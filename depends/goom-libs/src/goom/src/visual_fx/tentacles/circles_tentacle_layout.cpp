@@ -14,29 +14,28 @@ using UTILS::MATH::TWO_PI;
 static constexpr auto ANGLE_START  = HALF_PI;
 static constexpr auto ANGLE_FINISH = ANGLE_START + TWO_PI;
 
-CirclesTentacleLayout::CirclesTentacleLayout(const float startRadius,
-                                             const float endRadius,
-                                             const uint32_t numTentacles) noexcept
-  : m_startPoints{GetCirclePoints(startRadius, numTentacles)},
-    m_endPoints{GetCirclePoints(endRadius, numTentacles)},
-    m_startRadius{startRadius},
-    m_endRadius{endRadius}
+CirclesTentacleLayout::CirclesTentacleLayout(const LayoutProperties& layoutProperties) noexcept
+  : m_startPoints{GetCirclePoints({layoutProperties.startRadius, layoutProperties.numTentacles})},
+    m_endPoints{GetCirclePoints({layoutProperties.endRadius, layoutProperties.numTentacles})},
+    m_startRadius{layoutProperties.startRadius},
+    m_endRadius{layoutProperties.endRadius}
 {
 }
 
-auto CirclesTentacleLayout::GetCirclePoints(const float radius, const uint32_t numPoints) noexcept
-    -> std::vector<Point2dFlt>
+auto CirclesTentacleLayout::GetCirclePoints(
+    const CirclePointsProperties& circlePointsProperties) noexcept -> std::vector<Point2dFlt>
 {
   auto circlePoints = std::vector<Point2dFlt>{};
 
   // TODO(glk) Use TValue
-  const auto angleStep = (ANGLE_FINISH - ANGLE_START) / static_cast<float>(numPoints);
-  auto angle           = ANGLE_START;
+  const auto angleStep =
+      (ANGLE_FINISH - ANGLE_START) / static_cast<float>(circlePointsProperties.numPoints);
+  auto angle = ANGLE_START;
 
-  for (auto i = 0U; i < numPoints; ++i)
+  for (auto i = 0U; i < circlePointsProperties.numPoints; ++i)
   {
-    const auto x = radius * std::cos(angle);
-    const auto y = radius * std::sin(angle);
+    const auto x = circlePointsProperties.radius * std::cos(angle);
+    const auto y = circlePointsProperties.radius * std::sin(angle);
 
     circlePoints.emplace_back(Point2dFlt{x, y});
 

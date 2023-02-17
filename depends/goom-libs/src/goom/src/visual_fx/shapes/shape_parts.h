@@ -5,6 +5,7 @@
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
@@ -58,8 +59,8 @@ public:
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
 
-  auto SetShapePathsMinMaxNumSteps(uint32_t shapePathsMinNumSteps,
-                                   uint32_t shapePathsMaxNumSteps) noexcept -> void;
+  auto SetShapePathsMinMaxNumSteps(const MinMaxValues<uint32_t>& minMaxShapePathsNumSteps) noexcept
+      -> void;
 
   auto Start() noexcept -> void;
 
@@ -104,11 +105,9 @@ private:
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
   int32_t m_extremeMaxShapeDotRadius = EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
   bool m_useExtremeMaxShapeDotRadius = false;
-  static constexpr uint32_t MIN_DOT_RADIUS_STEPS  = 100;
-  static constexpr uint32_t MAX_DOT_RADIUS_STEPS  = 200;
+  static constexpr auto MIN_MAX_RADIUS_STEPS = MinMaxValues<uint32_t>{100U, 200U};
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
-  UTILS::StepSpeed m_dotRadiusStepSpeed{
-      MIN_DOT_RADIUS_STEPS, MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
+  UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
                              m_dotRadiusStepSpeed.GetCurrentNumSteps()};
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
@@ -159,7 +158,8 @@ private:
   auto IncrementTs() noexcept -> void;
   auto SetRandomizedShapePaths() noexcept -> void;
   [[nodiscard]] auto GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>;
-  [[nodiscard]] auto GetShapePaths(uint32_t numShapePaths, float minScale, float maxScale) noexcept
+  [[nodiscard]] auto GetShapePaths(uint32_t numShapePaths,
+                                   const MinMaxValues<float>& minMaxValues) noexcept
       -> std::vector<ShapePath>;
   [[nodiscard]] static auto GetTransform2d(const Vec2dFlt& targetPoint,
                                            float radius,

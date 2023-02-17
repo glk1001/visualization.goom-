@@ -344,6 +344,7 @@ inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept
 
 inline auto PixelBuffer::GetIntBuff() const noexcept -> const PixelIntType*
 {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
   return reinterpret_cast<const PixelIntType*>(m_buff.data());
 }
 

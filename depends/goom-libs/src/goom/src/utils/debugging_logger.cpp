@@ -10,7 +10,7 @@ namespace GOOM::UTILS
 
 namespace
 {
-GoomLogger* globalGoomLogger{};
+GoomLogger* globalGoomLogger{}; // NOLINT: For debugging use only.
 }
 
 auto SetGoomLogger(GoomLogger& goomLogger) noexcept -> void

@@ -41,6 +41,7 @@ using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::PI;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::Sq;
+using UTILS::MATH::StartAndEndPos;
 using UTILS::MATH::THIRD_PI;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
@@ -180,7 +181,7 @@ public:
 private:
   TubeData m_data;
   propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer{
-      std::make_unique<ShapeColorizer>(m_data, NUM_SHAPES_PER_TUBE, MAX_NUM_CIRCLES_IN_GROUP)};
+      std::make_unique<ShapeColorizer>(NUM_SHAPES_PER_TUBE, m_data, MAX_NUM_CIRCLES_IN_GROUP)};
   bool m_active                                = true;
   static constexpr float PATH_STEP             = NML_CIRCLE_SPEED;
   static constexpr uint32_t SHAPE_T_DELAY_TIME = 10;
@@ -325,7 +326,7 @@ public:
     const IColorMap* innerLowColorMap{};
   };
 
-  ShapeColorizer(const TubeData& data, uint32_t numShapes, uint32_t numCircles) noexcept;
+  ShapeColorizer(uint32_t numShapes, const TubeData& data, uint32_t numCircles) noexcept;
 
   [[nodiscard]] auto GetBrightnessFactor() const noexcept -> float;
   auto SetBrightnessFactor(float val) noexcept -> void;
@@ -347,7 +348,9 @@ private:
   TubeData m_data;
 
   static constexpr auto GAMMA = 1.0F;
-  ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  ColorAdjustment m_colorAdjust{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;
@@ -478,7 +481,7 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
     auto shapeT = std::make_unique<TValue>(
         TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP, s_DELAY_POINTS);
     shape.path = std::make_unique<OscillatingPath>(
-        std::move(shapeT), ToPoint2dFlt(fromPos), ToPoint2dFlt(toPos), pathParams);
+        std::move(shapeT), StartAndEndPos{ToPoint2dFlt(fromPos), ToPoint2dFlt(toPos)}, pathParams);
 
     angle += ANGLE_STEP;
     ++shapeNum;
@@ -792,8 +795,8 @@ static constexpr auto CIRCLES_ONLY_WEIGHT               = 20.0F;
 static constexpr auto SHAPES_AND_CIRCLES_WEIGHT         = 05.0F;
 static constexpr auto STRIPED_SHAPES_AND_CIRCLES_WEIGHT = 15.0F;
 
-ShapeColorizer::ShapeColorizer(const TubeData& data,
-                               const uint32_t numShapes,
+ShapeColorizer::ShapeColorizer(const uint32_t numShapes,
+                               const TubeData& data,
                                const uint32_t numCircles) noexcept
   : m_data{data},
     m_shapeColorMaps(numShapes),
@@ -812,7 +815,7 @@ ShapeColorizer::ShapeColorizer(const TubeData& data,
             {ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES, STRIPED_SHAPES_AND_CIRCLES_WEIGHT},
         }
     },
-    m_brightnessAttenuation{m_data.screenWidth, m_data.screenHeight, CUTOFF_BRIGHTNESS}
+    m_brightnessAttenuation{{m_data.screenWidth, m_data.screenHeight, CUTOFF_BRIGHTNESS}}
 {
   InitColorMaps();
   ResetColorMaps();
@@ -1143,11 +1146,9 @@ inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor, const Pixel& co
   return IColorMap::GetColorMix(oldColor, color, m_oldT());
 }
 
-BrightnessAttenuation::BrightnessAttenuation(const uint32_t screenWidth,
-                                             const uint32_t screenHeight,
-                                             const float cutoffBrightness) noexcept
-  : m_cutoffBrightness{cutoffBrightness},
-    m_maxRSquared{2 * Sq(U_HALF * std::min(screenWidth, screenHeight))}
+BrightnessAttenuation::BrightnessAttenuation(const Properties& properties) noexcept
+  : m_cutoffBrightness{properties.cutoffBrightness},
+    m_maxRSquared{2 * Sq(U_HALF * std::min(properties.screenWidth, properties.screenHeight))}
 {
 }
 

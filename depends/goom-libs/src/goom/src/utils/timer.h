@@ -42,7 +42,12 @@ public:
   explicit OnOffTimer(const TimerCounts& timerCounts) noexcept;
 
   using Action = std::function<bool()>; // return true if action succeeded.
-  auto SetActions(const Action& onAction, const Action& offAction) noexcept -> void;
+  struct OnAndOffActions
+  {
+    Action onAction;
+    Action offAction;
+  };
+  auto SetActions(const OnAndOffActions& onAndOffActions) noexcept -> void;
 
   auto StartOnTimer() noexcept -> void;
   auto StartOffTimer() noexcept -> void;
@@ -127,10 +132,10 @@ inline OnOffTimer::OnOffTimer(const TimerCounts& timerCounts) noexcept : m_timer
 {
 }
 
-inline auto OnOffTimer::SetActions(const Action& onAction, const Action& offAction) noexcept -> void
+inline auto OnOffTimer::SetActions(const OnAndOffActions& onAndOffActions) noexcept -> void
 {
-  m_onAction  = onAction;
-  m_offAction = offAction;
+  m_onAction  = onAndOffActions.onAction;
+  m_offAction = onAndOffActions.offAction;
 }
 
 inline auto OnOffTimer::StartOnTimer() noexcept -> void

@@ -12,6 +12,7 @@ using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
+using UTILS::MATH::StartAndEndPos;
 
 LSysPath::LSysPath(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
@@ -59,12 +60,10 @@ auto LSysPath::GetPathsToAndFrom() const noexcept -> std::unique_ptr<PathsToAndF
 
   auto pathsToAndFrom = PathsToAndFrom{
       OscillatingPath{std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, m_pathNumSteps),
-                      ToPoint2dFlt(m_lSysPathStart),
-                      ToPoint2dFlt(m_lSysPathTarget),
+                      StartAndEndPos{ToPoint2dFlt(m_lSysPathStart), ToPoint2dFlt(m_lSysPathTarget)},
                       pathParams},
       OscillatingPath{std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, m_pathNumSteps),
-                      ToPoint2dFlt(m_lSysPathTarget),
-                      ToPoint2dFlt(m_lSysPathStart),
+                      StartAndEndPos{ToPoint2dFlt(m_lSysPathTarget), ToPoint2dFlt(m_lSysPathStart)},
                       pathParams}
   };
 

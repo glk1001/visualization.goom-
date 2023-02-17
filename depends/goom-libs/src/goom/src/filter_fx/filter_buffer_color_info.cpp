@@ -129,7 +129,7 @@ inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point
     const auto y0          = static_cast<int32_t>(regionInfo.y0);
     const auto y1          = static_cast<int32_t>(regionInfo.y1);
 
-    if ((y0 <= point.y) && (point.y <= y1) && IsInXRegion(point.x, regionInfo.xRegionIndex))
+    if ((y0 <= point.y) && (point.y <= y1) && IsInXRegion({point.x, regionInfo.xRegionIndex}))
     {
       return regionIndex;
     }
@@ -138,14 +138,15 @@ inline auto FilterBufferColorInfo::GetRegionIndexOfPoint(const Point2dInt& point
   FailFast();
 }
 
-inline auto FilterBufferColorInfo::IsInXRegion(const int32_t x,
-                                               const size_t xRegionIndex) const noexcept -> bool
+inline auto FilterBufferColorInfo::IsInXRegion(
+    const XValueAndRegion& xValueAndRegion) const noexcept -> bool
 {
-  const auto x0 =
-      0 == xRegionIndex ? 0 : static_cast<int32_t>(m_xRegionBorders.at(xRegionIndex - 1));
-  const auto x1 = static_cast<int32_t>(m_xRegionBorders.at(xRegionIndex));
+  const auto x0 = 0 == xValueAndRegion.xRegionIndex
+                      ? 0
+                      : static_cast<int32_t>(m_xRegionBorders.at(xValueAndRegion.xRegionIndex - 1));
+  const auto x1 = static_cast<int32_t>(m_xRegionBorders.at(xValueAndRegion.xRegionIndex));
 
-  return (x0 <= x) && (x <= x1);
+  return (x0 <= xValueAndRegion.x) and (xValueAndRegion.x <= x1);
 }
 
 auto FilterBufferColorInfo::GetAverageLuminanceTest() const noexcept -> float

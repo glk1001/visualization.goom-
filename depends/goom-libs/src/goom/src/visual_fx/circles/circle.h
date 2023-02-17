@@ -74,7 +74,8 @@ private:
 
   DotPaths m_dotPaths;
   DotDiameters m_dotDiameters{
-      *m_goomRand, NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter};
+      *m_goomRand, {NUM_DOTS, m_helper.minDotDiameter, m_helper.maxDotDiameter}
+  };
   [[nodiscard]] static auto GetDotStartingPositions(const Point2dInt& centre, float radius) noexcept
       -> std::vector<Point2dInt>;
 
@@ -94,7 +95,9 @@ private:
   auto DrawNextCircleDots() noexcept -> void;
 
   static constexpr auto GAMMA = 1.0F;
-  COLOR::ColorAdjustment m_colorAdjustment{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjustment{
+      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 
   float m_globalBrightnessFactor = 1.0F;
   [[nodiscard]] auto GetCurrentBrightness() const noexcept -> float;

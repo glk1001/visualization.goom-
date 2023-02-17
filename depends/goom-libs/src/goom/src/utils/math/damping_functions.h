@@ -27,9 +27,17 @@ public:
 class ExpDampingFunction : public IDampingFunction
 {
 public:
+  struct ExpProperties
+  {
+    double amplitude;
+    double xToStartRise;
+    double yAtStartToRise;
+    double xMax;
+    double yAtXMax;
+  };
+
   ExpDampingFunction() noexcept = default;
-  ExpDampingFunction(
-      double amplitude, double xToStartRise, double yAtStartToRise, double xMax, double yAtXMax);
+  explicit ExpDampingFunction(const ExpProperties& expProperties);
   auto operator()(double x) -> double override;
   [[nodiscard]] auto KVal() const -> double { return m_k; }
   [[nodiscard]] auto BVal() const -> double { return m_b; }
@@ -54,8 +62,16 @@ private:
 class LinearDampingFunction : public IDampingFunction
 {
 public:
+  struct LinearProperties
+  {
+    double x0;
+    double y0;
+    double x1;
+    double y1;
+  };
+
   LinearDampingFunction() noexcept = default;
-  explicit LinearDampingFunction(double x0, double y0, double x1, double y1) noexcept;
+  explicit LinearDampingFunction(const LinearProperties& linearProperties) noexcept;
   auto operator()(double x) -> double override;
 
 private:
@@ -93,7 +109,15 @@ public:
 class SineWaveMultiplier : public ISequenceFunction
 {
 public:
-  SineWaveMultiplier(float frequency, float lower, float upper, float x0) noexcept;
+  struct SineProperties
+  {
+    float frequency;
+    float lower;
+    float upper;
+    float x0;
+  };
+
+  explicit SineWaveMultiplier(const SineProperties& sineProperties) noexcept;
 
   auto Increment() noexcept -> void override;
   [[nodiscard]] auto GetNext() const noexcept -> float override;
@@ -104,17 +128,23 @@ public:
 
   [[nodiscard]] auto GetLower() const noexcept -> float;
   [[nodiscard]] auto GetUpper() const noexcept -> float;
-  auto SetRange(float lwr, float upr) noexcept -> void;
+  struct SineRange
+  {
+    float lower;
+    float upper;
+  };
+  auto SetRange(const SineRange& sineRange) noexcept -> void;
 
   auto SetPiStepFrac(float val) noexcept -> void;
 
 private:
-  RangeMapper m_rangeMapper;
+  RangeMapper m_rangeMapper{-1.0, +1.0};
   float m_frequency;
   float m_lower;
   float m_upper;
-  float m_piStepFrac;
   float m_x;
+  static constexpr auto DEFAULT_PI_STEP_FRAC = 1.0 / 16.0;
+  float m_piStepFrac                         = DEFAULT_PI_STEP_FRAC;
 };
 
 inline auto SineWaveMultiplier::SetX0(const float x0) noexcept -> void
@@ -142,10 +172,10 @@ inline auto SineWaveMultiplier::GetUpper() const noexcept -> float
   return m_upper;
 }
 
-inline auto SineWaveMultiplier::SetRange(const float lwr, const float upr) noexcept -> void
+inline auto SineWaveMultiplier::SetRange(const SineRange& sineRange) noexcept -> void
 {
-  m_lower = lwr;
-  m_upper = upr;
+  m_lower = sineRange.lower;
+  m_upper = sineRange.upper;
 }
 
 inline auto SineWaveMultiplier::SetPiStepFrac(const float val) noexcept -> void

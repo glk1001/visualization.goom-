@@ -8,6 +8,7 @@
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "shapes/shapes.h"
 #include "spimpl.h"
@@ -215,13 +216,13 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> void
 {
-  const auto newMinNumShapePathSteps = m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS;
-  const auto newMaxNumShapePathSteps = m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS;
-  std::for_each(
-      begin(m_shapes),
-      end(m_shapes),
-      [&newMinNumShapePathSteps, &newMaxNumShapePathSteps](Shape& shape)
-      { shape.SetShapePathsMinMaxNumSteps(newMinNumShapePathSteps, newMaxNumShapePathSteps); });
+  const auto newMinMaxNumShapePathSteps =
+      MinMaxValues<uint32_t>{m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS,
+                             m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS};
+  std::for_each(begin(m_shapes),
+                end(m_shapes),
+                [&newMinMaxNumShapePathSteps](Shape& shape)
+                { shape.SetShapePathsMinMaxNumSteps(newMinMaxNumShapePathSteps); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void

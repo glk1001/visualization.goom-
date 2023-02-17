@@ -9,7 +9,13 @@ namespace GOOM::COLOR
 class ColorAdjustment
 {
 public:
-  explicit ColorAdjustment(float gamma, float alterChromaFactor = 1.0F);
+  struct AdjustmentProperties
+  {
+    float gamma             = 1.0F;
+    float alterChromaFactor = 1.0F;
+  };
+
+  explicit ColorAdjustment(const AdjustmentProperties& adjustmentProperties);
 
   [[nodiscard]] auto GetIgnoreThreshold() const -> float;
   auto SetIgnoreThreshold(float val) -> void;
@@ -37,8 +43,8 @@ private:
   float m_ignoreThreshold                                   = DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD;
 };
 
-inline ColorAdjustment::ColorAdjustment(const float gamma, const float alterChromaFactor)
-  : m_gamma{gamma}, m_chromaFactor{alterChromaFactor}
+inline ColorAdjustment::ColorAdjustment(const AdjustmentProperties& adjustmentProperties)
+  : m_gamma{adjustmentProperties.gamma}, m_chromaFactor{adjustmentProperties.alterChromaFactor}
 {
 }
 

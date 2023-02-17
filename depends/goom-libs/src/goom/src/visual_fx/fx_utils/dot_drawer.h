@@ -43,11 +43,16 @@ enum class DotSizes
 class DotDrawer
 {
 public:
+  struct WeightProperties
+  {
+    UTILS::MATH::Weights<DotSizes> minDotSizes;
+    UTILS::MATH::Weights<DotSizes> normalDotSizes;
+  };
+
   DotDrawer(DRAW::IGoomDraw& draw,
             const UTILS::MATH::IGoomRand& goomRand,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-            const UTILS::MATH::Weights<DotSizes>& minDotSizes,
-            const UTILS::MATH::Weights<DotSizes>& normalDotSizes) noexcept;
+            const WeightProperties& weightProperties) noexcept;
 
   auto ChangeDotSizes() noexcept -> void;
 

@@ -104,68 +104,63 @@ auto Wave::SetRandomParams() noexcept -> void
 
 auto Wave::SetSqDistAngleEffectMode0RandomParams() noexcept -> void
 {
-  SetWaveModeSettings(AngleEffect::SQ_DIST,
-                      FREQ_FACTOR_RANGE,
-                      AMPLITUDE_RANGE,
-                      PERIODIC_FACTOR_RANGE,
-                      SIN_COS_PERIODIC_FACTOR_RANGE);
+  SetWaveModeSettings({AngleEffect::SQ_DIST,
+                       FREQ_FACTOR_RANGE,
+                       AMPLITUDE_RANGE,
+                       PERIODIC_FACTOR_RANGE,
+                       SIN_COS_PERIODIC_FACTOR_RANGE});
 }
 
 auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
 {
   if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
-    SetWaveModeSettings(AngleEffect::SQ_DIST,
-                        SMALL_FREQ_FACTOR_RANGE,
-                        BIG_AMPLITUDE_RANGE,
-                        BIG_PERIODIC_FACTOR_RANGE,
-                        BIG_SIN_COS_PERIODIC_FACTOR_RANGE);
+    SetWaveModeSettings({AngleEffect::SQ_DIST,
+                         SMALL_FREQ_FACTOR_RANGE,
+                         BIG_AMPLITUDE_RANGE,
+                         BIG_PERIODIC_FACTOR_RANGE,
+                         BIG_SIN_COS_PERIODIC_FACTOR_RANGE});
   }
   else
   {
-    SetWaveModeSettings(AngleEffect::SQ_DIST,
-                        FREQ_FACTOR_RANGE,
-                        AMPLITUDE_RANGE,
-                        PERIODIC_FACTOR_RANGE,
-                        SIN_COS_PERIODIC_FACTOR_RANGE);
+    SetWaveModeSettings({AngleEffect::SQ_DIST,
+                         FREQ_FACTOR_RANGE,
+                         AMPLITUDE_RANGE,
+                         PERIODIC_FACTOR_RANGE,
+                         SIN_COS_PERIODIC_FACTOR_RANGE});
   }
 }
 
 auto Wave::SetAtanAngleEffectMode0RandomParams() noexcept -> void
 {
-  SetWaveModeSettings(AngleEffect::ATAN,
-                      FREQ_FACTOR_RANGE,
-                      AMPLITUDE_RANGE,
-                      PERIODIC_FACTOR_RANGE,
-                      SIN_COS_PERIODIC_FACTOR_RANGE);
+  SetWaveModeSettings({AngleEffect::ATAN,
+                       FREQ_FACTOR_RANGE,
+                       AMPLITUDE_RANGE,
+                       PERIODIC_FACTOR_RANGE,
+                       SIN_COS_PERIODIC_FACTOR_RANGE});
 }
 
 auto Wave::SetAtanAngleEffectMode1RandomParams() noexcept -> void
 {
   if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
-    SetWaveModeSettings(AngleEffect::ATAN,
-                        SMALL_FREQ_FACTOR_RANGE,
-                        BIG_AMPLITUDE_RANGE,
-                        BIG_PERIODIC_FACTOR_RANGE,
-                        BIG_SIN_COS_PERIODIC_FACTOR_RANGE);
+    SetWaveModeSettings({AngleEffect::ATAN,
+                         SMALL_FREQ_FACTOR_RANGE,
+                         BIG_AMPLITUDE_RANGE,
+                         BIG_PERIODIC_FACTOR_RANGE,
+                         BIG_SIN_COS_PERIODIC_FACTOR_RANGE});
   }
   else
   {
-    SetWaveModeSettings(AngleEffect::ATAN,
-                        FREQ_FACTOR_RANGE,
-                        AMPLITUDE_RANGE,
-                        PERIODIC_FACTOR_RANGE,
-                        SIN_COS_PERIODIC_FACTOR_RANGE);
+    SetWaveModeSettings({AngleEffect::ATAN,
+                         FREQ_FACTOR_RANGE,
+                         AMPLITUDE_RANGE,
+                         PERIODIC_FACTOR_RANGE,
+                         SIN_COS_PERIODIC_FACTOR_RANGE});
   }
 }
 
-auto Wave::SetWaveModeSettings(
-    const AngleEffect angleEffect,
-    const IGoomRand::NumberRange<float>& freqFactorRange,
-    const IGoomRand::NumberRange<float>& amplitudeRange,
-    const IGoomRand::NumberRange<float>& periodicFactorRange,
-    const IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) noexcept -> void
+auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcept -> void
 {
   const auto waveEffectsEqual = m_goomRand->ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
 
@@ -174,15 +169,17 @@ auto Wave::SetWaveModeSettings(
 
   const auto sqDistPower = m_goomRand->GetRandInRange(SQ_DIST_POWER_RANGE);
 
-  const auto periodicFactor =
-      GetPeriodicFactor(xWaveEffect, yWaveEffect, periodicFactorRange, sinCosPeriodicFactorRange);
-  const auto freqFactor   = m_goomRand->GetRandInRange(freqFactorRange);
-  const auto amplitude    = m_goomRand->GetRandInRange(amplitudeRange);
-  const auto reducerCoeff = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
+  const auto periodicFactor = GetPeriodicFactor(xWaveEffect,
+                                                yWaveEffect,
+                                                waveModeSettings.periodicFactorRange,
+                                                waveModeSettings.sinCosPeriodicFactorRange);
+  const auto freqFactor     = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
+  const auto amplitude      = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
+  const auto reducerCoeff   = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
 
   SetParams({xWaveEffect,
              yWaveEffect,
-             angleEffect,
+             waveModeSettings.angleEffect,
              sqDistPower,
              freqFactor,
              amplitude,

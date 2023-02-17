@@ -152,7 +152,7 @@ private:
   [[nodiscard]] auto GetChunkFloatingStartPosition(size_t i) const -> Point2dInt;
 
   static constexpr float GAMMA = 1.0F;
-  ColorAdjustment m_colorAdjust{GAMMA};
+  ColorAdjustment m_colorAdjust{{GAMMA}};
 };
 
 ImageFx::ImageFx(Parallel& parallel,

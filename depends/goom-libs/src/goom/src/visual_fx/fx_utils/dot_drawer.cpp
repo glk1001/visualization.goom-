@@ -18,18 +18,16 @@ using UTILS::NUM;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::Weights;
 
 DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
                      const IGoomRand& goomRand,
                      const SmallImageBitmaps& smallBitmaps,
-                     const Weights<DotSizes>& minDotSizes,
-                     const Weights<DotSizes>& normalDotSizes) noexcept
+                     const WeightProperties& weightProperties) noexcept
   : m_goomRand{&goomRand},
     m_smallBitmaps{&smallBitmaps},
     m_bitmapDrawer{draw},
-    m_minDotSizes{minDotSizes},
-    m_normalDotSizes{normalDotSizes}
+    m_minDotSizes{weightProperties.minDotSizes},
+    m_normalDotSizes{weightProperties.normalDotSizes}
 {
   static_assert(MAX_IMAGE_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 }

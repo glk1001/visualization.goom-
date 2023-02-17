@@ -6,24 +6,22 @@ namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 DotDiameters::DotDiameters(const UTILS::MATH::IGoomRand& goomRand,
-                           const uint32_t numDots,
-                           const uint32_t minDotDiameter,
-                           const uint32_t maxDotDiameter) noexcept
+                           const DotProperties& dotProperties) noexcept
   : m_goomRand{&goomRand},
-    m_numDots{numDots},
-    m_minDotDiameter{minDotDiameter + MIN_DIAMETER_EXTRA},
-    m_maxDotDiameter{maxDotDiameter}
+    m_numDots{dotProperties.numDots},
+    m_minDotDiameter{dotProperties.minDotDiameter + MIN_DIAMETER_EXTRA},
+    m_maxDotDiameter{dotProperties.maxDotDiameter}
 {
-  Expects(m_minDotDiameter <= m_maxDotDiameter);
+  Expects(dotProperties.numDots > 0);
+  Expects((dotProperties.minDotDiameter + MIN_DIAMETER_EXTRA) <= dotProperties.maxDotDiameter);
   ChangeDotDiameters();
 }
 
-auto DotDiameters::GetInitialDotDiameters(const uint32_t numDots,
-                                          const uint32_t maxDotDiameter) noexcept
-    -> std::vector<uint32_t>
+auto DotDiameters::GetInitialDotDiameters(
+    const NumDotsAndMaxDiameter& numDotsAndMaxDiameter) noexcept -> std::vector<uint32_t>
 {
-  auto diameters = std::vector<uint32_t>(numDots);
-  std::fill(begin(diameters), end(diameters), maxDotDiameter);
+  auto diameters = std::vector<uint32_t>(numDotsAndMaxDiameter.numDots);
+  std::fill(begin(diameters), end(diameters), numDotsAndMaxDiameter.maxDotDiameter);
   return diameters;
 }
 

@@ -4,6 +4,7 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/propagate_const.h"
@@ -79,22 +80,22 @@ private:
   [[nodiscard]] auto GetInteriorColor(float fontColorT,
                                       float fontCharColorMixT,
                                       const Point2dInt& point,
-                                      int32_t charWidth,
-                                      int32_t charHeight) const -> Pixel;
+                                      const Dimensions& charDimensions) const -> Pixel;
   [[nodiscard]] auto GetInitialPhaseInteriorColor(float fontColorT) const -> Pixel;
-  [[nodiscard]] auto GetMiddlePhaseInteriorColor(float fontColorT,
-                                                 float fontCharColorMixT,
-                                                 const Point2dInt& point,
-                                                 int32_t charWidth,
-                                                 int32_t charHeight) const -> Pixel;
-  [[nodiscard]] auto GetFinalPhaseInteriorColor(float fontCharColorMixT,
-                                                const Point2dInt& point,
-                                                int32_t charWidth,
-                                                int32_t charHeight) const -> Pixel;
-  [[nodiscard]] auto GetOutlineColor(float fontColorT,
-                                     float fontCharColorMixT,
-                                     int32_t x,
-                                     int32_t charWidth) const -> Pixel;
+
+  struct FontTs
+  {
+    float fontColorT;
+    float fontCharColorMixT;
+  };
+  [[nodiscard]] auto GetMiddlePhaseInteriorColor(const Point2dInt& point,
+                                                 const FontTs& fontTs,
+                                                 const Dimensions& charDimensions) const -> Pixel;
+  [[nodiscard]] auto GetFinalPhaseInteriorColor(const Point2dInt& point,
+                                                float fontCharColorMixT,
+                                                const Dimensions& charDimensions) const -> Pixel;
+  [[nodiscard]] auto GetOutlineColor(int32_t x, const FontTs& fontTs, int32_t charWidth) const
+      -> Pixel;
 
   [[nodiscard]] auto GetCharSpacing() const -> float;
   void UpdateColorMaps();
@@ -119,8 +120,9 @@ private:
   [[nodiscard]] auto GetFinalPhaseCentrePenPos(const std::string& str) -> Point2dFlt;
 
   static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
-  COLOR::ColorAdjustment m_textColorAdjust{TEXT_GAMMA,
-                                           COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_textColorAdjust{
+      {TEXT_GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 };
 
 inline void GoomTitleDisplayer::DrawStaticText(const std::string& title)

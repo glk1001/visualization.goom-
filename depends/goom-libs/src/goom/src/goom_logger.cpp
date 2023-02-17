@@ -33,14 +33,14 @@ GoomLogger::~GoomLogger() noexcept
   Expects(not m_doLogging);
 }
 
-auto GoomLogger::VLog(const LogLevel lvl,
-                      const int lineNum,
+auto GoomLogger::VLog(LogLevel lvl,
                       const std::string& funcName,
+                      const int lineNum,
                       const std::string& formatStr,
-                      const std20::format_args args) -> void
+                      std20::format_args args) -> void
 {
   std20::memory_buffer buffer;
-  // Pass custom argument formatter as a template arg to vwrite.
+  // Pass custom argument formatter as a template arg to pass further down.
   std20::vformat_to(std20::detail::buffer_appender<char>(buffer), formatStr, args);
   Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
 }

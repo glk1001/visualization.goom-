@@ -24,9 +24,15 @@ template<class T, class HeaderT = EmptyHeaderType>
 class BufferSaver
 {
 public:
+  struct BufferLimits
+  {
+    int64_t startBuffNum{};
+    int64_t endBuffNum{};
+  };
+
+  static constexpr auto LARGE_END_BUFF_NUM = 1000000L;
   explicit BufferSaver(std::string filenamePrefix,
-                       int64_t startBuffNum = 0,
-                       int64_t endBuffNum   = 1000000);
+                       const BufferLimits& bufferLimits = {0, LARGE_END_BUFF_NUM});
 
   [[nodiscard]] auto GetCurrentFilename() const -> std::string;
   [[nodiscard]] auto GetCurrentBufferNum() const -> int64_t;
@@ -75,12 +81,11 @@ private:
 
 template<class T, class HeaderT>
 inline BufferSaver<T, HeaderT>::BufferSaver(std::string filenamePrefix,
-                                            const int64_t startBuffNum,
-                                            const int64_t endBuffNum)
+                                            const BufferLimits& bufferLimits)
   : m_filenamePrefix{std::move(filenamePrefix)},
-    m_startBuffNum{startBuffNum},
-    m_endBuffNum{endBuffNum},
-    m_currentBuffNum{startBuffNum}
+    m_startBuffNum{bufferLimits.startBuffNum},
+    m_endBuffNum{bufferLimits.endBuffNum},
+    m_currentBuffNum{bufferLimits.startBuffNum}
 {
 }
 
@@ -186,13 +191,14 @@ void BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
 {
   if (typeid(HeaderT) != typeid(EmptyHeaderType))
   {
-    file.write(reinterpret_cast<const char*>(&header), sizeof(HeaderT));
+    file.write(static_cast<const char*>(&header), sizeof(HeaderT));
   }
 
   const auto bufferLen = buffer.GetBufferLen();
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
   file.write(reinterpret_cast<const char*>(&tag), sizeof(tag));
-  file.write(reinterpret_cast<const char*>(&bufferLen), sizeof(bufferLen));
-  file.write(reinterpret_cast<const char*>(buffer.Data()),
+  file.write(static_cast<const char*>(&bufferLen), sizeof(bufferLen));
+  file.write(static_cast<const char*>(buffer.Data()),
              static_cast<std::streamsize>(bufferLen * sizeof(T)));
 }
 
@@ -213,7 +219,7 @@ auto BufferSaver<T, HeaderT>::PeekHeaderBinary(std::istream& file, HeaderT& head
   if (typeid(HeaderT) != typeid(EmptyHeaderType))
   {
     HeaderT header1;
-    file.read(reinterpret_cast<char*>(&header1), sizeof(HeaderT));
+    file.read(static_cast<char*>(&header1), sizeof(HeaderT));
     header = header1;
     file.seekg(0);
   }

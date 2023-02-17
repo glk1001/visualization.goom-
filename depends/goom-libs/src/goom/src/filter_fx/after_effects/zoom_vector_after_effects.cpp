@@ -44,7 +44,7 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
 
   if (m_afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY])
   {
-    newVelocity = m_afterEffects.GetImageVelocity().GetVelocity(coords, newVelocity);
+    newVelocity = m_afterEffects.GetImageVelocity().GetVelocity({coords, newVelocity});
   }
 
   if (m_afterEffectsSettings.active[AfterEffectsTypes::XY_LERP_EFFECT])
@@ -74,12 +74,12 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
 
   if (m_afterEffects.GetPlanes().IsHorizontalPlaneVelocityActive())
   {
-    newVelocity.SetX(m_afterEffects.GetPlanes().GetHorizontalPlaneVelocity(coords, newVelocity));
+    newVelocity.SetX(m_afterEffects.GetPlanes().GetHorizontalPlaneVelocity({coords, newVelocity}));
   }
 
   if (m_afterEffects.GetPlanes().IsVerticalPlaneVelocityActive())
   {
-    newVelocity.SetY(m_afterEffects.GetPlanes().GetVerticalPlaneVelocity(coords, newVelocity));
+    newVelocity.SetY(m_afterEffects.GetPlanes().GetVerticalPlaneVelocity({coords, newVelocity}));
   }
 
   /* TODO : Water Mode */

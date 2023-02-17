@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_config.h"
+#include "goom_types.h"
 #include "point2d.h"
 
 #include <cstdint>
@@ -16,13 +17,17 @@ struct LinePoint
 };
 
 
-[[nodiscard]] auto GetHorizontalLinePoints(uint32_t numPoints, uint32_t width, float yValue)
+struct LineProperties
+{
+  uint32_t numPoints;
+  uint32_t length;
+};
+[[nodiscard]] auto GetHorizontalLinePoints(const LineProperties& lineProperties, float yValue)
     -> std::vector<LinePoint>;
-[[nodiscard]] auto GetVerticalLinePoints(uint32_t numPoints, uint32_t height, float xValue)
+[[nodiscard]] auto GetVerticalLinePoints(const LineProperties& lineProperties, float xValue)
     -> std::vector<LinePoint>;
 [[nodiscard]] auto GetCircularLinePoints(uint32_t numPoints,
-                                         uint32_t width,
-                                         uint32_t height,
+                                         const Dimensions& dimensions,
                                          float radius) -> std::vector<LinePoint>;
 template<typename T>
 void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsToSmooth);

@@ -1,11 +1,10 @@
 #include "damping_functions.h"
 
+#include "goom_config.h"
 #include "misc.h"
 
 #include <cmath>
-#include <format>
 #include <memory>
-#include <stdexcept>
 #include <tuple>
 #include <vector>
 
@@ -14,34 +13,21 @@ namespace GOOM::UTILS::MATH
 
 using UTILS::MATH::PI;
 
-ExpDampingFunction::ExpDampingFunction(const double amplitude,
-                                       const double xToStartRise,
-                                       const double yAtStartToRise,
-                                       const double xMax,
-                                       const double yAtXMax)
-  : m_amplitude{amplitude}
+ExpDampingFunction::ExpDampingFunction(const ExpProperties& expProperties)
+  : m_amplitude{expProperties.amplitude}
 {
-  if (constexpr auto MIN_AMP = 0.00001; std::fabs(m_amplitude) < MIN_AMP)
-  {
-    throw std::runtime_error(
-        std20::format("abs(amplitude) should be >= {}, not {}.", MIN_AMP, m_amplitude));
-  }
-  if (yAtStartToRise <= m_amplitude)
-  {
-    throw std::runtime_error(std20::format(
-        "yAtStartToRise should be > {} = amplitude, not {}.", m_amplitude, yAtStartToRise));
-  }
-  if (yAtXMax <= m_amplitude)
-  {
-    throw std::runtime_error(
-        std20::format("yAtXMax should be > {} = amplitude, not {}.", m_amplitude, yAtXMax));
-  }
-  const auto y0    = (yAtStartToRise / m_amplitude) - 1.0;
-  const auto y1    = (yAtXMax / m_amplitude) - 1.0;
+  static constexpr auto MIN_AMP = 0.00001;
+  USED_FOR_DEBUGGING(MIN_AMP);
+  Expects(std::fabs(expProperties.amplitude) >= MIN_AMP);
+  Expects(expProperties.yAtStartToRise > m_amplitude);
+  Expects(expProperties.yAtXMax > m_amplitude);
+
+  const auto y0    = (expProperties.yAtStartToRise / m_amplitude) - 1.0;
+  const auto y1    = (expProperties.yAtXMax / m_amplitude) - 1.0;
   const auto logY0 = std::log(y0);
   const auto logY1 = std::log(y1);
-  m_b              = ((xToStartRise * logY1) - (xMax * logY0)) / (logY1 - logY0);
-  m_k              = logY1 / (xMax - m_b);
+  m_b = ((expProperties.xToStartRise * logY1) - (expProperties.xMax * logY0)) / (logY1 - logY0);
+  m_k = logY1 / (expProperties.xMax - m_b);
 }
 
 auto ExpDampingFunction::operator()(const double x) -> double
@@ -58,11 +44,10 @@ auto FlatDampingFunction::operator()([[maybe_unused]] const double x) -> double
   return m_y;
 }
 
-LinearDampingFunction::LinearDampingFunction(const double x0,
-                                             const double y0,
-                                             const double x1,
-                                             const double y1) noexcept
-  : m_m{(y1 - y0) / (x1 - x0)}, m_x1{x1}, m_y1{y1}
+LinearDampingFunction::LinearDampingFunction(const LinearProperties& linearProperties) noexcept
+  : m_m{(linearProperties.y1 - linearProperties.y0) / (linearProperties.x1 - linearProperties.x0)},
+    m_x1{linearProperties.x1},
+    m_y1{linearProperties.y1}
 {
 }
 
@@ -89,18 +74,11 @@ auto PiecewiseDampingFunction::operator()(const double x) -> double
   return 0.0;
 }
 
-static constexpr auto DEFAULT_PI_STEP_FRAC = 1.0 / 16.0;
-
-SineWaveMultiplier::SineWaveMultiplier(const float frequency,
-                                       const float lower,
-                                       const float upper,
-                                       const float x0) noexcept
-  : m_rangeMapper{-1, +1},
-    m_frequency{frequency},
-    m_lower{lower},
-    m_upper{upper},
-    m_piStepFrac{DEFAULT_PI_STEP_FRAC},
-    m_x{x0}
+SineWaveMultiplier::SineWaveMultiplier(const SineProperties& sineProperties) noexcept
+  : m_frequency{sineProperties.frequency},
+    m_lower{sineProperties.lower},
+    m_upper{sineProperties.upper},
+    m_x{sineProperties.x0}
 {
 }
 

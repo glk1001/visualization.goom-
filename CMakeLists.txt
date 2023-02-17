@@ -145,14 +145,20 @@ endif ()
 get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
 
-include_directories(${GOOM_LIBS_DIR}
+include_directories(BEFORE
+                    ${GOOM_LIBS_DIR}
                     ${GOOM_INCLUDE_DIRS}
-                    SYSTEM ${GOOM_LIBS_DIR}/src/vivid/include
-                    SYSTEM ${GOOM_LIBS_DIR}/lib/fmt/include
-                    SYSTEM ${fmt_SOURCE_DIR}/include
-                    SYSTEM ${GLM_INCLUDE_DIR}
-                    SYSTEM ${KODI_INCLUDE_DIR}
-                    SYSTEM ${KODI_FIXED_INCLUDE_DIR}
+                    )
+include_directories(BEFORE
+                    SYSTEM
+                    ${GOOM_LIBS_DIR}/lib/span/include
+                    ${GOOM_LIBS_DIR}/lib/span/include/tcb
+                    ${GOOM_LIBS_DIR}/src/vivid/include
+                    ${GOOM_LIBS_DIR}/lib/fmt/include
+                    ${fmt_SOURCE_DIR}/include
+                    ${GLM_INCLUDE_DIR}
+                    ${KODI_INCLUDE_DIR}
+                    ${KODI_FIXED_INCLUDE_DIR}
                     )
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp

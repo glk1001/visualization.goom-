@@ -50,7 +50,7 @@ void SetRandSeed(const uint64_t seed)
 inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
 {
   const auto x     = static_cast<uint32_t>(xoshiroEng());
-  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32;
+  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
   return n0 + static_cast<uint32_t>(m);
 }
 
@@ -59,7 +59,7 @@ inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
   // thread_local SplitMix32 eng { GetRandSeed() };
   thread_local splitmix64 s_eng{GetRandSeed()};
   const auto x     = static_cast<uint32_t>(s_eng());
-  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32;
+  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
   return n0 + static_cast<uint32_t>(m);
 }
 

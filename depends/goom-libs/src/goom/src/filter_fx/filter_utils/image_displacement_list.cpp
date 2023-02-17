@@ -10,6 +10,7 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
+// NOLINTNEXTLINE(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
     "pattern1.jpg",
     "pattern2.jpg",

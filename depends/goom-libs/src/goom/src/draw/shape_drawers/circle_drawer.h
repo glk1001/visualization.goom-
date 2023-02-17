@@ -30,8 +30,9 @@ private:
   static auto DrawBresenhamCircle(const Point2dInt& centre,
                                   int32_t radius,
                                   const PlotCirclePointsFunc& plot) noexcept -> void;
-  auto DrawHorizontalLine(int32_t x1, int32_t y, int32_t x2, const MultiplePixels& colors) noexcept
-      -> void;
+  auto DrawHorizontalLine(const Point2dInt& point1,
+                          int32_t x2,
+                          const MultiplePixels& colors) noexcept -> void;
 };
 
 inline CircleDrawer::CircleDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}

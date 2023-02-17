@@ -25,7 +25,7 @@ TEST_CASE("FindAndReplaceAll")
   REQUIRE(str == expectedStr);
 }
 
-TEST_CASE("StringJoin", "[StringJoin]")
+TEST_CASE("StringJoin")
 {
   REQUIRE(StringJoin({""}, ", ").empty());
   REQUIRE("word1" == StringJoin({"word1"}, ", "));
@@ -33,7 +33,8 @@ TEST_CASE("StringJoin", "[StringJoin]")
   REQUIRE("word1, word2, word3," == StringJoin({"word1", "word2", "word3,"}, ", "));
 }
 
-TEST_CASE("StringSplit", "[StringSplit]")
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+TEST_CASE("StringSplit")
 {
   const auto testString1 = std::string{"line1: word1, word2\nline2: word3, word4\n"};
 
@@ -69,8 +70,9 @@ TEST_CASE("StringSplit", "[StringSplit]")
   REQUIRE(test4[2] == "word3 ");
   REQUIRE(test4[3] == "word4 ");
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
-TEST_CASE("EnumToString", "[EnumToString]")
+TEST_CASE("EnumToString")
 {
   enum class EnumTester
   {

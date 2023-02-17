@@ -41,7 +41,7 @@ ShapePart::ShapePart(IGoomDraw& draw,
     m_colorMapsManager{&colorMapsManager},
     m_currentTMinMaxLerp{params.tMinMaxLerp},
     m_shapePathsStepSpeed{
-        params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps, params.tMinMaxLerp},
+        {params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps}, params.tMinMaxLerp},
     m_minShapeDotRadius{params.minShapeDotRadius},
     m_maxShapeDotRadius{params.maxShapeDotRadius},
     m_shapePartNum{params.shapePartNum},
@@ -84,10 +84,10 @@ auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
   m_newShapePathsTargetPoint = targetPoint;
 }
 
-auto ShapePart::SetShapePathsMinMaxNumSteps(const uint32_t shapePathsMinNumSteps,
-                                            const uint32_t shapePathsMaxNumSteps) noexcept -> void
+auto ShapePart::SetShapePathsMinMaxNumSteps(
+    const MinMaxValues<uint32_t>& minMaxShapePathsNumSteps) noexcept -> void
 {
-  m_shapePathsStepSpeed.SetMinMaxNumSteps(shapePathsMinNumSteps, shapePathsMaxNumSteps);
+  m_shapePathsStepSpeed.SetMinMaxNumSteps(minMaxShapePathsNumSteps);
 }
 
 auto ShapePart::UpdateShapePathTargets() noexcept -> void
@@ -131,7 +131,7 @@ inline auto ShapePart::GetTransform2d(const Vec2dFlt& targetPoint,
       targetPoint.x - (scale * radius * std::cos(rotate)),
       targetPoint.y - (scale * radius * std::sin(rotate)),
   };
-  return Transform2d{rotate, scale, centre};
+  return Transform2d{rotate, centre, scale};
 }
 
 auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
@@ -150,12 +150,12 @@ auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
   const auto maxScale =
       probScaleEqualsOne ? 1.0F : m_goomRand->GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
 
-  return GetShapePaths(numShapePaths, minScale, maxScale);
+  return GetShapePaths(numShapePaths, {minScale, maxScale});
 }
 
 auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
-                              const float minScale,
-                              const float maxScale) noexcept -> std::vector<ShapePath>
+                              const MinMaxValues<float>& minMaxValues) noexcept
+    -> std::vector<ShapePath>
 {
 
   const auto targetPointFlt = GetVec2dFlt(ToPoint2dFlt(m_shapePathsTargetPoint));
@@ -172,8 +172,8 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
   for (auto i = 0U; i < numShapePaths; ++i)
   {
-    const auto rotate     = STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
-    const auto scale      = STD20::lerp(minScale, maxScale, stepFraction());
+    const auto rotate = STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
+    const auto scale  = STD20::lerp(minMaxValues.minValue, minMaxValues.maxValue, stepFraction());
     const auto circlePath = GetCirclePath(radius, direction, numSteps);
 
     const auto newTransform = GetTransform2d(targetPointFlt, radius, scale, rotate);
@@ -395,8 +395,8 @@ inline auto ShapePart::DoMegaColorChange() noexcept -> void
 
 inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 {
-  m_megaColorChangeOnOffTimer.SetActions([this]() { return SetMegaColorChangeOn(); },
-                                         [this]() { return SetMegaColorChangeOff(); });
+  m_megaColorChangeOnOffTimer.SetActions(
+      {[this]() { return SetMegaColorChangeOn(); }, [this]() { return SetMegaColorChangeOff(); }});
   m_megaColorChangeOnOffTimer.StartOffTimer();
 }
 

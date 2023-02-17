@@ -48,10 +48,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
     return;
   }
 
-  const auto ux = static_cast<uint32_t>(x);
-  const auto uy = static_cast<uint32_t>(y);
-
-  auto& hitInfo = m_hitInfo[uy][ux];
+  auto& hitInfo = m_hitInfo[static_cast<uint32_t>(y)][static_cast<uint32_t>(x)];
 
   ++hitInfo.count;
   if (hitInfo.count > m_maxHitCount)
@@ -67,7 +64,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
   else
   {
     hitInfo.color = simi.GetColor();
-    m_hits.emplace_back(ux, uy, 1);
+    m_hits.emplace_back(Point2dInt{x, y}, 1);
   }
 }
 

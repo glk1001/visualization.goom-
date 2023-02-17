@@ -53,7 +53,7 @@ public:
   auto ReserveNextActivePixelBufferData() noexcept;
   auto ReleaseActivePixelBufferData() noexcept -> void;
 
-  [[nodiscard]] auto GetNextPixelBuffer() const noexcept -> const GOOM::PixelChannelType*;
+  [[nodiscard]] auto GetNextPixelBuffer() const noexcept -> const PixelChannelType*;
   [[nodiscard]] auto GetNextGoomShaderVariables() const noexcept -> const GoomShaderVariables*;
 
 private:
@@ -76,13 +76,14 @@ inline auto CVisualizationGoom::PixelBufferGetter::ReleaseActivePixelBufferData(
 }
 
 inline auto CVisualizationGoom::PixelBufferGetter::GetNextPixelBuffer() const noexcept
-    -> const GOOM::PixelChannelType*
+    -> const PixelChannelType*
 {
   if (nullptr == m_pixelBufferData.pixelBuffer)
   {
     return nullptr;
   }
-  return reinterpret_cast<const PixelChannelType*>(m_pixelBufferData.pixelBuffer->GetIntBuff());
+  return static_cast<const PixelChannelType*>(
+      static_cast<const void*>(m_pixelBufferData.pixelBuffer->GetIntBuff()));
 }
 
 inline auto CVisualizationGoom::PixelBufferGetter::GetNextGoomShaderVariables() const noexcept
@@ -174,6 +175,7 @@ CVisualizationGoom::CVisualizationGoom()
     m_pixelBufferGetter{std::make_unique<PixelBufferGetter>(*m_goomBufferProducer)}
 {
   StartLogging();
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 }
 
@@ -181,62 +183,61 @@ CVisualizationGoom::CVisualizationGoom()
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
+// NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall)
 CVisualizationGoom::~CVisualizationGoom()
 {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Destroyed CVisualizationGoom object.");
   LogStop(*m_goomLogger);
 }
+// NOLINTEND(clang-analyzer-optin.cplusplus.VirtualCall)
 
-auto CVisualizationGoom::HandleError(const std::string& errorMsg) const -> void
+auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 {
   const auto fullMsg = std20::format("CVisualizationGoom: {}", errorMsg);
 
+  LogError(*m_goomLogger, fullMsg);
+
 #ifdef GOOM_DEBUG
   throw std::runtime_error(fullMsg);
-#else
-  LogError(*m_goomLogger, fullMsg);
 #endif
 }
 
 //-- Start --------------------------------------------------------------------
 // Called when a new soundtrack is played
 //-----------------------------------------------------------------------------
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto CVisualizationGoom::Start(const int numChannels,
-                               const int samplesPerSec,
-                               const int bitsPerSample,
-                               const std::string& songName) -> bool
+                               [[maybe_unused]] const int samplesPerSec,
+                               [[maybe_unused]] const int bitsPerSample,
+                               [[maybe_unused]] const std::string& songName) -> bool
 {
   if (m_started)
   {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     kodi::Log(ADDON_LOG_WARNING,
               "CVisualizationGoom: Already started without a stop - skipping this.");
     return true;
   }
 
 #ifdef GOOM_DEBUG
-  StartWithoutCatch(numChannels, samplesPerSec, bitsPerSample, songName);
+  StartWithoutCatch(numChannels);
 #else
-  StartWithCatch(numChannels, samplesPerSec, bitsPerSample, songName);
+  StartWithCatch(numChannels);
 #endif
   return true;
 }
 
-inline auto CVisualizationGoom::StartWithoutCatch(const int numChannels,
-                                                  const int samplesPerSec,
-                                                  const int bitsPerSample,
-                                                  const std::string& songName) -> void
+inline auto CVisualizationGoom::StartWithoutCatch(const int numChannels) -> void
 {
-  StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
+  StartVis(numChannels);
 }
 
-auto CVisualizationGoom::StartWithCatch(const int numChannels,
-                                        const int samplesPerSec,
-                                        const int bitsPerSample,
-                                        const std::string& songName) -> void
+auto CVisualizationGoom::StartWithCatch(const int numChannels) -> void
 {
   try
   {
-    StartVis(numChannels, samplesPerSec, bitsPerSample, songName);
+    StartVis(numChannels);
   }
   catch (const std::exception& e)
   {
@@ -244,10 +245,7 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels,
   }
 }
 
-auto CVisualizationGoom::StartVis(const int numChannels,
-                                  [[maybe_unused]] const int samplesPerSec,
-                                  [[maybe_unused]] const int bitsPerSample,
-                                  [[maybe_unused]] const std::string& songName) -> void
+auto CVisualizationGoom::StartVis(const int numChannels) -> void
 {
   LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
 
@@ -268,6 +266,7 @@ auto CVisualizationGoom::StartLogging() -> void
   static const auto s_KODI_LOGGER = [](const GoomLogger::LogLevel lvl, const std::string& msg)
   {
     const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     kodi::Log(kodiLvl, msg.c_str());
   };
   AddLogHandler(*m_goomLogger, "kodi-logger", s_KODI_LOGGER);

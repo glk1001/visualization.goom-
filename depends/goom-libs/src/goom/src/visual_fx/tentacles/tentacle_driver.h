@@ -85,7 +85,9 @@ private:
                                     const TentacleAndAttributes& tentacleAndAttributes,
                                     float brightness) const -> DRAW::MultiplePixels;
   static constexpr float GAMMA = 0.8F;
-  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{
+      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 
   static constexpr auto MIN_COLOR_SEGMENT_MIX_T     = 0.7F;
   static constexpr auto MAX_COLOR_SEGMENT_MIX_T     = 1.0F;

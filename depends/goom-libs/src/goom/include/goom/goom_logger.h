@@ -75,8 +75,8 @@ private:
   std::mutex m_mutex{};
   auto DoFlush() -> void;
   auto VLog(LogLevel lvl,
-            int lineNum,
             const std::string& funcName,
+            int lineNum,
             const std::string& formatStr,
             std20::format_args args) -> void;
 };
@@ -122,13 +122,14 @@ inline auto GoomLogger::CanLog() const -> bool
 }
 
 template<typename... Args>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto GoomLogger::Log(const LogLevel lvl,
                      const int lineNum,
                      const std::string& funcName,
                      const std::string& formatStr,
                      const Args&... args) -> void
 {
-  VLog(lvl, lineNum, funcName, formatStr, std20::make_format_args(args...));
+  VLog(lvl, funcName, lineNum, formatStr, std20::make_format_args(args...));
 }
 
 } // namespace GOOM

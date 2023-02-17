@@ -15,6 +15,9 @@ using UTILS::MATH::ConditionalWeights;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::Weights;
 
+namespace
+{
+
 enum class Events
 {
   EVENT1,
@@ -23,10 +26,9 @@ enum class Events
   EVENT4,
   _num // unused, and marks the enum end
 };
-using EventCounts = std::array<uint32_t, NUM<Events>>;
+using EventCounts             = std::array<uint32_t, NUM<Events>>;
+constexpr auto PREVIOUS_EVENT = Events::EVENT3;
 
-namespace
-{
 constexpr size_t NUM_LOOPS     = 10000000;
 constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
@@ -42,14 +44,13 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
   return eventCounts;
 }
 
-[[nodiscard]] auto GetConditionalWeightedCounts(const Events givenEvent,
-                                                const ConditionalWeights<Events>& weights)
+[[nodiscard]] auto GetConditionalWeightedCounts(const ConditionalWeights<Events>& weights)
     -> EventCounts
 {
   EventCounts eventCounts{};
   for (auto i = 0U; i < NUM_LOOPS; ++i)
   {
-    const auto event = weights.GetRandomWeighted(givenEvent);
+    const auto event = weights.GetRandomWeighted(PREVIOUS_EVENT);
     ++eventCounts.at(static_cast<size_t>(event));
   }
 
@@ -58,10 +59,11 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 } // namespace
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Weighted Events")
 {
-  const auto goomRand                                 = GoomRand{};
-  const Weights<Events>::EventWeightPairs weightPairs = {
+  const auto goomRand    = GoomRand{};
+  const auto weightPairs = Weights<Events>::EventWeightPairs{
       {Events::EVENT1, 05.0F},
       {Events::EVENT2, 02.0F},
       {Events::EVENT3, 10.0F},
@@ -95,8 +97,6 @@ TEST_CASE("Weighted Events")
 
   SECTION("Conditional weights")
   {
-    static constexpr auto GIVEN_EVENT = Events::EVENT3;
-
     static const auto s_EVENT3_WEIGHT_MULTIPLIERS = std::map<Events, float>{
         {Events::EVENT1, 1.0F},
         {Events::EVENT2, 0.0F},
@@ -104,17 +104,16 @@ TEST_CASE("Weighted Events")
         {Events::EVENT4, 1.0F},
     };
     static const auto s_WEIGHT_MULTIPLIERS = ConditionalWeights<Events>::EventWeightMultiplierPairs{
-        {GIVEN_EVENT, s_EVENT3_WEIGHT_MULTIPLIERS}
+        {PREVIOUS_EVENT, s_EVENT3_WEIGHT_MULTIPLIERS}
     };
     const auto conditionalWeightedEvents =
         ConditionalWeights<Events>{goomRand, weightPairs, s_WEIGHT_MULTIPLIERS};
     const auto conditionalSumOfWeights =
-        static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(GIVEN_EVENT));
+        static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(PREVIOUS_EVENT));
     static constexpr auto EXPECTED_SUM_FOR_GIVEN = 5.0 + 2.0 * 10.0 + 6.0;
     REQUIRE(conditionalSumOfWeights == Approx(EXPECTED_SUM_FOR_GIVEN));
 
-    const auto conditionalEventCounts =
-        GetConditionalWeightedCounts(GIVEN_EVENT, conditionalWeightedEvents);
+    const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
@@ -127,15 +126,15 @@ TEST_CASE("Weighted Events")
           std20::format("i:{}, conditionalCountFraction = {}", i, conditionalCountFraction));
 
       const auto fConditionalEventWeight = static_cast<double>(
-          conditionalWeightedEvents.GetWeight(GIVEN_EVENT, static_cast<Events>(i)));
+          conditionalWeightedEvents.GetWeight({PREVIOUS_EVENT, static_cast<Events>(i)}));
       const auto conditionalEventFraction = fConditionalEventWeight / conditionalSumOfWeights;
       UNSCOPED_INFO(std20::format("i:{}, fConditionalEventWeight({}) = {}",
                                   i,
-                                  EnumToString(GIVEN_EVENT),
+                                  EnumToString(PREVIOUS_EVENT),
                                   fConditionalEventWeight));
       UNSCOPED_INFO(std20::format("i:{}, conditionalSumOfWeights({}) = {}",
                                   i,
-                                  EnumToString(GIVEN_EVENT),
+                                  EnumToString(PREVIOUS_EVENT),
                                   conditionalSumOfWeights));
       UNSCOPED_INFO(
           std20::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
@@ -147,17 +146,16 @@ TEST_CASE("Weighted Events")
 
   SECTION("DisallowEventsSameAsGiven = true")
   {
-    static constexpr auto GIVEN_EVENT = Events::EVENT3;
-
     const auto conditionalWeightedEvents = ConditionalWeights<Events>{goomRand, weightPairs, true};
 
-    const auto conditionalEventCounts =
-        GetConditionalWeightedCounts(GIVEN_EVENT, conditionalWeightedEvents);
+    const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
 
-    REQUIRE(conditionalEventCounts.at(static_cast<size_t>(GIVEN_EVENT)) == 0);
+    REQUIRE(conditionalEventCounts.at(static_cast<size_t>(PREVIOUS_EVENT)) == 0);
   }
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Weighted Events Corner Cases")
 {
   const auto goomRand       = GoomRand{};
@@ -191,6 +189,7 @@ TEST_CASE("Weighted Events Corner Cases")
     }
   }
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 /*** Catch2 can't catch 'assert' calls.
 TEST_CASE("Weighted Events Exceptions")

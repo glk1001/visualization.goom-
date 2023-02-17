@@ -47,8 +47,12 @@ private:
   uint32_t m_tranLerpFactor = 0U;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;
-  [[nodiscard]] static auto GetTranBuffLerpVal(int32_t srceBuffVal,
-                                               int32_t destBuffVal,
+  struct SrceDestVals
+  {
+    int32_t srceBuffVal;
+    int32_t destBuffVal;
+  };
+  [[nodiscard]] static auto GetTranBuffLerpVal(const SrceDestVals& srceDestVals,
                                                uint32_t t) noexcept -> int32_t;
   [[nodiscard]] auto GetClampedXVal(int32_t x) const noexcept -> int32_t;
   [[nodiscard]] auto GetClampedYVal(int32_t y) const noexcept -> int32_t;
@@ -132,18 +136,17 @@ inline auto ZoomTransformBuffers::GetTranBuffLerpPoint(const Point2dInt& srcePoi
                                                        const Point2dInt& destPoint,
                                                        const uint32_t t) noexcept -> Point2dInt
 {
-  return {GetTranBuffLerpVal(srcePoint.x, destPoint.x, t),
-          GetTranBuffLerpVal(srcePoint.y, destPoint.y, t)};
+  return {GetTranBuffLerpVal({srcePoint.x, destPoint.x}, t),
+          GetTranBuffLerpVal({srcePoint.y, destPoint.y}, t)};
 }
 
-inline auto ZoomTransformBuffers::GetTranBuffLerpVal(const int32_t srceBuffVal,
-                                                     const int32_t destBuffVal,
+inline auto ZoomTransformBuffers::GetTranBuffLerpVal(const SrceDestVals& srceDestVals,
                                                      const uint32_t t) noexcept -> int32_t
 {
-  const auto diff      = static_cast<int64_t>(destBuffVal - srceBuffVal);
+  const auto diff      = static_cast<int64_t>(srceDestVals.destBuffVal - srceDestVals.srceBuffVal);
   const auto numerator = static_cast<int64_t>(t) * diff;
-  const auto result =
-      static_cast<int32_t>(static_cast<int64_t>(srceBuffVal) + (numerator >> MAX_TRAN_LERP_EXP));
+  const auto result    = static_cast<int32_t>(static_cast<int64_t>(srceDestVals.srceBuffVal) +
+                                           (numerator >> MAX_TRAN_LERP_EXP));
 
   if (const auto mod = numerator & static_cast<int64_t>(MAX_TRAN_LERP_VALUE - 1U);
       mod >= static_cast<int64_t>(MAX_TRAN_LERP_VALUE / 2))

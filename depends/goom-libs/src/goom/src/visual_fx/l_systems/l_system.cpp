@@ -140,18 +140,17 @@ auto LSystem::Start() noexcept -> void
 
 auto LSystem::StartBrightnessTimer() noexcept -> void
 {
-  m_brightnessOnOffTimer.SetActions(
-      [this]()
-      {
-        m_lSysColors.SetGlobalBrightness(ON_BRIGHTNESS);
-        return true;
-      },
-      [this]()
-      {
-        m_lSysColors.SetGlobalBrightness(OFF_BRIGHTNESS);
-        return true;
-        ;
-      });
+  m_brightnessOnOffTimer.SetActions({[this]()
+                                     {
+                                       m_lSysColors.SetGlobalBrightness(ON_BRIGHTNESS);
+                                       return true;
+                                     },
+                                     [this]()
+                                     {
+                                       m_lSysColors.SetGlobalBrightness(OFF_BRIGHTNESS);
+                                       return true;
+                                       ;
+                                     }});
 
   m_brightnessOnOffTimer.StartOnTimer();
 }

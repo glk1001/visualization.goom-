@@ -41,6 +41,12 @@ private:
   Point2dFlt m_fltCoords;
 };
 
+struct CoordsAndVelocity
+{
+  NormalizedCoords coords;
+  NormalizedCoords velocity;
+};
+
 [[nodiscard]] constexpr auto operator+(const NormalizedCoords& coords1,
                                        const NormalizedCoords& coords2) noexcept
     -> NormalizedCoords;

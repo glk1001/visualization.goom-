@@ -9,15 +9,16 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 using UTILS::MATH::HALF_PI;
 using UTILS::MATH::TWO_PI;
 
-auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, const float yValue)
+auto GetHorizontalLinePoints(const LineProperties& lineProperties, const float yValue)
     -> std::vector<LinePoint>
 {
-  Expects(numPoints > 1);
+  Expects(lineProperties.numPoints > 1);
 
-  auto linePoints = std::vector<LinePoint>(numPoints);
+  auto linePoints = std::vector<LinePoint>(lineProperties.numPoints);
 
-  const auto xStep = static_cast<float>(width - 1) / static_cast<float>(numPoints - 1);
-  auto x           = 0.0F;
+  const auto xStep = static_cast<float>(lineProperties.length - 1) /
+                     static_cast<float>(lineProperties.numPoints - 1);
+  auto x = 0.0F;
   for (auto& pt : linePoints)
   {
     pt.angle   = HALF_PI;
@@ -30,15 +31,16 @@ auto GetHorizontalLinePoints(const uint32_t numPoints, const uint32_t width, con
   return linePoints;
 }
 
-auto GetVerticalLinePoints(const uint32_t numPoints, const uint32_t height, const float xValue)
+auto GetVerticalLinePoints(const LineProperties& lineProperties, const float xValue)
     -> std::vector<LinePoint>
 {
-  Expects(numPoints > 1);
+  Expects(lineProperties.numPoints > 1);
 
-  auto linePoints = std::vector<LinePoint>(numPoints);
+  auto linePoints = std::vector<LinePoint>(lineProperties.numPoints);
 
-  const auto yStep = static_cast<float>(height - 1) / static_cast<float>(numPoints - 1);
-  auto y           = 0.0F;
+  const auto yStep = static_cast<float>(lineProperties.length - 1) /
+                     static_cast<float>(lineProperties.numPoints - 1);
+  auto y = 0.0F;
   for (auto& pt : linePoints)
   {
     pt.angle   = 0.0F;
@@ -58,16 +60,15 @@ inline auto RoundToTwoDecimals(const double x) -> double
 }
 
 auto GetCircularLinePoints(const uint32_t numPoints,
-                           const uint32_t width,
-                           const uint32_t height,
+                           const Dimensions& dimensions,
                            const float radius) -> std::vector<LinePoint>
 {
   Expects(numPoints > 1);
 
   auto linePoint = std::vector<LinePoint>(numPoints);
 
-  const auto xCentre = 0.5 * static_cast<double>(width);
-  const auto yCentre = 0.5 * static_cast<double>(height);
+  const auto xCentre = 0.5 * static_cast<double>(dimensions.GetWidth());
+  const auto yCentre = 0.5 * static_cast<double>(dimensions.GetHeight());
 
   const auto angleStep = static_cast<double>(TWO_PI) / static_cast<double>(numPoints - 1);
   auto angle           = 0.0;

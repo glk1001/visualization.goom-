@@ -11,6 +11,10 @@ using UTILS::IncrementedValue;
 using UTILS::TValue;
 using UTILS::MATH::SMALL_FLOAT;
 
+static constexpr auto TWO = 2.0F;
+
+// NOLINTBEGIN(misc-const-correctness)
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("TValue SINGLE_CYCLE")
 {
   static constexpr auto NUM_STEPS = 10U;
@@ -373,7 +377,7 @@ TEST_CASE("IncrementedValue SINGLE_CYCLE")
 
   // Peek
   const auto nextValue = value.PeekNext();
-  REQUIRE(nextValue == Approx(MIN_VALUE + ((2.0F * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+  REQUIRE(nextValue == Approx(MIN_VALUE + ((TWO * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
   REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
   REQUIRE(value.GetT().IsInsideBoundary());
 
@@ -407,7 +411,7 @@ TEST_CASE("IncrementedValue CONTINUOUS_REPEATABLE")
 
   // Peek
   const auto nextValue = value.PeekNext();
-  REQUIRE(nextValue == Approx(MIN_VALUE + ((2.0F * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+  REQUIRE(nextValue == Approx(MIN_VALUE + ((TWO * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
   REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
   REQUIRE(value.GetT().IsInsideBoundary());
 
@@ -450,7 +454,7 @@ TEST_CASE("IncrementedValue CONTINUOUS_REVERSIBLE")
 
   // Peek
   const auto nextValue = value.PeekNext();
-  REQUIRE(nextValue == Approx(MIN_VALUE + ((2.0F * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
+  REQUIRE(nextValue == Approx(MIN_VALUE + ((TWO * STEP_SIZE) * (MAX_VALUE - MIN_VALUE))));
   REQUIRE(value() == Approx(MIN_VALUE + (STEP_SIZE * (MAX_VALUE - MIN_VALUE))));
   REQUIRE(value.GetT().IsInsideBoundary());
 
@@ -495,7 +499,7 @@ TEST_CASE("IncrementedValue CONTINUOUS_REVERSIBLE")
   REQUIRE(value.GetT().HasJustHitEndBoundary());
 
   value.ResetCurrentValue(INBETWEEN_VALUE);
-  REQUIRE(value() == Approx(10.0F));
+  REQUIRE(value() == Approx(INBETWEEN_VALUE));
   REQUIRE(value.GetT().IsInsideBoundary());
 
   value.SetValues(MIN_VALUE + 1.0F, MAX_VALUE - 1.0F);
@@ -506,5 +510,7 @@ TEST_CASE("IncrementedValue CONTINUOUS_REVERSIBLE")
   REQUIRE(value() == Approx(INBETWEEN_VALUE + 1.0F));
   REQUIRE(value.GetT().HasJustHitStartBoundary());
 }
+// NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(misc-const-correctness)
 
 } // namespace GOOM::UNIT_TESTS

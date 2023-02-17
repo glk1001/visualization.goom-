@@ -94,7 +94,7 @@ private:
                                         float logAlpha) const noexcept -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  COLOR::ColorAdjustment m_colorAdjust{GAMMA};
+  COLOR::ColorAdjustment m_colorAdjust{{GAMMA}};
 };
 
 inline auto LowDensityBlurrer::GetWidth() const noexcept -> uint32_t

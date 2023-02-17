@@ -1,10 +1,14 @@
 #ifndef FMT_FORMAT_
 #define FMT_FORMAT_
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define FMT_HEADER_ONLY 1
 
+// NOLINTBEGIN: third-party code
 #include "fmt/format.h"
+// NOLINTEND: third-party code
 
+// NOLINTNEXTLINE(misc-unused-alias-decls): Waiting for C++20
 namespace std20 = ::fmt;
 
 #endif

@@ -24,10 +24,15 @@ static constexpr auto DEFAULT_XY_LERP_EFFECT          = false;
 class AfterEffectsStates::EffectState
 {
 public:
+  struct EffectProperties
+  {
+    float probabilityOfEffectRepeated;
+    uint32_t effectOffTime;
+  };
+
   EffectState(const IGoomRand& goomRand,
               bool turnedOn,
-              float probabilityOfEffectRepeated,
-              uint32_t effectOffTime) noexcept;
+              const EffectProperties& effectProperties) noexcept;
 
   void UpdateTimer();
   void UpdateState(float probabilityOfEffect);
@@ -50,39 +55,43 @@ AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand,
   : m_blockyWavyEffect{std::make_unique<EffectState>(
         goomRand,
         DEFAULT_BLOCKY_WAVY_EFFECT,
-        repeatProbabilities[AfterEffectsTypes::BLOCK_WAVY],
-        offTimes[AfterEffectsTypes::BLOCK_WAVY])},
-    m_hypercosOverlayEffect{
-        std::make_unique<EffectState>(goomRand,
-                                      DEFAULT_HYPERCOS_OVERLAY_EFFECT,
-                                      repeatProbabilities[AfterEffectsTypes::HYPERCOS],
-                                      offTimes[AfterEffectsTypes::HYPERCOS])},
-    m_imageVelocityEffect{
-        std::make_unique<EffectState>(goomRand,
-                                      DEFAULT_IMAGE_VELOCITY_EFFECT,
-                                      repeatProbabilities[AfterEffectsTypes::IMAGE_VELOCITY],
-                                      offTimes[AfterEffectsTypes::IMAGE_VELOCITY])},
-    m_noiseEffect{std::make_unique<EffectState>(goomRand,
-                                                DEFAULT_NOISE_EFFECT,
-                                                repeatProbabilities[AfterEffectsTypes::NOISE],
-                                                offTimes[AfterEffectsTypes::NOISE])},
-    m_planeEffect{std::make_unique<EffectState>(goomRand,
-                                                DEFAULT_PLANE_EFFECT,
-                                                repeatProbabilities[AfterEffectsTypes::PLANES],
-                                                offTimes[AfterEffectsTypes::PLANES])},
-    m_rotationEffect{std::make_unique<EffectState>(goomRand,
-                                                   DEFAULT_ROTATION_EFFECT,
-                                                   repeatProbabilities[AfterEffectsTypes::ROTATION],
-                                                   offTimes[AfterEffectsTypes::ROTATION])},
-    m_tanEffect{std::make_unique<EffectState>(goomRand,
-                                              DEFAULT_TAN_EFFECT,
-                                              repeatProbabilities[AfterEffectsTypes::TAN_EFFECT],
-                                              offTimes[AfterEffectsTypes::TAN_EFFECT])},
-    m_xyLerpEffect{
-        std::make_unique<EffectState>(goomRand,
-                                      DEFAULT_XY_LERP_EFFECT,
-                                      repeatProbabilities[AfterEffectsTypes::XY_LERP_EFFECT],
-                                      offTimes[AfterEffectsTypes::XY_LERP_EFFECT])}
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::BLOCK_WAVY],
+                                      offTimes[AfterEffectsTypes::BLOCK_WAVY]})},
+    m_hypercosOverlayEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_HYPERCOS_OVERLAY_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::HYPERCOS],
+                                      offTimes[AfterEffectsTypes::HYPERCOS]})},
+    m_imageVelocityEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_IMAGE_VELOCITY_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::IMAGE_VELOCITY],
+                                      offTimes[AfterEffectsTypes::IMAGE_VELOCITY]})},
+    m_noiseEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_NOISE_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::NOISE],
+                                      offTimes[AfterEffectsTypes::NOISE]})},
+    m_planeEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_PLANE_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::PLANES],
+                                      offTimes[AfterEffectsTypes::PLANES]})},
+    m_rotationEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_ROTATION_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::ROTATION],
+                                      offTimes[AfterEffectsTypes::ROTATION]})},
+    m_tanEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_TAN_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::TAN_EFFECT],
+                                      offTimes[AfterEffectsTypes::TAN_EFFECT]})},
+    m_xyLerpEffect{std::make_unique<EffectState>(
+        goomRand,
+        DEFAULT_XY_LERP_EFFECT,
+        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::XY_LERP_EFFECT],
+                                      offTimes[AfterEffectsTypes::XY_LERP_EFFECT]})}
 {
 }
 
@@ -198,14 +207,14 @@ auto AfterEffectsStates::CheckForPendingOffTimers() -> void
   m_xyLerpEffect->CheckPendingOffTimerReset();
 }
 
-inline AfterEffectsStates::EffectState::EffectState(const UTILS::MATH::IGoomRand& goomRand,
-                                                    const bool turnedOn,
-                                                    const float probabilityOfEffectRepeated,
-                                                    const uint32_t effectOffTime) noexcept
+inline AfterEffectsStates::EffectState::EffectState(
+    const UTILS::MATH::IGoomRand& goomRand,
+    const bool turnedOn,
+    const EffectProperties& effectProperties) noexcept
   : m_goomRand{&goomRand},
-    m_probabilityOfEffectRepeated{probabilityOfEffectRepeated},
+    m_probabilityOfEffectRepeated{effectProperties.probabilityOfEffectRepeated},
     m_turnedOn{turnedOn},
-    m_offTimer{effectOffTime, true}
+    m_offTimer{effectProperties.effectOffTime, true}
 {
 }
 

@@ -45,8 +45,13 @@ public:
   [[nodiscard]] auto GetFilterBuffers() noexcept -> FilterBuffers&;
 
   auto UpdateTranBuffers() noexcept -> void;
-  auto UpdateTranLerpFactor(uint32_t tranLerpIncrement, float tranLerpToMaxSwitchMult) noexcept
-      -> void;
+
+  struct TranLerpProperties
+  {
+    uint32_t tranLerpIncrement;
+    float tranLerpToMaxSwitchMult;
+  };
+  auto UpdateTranLerpProperties(const TranLerpProperties& tranLerpProperties) noexcept -> void;
 
   [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept
       -> FILTER_BUFFERS::SourcePointInfo;

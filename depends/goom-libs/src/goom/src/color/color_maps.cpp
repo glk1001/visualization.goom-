@@ -64,8 +64,7 @@ class TintedColorMap : public ColorMapWrapper
 {
 public:
   TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
-                 float saturation,
-                 float lightness);
+                 const ColorMaps::TintProperties& tintProperties);
 
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
@@ -77,12 +76,13 @@ private:
 };
 
 TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
-                               const float saturation,
-                               const float lightness)
-  : ColorMapWrapper{colorMap}, m_saturation{saturation}, m_lightness{lightness}
+                               const ColorMaps::TintProperties& tintProperties)
+  : ColorMapWrapper{colorMap},
+    m_saturation{tintProperties.saturation},
+    m_lightness{tintProperties.lightness}
 {
-  Expects(lightness >= MIN_LIGHTNESS);
-  Expects(lightness <= MAX_LIGHTNESS);
+  Expects(tintProperties.lightness >= MIN_LIGHTNESS);
+  Expects(tintProperties.lightness <= MAX_LIGHTNESS);
 }
 
 auto TintedColorMap::GetColor(const float t) const -> Pixel
@@ -149,12 +149,10 @@ public:
                                                   float tRotatePoint)
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] static auto GetTintedColorMapPtr(ColorMapName mapName,
-                                                 float saturation,
-                                                 float lightness)
+                                                 const TintProperties& tintProperties)
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] static auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                                 float saturation,
-                                                 float lightness)
+                                                 const TintProperties& tintProperties)
       -> std::shared_ptr<const IColorMap>;
 
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;
@@ -211,17 +209,17 @@ auto ColorMaps::GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm
 }
 
 auto ColorMaps::GetTintedColorMapPtr(const ColorMapName mapName,
-                                     const float saturation,
-                                     const float lightness) -> std::shared_ptr<const IColorMap>
+                                     const TintProperties& tintProperties)
+    -> std::shared_ptr<const IColorMap>
 {
-  return ColorMapsImpl::GetTintedColorMapPtr(mapName, saturation, lightness);
+  return ColorMapsImpl::GetTintedColorMapPtr(mapName, tintProperties);
 }
 
 auto ColorMaps::GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                     const float saturation,
-                                     const float lightness) -> std::shared_ptr<const IColorMap>
+                                     const TintProperties& tintProperties)
+    -> std::shared_ptr<const IColorMap>
 {
-  return std::make_shared<TintedColorMap>(cm, saturation, lightness);
+  return std::make_shared<TintedColorMap>(cm, tintProperties);
 }
 
 auto ColorMaps::GetNumGroups() -> uint32_t
@@ -265,19 +263,17 @@ inline auto ColorMaps::ColorMapsImpl::GetRotatedColorMapPtr(
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(const ColorMapName mapName,
-                                                           const float saturation,
-                                                           const float lightness)
+                                                           const TintProperties& tintProperties)
     -> std::shared_ptr<const IColorMap>
 {
-  return std::make_shared<TintedColorMap>(
-      MAKE_SHARED_ADDR(&GetColorMap(mapName)), saturation, lightness);
+  return std::make_shared<TintedColorMap>(MAKE_SHARED_ADDR(&GetColorMap(mapName)), tintProperties);
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(
-    const std::shared_ptr<const IColorMap>& cm, const float saturation, const float lightness)
+    const std::shared_ptr<const IColorMap>& cm, const TintProperties& tintProperties)
     -> std::shared_ptr<const IColorMap>
 {
-  return std::make_shared<TintedColorMap>(cm, saturation, lightness);
+  return std::make_shared<TintedColorMap>(cm, tintProperties);
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetNumColorMapNames() -> uint32_t

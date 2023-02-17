@@ -13,35 +13,7 @@ using UTILS::MATH::SMALL_FLOAT;
 
 namespace
 {
-[[nodiscard]] auto GetAudioData(const float xMin0,
-                                const float xMax0,
-                                const float xMin1,
-                                const float xMax1) -> std::vector<float>
-{
-  auto audioData =
-      std::vector<float>(AudioSamples::NUM_AUDIO_SAMPLES * AudioSamples::AUDIO_SAMPLE_LEN);
 
-  auto x     = xMin0;
-  auto xStep = (xMax0 - xMin0) / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
-  for (auto i = 0U; i < audioData.size(); i += 2)
-  {
-    audioData.at(i) = x;
-    x += xStep;
-  }
-
-  x     = xMin1;
-  xStep = (xMax1 - xMin1) / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
-  for (auto i = 1U; i < audioData.size(); i += 2)
-  {
-    audioData.at(i) = x;
-    x += xStep;
-  }
-
-  return audioData;
-}
-
-
-//static constexpr size_t NUM_SAMPLE_CHANNELS = AudioSamples::NUM_AUDIO_SAMPLES;
 constexpr auto NUM_SAMPLE_CHANNELS = AudioSamples::NUM_AUDIO_SAMPLES;
 
 constexpr auto X_MIN0          = -0.9F;
@@ -53,11 +25,36 @@ constexpr auto EXPECTED_X_MAX0 = X_MAX0;
 constexpr auto EXPECTED_X_MIN1 = X_MIN1;
 constexpr auto EXPECTED_X_MAX1 = X_MAX1;
 
+[[nodiscard]] auto GetAudioData() -> std::vector<float>
+{
+  auto audioData =
+      std::vector<float>(AudioSamples::NUM_AUDIO_SAMPLES * AudioSamples::AUDIO_SAMPLE_LEN);
+
+  auto x     = X_MIN0;
+  auto xStep = (X_MAX0 - X_MIN0) / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  for (auto i = 0U; i < audioData.size(); i += 2)
+  {
+    audioData.at(i) = x;
+    x += xStep;
+  }
+
+  x     = X_MIN1;
+  xStep = (X_MAX1 - X_MIN1) / static_cast<float>(AudioSamples::AUDIO_SAMPLE_LEN - 1);
+  for (auto i = 1U; i < audioData.size(); i += 2)
+  {
+    audioData.at(i) = x;
+    x += xStep;
+  }
+
+  return audioData;
+}
+
 } // namespace
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Test AudioSamples MinMax")
 {
-  const auto audioData    = GetAudioData(X_MIN0, X_MAX0, X_MIN1, X_MAX1);
+  const auto audioData    = GetAudioData();
   const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, audioData};
 
   REQUIRE(AudioSamples::NUM_AUDIO_SAMPLES == 2);
@@ -77,7 +74,7 @@ TEST_CASE("Test AudioSamples MinMax")
 
 TEST_CASE("Test AudioSamples Arrays")
 {
-  const auto audioData    = GetAudioData(X_MIN0, X_MAX0, X_MIN1, X_MAX1);
+  const auto audioData    = GetAudioData();
   const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, audioData};
 
   REQUIRE(audioData.at(0) == Approx(X_MIN0));
@@ -111,7 +108,7 @@ TEST_CASE("Test SoundInfo ProcessSample Defaults")
   REQUIRE(goomSoundEvents.GetTimeSinceLastBigGoom() == 0);
   REQUIRE(goomSoundEvents.GetTotalGoomsInCurrentCycle() == 0);
 
-  const auto audioData    = GetAudioData(X_MIN0, X_MAX0, X_MIN1, X_MAX1);
+  const auto audioData    = GetAudioData();
   const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, audioData};
 
   soundInfo.ProcessSample(audioSamples);
@@ -126,7 +123,7 @@ TEST_CASE("Test SoundInfo ProcessSample Defaults")
 TEST_CASE("Test SoundInfo Volume")
 {
   auto soundInfo    = SoundInfo{};
-  auto audioData    = GetAudioData(X_MIN0, X_MAX0, X_MIN1, X_MAX1);
+  auto audioData    = GetAudioData();
   auto audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
 
   // First update - defaults
@@ -167,5 +164,6 @@ TEST_CASE("Test SoundInfo Volume")
   REQUIRE(soundInfo.GetAllTimesMaxVolume() == Approx(AudioSamples::GetPositiveValue(NEW_MAX_VOL)));
   REQUIRE(soundInfo.GetAllTimesMinVolume() == Approx(ALL_TIMES_MIN));
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace GOOM::UNIT_TESTS

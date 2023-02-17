@@ -32,14 +32,17 @@ public:
 
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LineMorph() noexcept = delete;
+  struct SrceDestLineParams
+  {
+    LineParams srceLineParams;
+    LineParams destLineParams;
+  };
 
   LineMorph(DRAW::IGoomDraw& draw,
             const PluginInfo& goomInfo,
             const UTILS::MATH::IGoomRand& goomRand,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-            const LineParams& srceLineParams,
-            const LineParams& destLineParams) noexcept;
+            const SrceDestLineParams& srceDestLineParams) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(
@@ -72,7 +75,9 @@ private:
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{
+      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 
   std::vector<FX_UTILS::LinePoint> m_srcePoints;
   std::vector<FX_UTILS::LinePoint> m_srcePointsCopy;

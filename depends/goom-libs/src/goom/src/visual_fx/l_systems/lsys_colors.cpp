@@ -15,6 +15,8 @@ using UTILS::TValue;
 using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
 
+using TintProperties = ColorMaps::TintProperties;
+
 LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
@@ -179,31 +181,31 @@ inline auto LSysColors::GetColorNumToUse(const uint32_t givenColorNum,
 
 auto LSysColors::SetMainColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto tintProperties =
+      TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
+                     m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
   auto& colorMaps = m_currentMainColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) =
-      ColorMaps::GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, saturation, lightness);
+  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, tintProperties);
 
   if (colorMaps.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BLUES, saturation, lightness);
+    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BLUES, tintProperties);
   }
   if (colorMaps.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::GREENS, saturation, lightness);
+    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::GREENS, tintProperties);
   }
   if (colorMaps.size() > 3)
   {
     colorMaps.at(3) =
-        ColorMaps::GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, saturation, lightness);
+        ColorMaps::GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, tintProperties);
   }
   if (colorMaps.size() > 4)
   {
-    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::ORANGES, saturation, lightness);
+    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::ORANGES, tintProperties);
   }
 
   SetNonMainColorMaps(colorMaps);
@@ -211,31 +213,31 @@ auto LSysColors::SetMainColorMaps() noexcept -> void
 
 auto LSysColors::SetLowColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto tintProperties =
+      TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
+                     m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
   auto& colorMaps = m_currentLowColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) =
-      ColorMaps::GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, saturation, lightness);
+  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, tintProperties);
 
   if (colorMaps.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BLUES, saturation, lightness);
+    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BLUES, tintProperties);
   }
   if (colorMaps.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::GREENS, saturation, lightness);
+    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::GREENS, tintProperties);
   }
   if (colorMaps.size() > 3)
   {
     colorMaps.at(3) =
-        ColorMaps::GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, saturation, lightness);
+        ColorMaps::GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, tintProperties);
   }
   if (colorMaps.size() > 4)
   {
-    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::ORANGES, saturation, lightness);
+    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::ORANGES, tintProperties);
   }
 
   SetNonMainColorMaps(colorMaps);
@@ -243,31 +245,30 @@ auto LSysColors::SetLowColorMaps() noexcept -> void
 
 auto LSysColors::SetThickerMainColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto tintProperties =
+      TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
+                     m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
   auto& colorMaps = m_currentThickerMainColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) =
-      ColorMaps::GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, saturation, lightness);
+  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, tintProperties);
 
   if (colorMaps.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::CORK_10, saturation, lightness);
+    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::CORK_10, tintProperties);
   }
   if (colorMaps.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::COPPER, saturation, lightness);
+    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::COPPER, tintProperties);
   }
   if (colorMaps.size() > 3)
   {
-    colorMaps.at(3) = ColorMaps::GetTintedColorMapPtr(ColorMapName::EARTH_2, saturation, lightness);
+    colorMaps.at(3) = ColorMaps::GetTintedColorMapPtr(ColorMapName::EARTH_2, tintProperties);
   }
   if (colorMaps.size() > 4)
   {
-    colorMaps.at(4) =
-        ColorMaps::GetTintedColorMapPtr(ColorMapName::TWILIGHT, saturation, lightness);
+    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::TWILIGHT, tintProperties);
   }
 
   SetNonMainColorMaps(colorMaps);
@@ -275,31 +276,30 @@ auto LSysColors::SetThickerMainColorMaps() noexcept -> void
 
 auto LSysColors::SetThickerLowColorMaps() noexcept -> void
 {
-  const auto saturation = m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION);
-  const auto lightness  = m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS);
+  const auto tintProperties =
+      TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
+                     m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
   auto& colorMaps = m_currentThickerLowColorMaps;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) =
-      ColorMaps::GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, saturation, lightness);
+  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, tintProperties);
 
   if (colorMaps.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::CORK_10, saturation, lightness);
+    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::CORK_10, tintProperties);
   }
   if (colorMaps.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::COPPER, saturation, lightness);
+    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::COPPER, tintProperties);
   }
   if (colorMaps.size() > 3)
   {
-    colorMaps.at(3) = ColorMaps::GetTintedColorMapPtr(ColorMapName::EARTH_2, saturation, lightness);
+    colorMaps.at(3) = ColorMaps::GetTintedColorMapPtr(ColorMapName::EARTH_2, tintProperties);
   }
   if (colorMaps.size() > 4)
   {
-    colorMaps.at(4) =
-        ColorMaps::GetTintedColorMapPtr(ColorMapName::TWILIGHT, saturation, lightness);
+    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::TWILIGHT, tintProperties);
   }
 
   SetNonMainColorMaps(colorMaps);

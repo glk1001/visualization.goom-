@@ -45,8 +45,8 @@ auto FilterBuffersService::SetFilterBufferSettings(
 {
   m_filterBuffers.SetFilterViewport(filterBufferSettings.filterEffectViewport);
 
-  UpdateTranLerpFactor(filterBufferSettings.tranLerpIncrement,
-                       filterBufferSettings.tranLerpToMaxSwitchMult);
+  UpdateTranLerpProperties(
+      {filterBufferSettings.tranLerpIncrement, filterBufferSettings.tranLerpToMaxSwitchMult});
 }
 
 auto FilterBuffersService::SetFilterEffectsSettings(
@@ -118,22 +118,22 @@ auto FilterBuffersService::StartFreshTranBuffers() noexcept -> void
   m_pendingFilterEffectsSettings = false;
 }
 
-inline auto FilterBuffersService::UpdateTranLerpFactor(const uint32_t tranLerpIncrement,
-                                                       const float tranLerpToMaxSwitchMult) noexcept
-    -> void
+inline auto FilterBuffersService::UpdateTranLerpProperties(
+    const TranLerpProperties& tranLerpProperties) noexcept -> void
 {
   auto tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
 
-  if (tranLerpIncrement != 0U)
+  if (tranLerpProperties.tranLerpIncrement != 0U)
   {
-    tranLerpFactor =
-        std::min(tranLerpFactor + tranLerpIncrement, FilterBuffers::GetMaxTranLerpFactor());
+    tranLerpFactor = std::min(tranLerpFactor + tranLerpProperties.tranLerpIncrement,
+                              FilterBuffers::GetMaxTranLerpFactor());
   }
 
-  if (not FloatsEqual(tranLerpToMaxSwitchMult, 1.0F))
+  if (not FloatsEqual(tranLerpProperties.tranLerpToMaxSwitchMult, 1.0F))
   {
-    tranLerpFactor =
-        STD20::lerp(FilterBuffers::GetMaxTranLerpFactor(), tranLerpFactor, tranLerpToMaxSwitchMult);
+    tranLerpFactor = STD20::lerp(FilterBuffers::GetMaxTranLerpFactor(),
+                                 tranLerpFactor,
+                                 tranLerpProperties.tranLerpToMaxSwitchMult);
   }
 
   m_filterBuffers.SetTranLerpFactor(tranLerpFactor);

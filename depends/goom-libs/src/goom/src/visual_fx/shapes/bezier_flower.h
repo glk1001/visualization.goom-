@@ -39,7 +39,7 @@ public:
 
   auto SetRotation(float rotation) -> void;
 
-  auto Draw(const Point2dInt& origin, uint32_t numPetals, uint32_t petalOffset) -> void;
+  auto Draw(uint32_t numPetals, const Point2dInt& origin, uint32_t petalOffset) -> void;
 
 private:
   UTILS::GRAPHICS::BezierDrawer* m_bezierDrawer;

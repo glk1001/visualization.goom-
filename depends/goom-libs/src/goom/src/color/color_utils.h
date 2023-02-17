@@ -44,7 +44,6 @@ inline constexpr auto MAX_BRIGHTNESS = 50.0F;
 [[nodiscard]] constexpr auto IsCloseToBlack(const Pixel& color, uint32_t threshold = 10) -> bool;
 
 [[nodiscard]] auto GetLightenedColor(const Pixel& oldColor, float power) -> Pixel;
-[[nodiscard]] auto GetEvolvedColor(const Pixel& baseColor) -> Pixel;
 
 enum class SimpleColors
 {
@@ -80,16 +79,20 @@ constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 
   for (auto i = 0U; i < num; ++i)
   {
+    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
     newR += static_cast<uint32_t>(colors[i].R());
     newG += static_cast<uint32_t>(colors[i].G());
     newB += static_cast<uint32_t>(colors[i].B());
     newA += static_cast<uint32_t>(colors[i].A());
+    // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
   }
 
+  // NOLINTBEGIN(clang-analyzer-core.DivideZero)
   newR /= static_cast<uint32_t>(num);
   newG /= static_cast<uint32_t>(num);
   newB /= static_cast<uint32_t>(num);
   newA /= static_cast<uint32_t>(num);
+  // NOLINTEND(clang-analyzer-core.DivideZero)
 
   return Pixel{static_cast<PixelChannelType>(newR),
                static_cast<PixelChannelType>(newG),

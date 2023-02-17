@@ -1,3 +1,6 @@
+// clang-format off
+// NOLINTBEGIN: Not my code
+
 // libdivide.h - Optimized integer division
 // https://libdivide.com
 //
@@ -3262,3 +3265,6 @@ using branchfree_divider = divider<T, BRANCHFREE>;
 #endif
 
 #endif  // LIBDIVIDE_H
+
+// NOLINTEND
+// clang-format on

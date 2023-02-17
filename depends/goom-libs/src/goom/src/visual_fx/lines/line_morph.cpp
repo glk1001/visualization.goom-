@@ -67,42 +67,43 @@ LineMorph::LineMorph(IGoomDraw& draw,
                      const PluginInfo& goomInfo,
                      const IGoomRand& goomRand,
                      const SmallImageBitmaps& smallBitmaps,
-                     const LineParams& srceLineParams,
-                     const LineParams& destLineParams) noexcept
+                     const SrceDestLineParams& srceDestLineParams) noexcept
   : m_draw{&draw},
     m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
-    m_srceLineParams{srceLineParams},
+    m_srceLineParams{srceDestLineParams.srceLineParams},
     m_destPoints(AudioSamples::AUDIO_SAMPLE_LEN),
-    m_destLineParams{destLineParams},
+    m_destLineParams{srceDestLineParams.destLineParams},
     m_dotDrawer{
         *m_draw,
         *m_goomRand,
         smallBitmaps,
-        // min dot sizes
         {
-            *m_goomRand,
+            // min dot sizes
             {
-                {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
-                {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
-                {DotSizes::DOT_SIZE03, MIN_DOT_SIZE03_WEIGHT},
-                {DotSizes::DOT_SIZE04, MIN_DOT_SIZE04_WEIGHT},
-            }
-        },
-        // normal dot sizes
-        {
-            *m_goomRand,
+                *m_goomRand,
+                {
+                    {DotSizes::DOT_SIZE01, MIN_DOT_SIZE01_WEIGHT},
+                    {DotSizes::DOT_SIZE02, MIN_DOT_SIZE02_WEIGHT},
+                    {DotSizes::DOT_SIZE03, MIN_DOT_SIZE03_WEIGHT},
+                    {DotSizes::DOT_SIZE04, MIN_DOT_SIZE04_WEIGHT},
+                }
+            },
+            // normal dot sizes
             {
-                {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
-                {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
-                {DotSizes::DOT_SIZE03, NORMAL_DOT_SIZE03_WEIGHT},
-                {DotSizes::DOT_SIZE04, NORMAL_DOT_SIZE04_WEIGHT},
-                {DotSizes::DOT_SIZE05, NORMAL_DOT_SIZE05_WEIGHT},
-                {DotSizes::DOT_SIZE06, NORMAL_DOT_SIZE06_WEIGHT},
-                {DotSizes::DOT_SIZE07, NORMAL_DOT_SIZE07_WEIGHT},
-                {DotSizes::DOT_SIZE08, NORMAL_DOT_SIZE08_WEIGHT},
+                *m_goomRand,
+                {
+                    {DotSizes::DOT_SIZE01, NORMAL_DOT_SIZE01_WEIGHT},
+                    {DotSizes::DOT_SIZE02, NORMAL_DOT_SIZE02_WEIGHT},
+                    {DotSizes::DOT_SIZE03, NORMAL_DOT_SIZE03_WEIGHT},
+                    {DotSizes::DOT_SIZE04, NORMAL_DOT_SIZE04_WEIGHT},
+                    {DotSizes::DOT_SIZE05, NORMAL_DOT_SIZE05_WEIGHT},
+                    {DotSizes::DOT_SIZE06, NORMAL_DOT_SIZE06_WEIGHT},
+                    {DotSizes::DOT_SIZE07, NORMAL_DOT_SIZE07_WEIGHT},
+                    {DotSizes::DOT_SIZE08, NORMAL_DOT_SIZE08_WEIGHT},
+                }
             }
         }
     }
@@ -152,15 +153,14 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
   switch (lineType)
   {
     case LineType::H_LINE:
-      return GetHorizontalLinePoints(
-          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenWidth(), lineParam);
+      return GetHorizontalLinePoints({AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenWidth()},
+                                     lineParam);
     case LineType::V_LINE:
-      return GetVerticalLinePoints(
-          AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenHeight(), lineParam);
+      return GetVerticalLinePoints({AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenHeight()},
+                                   lineParam);
     case LineType::CIRCLE:
       return GetCircularLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                   m_goomInfo->GetScreenWidth(),
-                                   m_goomInfo->GetScreenHeight(),
+                                   {m_goomInfo->GetScreenWidth(), m_goomInfo->GetScreenHeight()},
                                    lineParam);
     default:
       FailFast();

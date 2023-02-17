@@ -137,13 +137,16 @@ public:
                                                   float tRotatePoint)
       -> std::shared_ptr<const IColorMap>;
 
+  struct TintProperties
+  {
+    float saturation;
+    float lightness;
+  };
   [[nodiscard]] static auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
-                                                 float saturation,
-                                                 float lightness)
+                                                 const TintProperties& tintProperties)
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] static auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                                 float saturation,
-                                                 float lightness)
+                                                 const TintProperties& tintProperties)
       -> std::shared_ptr<const IColorMap>;
 
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;

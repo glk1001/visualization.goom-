@@ -17,10 +17,10 @@
 namespace GOOM::UTILS::GRAPHICS
 {
 
-auto ImageBitmap::Resize(const size_t width, const size_t height) noexcept -> void
+auto ImageBitmap::Resize(const Dimensions& dimensions) noexcept -> void
 {
-  m_width  = static_cast<uint32_t>(width);
-  m_height = static_cast<uint32_t>(height);
+  m_width  = dimensions.GetWidth();
+  m_height = dimensions.GetHeight();
   m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
@@ -35,28 +35,30 @@ void ImageBitmap::Load(const std::string& imageFilename)
   const auto [rgbImage, width, height, bpp] = GetRGBImage();
 
   const auto* rgbPtr = rgbImage;
-  Resize(static_cast<size_t>(width), static_cast<size_t>(height));
+  Resize({static_cast<uint32_t>(width), static_cast<uint32_t>(height)});
   for (auto y = 0U; y < GetHeight(); ++y)
   {
     for (auto x = 0U; x < GetWidth(); ++x)
     {
-      auto blue = *rgbPtr;
+      //NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic): stb_image requirement
+      const auto blue = *rgbPtr;
       ++rgbPtr;
-      auto green = *rgbPtr;
+      const auto green = *rgbPtr;
       ++rgbPtr;
-      auto red = *rgbPtr;
+      const auto red = *rgbPtr;
       ++rgbPtr;
       const auto alpha = *rgbPtr;
       ++rgbPtr;
+      //NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic): stb_image requirement
 
       if (0 == alpha)
       {
-        red   = 0;
-        green = 0;
-        blue  = 0;
+        SetPixel(x, y, RGB{});
       }
-
-      SetPixel(x, y, RGB{/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha});
+      else
+      {
+        SetPixel(x, y, RGB{/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha});
+      }
     }
   }
 

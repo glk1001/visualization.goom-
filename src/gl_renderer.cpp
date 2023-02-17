@@ -72,7 +72,14 @@ private:
   static constexpr int32_t NUM_TRIANGLES            = 2;
   int32_t m_numVertices                             = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
   std::vector<GLfloat> m_quadData;
-  [[nodiscard]] static auto GetGlQuadData(int32_t width, int32_t height, int32_t xPos, int32_t yPos)
+  struct QuadDataProperties
+  {
+    int32_t width;
+    int32_t height;
+    int32_t xPos;
+    int32_t yPos;
+  };
+  [[nodiscard]] static auto GetGlQuadData(const QuadDataProperties& quadDataProperties)
       -> std::vector<GLfloat>;
 
   GLuint m_textureId    = 0;
@@ -89,7 +96,11 @@ private:
   auto InitGlObjects() -> void;
   auto InitGlVertexAttributes() -> void;
   auto InitVertexAttributes() const -> void;
+#ifdef HAS_GL
+  static auto DeinitVertexAttributes() -> void;
+#else
   auto DeinitVertexAttributes() const -> void;
+#endif
   auto CreateGlTexture() -> void;
   auto DrawGlTexture() -> void;
   auto UpdateGlTextureBuffer() -> void;
@@ -155,7 +166,7 @@ GlRenderer::GLRendererImpl::GLRendererImpl(const TextureBufferDimensions& textur
     m_windowWidth{windowDimensions.width},
     m_windowHeight{windowDimensions.height},
     //TODO(glk) - Is pos (0,0) OK? Used to pass in pos from Kodi.
-    m_quadData{GetGlQuadData(m_windowWidth, m_windowHeight, 0, 0)},
+    m_quadData{GetGlQuadData({m_windowWidth, m_windowHeight, 0, 0})},
     m_glShader{shaderStrategy}
 {
   LogDebug(*m_goomLogger, "Start constructor.");
@@ -186,6 +197,7 @@ auto GlRenderer::GLRendererImpl::InitGl() -> void
   LogDebug(*m_goomLogger, "Start InitGl.");
   LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
   LogDebug(
       *m_goomLogger, "GL_VERSION  : {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   LogDebug(
@@ -195,6 +207,7 @@ auto GlRenderer::GLRendererImpl::InitGl() -> void
   LogDebug(*m_goomLogger,
            "GLSL VERSION: {}",
            reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
 
   InitGlShaders();
   InitGlObjects();
@@ -216,15 +229,13 @@ auto GlRenderer::GLRendererImpl::DeinitGl() -> void
   m_vertexVBO = 0;
 }
 
-auto GlRenderer::GLRendererImpl::GetGlQuadData(const int32_t width,
-                                               const int32_t height,
-                                               const int32_t xPos,
-                                               const int32_t yPos) -> std::vector<GLfloat>
+auto GlRenderer::GLRendererImpl::GetGlQuadData(const QuadDataProperties& quadDataProperties)
+    -> std::vector<GLfloat>
 {
-  const auto x0 = static_cast<GLfloat>(xPos);
-  const auto y0 = static_cast<GLfloat>(yPos);
-  const auto x1 = static_cast<GLfloat>(xPos + width);
-  const auto y1 = static_cast<GLfloat>(yPos + height);
+  const auto x0 = static_cast<GLfloat>(quadDataProperties.xPos);
+  const auto y0 = static_cast<GLfloat>(quadDataProperties.yPos);
+  const auto x1 = static_cast<GLfloat>(quadDataProperties.xPos + quadDataProperties.width);
+  const auto y1 = static_cast<GLfloat>(quadDataProperties.yPos + quadDataProperties.height);
 
   // clang-format off
   return {
@@ -293,8 +304,9 @@ auto GlRenderer::GLRendererImpl::InitGlVertexAttributes() -> void
       GL_FLOAT,
       GL_FALSE,
       0,
-      reinterpret_cast<GLvoid*>(static_cast<size_t>(m_numVertices * m_componentsPerVertex) *
-                                sizeof(GLfloat)));
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
+      reinterpret_cast<const GLvoid*>(static_cast<size_t>(m_numVertices * m_componentsPerVertex) *
+                                      sizeof(GLfloat)));
 
   glBufferData(GL_ARRAY_BUFFER,
                static_cast<GLsizeiptr>(m_quadData.size() * sizeof(GLfloat)),
@@ -423,15 +435,18 @@ inline auto GlRenderer::GLRendererImpl::InitVertexAttributes() const -> void
 #endif
 }
 
+#ifdef HAS_GL
+inline auto GlRenderer::GLRendererImpl::DeinitVertexAttributes() -> void
+{
+  glBindVertexArray(0);
+}
+#else
 inline auto GlRenderer::GLRendererImpl::DeinitVertexAttributes() const -> void
 {
-#ifdef HAS_GL
-  glBindVertexArray(0);
-#else
   glDisableVertexAttribArray(static_cast<GLuint>(m_aPositionLoc));
   glDisableVertexAttribArray(static_cast<GLuint>(m_aTexCoordsLoc));
-#endif
 }
+#endif
 
 inline auto GlRenderer::GLRendererImpl::DrawGlTexture() -> void
 {

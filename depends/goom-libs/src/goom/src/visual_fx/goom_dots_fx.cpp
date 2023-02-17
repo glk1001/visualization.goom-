@@ -99,7 +99,8 @@ private:
   bool m_useMiddleColor               = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] static auto GetDotPrimaryColor(size_t dotNum) -> Pixel;
-  [[nodiscard]] static auto IsImagePointCloseToMiddle(size_t x, size_t y, uint32_t radius) -> bool;
+  [[nodiscard]] static auto IsImagePointCloseToMiddle(const Point2dInt& point, uint32_t radius)
+      -> bool;
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
@@ -114,7 +115,9 @@ private:
   void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
 
   static constexpr auto GAMMA = 2.2F; // Cancel the shader gamma
-  ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  ColorAdjustment m_colorAdjust{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 };
 
 GoomDotsFx::GoomDotsFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
@@ -357,7 +360,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::ApplyMultiple()
 void GoomDotsFx::GoomDotsFxImpl::Update()
 {
   auto radius = MIN_DOT_SIZE / 2U;
-  if ((0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) || ChangeDotColorsEvent())
+  if ((0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or ChangeDotColorsEvent())
   {
     ChangeColors();
     radius = m_goomRand->GetRandInRange(radius, (U_HALF * MAX_DOT_SIZE) + 1);
@@ -422,7 +425,7 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName()
   else if (m_goomRand->ProbabilityOf(PROB_MORE_FLOWERS))
   {
     m_numFlowersInRow = 1;
-    SetNextCurrentBitmapName();
+    SetFlowerBitmap();
   }
   else
   {
@@ -465,9 +468,9 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   const auto screenHeightLessDiameter =
       static_cast<int32_t>(m_goomInfo->GetScreenHeight() - diameter);
 
-  if ((dotPosition.x < static_cast<int32_t>(diameter)) ||
-      (dotPosition.y < static_cast<int32_t>(diameter)) ||
-      (dotPosition.x >= screenWidthLessDiameter) || (dotPosition.y >= screenHeightLessDiameter))
+  if ((dotPosition.x < static_cast<int32_t>(diameter)) or
+      (dotPosition.y < static_cast<int32_t>(diameter)) or
+      (dotPosition.x >= screenWidthLessDiameter) or (dotPosition.y >= screenHeightLessDiameter))
   {
     return;
   }
@@ -480,7 +483,8 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
       return BLACK_PIXEL;
     }
     const auto newColor =
-        m_useMiddleColor && IsImagePointCloseToMiddle(x, y, radius) ? m_middleColor : color;
+        m_useMiddleColor and IsImagePointCloseToMiddle(GetPoint2dInt(x, y), radius) ? m_middleColor
+                                                                                    : color;
     static constexpr auto COLOR_MIX_T = 0.6F;
     const auto mixedColor             = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
@@ -492,7 +496,7 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 
   if (const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
                                        dotPosition.y + static_cast<int32_t>(radius)};
-      m_thereIsOneBuffer || m_currentlyUseSingleBufferOnly)
+      m_thereIsOneBuffer or m_currentlyUseSingleBufferOnly)
   {
     m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(diameter), getColor1);
   }
@@ -502,14 +506,14 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const size_t x,
-                                                                  const size_t y,
+inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const Point2dInt& point,
                                                                   const uint32_t radius) -> bool
 {
   const auto margin = GetMargin(radius);
-  const auto minVal = radius - margin;
-  const auto maxVal = radius + margin;
-  return (minVal <= x) && (x <= maxVal) && (minVal <= y) && (y <= maxVal);
+  const auto minVal = static_cast<int32_t>(radius - margin);
+  const auto maxVal = static_cast<int32_t>(radius + margin);
+  return (minVal <= point.x) and (point.x <= maxVal) and (minVal <= point.y) and
+         (point.y <= maxVal);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetMargin(const uint32_t radius) -> size_t

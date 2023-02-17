@@ -86,7 +86,12 @@ private:
       const std::array<uint32_t, NUM_Y_REGIONS>& yRegionBorders) noexcept
       -> std::array<RegionInfo, NUM_REGIONS>;
   [[nodiscard]] auto GetRegionIndexOfPoint(const Point2dInt& point) const noexcept -> size_t;
-  [[nodiscard]] auto IsInXRegion(int32_t x, size_t xRegionIndex) const noexcept -> bool;
+  struct XValueAndRegion
+  {
+    int32_t x;
+    size_t xRegionIndex;
+  };
+  [[nodiscard]] auto IsInXRegion(const XValueAndRegion& xValueAndRegion) const noexcept -> bool;
 
   std::array<float, NUM_REGIONS> m_regionAverageLuminances{};
   [[nodiscard]] auto GetRegionAverageLuminance(size_t regionIndex) const noexcept -> float;

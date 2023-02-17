@@ -37,12 +37,16 @@ public:
 
   auto SetMaxHitCount(uint32_t val) -> void;
 
+  struct MixProperties
+  {
+    float brightness;
+    float tMix;
+    float tX;
+    float tY;
+  };
   [[nodiscard]] auto GetMixedColor(const Pixel& baseColor,
                                    uint32_t hitCount,
-                                   float brightness,
-                                   float tMix,
-                                   float tX,
-                                   float tY) const -> Pixel;
+                                   const MixProperties& mixProperties) const -> Pixel;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -73,11 +77,9 @@ private:
   UTILS::MATH::Weights<VISUAL_FX::IfsDancersFx::ColorMode> m_colorModeWeights;
   auto GetNextColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode;
   [[nodiscard]] auto GetMixedColorInfo(const Pixel& baseColor,
-                                       float brightness,
                                        float logAlpha,
-                                       float tMix,
-                                       float tX,
-                                       float tY) const -> std::pair<Pixel, float>;
+                                       const MixProperties& mixProperties) const
+      -> std::pair<Pixel, float>;
   [[nodiscard]] auto GetNextMixerMapColor(float t, float tX, float tY) const -> Pixel;
   [[nodiscard]] auto GetSineMixColor(float tX, float tY) const -> Pixel;
   [[nodiscard]] auto GetMapColorsTBaseMix() const -> float;
@@ -86,7 +88,9 @@ private:
                                         const Pixel& mixColor) const -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{
+      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 };
 
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&

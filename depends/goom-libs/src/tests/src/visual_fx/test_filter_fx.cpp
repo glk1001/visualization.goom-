@@ -42,10 +42,9 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
   Parallel parallel{-1};
   const auto soundInfo       = SoundInfo{};
   const auto goomSoundEvents = GoomSoundEvents{soundInfo};
-
-  const auto goomInfo = PluginInfo{
-      {WIDTH, HEIGHT},
-      goomSoundEvents
+  const auto goomInfo        = PluginInfo{
+             {WIDTH, HEIGHT},
+             goomSoundEvents
   };
   const auto goomRand              = GoomRand{};
   const auto filterSettingsService = FilterSettingsService{

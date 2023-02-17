@@ -34,15 +34,20 @@ add_executable(${GOOM_LIB_TESTS_NAME}
 target_link_libraries(${GOOM_LIB_TESTS_NAME}
                       PRIVATE
                       goom
-                      LSys::lib
                       vivid
-                      freetype
+                      LSys::lib
                       Catch2::Catch2
                       ${CMAKE_THREAD_LIBS_INIT}
                       m
                       pthread
                       stdc++
                       )
+if (FREETYPE_FOUND)
+    target_link_libraries(${GOOM_LIB_TESTS_NAME}
+                          PRIVATE
+                          Freetype::Freetype
+                          )
+endif ()
 
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            PRIVATE
@@ -52,6 +57,7 @@ target_include_directories(${GOOM_LIB_TESTS_NAME}
                            )
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            SYSTEM PRIVATE
+                           ${GOOM_LIBS_DIR}/lib/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}

@@ -9,8 +9,8 @@ using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using UTILS::MATH::TWO_PI;
 
-auto BezierFlower::Draw(const Point2dInt& origin,
-                        const uint32_t numPetals,
+auto BezierFlower::Draw(const uint32_t numPetals,
+                        const Point2dInt& origin,
                         const uint32_t petalOffset) -> void
 {
   auto petal         = GetBezierPetal(origin, petalOffset);
@@ -63,7 +63,8 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
 
   for (auto i = 0U; i < numPetals; ++i)
   {
-    if (0 == (i % 5))
+    static constexpr auto COLOR_CHANGE_FREQUENCY = 5U;
+    if (0 == (i % COLOR_CHANGE_FREQUENCY))
     {
       m_lineColorMaps[i] = &randomColorMaps.GetRandomColorMap();
       m_dotColorMaps[i]  = &randomColorMaps.GetRandomColorMap();

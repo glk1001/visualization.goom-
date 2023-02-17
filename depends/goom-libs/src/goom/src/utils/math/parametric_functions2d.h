@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_types.h"
 #include "misc.h"
 #include "point2d.h"
 
@@ -8,6 +9,12 @@
 
 namespace GOOM::UTILS::MATH
 {
+
+struct StartAndEndPos
+{
+  Point2dFlt startPos;
+  Point2dFlt endPos;
+};
 
 class IParametricFunction2d
 {
@@ -47,7 +54,7 @@ private:
 class LineFunction : public IParametricFunction2d
 {
 public:
-  LineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos) noexcept;
+  explicit LineFunction(const StartAndEndPos& startAndEndPos) noexcept;
 
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
@@ -98,8 +105,7 @@ public:
   SpiralFunction(const Vec2dFlt& centrePos,
                  uint32_t numTurns,
                  Direction direction,
-                 float minRadius,
-                 float maxRadius) noexcept;
+                 const MinMaxValues<float>& minMaxRadius) noexcept;
 
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
   [[nodiscard]] auto GetPointData(float t) const noexcept -> PointData override;
@@ -159,7 +165,12 @@ private:
   Params m_params;
   float m_rDiff;
   float m_numCusps;
-  [[nodiscard]] static auto GetNumCusps(float bigR, float smallR) noexcept -> float;
+  struct BigAndSmallR
+  {
+    float bigR;
+    float smallR;
+  };
+  [[nodiscard]] static auto GetNumCusps(const BigAndSmallR& bigAndSmallR) noexcept -> float;
   [[nodiscard]] auto GetPointAtAngle(float angle) const noexcept -> Point2dFlt;
 };
 
@@ -197,7 +208,7 @@ public:
     float freq      = 1.0;
   };
 
-  SineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos, const Params& params) noexcept;
+  SineFunction(const StartAndEndPos& startAndEndPos, const Params& params) noexcept;
 
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
@@ -219,9 +230,7 @@ public:
     float yOscillatingFreq     = 1.0;
   };
 
-  OscillatingFunction(const Point2dFlt& startPos,
-                      const Point2dFlt& endPos,
-                      const Params& params) noexcept;
+  OscillatingFunction(const StartAndEndPos& startAndEndPos, const Params& params) noexcept;
 
   auto SetParams(const Params& params) noexcept -> void;
   auto SetStartPos(const Point2dFlt& startPos) noexcept -> void;
@@ -254,8 +263,8 @@ inline auto ModifiedFunction<T>::GetPoint(const float t) const noexcept -> Point
   return m_modifierFunction(t, m_mainFunction.GetPointData(t));
 }
 
-inline LineFunction::LineFunction(const Point2dFlt& startPos, const Point2dFlt& endPos) noexcept
-  : m_startPos{startPos}, m_endPos{endPos}
+inline LineFunction::LineFunction(const StartAndEndPos& startAndEndPos) noexcept
+  : m_startPos{startAndEndPos.startPos}, m_endPos{startAndEndPos.endPos}
 {
 }
 

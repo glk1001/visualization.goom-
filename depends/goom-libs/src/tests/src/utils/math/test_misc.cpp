@@ -4,23 +4,27 @@
 #include "goom_logger.h"
 #include "utils/math/misc.h"
 
+#include <numeric>
+
 namespace GOOM::UNIT_TESTS
 {
 
 using UTILS::MATH::FloatToIrreducibleFraction;
-using UTILS::MATH::Gcd;
 using UTILS::MATH::Lcm;
 using UTILS::MATH::Log2;
 using UTILS::MATH::PowerOf2;
 using UTILS::MATH::RationalNumber;
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+
 TEST_CASE("Gcd")
 {
-  REQUIRE(Gcd(8, 12) == 4);
-  REQUIRE(Gcd(12, 8) == 4);
+  REQUIRE(std::gcd(8, 12) == 4);
+  REQUIRE(std::gcd(12, 8) == 4);
 
-  REQUIRE(Gcd(54, 24) == 6);
-  REQUIRE(Gcd(24, 54) == 6);
+  REQUIRE(std::gcd(54, 24) == 6);
+  REQUIRE(std::gcd(24, 54) == 6);
 }
 
 TEST_CASE("Lcm")
@@ -107,5 +111,8 @@ TEST_CASE("Frac")
   frac = FloatToIrreducibleFraction(6.0F / 7.0F);
   REQUIRE(frac.isRational == false);
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
 } // namespace GOOM::UNIT_TESTS

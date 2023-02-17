@@ -12,7 +12,7 @@ class Transform2d
 {
 public:
   Transform2d() noexcept = default;
-  Transform2d(float angleInRadians, float scale, const Vec2dFlt& translation) noexcept;
+  Transform2d(float angleInRadians, const Vec2dFlt& translation, float scale) noexcept;
 
   auto SetRotation(float angleInRadians) -> void;
   auto SetScale(float scale) -> void;
@@ -34,8 +34,8 @@ private:
 };
 
 inline Transform2d::Transform2d(const float angleInRadians,
-                                const float scale,
-                                const Vec2dFlt& translation) noexcept
+                                const Vec2dFlt& translation,
+                                const float scale) noexcept
   : m_rotationAngle{angleInRadians}, m_scale{scale}, m_translation{translation}
 {
 }

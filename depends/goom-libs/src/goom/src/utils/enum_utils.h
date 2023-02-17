@@ -112,7 +112,7 @@ constexpr auto EnumMap<E, T>::keys() -> std::array<E, NUM<E>>
   auto keys = std::array<E, NUM<E>>{};
   for (auto i = 0U; i < NUM<E>; ++i)
   {
-    keys[i] = static_cast<E>(i);
+    keys.at(i) = static_cast<E>(i);
   }
   return keys;
 }
@@ -120,13 +120,13 @@ constexpr auto EnumMap<E, T>::keys() -> std::array<E, NUM<E>>
 template<typename E, typename T>
 constexpr auto EnumMap<E, T>::operator[](const E key) const noexcept -> const T&
 {
-  return m_keyValues[static_cast<uint32_t>(key)];
+  return m_keyValues.at(static_cast<uint32_t>(key));
 }
 
 template<typename E, typename T>
 constexpr auto EnumMap<E, T>::operator[](const E key) noexcept -> T&
 {
-  return m_keyValues[static_cast<uint32_t>(key)];
+  return m_keyValues.at(static_cast<uint32_t>(key));
 }
 
 template<typename E, typename T>
@@ -142,7 +142,7 @@ constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> st
   auto sortedValuesArray = std::array<T, NUM<E>>{};
   for (auto& keyValue : keyValues)
   {
-    sortedValuesArray[static_cast<uint32_t>(keyValue.key)] = std::move(keyValue.value);
+    sortedValuesArray.at(static_cast<uint32_t>(keyValue.key)) = std::move(keyValue.value);
   }
   return sortedValuesArray;
 }
@@ -169,13 +169,13 @@ inline RuntimeEnumMap<E, T>::RuntimeEnumMap(std::vector<T>&& keyValues) noexcept
 template<typename E, typename T>
 inline auto RuntimeEnumMap<E, T>::operator[](const E key) const noexcept -> const T&
 {
-  return m_keyValues[static_cast<uint32_t>(key)];
+  return m_keyValues.at(static_cast<uint32_t>(key));
 }
 
 template<typename E, typename T>
 inline auto RuntimeEnumMap<E, T>::operator[](const E key) noexcept -> T&
 {
-  return m_keyValues[static_cast<uint32_t>(key)];
+  return m_keyValues.at(static_cast<uint32_t>(key));
 }
 
 template<typename E, typename T>
@@ -193,13 +193,13 @@ inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -
   auto keysArray = std::vector<uint32_t>(NUM<E>);
   for (auto i = 0U; i < NUM<E>; ++i)
   {
-    keysArray[static_cast<uint32_t>(keyValues[i].key)] = i;
+    keysArray.at(static_cast<uint32_t>(keyValues.at(i).key)) = i;
   }
 
   auto sortedValuesArray = std::vector<T>{};
   for (const auto& key : keysArray)
   {
-    sortedValuesArray.emplace_back(keyValues[key].value);
+    sortedValuesArray.emplace_back(keyValues.at(key).value);
   }
   return sortedValuesArray;
 }

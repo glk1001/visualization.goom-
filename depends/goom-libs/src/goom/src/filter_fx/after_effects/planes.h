@@ -22,12 +22,11 @@ public:
   auto operator=(Planes&&) -> Planes&      = delete;
 
   [[nodiscard]] auto IsHorizontalPlaneVelocityActive() const -> bool;
-  [[nodiscard]] auto GetHorizontalPlaneVelocity(const NormalizedCoords& coords,
-                                                const NormalizedCoords& velocity) const -> float;
-
+  [[nodiscard]] auto GetHorizontalPlaneVelocity(const CoordsAndVelocity& coordsAndVelocity) const
+      -> float;
   [[nodiscard]] auto IsVerticalPlaneVelocityActive() const -> bool;
-  [[nodiscard]] auto GetVerticalPlaneVelocity(const NormalizedCoords& coords,
-                                              const NormalizedCoords& velocity) const -> float;
+  [[nodiscard]] auto GetVerticalPlaneVelocity(const CoordsAndVelocity& coordsAndVelocity) const
+      -> float;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;

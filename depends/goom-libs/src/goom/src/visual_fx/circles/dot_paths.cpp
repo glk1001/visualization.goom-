@@ -16,6 +16,7 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingPath;
+using UTILS::MATH::StartAndEndPos;
 
 DotPaths::DotPaths(const IGoomRand& goomRand,
                    const uint32_t numDots,
@@ -40,13 +41,13 @@ auto DotPaths::GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noex
   {
     dotPathsToAndFrom.dotPathToTarget.emplace_back(
         std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
-        ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsToTarget.at(i)),
-        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionToTarget),
+        StartAndEndPos{ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsToTarget.at(i)),
+                       ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionToTarget)},
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
     dotPathsToAndFrom.dotPathFromTarget.emplace_back(
         std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
-        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
-        ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i)),
+        StartAndEndPos{ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
+                       ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i))},
         m_dotPathParamsToAndFrom.dotPathParamsFromTarget);
   }
 
@@ -61,8 +62,8 @@ auto DotPaths::MakeToDotPathsSameAsFromDotPaths() noexcept -> void
     m_dotPathsToAndFrom.dotPathToTarget.emplace_back(
         std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE,
                                  m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()),
-        ToPoint2dFlt(m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint()),
-        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
+        StartAndEndPos{ToPoint2dFlt(m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint()),
+                       ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget)},
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
   }
 

@@ -30,6 +30,7 @@ static constexpr PixelChannelType TEST_R = 200;
 static constexpr PixelChannelType TEST_G = 100;
 static constexpr PixelChannelType TEST_B = 50;
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Pixels")
 {
   SECTION("Pixel RGB")
@@ -256,5 +257,6 @@ TEST_CASE("PixelBuffers")
     REQUIRE(count == WIDTH);
   }
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace GOOM::UNIT_TESTS

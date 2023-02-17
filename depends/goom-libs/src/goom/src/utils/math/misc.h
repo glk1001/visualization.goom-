@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <numeric>
 
 namespace GOOM::UTILS::MATH
 {
@@ -30,18 +31,9 @@ inline constexpr auto DEGREES_360 = 360.0F;
   return radians * (DEGREES_360 / TWO_PI);
 }
 
-[[nodiscard]] constexpr auto Gcd(const int32_t a, const int32_t b) -> int64_t
-{
-  if (0 == b)
-  {
-    return static_cast<int64_t>(a);
-  }
-  return Gcd(b, a % b);
-}
-
 [[nodiscard]] constexpr auto Lcm(const int32_t a, const int32_t b) -> int64_t
 {
-  return (static_cast<int64_t>(a) / Gcd(a, b)) * static_cast<int64_t>(b);
+  return (static_cast<int64_t>(a) / std::gcd(a, b)) * static_cast<int64_t>(b);
 }
 
 struct RationalNumber
@@ -59,11 +51,11 @@ struct RationalNumber
   const auto intVal  = std::floor(dblVal);
   const auto fracVal = dblVal - intVal;
 
-  const auto gcdVal = static_cast<int32_t>(
-      Gcd(static_cast<int32_t>(std::lround(fracVal * PRECISION)), static_cast<int32_t>(PRECISION)));
+  const auto gcdVal = std::gcd(static_cast<int32_t>(std::lround(fracVal * PRECISION)),
+                               static_cast<int32_t>(PRECISION));
 
   const auto numerator   = static_cast<int32_t>(std::lround(fracVal * PRECISION) / gcdVal);
-  const auto denominator = static_cast<int32_t>(PRECISION) / gcdVal;
+  const auto denominator = static_cast<int32_t>(PRECISION / gcdVal);
 
   const auto isRational = denominator != static_cast<int32_t>(PRECISION);
 
@@ -180,12 +172,15 @@ template<typename T>
 class Fraction
 {
 public:
-  Fraction() noexcept = delete;
-
-  constexpr Fraction(T numerator, T denominator) noexcept
-    : m_numerator{numerator}, m_denominator{denominator}
+  struct NumDom
   {
-    Expects(denominator != 0);
+    T numerator;
+    T denominator;
+  };
+  constexpr explicit Fraction(const NumDom& numDom) noexcept
+    : m_numerator{numDom.numerator}, m_denominator{numDom.denominator}
+  {
+    Expects(numDom.denominator != static_cast<T>(0));
   }
 
 private:
@@ -199,35 +194,45 @@ private:
 };
 
 template<typename T>
-inline constexpr auto FRAC_HALF = Fraction<T>{static_cast<T>(1), static_cast<T>(2)};
-inline constexpr auto I_HALF    = FRAC_HALF<int32_t>;
-inline constexpr auto U_HALF    = FRAC_HALF<uint32_t>;
-inline constexpr auto S_HALF    = FRAC_HALF<size_t>;
+inline constexpr auto FRAC_HALF = Fraction<T>{
+    {static_cast<T>(1), static_cast<T>(2)}
+};
+inline constexpr auto I_HALF = FRAC_HALF<int32_t>;
+inline constexpr auto U_HALF = FRAC_HALF<uint32_t>;
+inline constexpr auto S_HALF = FRAC_HALF<size_t>;
 
 template<typename T>
-inline constexpr auto FRAC_QUARTER = Fraction<T>{static_cast<T>(1), static_cast<T>(4)};
-inline constexpr auto I_QUARTER    = FRAC_QUARTER<int32_t>;
-inline constexpr auto U_QUARTER    = FRAC_QUARTER<uint32_t>;
+inline constexpr auto FRAC_QUARTER = Fraction<T>{
+    {static_cast<T>(1), static_cast<T>(4)}
+};
+inline constexpr auto I_QUARTER = FRAC_QUARTER<int32_t>;
+inline constexpr auto U_QUARTER = FRAC_QUARTER<uint32_t>;
 
 template<typename T>
-inline constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{static_cast<T>(3), static_cast<T>(4)};
-inline constexpr auto I_THREE_QUARTERS    = FRAC_THREE_QUARTERS<int32_t>;
-inline constexpr auto U_THREE_QUARTERS    = FRAC_THREE_QUARTERS<uint32_t>;
+inline constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{
+    {static_cast<T>(3), static_cast<T>(4)}
+};
+inline constexpr auto I_THREE_QUARTERS = FRAC_THREE_QUARTERS<int32_t>;
+inline constexpr auto U_THREE_QUARTERS = FRAC_THREE_QUARTERS<uint32_t>;
 
 template<typename T>
-inline constexpr auto FRAC_THIRD = Fraction<T>{static_cast<T>(1), static_cast<T>(3)};
-inline constexpr auto I_THIRD    = FRAC_THIRD<int32_t>;
-inline constexpr auto U_THIRD    = FRAC_THIRD<uint32_t>;
+inline constexpr auto FRAC_THIRD = Fraction<T>{
+    {static_cast<T>(1), static_cast<T>(3)}
+};
+inline constexpr auto I_THIRD = FRAC_THIRD<int32_t>;
+inline constexpr auto U_THIRD = FRAC_THIRD<uint32_t>;
 
 template<typename T>
-inline constexpr auto FRAC_FIFTH = Fraction<T>{static_cast<T>(1), static_cast<T>(5)};
-inline constexpr auto I_FIFTH    = FRAC_FIFTH<int32_t>;
-inline constexpr auto U_FIFTH    = FRAC_FIFTH<uint32_t>;
+inline constexpr auto FRAC_FIFTH = Fraction<T>{
+    {static_cast<T>(1), static_cast<T>(5)}
+};
+inline constexpr auto I_FIFTH = FRAC_FIFTH<int32_t>;
+inline constexpr auto U_FIFTH = FRAC_FIFTH<uint32_t>;
 
 template<typename T>
-[[nodiscard]] constexpr auto GetFltFraction(const T numerator, const T denominator) -> float
+[[nodiscard]] constexpr auto GetFltFraction(const typename Fraction<T>::NumDom& numDom) -> float
 {
-  return static_cast<float>(numerator) / static_cast<float>(denominator);
+  return static_cast<float>(numDom.numerator) / static_cast<float>(numDom.denominator);
 }
 
 class RangeMapper

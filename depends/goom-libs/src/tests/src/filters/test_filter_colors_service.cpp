@@ -16,12 +16,14 @@ using FILTER_FX::FilterColorsService;
 using FILTER_FX::FILTER_BUFFERS::SourcePointInfo;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::MAX_SUM_COEFFS;
 using FILTER_FX::FILTER_UTILS::ZOOM_FILTER_COEFFS::NeighborhoodCoeffArray;
-using UTILS::fmt_rgba;
 using UTILS::MATH::GoomRand;
 
-static constexpr auto WIDTH  = 120;
-static constexpr auto HEIGHT = 70;
-static const auto GOOM_RAND  = GoomRand{};
+namespace
+{
+
+constexpr auto WIDTH  = 120;
+constexpr auto HEIGHT = 70;
+const auto GOOM_RAND  = GoomRand{};
 
 constexpr auto GetColor(const PixelChannelType red,
                         const PixelChannelType green,
@@ -30,7 +32,9 @@ constexpr auto GetColor(const PixelChannelType red,
   return Pixel{red, green, blue, MAX_ALPHA};
 }
 
-TEST_CASE("FilterColorsService", "[FilterColorsService]")
+} // namespace
+
+TEST_CASE("FilterColorsService")
 {
   auto filterColorsService = FilterColorsService{GOOM_RAND};
 
@@ -91,8 +95,8 @@ TEST_CASE("FilterColorsService", "[FilterColorsService]")
                                                                SOURCE_POINT_INFO.screenPoint.y);
     const auto newColor = filterColorsService.GetNewColor(SOURCE_POINT_INFO, pixelNeighbours);
 
-    UNSCOPED_INFO("expectedColor = " << fmt_rgba("{}", EXPECTED_COLOR));
-    UNSCOPED_INFO("newColor = " << fmt_rgba("{}", newColor));
+    UNSCOPED_INFO("expectedColor = " << FMT::Rgba("{}", EXPECTED_COLOR));
+    UNSCOPED_INFO("newColor = " << FMT::Rgba("{}", newColor));
     REQUIRE(EXPECTED_COLOR == newColor);
   }
 }

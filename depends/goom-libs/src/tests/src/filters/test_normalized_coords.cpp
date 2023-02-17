@@ -11,23 +11,22 @@ namespace GOOM::UNIT_TESTS
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using UTILS::MATH::FloatsEqual;
+using UTILS::MATH::HALF;
 
-static constexpr auto WIDTH  = 1280U;
-static constexpr auto HEIGHT = 720U;
-static constexpr auto MIN_COORD_VAL =
-    (NormalizedCoords::COORD_WIDTH) / static_cast<float>(WIDTH - 1);
-static constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
+namespace
+{
+
+constexpr auto WIDTH         = 1280U;
+constexpr auto HEIGHT        = 720U;
+constexpr auto MIN_COORD_VAL = (NormalizedCoords::COORD_WIDTH) / static_cast<float>(WIDTH - 1);
+constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT},
     MIN_COORD_VAL
 };
 
-constexpr auto ConvertToScreen(const float normalizedValue) -> int32_t
-{
-  return static_cast<int32_t>(
-      static_cast<float>(WIDTH - 1) *
-      ((normalizedValue - NormalizedCoords::MIN_COORD) / (NormalizedCoords::COORD_WIDTH)));
-}
+} // namespace
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Normalized Coords Values")
 {
   SECTION("Min coords")
@@ -87,20 +86,25 @@ TEST_CASE("Normalized Coords Values")
 
   SECTION("From normalized")
   {
-    static constexpr auto COORDS = NormalizedCoords{0.5F, 0.3F};
+    static constexpr auto X_COORD = 0.5F;
+    static constexpr auto Y_COORD = 0.3F;
+    static constexpr auto COORDS  = NormalizedCoords{X_COORD, Y_COORD};
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
-    REQUIRE(FloatsEqual(COORDS.GetX(), 0.5F));
+    REQUIRE(FloatsEqual(COORDS.GetX(), X_COORD));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
-    REQUIRE(FloatsEqual(COORDS.GetY(), 0.3F));
+    REQUIRE(FloatsEqual(COORDS.GetY(), Y_COORD));
 
     const auto screenCoords =
         ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
-    const auto x = ConvertToScreen(0.5F);
+    static constexpr auto X = static_cast<int32_t>(
+        static_cast<float>(WIDTH - 1) *
+        ((COORDS.GetX() - NormalizedCoords::MIN_COORD) / (NormalizedCoords::COORD_WIDTH)));
     UNSCOPED_INFO("screenCoords.x = " << screenCoords.x);
-    UNSCOPED_INFO("x = " << x);
-    REQUIRE(screenCoords.x == x);
+    UNSCOPED_INFO("X = " << X);
+    REQUIRE(screenCoords.x == X);
   }
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 TEST_CASE("Normalized Coords Increment")
 {
@@ -116,37 +120,45 @@ TEST_CASE("Normalized Coords Increment")
   }
 }
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Normalized Coords Operations", )
 {
   SECTION("Plus")
   {
-    auto coords = NormalizedCoords{0.5F, 0.5F};
-    coords += NormalizedCoords{0.5F, 0.5F};
+    static constexpr auto X_COORD = 0.5F;
+    static constexpr auto Y_COORD = 0.3F;
+    auto coords                   = NormalizedCoords{X_COORD, Y_COORD};
+    coords += NormalizedCoords{X_COORD, Y_COORD};
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
-    REQUIRE(FloatsEqual(coords.GetX(), 1.0F));
+    REQUIRE(FloatsEqual(coords.GetX(), (X_COORD + X_COORD)));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
-    REQUIRE(FloatsEqual(coords.GetY(), 1.0F));
+    REQUIRE(FloatsEqual(coords.GetY(), (Y_COORD + Y_COORD)));
   }
 
   SECTION("Minus")
   {
-    auto coords = NormalizedCoords{1.0F, 1.0F};
-    coords -= NormalizedCoords{0.5F, 0.5F};
+    auto coords                   = NormalizedCoords{1.0F, 1.0F};
+    static constexpr auto X_COORD = 0.5F;
+    static constexpr auto Y_COORD = 0.3F;
+    coords -= NormalizedCoords{X_COORD, Y_COORD};
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
-    REQUIRE(FloatsEqual(coords.GetX(), 0.5F));
+    REQUIRE(FloatsEqual(coords.GetX(), (1.0F - X_COORD)));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
-    REQUIRE(FloatsEqual(coords.GetY(), 0.5F));
+    REQUIRE(FloatsEqual(coords.GetY(), (1.0F - Y_COORD)));
   }
 
   SECTION("Scalar Mult")
   {
-    auto coords = NormalizedCoords{0.5F, 0.5F};
-    coords *= 0.5F;
+    static constexpr auto X_COORD = 0.5F;
+    static constexpr auto Y_COORD = 0.3F;
+    auto coords                   = NormalizedCoords{X_COORD, Y_COORD};
+    coords *= HALF;
     UNSCOPED_INFO("coords.GetX() = " << coords.GetX());
-    REQUIRE(FloatsEqual(coords.GetX(), 0.25F));
+    REQUIRE(FloatsEqual(coords.GetX(), HALF * X_COORD));
     UNSCOPED_INFO("coords.GetY() = " << coords.GetY());
-    REQUIRE(FloatsEqual(coords.GetY(), 0.25F));
+    REQUIRE(FloatsEqual(coords.GetY(), HALF * Y_COORD));
   }
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace GOOM::UNIT_TESTS

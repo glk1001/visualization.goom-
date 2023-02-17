@@ -4,6 +4,7 @@
 #include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
@@ -44,8 +45,8 @@ public:
 
   auto SetVaryDotRadius(bool val) -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
-  auto SetShapePathsMinMaxNumSteps(uint32_t shapePathsMinNumSteps,
-                                   uint32_t shapePathsMaxNumSteps) noexcept -> void;
+  auto SetShapePathsMinMaxNumSteps(const MinMaxValues<uint32_t>& minMaxShapePathsNumSteps) noexcept
+      -> void;
 
   auto Start() noexcept -> void;
 

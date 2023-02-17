@@ -124,14 +124,13 @@ auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
                 { shapePart.SetShapePathsTargetPoint(zoomMidpoint); });
 }
 
-auto Shape::SetShapePathsMinMaxNumSteps(const uint32_t shapePathsMinNumSteps,
-                                        const uint32_t shapePathsMaxNumSteps) noexcept -> void
+auto Shape::SetShapePathsMinMaxNumSteps(
+    const MinMaxValues<uint32_t>& minMaxShapePathsNumSteps) noexcept -> void
 {
-  std::for_each(
-      begin(m_shapeParts),
-      end(m_shapeParts),
-      [&shapePathsMinNumSteps, &shapePathsMaxNumSteps](ShapePart& shapePart)
-      { shapePart.SetShapePathsMinMaxNumSteps(shapePathsMinNumSteps, shapePathsMaxNumSteps); });
+  std::for_each(begin(m_shapeParts),
+                end(m_shapeParts),
+                [&minMaxShapePathsNumSteps](ShapePart& shapePart)
+                { shapePart.SetShapePathsMinMaxNumSteps(minMaxShapePathsNumSteps); });
 }
 
 auto Shape::Start() noexcept -> void
@@ -255,8 +254,8 @@ auto Shape::GetTotalNumShapePaths() const noexcept -> uint32_t
 
 inline auto Shape::StartChromaChangeOnOffTimer() noexcept -> void
 {
-  m_chromaChangeOnOffTimer.SetActions([this]() { return SetIncreasedChromaFactor(); },
-                                      [this]() { return SetDecreasedChromaFactor(); });
+  m_chromaChangeOnOffTimer.SetActions({[this]() { return SetIncreasedChromaFactor(); },
+                                       [this]() { return SetDecreasedChromaFactor(); }});
   m_chromaChangeOnOffTimer.StartOnTimer();
 }
 

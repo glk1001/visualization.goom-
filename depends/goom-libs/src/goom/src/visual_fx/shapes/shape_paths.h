@@ -94,7 +94,9 @@ private:
       -> DRAW::MultiplePixels;
 
   static constexpr float GAMMA = 1.3F;
-  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{
+      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 };
 
 inline auto ShapePath::SetNumSteps(const uint32_t val) noexcept -> void

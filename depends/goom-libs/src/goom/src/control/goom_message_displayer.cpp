@@ -32,8 +32,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
   const auto textColor    = GetBrighterColor(10.0F, WHITE_PIXEL);
   const auto getFontColor = [textColor]([[maybe_unused]] const size_t textIndexOfChar,
                                         [[maybe_unused]] const Point2dInt& point,
-                                        [[maybe_unused]] const int32_t width,
-                                        [[maybe_unused]] const int32_t height)
+                                        [[maybe_unused]] const Dimensions& charDimensions)
   { return textColor; };
 
   static constexpr auto OUTLINE_GREY = 0xFA;
@@ -44,8 +43,7 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
   });
   const auto getOutlineFontColor = [outlineColor]([[maybe_unused]] const size_t textIndexOfChar,
                                                   [[maybe_unused]] const Point2dInt& point,
-                                                  [[maybe_unused]] const int32_t width,
-                                                  [[maybe_unused]] const int32_t height)
+                                                  [[maybe_unused]] const Dimensions& charDimensions)
   { return outlineColor; };
 
   auto updateMessagesDisplayers = std::vector<TextDrawer>{};

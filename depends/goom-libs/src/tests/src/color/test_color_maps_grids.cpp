@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <string>
-#include <vivid/vivid.h>
+#include <vivid.h>
 
 namespace GOOM::UNIT_TESTS
 {

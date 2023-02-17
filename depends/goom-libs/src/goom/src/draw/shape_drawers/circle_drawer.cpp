@@ -42,21 +42,20 @@ auto CircleDrawer::DrawFilledCircle(const Point2dInt& centre,
   const auto plot = [this, &colors](const Point2dInt& point1, const Point2dInt& point2)
   {
     Expects(point1.y == point2.y);
-    DrawHorizontalLine(point1.x, point1.y, point2.x, colors);
+    DrawHorizontalLine(point1, point2.x, colors);
   };
 
   DrawBresenhamCircle(centre, radius, plot);
 }
 
-auto CircleDrawer::DrawHorizontalLine(const int32_t x1,
-                                      const int32_t y,
+auto CircleDrawer::DrawHorizontalLine(const Point2dInt& point1,
                                       const int32_t x2,
                                       const MultiplePixels& colors) noexcept -> void
 {
-  const auto xEnd = x1 == x2 ? x1 : x2;
-  for (int32_t x = x1; x <= xEnd; ++x)
+  const auto xEnd = point1.x == x2 ? point1.x : x2;
+  for (auto x = point1.x; x <= xEnd; ++x)
   {
-    m_draw->DrawPixels({x, y}, colors);
+    m_draw->DrawPixels({x, point1.y}, colors);
   }
 }
 
@@ -84,14 +83,16 @@ auto CircleDrawer::DrawBresenhamCircle(const Point2dInt& centre,
   {
     ++x;
 
-    if (d > 0)
+    if (static constexpr auto FACTOR = 4; d > 0)
     {
       --y;
-      d += (4 * (x - y)) + 10;
+      static constexpr auto D_POS_INC = 10;
+      d += (FACTOR * (x - y)) + D_POS_INC;
     }
     else
     {
-      d += (4 * x) + 6;
+      static constexpr auto D_NEG_INC = 6;
+      d += (FACTOR * x) + D_NEG_INC;
     }
     drawCircle8(centre.x, centre.y, x, y);
   }

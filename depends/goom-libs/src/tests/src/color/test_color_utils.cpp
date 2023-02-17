@@ -12,11 +12,11 @@ using COLOR::GetBrighterChannelColor;
 using COLOR::GetBrighterColor;
 using COLOR::GetColorAdd;
 using COLOR::GetColorChannelAdd;
-using COLOR::GetEvolvedColor;
 using COLOR::GetLightenedColor;
 using COLOR::GetRgbColorLerp;
 using GOOM::UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR;
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Test max channels")
 {
   static constexpr auto CHANNEL_MAX = 255;
@@ -176,35 +176,6 @@ TEST_CASE("Lightened color")
   REQUIRE(lightenedColor.G() == 127);
   REQUIRE(lightenedColor.B() == 127);
 }
-
-TEST_CASE("Evolved color")
-{
-  static constexpr auto RED   = 100;
-  static constexpr auto GREEN = 50;
-  static constexpr auto BLUE  = 20;
-  static constexpr auto COLOR = Pixel{
-      {RED, GREEN, BLUE}
-  };
-
-  auto evolvedColor = GetEvolvedColor(COLOR);
-  REQUIRE(evolvedColor.R() == 67);
-  REQUIRE(evolvedColor.G() == 33);
-  REQUIRE(evolvedColor.B() == 13);
-
-  evolvedColor = GetEvolvedColor(evolvedColor);
-  REQUIRE(evolvedColor.R() == 44);
-  REQUIRE(evolvedColor.G() == 22);
-  REQUIRE(evolvedColor.B() == 8);
-
-  evolvedColor = GetEvolvedColor(evolvedColor);
-  REQUIRE(evolvedColor.R() == 29);
-  REQUIRE(evolvedColor.G() == 14);
-  REQUIRE(evolvedColor.B() == 5);
-
-  evolvedColor = GetEvolvedColor(evolvedColor);
-  REQUIRE(evolvedColor.R() == 19);
-  REQUIRE(evolvedColor.G() == 9);
-  REQUIRE(evolvedColor.B() == 3);
-}
+// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace GOOM::UNIT_TESTS

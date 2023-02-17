@@ -61,16 +61,9 @@ private:
 
   auto StartLogging() -> void;
 
-  auto StartWithCatch(int numChannels,
-                      int samplesPerSec,
-                      int bitsPerSample,
-                      const std::string& songName) -> void;
-  auto StartWithoutCatch(int numChannels,
-                         int samplesPerSec,
-                         int bitsPerSample,
-                         const std::string& songName) -> void;
-  auto StartVis(int numChannels, int samplesPerSec, int bitsPerSample, const std::string& songName)
-      -> void;
+  auto StartWithCatch(int numChannels) -> void;
+  auto StartWithoutCatch(int numChannels) -> void;
+  auto StartVis(int numChannels) -> void;
 
   auto StopWithCatch() -> void;
   auto StopWithoutCatch() -> void;
@@ -82,5 +75,5 @@ private:
   std::unique_ptr<PixelBufferGetter> m_pixelBufferGetter;
   auto DoRender() noexcept -> void;
 
-  auto HandleError(const std::string& errorMsg) const -> void;
+  auto HandleError(const std::string& errorMsg) -> void;
 };

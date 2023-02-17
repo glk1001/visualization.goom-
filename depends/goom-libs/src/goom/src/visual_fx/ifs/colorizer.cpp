@@ -95,45 +95,42 @@ auto Colorizer::ChangeColorMaps() -> void
 
 auto Colorizer::GetMixedColor(const Pixel& baseColor,
                               const uint32_t hitCount,
-                              const float brightness,
-                              const float tMix,
-                              const float tX,
-                              const float tY) const -> Pixel
+                              const MixProperties& mixProperties) const -> Pixel
 {
   const auto logAlpha =
       m_maxHitCount <= 1 ? 1.0F : (std::log(static_cast<float>(hitCount)) / m_logMaxHitCount);
 
-  const auto [mixColor, tBaseMix] =
-      GetMixedColorInfo(baseColor, brightness, logAlpha, tMix, tX, tY);
+  const auto [mixColor, tBaseMix] = GetMixedColorInfo(baseColor, logAlpha, mixProperties);
 
-  return m_colorAdjust.GetAdjustment(brightness * logAlpha,
+  return m_colorAdjust.GetAdjustment(mixProperties.brightness * logAlpha,
                                      GetFinalMixedColor(baseColor, tBaseMix, mixColor));
 }
 
 auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
-                                  const float brightness,
                                   const float logAlpha,
-                                  const float tMix,
-                                  const float tX,
-                                  const float tY) const -> std::pair<Pixel, float>
+                                  const MixProperties& mixProperties) const
+    -> std::pair<Pixel, float>
 {
   switch (m_colorMode)
   {
     case IfsDancersFx::ColorMode::MAP_COLORS:
     case IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE:
-      return {GetNextMixerMapColor(brightness * logAlpha, tX, tY), GetMapColorsTBaseMix()};
+      return {GetNextMixerMapColor(
+                  mixProperties.brightness * logAlpha, mixProperties.tX, mixProperties.tY),
+              GetMapColorsTBaseMix()};
 
     case IfsDancersFx::ColorMode::MIX_COLORS:
     case IfsDancersFx::ColorMode::REVERSE_MIX_COLORS:
     case IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE:
-      return {GetNextMixerMapColor(tMix, tX, tY), 1.0F - m_tAwayFromBaseColor};
+      return {GetNextMixerMapColor(mixProperties.tMix, mixProperties.tX, mixProperties.tY),
+              1.0F - m_tAwayFromBaseColor};
 
     case IfsDancersFx::ColorMode::SINGLE_COLORS:
       return {baseColor, 1.0F - m_tAwayFromBaseColor};
 
     case IfsDancersFx::ColorMode::SINE_MIX_COLORS:
     case IfsDancersFx::ColorMode::SINE_MAP_COLORS:
-      return {GetSineMixColor(tX, tY), 1.0F - m_tAwayFromBaseColor};
+      return {GetSineMixColor(mixProperties.tX, mixProperties.tY), 1.0F - m_tAwayFromBaseColor};
 
     default:
       FailFast();

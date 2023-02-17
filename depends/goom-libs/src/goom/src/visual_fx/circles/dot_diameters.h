@@ -11,10 +11,14 @@ namespace GOOM::VISUAL_FX::CIRCLES
 class DotDiameters
 {
 public:
-  DotDiameters(const UTILS::MATH::IGoomRand& goomRand,
-               uint32_t numDots,
-               uint32_t minDotDiameter,
-               uint32_t maxDotDiameter) noexcept;
+  struct DotProperties
+  {
+    uint32_t numDots;
+    uint32_t minDotDiameter;
+    uint32_t maxDotDiameter;
+  };
+
+  DotDiameters(const UTILS::MATH::IGoomRand& goomRand, const DotProperties& dotProperties) noexcept;
 
   auto ChangeDotDiameters() noexcept -> void;
 
@@ -27,10 +31,14 @@ private:
   static constexpr uint32_t MIN_DIAMETER_EXTRA = 2;
   uint32_t m_minDotDiameter;
   uint32_t m_maxDotDiameter;
-  std::vector<uint32_t> m_dotDiameters{GetInitialDotDiameters(m_numDots, m_maxDotDiameter)};
-  [[nodiscard]] static auto GetInitialDotDiameters(uint32_t numDots,
-                                                   uint32_t maxDotDiameter) noexcept
-      -> std::vector<uint32_t>;
+  struct NumDotsAndMaxDiameter
+  {
+    uint32_t numDots;
+    uint32_t maxDotDiameter;
+  };
+  std::vector<uint32_t> m_dotDiameters{GetInitialDotDiameters({m_numDots, m_maxDotDiameter})};
+  [[nodiscard]] static auto GetInitialDotDiameters(
+      const NumDotsAndMaxDiameter& numDotsAndMaxDiameter) noexcept -> std::vector<uint32_t>;
 
   static constexpr float PROB_FIXED_DIAMETER = 0.0F;
   auto ChangeToFixedDotDiameters() noexcept -> void;

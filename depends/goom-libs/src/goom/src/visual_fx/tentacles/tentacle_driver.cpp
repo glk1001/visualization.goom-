@@ -57,8 +57,9 @@ static constexpr auto MAX_BASE_Y_WEIGHT_FACTOR = 1.1F;
 static constexpr auto ITER_ZERO_LERP_FACTOR    = 0.9;
 static constexpr auto MIN_SINE_X0              = 0.0F;
 //static constexpr auto MAX_SINE_X0 = UTILS::MATH::TWO_PI;
-static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START =
-    SineWaveMultiplier{MIN_SINE_FREQUENCY, -20.0F, +20.0F, MIN_SINE_X0};
+static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START = SineWaveMultiplier{
+    SineWaveMultiplier::SineProperties{MIN_SINE_FREQUENCY, -20.0F, +20.0F, MIN_SINE_X0}
+};
 
 constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D::BaseYWeights
 {
@@ -171,10 +172,11 @@ auto TentacleDriver::SetWeightedColorMaps(
       end(m_tentacles),
       [&baseMainColorMapName, &baseLowColorMapName, &saturation, &lightness](auto& tentacle)
       {
+        const auto tintProperties = ColorMaps::TintProperties{saturation(), lightness()};
+
         tentacle.mainColorMap =
-            ColorMaps::GetTintedColorMapPtr(baseMainColorMapName, saturation(), lightness());
-        tentacle.lowColorMap =
-            ColorMaps::GetTintedColorMapPtr(baseLowColorMapName, saturation(), lightness());
+            ColorMaps::GetTintedColorMapPtr(baseMainColorMapName, tintProperties);
+        tentacle.lowColorMap = ColorMaps::GetTintedColorMapPtr(baseLowColorMapName, tintProperties);
 
         saturation.Increment();
         lightness.Increment();

@@ -23,6 +23,9 @@ struct PixelInfo
   MultiplePixels colors{};
 };
 
+// NOLINTBEGIN(misc-const-correctness)
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void CheckPixels(const std::vector<PixelInfo>& changedPixels,
                  const std::vector<PixelInfo>& expectedPixels)
 {
@@ -77,31 +80,47 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   CheckPixels(changedPixels, expectedPixels);
 }
 
-auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
-    -> std::vector<PixelInfo>
+[[nodiscard]] auto GetPixelInfo(uint32_t pixelNum) -> PixelInfo
 {
-  std::vector<PixelInfo> pixelsNewToOld{};
+  const auto point  = Point2dInt{static_cast<int32_t>(pixelNum), static_cast<int32_t>(pixelNum)};
+  const auto chan0  = static_cast<PixelChannelType>(pixelNum);
+  const auto chan1  = static_cast<PixelChannelType>(pixelNum + 1);
+  const auto color0 = Pixel{
+      {chan0, chan0, chan0, 255U}
+  };
+  const auto color1 = Pixel{
+      {chan1, chan1, chan1, 0U}
+  };
+  const auto colors = MultiplePixels{color0, color1};
+
+  return {point, colors};
+}
+
+[[nodiscard]] auto GetPixelsNewToOld(GoomDrawToContainer* const draw,
+                                     const uint32_t numChanged) noexcept -> std::vector<PixelInfo>
+{
+  auto pixelsNewToOld = std::vector<PixelInfo>{};
+
   // Add some changed coords - '1' is old, 'numChanged' is new.
   for (auto i = 1U; i <= numChanged; ++i)
   {
-    const auto point  = Point2dInt{static_cast<int32_t>(i), static_cast<int32_t>(i)};
-    const auto chan0  = static_cast<PixelChannelType>(i);
-    const auto chan1  = static_cast<PixelChannelType>(i + 1);
-    const auto color0 = Pixel{
-        {chan0, chan0, chan0, 255U}
-    };
-    const auto color1 = Pixel{
-        {chan1, chan1, chan1, 0U}
-    };
-    const auto colors = MultiplePixels{color0, color1};
+    const auto pixelInfo = GetPixelInfo(i);
 
-    pixelsNewToOld.emplace_back(PixelInfo{point, colors});
+    pixelsNewToOld.emplace_back(pixelInfo);
 
-    draw->DrawPixels(point, colors);
-    REQUIRE(draw->GetPixels(point).color1 == color0);
-    REQUIRE(draw->GetPixels(point).color2 == BLACK_PIXEL);
+    draw->DrawPixels(pixelInfo.point, pixelInfo.colors);
+    REQUIRE(draw->GetPixels(pixelInfo.point).color1 == pixelInfo.colors.color1);
+    REQUIRE(draw->GetPixels(pixelInfo.point).color2 == BLACK_PIXEL);
   }
   std::reverse(begin(pixelsNewToOld), end(pixelsNewToOld));
+
+  return pixelsNewToOld;
+}
+
+auto FillDrawContainer(GoomDrawToContainer* const draw, const uint32_t numChanged)
+    -> std::vector<PixelInfo>
+{
+  auto pixelsNewToOld = GetPixelsNewToOld(draw, numChanged);
 
   REQUIRE(pixelsNewToOld.size() == numChanged);
   REQUIRE(pixelsNewToOld.front().point.x == static_cast<int32_t>(numChanged));
@@ -112,7 +131,7 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const size_t numChanged)
   return pixelsNewToOld;
 }
 
-TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
+TEST_CASE("Test DrawMovingText to Container")
 {
   GoomDrawToContainer draw{
       {WIDTH, HEIGHT}
@@ -120,23 +139,10 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
 
   draw.SetBuffIntensity(1.0F);
 
-  static constexpr auto NUM_CHANGED_COORDS = 5U;
-  std::vector<PixelInfo> pixelsNewToOld    = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
+  static constexpr auto NUM_CHANGED_COORDS    = 5U;
+  const std::vector<PixelInfo> pixelsNewToOld = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   auto i = static_cast<int32_t>(NUM_CHANGED_COORDS);
-  for (const auto& pixelInfo : pixelsNewToOld)
-  {
-    REQUIRE(pixelInfo.point.x == i);
-    REQUIRE(pixelInfo.point.y == i);
-    --i;
-  }
-
-  CheckContainer(draw, pixelsNewToOld);
-
-  static constexpr auto NEW_SIZE = NUM_CHANGED_COORDS / 2U;
-  draw.ResizeChangedCoordsKeepingNewest(NEW_SIZE);
-  pixelsNewToOld.resize(NEW_SIZE);
-  i = NUM_CHANGED_COORDS;
   for (const auto& pixelInfo : pixelsNewToOld)
   {
     REQUIRE(pixelInfo.point.x == i);
@@ -146,7 +152,31 @@ TEST_CASE("Test DrawMovingText to Container", "[GoomDrawToContainer]")
   CheckContainer(draw, pixelsNewToOld);
 }
 
-TEST_CASE("Test DrawMovingText to Container with Duplicates", "[GoomDrawToContainerDuplicates]")
+TEST_CASE("Test Resized DrawMovingText to Container")
+{
+  GoomDrawToContainer draw{
+      {WIDTH, HEIGHT}
+  };
+  draw.SetBuffIntensity(1.0F);
+
+  static constexpr auto NUM_CHANGED_COORDS = 5U;
+  std::vector<PixelInfo> pixelsNewToOld    = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
+
+  static constexpr auto NEW_SIZE = NUM_CHANGED_COORDS / 2U;
+  draw.ResizeChangedCoordsKeepingNewest(NEW_SIZE);
+  pixelsNewToOld.resize(NEW_SIZE);
+
+  auto i = static_cast<int32_t>(NUM_CHANGED_COORDS);
+  for (const auto& pixelInfo : pixelsNewToOld)
+  {
+    REQUIRE(pixelInfo.point.x == i);
+    REQUIRE(pixelInfo.point.y == i);
+    --i;
+  }
+  CheckContainer(draw, pixelsNewToOld);
+}
+
+TEST_CASE("Test DrawMovingText to Container with Duplicates")
 {
   auto draw = GoomDrawToContainer{
       {WIDTH, HEIGHT}
@@ -209,5 +239,7 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
     REQUIRE(0 == colorsList.count);
   }
 }
+
+// NOLINTEND(misc-const-correctness)
 
 } // namespace GOOM::UNIT_TESTS

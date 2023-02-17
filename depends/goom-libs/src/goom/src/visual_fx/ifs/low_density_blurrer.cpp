@@ -263,7 +263,7 @@ inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
       IColorMap::GetColorMix(baseColor, neighbourhoodAverageColor, m_neighbourMixFactor);
 
   return m_colorizer->GetMixedColor(
-      baseAndNeighbourhoodMixedColor, point.GetCount(), brightness, logAlpha, fx, fy);
+      baseAndNeighbourhoodMixedColor, point.GetCount(), {brightness, logAlpha, fx, fy});
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

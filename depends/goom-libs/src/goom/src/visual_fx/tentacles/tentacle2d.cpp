@@ -156,11 +156,12 @@ auto Tentacle2D::CreateExpDampingFunc(const LinearDimensions& xDimensions) noexc
 {
   const auto xToStartRise = xDimensions.min + (0.25 * xDimensions.max);
 
-  return DampingFuncPtr{std::make_unique<ExpDampingFunction>(DAMPING_AMPLITUDE,
-                                                             xToStartRise,
-                                                             DAMPING_Y_AT_START_TO_RISE,
-                                                             xDimensions.max,
-                                                             DAMPING_Y_AT_X_MAX)};
+  return DampingFuncPtr{std::make_unique<ExpDampingFunction>(
+      ExpDampingFunction::ExpProperties{DAMPING_AMPLITUDE,
+                                        xToStartRise,
+                                        DAMPING_Y_AT_START_TO_RISE,
+                                        xDimensions.max,
+                                        DAMPING_Y_AT_X_MAX})};
 }
 
 auto Tentacle2D::CreateLinearDampingFunc(const LinearDimensions& xDimensions) noexcept
@@ -180,8 +181,9 @@ auto Tentacle2D::CreateLinearDampingFunc(const LinearDimensions& xDimensions) no
   pieces.emplace_back(
       linearXMin,
       linearXMax,
-      DampingFuncPtr{std::make_unique<LinearDampingFunction>(
-          flatXMax, LINEAR_DAMPING_FLAT_VALUE, xDimensions.max, LINEAR_DAMPING_Y_SCALE)});
+      DampingFuncPtr{
+          std::make_unique<LinearDampingFunction>(LinearDampingFunction::LinearProperties{
+              flatXMax, LINEAR_DAMPING_FLAT_VALUE, xDimensions.max, LINEAR_DAMPING_Y_SCALE})});
 
   return DampingFuncPtr{std::make_unique<PiecewiseDampingFunction>(pieces)};
 }

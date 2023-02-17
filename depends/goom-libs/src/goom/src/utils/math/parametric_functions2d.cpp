@@ -35,11 +35,10 @@ auto CircleFunction::GetPointAtAngle(float angle) const noexcept -> Point2dFlt
 SpiralFunction::SpiralFunction(const Vec2dFlt& centrePos,
                                const uint32_t numTurns,
                                const Direction direction,
-                               const float minRadius,
-                               const float maxRadius) noexcept
+                               const MinMaxValues<float>& minMaxRadius) noexcept
   : m_centrePos{centrePos},
-    m_minRadius{minRadius},
-    m_maxRadius{maxRadius},
+    m_minRadius{minMaxRadius.minValue},
+    m_maxRadius{minMaxRadius.maxValue},
     m_angleFactor{direction == Direction::COUNTER_CLOCKWISE
                       ? -(static_cast<float>(numTurns) * TWO_PI)
                       : +(static_cast<float>(numTurns) * TWO_PI)}
@@ -67,7 +66,7 @@ HypotrochoidFunction::HypotrochoidFunction(const Vec2dFlt& centrePos,
     m_angleParams{angleParams},
     m_params{params},
     m_rDiff{m_params.bigR - m_params.smallR},
-    m_numCusps{GetNumCusps(m_params.bigR, m_params.smallR)}
+    m_numCusps{GetNumCusps({m_params.bigR, m_params.smallR})}
 {
   Expects(params.bigR > 0.0F);
   Expects(params.smallR > 0.0F);
@@ -75,16 +74,17 @@ HypotrochoidFunction::HypotrochoidFunction(const Vec2dFlt& centrePos,
   Expects(angleParams.startAngleInRadians <= angleParams.endAngleInRadians);
 }
 
-auto HypotrochoidFunction::GetNumCusps(const float bigR, const float smallR) noexcept -> float
+auto HypotrochoidFunction::GetNumCusps(const BigAndSmallR& bigAndSmallR) noexcept -> float
 {
-  const auto intBigR   = static_cast<int32_t>(bigR + SMALL_FLOAT);
-  const auto intSmallR = static_cast<int32_t>(smallR + SMALL_FLOAT);
+  const auto intBigR   = static_cast<int32_t>(bigAndSmallR.bigR + SMALL_FLOAT);
+  const auto intSmallR = static_cast<int32_t>(bigAndSmallR.smallR + SMALL_FLOAT);
 
   if ((0 == intBigR) || (0 == intSmallR))
   {
     return 1.0F;
   }
 
+  // NOLINTNEXTLINE(bugprone-integer-division)
   return static_cast<float>(Lcm(intSmallR, intBigR) / static_cast<int64_t>(intBigR));
 }
 
@@ -141,11 +141,9 @@ auto EpicycloidFunction::GetPointAtAngle(const float angle) const noexcept -> Po
   return (m_params.amplitude * point) + m_centrePos;
 }
 
-SineFunction::SineFunction(const Point2dFlt& startPos,
-                           const Point2dFlt& endPos,
-                           const Params& params) noexcept
-  : m_startPos{startPos},
-    m_endPos{endPos},
+SineFunction::SineFunction(const StartAndEndPos& startAndEndPos, const Params& params) noexcept
+  : m_startPos{startAndEndPos.startPos},
+    m_endPos{startAndEndPos.endPos},
     m_params{params},
     m_distance{Distance(m_startPos, m_endPos)},
     m_rotateAngle{std::asin((m_endPos.y - m_startPos.y) / m_distance)}
@@ -161,10 +159,11 @@ auto SineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
   return (Point2dFlt{newPoint.x, (m_params.amplitude * newPoint.y)} + GetVec2dFlt(m_startPos));
 }
 
-OscillatingFunction::OscillatingFunction(const Point2dFlt& startPos,
-                                         const Point2dFlt& endPos,
+OscillatingFunction::OscillatingFunction(const StartAndEndPos& startAndEndPos,
                                          const Params& params) noexcept
-  : m_params{params}, m_startPos{GetAdjustedStartPos(startPos)}, m_endPos{endPos}
+  : m_params{params},
+    m_startPos{GetAdjustedStartPos(startAndEndPos.startPos)},
+    m_endPos{startAndEndPos.endPos}
 {
 }
 

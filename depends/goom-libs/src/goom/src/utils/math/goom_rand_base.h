@@ -86,8 +86,8 @@ class ConditionalWeights
 public:
   struct KeyValue
   {
-    E key;
-    std::map<E, float> weightMultipliers;
+    E key{};
+    std::map<E, float> weightMultipliers{};
   };
   using EventWeightMultiplierPairs = std::vector<KeyValue>;
 
@@ -99,7 +99,12 @@ public:
                      const EventWeightMultiplierPairs& weightMultiplierPairs,
                      bool disallowEventsSameAsGiven = true) noexcept;
 
-  [[nodiscard]] auto GetWeight(const E& given, const E& enumClass) const noexcept -> float;
+  struct ConditionalEvents
+  {
+    E previousEvent;
+    E event;
+  };
+  [[nodiscard]] auto GetWeight(const ConditionalEvents& events) const noexcept -> float;
   [[nodiscard]] auto GetSumOfWeights(const E& given) const noexcept -> float;
 
   [[nodiscard]] auto GetRandomWeighted(const E& given) const noexcept -> E;
@@ -245,15 +250,15 @@ inline ConditionalWeights<E>::ConditionalWeights(
 }
 
 template<class E>
-inline auto ConditionalWeights<E>::GetWeight(const E& given, const E& enumClass) const noexcept
+inline auto ConditionalWeights<E>::GetWeight(const ConditionalEvents& events) const noexcept
     -> float
 {
-  const auto iter = m_conditionalWeights.find(given);
+  const auto iter = m_conditionalWeights.find(events.previousEvent);
   if (iter == cend(m_conditionalWeights))
   {
-    return m_unconditionalWeights.GetWeight(enumClass);
+    return m_unconditionalWeights.GetWeight(events.event);
   }
-  return iter->second.GetWeight(enumClass);
+  return iter->second.GetWeight(events.event);
 }
 
 template<class E>

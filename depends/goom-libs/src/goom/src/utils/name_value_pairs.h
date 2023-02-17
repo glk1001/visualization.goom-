@@ -70,6 +70,7 @@ auto GetPair(const std::string& paramGroup, const std::string& paramName, const 
   return {paramGroup + "::" + paramName, to_string(paramValue)};
 }
 
+// NOLINTBEGIN(readability-identifier-naming)
 template<typename T>
 inline auto to_string(const T& value) -> std::string
 {
@@ -97,19 +98,20 @@ inline auto to_string(const bool& value) -> std::string
 template<>
 inline auto to_string(const Pixel& value) -> std::string
 {
-  return fmt_rgba("{}", value);
+  return FMT::Rgba("{}", value);
 }
 
 template<>
 inline auto to_string(const Point2dInt& value) -> std::string
 {
-  return fmt_pt("{}", value);
+  return FMT::Pt("{}", value);
 }
 
 template<>
 inline auto to_string(const Point2dFlt& value) -> std::string
 {
-  return fmt_pt("{:.2f}", value);
+  return FMT::Pt("{:.2f}", value);
 }
+// NOLINTEND(readability-identifier-naming)
 
 } // namespace GOOM::UTILS

@@ -161,9 +161,11 @@ private:
   bool m_oscillatingShapePath{m_goomRand->ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
   uint32_t m_numCapturedPrevShapesGroups              = 0;
   static constexpr auto PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
-  BrightnessAttenuation m_prevShapesBrightnessAttenuation{m_draw->GetDimensions().GetWidth(),
-                                                          m_draw->GetDimensions().GetHeight(),
-                                                          PREV_SHAPES_CUTOFF_BRIGHTNESS};
+  BrightnessAttenuation m_prevShapesBrightnessAttenuation{
+      {m_draw->GetDimensions().GetWidth(),
+       m_draw->GetDimensions().GetHeight(),
+       PREV_SHAPES_CUTOFF_BRIGHTNESS}
+  };
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
   bool m_prevShapesJitter                               = false;
   static constexpr auto PREV_SHAPES_JITTER_AMOUNT       = 2;

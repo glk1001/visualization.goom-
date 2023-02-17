@@ -90,7 +90,9 @@ private:
   std::vector<UTILS::TValue> m_currentThickerColorTs{};
   auto ResetColorTs() noexcept -> void;
   static constexpr auto GAMMA = 1.0F / 2.2F;
-  COLOR::ColorAdjustment m_colorAdjust{GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  COLOR::ColorAdjustment m_colorAdjust{
+      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
 };
 
 inline auto LSysColors::SetMaxNumColorSteps(const uint32_t numSteps) noexcept -> void

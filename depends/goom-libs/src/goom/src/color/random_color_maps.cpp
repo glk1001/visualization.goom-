@@ -130,32 +130,32 @@ auto RandomColorMaps::GetRandomTintedColorMapPtr() const noexcept
     -> std::shared_ptr<const IColorMap>
 {
   return GetTintedColorMapPtr(GetRandomColorMapName(),
-                              m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                              m_goomRand->GetRandInRange(m_minLightness, m_maxLightness));
+                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
+                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
 }
 
 auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapName colorMapName) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
   return GetTintedColorMapPtr(colorMapName,
-                              m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                              m_goomRand->GetRandInRange(m_minLightness, m_maxLightness));
+                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
+                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
 }
 
 auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapGroup colorMapGroup) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
   return GetTintedColorMapPtr(GetRandomColorMapName(colorMapGroup),
-                              m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                              m_goomRand->GetRandInRange(m_minLightness, m_maxLightness));
+                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
+                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
 }
 
 auto RandomColorMaps::GetRandomTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap)
     const noexcept -> std::shared_ptr<const IColorMap>
 {
   return GetTintedColorMapPtr(colorMap,
-                              m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                              m_goomRand->GetRandInRange(m_minLightness, m_maxLightness));
+                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
+                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
 }
 
 auto RandomColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup
@@ -180,15 +180,15 @@ auto RandomColorMaps::GetMaxRotationPoint() const noexcept -> float
   return m_maxRotationPoint;
 }
 
-auto RandomColorMaps::SetRotationPointLimits(const float minRotationPoint,
-                                             const float maxRotationPoint) noexcept -> void
+auto RandomColorMaps::SetRotationPointLimits(
+    const MinMaxValues<float>& minMaxRotationPoint) noexcept -> void
 {
-  Expects(minRotationPoint >= MIN_ROTATION_POINT);
-  Expects(maxRotationPoint <= MAX_ROTATION_POINT);
-  Expects(minRotationPoint <= maxRotationPoint);
+  Expects(minMaxRotationPoint.minValue >= MIN_ROTATION_POINT);
+  Expects(minMaxRotationPoint.maxValue <= MAX_ROTATION_POINT);
+  Expects(minMaxRotationPoint.minValue <= minMaxRotationPoint.maxValue);
 
-  m_minRotationPoint = minRotationPoint;
-  m_maxRotationPoint = maxRotationPoint;
+  m_minRotationPoint = minMaxRotationPoint.minValue;
+  m_maxRotationPoint = minMaxRotationPoint.maxValue;
 }
 
 auto RandomColorMaps::GetMinSaturation() const noexcept -> float
@@ -201,15 +201,15 @@ auto RandomColorMaps::GetMaxSaturation() const noexcept -> float
   return m_maxSaturation;
 }
 
-auto RandomColorMaps::SetSaturationLimits(const float minSaturation,
-                                          const float maxSaturation) noexcept -> void
+auto RandomColorMaps::SetSaturationLimits(const MinMaxValues<float>& minMaxSaturation) noexcept
+    -> void
 {
-  Expects(minSaturation >= MIN_SATURATION);
-  Expects(maxSaturation <= MAX_SATURATION);
-  Expects(minSaturation <= maxSaturation);
+  Expects(minMaxSaturation.minValue >= MIN_SATURATION);
+  Expects(minMaxSaturation.maxValue <= MAX_SATURATION);
+  Expects(minMaxSaturation.minValue <= minMaxSaturation.maxValue);
 
-  m_minSaturation = minSaturation;
-  m_maxSaturation = maxSaturation;
+  m_minSaturation = minMaxSaturation.minValue;
+  m_maxSaturation = minMaxSaturation.maxValue;
 }
 
 auto RandomColorMaps::GetMinLightness() const noexcept -> float
@@ -222,15 +222,15 @@ auto RandomColorMaps::GetMaxLightness() const noexcept -> float
   return m_maxLightness;
 }
 
-auto RandomColorMaps::SetLightnessLimits(const float minLightness,
-                                         const float maxLightness) noexcept -> void
+auto RandomColorMaps::SetLightnessLimits(const MinMaxValues<float>& minMaxLightness) noexcept
+    -> void
 {
-  Expects(minLightness >= MIN_LIGHTNESS);
-  Expects(maxLightness <= MAX_LIGHTNESS);
-  Expects(minLightness <= maxLightness);
+  Expects(minMaxLightness.minValue >= MIN_LIGHTNESS);
+  Expects(minMaxLightness.maxValue <= MAX_LIGHTNESS);
+  Expects(minMaxLightness.minValue <= minMaxLightness.maxValue);
 
-  m_minLightness = minLightness;
-  m_maxLightness = maxLightness;
+  m_minLightness = minMaxLightness.minValue;
+  m_maxLightness = minMaxLightness.maxValue;
 }
 
 WeightedColorMaps::WeightedColorMaps(const IGoomRand& goomRand,

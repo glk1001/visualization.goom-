@@ -73,12 +73,17 @@ private:
   auto SetSqDistAngleEffectMode1RandomParams() noexcept -> void;
   auto SetAtanAngleEffectMode0RandomParams() noexcept -> void;
   auto SetAtanAngleEffectMode1RandomParams() noexcept -> void;
-  auto SetWaveModeSettings(
-      AngleEffect angleEffect,
-      const UTILS::MATH::IGoomRand::NumberRange<float>& freqFactorRange,
-      const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange,
-      const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
-      const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) noexcept -> void;
+
+  struct WaveModeSettings
+  {
+    AngleEffect angleEffect{};
+    UTILS::MATH::IGoomRand::NumberRange<float> freqFactorRange{};
+    UTILS::MATH::IGoomRand::NumberRange<float> amplitudeRange{};
+    UTILS::MATH::IGoomRand::NumberRange<float> periodicFactorRange{};
+    UTILS::MATH::IGoomRand::NumberRange<float> sinCosPeriodicFactorRange{};
+  };
+  auto SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcept -> void;
+
   [[nodiscard]] auto GetZoomInAdd(WaveEffect waveEffect, float angle, float reducer) const noexcept
       -> float;
   [[nodiscard]] auto GetAngle(float sqDistFromZero, const NormalizedCoords& coords) const noexcept

@@ -3,6 +3,7 @@
 #include "color/color_data/color_map_enums.h"
 #include "color/color_maps.h"
 #include "goom_graphic.h"
+#include "goom_types.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <memory>
@@ -54,7 +55,7 @@ public:
 
   [[nodiscard]] auto GetMinRotationPoint() const noexcept -> float;
   [[nodiscard]] auto GetMaxRotationPoint() const noexcept -> float;
-  auto SetRotationPointLimits(float minRotationPoint, float maxRotationPoint) noexcept -> void;
+  auto SetRotationPointLimits(const MinMaxValues<float>& minMaxRotationPoint) noexcept -> void;
 
   [[nodiscard]] auto GetRandomRotatedColorMapPtr() const noexcept
       -> std::shared_ptr<const IColorMap>;
@@ -67,10 +68,10 @@ public:
 
   [[nodiscard]] auto GetMinSaturation() const noexcept -> float;
   [[nodiscard]] auto GetMaxSaturation() const noexcept -> float;
-  auto SetSaturationLimits(float minSaturation, float maxSaturation) noexcept -> void;
+  auto SetSaturationLimits(const MinMaxValues<float>& minMaxSaturation) noexcept -> void;
   [[nodiscard]] auto GetMaxLightness() const noexcept -> float;
   [[nodiscard]] auto GetMinLightness() const noexcept -> float;
-  auto SetLightnessLimits(float minLightness, float maxLightness) noexcept -> void;
+  auto SetLightnessLimits(const MinMaxValues<float>& minMaxLightness) noexcept -> void;
 
   [[nodiscard]] auto GetRandomTintedColorMapPtr() const noexcept
       -> std::shared_ptr<const IColorMap>;

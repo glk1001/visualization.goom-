@@ -3,6 +3,7 @@ Aerovias
 atan
 anyofallof
 bgnd
+bitcast
 bnds
 blocky
 blurrer
@@ -11,6 +12,7 @@ BGRA
 calc
 cbegin
 cend
+CODECVT
 coeff
 coeffs
 colorizer

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_config.h"
+#include "goom_types.h"
 #include "math/misc.h"
 
 #include <cstdint>
@@ -11,9 +12,9 @@ namespace GOOM::UTILS
 class StepSpeed
 {
 public:
-  StepSpeed(uint32_t minNumSteps, uint32_t maxNumSteps, float initialSpeed);
+  StepSpeed(const MinMaxValues<uint32_t>& minMaxNumSteps, float initialSpeed);
 
-  auto SetMinMaxNumSteps(uint32_t minNumSteps, uint32_t maxNumSteps) -> void;
+  auto SetMinMaxNumSteps(const MinMaxValues<uint32_t>& minMaxNumSteps) -> void;
   auto SetSpeed(float val) -> void;
 
   [[nodiscard]] auto GetCurrentNumSteps() const -> uint32_t;
@@ -29,25 +30,24 @@ private:
   auto SetCurrentNumSteps() -> void;
 };
 
-inline StepSpeed::StepSpeed(const uint32_t minNumSteps,
-                            const uint32_t maxNumSteps,
-                            const float initialSpeed)
-  : m_minNumSteps{minNumSteps}, m_maxNumSteps{maxNumSteps}, m_tMinMaxLerp{initialSpeed}
+inline StepSpeed::StepSpeed(const MinMaxValues<uint32_t>& minMaxNumSteps, const float initialSpeed)
+  : m_minNumSteps{minMaxNumSteps.minValue},
+    m_maxNumSteps{minMaxNumSteps.maxValue},
+    m_tMinMaxLerp{initialSpeed}
 {
-  Expects(0 < minNumSteps);
-  Expects(minNumSteps < maxNumSteps);
+  Expects(0 < minMaxNumSteps.minValue);
+  Expects(minMaxNumSteps.minValue < minMaxNumSteps.maxValue);
   Expects(0.0F <= initialSpeed);
 
   SetCurrentNumSteps();
 }
 
-inline auto StepSpeed::SetMinMaxNumSteps(const uint32_t minNumSteps, const uint32_t maxNumSteps)
-    -> void
+inline auto StepSpeed::SetMinMaxNumSteps(const MinMaxValues<uint32_t>& minMaxNumSteps) -> void
 {
-  Expects(0 < minNumSteps);
-  Expects(minNumSteps < maxNumSteps);
-  m_minNumSteps = minNumSteps;
-  m_maxNumSteps = maxNumSteps;
+  Expects(0 < minMaxNumSteps.minValue);
+  Expects(minMaxNumSteps.minValue < minMaxNumSteps.maxValue);
+  m_minNumSteps = minMaxNumSteps.minValue;
+  m_maxNumSteps = minMaxNumSteps.maxValue;
   SetCurrentNumSteps();
 }
 

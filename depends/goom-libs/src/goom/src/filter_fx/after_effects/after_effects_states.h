@@ -29,21 +29,8 @@ enum class HypercosOverlay
 class AfterEffectsStates
 {
 public:
-  using AfterEffectsActiveMap      = UTILS::EnumMap<AfterEffectsTypes, bool>;
   using AfterEffectsOffTimeMap     = UTILS::EnumMap<AfterEffectsTypes, uint32_t>;
   using AfterEffectsProbabilityMap = UTILS::EnumMap<AfterEffectsTypes, float>;
-
-  struct AfterEffectsSettings
-  {
-    HypercosOverlay hypercosOverlay{};
-    AfterEffectsActiveMap active{};
-    RotationAdjustments rotationAdjustments;
-  };
-  struct AfterEffectsProbabilities
-  {
-    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
-    AfterEffectsProbabilityMap probabilities;
-  };
 
   AfterEffectsStates(const UTILS::MATH::IGoomRand& goomRand,
                      const AfterEffectsProbabilityMap& repeatProbabilities,
@@ -58,9 +45,23 @@ public:
 
   auto SetDefaults() -> void;
   auto UpdateTimers() -> void;
+  auto CheckForPendingOffTimers() -> void;
+
+  struct AfterEffectsProbabilities
+  {
+    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    AfterEffectsProbabilityMap probabilities;
+  };
   auto ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
   auto ResetStandardStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
-  auto CheckForPendingOffTimers() -> void;
+
+  using AfterEffectsActiveMap = UTILS::EnumMap<AfterEffectsTypes, bool>;
+  struct AfterEffectsSettings
+  {
+    HypercosOverlay hypercosOverlay{};
+    AfterEffectsActiveMap active{};
+    RotationAdjustments rotationAdjustments;
+  };
   auto UpdateFilterSettingsFromStates(AfterEffectsSettings& afterEffectsSettings) const -> void;
 
 private:

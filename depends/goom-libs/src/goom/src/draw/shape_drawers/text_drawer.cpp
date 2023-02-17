@@ -377,14 +377,19 @@ auto TextDrawer::Prepare() -> void
   m_pimpl->Prepare();
 }
 
-constexpr auto TextDrawer::Width(const Rect& rect) noexcept -> int32_t
+constexpr auto TextDrawer::Width(const Rect& rect) noexcept -> uint32_t
 {
-  return (rect.xMax - rect.xMin) + 1;
+  return static_cast<uint32_t>((rect.xMax - rect.xMin) + 1);
 }
 
-constexpr auto TextDrawer::Height(const Rect& rect) noexcept -> int32_t
+constexpr auto TextDrawer::IntHeight(const Rect& rect) noexcept -> int32_t
 {
   return (rect.yMax - rect.yMin) + 1;
+}
+
+constexpr auto TextDrawer::Height(const Rect& rect) noexcept -> uint32_t
+{
+  return static_cast<uint32_t>(IntHeight(rect));
 }
 
 auto TextDrawer::GetPreparedTextBoundingRect() const noexcept -> TextDrawer::Rect
@@ -741,8 +746,8 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
       continue;
     }
 
-    const auto pen       = Point2dInt{xf0 + width, Height(rect) - (span.y - rect.yMin)};
-    const auto color     = getColor(textIndexOfChar, pen, Width(rect), Height(rect));
+    const auto pen       = Point2dInt{xf0 + width, IntHeight(rect) - (span.y - rect.yMin)};
+    const auto color     = getColor(textIndexOfChar, pen, {Width(rect), Height(rect)});
     const auto srceColor = Pixel{
         {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
     };

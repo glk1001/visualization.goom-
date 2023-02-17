@@ -71,7 +71,9 @@ private:
   StarDrawer m_starDrawer;
 
   static constexpr auto GAMMA = 1.0F / 2.0F;
-  ColorAdjustment m_colorAdjust{GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR};
+  ColorAdjustment m_colorAdjust{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
   [[nodiscard]] auto GetColorCorrection(float brightness, const Pixel& color) const noexcept
       -> Pixel;
 

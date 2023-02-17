@@ -43,9 +43,14 @@ class BrightnessAttenuation
 {
 public:
   static constexpr float DIST_SQ_CUTOFF = 0.10F;
-  BrightnessAttenuation(uint32_t screenWidth,
-                        uint32_t screenHeight,
-                        float cutoffBrightness) noexcept;
+  struct Properties
+  {
+    uint32_t screenWidth{};
+    uint32_t screenHeight{};
+    float cutoffBrightness{};
+  };
+
+  explicit BrightnessAttenuation(const Properties& properties) noexcept;
   [[nodiscard]] auto GetPositionBrightness(const Point2dInt& pos,
                                            float minBrightnessPastCutoff) const noexcept -> float;
 

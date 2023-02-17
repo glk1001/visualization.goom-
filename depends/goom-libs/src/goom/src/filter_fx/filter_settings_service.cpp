@@ -116,7 +116,7 @@ constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
 constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
 
 // TODO(glk) - When we get to use C++20, replace the below 'inline consts' with 'constexpr'.
-
+// NOLINTBEGIN(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 inline const auto CRYSTAL_BALL_MODE0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
     {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
@@ -186,6 +186,7 @@ inline const auto WAVE_ATAN_MODE1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
     {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, 0.0F},
     {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
 };
+// NOLINTEND(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 
 constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {ZoomFilterMode::AMULET_MODE, "Amulet"},

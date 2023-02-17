@@ -34,46 +34,39 @@ using FILTER_FX::FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
 using UTILS::MATH::GoomRand;
 
-static constexpr auto WIDTH                       = 120;
-static constexpr auto HEIGHT                      = 70;
-static constexpr auto* RESOURCES_DIRECTORY        = "";
-static const auto GOOM_RAND                       = GoomRand{};
-static constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
+namespace
+{
+
+constexpr auto WIDTH                       = 120;
+constexpr auto HEIGHT                      = 70;
+constexpr auto* RESOURCES_DIRECTORY        = "";
+const auto GOOM_RAND                       = GoomRand{};
+constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT},
     MIN_SCREEN_COORD_ABS_VAL
 };
 
-namespace
+[[nodiscard]] constexpr auto GetRelativeSpeed(const uint32_t intSpeed, const bool reverseSpeed)
+    -> float
 {
-[[nodiscard]] auto GetRelativeSpeed(const uint32_t intSpeed, const bool reverseSpeed) -> float
-{
-  static constexpr auto MAX_INT_SPEED = static_cast<float>(Vitesse::MAXIMUM_SPEED);
-  const auto absRelativeSpeed         = static_cast<float>(intSpeed) / MAX_INT_SPEED;
+  constexpr auto MAX_INT_SPEED = static_cast<float>(Vitesse::MAXIMUM_SPEED);
+  const auto absRelativeSpeed  = static_cast<float>(intSpeed) / MAX_INT_SPEED;
   return reverseSpeed ? -absRelativeSpeed : absRelativeSpeed;
 }
 
-[[nodiscard]] auto GetZoomInCoeff(const float baseZoomInCoeffFactor, const float relativeSpeed)
-    -> float
+[[nodiscard]] constexpr auto GetZoomInCoeff(const float relativeSpeed) -> float
 {
-  return baseZoomInCoeffFactor * (1.0F + relativeSpeed);
+  constexpr auto BASE_ZOOM_IN_COEFF_FACTOR = ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
+  return BASE_ZOOM_IN_COEFF_FACTOR * (1.0F + relativeSpeed);
 }
 
-} // namespace
-
-TEST_CASE("FilterZoomVector")
+[[nodiscard]] auto GetZoomFilterEffectsSettings() -> ZoomFilterEffectsSettings
 {
-  static constexpr auto TEST_X = 10;
-  static constexpr auto TEST_Y = 50;
-  static_assert((0 <= TEST_X) && (TEST_X < WIDTH), "Invalid X");
-  static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
-
-  auto filterZoomVector =
-      FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, GOOM_RAND, NORMALIZED_COORDS_CONVERTER};
-
   static constexpr auto DEFAULT_ZOOM_MID_X                        = 16;
   static constexpr auto DEFAULT_ZOOM_MID_Y                        = 1;
   static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                 = 2.01F;
   static constexpr auto UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
+
   static constexpr auto ALL_OFF_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
       {AfterEffectsTypes::BLOCK_WAVY, false},
       {AfterEffectsTypes::HYPERCOS, false},
@@ -85,7 +78,7 @@ TEST_CASE("FilterZoomVector")
       {AfterEffectsTypes::XY_LERP_EFFECT, false},
   }}};
 
-  auto filterSettings = ZoomFilterEffectsSettings{
+  return ZoomFilterEffectsSettings{
       Vitesse{},
       DEFAULT_MAX_ZOOM_IN_COEFF,
       UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
@@ -96,9 +89,45 @@ TEST_CASE("FilterZoomVector")
               ALL_OFF_AFTER_EFFECTS_STATES, RotationAdjustments{},
               },
   };
+}
 
-  static constexpr auto BASE_ZOOM_IN_COEFF_FACTOR =
-      ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
+auto TestZoomInPoint(FilterZoomVector& filterZoomVector,
+                     ZoomFilterEffectsSettings& filterSettings,
+                     const bool reverseSpeed,
+                     const uint32_t speedInc)
+{
+  static constexpr auto COORDS = NormalizedCoords{1.0F, 1.0F};
+
+  UNSCOPED_INFO("speedInc = " << speedInc);
+
+  const auto intSpeed      = Vitesse::STOP_SPEED + speedInc;
+  const auto relativeSpeed = GetRelativeSpeed(intSpeed, reverseSpeed);
+  UNSCOPED_INFO("relativeSpeed = " << relativeSpeed);
+  REQUIRE(-1.0F <= relativeSpeed);
+  REQUIRE(relativeSpeed <= 1.0F);
+  filterSettings.vitesse.SetVitesse(intSpeed);
+  REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(relativeSpeed));
+
+  const auto baseZoomInCoeff     = GetZoomInCoeff(relativeSpeed);
+  const auto zoomInFactor        = 1.0F - baseZoomInCoeff;
+  const auto expectedZoomInPoint = NormalizedCoords{zoomInFactor, zoomInFactor};
+  UNSCOPED_INFO("baseZoomInCoeff = " << baseZoomInCoeff);
+  UNSCOPED_INFO("zoomInFactor = " << zoomInFactor);
+
+  filterZoomVector.SetFilterSettings(filterSettings);
+  const auto zoomInPoint = filterZoomVector.GetZoomInPoint(COORDS, COORDS);
+  REQUIRE(zoomInPoint.GetX() == Approx(expectedZoomInPoint.GetX()));
+  REQUIRE(zoomInPoint.GetY() == Approx(expectedZoomInPoint.GetY()));
+}
+
+} // namespace
+
+TEST_CASE("FilterZoomVector")
+{
+  auto filterZoomVector =
+      FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, GOOM_RAND, NORMALIZED_COORDS_CONVERTER};
+
+  auto filterSettings = GetZoomFilterEffectsSettings();
 
   SECTION("Zero Speed")
   {
@@ -106,7 +135,7 @@ TEST_CASE("FilterZoomVector")
 
     filterSettings.vitesse.SetVitesse(Vitesse::STOP_SPEED);
     REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(0.0F));
-    const auto baseZoomInCoeff     = GetZoomInCoeff(BASE_ZOOM_IN_COEFF_FACTOR, 0.0F);
+    const auto baseZoomInCoeff     = GetZoomInCoeff(0.0F);
     const auto zoomInFactor        = 1.0F - baseZoomInCoeff;
     const auto expectedZoomInPoint = zoomInFactor * coords;
 
@@ -119,35 +148,16 @@ TEST_CASE("FilterZoomVector")
 
   SECTION("Non-zero Speed")
   {
-    const auto coords = NormalizedCoords{1.0F, 1.0F};
+    static constexpr auto NUM_SPEEDS = 2U;
 
-    for (auto i = 0; i < 2; ++i)
+    for (auto i = 0U; i < NUM_SPEEDS; ++i)
     {
       const auto reverseSpeed = 1 == i;
       filterSettings.vitesse.SetReverseVitesse(reverseSpeed);
 
       for (auto speedInc = 0U; speedInc <= Vitesse::MAXIMUM_SPEED; ++speedInc)
       {
-        UNSCOPED_INFO("speedInc = " << speedInc);
-
-        const auto intSpeed      = Vitesse::STOP_SPEED + speedInc;
-        const auto relativeSpeed = GetRelativeSpeed(intSpeed, reverseSpeed);
-        UNSCOPED_INFO("relativeSpeed = " << relativeSpeed);
-        REQUIRE(-1.0F <= relativeSpeed);
-        REQUIRE(relativeSpeed <= 1.0F);
-        filterSettings.vitesse.SetVitesse(intSpeed);
-        REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(relativeSpeed));
-
-        const auto baseZoomInCoeff     = GetZoomInCoeff(BASE_ZOOM_IN_COEFF_FACTOR, relativeSpeed);
-        const auto zoomInFactor        = 1.0F - baseZoomInCoeff;
-        const auto expectedZoomInPoint = NormalizedCoords{zoomInFactor, zoomInFactor};
-        UNSCOPED_INFO("baseZoomInCoeff = " << baseZoomInCoeff);
-        UNSCOPED_INFO("zoomInFactor = " << zoomInFactor);
-
-        filterZoomVector.SetFilterSettings(filterSettings);
-        const auto zoomInPoint = filterZoomVector.GetZoomInPoint(coords, coords);
-        REQUIRE(zoomInPoint.GetX() == Approx(expectedZoomInPoint.GetX()));
-        REQUIRE(zoomInPoint.GetY() == Approx(expectedZoomInPoint.GetY()));
+        TestZoomInPoint(filterZoomVector, filterSettings, reverseSpeed, speedInc);
       }
     }
   }

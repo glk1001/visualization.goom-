@@ -13,6 +13,7 @@ using UTILS::NUM;
 using UTILS::RuntimeEnumMap;
 using UTILS::StringToEnum;
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("EnumMap")
 {
   enum class EnumClass
@@ -67,6 +68,7 @@ TEST_CASE("EnumMap")
       {EnumClass::ENUM2, {3, 4}},
   }}};
 
+  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
   static_assert(CONST_ENUM_MAP.size() == NUM<EnumClass>);
   static_assert(CONST_ENUM_MAP[EnumClass::ENUM1].i1 == 1);
   static_assert(CONST_ENUM_MAP[EnumClass::ENUM1].i2 == 2);
@@ -82,7 +84,9 @@ TEST_CASE("EnumMap")
   REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM2].i2 == 4);
   REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM3].i1 == 5);
   REQUIRE(nonConstRuntimeEnumMap[EnumClass::ENUM3].i2 == 6);
+  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 TEST_CASE("ForRange")
 {
@@ -141,6 +145,7 @@ TEST_CASE("EnumMapValidation")
 }
 #endif
 
+// NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("EnumToString/StringToEnum")
 {
 #ifdef NO_MAGIC_ENUM_AVAILABLE
@@ -164,5 +169,6 @@ TEST_CASE("EnumToString/StringToEnum")
   REQUIRE(EnumToString(EnumClass::ENUM3) == "ENUM3");
   REQUIRE(StringToEnum<EnumClass>("ENUM3") == EnumClass::ENUM3);
 }
+// NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace GOOM::UNIT_TESTS

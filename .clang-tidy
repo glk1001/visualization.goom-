@@ -1,10 +1,11 @@
 ---
-# Turn these off:
-#
-#  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-#     Doesn't work with logging.h. Not sure why.
-#
 
+# Disabled:
+#   '-hicpp-signed-bitwise' not correct: https://stackoverflow.com/questions/50399090/use-of-a-
+#                                                signed-integer-operand-with-a-binary-bitwise-
+#                                                operator-when-using-un/58845898#58845898
+#  '-llvm-header-guard'  doesn't work with '#pragma once'
+#  -hicpp-no-array-decay ????
 Checks: >
   -*,
   abseil-*,
@@ -26,9 +27,8 @@ Checks: >
   readability-*,
   zircon-*,
   -llvm-header-guard,
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -hicpp-no-array-decay,
-  -cert-err58-cpp, # Can activate this when we can use 'constexpr std::vector'
+  -hicpp-signed-bitwise
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: '*'
@@ -37,6 +37,7 @@ AnalyzeTemporaryDtors: false
 FormatStyle: none
 
 CheckOptions:
+  - { key: readability-inconsistent-declaration-parameter-name.Strict,      value: 'true' }
   - { key: readability-identifier-naming.AbstractClassCase,                 value: CamelCase }
   - { key: readability-identifier-naming.AbstractClassPrefix,               value: 'I' }
   - { key: readability-identifier-naming.ClassCase,                         value: CamelCase }

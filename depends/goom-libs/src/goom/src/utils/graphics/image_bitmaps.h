@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "goom_types.h"
 
 #include <cstdint>
 
@@ -38,7 +39,7 @@ private:
   std::string m_filename{};
   [[nodiscard]] auto GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>;
   auto SetPixel(size_t x, size_t y, const RGB& pixel) noexcept -> void;
-  auto Resize(size_t width, size_t height) noexcept -> void;
+  auto Resize(const Dimensions& dimensions) noexcept -> void;
 };
 
 inline ImageBitmap::ImageBitmap(const std::string& imageFilename)

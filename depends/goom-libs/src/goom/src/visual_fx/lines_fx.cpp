@@ -171,17 +171,19 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             fxHelper.GetGoomRand(),
             smallBitmaps,
             {
-                LineType::H_LINE,
-                static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
-                BLACK_LINE_COLOR,
-                1.0F
-            },
-            {
-                LineType::CIRCLE,
-                INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
+                {
+                    LineType::H_LINE,
                     static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
-                GREEN_LINE_COLOR,
-                1.0F
+                    BLACK_LINE_COLOR,
+                    1.0F
+                },
+                {
+                    LineType::CIRCLE,
+                    INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
+                        static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
+                    GREEN_LINE_COLOR,
+                    1.0F
+                }
             }
         },
         LineMorph{
@@ -190,17 +192,19 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             fxHelper.GetGoomRand(),
             smallBitmaps,
             {
-                LineType::H_LINE,
-                0.0F,
-                BLACK_LINE_COLOR,
-                1.0F
-            },
-            {
-                LineType::CIRCLE,
-                INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-                    static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
-                RED_LINE_COLOR,
-                1.0F
+                {
+                    LineType::H_LINE,
+                    0.0F,
+                    BLACK_LINE_COLOR,
+                    1.0F
+                },
+                {
+                    LineType::CIRCLE,
+                    INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
+                        static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
+                    RED_LINE_COLOR,
+                    1.0F
+                }
             }
         }
     },
