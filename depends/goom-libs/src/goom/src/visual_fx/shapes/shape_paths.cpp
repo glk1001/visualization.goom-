@@ -33,13 +33,16 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
   const auto shapeColors    = GetCurrentShapeColors();
   const auto& innerColorMap = m_colorMapsManager->GetColorMap(m_colorInfo.innerColorMapId);
 
-  auto innerColorT =
-      TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius - 1)};
+  auto innerColorT = TValue{
+      {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius - 1)}
+  };
 
+  // clang-format off
   static constexpr auto MIN_BRIGHTNESS = 0.5F;
   static constexpr auto MAX_BRIGHTNESS = 4.0F;
-  auto brightnessT =
-      TValue{TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)};
+  auto brightnessT = TValue{
+      {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)}};
+  // clang-format on
 
   m_colorAdjust.SetChromaFactor(m_colorInfo.chromaFactor);
   const auto innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);

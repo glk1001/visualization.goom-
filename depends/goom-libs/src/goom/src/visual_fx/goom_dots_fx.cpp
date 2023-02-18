@@ -228,11 +228,16 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   static constexpr auto LISSAJOUS_STEP_SIZE    = 0.01F;
   static constexpr auto EPICYCLOID_STEP_SIZE   = 0.001F;
 
-  auto hypotrochoidPositionT1 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
-  auto hypotrochoidPositionT2 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
-  auto hypotrochoidPositionT3 = std::make_unique<TValue>(STEP_TYPE, HYPOTROCHOID_STEP_SIZE);
-  auto lissajousPositionT     = std::make_unique<TValue>(STEP_TYPE, LISSAJOUS_STEP_SIZE);
-  auto epicycloidPositionT    = std::make_unique<TValue>(STEP_TYPE, EPICYCLOID_STEP_SIZE);
+  auto hypotrochoidPositionT1 =
+      std::make_unique<TValue>(TValue::StepSizeProperties{HYPOTROCHOID_STEP_SIZE, STEP_TYPE});
+  auto hypotrochoidPositionT2 =
+      std::make_unique<TValue>(TValue::StepSizeProperties{HYPOTROCHOID_STEP_SIZE, STEP_TYPE});
+  auto hypotrochoidPositionT3 =
+      std::make_unique<TValue>(TValue::StepSizeProperties{HYPOTROCHOID_STEP_SIZE, STEP_TYPE});
+  auto lissajousPositionT =
+      std::make_unique<TValue>(TValue::StepSizeProperties{LISSAJOUS_STEP_SIZE, STEP_TYPE});
+  auto epicycloidPositionT =
+      std::make_unique<TValue>(TValue::StepSizeProperties{EPICYCLOID_STEP_SIZE, STEP_TYPE});
 
   const auto centrePos                       = GetVec2dFlt(ToPoint2dFlt(centre));
   static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};

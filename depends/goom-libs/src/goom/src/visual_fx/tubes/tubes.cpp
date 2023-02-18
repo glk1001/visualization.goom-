@@ -188,8 +188,8 @@ private:
   static constexpr float T_AT_CENTRE           = 0.5F;
   int32_t m_maxJitterOffset                    = 0;
   propagate_const<std::unique_ptr<TubeParametricPath>> m_centrePath{
-      std::make_unique<TubeParametricPath>(
-          std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP))};
+      std::make_unique<TubeParametricPath>(std::make_unique<TValue>(
+          TValue::StepSizeProperties{PATH_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}))};
   TransformCentreFunc m_getTransformedCentre{};
   std::vector<Shape> m_shapes;
   [[nodiscard]] static auto GetInitialShapes(const TubeData& data,
@@ -355,24 +355,34 @@ private:
   std::vector<ShapeColorMaps> m_shapeColorMaps;
   std::vector<ShapeColors> m_oldShapeColors;
   static constexpr uint32_t NUM_SHAPE_COLOR_STEPS = 1000;
-  TValue m_shapeColorsT{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_SHAPE_COLOR_STEPS};
+  TValue m_shapeColorsT{
+      {TValue::StepType::CONTINUOUS_REPEATABLE, NUM_SHAPE_COLOR_STEPS}
+  };
 
   std::vector<ShapeColorMaps> m_circleColorMaps;
   std::vector<ShapeColors> m_oldCircleColors;
-  TValue m_circleColorsT{TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP};
+  TValue m_circleColorsT{
+      {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP}
+  };
 
   const IColorMap* m_outerCircleMainColorMap;
   const IColorMap* m_outerCircleLowColorMap;
   static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
-  TValue m_outerCircleT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS};
+  TValue m_outerCircleT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS}
+  };
 
   ColorMapMixMode m_colorMapMixMode             = ColorMapMixMode::CIRCLES_ONLY;
   static constexpr uint32_t NUM_MIX_COLOR_STEPS = 1000;
-  TValue m_mixT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MIX_COLOR_STEPS};
+  TValue m_mixT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MIX_COLOR_STEPS}
+  };
   Weights<ColorMapMixMode> m_colorMapMixModes;
 
   static constexpr uint32_t NUM_STEPS_FROM_OLD = 50;
-  TValue m_oldT{TValue::StepType::SINGLE_CYCLE, NUM_STEPS_FROM_OLD};
+  TValue m_oldT{
+      {TValue::StepType::SINGLE_CYCLE, NUM_STEPS_FROM_OLD}
+  };
 
   auto InitColorMaps() noexcept -> void;
   auto ResetColorMixMode() noexcept -> void;
@@ -479,7 +489,8 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
         {       1.0F, SHAPE_T_DELAY_TIME}
     };
     auto shapeT = std::make_unique<TValue>(
-        TValue::StepType::CONTINUOUS_REVERSIBLE, PATH_STEP, s_DELAY_POINTS);
+        TValue::StepSizeProperties{PATH_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE},
+        s_DELAY_POINTS);
     shape.path = std::make_unique<OscillatingPath>(
         std::move(shapeT), StartAndEndPos{ToPoint2dFlt(fromPos), ToPoint2dFlt(toPos)}, pathParams);
 

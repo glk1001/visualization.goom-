@@ -173,13 +173,17 @@ private:
 
   std::vector<Tube> m_tubes{};
   static constexpr auto ALL_JOIN_CENTRE_STEP = 0.001F;
-  TValue m_allJoinCentreT{TValue::StepType::CONTINUOUS_REVERSIBLE, ALL_JOIN_CENTRE_STEP};
+  TValue m_allJoinCentreT{
+      {ALL_JOIN_CENTRE_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}
+  };
   Point2dInt m_screenMidpoint = GetPoint2dInt(U_HALF * m_draw->GetDimensions().GetWidth(),
                                               U_HALF * m_draw->GetDimensions().GetHeight());
   Point2dInt m_targetMiddlePos{0, 0};
   Point2dInt m_previousMiddlePos{0, 0};
   static constexpr auto MIDDLE_POS_NUM_STEPS = 100U;
-  TValue m_middlePosT{TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE};
+  TValue m_middlePosT{
+      {TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE}
+  };
   [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
   Timer m_allStayInCentreTimer{1};
   Timer m_allStayAwayFromCentreTimer{MAX_STAY_AWAY_FROM_CENTRE_TIME};
@@ -188,7 +192,9 @@ private:
       -> Vec2dInt;
 
   static constexpr auto JITTER_STEP = 0.1F;
-  TValue m_shapeJitterT{TValue::StepType::CONTINUOUS_REVERSIBLE, JITTER_STEP};
+  TValue m_shapeJitterT{
+      {JITTER_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}
+  };
 
   Timer m_colorMapTimer{m_goomRand->GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)};
   Timer m_changedSpeedTimer{1};

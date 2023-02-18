@@ -33,7 +33,9 @@ private:
   static constexpr uint32_t MIN_NUM_LERP_ON_STEPS     = 50U;
   static constexpr uint32_t MAX_NUM_LERP_ON_STEPS     = 500U;
   static constexpr uint32_t DEFAULT_NUM_LERP_ON_STEPS = MIN_NUM_LERP_ON_STEPS;
-  UTILS::TValue m_lerpT{UTILS::TValue::StepType::SINGLE_CYCLE, DEFAULT_NUM_LERP_ON_STEPS};
+  UTILS::TValue m_lerpT{
+      {UTILS::TValue::StepType::SINGLE_CYCLE, DEFAULT_NUM_LERP_ON_STEPS}
+  };
   bool m_fastLerpChange                                = false;
   static constexpr uint32_t MIN_FAST_NUM_LERP_ON_STEPS = 25U;
   static constexpr uint32_t MAX_FAST_NUM_LERP_ON_STEPS = 100U;

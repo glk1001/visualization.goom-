@@ -37,7 +37,9 @@ auto LSysGeometry::GetTransformAdjustArray() const noexcept -> std::vector<Trans
 {
   auto transformAdjustArray = std::vector<TransformAdjust>(m_numLSysCopies);
 
-  auto t = TValue{TValue::StepType::SINGLE_CYCLE, m_numLSysCopies};
+  auto t = TValue{
+      {TValue::StepType::SINGLE_CYCLE, m_numLSysCopies}
+  };
   for (auto& transformAdjust : transformAdjustArray)
   {
     static constexpr auto MIN_X_SCALE = 0.8F;

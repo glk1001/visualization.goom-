@@ -92,7 +92,9 @@ private:
   DRAW::IGoomDraw::BlendPixelFunc m_previousBlendPixelFunc = GetColorAddBlendPixelFunc();
   static constexpr auto MAX_BLEND_STEPS                    = 500U;
   static constexpr auto MIN_BLEND_STEPS                    = 50U;
-  UTILS::TValue m_blendT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_BLEND_STEPS};
+  UTILS::TValue m_blendT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_BLEND_STEPS}
+  };
   [[nodiscard]] auto GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] static auto GetColorAddBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] auto GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;

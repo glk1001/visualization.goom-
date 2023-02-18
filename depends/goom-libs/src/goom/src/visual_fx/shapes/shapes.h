@@ -86,8 +86,9 @@ private:
   COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId{
       m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;
-  UTILS::TValue m_meetingPointColorsT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                      NUM_MEETING_POINT_COLOR_STEPS};
+  UTILS::TValue m_meetingPointColorsT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}
+  };
   [[nodiscard]] auto GetCurrentMeetingPointColors() const noexcept -> ShapePath::ShapePathColors;
   [[nodiscard]] auto GetBrightnessAttenuation() const noexcept -> float;
 

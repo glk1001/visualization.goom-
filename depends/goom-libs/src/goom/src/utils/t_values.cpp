@@ -9,50 +9,49 @@
 namespace GOOM::UTILS
 {
 
-TValue::TValue(const TValue::StepType stepType,
-               const float stepSize,
-               const float startingT) noexcept
-  : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}
+TValue::TValue(const StepSizeProperties& stepSizeProperties) noexcept
+  : m_stepType{stepSizeProperties.stepType},
+    m_stepSize{stepSizeProperties.stepSize},
+    m_t{stepSizeProperties.startingT}
 {
-  Expects(stepSize > 0.0F);
-  Expects(startingT >= MIN_T_VALUE);
-  Expects(startingT <= MAX_T_VALUE);
+  Expects(stepSizeProperties.stepSize > 0.0F);
+  Expects(stepSizeProperties.startingT >= MIN_T_VALUE);
+  Expects(stepSizeProperties.startingT <= MAX_T_VALUE);
 }
 
-TValue::TValue(const TValue::StepType stepType,
-               const float stepSize,
-               const std::vector<DelayPoint>& delayPoints,
-               const float startingT) noexcept
-  : m_stepType{stepType}, m_stepSize{stepSize}, m_t{startingT}, m_delayPoints{delayPoints}
+TValue::TValue(const StepSizeProperties& stepSizeProperties,
+               const std::vector<DelayPoint>& delayPoints) noexcept
+  : m_stepType{stepSizeProperties.stepType},
+    m_stepSize{stepSizeProperties.stepSize},
+    m_t{stepSizeProperties.startingT},
+    m_delayPoints{delayPoints}
 {
-  Expects(stepSize > 0.0F);
-  Expects(startingT >= MIN_T_VALUE);
-  Expects(startingT <= MAX_T_VALUE);
+  Expects(stepSizeProperties.stepSize > 0.0F);
+  Expects(stepSizeProperties.startingT >= MIN_T_VALUE);
+  Expects(stepSizeProperties.startingT <= MAX_T_VALUE);
   ValidateDelayPoints();
 }
 
-TValue::TValue(const TValue::StepType stepType,
-               const uint32_t numSteps,
-               const float startingT) noexcept
-  : m_stepType{stepType}, m_stepSize{1.0F / static_cast<float>(numSteps)}, m_t{startingT}
+TValue::TValue(const NumStepsProperties& numStepsProperties) noexcept
+  : m_stepType{numStepsProperties.stepType},
+    m_stepSize{1.0F / static_cast<float>(numStepsProperties.numSteps)},
+    m_t{numStepsProperties.startingT}
 {
-  Expects(numSteps > 0U);
-  Expects(startingT >= MIN_T_VALUE);
-  Expects(startingT <= MAX_T_VALUE);
+  Expects(numStepsProperties.numSteps > 0U);
+  Expects(numStepsProperties.startingT >= MIN_T_VALUE);
+  Expects(numStepsProperties.startingT <= MAX_T_VALUE);
 }
 
-TValue::TValue(const TValue::StepType stepType,
-               const uint32_t numSteps,
-               const std::vector<DelayPoint>& delayPoints,
-               const float startingT) noexcept
-  : m_stepType{stepType},
-    m_stepSize{1.0F / static_cast<float>(numSteps)},
-    m_t{startingT},
+TValue::TValue(const NumStepsProperties& numStepsProperties,
+               const std::vector<DelayPoint>& delayPoints) noexcept
+  : m_stepType{numStepsProperties.stepType},
+    m_stepSize{1.0F / static_cast<float>(numStepsProperties.numSteps)},
+    m_t{numStepsProperties.startingT},
     m_delayPoints{delayPoints}
 {
-  Expects(numSteps > 0U);
-  Expects(startingT >= MIN_T_VALUE);
-  Expects(startingT <= MAX_T_VALUE);
+  Expects(numStepsProperties.numSteps > 0U);
+  Expects(numStepsProperties.startingT >= MIN_T_VALUE);
+  Expects(numStepsProperties.startingT <= MAX_T_VALUE);
   ValidateDelayPoints();
 }
 
@@ -115,7 +114,7 @@ inline auto TValue::ContinuousRepeatableIncrement() noexcept -> void
 
   if (Boundaries::END == m_currentPosition)
   {
-    HandleBoundary(MIN_T_VALUE, POSITIVE_SIGN);
+    HandleBoundary(MIN_T_VALUE, FloatSign::POSITIVE);
     m_currentPosition = Boundaries::START;
   }
   else
@@ -163,12 +162,12 @@ inline auto TValue::CheckContinuousReversibleBoundary() noexcept -> void
 {
   if (Boundaries::END == m_currentPosition)
   {
-    HandleBoundary(MAX_T_VALUE - m_stepSize, NEGATIVE_SIGN);
+    HandleBoundary(MAX_T_VALUE - m_stepSize, FloatSign::NEGATIVE);
     m_currentPosition = Boundaries::INSIDE;
   }
   else if (Boundaries::START == m_currentPosition)
   {
-    HandleBoundary(MIN_T_VALUE + m_stepSize, POSITIVE_SIGN);
+    HandleBoundary(MIN_T_VALUE + m_stepSize, FloatSign::POSITIVE);
     m_currentPosition = Boundaries::INSIDE;
   }
   else if (m_t >= MAX_T_VALUE)
@@ -256,19 +255,24 @@ auto TValue::SetNumSteps(const uint32_t val) noexcept -> void
 }
 
 
-inline auto TValue::HandleBoundary(const float continueValue, const float stepSign) noexcept -> void
+inline auto TValue::HandleBoundary(const float continueValue, const FloatSign floatSign) noexcept
+    -> void
 {
   m_t = continueValue;
 
-  if (stepSign < 0.0F)
+  if (FloatSign::NEGATIVE == floatSign)
   {
     m_currentStep = -m_stepSize;
     Ensures(m_currentStep < 0.0F);
   }
-  else
+  else if (FloatSign::POSITIVE == floatSign)
   {
     m_currentStep = +m_stepSize;
     Ensures(m_currentStep > 0.0F);
+  }
+  else
+  {
+    FailFast();
   }
 
   m_currentDelayPoints = m_delayPoints;

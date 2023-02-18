@@ -132,8 +132,9 @@ private:
   std::vector<const COLOR::IColorMap*> m_rotatingLowColorMaps{};
   std::vector<uint32_t> m_rotatingDotNums{};
   static constexpr uint32_t NUM_ROTATING_COLOR_STEPS = 100U;
-  UTILS::TValue m_rotatingColorsT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                  NUM_ROTATING_COLOR_STEPS};
+  UTILS::TValue m_rotatingColorsT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_ROTATING_COLOR_STEPS}
+  };
   auto UpdateRotatingColorMaps() noexcept -> void;
 
   enum class GridColorRange

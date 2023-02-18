@@ -185,8 +185,10 @@ auto Similitudes::IterateSimis() -> void
   RandomizeSimiGroup(m_extraSimiGroups[3]);
 }
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
 {
+// NOLINTBEGIN(readability-identifier-naming)
 #if __cplusplus <= 201703L
   static const auto c_factor             = 0.8F * Get_1_minus_exp_neg_S(4.0);
   static const auto r1_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(3.0);
@@ -200,6 +202,7 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
   static const constinit auto A1_factor            = 360.0F * Get_1_minus_exp_neg_S(4.0);
   static const constinit auto A2_factor            = A1_factor;
 #endif
+  // NOLINTEND(readability-identifier-naming)
 
   const auto r1Factor = m_centreAttributes.dr1Mean * r1_1_minus_exp_neg_S;
   const auto r2Factor = m_centreAttributes.dr2Mean * r2_1_minus_exp_neg_S;
@@ -234,6 +237,7 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
     simi.m_currentPointBitmap = GetSimiBitmap(useBitmaps);
   }
 }
+// NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 
 auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitmap*
 {
@@ -255,11 +259,13 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitma
   return &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE, res);
 }
 
+// NOLINTBEGIN(readability-identifier-length,readability-identifier-naming)
 inline auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
 {
   return 1.0F - std::exp(-S);
 }
 
+// NOLINTBEGIN(bugprone-easily-swappable-parameters)
 inline auto Similitudes::GaussRand(const Dbl c,
                                    const Dbl S,
                                    const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
@@ -278,6 +284,8 @@ inline auto Similitudes::HalfGaussRand(const Dbl c,
   const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
   return c + y;
 }
+// NOLINTEND(bugprone-easily-swappable-parameters)
+// NOLINTEND(readability-identifier-length,readability-identifier-naming)
 
 auto Similitudes::ResetCurrentIfsFunc() -> void
 {

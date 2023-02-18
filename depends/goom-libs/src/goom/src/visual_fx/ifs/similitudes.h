@@ -139,9 +139,11 @@ private:
   CentreType m_centreAttributes{};
   auto InitCentre() -> void;
 
+  // NOLINTBEGIN(readability-identifier-length,readability-identifier-naming)
   [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
   [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
   [[nodiscard]] static auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
+  // NOLINTEND(readability-identifier-length,readability-identifier-naming)
 };
 
 inline auto Similitudes::GetNumSimis() const -> size_t

@@ -56,7 +56,9 @@ inline auto TentaclePlotter::PlotPoints(const std::vector<V3dFlt>& points3D) -> 
     return;
   }
 
-  auto nodeT = TValue{TValue::StepType::CONTINUOUS_REVERSIBLE, numNodes, m_nodeTOffset};
+  auto nodeT = TValue{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, numNodes, m_nodeTOffset}
+  };
   for (const auto& line : lines2D)
   {
     const auto colors = m_getColors(nodeT());

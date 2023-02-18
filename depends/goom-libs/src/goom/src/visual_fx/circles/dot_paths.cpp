@@ -40,12 +40,14 @@ auto DotPaths::GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noex
   for (auto i = 0U; i < m_numDots; ++i)
   {
     dotPathsToAndFrom.dotPathToTarget.emplace_back(
-        std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
+        std::make_unique<TValue>(
+            TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS}),
         StartAndEndPos{ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsToTarget.at(i)),
                        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionToTarget)},
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
     dotPathsToAndFrom.dotPathFromTarget.emplace_back(
-        std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS),
+        std::make_unique<TValue>(
+            TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS}),
         StartAndEndPos{ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
                        ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i))},
         m_dotPathParamsToAndFrom.dotPathParamsFromTarget);
@@ -60,8 +62,9 @@ auto DotPaths::MakeToDotPathsSameAsFromDotPaths() noexcept -> void
   for (auto i = 0U; i < m_numDots; ++i)
   {
     m_dotPathsToAndFrom.dotPathToTarget.emplace_back(
-        std::make_unique<TValue>(TValue::StepType::SINGLE_CYCLE,
-                                 m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()),
+        std::make_unique<TValue>(
+            TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
+                                       m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()}),
         StartAndEndPos{ToPoint2dFlt(m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint()),
                        ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget)},
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);

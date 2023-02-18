@@ -70,8 +70,9 @@ inline auto DotDrawer::DrawCircleDot(const Point2dInt& centre,
                                      const IColorMap& innerColorMap) noexcept -> void
 {
   const auto maxRadius = static_cast<int32_t>(diameter + 3) / 2;
-  auto innerColorT =
-      TValue{UTILS::TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)};
+  auto innerColorT     = TValue{
+          {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)}
+  };
   static constexpr auto INNER_COLOR_CUTOFF_RADIUS = 4;
 
   const auto minBrightness = m_globalBrightnessFactor * DOT_INSIDE_MIN_BRIGHTNESS_FACTOR;

@@ -84,57 +84,72 @@ inline const auto VERTICAL_BASE_COLORS = std::vector<Pixel>{
     Pixel{           0U, MAX_COLOR_VAL,            0U, MAX_ALPHA},
     Pixel{           0U,            0U, MAX_COLOR_VAL, MAX_ALPHA},
 };
+constexpr auto NUM_VERTICAL_COLORS = 3U;
+
+[[nodiscard]] auto GetColorMapsGrid(
+    const UTILS::TValue& verticalT,
+    const ColorMapsGrid::ColorMixingTFunc& colorMixingTFunc) noexcept -> ColorMapsGrid
+{
+  const auto horizontalColorMaps = std::vector<const IColorMap*>{
+      &SIMPLE_WHITE_MAP,
+  };
+  const auto verticalColorMaps = std::vector<const IColorMap*>{
+      &SIMPLE_RED_MAP,
+      &SIMPLE_GREEN_MAP,
+      &SIMPLE_BLUE_MAP,
+  };
+
+  return ColorMapsGrid{horizontalColorMaps, verticalT, verticalColorMaps, colorMixingTFunc};
+}
+
+constexpr auto COLOR_MIX_T = 0.5F;
+
+auto TestColorElement(const Pixel& gridColor,
+                      const float tHorizontal,
+                      const Pixel& verticalBaseColor,
+                      const float tVertical) noexcept -> void
+{
+  static constexpr auto LERP_ERROR = 1.0F / static_cast<float>(MAX_COLOR_VAL);
+
+  const auto horizontalColor = GetRgbColorLerp(BLACK_PIXEL, WHITE_PIXEL, tHorizontal);
+  REQUIRE(horizontalColor.RFlt() == Approx(tHorizontal).margin(LERP_ERROR));
+  REQUIRE(horizontalColor.GFlt() == Approx(tHorizontal).margin(LERP_ERROR));
+  REQUIRE(horizontalColor.BFlt() == Approx(tHorizontal).margin(LERP_ERROR));
+
+  const auto verticalColor = GetRgbColorLerp(BLACK_PIXEL, verticalBaseColor, tVertical);
+  const auto mixedColor    = GetRgbColorLerp(verticalColor, horizontalColor, COLOR_MIX_T);
+  REQUIRE(gridColor.RFlt() == Approx(mixedColor.RFlt()).margin(LERP_ERROR));
+  REQUIRE(gridColor.GFlt() == Approx(mixedColor.GFlt()).margin(LERP_ERROR));
+  REQUIRE(gridColor.BFlt() == Approx(mixedColor.BFlt()).margin(LERP_ERROR));
+}
 
 } // namespace
 
 TEST_CASE("Test GetCurrentHorizontalLineColors")
 {
   static constexpr auto NUM_VERTICAL_STEPS = 4U;
-  static constexpr auto COLOR_MIX_T        = 0.5F;
 
-  static constexpr auto WIDTH = 3U;
-  auto horizontalColorMaps    = std::vector<const IColorMap*>{
-      &SIMPLE_WHITE_MAP,
-  };
-  auto verticalT         = TValue{TValue::StepType::SINGLE_CYCLE, NUM_VERTICAL_STEPS};
-  auto verticalColorMaps = std::vector<const IColorMap*>{
-      &SIMPLE_RED_MAP,
-      &SIMPLE_GREEN_MAP,
-      &SIMPLE_BLUE_MAP,
+  auto verticalT = TValue{
+      {TValue::StepType::SINGLE_CYCLE, NUM_VERTICAL_STEPS}
   };
   const auto colorMixingTFunc = []([[maybe_unused]] const float tX, [[maybe_unused]] const float tY)
   { return COLOR_MIX_T; };
+  static constexpr auto HORIZONTAL_T_STEP = 1.0F / static_cast<float>(NUM_VERTICAL_COLORS);
+  const auto colorMapsGrid                = GetColorMapsGrid(verticalT, colorMixingTFunc);
 
-  auto colorMapsGrid =
-      ColorMapsGrid{horizontalColorMaps, verticalT, verticalColorMaps, colorMixingTFunc};
-
-  static constexpr auto HORIZONTAL_T_STEP = 1.0F / static_cast<float>(WIDTH);
-  static constexpr auto LERP_ERROR        = 1.0F / static_cast<float>(MAX_COLOR_VAL);
-
-  REQUIRE(VERTICAL_BASE_COLORS.size() == WIDTH);
+  REQUIRE(VERTICAL_BASE_COLORS.size() == NUM_VERTICAL_COLORS);
 
   verticalT.Reset();
   for (auto j = 0U; j < NUM_VERTICAL_STEPS; ++j)
   {
-    for (auto i = 0U; i < WIDTH; ++i)
+    for (auto i = 0U; i < NUM_VERTICAL_COLORS; ++i)
     {
-      const auto tHoriz = static_cast<float>(i) * HORIZONTAL_T_STEP;
+      const auto gridColors  = colorMapsGrid.GetCurrentHorizontalLineColors();
+      const auto tHorizontal = static_cast<float>(i) * HORIZONTAL_T_STEP;
 
-      const auto horizontalColor = GetRgbColorLerp(BLACK_PIXEL, WHITE_PIXEL, tHoriz);
-      REQUIRE(horizontalColor.RFlt() == Approx(tHoriz).margin(LERP_ERROR));
-      REQUIRE(horizontalColor.GFlt() == Approx(tHoriz).margin(LERP_ERROR));
-      REQUIRE(horizontalColor.BFlt() == Approx(tHoriz).margin(LERP_ERROR));
+      REQUIRE(gridColors.size() == NUM_VERTICAL_COLORS);
 
-      const auto currentVerticalColor =
-          GetRgbColorLerp(BLACK_PIXEL, VERTICAL_BASE_COLORS.at(i), verticalT());
-      const auto mixedColor = GetRgbColorLerp(currentVerticalColor, horizontalColor, COLOR_MIX_T);
-
-      const auto gridColors = colorMapsGrid.GetCurrentHorizontalLineColors();
-      REQUIRE(gridColors.size() == WIDTH);
-
-      REQUIRE(gridColors.at(i).RFlt() == Approx(mixedColor.RFlt()).margin(LERP_ERROR));
-      REQUIRE(gridColors.at(i).GFlt() == Approx(mixedColor.GFlt()).margin(LERP_ERROR));
-      REQUIRE(gridColors.at(i).BFlt() == Approx(mixedColor.BFlt()).margin(LERP_ERROR));
+      TestColorElement(gridColors.at(i), tHorizontal, VERTICAL_BASE_COLORS.at(i), verticalT());
     }
     verticalT.Increment();
   }

@@ -62,8 +62,9 @@ private:
   uint32_t m_prevSpeed                                 = INITIAL_SPEED;
   uint32_t m_speed                                     = INITIAL_SPEED;
   static constexpr uint32_t NUM_SPEED_TRANSITION_STEPS = 500;
-  UTILS::TValue m_speedTransitionT{UTILS::TValue::StepType::SINGLE_CYCLE,
-                                   NUM_SPEED_TRANSITION_STEPS};
+  UTILS::TValue m_speedTransitionT{
+      {UTILS::TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
+  };
   uint32_t m_maxCountTimesSpeed = MAX_MAX_COUNT_TIMES_SPEED;
 
   FractalHits m_hits1;

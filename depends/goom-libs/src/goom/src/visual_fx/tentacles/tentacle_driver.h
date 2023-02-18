@@ -66,11 +66,13 @@ private:
     Pixel currentLowColor;
   };
   static constexpr auto NUM_CURRENT_COLOR_STEPS = 500U;
-  UTILS::TValue m_currentColorT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                NUM_CURRENT_COLOR_STEPS};
+  UTILS::TValue m_currentColorT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_CURRENT_COLOR_STEPS}
+  };
   static constexpr auto NUM_NODE_T_OFFSET_STEPS = 10U;
-  UTILS::TValue m_nodeTOffset{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                              NUM_NODE_T_OFFSET_STEPS};
+  UTILS::TValue m_nodeTOffset{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_NODE_T_OFFSET_STEPS}
+  };
   std::vector<TentacleAndAttributes> m_tentacles;
   [[nodiscard]] static auto GetTentacles(const UTILS::MATH::IGoomRand& goomRand,
                                          const CirclesTentacleLayout& tentacleLayout,
@@ -104,7 +106,9 @@ private:
   Point2dInt m_previousEndCentrePos             = m_screenMidpoint;
   Point2dInt m_targetEndCentrePos               = m_screenMidpoint;
   static constexpr auto NUM_STEPS_TO_END_TARGET = 100U;
-  UTILS::TValue m_endCentrePosT{StepType::SINGLE_CYCLE, NUM_STEPS_TO_END_TARGET};
+  UTILS::TValue m_endCentrePosT{
+      {StepType::SINGLE_CYCLE, NUM_STEPS_TO_END_TARGET}
+  };
   [[nodiscard]] auto GetAcceptableEndCentrePos(
       const Point2dInt& requestedEndCentrePos) const noexcept -> Point2dInt;
   auto UpdateTentaclesEndCentrePosOffsets() noexcept -> void;

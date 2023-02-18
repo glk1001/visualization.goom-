@@ -130,6 +130,8 @@ TEST_CASE("Lightened color")
       {RED, GREEN, BLUE}
   };
 
+  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+
   auto lightenedColor = GetLightenedColor(COLOR, 0.5);
   REQUIRE(lightenedColor.R() == 0);
   REQUIRE(lightenedColor.G() == 0);
@@ -175,6 +177,8 @@ TEST_CASE("Lightened color")
   REQUIRE(lightenedColor.R() == 127);
   REQUIRE(lightenedColor.G() == 127);
   REQUIRE(lightenedColor.B() == 127);
+
+  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 

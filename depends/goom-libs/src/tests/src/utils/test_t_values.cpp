@@ -18,7 +18,9 @@ static constexpr auto TWO = 2.0F;
 TEST_CASE("TValue SINGLE_CYCLE")
 {
   static constexpr auto NUM_STEPS = 10U;
-  auto tValue                     = TValue{TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
+  auto tValue                     = TValue{
+                          {TValue::StepType::SINGLE_CYCLE, NUM_STEPS}
+  };
 
   static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
@@ -57,7 +59,9 @@ TEST_CASE("TValue SINGLE_CYCLE")
 TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 {
   static constexpr auto NUM_STEPS = 10U;
-  auto tValue                     = TValue{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
+  auto tValue                     = TValue{
+                          {TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS}
+  };
 
   static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
@@ -102,7 +106,9 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE")
 TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
 {
   static constexpr auto NUM_STEPS = 10U;
-  auto tValue                     = TValue{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
+  auto tValue                     = TValue{
+                          {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS}
+  };
 
   static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(tValue.GetStepSize() == Approx(STEP_SIZE));
@@ -204,11 +210,10 @@ TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
   static constexpr auto T_DELAY_TIME = 6U;
   static constexpr auto MID_DELAY_T  = 0.5F;
   auto tValue                        = TValue{
-      TValue::StepType::CONTINUOUS_REPEATABLE,
-      NUM_STEPS,
+                             {TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS},
                              {{TValue::MIN_T_VALUE, T_DELAY_TIME},
-                               {MID_DELAY_T, T_DELAY_TIME},
-                               {TValue::MAX_T_VALUE, T_DELAY_TIME}}
+                              {MID_DELAY_T, T_DELAY_TIME},
+                              {TValue::MAX_T_VALUE, T_DELAY_TIME}}
   };
   REQUIRE((NUM_STEPS % 2) == 0);
   REQUIRE((T_DELAY_TIME % 2) == 0);
@@ -266,11 +271,10 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE with delay")
   static constexpr auto T_DELAY_TIME = 6U;
   static constexpr auto MID_DELAY_T  = 0.5F;
   auto tValue                        = TValue{
-      TValue::StepType::CONTINUOUS_REVERSIBLE,
-      NUM_STEPS,
+                             {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS},
                              {{TValue::MIN_T_VALUE, T_DELAY_TIME},
-                               {MID_DELAY_T, T_DELAY_TIME},
-                               {TValue::MAX_T_VALUE, T_DELAY_TIME}}
+                              {MID_DELAY_T, T_DELAY_TIME},
+                              {TValue::MAX_T_VALUE, T_DELAY_TIME}}
   };
   REQUIRE((NUM_STEPS % 2) == 0);
   REQUIRE((T_DELAY_TIME % 2) == 0);

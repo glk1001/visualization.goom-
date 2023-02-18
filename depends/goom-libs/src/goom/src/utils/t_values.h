@@ -27,16 +27,25 @@ public:
     SINGLE_CYCLE,
   };
 
-  TValue(StepType stepType, float stepSize, float startingT = 0.0F) noexcept;
-  TValue(StepType stepType,
-         float stepSize,
-         const std::vector<DelayPoint>& delayPoints,
-         float startingT = 0.0F) noexcept;
-  TValue(StepType stepType, uint32_t numSteps, float startingT = 0.0F) noexcept;
-  TValue(StepType stepType,
-         uint32_t numSteps,
-         const std::vector<DelayPoint>& delayPoints,
-         float startingT = 0.0F) noexcept;
+  struct StepSizeProperties
+  {
+    float stepSize = 0.0F;
+    StepType stepType{};
+    float startingT = 0.0F;
+  };
+  struct NumStepsProperties
+  {
+    StepType stepType{};
+    uint32_t numSteps = 0U;
+    float startingT   = 0.0F;
+  };
+
+  explicit TValue(const StepSizeProperties& stepSizeProperties) noexcept;
+  TValue(const StepSizeProperties& stepSizeProperties,
+         const std::vector<DelayPoint>& delayPoints) noexcept;
+  explicit TValue(const NumStepsProperties& numStepsProperties) noexcept;
+  TValue(const NumStepsProperties& numStepsProperties,
+         const std::vector<DelayPoint>& delayPoints) noexcept;
   TValue(const TValue&) noexcept = default;
   TValue(TValue&&) noexcept      = default;
   ~TValue() noexcept;
@@ -69,8 +78,6 @@ private:
   StepType m_stepType;
   float m_stepSize;
   float m_currentStep{m_stepSize};
-  static constexpr auto POSITIVE_SIGN = +1.0F;
-  static constexpr auto NEGATIVE_SIGN = -1.0F;
   float m_t;
 
   enum class Boundaries
@@ -96,7 +103,12 @@ private:
   auto ContinuousRepeatableIncrement() noexcept -> void;
   auto ContinuousReversibleIncrement() noexcept -> void;
   auto CheckContinuousReversibleBoundary() noexcept -> void;
-  auto HandleBoundary(float continueValue, float stepSign) noexcept -> void;
+  enum class FloatSign
+  {
+    POSITIVE,
+    NEGATIVE
+  };
+  auto HandleBoundary(float continueValue, FloatSign floatSign) noexcept -> void;
   auto UpdateCurrentPositionAndStep() -> void;
 };
 
@@ -255,7 +267,7 @@ inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexce
 template<typename T>
 inline IncrementedValue<T>::IncrementedValue(const TValue::StepType stepType,
                                              const uint32_t numSteps) noexcept
-  : m_value1{}, m_value2{}, m_t{stepType, numSteps}
+  : m_value1{}, m_value2{}, m_t{{stepType, numSteps}}
 {
   Expects(numSteps > 0U);
 }
@@ -265,7 +277,7 @@ inline IncrementedValue<T>::IncrementedValue(const T& value1,
                                              const T& value2,
                                              const TValue::StepType stepType,
                                              const uint32_t numSteps) noexcept
-  : m_value1{value1}, m_value2{value2}, m_t{stepType, numSteps}
+  : m_value1{value1}, m_value2{value2}, m_t{{stepType, numSteps}}
 {
   Expects(numSteps > 0U);
 }
@@ -275,7 +287,7 @@ inline IncrementedValue<T>::IncrementedValue(const T& value1,
                                              const T& value2,
                                              const TValue::StepType stepType,
                                              const float stepSize) noexcept
-  : m_value1{value1}, m_value2{value2}, m_t{stepType, stepSize}
+  : m_value1{value1}, m_value2{value2}, m_t{TValue::StepSizeProperties{stepSize, stepType}}
 {
   Expects(stepSize > 0.0F);
 }

@@ -316,7 +316,9 @@ inline auto TentacleDriver::PreDrawUpdateTentacles() noexcept -> void
 
 auto TentacleDriver::DrawTentacles() noexcept -> void
 {
-  auto colorT = TValue{TValue::StepType::CONTINUOUS_REVERSIBLE, m_tentacleGroupSize};
+  auto colorT = TValue{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, m_tentacleGroupSize}
+  };
 
   m_tentaclePlotter.SetNodeTOffset(m_nodeTOffset());
 

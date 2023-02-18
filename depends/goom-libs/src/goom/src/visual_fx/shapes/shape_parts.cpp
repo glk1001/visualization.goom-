@@ -162,7 +162,9 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
   static constexpr auto MIN_ANGLE = 0.0F;
   static constexpr auto MAX_ANGLE = TWO_PI;
-  auto stepFraction               = TValue{TValue::StepType::SINGLE_CYCLE, numShapePaths};
+  auto stepFraction               = TValue{
+                    {TValue::StepType::SINGLE_CYCLE, numShapePaths}
+  };
 
   const auto radius    = GetCircleRadius();
   const auto direction = GetCircleDirection();
@@ -246,7 +248,8 @@ inline auto ShapePart::GetCirclePath(const float radius,
                                      const CircleFunction::Direction direction,
                                      const uint32_t numSteps) noexcept -> CirclePath
 {
-  auto positionT = std::make_unique<TValue>(TValue::StepType::CONTINUOUS_REVERSIBLE, numSteps);
+  auto positionT = std::make_unique<TValue>(
+      TValue::NumStepsProperties{TValue::StepType::CONTINUOUS_REVERSIBLE, numSteps});
 
   const auto params = ShapeFunctionParams{radius, AngleParams{}, direction};
 

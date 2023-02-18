@@ -108,8 +108,9 @@ private:
   static constexpr auto MIN_MAX_RADIUS_STEPS = MinMaxValues<uint32_t>{100U, 200U};
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
   UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
-  UTILS::TValue m_dotRadiusT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                             m_dotRadiusStepSpeed.GetCurrentNumSteps()};
+  UTILS::TValue m_dotRadiusT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
+  };
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
 
   static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;

@@ -38,9 +38,10 @@ private:
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;
   static constexpr uint32_t HIGH_CONTRAST_ON_TIME =
       (2 * NUM_HIGH_CONTRAST_ON_STEPS) + HIGH_CONTRAST_ON_DELAY_TIME;
-  UTILS::TValue m_highContrastT{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                NUM_HIGH_CONTRAST_ON_STEPS,
-                                {{1.0F, HIGH_CONTRAST_ON_DELAY_TIME}}};
+  UTILS::TValue m_highContrastT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_HIGH_CONTRAST_ON_STEPS},
+      {{1.0F, HIGH_CONTRAST_ON_DELAY_TIME}}
+  };
   UTILS::Timer m_highContrastOnTimer{HIGH_CONTRAST_ON_TIME, true};
   static constexpr uint32_t HIGH_CONTRAST_OFF_TIME = 300;
   UTILS::Timer m_highContrastOffTimer{HIGH_CONTRAST_OFF_TIME, false};

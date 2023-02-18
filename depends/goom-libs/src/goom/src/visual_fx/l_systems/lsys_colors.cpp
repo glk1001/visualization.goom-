@@ -55,9 +55,10 @@ auto LSysColors::SetNumColors(const uint32_t numColors) noexcept -> void
   m_currentThickerColorTs.clear();
   for (auto i = 0U; i < numColors; ++i)
   {
-    m_currentColorTs.emplace_back(TValue::StepType::CONTINUOUS_REVERSIBLE, numColorSteps);
-    m_currentThickerColorTs.emplace_back(TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                         numThickerColorSteps);
+    m_currentColorTs.emplace_back(
+        TValue::NumStepsProperties{TValue::StepType::CONTINUOUS_REVERSIBLE, numColorSteps});
+    m_currentThickerColorTs.emplace_back(
+        TValue::NumStepsProperties{TValue::StepType::CONTINUOUS_REVERSIBLE, numThickerColorSteps});
   }
 }
 

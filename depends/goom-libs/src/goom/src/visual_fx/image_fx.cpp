@@ -125,10 +125,15 @@ private:
   ChunkedImage* m_currentImage{};
   static constexpr uint32_t NUM_STEPS    = 400;
   static constexpr uint32_t T_DELAY_TIME = 15;
-  TValue m_inOutT{TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS, {{1.0F, T_DELAY_TIME}}};
+  TValue m_inOutT{
+      {TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS},
+      {{1.0F, T_DELAY_TIME}}
+  };
   float m_inOutTSq = 0.0F;
   Point2dInt m_floatingStartPosition{};
-  TValue m_floatingT{TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS, 1.0F};
+  TValue m_floatingT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS, 1.0F}
+  };
   auto InitImage() -> void;
 
   auto DrawChunks() -> void;
