@@ -29,24 +29,24 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
   const auto tStep = 1.0F / static_cast<float>(m_numBezierSteps - 1);
   auto colorT      = colorT0 + colorTStep;
   auto t           = tStep;
-  auto point0      = Point2dInt{static_cast<int32_t>(bezier.valueAt(0.0F, 0)),
+  auto point1      = Point2dInt{static_cast<int32_t>(bezier.valueAt(0.0F, 0)),
                            static_cast<int32_t>(bezier.valueAt(0.0F, 1))};
 
   for (auto i = 1U; i < m_numBezierSteps; ++i)
   {
-    const auto point1 = Point2dInt{static_cast<int32_t>(bezier.valueAt(t, 0)),
+    const auto point2 = Point2dInt{static_cast<int32_t>(bezier.valueAt(t, 0)),
                                    static_cast<int32_t>(bezier.valueAt(t, 1))};
 
     const auto lineColor = GetBrighterColor(10.F, m_lineColorFunc(colorT));
-    lineDrawer.DrawLine(point0, point1, {lineColor, lineColor});
+    lineDrawer.DrawLine(point1, point2, {lineColor, lineColor});
 
     if (0 == (i % m_dotEveryNumBezierSteps))
     {
       const auto dotColor = GetBrighterColor(10.F, m_dotColorFunc(colorT));
-      DrawDot(point1, m_dotDiameter, dotColor);
+      DrawDot(point2, m_dotDiameter, dotColor);
     }
 
-    point0 = point1;
+    point1 = point2;
     t += tStep;
     colorT += colorTStep;
   }
@@ -54,8 +54,7 @@ void BezierDrawer::Draw(const Bezier::Bezier<3>& bezier, const float colorT0, co
 
 void BezierDrawer::DrawDot(const Point2dInt& centre, const uint32_t diameter, const Pixel& color)
 {
-  const auto getColor =
-      [&color]([[maybe_unused]] const size_t x, [[maybe_unused]] const size_t y, const Pixel& bgnd)
+  const auto getColor = [&color]([[maybe_unused]] const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
     {

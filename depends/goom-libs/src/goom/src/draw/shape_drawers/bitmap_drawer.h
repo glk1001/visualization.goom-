@@ -25,7 +25,8 @@ class BitmapDrawer
 public:
   explicit BitmapDrawer(IGoomDraw& draw) noexcept;
 
-  using GetBitmapColorFunc = std::function<Pixel(size_t x, size_t y, const Pixel& imageColor)>;
+  using GetBitmapColorFunc =
+      std::function<Pixel(const Point2dInt& bitmapPoint, const Pixel& imageColor)>;
   auto Bitmap(const Point2dInt& centre,
               const UTILS::GRAPHICS::ImageBitmap& bitmap,
               const GetBitmapColorFunc& getColor) noexcept -> void;

@@ -14,8 +14,8 @@ using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
 using UTILS::IncrementedValue;
 using UTILS::TValue;
+using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::U_HALF;
 
 static constexpr auto PROB_CIRCLES                          = 0.5F;
 static constexpr auto DOT_INSIDE_MIN_BRIGHTNESS_FACTOR      = 0.5F;
@@ -126,19 +126,21 @@ inline auto DotDrawer::DrawBitmapDot(const Point2dInt& position,
                                      const MultiplePixels& colors) noexcept -> void
 {
   const auto getMainColor =
-      [this, &colors, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
-  { return GetDotMixedColor(x, y, diameter, bgnd, GetMainColor(colors), m_bgndMainColorMixT); };
+      [this, &colors, &diameter](const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  {
+    return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetMainColor(colors), m_bgndMainColorMixT);
+  };
 
-  const auto getLowColor =
-      [this, &colors, &diameter](const size_t x, const size_t y, const Pixel& bgnd)
-  { return GetDotMixedColor(x, y, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT); };
+  const auto getLowColor = [this, &colors, &diameter](const Point2dInt& bitmapPoint,
+                                                      const Pixel& bgnd) {
+    return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT);
+  };
 
   m_bitmapDrawer.Bitmap(
       position, m_helper->bitmapGetter->GetBitmap(diameter), {getMainColor, getLowColor});
 }
 
-inline auto DotDrawer::GetDotMixedColor(const size_t x,
-                                        const size_t y,
+inline auto DotDrawer::GetDotMixedColor(const Point2dInt& bitmapPoint,
                                         const uint32_t diameter,
                                         const Pixel& bgnd,
                                         const Pixel& color,
@@ -151,7 +153,7 @@ inline auto DotDrawer::GetDotMixedColor(const size_t x,
 
   const auto mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
 
-  if (not IsSpecialPoint(x, y, diameter))
+  if (not IsSpecialPoint(bitmapPoint, diameter))
   {
     return GetBrighterColor(m_globalBrightnessFactor, mixedColor);
   }
@@ -172,21 +174,24 @@ inline auto DotDrawer::GetDotMixedColor(const size_t x,
   }
 }
 
-inline auto DotDrawer::IsSpecialPoint(const size_t x,
-                                      const size_t y,
+inline auto DotDrawer::IsSpecialPoint(const Point2dInt& bitmapPoint,
                                       const uint32_t diameter) noexcept -> bool
 {
-  if (static constexpr auto EDGE_CUTOFF = 3U; (x <= EDGE_CUTOFF) ||
-                                              (x >= (diameter - EDGE_CUTOFF)) ||
-                                              (y <= EDGE_CUTOFF) || (y >= (diameter - EDGE_CUTOFF)))
+  if (static constexpr auto EDGE_CUTOFF = 3;
+      (bitmapPoint.x <= EDGE_CUTOFF) or
+      (bitmapPoint.x >= (static_cast<int32_t>(diameter) - EDGE_CUTOFF)) or
+      (bitmapPoint.y <= EDGE_CUTOFF) or
+      (bitmapPoint.y >= (static_cast<int32_t>(diameter) - EDGE_CUTOFF)))
   {
     return false;
   }
-  if (((U_HALF * diameter) == x) || ((U_HALF * diameter) == y))
+  if (((I_HALF * static_cast<int32_t>(diameter)) == bitmapPoint.x) or
+      ((I_HALF * static_cast<int32_t>(diameter)) == bitmapPoint.y))
   {
     return true;
   }
-  if ((x == y) || ((diameter - x) == y))
+  if ((bitmapPoint.x == bitmapPoint.y) or
+      ((static_cast<int32_t>(diameter) - bitmapPoint.x) == bitmapPoint.y))
   {
     return true;
   }

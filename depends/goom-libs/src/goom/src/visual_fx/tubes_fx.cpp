@@ -501,11 +501,9 @@ inline auto TubesFx::TubeFxImpl::DrawImageToMany(const Point2dInt& point,
 inline auto TubesFx::TubeFxImpl::GetSimpleColorFuncs(const MultiplePixels& colors)
     -> std::vector<BitmapDrawer::GetBitmapColorFunc>
 {
-  const auto getColor1 = [&colors]([[maybe_unused]] const size_t x,
-                                   [[maybe_unused]] const size_t y,
+  const auto getColor1 = [&colors]([[maybe_unused]] const Point2dInt& bitmapPoint,
                                    [[maybe_unused]] const Pixel& bgnd) { return colors.color1; };
-  const auto getColor2 = [&colors]([[maybe_unused]] const size_t x,
-                                   [[maybe_unused]] const size_t y,
+  const auto getColor2 = [&colors]([[maybe_unused]] const Point2dInt& bitmapPoint,
                                    [[maybe_unused]] const Pixel& bgnd) { return colors.color2; };
   return {getColor1, getColor2};
 }

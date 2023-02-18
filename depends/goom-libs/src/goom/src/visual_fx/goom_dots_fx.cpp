@@ -481,23 +481,20 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   }
 
   static constexpr auto BRIGHTNESS = 3.5F;
-  const auto getColor1 = [this, &radius, &color](const size_t x, const size_t y, const Pixel& bgnd)
+  const auto getColor1 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
     if (0 == bgnd.A())
     {
       return BLACK_PIXEL;
     }
     const auto newColor =
-        m_useMiddleColor and IsImagePointCloseToMiddle(GetPoint2dInt(x, y), radius) ? m_middleColor
-                                                                                    : color;
+        m_useMiddleColor and IsImagePointCloseToMiddle(bitmapPoint, radius) ? m_middleColor : color;
     static constexpr auto COLOR_MIX_T = 0.6F;
     const auto mixedColor             = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
   };
-  const auto getColor2 = [&getColor1]([[maybe_unused]] const size_t x,
-                                      [[maybe_unused]] const size_t y,
-                                      [[maybe_unused]] const Pixel& bgnd)
-  { return getColor1(x, y, bgnd); };
+  const auto getColor2 = [&getColor1](const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  { return getColor1(bitmapPoint, bgnd); };
 
   if (const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
                                        dotPosition.y + static_cast<int32_t>(radius)};

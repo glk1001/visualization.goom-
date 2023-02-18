@@ -495,8 +495,7 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   {
     const auto mixedColor = m_colorizer.GetMixedColor(
         baseColor, ifsPoint.GetCount(), {BITMAP_BRIGHTNESS, tMix, tX, tY});
-    const auto getColor = [&mixedColor]([[maybe_unused]] const size_t x,
-                                        [[maybe_unused]] const size_t y,
+    const auto getColor = [&mixedColor]([[maybe_unused]] const Point2dInt& bitmapPoint,
                                         [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
     const auto& bitmap{*ifsPoint.GetSimi()->GetCurrentPointBitmap()};
     m_bitmapDrawer.Bitmap(point, bitmap, {getColor, getColor});

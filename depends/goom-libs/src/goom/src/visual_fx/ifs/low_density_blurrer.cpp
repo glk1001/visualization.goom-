@@ -157,8 +157,7 @@ inline auto LowDensityBlurrer::DrawPoint(const IfsPoint& point) noexcept -> void
   }
   else
   {
-    const auto getColor = [&point]([[maybe_unused]] const size_t xVal,
-                                   [[maybe_unused]] const size_t yVal,
+    const auto getColor = [&point]([[maybe_unused]] const Point2dInt& bitmapPoint,
                                    [[maybe_unused]] const Pixel& bgnd) { return point.GetColor(); };
     m_bitmapDrawer.Bitmap(pt, *m_currentImageBitmap, {getColor, getColor});
   }

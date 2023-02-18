@@ -50,7 +50,7 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
   const auto actualBitmapHeight = static_cast<uint32_t>(y1 - y0) + 1;
 
   const auto setDestPixelRow =
-      [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const size_t bitmapY)
+      [this, &x0, &y0, &actualBitmapWidth, &bitmap, &getColors](const uint32_t bitmapY)
   {
     const int buffY  = y0 + static_cast<int>(bitmapY);
     auto finalColors = MultiplePixels{};
@@ -62,10 +62,10 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
         continue;
       }
 
-      finalColors.color1 = getColors[0](bitmapX, bitmapY, bitmapColor);
+      finalColors.color1 = getColors[0](GetPoint2dInt(bitmapX, bitmapY), bitmapColor);
       if (getColors.size() > 1)
       {
-        finalColors.color2 = getColors[1](bitmapX, bitmapY, bitmapColor);
+        finalColors.color2 = getColors[1](GetPoint2dInt(bitmapX, bitmapY), bitmapColor);
       }
 
       const auto buffX = x0 + static_cast<int>(bitmapX);

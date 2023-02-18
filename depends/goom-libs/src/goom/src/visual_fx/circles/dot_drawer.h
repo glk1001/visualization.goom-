@@ -58,9 +58,9 @@ private:
   [[nodiscard]] auto GetRandomDifferentColor(
       const COLOR::RandomColorMaps& weightedMaps) const noexcept -> Pixel;
   [[nodiscard]] auto GetRandomDecorationType() const noexcept -> DecorationType;
-  [[nodiscard]] static auto IsSpecialPoint(size_t x, size_t y, uint32_t diameter) noexcept -> bool;
-  [[nodiscard]] auto GetDotMixedColor(size_t x,
-                                      size_t y,
+  [[nodiscard]] static auto IsSpecialPoint(const Point2dInt& bitmapPoint,
+                                           uint32_t diameter) noexcept -> bool;
+  [[nodiscard]] auto GetDotMixedColor(const Point2dInt& bitmapPoint,
                                       uint32_t diameter,
                                       const Pixel& bgnd,
                                       const Pixel& color,
