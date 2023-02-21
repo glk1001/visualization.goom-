@@ -45,6 +45,8 @@ static constexpr auto FINAL_PHASE_INTERIOR_COLOR          = Pixel{210U, 210U, 21
 // To normalize: turn on logging in TextDraw, get width of prepared text for a
 // sample text for each font, then normalize with 'verdana' as 1.0.
 //
+
+// NOLINTNEXTLINE(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::FONT_INFO = {
     {  "AeroviasBrasilNF.ttf", 1.34F},
     { "AlexBrush-Regular.ttf", 1.25F},

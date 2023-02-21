@@ -13,7 +13,7 @@ auto RandomColorMapsManager::AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand
     -> ColorMapId
 {
   return AddColorMapInfo({RandomColorMapsGroups::MakeSharedAllMapsUnweighted(goomRand),
-                          RandomColorMaps::ALL_COLOR_MAP_TYPES});
+                          RandomColorMaps::GetAllColorMapsTypes()});
 }
 
 auto RandomColorMapsManager::AddColorMapInfo(

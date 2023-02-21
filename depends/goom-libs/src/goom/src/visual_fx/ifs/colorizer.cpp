@@ -53,8 +53,8 @@ auto Colorizer::UpdateMixerMaps() -> void
 {
   static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const auto& colorMapTypes = m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
-                                  ? RandomColorMaps::NO_COLOR_MAP_TYPES
-                                  : RandomColorMaps::ALL_COLOR_MAP_TYPES;
+                                  ? RandomColorMaps::GetNoColorMapsTypes()
+                                  : RandomColorMaps::GetAllColorMapsTypes();
 
   m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id, {m_colorMaps, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);

@@ -311,7 +311,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
   return RandomColorMaps::GetRandomColor(
       *m_goomRand,
       *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
-                                                   RandomColorMaps::ALL_COLOR_MAP_TYPES),
+                                                   RandomColorMaps::GetAllColorMapsTypes()),
       MIN_MIX_T,
       MAX_MIX_T);
 }
@@ -332,7 +332,7 @@ auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
   m_dotColorMapsList.at(dotNum) = weightedColorMaps.mainColorMaps;
   m_colorMapsManager.UpdateColorMapInfo(
       m_colorMapIds.at(dotNum),
-      {m_dotColorMapsList.at(dotNum), RandomColorMaps::ALL_COLOR_MAP_TYPES});
+      {m_dotColorMapsList.at(dotNum), RandomColorMaps::GetAllColorMapsTypes()});
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::SetSingleBufferDots(const bool val) noexcept -> void

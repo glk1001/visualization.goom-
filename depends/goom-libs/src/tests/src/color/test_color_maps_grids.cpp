@@ -55,6 +55,7 @@ inline auto TestColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, cons
   return GetRgbColorLerp(col1, col2, t);
 }
 
+// NOLINTBEGIN(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 inline const auto SIMPLE_WHITE_MAP_STOPS = std::vector<vivid::srgb_t>{
     {BLACK_PIXEL.RFlt(), BLACK_PIXEL.GFlt(), BLACK_PIXEL.BFlt()},
     {WHITE_PIXEL.RFlt(), WHITE_PIXEL.GFlt(), WHITE_PIXEL.BFlt()},
@@ -84,6 +85,8 @@ inline const auto VERTICAL_BASE_COLORS = std::vector<Pixel>{
     Pixel{           0U, MAX_COLOR_VAL,            0U, MAX_ALPHA},
     Pixel{           0U,            0U, MAX_COLOR_VAL, MAX_ALPHA},
 };
+// NOLINTEND(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
+
 constexpr auto NUM_VERTICAL_COLORS = 3U;
 
 [[nodiscard]] auto GetColorMapsGrid(

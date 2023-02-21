@@ -18,7 +18,10 @@ using UTILS::EnumMap;
 using UTILS::EnumToString;
 using UTILS::NUM;
 
-static constexpr auto DEFAULT_BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, BuffIntensityRange>{{{
+namespace
+{
+
+constexpr auto DEFAULT_BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, BuffIntensityRange>{{{
     {GoomDrawables::CIRCLES, {0.50F, 0.80F}},
     {GoomDrawables::DOTS, {0.40F, 0.70F}},
     {GoomDrawables::IFS, {0.40F, 0.70F}},
@@ -31,7 +34,7 @@ static constexpr auto DEFAULT_BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, Buf
     {GoomDrawables::TUBES, {0.70F, 0.80F}},
 }}};
 
-static constexpr auto STATE_MULTI_THREADED = EnumMap<GoomDrawables, bool>{{{
+constexpr auto STATE_MULTI_THREADED = EnumMap<GoomDrawables, bool>{{{
     {GoomDrawables::CIRCLES, false},
     {GoomDrawables::DOTS, false},
     {GoomDrawables::IFS, false},
@@ -44,7 +47,7 @@ static constexpr auto STATE_MULTI_THREADED = EnumMap<GoomDrawables, bool>{{{
     {GoomDrawables::TUBES, false},
 }}};
 
-static constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
+constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
     {GoomStates::CIRCLES_ONLY, "Circles Only"},
     {GoomStates::CIRCLES_IFS, "Circles and IFS"},
     {GoomStates::CIRCLES_IMAGE, "Circles and Image"},
@@ -107,93 +110,101 @@ static constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
     {GoomStates::TUBES_ONLY, "Tubes Only"},
 }}};
 
-// clang-format off
-static const auto STATE_DRAWABLES = EnumMap<GoomStates, std::set<GoomDrawables>>{{{
-    {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
-    {GoomStates::CIRCLES_IFS,                 {GoomDrawables::CIRCLES, GoomDrawables::IFS}},
-    {GoomStates::CIRCLES_IMAGE,               {GoomDrawables::CIRCLES, GoomDrawables::IMAGE}},
-    {GoomStates::CIRCLES_IMAGE_STARS,         {GoomDrawables::CIRCLES, GoomDrawables::IMAGE,
-                                               GoomDrawables::STARS}},
-    {GoomStates::CIRCLES_IMAGE_STARS_L_SYSTEM,
-                                              {GoomDrawables::CIRCLES, GoomDrawables::IMAGE,
-                                               GoomDrawables::STARS, GoomDrawables::L_SYSTEM}},
-    {GoomStates::CIRCLES_LINES,               {GoomDrawables::CIRCLES, GoomDrawables::LINES}},
-    {GoomStates::CIRCLES_STARS_TUBES,         {GoomDrawables::CIRCLES, GoomDrawables::STARS,
-                                               GoomDrawables::TUBES}},
-    {GoomStates::CIRCLES_TENTACLES,           {GoomDrawables::CIRCLES, GoomDrawables::TENTACLES}},
-    {GoomStates::DOTS_IFS,                    {GoomDrawables::DOTS, GoomDrawables::IFS}},
-    {GoomStates::DOTS_IFS_STARS,              {GoomDrawables::DOTS, GoomDrawables::IFS,
-                                               GoomDrawables::STARS}},
-    {GoomStates::DOTS_IMAGE_STARS,            {GoomDrawables::DOTS, GoomDrawables::IMAGE,
-                                               GoomDrawables::STARS}},
-    {GoomStates::DOTS_IMAGE_STARS_L_SYSTEM,   {GoomDrawables::DOTS, GoomDrawables::IMAGE,
-                                               GoomDrawables::STARS, GoomDrawables::L_SYSTEM}},
-    {GoomStates::DOTS_LINES,                  {GoomDrawables::DOTS, GoomDrawables::LINES}},
-    {GoomStates::DOTS_LINES_STARS_TENTACLES,  {GoomDrawables::DOTS, GoomDrawables::LINES,
-                                               GoomDrawables::STARS, GoomDrawables::TENTACLES}},
-    {GoomStates::DOTS_LINES_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::LINES,
-                                               GoomDrawables::TENTACLES, GoomDrawables::TUBES}},
-    {GoomStates::DOTS_LINES_TUBES,            {GoomDrawables::DOTS, GoomDrawables::LINES,
-                                               GoomDrawables::TUBES}},
-    {GoomStates::DOTS_ONLY,                   {GoomDrawables::DOTS}},
-    {GoomStates::DOTS_STARS,                  {GoomDrawables::DOTS, GoomDrawables::STARS}},
-    {GoomStates::DOTS_STARS_L_SYSTEM,         {GoomDrawables::DOTS, GoomDrawables::STARS,
-                                               GoomDrawables::L_SYSTEM}},
-    {GoomStates::DOTS_STARS_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::STARS,
-                                               GoomDrawables::TENTACLES, GoomDrawables::TUBES}},
-    {GoomStates::DOTS_TENTACLES_TUBES,        {GoomDrawables::DOTS, GoomDrawables::TENTACLES,
-                                               GoomDrawables::TUBES}},
-    {GoomStates::IFS_IMAGE,                   {GoomDrawables::IFS, GoomDrawables::IMAGE}},
-    {GoomStates::IFS_IMAGE_SHAPES,            {GoomDrawables::IFS, GoomDrawables::IMAGE,
-                                               GoomDrawables::SHAPES}},
-    {GoomStates::IFS_LINES_STARS,             {GoomDrawables::IFS, GoomDrawables::LINES,
-                                               GoomDrawables::STARS}},
-    {GoomStates::IFS_ONLY,                    {GoomDrawables::IFS}},
-    {GoomStates::IFS_SHAPES,                  {GoomDrawables::IFS, GoomDrawables::SHAPES}},
-    {GoomStates::IFS_STARS,                   {GoomDrawables::IFS, GoomDrawables::STARS}},
-    {GoomStates::IFS_STARS_TENTACLES,         {GoomDrawables::IFS, GoomDrawables::STARS,
-                                               GoomDrawables::TENTACLES}},
-    {GoomStates::IFS_TENTACLES,               {GoomDrawables::IFS, GoomDrawables::TENTACLES}},
-    {GoomStates::IFS_TENTACLES_TUBES,         {GoomDrawables::IFS, GoomDrawables::TENTACLES,
-                                               GoomDrawables::TUBES}},
-    {GoomStates::IFS_TUBES,                   {GoomDrawables::IFS, GoomDrawables::TUBES}},
-    {GoomStates::IMAGE_LINES,                 {GoomDrawables::IMAGE, GoomDrawables::LINES}},
-    {GoomStates::IMAGE_LINES_SHAPES,          {GoomDrawables::IMAGE, GoomDrawables::LINES,
-                                               GoomDrawables::SHAPES}},
-    {GoomStates::IMAGE_LINES_STARS_TENTACLES, {GoomDrawables::IMAGE, GoomDrawables::LINES,
-                                               GoomDrawables::STARS, GoomDrawables::TENTACLES}},
-    {GoomStates::IMAGE_ONLY,                  {GoomDrawables::IMAGE}},
-    {GoomStates::IMAGE_SHAPES,                {GoomDrawables::IMAGE, GoomDrawables::SHAPES}},
-    {GoomStates::IMAGE_SHAPES_L_SYSTEM,       {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
-                                               GoomDrawables::L_SYSTEM}},
-    {GoomStates::IMAGE_SHAPES_STARS,          {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
-                                               GoomDrawables::STARS}},
-    {GoomStates::IMAGE_SHAPES_TUBES,          {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
-                                               GoomDrawables::TUBES}},
-    {GoomStates::IMAGE_STARS,                 {GoomDrawables::IMAGE, GoomDrawables::STARS}},
-    {GoomStates::IMAGE_STARS_L_SYSTEM,        {GoomDrawables::IMAGE, GoomDrawables::STARS,
-                                               GoomDrawables::L_SYSTEM}},
-    {GoomStates::IMAGE_TENTACLES,             {GoomDrawables::IMAGE, GoomDrawables::TENTACLES}},
-    {GoomStates::IMAGE_TUBES,                 {GoomDrawables::IMAGE, GoomDrawables::TUBES}},
-    {GoomStates::L_SYSTEM_ONLY,               {GoomDrawables::L_SYSTEM}},
-    {GoomStates::LINES_ONLY,                  {GoomDrawables::LINES}},
-    {GoomStates::LINES_SHAPES_STARS,          {GoomDrawables::LINES, GoomDrawables::SHAPES,
-                                               GoomDrawables::STARS}},
-    {GoomStates::LINES_STARS,                 {GoomDrawables::LINES, GoomDrawables::STARS}},
-    {GoomStates::LINES_TENTACLES,             {GoomDrawables::LINES, GoomDrawables::TENTACLES}},
-    {GoomStates::SHAPES_ONLY,                 {GoomDrawables::SHAPES}},
-    {GoomStates::SHAPES_STARS,                {GoomDrawables::SHAPES, GoomDrawables::STARS}},
-    {GoomStates::SHAPES_TUBES,                {GoomDrawables::SHAPES, GoomDrawables::TUBES}},
-    {GoomStates::STARS_ONLY,                  {GoomDrawables::STARS}},
-    {GoomStates::TENTACLES_ONLY,              {GoomDrawables::TENTACLES}},
-    {GoomStates::TUBES_ONLY,                  {GoomDrawables::TUBES}},
-}}};
-// clang-format on
+[[nodiscard]] inline auto GetStateDrawables() noexcept
+    -> const EnumMap<GoomStates, std::set<GoomDrawables>>&
+{
+  // clang-format off
+  static const auto s_STATE_DRAWABLES = EnumMap<GoomStates, std::set<GoomDrawables>>{{{
+      {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
+      {GoomStates::CIRCLES_IFS,                 {GoomDrawables::CIRCLES, GoomDrawables::IFS}},
+      {GoomStates::CIRCLES_IMAGE,               {GoomDrawables::CIRCLES, GoomDrawables::IMAGE}},
+      {GoomStates::CIRCLES_IMAGE_STARS,         {GoomDrawables::CIRCLES, GoomDrawables::IMAGE,
+                                                 GoomDrawables::STARS}},
+      {GoomStates::CIRCLES_IMAGE_STARS_L_SYSTEM,
+                                                {GoomDrawables::CIRCLES, GoomDrawables::IMAGE,
+                                                 GoomDrawables::STARS, GoomDrawables::L_SYSTEM}},
+      {GoomStates::CIRCLES_LINES,               {GoomDrawables::CIRCLES, GoomDrawables::LINES}},
+      {GoomStates::CIRCLES_STARS_TUBES,         {GoomDrawables::CIRCLES, GoomDrawables::STARS,
+                                                 GoomDrawables::TUBES}},
+      {GoomStates::CIRCLES_TENTACLES,           {GoomDrawables::CIRCLES, GoomDrawables::TENTACLES}},
+      {GoomStates::DOTS_IFS,                    {GoomDrawables::DOTS, GoomDrawables::IFS}},
+      {GoomStates::DOTS_IFS_STARS,              {GoomDrawables::DOTS, GoomDrawables::IFS,
+                                                 GoomDrawables::STARS}},
+      {GoomStates::DOTS_IMAGE_STARS,            {GoomDrawables::DOTS, GoomDrawables::IMAGE,
+                                                 GoomDrawables::STARS}},
+      {GoomStates::DOTS_IMAGE_STARS_L_SYSTEM,   {GoomDrawables::DOTS, GoomDrawables::IMAGE,
+                                                 GoomDrawables::STARS, GoomDrawables::L_SYSTEM}},
+      {GoomStates::DOTS_LINES,                  {GoomDrawables::DOTS, GoomDrawables::LINES}},
+      {GoomStates::DOTS_LINES_STARS_TENTACLES,  {GoomDrawables::DOTS, GoomDrawables::LINES,
+                                                 GoomDrawables::STARS, GoomDrawables::TENTACLES}},
+      {GoomStates::DOTS_LINES_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::LINES,
+                                                 GoomDrawables::TENTACLES, GoomDrawables::TUBES}},
+      {GoomStates::DOTS_LINES_TUBES,            {GoomDrawables::DOTS, GoomDrawables::LINES,
+                                                 GoomDrawables::TUBES}},
+      {GoomStates::DOTS_ONLY,                   {GoomDrawables::DOTS}},
+      {GoomStates::DOTS_STARS,                  {GoomDrawables::DOTS, GoomDrawables::STARS}},
+      {GoomStates::DOTS_STARS_L_SYSTEM,         {GoomDrawables::DOTS, GoomDrawables::STARS,
+                                                 GoomDrawables::L_SYSTEM}},
+      {GoomStates::DOTS_STARS_TENTACLES_TUBES,  {GoomDrawables::DOTS, GoomDrawables::STARS,
+                                                 GoomDrawables::TENTACLES, GoomDrawables::TUBES}},
+      {GoomStates::DOTS_TENTACLES_TUBES,        {GoomDrawables::DOTS, GoomDrawables::TENTACLES,
+                                                 GoomDrawables::TUBES}},
+      {GoomStates::IFS_IMAGE,                   {GoomDrawables::IFS, GoomDrawables::IMAGE}},
+      {GoomStates::IFS_IMAGE_SHAPES,            {GoomDrawables::IFS, GoomDrawables::IMAGE,
+                                                 GoomDrawables::SHAPES}},
+      {GoomStates::IFS_LINES_STARS,             {GoomDrawables::IFS, GoomDrawables::LINES,
+                                                 GoomDrawables::STARS}},
+      {GoomStates::IFS_ONLY,                    {GoomDrawables::IFS}},
+      {GoomStates::IFS_SHAPES,                  {GoomDrawables::IFS, GoomDrawables::SHAPES}},
+      {GoomStates::IFS_STARS,                   {GoomDrawables::IFS, GoomDrawables::STARS}},
+      {GoomStates::IFS_STARS_TENTACLES,         {GoomDrawables::IFS, GoomDrawables::STARS,
+                                                 GoomDrawables::TENTACLES}},
+      {GoomStates::IFS_TENTACLES,               {GoomDrawables::IFS, GoomDrawables::TENTACLES}},
+      {GoomStates::IFS_TENTACLES_TUBES,         {GoomDrawables::IFS, GoomDrawables::TENTACLES,
+                                                 GoomDrawables::TUBES}},
+      {GoomStates::IFS_TUBES,                   {GoomDrawables::IFS, GoomDrawables::TUBES}},
+      {GoomStates::IMAGE_LINES,                 {GoomDrawables::IMAGE, GoomDrawables::LINES}},
+      {GoomStates::IMAGE_LINES_SHAPES,          {GoomDrawables::IMAGE, GoomDrawables::LINES,
+                                                 GoomDrawables::SHAPES}},
+      {GoomStates::IMAGE_LINES_STARS_TENTACLES, {GoomDrawables::IMAGE, GoomDrawables::LINES,
+                                                 GoomDrawables::STARS, GoomDrawables::TENTACLES}},
+      {GoomStates::IMAGE_ONLY,                  {GoomDrawables::IMAGE}},
+      {GoomStates::IMAGE_SHAPES,                {GoomDrawables::IMAGE, GoomDrawables::SHAPES}},
+      {GoomStates::IMAGE_SHAPES_L_SYSTEM,       {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
+                                                 GoomDrawables::L_SYSTEM}},
+      {GoomStates::IMAGE_SHAPES_STARS,          {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
+                                                 GoomDrawables::STARS}},
+      {GoomStates::IMAGE_SHAPES_TUBES,          {GoomDrawables::IMAGE, GoomDrawables::SHAPES,
+                                                 GoomDrawables::TUBES}},
+      {GoomStates::IMAGE_STARS,                 {GoomDrawables::IMAGE, GoomDrawables::STARS}},
+      {GoomStates::IMAGE_STARS_L_SYSTEM,        {GoomDrawables::IMAGE, GoomDrawables::STARS,
+                                                 GoomDrawables::L_SYSTEM}},
+      {GoomStates::IMAGE_TENTACLES,             {GoomDrawables::IMAGE, GoomDrawables::TENTACLES}},
+      {GoomStates::IMAGE_TUBES,                 {GoomDrawables::IMAGE, GoomDrawables::TUBES}},
+      {GoomStates::L_SYSTEM_ONLY,               {GoomDrawables::L_SYSTEM}},
+      {GoomStates::LINES_ONLY,                  {GoomDrawables::LINES}},
+      {GoomStates::LINES_SHAPES_STARS,          {GoomDrawables::LINES, GoomDrawables::SHAPES,
+                                                 GoomDrawables::STARS}},
+      {GoomStates::LINES_STARS,                 {GoomDrawables::LINES, GoomDrawables::STARS}},
+      {GoomStates::LINES_TENTACLES,             {GoomDrawables::LINES, GoomDrawables::TENTACLES}},
+      {GoomStates::SHAPES_ONLY,                 {GoomDrawables::SHAPES}},
+      {GoomStates::SHAPES_STARS,                {GoomDrawables::SHAPES, GoomDrawables::STARS}},
+      {GoomStates::SHAPES_TUBES,                {GoomDrawables::SHAPES, GoomDrawables::TUBES}},
+      {GoomStates::STARS_ONLY,                  {GoomDrawables::STARS}},
+      {GoomStates::TENTACLES_ONLY,              {GoomDrawables::TENTACLES}},
+      {GoomStates::TUBES_ONLY,                  {GoomDrawables::TUBES}},
+  }}};
+  // clang-format on
+
+  return s_STATE_DRAWABLES;
+}
+
+} // namespace
 
 auto GoomStateInfo::GetStateInfoMap() noexcept -> StateInfoMap
 {
   Expects(DEFAULT_BUFF_INTENSITY_RANGES.size() == NUM<GoomDrawables>);
-  Expects(STATE_DRAWABLES.size() == NUM<GoomStates>);
+  Expects(GetStateDrawables().size() == NUM<GoomStates>);
   Expects(STATE_NAMES.size() == NUM<GoomStates>);
 
   auto statesArray = std::vector<StateInfoMap::KeyValue>{};
@@ -215,7 +226,7 @@ auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<
 {
   auto drawablesInfo = std::vector<DrawableInfo>{};
 
-  for (const auto& drawable : STATE_DRAWABLES[goomState])
+  for (const auto& drawable : GetStateDrawables()[goomState])
   {
     drawablesInfo.emplace_back(DrawableInfo{drawable, DEFAULT_BUFF_INTENSITY_RANGES[drawable]});
   }
@@ -225,7 +236,7 @@ auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<
 
 auto GoomStateInfo::IsMultiThreaded(const GoomStates goomState) -> bool
 {
-  const auto& goomDrawables = STATE_DRAWABLES[goomState];
+  const auto& goomDrawables = GetStateDrawables()[goomState];
 
   return std::any_of(cbegin(goomDrawables),
                      cend(goomDrawables),

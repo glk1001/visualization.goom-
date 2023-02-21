@@ -34,12 +34,7 @@ public:
   constexpr auto SetReverseVitesse(bool val) noexcept -> void;
   constexpr auto ToggleReverseVitesse() noexcept -> void;
 
-  [[nodiscard]] constexpr static auto IsFasterThan(uint32_t speed, uint32_t otherSpeed) noexcept
-      -> bool;
   [[nodiscard]] constexpr auto IsFasterThan(uint32_t otherSpeed) const noexcept -> bool;
-  [[nodiscard]] constexpr static auto IsSlowerThan(uint32_t speed, uint32_t otherSpeed) noexcept
-      -> bool;
-  [[nodiscard]] constexpr auto IsSlowerThan(uint32_t otherSpeed) const noexcept -> bool;
 
   [[nodiscard]] constexpr auto GetRelativeSpeed() const noexcept -> float;
 
@@ -76,8 +71,8 @@ constexpr auto Vitesse::GetVitesse() const noexcept -> uint32_t
 
 constexpr auto Vitesse::SetVitesse(const uint32_t val) noexcept -> void
 {
-  Expects(not IsFasterThan(val, MAXIMUM_SPEED));
-  Expects(not IsSlowerThan(val, STOP_SPEED));
+  Expects(val <= MAXIMUM_SPEED);
+  Expects(val >= STOP_SPEED);
 
   m_vitesse = val;
 }
@@ -91,8 +86,8 @@ constexpr auto Vitesse::GoSlowerBy(const uint32_t amount) noexcept -> void
   }
   m_vitesse -= amount;
 
-  Ensures(not IsFasterThan(m_vitesse, MAXIMUM_SPEED));
-  Ensures(not IsSlowerThan(m_vitesse, STOP_SPEED));
+  Ensures(m_vitesse <= MAXIMUM_SPEED);
+  Ensures(m_vitesse >= STOP_SPEED);
 }
 
 constexpr auto Vitesse::GetFasterBy(const uint32_t speed, const uint32_t amount) noexcept
@@ -111,26 +106,9 @@ constexpr auto Vitesse::GetSlowerBy(const uint32_t speed, const uint32_t amount)
   return speed - amount;
 }
 
-constexpr auto Vitesse::IsFasterThan(const uint32_t speed, const uint32_t otherSpeed) noexcept
-    -> bool
-{
-  return speed > otherSpeed;
-}
-
 constexpr auto Vitesse::IsFasterThan(const uint32_t otherSpeed) const noexcept -> bool
 {
-  return IsFasterThan(m_vitesse, otherSpeed);
-}
-
-constexpr auto Vitesse::IsSlowerThan(const uint32_t speed, const uint32_t otherSpeed) noexcept
-    -> bool
-{
-  return speed < otherSpeed;
-}
-
-constexpr auto Vitesse::IsSlowerThan(const uint32_t otherSpeed) const noexcept -> bool
-{
-  return IsSlowerThan(m_vitesse, otherSpeed);
+  return m_vitesse > otherSpeed;
 }
 
 constexpr auto Vitesse::GetRelativeSpeed() const noexcept -> float

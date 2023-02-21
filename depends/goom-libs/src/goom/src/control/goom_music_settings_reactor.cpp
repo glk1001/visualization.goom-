@@ -89,10 +89,10 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
 
   auto& filterVitesse = m_filterSettingsService->GetRWVitesse();
 
-  const auto oldVitesse = filterVitesse.GetVitesse();
-  const auto newVitesse = Vitesse::GetFasterBy(Vitesse::STOP_SPEED, newSpeedVal);
+  const auto currentVitesse = filterVitesse.GetVitesse();
+  const auto newVitesse     = Vitesse::GetFasterBy(Vitesse::STOP_SPEED, newSpeedVal);
 
-  if (Vitesse::IsFasterThan(oldVitesse, newVitesse))
+  if (currentVitesse > newVitesse)
   {
     // Current speed is faster than new one. Nothing to do.
     return;
@@ -100,8 +100,7 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
 
   // on accelere
   if (static constexpr auto VITESSE_CYCLES = 3U;
-      (Vitesse::IsFasterThan(oldVitesse, Vitesse::FASTER_SPEED) and
-       Vitesse::IsFasterThan(newVitesse, Vitesse::EVEN_FASTER_SPEED) and
+      ((currentVitesse > Vitesse::FASTER_SPEED) and (newVitesse > Vitesse::EVEN_FASTER_SPEED) and
        (0 == (m_updateNum % VITESSE_CYCLES))) or
       m_goomRand->ProbabilityOf(PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
   {
@@ -111,7 +110,7 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   else
   {
     static constexpr auto OLD_TO_NEW_SPEED_MIX = 0.4F;
-    filterVitesse.SetVitesse(STD20::lerp(oldVitesse, newVitesse, OLD_TO_NEW_SPEED_MIX));
+    filterVitesse.SetVitesse(STD20::lerp(currentVitesse, newVitesse, OLD_TO_NEW_SPEED_MIX));
   }
 
   m_lock.IncreaseLockTime(CHANGE_VITESSE_LOCK_TIME_INCREASE);

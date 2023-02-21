@@ -2,59 +2,58 @@
 
 #include "randutils.h"
 
+#include "goom_config.h"
 #include "goom_logger.h"
 #include "splitmix.hpp"
 #include "utils/math/misc.h"
 #include "xoshiro.hpp"
 
-#include <format>
 #include <limits>
 #include <ostream>
-#include <random>
-#include <stdexcept>
 
 namespace GOOM::UTILS::MATH::RAND
 {
 
-const uint32_t G_RAND_MAX = (xoshiro256plus64::max() > std::numeric_limits<uint32_t>::max())
-                                ? std::numeric_limits<uint32_t>::max()
-                                : static_cast<uint32_t>(xoshiro256plus64::max());
-
 // NOTE: C++ std::uniform_int_distribution is too expensive (about double time) so we use
 // Xoshiro and multiplication/shift technique. For timings, see tests/test_goomrand.cpp.
-// thread_local xoshiro256starstar64 eng { GetRandSeed() };
 
 namespace
 {
-uint64_t randSeed = std::random_device{}();
-thread_local xoshiro256plus64 xoshiroEng{GetRandSeed()};
-}
 
-auto GetXoshiroEng() -> xoshiro256plus64
-{
-  return xoshiroEng;
-}
+constexpr uint32_t G_RAND_MAX_CONST =
+    (xoshiro256plus64::max() > std::numeric_limits<uint32_t>::max())
+        ? std::numeric_limits<uint32_t>::max()
+        : static_cast<uint32_t>(xoshiro256plus64::max());
 
-auto GetRandSeed() -> uint64_t
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables): Hard to get around!
+uint64_t randSeed = 0UL;
+thread_local xoshiro256plus64 xoshiroEng{GetRandSeed()}; // NOLINT(cert-err58-cpp)
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables): Hard to get around!
+
+} // namespace
+
+const uint32_t G_RAND_MAX = G_RAND_MAX_CONST;
+
+auto GetRandSeed() noexcept -> uint64_t
 {
   return randSeed;
 }
 
-void SetRandSeed(const uint64_t seed)
+void SetRandSeed(const uint64_t seed) noexcept
 {
   randSeed   = seed;
-  xoshiroEng = GetRandSeed();
-  LogDebug("SetRandSeed: xoshiroEng = {}", GetRandSeed()); // NOLINT
+  xoshiroEng = randSeed;
+  LogDebug("SetRandSeed: GetRandSeed = {}", GetRandSeed());
 }
 
-inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
+inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
 {
   const auto x     = static_cast<uint32_t>(xoshiroEng());
   const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
   return n0 + static_cast<uint32_t>(m);
 }
 
-inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) -> uint32_t
+inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
 {
   // thread_local SplitMix32 eng { GetRandSeed() };
   thread_local splitmix64 s_eng{GetRandSeed()};
@@ -75,24 +74,17 @@ void RestoreRandState(std::istream& file)
   file >> xoshiroEng;
 }
 
-auto GetRandInRange(const uint32_t n0, const uint32_t n1) -> uint32_t
+auto GetRandInRange(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
 {
-#ifndef NDEBUG
-  if (n0 >= n1)
-  {
-    throw std::logic_error(std20::format("uint n0:'{}' >= n1:'{}'", n0, n1));
-  }
-#endif
+  Expects(n0 < n1);
 
   return RandXoshiroFunc(n0, n1);
 }
 
-auto GetRandInRange(const int32_t n0, const int32_t n1) -> int32_t
+auto GetRandInRange(const int32_t n0, const int32_t n1) noexcept -> int32_t
 {
-  if (n0 >= n1)
-  {
-    throw std::logic_error(std20::format("int n0:'{}' >= n1:'{}'", n0, n1));
-  }
+  Expects(n0 < n1);
+
   if ((n0 >= 0) && (n1 >= 0))
   {
     return static_cast<int32_t>(
@@ -101,14 +93,9 @@ auto GetRandInRange(const int32_t n0, const int32_t n1) -> int32_t
   return n0 + static_cast<int32_t>(GetNRand(static_cast<uint32_t>(-n0 + n1)));
 }
 
-auto GetRandInRange(const float x0, const float x1) -> float
+auto GetRandInRange(const float x0, const float x1) noexcept -> float
 {
-#ifndef NDEBUG
-  if (x0 >= x1)
-  {
-    throw std::logic_error(std20::format("float x0:'{}' >= x1:'{}'", x0, x1));
-  }
-#endif
+  Expects(x0 < x1);
 
   static const auto s_ENG_MAX = static_cast<float>(G_RAND_MAX);
   const auto t                = static_cast<float>(RandXoshiroFunc(0, G_RAND_MAX)) / s_ENG_MAX;
@@ -117,14 +104,9 @@ auto GetRandInRange(const float x0, const float x1) -> float
   //  return std::lerp(x0, x1, static_cast<float>(dis(eng)));
 }
 
-auto GetRandInRange(const double x0, const double x1) -> double
+auto GetRandInRange(const double x0, const double x1) noexcept -> double
 {
-#ifndef NDEBUG
-  if (x0 >= x1)
-  {
-    throw std::logic_error(std20::format("float x0:'{}' >= x1:'{}'", x0, x1));
-  }
-#endif
+  Expects(x0 < x1);
 
   static const auto s_ENG_MAX = static_cast<double>(G_RAND_MAX);
   const auto t                = static_cast<double>(RandXoshiroFunc(0, G_RAND_MAX)) / s_ENG_MAX;

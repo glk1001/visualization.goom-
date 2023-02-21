@@ -9,6 +9,7 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
 
+#include <random>
 #include <string>
 
 #ifdef SAVE_AUDIO_BUFFERS
@@ -64,6 +65,7 @@ auto GoomBufferProducer::Start() -> void
 
   // Goom will use same random sequence each time if the following is uncommented:
   //GoomControl::SetRandSeed(1);
+  SetRandSeed(std::random_device{}());
 
   StartActivePixelBufferDataQueue();
 

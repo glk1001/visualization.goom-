@@ -50,8 +50,6 @@ static constexpr auto COLOR_MODE_REVERSE_MIX_COLORS_WEIGHT = 15.0F;
 static constexpr auto COLOR_MODE_SIMILAR_LOW_COLORS_WEIGHT = 10.0F;
 static constexpr auto COLOR_MODE_SINE_MIX_COLORS_WEIGHT    = 05.0F;
 
-static const inline auto DEFAULT_COLOR_MAP_TYPES = RandomColorMaps::ALL_COLOR_MAP_TYPES;
-
 class FlyingStarsFx::FlyingStarsImpl
 {
 public:
@@ -108,10 +106,10 @@ private:
   [[nodiscard]] auto IsStarDead(const Star& star) const noexcept -> bool;
   auto RemoveDeadStars() noexcept -> void;
 
-  static constexpr uint32_t MIN_NUM_STAR_CLUSTERS = 0;
-  static constexpr uint32_t MAX_NUM_STAR_CLUSTERS = 3;
-  static constexpr auto MAX_STAR_CLUSTER_WIDTH    = 320.0F;
-  static constexpr auto MAX_STAR_CLUSTER_HEIGHT   = 200.0F;
+  static constexpr auto MIN_NUM_STAR_CLUSTERS   = 0U;
+  static constexpr auto MAX_NUM_STAR_CLUSTERS   = 2U;
+  static constexpr auto MAX_STAR_CLUSTER_WIDTH  = 320.0F;
+  static constexpr auto MAX_STAR_CLUSTER_HEIGHT = 200.0F;
   // Why 320,200 ? Because the FX was developed on 320x200.
   static constexpr auto MIN_STAR_CLUSTER_HEIGHT = 50.0F;
   float m_heightRatio = static_cast<float>(m_goomInfo->GetScreenHeight()) / MAX_STAR_CLUSTER_HEIGHT;
@@ -347,7 +345,8 @@ inline auto FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred() noexcept -> voi
 
 auto FlyingStarsFx::FlyingStarsImpl::AddStarClusters() -> void
 {
-  const auto numStarClusters = m_goomRand->GetRandInRange(MIN_NUM_STAR_CLUSTERS, 2U);
+  const auto numStarClusters =
+      m_goomRand->GetRandInRange(MIN_NUM_STAR_CLUSTERS, MAX_NUM_STAR_CLUSTERS + 1);
   const auto totalNumActiveStars =
       m_goomRand->GetRandInRange(MIN_TOTAL_NUM_ACTIVE_STARS, MAX_TOTAL_NUM_ACTIVE_STARS + 1);
 
@@ -375,26 +374,28 @@ inline auto FlyingStarsFx::FlyingStarsImpl::ChangeColorMapMode() noexcept -> voi
 auto FlyingStarsFx::FlyingStarsImpl::GetColorMapsSet(const IStarType& starType) const noexcept
     -> Star::ColorMapsSet
 {
+  static const auto s_DEFAULT_COLOR_MAP_TYPES = RandomColorMaps::GetAllColorMapsTypes();
+
   if (static constexpr auto PROB_RANDOM_COLOR_MAPS = 0.5F;
       m_goomRand->ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
     return {
-        starType.GetWeightedMainColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        starType.GetWeightedLowColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        starType.GetWeightedMainColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        starType.GetWeightedLowColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
+        starType.GetWeightedMainColorMaps().GetRandomColorMapPtr(s_DEFAULT_COLOR_MAP_TYPES),
+        starType.GetWeightedLowColorMaps().GetRandomColorMapPtr(s_DEFAULT_COLOR_MAP_TYPES),
+        starType.GetWeightedMainColorMaps().GetRandomColorMapPtr(s_DEFAULT_COLOR_MAP_TYPES),
+        starType.GetWeightedLowColorMaps().GetRandomColorMapPtr(s_DEFAULT_COLOR_MAP_TYPES),
     };
   }
 
   return {
       starType.GetWeightedMainColorMaps().GetRandomColorMapPtr(GetMainColorMapName(starType),
-                                                               DEFAULT_COLOR_MAP_TYPES),
+                                                               s_DEFAULT_COLOR_MAP_TYPES),
       starType.GetWeightedLowColorMaps().GetRandomColorMapPtr(GetLowColorMapName(starType),
-                                                              DEFAULT_COLOR_MAP_TYPES),
+                                                              s_DEFAULT_COLOR_MAP_TYPES),
       starType.GetWeightedMainColorMaps().GetRandomColorMapPtr(GetMainColorMapName(starType),
-                                                               DEFAULT_COLOR_MAP_TYPES),
+                                                               s_DEFAULT_COLOR_MAP_TYPES),
       starType.GetWeightedLowColorMaps().GetRandomColorMapPtr(GetLowColorMapName(starType),
-                                                              DEFAULT_COLOR_MAP_TYPES),
+                                                              s_DEFAULT_COLOR_MAP_TYPES),
   };
 }
 

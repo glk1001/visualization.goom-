@@ -178,7 +178,7 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
            CirclesTentacleLayout{{LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES}},
         }}
     )}
-// clang-format off
+// clang-format on
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
   Ensures(m_currentTentacleDriver != nullptr);
@@ -261,12 +261,12 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   else if (weightedColorMaps.id == DOMINANT_COLOR_TYPE)
   {
     m_weightedDominantMainColorMaps = weightedColorMaps.mainColorMaps;
-    m_dominantMainColorMap =
-        m_weightedDominantMainColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
+    m_weightedDominantLowColorMaps  = weightedColorMaps.lowColorMaps;
 
-    m_weightedDominantLowColorMaps = weightedColorMaps.lowColorMaps;
-    m_dominantLowColorMap =
-        m_weightedDominantLowColorMaps->GetRandomColorMapPtr(RandomColorMaps::ALL_COLOR_MAP_TYPES);
+    m_dominantMainColorMap = m_weightedDominantMainColorMaps->GetRandomColorMapPtr(
+        RandomColorMaps::GetAllColorMapsTypes());
+    m_dominantLowColorMap = m_weightedDominantLowColorMaps->GetRandomColorMapPtr(
+        RandomColorMaps::GetAllColorMapsTypes());
   }
   else
   {

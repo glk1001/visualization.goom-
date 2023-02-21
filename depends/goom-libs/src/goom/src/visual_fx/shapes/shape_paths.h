@@ -71,8 +71,8 @@ private:
   COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   ColorInfo m_colorInfo;
-  static inline const std::set<COLOR::RandomColorMaps::ColorMapTypes> COLOR_MAP_TYPES =
-      COLOR::RandomColorMaps::ALL_COLOR_MAP_TYPES;
+  [[nodiscard]] static auto GetColorMapTypes() noexcept
+      -> const std::set<COLOR::RandomColorMaps::ColorMapTypes>&;
 
   [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
   [[nodiscard]] auto GetCurrentShapeColors() const noexcept -> ShapePathColors;
@@ -154,25 +154,31 @@ inline auto ShapePath::GetColorInfo() const noexcept -> const ColorInfo&
   return m_colorInfo;
 }
 
+inline auto ShapePath::GetColorMapTypes() noexcept
+    -> const std::set<COLOR::RandomColorMaps::ColorMapTypes>&
+{
+  return COLOR::RandomColorMaps::GetAllColorMapsTypes();
+}
+
 inline auto ShapePath::UpdateMainColorInfo(
     const std::shared_ptr<const COLOR::RandomColorMaps>& mainColorMaps) noexcept -> void
 {
   m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.mainColorMapId,
-                                         {mainColorMaps, COLOR_MAP_TYPES});
+                                         {mainColorMaps, GetColorMapTypes()});
 }
 
 inline auto ShapePath::UpdateLowColorInfo(
     const std::shared_ptr<const COLOR::RandomColorMaps>& lowColorMaps) noexcept -> void
 {
   m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.lowColorMapId,
-                                         {lowColorMaps, COLOR_MAP_TYPES});
+                                         {lowColorMaps, GetColorMapTypes()});
 }
 
 inline auto ShapePath::UpdateInnerColorInfo(
     const std::shared_ptr<const COLOR::RandomColorMaps>& innerColorMaps) noexcept -> void
 {
   m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.innerColorMapId,
-                                         {innerColorMaps, COLOR_MAP_TYPES});
+                                         {innerColorMaps, GetColorMapTypes()});
 }
 
 inline auto ShapePath::SetChromaFactor(const float val) noexcept -> void

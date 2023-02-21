@@ -36,11 +36,9 @@ public:
     ROTATED_T,
     SHADES,
   };
-  static inline const std::set<ColorMapTypes> NO_COLOR_MAP_TYPES{};
-  static inline const std::set<ColorMapTypes> ALL_COLOR_MAP_TYPES{
-      ColorMapTypes::ROTATED_T,
-      ColorMapTypes::SHADES,
-  };
+  [[nodiscard]] static auto GetNoColorMapsTypes() noexcept -> const std::set<ColorMapTypes>&;
+  [[nodiscard]] static auto GetAllColorMapsTypes() noexcept -> const std::set<ColorMapTypes>&;
+
   [[nodiscard]] auto GetRandomColorMapPtr(const std::set<ColorMapTypes>& types) const noexcept
       -> std::shared_ptr<const IColorMap>;
   [[nodiscard]] auto GetRandomColorMapPtr(COLOR_DATA::ColorMapName colorMapName,
@@ -132,6 +130,23 @@ inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
                                         const std::string& colorMapsName) noexcept
   : m_goomRand{&goomRand}, m_colorMapsName{colorMapsName}
 {
+}
+
+inline auto RandomColorMaps::GetNoColorMapsTypes() noexcept -> const std::set<ColorMapTypes>&
+{
+  static const auto s_NO_COLOR_MAP_TYPES = std::set<ColorMapTypes>{};
+
+  return s_NO_COLOR_MAP_TYPES;
+}
+
+inline auto RandomColorMaps::GetAllColorMapsTypes() noexcept -> const std::set<ColorMapTypes>&
+{
+  static const auto s_ALL_COLOR_MAP_TYPES = std::set<ColorMapTypes>{
+      ColorMapTypes::ROTATED_T,
+      ColorMapTypes::SHADES,
+  };
+
+  return s_ALL_COLOR_MAP_TYPES;
 }
 
 inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::string&

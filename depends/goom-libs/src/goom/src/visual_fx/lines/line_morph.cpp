@@ -136,7 +136,7 @@ auto LineMorph::SetWeightedColorMaps(
 {
   m_colorMaps = weightedMaps;
   m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
-                                        {m_colorMaps, RandomColorMaps::ALL_COLOR_MAP_TYPES});
+                                        {m_colorMaps, RandomColorMaps::GetAllColorMapsTypes()});
 }
 
 inline auto LineMorph::UpdateColorInfo() noexcept -> void
