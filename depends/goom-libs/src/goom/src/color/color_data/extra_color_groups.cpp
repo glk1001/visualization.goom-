@@ -8,6 +8,7 @@ namespace GOOM::COLOR::COLOR_DATA
 {
 
 // clang-format off
+// NOLINTBEGIN(cert-err58-cpp): Fix with C++20 and 'constexpr'.\n"
 const std::vector<ColorMapName> WES_ANDERSON_MAPS {
     ColorMapName::AQUATIC1_5,
     ColorMapName::AQUATIC2_5,
@@ -396,6 +397,7 @@ const std::vector<ColorMapName> PASTEL_MAPS
     ColorMapName::PASTEL_9,
     ColorMapName::PASTEL_10,
 };
+// NOLINTEND(cert-err58-cpp): Fix with C++20 and 'constexpr'.\n"
 // clang-format on
 
 } // namespace GOOM::COLOR::COLOR_DATA

@@ -30,41 +30,41 @@ PALETTABLE_INCLUDE_DIR = '/tmp/' + INCLUDE_RELDIR + '/' + PALETTABLE_SUBDIR
 SRCE_DIR = '/tmp/' + SRCE_RELDIR
 
 COLOR_MAP_ENUMS_H = 'color_map_enums.h'
-ALL_MAPS_H = 'color_data_maps.h'
-ALL_MAPS_CPP = 'color_data_maps.cpp'
+COLOR_DATA_MAPS_H = 'color_data_maps.h'
+COLOR_DATA_MAPS_CPP = 'color_data_maps.cpp'
 GOOM_NAMESPACE = 'GOOM'
 COLOR_NAMESPACE = 'COLOR'
 COLOR_DATA_NAMESPACE = 'COLOR_DATA'
 MAPS_ENUM_NAME = 'ColorMapName'
 
 PALETTABLE_MODULES = {
-    'palettable.cartocolors.diverging': './cartocolors/diverging',
-    'palettable.cartocolors.qualitative': './cartocolors/qualitative',
-    'palettable.cartocolors.sequential': './cartocolors/sequential',
-    'palettable.cmocean.diverging': './cmocean/diverging',
-    'palettable.cmocean.sequential': './cmocean/sequential',
-    'palettable.colorbrewer.diverging': './colorbrewer/diverging',
-    'palettable.colorbrewer.qualitative': './colorbrewer/qualitative',
-    'palettable.colorbrewer.sequential': './colorbrewer/sequential',
-    'palettable.cubehelix': './cubehelix',
-    'palettable.lightbartlein.diverging': './lightbartlein/diverging',
-    'palettable.lightbartlein.sequential': './lightbartlein/sequential',
-    'palettable.matplotlib': './matplotlib',
-    'palettable.mycarta': './mycarta',
-    'palettable.scientific.diverging': './scientific/diverging',
-    'palettable.scientific.sequential': './scientific/sequential',
-    'palettable.tableau': './tableau',
-    'palettable.wesanderson': './wesanderson',
+        'palettable.cartocolors.diverging': './cartocolors/diverging',
+        'palettable.cartocolors.qualitative': './cartocolors/qualitative',
+        'palettable.cartocolors.sequential': './cartocolors/sequential',
+        'palettable.cmocean.diverging': './cmocean/diverging',
+        'palettable.cmocean.sequential': './cmocean/sequential',
+        'palettable.colorbrewer.diverging': './colorbrewer/diverging',
+        'palettable.colorbrewer.qualitative': './colorbrewer/qualitative',
+        'palettable.colorbrewer.sequential': './colorbrewer/sequential',
+        'palettable.cubehelix': './cubehelix',
+        'palettable.lightbartlein.diverging': './lightbartlein/diverging',
+        'palettable.lightbartlein.sequential': './lightbartlein/sequential',
+        'palettable.matplotlib': './matplotlib',
+        'palettable.mycarta': './mycarta',
+        'palettable.scientific.diverging': './scientific/diverging',
+        'palettable.scientific.sequential': './scientific/sequential',
+        'palettable.tableau': './tableau',
+        'palettable.wesanderson': './wesanderson',
 }
 
 DIVERGING_BLACK = [
-    'pink_black_green(w3c)',
-    'red_black_blue',
-    'red_black_green',
-    'red_black_orange',
-    'red_black_sky',
-    'yellow_black_blue',
-    'yellow_black_sky',
+        'pink_black_green(w3c)',
+        'red_black_blue',
+        'red_black_green',
+        'red_black_orange',
+        'red_black_sky',
+        'yellow_black_blue',
+        'yellow_black_sky',
 ]
 
 
@@ -95,8 +95,8 @@ def cmap_name_key(text: str):
 
 def find_palettes(mod):
     return {
-        k: v for k, v in vars(mod).items()
-        if isinstance(v, Palette) and not k.endswith('_r')}
+            k: v for k, v in vars(mod).items()
+            if isinstance(v, Palette) and not k.endswith('_r')}
 
 
 def get_cpp_name(nm: str) -> str:
@@ -219,6 +219,7 @@ def write_cpp_header(cm: Colormap):
         f.write('\n')
         write_namespace_begin(f)
         f.write('\n')
+        f.write("// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.\n")
         f.write(f'inline const auto {get_upper_cpp_name(cm.name)} = std::vector<vivid::srgb_t>{{\n')
         for i in range(cm.N):
             vals = cm(i)
@@ -247,8 +248,8 @@ def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
         write_namespace_end(f)
 
 
-def write_all_maps_header(color_map_grps: Dict[str, List[str]], num_maps: int):
-    with open(f'{INCLUDE_DIR}/{ALL_MAPS_H}', 'w') as f:
+def write_color_data_maps_header(color_map_grps: Dict[str, List[str]], num_maps: int):
+    with open(f'{INCLUDE_DIR}/{COLOR_DATA_MAPS_H}', 'w') as f:
         f.write('#pragma once\n')
         f.write('\n')
         f.write(f'{GENERATED_CODE_WARNING}\n')
@@ -277,17 +278,19 @@ def write_all_maps_header(color_map_grps: Dict[str, List[str]], num_maps: int):
         write_namespace_end(f)
 
 
-def write_all_maps_cpp(color_map_grps: Dict[str, List[str]], used_mps: List[str],
-                       dupl: Dict[str, str]):
-    with open(f'{SRCE_DIR}/{FINAL_INCLUDE_RELDIR}/{ALL_MAPS_CPP}', 'w') as f:
+def write_color_data_maps_cpp(color_map_grps: Dict[str, List[str]], used_mps: List[str],
+                              dupl: Dict[str, str]):
+    with open(f'{SRCE_DIR}/{FINAL_INCLUDE_RELDIR}/{COLOR_DATA_MAPS_CPP}', 'w') as f:
         f.write(f'{GENERATED_CODE_WARNING}\n')
         f.write('\n')
-        f.write(f'#include "{ALL_MAPS_H}"\n')
+        f.write(f'#include "{COLOR_DATA_MAPS_H}"\n')
         f.write('\n')
         f.write('// clang-format off\n')
+        f.write('// NOLINTBEGIN(llvm-include-order)\n')
         for m in used_mps:
             f.write(f'#include "{FINAL_PALETTABLE_INCLUDE_RELDIR}/{get_cpp_name(m)}.h"' +
                     get_enum_line_end(m, dupl))
+        f.write('// NOLINTEND(llvm-include-order)\n')
         f.write('// clang-format on\n')
         f.write('\n')
         f.write(f'#include "{COLOR_MAP_ENUMS_H}"\n')
@@ -309,6 +312,7 @@ def write_all_maps_cpp(color_map_grps: Dict[str, List[str]], used_mps: List[str]
         # Do the groups
         not_done_maps = copy.deepcopy(used_mps)
         for map_nm in color_map_grps:
+            f.write("// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.\n")
             f.write(f'const std::vector<{MAPS_ENUM_NAME}> {get_upper_cpp_name(map_nm)}_MAPS{{\n')
             sorted_map_names = sorted(color_map_grps[map_nm], key=cmap_name_key)
             for m in sorted_map_names:
@@ -332,111 +336,111 @@ if __name__ == '__main__':
     inject_palettable_cmaps()
 
     matplotlib_color_map_groups: Dict[str, List[str]] = {
-        'perc_unif_sequential': [
-            'viridis',
-            'plasma',
-            'inferno',
-            'magma',
-            'cividis',
-        ],
-        'sequential': [
-            'Greys',
-            'Purples',
-            'Blues',
-            'Greens',
-            'Oranges',
-            'Reds',
-            'YlOrBr',
-            'YlOrRd',
-            'OrRd',
-            'PuRd',
-            'RdPu',
-            'BuPu',
-            'GnBu',
-            'PuBu',
-            'YlGnBu',
-            'PuBuGn',
-            'BuGn',
-            'YlGn'
-        ],
-        'sequential2': [
-            'binary',
-            'gist_yarg',
-            'gist_gray',
-            'gray',
-            'bone',
-            'pink',
-            'spring',
-            'summer',
-            'autumn',
-            'winter',
-            'cool',
-            'Wistia',
-            'hot',
-            'afmhot',
-            'gist_heat',
-            'copper'
-        ],
-        'diverging': [
-            'PiYG',
-            'PRGn',
-            'BrBG',
-            'PuOr',
-            'RdGy',
-            'RdBu',
-            'RdYlBu',
-            'RdYlGn',
-            'Spectral',
-            'coolwarm',
-            'bwr',
-            'seismic'
-        ],
-        'diverging_black': [
-            'pink_black_green(w3c)',
-            'red_black_blue',
-            'red_black_green',
-            'red_black_orange',
-            'red_black_sky',
-            'yellow_black_blue',
-            'yellow_black_sky',
-        ],
-        'qualitative': [
-            'Pastel1',
-            'Pastel2',
-            'Paired',
-            'Accent',
-            'Dark2',
-            'Set1',
-            'Set2',
-            'Set3',
-            'tab10',
-            'tab20',
-            'tab20b',
-            'tab20c'
-        ],
-        'misc': [
-            'flag',
-            'prism',
-            'ocean',
-            'gist_earth',
-            'terrain',
-            'gist_stern',
-            'gnuplot',
-            'gnuplot2',
-            'CMRmap',
-            'cubehelix',
-            'brg',
-            'gist_rainbow',
-            'rainbow',
-            'jet',
-            'nipy_spectral',
-            'gist_ncar'
-        ],
-        'cyclic': [
-            'twilight',
-            'twilight_shifted',
-            'hsv'
-        ],
+            'perc_unif_sequential': [
+                    'viridis',
+                    'plasma',
+                    'inferno',
+                    'magma',
+                    'cividis',
+            ],
+            'sequential': [
+                    'Greys',
+                    'Purples',
+                    'Blues',
+                    'Greens',
+                    'Oranges',
+                    'Reds',
+                    'YlOrBr',
+                    'YlOrRd',
+                    'OrRd',
+                    'PuRd',
+                    'RdPu',
+                    'BuPu',
+                    'GnBu',
+                    'PuBu',
+                    'YlGnBu',
+                    'PuBuGn',
+                    'BuGn',
+                    'YlGn'
+            ],
+            'sequential2': [
+                    'binary',
+                    'gist_yarg',
+                    'gist_gray',
+                    'gray',
+                    'bone',
+                    'pink',
+                    'spring',
+                    'summer',
+                    'autumn',
+                    'winter',
+                    'cool',
+                    'Wistia',
+                    'hot',
+                    'afmhot',
+                    'gist_heat',
+                    'copper'
+            ],
+            'diverging': [
+                    'PiYG',
+                    'PRGn',
+                    'BrBG',
+                    'PuOr',
+                    'RdGy',
+                    'RdBu',
+                    'RdYlBu',
+                    'RdYlGn',
+                    'Spectral',
+                    'coolwarm',
+                    'bwr',
+                    'seismic'
+            ],
+            'diverging_black': [
+                    'pink_black_green(w3c)',
+                    'red_black_blue',
+                    'red_black_green',
+                    'red_black_orange',
+                    'red_black_sky',
+                    'yellow_black_blue',
+                    'yellow_black_sky',
+            ],
+            'qualitative': [
+                    'Pastel1',
+                    'Pastel2',
+                    'Paired',
+                    'Accent',
+                    'Dark2',
+                    'Set1',
+                    'Set2',
+                    'Set3',
+                    'tab10',
+                    'tab20',
+                    'tab20b',
+                    'tab20c'
+            ],
+            'misc': [
+                    'flag',
+                    'prism',
+                    'ocean',
+                    'gist_earth',
+                    'terrain',
+                    'gist_stern',
+                    'gnuplot',
+                    'gnuplot2',
+                    'CMRmap',
+                    'cubehelix',
+                    'brg',
+                    'gist_rainbow',
+                    'rainbow',
+                    'jet',
+                    'nipy_spectral',
+                    'gist_ncar'
+            ],
+            'cyclic': [
+                    'twilight',
+                    'twilight_shifted',
+                    'hsv'
+            ],
     }
 
     os.makedirs(SRCE_DIR)
@@ -469,7 +473,7 @@ if __name__ == '__main__':
     write_cpp_headers(used_maps)
     write_color_maps_enums_header(used_maps, duplicate_maps)
 
-    write_all_maps_header(color_map_groups, len(used_maps))
-    write_all_maps_cpp(color_map_groups, used_maps, duplicate_maps)
+    write_color_data_maps_header(color_map_groups, len(used_maps))
+    write_color_data_maps_cpp(color_map_groups, used_maps, duplicate_maps)
 
     print(f'Wrote generated files to "{SRCE_DIR}".')
