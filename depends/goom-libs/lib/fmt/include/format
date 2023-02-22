@@ -1,5 +1,4 @@
-#ifndef FMT_FORMAT_
-#define FMT_FORMAT_
+#pragma once
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define FMT_HEADER_ONLY 1
@@ -10,5 +9,3 @@
 
 // NOLINTNEXTLINE(misc-unused-alias-decls): Waiting for C++20
 namespace std20 = ::fmt;
-
-#endif

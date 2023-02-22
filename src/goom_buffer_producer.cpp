@@ -317,7 +317,7 @@ auto GoomBufferProducer::GetAudioBufferWriter(const std::string& songName) const
   static constexpr auto* AUDIO_BUFFERS_FILE_PREFIX = "audio";
   const auto saveFilePrefix = songSaveDirectory + PATH_SEP + AUDIO_BUFFERS_FILE_PREFIX;
 
-  return std::make_unique<AudioBufferWriter>(saveFilePrefix, true);
+  return std::make_unique<AudioBufferWriter>(saveFilePrefix);
 }
 
 auto GoomBufferProducer::SaveAudioBuffer(const std::vector<float>& floatAudioData) -> void
@@ -341,7 +341,7 @@ auto GoomBufferProducer::SaveAudioBuffer(const std::vector<float>& floatAudioDat
 
   const auto currentFilename = m_audioBufferWriter->GetCurrentFilename();
   m_audioBufferWriter->Write(audioBuffer, true);
-  LogInfo(m_goomLogger, "Wrote audio data buffer {} to file '{}'.", bufferNum, currentFilename);
+  LogInfo(*m_goomLogger, "Wrote audio data buffer {} to file '{}'.", bufferNum, currentFilename);
 }
 
 #endif

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
+#include <span>
 
-static constexpr auto CPLUSPLUS_17 = 201703L;
+inline constexpr auto CPLUSPLUS_17 = 201703L;
 static_assert(__cplusplus >= CPLUSPLUS_17, "c++ std too low");
 
 namespace GOOM::UTILS
@@ -21,19 +21,18 @@ public:
   auto operator=(BufferView&&) -> BufferView      = delete;
   virtual ~BufferView() noexcept                  = default;
 
-  [[nodiscard]] auto Data() const -> const T*;
-  auto operator[](size_t i) const -> const T&;
+  [[nodiscard]] auto Data() const noexcept -> const T*;
+  auto operator[](size_t i) const noexcept -> const T&;
 
-  [[nodiscard]] auto GetBufferLen() const -> size_t;
-  [[nodiscard]] auto GetBufferSize() const -> size_t;
+  [[nodiscard]] auto GetBufferLen() const noexcept -> size_t;
+  [[nodiscard]] auto GetBufferSizeBytes() const noexcept -> size_t;
 
 protected:
   BufferView() noexcept;
-  void SetBuffer(size_t buffLen, const T* buff);
+  auto SetBuffer(size_t buffLen, const T* buff) noexcept -> void;
 
 private:
-  size_t m_buffLen  = 0;
-  const T* m_buffer = nullptr;
+  STD_20::span<const T> m_buffer{};
 };
 
 template<class T>
@@ -41,39 +40,38 @@ inline BufferView<T>::BufferView() noexcept = default;
 
 template<class T>
 inline BufferView<T>::BufferView(const size_t buffLen, const T* buff) noexcept
-  : m_buffLen{buffLen}, m_buffer{buff}
+  : m_buffer{buff, buffLen}
 {
 }
 
 template<class T>
-void inline BufferView<T>::SetBuffer(const size_t buffLen, const T* buff)
+void inline BufferView<T>::SetBuffer(const size_t buffLen, const T* buff) noexcept
 {
-  m_buffLen = buffLen;
-  m_buffer  = buff;
+  m_buffer = {buff, buffLen};
 }
 
 template<class T>
-inline auto BufferView<T>::Data() const -> const T*
+inline auto BufferView<T>::Data() const noexcept -> const T*
 {
-  return m_buffer;
+  return m_buffer.data();
 }
 
 template<class T>
-inline auto BufferView<T>::operator[](const size_t i) const -> const T&
+inline auto BufferView<T>::operator[](const size_t i) const noexcept -> const T&
 {
   return m_buffer[i];
 }
 
 template<class T>
-inline auto BufferView<T>::GetBufferLen() const -> size_t
+inline auto BufferView<T>::GetBufferLen() const noexcept -> size_t
 {
-  return m_buffLen;
+  return m_buffer.size();
 }
 
 template<class T>
-inline auto BufferView<T>::GetBufferSize() const -> size_t
+inline auto BufferView<T>::GetBufferSizeBytes() const noexcept -> size_t
 {
-  return m_buffLen * sizeof(T);
+  return m_buffer.size_bytes();
 }
 
 } // namespace GOOM::UTILS
