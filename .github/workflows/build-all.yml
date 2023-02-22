@@ -106,6 +106,11 @@ jobs:
           version: ${{ env.GCC_VERSION }}
           platform: x64
 
+      - name: Install clang-tidy-${{ env.CLANG_VERSION }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        run: |
+            sudo apt-get install -y clang-tidy-${{ env.CLANG_VERSION }}
+
       - name: Configure
         shell: bash
         run: |
@@ -116,6 +121,7 @@ jobs:
                                                                         -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
                                                                         -DENABLE_TESTING=0 \
                                                                         -DUSE_MAGIC_ENUM=1 \
+                                                                        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
                                                                         ..
 
       - name: Build
@@ -125,6 +131,15 @@ jobs:
           CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
                                                                   --build ${{ env.BUILD_DIR }} \
                                                                   --config ${{ matrix.config.build_type }}
+
+      - name: Run clang-tidy-${{ env.CLANG_VERSION }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          cd ${{ env.GOOM_DIR }}
+          run-clang-tidy-${{ env.CLANG_VERSION }} -header-filter=.* \
+                                                  -p ${{ env.BUILD_DIR }} \
+                                                  ${{ env.GOOM_DIR }}
 
       # - name: Archive goom artifacts
       #   if: startsWith(matrix.config.name, 'Windows')
