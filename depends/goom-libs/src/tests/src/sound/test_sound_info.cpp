@@ -1,13 +1,15 @@
-#include "catch2/catch.hpp"
 #include "control/goom_sound_events.h"
 #include "sound_info.h"
 #include "utils/math/misc.h"
 
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <memory>
 
 namespace GOOM::UNIT_TESTS
 {
 
+using Catch::Approx;
 using CONTROL::GoomSoundEvents;
 using UTILS::MATH::SMALL_FLOAT;
 

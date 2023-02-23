@@ -100,7 +100,8 @@ if (NOT DEFINED LSys_SOURCE_DIR)
                   GITHUB_REPOSITORY "glk1001/LSys"
                   GIT_TAG "master"
                   FORCE True
-                  DOWNLOAD_ONLY True)
+                  )
+    set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 endif ()
 
 
@@ -138,6 +139,16 @@ else ()
     endif ()
 endif ()
 
+if (ENABLE_TESTING)
+    set(CATCH2_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/catch2-src")
+    if (NOT EXISTS "${CATCH2_SOURCE_DIR}")
+        CPMAddPackage(NAME Catch2 GITHUB_REPOSITORY catchorg/Catch2 VERSION 3.1.1
+                      OPTIONS WARNINGS_AS_ERRORS "Catch2 v3 has warnings" OFF)
+
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
+    endif ()
+endif ()
+
 
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
@@ -155,13 +166,13 @@ message(STATUS "Goom-libs: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom-libs: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Goom-libs: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
 message(STATUS "Goom-libs: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
+message(STATUS "Goom-libs: Catch2_SOURCE_DIR = \"${Catch2_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: GOOM_DEBUG = \"${GOOM_DEBUG}\".")
 message(STATUS "Goom-libs: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
-message(STATUS "Goom-libs: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
-message(STATUS "Goom-libs: THIRD_PARTY_INCLUDE_DIR = \"${THIRD_PARTY_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
+message(STATUS "Goom-libs: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 
 
 if (ENABLE_TESTING)

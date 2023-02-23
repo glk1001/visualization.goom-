@@ -1,4 +1,3 @@
-#include "catch2/catch.hpp"
 #include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
@@ -13,6 +12,7 @@
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <memory>
 
 namespace GOOM::UNIT_TESTS

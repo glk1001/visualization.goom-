@@ -1,6 +1,6 @@
-#include "catch2/catch.hpp"
 #include "utils/parallel_utils.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <set>
 #include <thread>
 #include <vector>
@@ -12,6 +12,12 @@ using UTILS::Parallel;
 
 TEST_CASE("Test Parallel Utils", "[ParallelFor]")
 {
+  const auto numSupportedConcurrentThreads = std::thread::hardware_concurrency();
+  if (numSupportedConcurrentThreads <= 1)
+  {
+    return;
+  }
+
   auto threadsUsed = std::set<std::thread::id>{};
   auto mutex       = std::mutex{};
 
@@ -26,34 +32,35 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
     threadsUsed.emplace(std::this_thread::get_id());
   };
 
-  const auto checkResults =
-      [&testArray, &threadsUsed, &func](const Parallel& parallel, const uint32_t numThreadsUsed)
+  const auto checkResults = [&numSupportedConcurrentThreads, &testArray, &threadsUsed, &func](
+                                const Parallel& parallel, const uint32_t expectedNumThreadsUsed)
   {
     for (auto i = 0U; i < ARRAY_LEN; ++i)
     {
       REQUIRE(testArray[i] == func(i));
     }
-    REQUIRE(parallel.GetNumThreadsUsed() == numThreadsUsed);
-    REQUIRE(threadsUsed.size() == numThreadsUsed);
+    UNSCOPED_INFO("numSupportedConcurrentThreads = " << numSupportedConcurrentThreads);
+    REQUIRE(parallel.GetNumThreadsUsed() == expectedNumThreadsUsed);
+    REQUIRE(threadsUsed.size() == expectedNumThreadsUsed);
   };
 
-  auto parallel       = std::make_unique<Parallel>(-1);
-  auto numThreadsUsed = std::thread::hardware_concurrency() - 1;
+  auto parallel               = std::make_unique<Parallel>(-1);
+  auto expectedNumThreadsUsed = numSupportedConcurrentThreads - 1;
   threadsUsed.clear();
   parallel->ForLoop(ARRAY_LEN, assignFunc);
-  checkResults(*parallel, numThreadsUsed);
+  checkResults(*parallel, expectedNumThreadsUsed);
 
-  parallel       = std::make_unique<Parallel>(-2);
-  numThreadsUsed = std::thread::hardware_concurrency() - 2;
+  parallel               = std::make_unique<Parallel>(-2);
+  expectedNumThreadsUsed = numSupportedConcurrentThreads - 2;
   threadsUsed.clear();
   parallel->ForLoop(ARRAY_LEN, assignFunc);
-  checkResults(*parallel, numThreadsUsed);
+  checkResults(*parallel, expectedNumThreadsUsed);
 
-  parallel       = std::make_unique<Parallel>(1);
-  numThreadsUsed = 1;
+  parallel               = std::make_unique<Parallel>(1);
+  expectedNumThreadsUsed = 1;
   threadsUsed.clear();
   parallel->ForLoop(ARRAY_LEN, assignFunc);
-  checkResults(*parallel, numThreadsUsed);
+  checkResults(*parallel, expectedNumThreadsUsed);
 }
 
 } // namespace GOOM::UNIT_TESTS

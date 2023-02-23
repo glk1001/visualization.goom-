@@ -1,7 +1,7 @@
-#include "catch2/catch.hpp"
 #include "utils/enum_utils.h"
 
 #include <algorithm>
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 
 namespace GOOM::UNIT_TESTS

@@ -1,7 +1,7 @@
 name: build goom-lib
 on:
   push:
-    branches: [master]
+    branches: []
   pull_request:
     branches: []
 
@@ -117,12 +117,11 @@ jobs:
           mkdir ${{ env.GOOM_DIR }}/${{ env.BUILD_DIR }}
           cd ${{ env.GOOM_DIR }}/${{ env.BUILD_DIR }}
           CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
-                                                                        -DIS_THIS_MAIN_CMAKE_SCRIPT=1 \
-                                                                        -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-                                                                        -DENABLE_TESTING=0 \
-                                                                        -DUSE_MAGIC_ENUM=1 \
-                                                                        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-                                                                        ..
+                                                                  -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+                                                                  -DENABLE_TESTING=1 \
+                                                                  -DUSE_MAGIC_ENUM=1 \
+                                                                  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                                                                  ..
 
       - name: Build
         shell: bash
@@ -137,9 +136,15 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.GOOM_DIR }}
-          run-clang-tidy-${{ env.CLANG_VERSION }} -header-filter=.* \
+          run-clang-tidy-${{ env.CLANG_VERSION }} -header-filter='^((?!catch2).)*$' \
                                                   -p ${{ env.BUILD_DIR }} \
-                                                  ${{ env.GOOM_DIR }}
+                                                  ${PWD}/src
+
+      - name: Run Test Harness
+        shell: bash
+        run: |
+          cd ${{ env.GOOM_DIR }}
+          ctest --verbose --build-config ${{ matrix.config.build_type }} --test-dir ${{ env.BUILD_DIR }}
 
       # - name: Archive goom artifacts
       #   if: startsWith(matrix.config.name, 'Windows')

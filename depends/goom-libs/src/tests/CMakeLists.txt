@@ -31,24 +31,6 @@ add_executable(${GOOM_LIB_TESTS_NAME}
                src/visual_fx/test_filter_fx.cpp
                )
 
-target_link_libraries(${GOOM_LIB_TESTS_NAME}
-                      PRIVATE
-                      goom
-                      vivid
-                      LSys::lib
-                      Catch2::Catch2
-                      ${CMAKE_THREAD_LIBS_INIT}
-                      m
-                      pthread
-                      stdc++
-                      )
-if (FREETYPE_FOUND)
-    target_link_libraries(${GOOM_LIB_TESTS_NAME}
-                          PRIVATE
-                          Freetype::Freetype
-                          )
-endif ()
-
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/include
@@ -59,9 +41,34 @@ target_include_directories(${GOOM_LIB_TESTS_NAME}
                            SYSTEM PRIVATE
                            ${GOOM_LIBS_DIR}/lib/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
+                           ${GOOM_LIBS_DIR}/lib/fmt/include
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}
+                           ${GLM_INCLUDE_DIR}
                            )
+
+target_link_libraries(${GOOM_LIB_TESTS_NAME}
+                      PRIVATE
+                      goom
+                      vivid
+                      LSys::lib
+                      Catch2::Catch2
+                      ${CMAKE_THREAD_LIBS_INIT}
+                      )
+if (FREETYPE_FOUND)
+    target_link_libraries(${GOOM_LIB_TESTS_NAME}
+                          PRIVATE
+                          Freetype::Freetype
+                          )
+endif ()
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_link_libraries(${GOOM_LIB_TESTS_NAME}
+                          PRIVATE
+                          m
+                          pthread
+                          stdc++
+                          )
+endif ()
 
 set_project_warnings(${GOOM_LIB_TESTS_NAME})
 enable_sanitizers(${GOOM_LIB_TESTS_NAME})

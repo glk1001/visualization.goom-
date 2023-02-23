@@ -2,12 +2,13 @@
 #define GOOM_DEBUG
 #endif
 
-#include "catch2/catch.hpp"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/misc.h"
 
+#include <algorithm>
+#include <catch2/catch_test_macros.hpp>
 #include <chrono>
 #include <cstring>
 #include <memory>
@@ -148,19 +149,19 @@ TEST_CASE("PixelBuffer Get4RHBNeighbours")
   };
   buffer.Fill(WHITE_PIXEL);
 
-  static constexpr auto X = 20UL;
-  static constexpr auto Y = 40UL;
-  buffer(X, Y)            = TEST_PIXEL1;
-  buffer(X + 1, Y)        = TEST_PIXEL2;
-  buffer(X, Y + 1)        = TEST_PIXEL3;
-  buffer(X + 1, Y + 1)    = TEST_PIXEL4;
+  static constexpr size_t X = 20UL;
+  static constexpr size_t Y = 40UL;
+  buffer(X, Y)              = TEST_PIXEL1;
+  buffer(X + 1, Y)          = TEST_PIXEL2;
+  buffer(X, Y + 1)          = TEST_PIXEL3;
+  buffer(X + 1, Y + 1)      = TEST_PIXEL4;
 
   const auto pixel4RHBNeighbours = buffer.Get4RHBNeighbours(X, Y);
 
-  REQUIRE(TEST_PIXEL1 == pixel4RHBNeighbours[0]);
-  REQUIRE(TEST_PIXEL2 == pixel4RHBNeighbours[1]);
-  REQUIRE(TEST_PIXEL3 == pixel4RHBNeighbours[2]);
-  REQUIRE(TEST_PIXEL4 == pixel4RHBNeighbours[3]);
+  REQUIRE(TEST_PIXEL1 == pixel4RHBNeighbours.at(0));
+  REQUIRE(TEST_PIXEL2 == pixel4RHBNeighbours.at(1));
+  REQUIRE(TEST_PIXEL3 == pixel4RHBNeighbours.at(2));
+  REQUIRE(TEST_PIXEL4 == pixel4RHBNeighbours.at(3));
 }
 
 TEST_CASE("PixelBuffer RowIter")

@@ -26,3 +26,7 @@ fi
 declare -r RERUN_OPTS="--rerun-failed --output-on-failure"
 
 ctest ${RERUN_OPTS} --verbose --test-dir "${TEST_DIR}"
+if [[ $? != 0 ]]; then
+  exit 1
+fi
+

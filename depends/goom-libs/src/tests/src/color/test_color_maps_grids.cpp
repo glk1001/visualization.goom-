@@ -1,4 +1,3 @@
-#include "catch2/catch.hpp"
 #include "color/color_maps.h"
 #include "color/color_maps_grids.h"
 #include "color/color_utils.h"
@@ -6,12 +5,23 @@
 #include "utils/t_values.h"
 
 #include <algorithm>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <string>
+
+#if not defined(_MSC_VER)
 #include <vivid.h>
+#else
+#pragma warning(push)
+#pragma warning(disable : 4242)
+#include <vivid.h>
+#pragma warning(pop)
+#endif
 
 namespace GOOM::UNIT_TESTS
 {
 
+using Catch::Approx;
 using COLOR::ColorMapsGrid;
 using COLOR::GetRgbColorLerp;
 using COLOR::IColorMap;

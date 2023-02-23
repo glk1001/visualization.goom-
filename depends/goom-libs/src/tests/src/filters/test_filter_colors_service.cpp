@@ -1,4 +1,3 @@
-#include "catch2/catch.hpp"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_colors_service.h"
 #include "filter_fx/filter_utils/zoom_filter_coefficients.h"
@@ -7,6 +6,7 @@
 #include "utils/math/goom_rand.h"
 
 #include <array>
+#include <catch2/catch_test_macros.hpp>
 #include <numeric>
 
 namespace GOOM::UNIT_TESTS

@@ -1,9 +1,9 @@
-#include "catch2/catch.hpp"
 #include "color/color_utils.h"
 #include "goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
+#include <catch2/catch_test_macros.hpp>
 
 namespace GOOM::UNIT_TESTS
 {
@@ -26,7 +26,7 @@ TEST_CASE("Test max channels")
   REQUIRE(channel_limits<uint32_t>::max() == CHANNEL_MAX);
   REQUIRE(channel_limits<int>::min() == 0);
   REQUIRE(channel_limits<int>::max() == CHANNEL_MAX);
-  REQUIRE(channel_limits<float>::min() == 0);
+  REQUIRE(channel_limits<float>::min() == 0.0F);
   REQUIRE(channel_limits<float>::max() == static_cast<float>(CHANNEL_MAX));
 }
 

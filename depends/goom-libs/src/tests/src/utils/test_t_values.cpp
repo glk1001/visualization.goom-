@@ -1,12 +1,14 @@
-#include "catch2/catch.hpp"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <vector>
 
 namespace GOOM::UNIT_TESTS
 {
 
+using Catch::Approx;
 using UTILS::IncrementedValue;
 using UTILS::TValue;
 using UTILS::MATH::SMALL_FLOAT;

@@ -2,11 +2,19 @@
 #define GOOM_DEBUG
 #endif
 
-#include "catch2/catch.hpp"
+// TODO(glk) - Look at a better way to deal with this - Vitesse::SetVitesse
+#if not defined(_MSC_VER)
+#include "filter_fx/filter_settings.h"
+#else
+#pragma warning(push)
+#pragma warning(disable : 4296)
+#include "filter_fx/filter_settings.h"
+#pragma warning(pop)
+#endif
+
 #include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffer_striper.h"
 #include "filter_fx/filter_buffers.h"
-#include "filter_fx/filter_settings.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
@@ -17,6 +25,7 @@
 #include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <cmath>
 
 namespace GOOM::UNIT_TESTS

@@ -1,8 +1,8 @@
-#include "catch2/catch.hpp"
 #include "filter_fx/normalized_coords.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <cmath>
 
 namespace GOOM::UNIT_TESTS

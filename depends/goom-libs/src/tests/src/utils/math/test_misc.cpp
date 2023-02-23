@@ -1,9 +1,9 @@
 #undef NO_LOGGING
 
-#include "catch2/catch.hpp"
 #include "goom_logger.h"
 #include "utils/math/misc.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <numeric>
 
 namespace GOOM::UNIT_TESTS

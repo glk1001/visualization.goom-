@@ -1,9 +1,9 @@
-#include "catch2/catch.hpp"
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 
+#include <catch2/catch_test_macros.hpp>
 #include <format>
 #include <vector>
 

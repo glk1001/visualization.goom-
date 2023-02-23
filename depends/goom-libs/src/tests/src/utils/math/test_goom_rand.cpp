@@ -1,14 +1,16 @@
-#include "catch2/catch.hpp"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 
 #include <array>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <format>
 #include <map>
 
 namespace GOOM::UNIT_TESTS
 {
 
+using Catch::Approx;
 using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
