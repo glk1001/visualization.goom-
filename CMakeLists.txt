@@ -113,13 +113,6 @@ set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#9.1.0")
 
-if (ENABLE_TESTING)
-    CPMAddPackage(NAME Catch2 GITHUB_REPOSITORY catchorg/Catch2 VERSION 3.1.1
-                  OPTIONS WARNINGS_AS_ERRORS "Catch2 v3 has warnings" OFF)
-
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
-endif ()
-
 CPMAddPackage(NAME "LSys"
               GITHUB_REPOSITORY "glk1001/LSys"
               GIT_TAG "master"
@@ -140,9 +133,28 @@ else ()
 endif ()
 
 
+# Let the Goom code know we're building from Kodi. There are Kodi
+# headers that the Main goom code needs only when doing a Kodi build.
+add_definitions(-DIS_KODI_BUILD)
+
+# Set GOOM_DEBUG for non-release builds.
+string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
+if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+    MESSAGE(STATUS "Goom: GOOM_DEBUG turned off.")
+else ()
+    add_definitions(-DGOOM_DEBUG)
+    MESSAGE(STATUS "Goom: GOOM_DEBUG turned on.")
+endif ()
+
+# Include the Goom libs cmake files here, before the (horrible) global
+# compiler settings (needed for Kodi addon builder).
+add_subdirectory(${GOOM_LIBS_RELDIR})
+
 get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
 
+
+# Setup the includes and other dependencies the addon builder needs.
 include_directories(BEFORE
                     ${GOOM_LIBS_DIR}
                     ${GOOM_INCLUDE_DIRS}
@@ -174,48 +186,24 @@ set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
     src/shader_with_effects.h
     src/kodi_shader_with_effects.h)
 
-# Let the Goom code know we're building from Kodi. There are
-# Kodi headers that need to be included only when building for Kodi.
-add_definitions(-DIS_KODI_BUILD)
-
-string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
-if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")
-    MESSAGE(STATUS "Goom: GOOM_DEBUG turned off.")
-else ()
-    add_definitions(-DGOOM_DEBUG)
-    MESSAGE(STATUS "Goom: GOOM_DEBUG turned on.")
-endif ()
-
 list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib)
-
-add_subdirectory(${GOOM_LIBS_RELDIR})
 
 build_addon(${GOOM_TARGET_NAME} ${GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
 
 
-if (ENABLE_TESTING)
-    # Move the external goom libs Dart file into the main build directory so CLion is happy.
-    set(GOOM_LIBS_DART_DIR ${CMAKE_BINARY_DIR}/${GOOM_LIBS_RELDIR})
-    add_custom_command(
-            TARGET ${GOOM_TARGET_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy
-            ${GOOM_LIBS_DART_DIR}/DartConfiguration.tcl
-            ${CMAKE_BINARY_DIR}/DartConfiguration.tcl)
-
-    # Force the build time into the compiled binaries.
-    set(GOOM_BUILD_TIME_FILES
-        ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
-        ${PROJECT_SOURCE_DIR}/src/build_time.cpp
-        )
-    add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
-    add_custom_command(TARGET goom_build_time
-                       PRE_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
-                       COMMENT "Touching build files."
-                       VERBATIM
-                       )
-endif ()
+# Force the build time into the compiled binaries.
+set(GOOM_BUILD_TIME_FILES
+    ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
+    ${PROJECT_SOURCE_DIR}/src/build_time.cpp
+    )
+add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
+add_custom_command(TARGET goom_build_time
+                   PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
+                   COMMENT "Touching build files."
+                   VERBATIM
+                   )
 
 
 include(CPack)
@@ -252,7 +240,6 @@ message(STATUS "Visualization.goom: GOOM_BUILD_DIR = \"${GOOM_BUILD_DIR}\".")
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS = \"${GOOM_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
-message(STATUS "Visualization.goom: GOOM_LIBS_DART_DIR = \"${GOOM_LIBS_DART_DIR}\".")
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_ROOT_DIR = \"${KODI_ROOT_DIR}\".")
 message(STATUS "Visualization.goom: KODI_CONFIG_DIR = \"${KODI_CONFIG_DIR}\".")

@@ -12,21 +12,10 @@ if [[ ! -d "${BUILD_DIR}" ]]; then
   exit 1
 fi
 
-declare -r TEST_DIR=${BUILD_DIR}
-
-echo "Using TEST_DIR \"${TEST_DIR}\"."
+echo "Using TEST_DIR \"${BUILD_DIR}\"."
 echo
 
-ctest --verbose --test-dir "${TEST_DIR}"
-if [[ $? == 0 ]]; then
-  exit 0
-fi
-
-
-declare -r RERUN_OPTS="--rerun-failed --output-on-failure"
-
-ctest ${RERUN_OPTS} --verbose --test-dir "${TEST_DIR}"
+${BUILD_DIR}/goom-libs-artifacts/bin/${BUILD_TYPE}/goom_lib_tests -d yes
 if [[ $? != 0 ]]; then
   exit 1
 fi
-

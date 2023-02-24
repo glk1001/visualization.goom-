@@ -10,6 +10,10 @@ endif ()
 
 find_package(Threads)
 
+CPMAddPackage(NAME Catch2 GITHUB_REPOSITORY catchorg/Catch2 VERSION 3.1.1)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
+
+
 add_executable(${GOOM_LIB_TESTS_NAME}
                src/test_main.cpp
                src/test_pixels.cpp
@@ -74,9 +78,12 @@ set_project_warnings(${GOOM_LIB_TESTS_NAME})
 enable_sanitizers(${GOOM_LIB_TESTS_NAME})
 configure_linker(${GOOM_LIB_TESTS_NAME})
 
+include(Catch)
+
 #catch_discover_tests(${GOOM_LIB_TESTS_NAME})
 add_test(NAME ${GOOM_LIB_TESTS_NAME}
          COMMAND ${GOOM_LIB_TESTS_NAME})
+
 
 get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_OPTIONS)
 get_target_property(${GOOM_LIB_TESTS_NAME} ${GOOM_LIB_TESTS_NAME} COMPILE_FEATURES)
@@ -88,3 +95,4 @@ message(STATUS
 message(STATUS
         "Goom Lib Tests: C++ compile options = \"${${GOOM_LIB_TESTS_NAME}_compile_options}\".")
 message(STATUS "Goom Lib Tests: C++ link options = \"${${GOOM_LIB_TESTS_NAME}_link_options}\".")
+message(STATUS "Goom Lib Tests: Catch2_SOURCE_DIR = \"${Catch2_SOURCE_DIR}\".")

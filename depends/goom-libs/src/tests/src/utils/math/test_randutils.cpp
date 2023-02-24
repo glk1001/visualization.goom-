@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
+#include <filesystem>
 #include <fstream>
 #include <limits>
 #include <string>
@@ -40,10 +41,14 @@ TEST_CASE("save/restore random state")
   const auto rand2 = GetRand();
   REQUIRE(rand1 != rand2);
 
-  const auto saveFile = std::string{"/tmp/rand.txt"};
+  namespace fs        = std::filesystem;
+  const auto saveFile = fs::path{fs::temp_directory_path()} / "rand.out";
   std::ofstream fileOut{saveFile, std::ofstream::out};
+  REQUIRE(not fileOut.fail());
   SaveRandState(fileOut);
+  REQUIRE(not fileOut.fail());
   fileOut.close();
+  REQUIRE(not fileOut.fail());
   const auto randJustAfterSave = GetRand();
 
   // Scramble things a bit
@@ -57,8 +62,12 @@ TEST_CASE("save/restore random state")
   REQUIRE(SEED != GetRandSeed());
   REQUIRE(rand != randJustAfterSave);
 
-  std::ifstream fin{saveFile, std::ifstream::in};
-  RestoreRandState(fin);
+  std::ifstream fileIn{saveFile, std::ifstream::in};
+  REQUIRE(not fileIn.fail());
+  RestoreRandState(fileIn);
+  REQUIRE(not fileIn.fail());
+  fileOut.close();
+  REQUIRE(not fileIn.fail());
   rand = GetRand();
   REQUIRE(SEED == GetRandSeed());
   REQUIRE(rand == randJustAfterSave);
@@ -90,7 +99,7 @@ TEST_CASE("repeatable random sequence")
   }
 
   SetRandSeed(SEED + 1);
-  REQUIRE(SEED + 1 == GetRandSeed());
+  REQUIRE((SEED + 1) == GetRandSeed());
   auto seq3    = std::vector<uint32_t>(NUM_LOOPS);
   auto fltSeq3 = std::vector<float>(NUM_LOOPS);
   for (auto i = 0U; i < NUM_LOOPS; ++i)
@@ -104,6 +113,9 @@ TEST_CASE("repeatable random sequence")
 
   REQUIRE(fltSeq1 == fltSeq2);
   REQUIRE(fltSeq1 != fltSeq3);
+
+  SetRandSeed(SEED);
+  REQUIRE(SEED == GetRandSeed());
 }
 
 template<typename ValType>

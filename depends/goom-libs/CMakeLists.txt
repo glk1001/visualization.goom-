@@ -5,7 +5,7 @@ project(visualization.goom.lib)
 # set(LSys_SOURCE_DIR "/home/greg/Prj/github/LSys")
 
 if (NOT DEFINED GOOM_BUILD_ARTIFACTS_DIR)
-    set(GOOM_BUILD_ARTIFACTS_DIR "${CMAKE_BINARY_DIR}")
+    set(GOOM_BUILD_ARTIFACTS_DIR "${CMAKE_BINARY_DIR}/goom-libs-artifacts")
 endif ()
 if (NOT DEFINED CMAKE_SCRIPTS_PATH)
     set(CMAKE_SCRIPTS_PATH "../../cmake")
@@ -67,7 +67,7 @@ include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
-option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
+set(BUILD_SHARED_LIBS OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
@@ -84,7 +84,8 @@ else ()
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    option(ENABLE_BUILD_WITH_TIME_TRACE "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
+    option(ENABLE_BUILD_WITH_TIME_TRACE
+           "Enable -ftime-trace to generate time tracing .json files on clang" OFF)
     if (ENABLE_BUILD_WITH_TIME_TRACE)
         target_compile_options(project_options INTERFACE -ftime-trace)
     endif ()
@@ -103,7 +104,6 @@ if (NOT DEFINED LSys_SOURCE_DIR)
                   )
     set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 endif ()
-
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     message(WARNING "Freetype on Windows is too hard to install - disabling Freetype.")
@@ -139,16 +139,6 @@ else ()
     endif ()
 endif ()
 
-if (ENABLE_TESTING)
-    set(CATCH2_SOURCE_DIR "${CMAKE_BINARY_DIR}/_deps/catch2-src")
-    if (NOT EXISTS "${CATCH2_SOURCE_DIR}")
-        CPMAddPackage(NAME Catch2 GITHUB_REPOSITORY catchorg/Catch2 VERSION 3.1.1
-                      OPTIONS WARNINGS_AS_ERRORS "Catch2 v3 has warnings" OFF)
-
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
-    endif ()
-endif ()
-
 
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
@@ -158,26 +148,19 @@ message(STATUS "Goom-libs: CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Goom-libs: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Goom-libs: CMAKE_GENERATOR = \"${CMAKE_GENERATOR}\".")
 message(STATUS "Goom-libs: GENERATOR_IS_MULTI_CONFIG = \"${GENERATOR_IS_MULTI_CONFIG}\".")
-message(STATUS "Goom-libs: CMAKE_LIBRARY_OUTPUT_DIRECTORY = \"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\".")
 message(STATUS "Goom-libs: CMAKE_ARCHIVE_OUTPUT_DIRECTORY = \"${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}\".")
 message(STATUS "Goom-libs: CMAKE_LIBRARY_OUTPUT_DIRECTORY = \"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}\".")
 message(STATUS "Goom-libs: CMAKE_RUNTIME_OUTPUT_DIRECTORY = \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\".")
 message(STATUS "Goom-libs: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom-libs: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Goom-libs: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
+message(STATUS "Goom-libs: BUILD_SHARED_LIBS = \"${BUILD_SHARED_LIBS}\".")
 message(STATUS "Goom-libs: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
-message(STATUS "Goom-libs: Catch2_SOURCE_DIR = \"${Catch2_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: GOOM_DEBUG = \"${GOOM_DEBUG}\".")
 message(STATUS "Goom-libs: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
-
-
-if (ENABLE_TESTING)
-    include(CTest)
-    include(Catch)
-endif ()
 
 add_subdirectory(src)

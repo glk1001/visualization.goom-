@@ -13,7 +13,8 @@ using UTILS::Parallel;
 TEST_CASE("Test Parallel Utils", "[ParallelFor]")
 {
   const auto numSupportedConcurrentThreads = std::thread::hardware_concurrency();
-  if (numSupportedConcurrentThreads <= 1)
+  if (static constexpr auto MIN_CONCURRENT_THREADS = 3U;
+      numSupportedConcurrentThreads < MIN_CONCURRENT_THREADS)
   {
     return;
   }

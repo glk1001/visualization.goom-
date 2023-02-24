@@ -75,7 +75,7 @@ jobs:
 
     env:
       GOOM_DIR: depends/goom-libs
-      BUILD_DIR: build-${{ matrix.config.cxx }}-${{ matrix.config.build_type }}
+      BUILD_DIR: build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}
 
     steps:
       - uses: actions/checkout@v2
@@ -144,7 +144,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.GOOM_DIR }}
-          ctest --verbose --build-config ${{ matrix.config.build_type }} --test-dir ${{ env.BUILD_DIR }}
+          ${{ env.BUILD_DIR }}/goom-libs-artifacts/bin/${{ matrix.config.build_type }}/goom_lib_tests -d yes
 
       # - name: Archive goom artifacts
       #   if: startsWith(matrix.config.name, 'Windows')

@@ -348,6 +348,7 @@ inline auto PixelBuffer::GetIntBuff() const noexcept -> const PixelIntType*
   return reinterpret_cast<const PixelIntType*>(m_buff.data());
 }
 
+// TODO(glk) - AppleClang does not seem to optimize std::copy - ignore it for now.
 inline auto PixelBuffer::CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void
 {
   std::copy(cbegin(m_buff), cend(m_buff), begin(pixelBuffer.m_buff));
