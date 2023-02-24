@@ -154,7 +154,7 @@ declare -r HOST_CCACHE_DIR=${CCACHE_DIR}
 declare -r HOST_KODI_ROOT_DIR=$(realpath ${GOOM_GET_VARS_SCRIPT_PATH}/..)
 declare -r DOCKER_CCACHE_DIR=/tmp/ccache
 declare -r DOCKER_KODI_ROOT_DIR=/tmp/xbmc
-declare -r DOCKER_GOOM_BUILD_DIR=/tmp/visualization.goom
+declare -r DOCKER_GOOM_BUILD_DIR=/tmp/xbmc/visualization.goom
 declare -r DOCKER_BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 # Clion

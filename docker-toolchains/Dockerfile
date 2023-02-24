@@ -23,12 +23,14 @@ RUN apt-get update    && \
       dos2unix           \
       rsync              \
       tar                \
+      fd-find            \
       git                \
       catch2             \
       ccache             \
       build-essential    \
       gdb                \
       clang-15           \
+      clang-tidy-15      \
       gcc-12             \
       g++-12          && \
     apt-get clean -y

@@ -63,8 +63,8 @@ fi
 # NOTE: Catch2 not available in Ubuntu Focal, so enable testing is off.
 cmake -DIS_THIS_MAIN_CMAKE_SCRIPT=1    \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-      -DENABLE_TESTING=0               \
-      -DUSE_MAGIC_ENUM=0               \
+      -DENABLE_TESTING=1               \
+      -DUSE_MAGIC_ENUM=1               \
       -DOVERRIDE_PATHS=1               \
       ${KODI_ROOT_DIR_OPTION}          \
       ..
