@@ -26,7 +26,7 @@ static constexpr auto DEFAULT_VIEWPORT = Viewport{};
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.01F, 0.11F};
 
-static constexpr auto DEFAULT_MAGNIFY_AND_ROTATE = std::complex{0.0F, 0.0F};
+static constexpr auto DEFAULT_MAGNIFY_AND_ROTATE = std::complex<float>{0.0F, 0.0F};
 static constexpr auto ROTATE_RANGE               = IGoomRand::NumberRange<float>{0.0F, TWO_PI};
 static constexpr auto MAGNIFY_RANGE              = IGoomRand::NumberRange<float>{0.95F, 1.05F};
 
@@ -106,8 +106,8 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
 
   const auto zOffset = std::complex<FltCalcType>{};
   const auto z       = static_cast<std::complex<FltCalcType>>(m_params.magnifyAndRotate) *
-                 (std::complex{static_cast<FltCalcType>(coords.GetX()),
-                               static_cast<FltCalcType>(coords.GetY())} +
+                 (std::complex<FltCalcType>{static_cast<FltCalcType>(coords.GetX()),
+                                            static_cast<FltCalcType>(coords.GetY())} +
                   zOffset);
 
   const auto fz      = std::exp(ONE / std::pow(z, m_params.reciprocalExponent));

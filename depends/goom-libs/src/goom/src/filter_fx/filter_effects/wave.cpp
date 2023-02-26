@@ -97,8 +97,6 @@ auto Wave::SetRandomParams() noexcept -> void
     case Modes::ATAN_ANGLE_EFFECT_MODE1:
       SetAtanAngleEffectMode1RandomParams();
       break;
-    default:
-      FailFast();
   }
 }
 

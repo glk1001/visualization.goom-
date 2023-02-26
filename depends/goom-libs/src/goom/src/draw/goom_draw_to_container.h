@@ -18,8 +18,8 @@ public:
   explicit GoomDrawToContainer(const Dimensions& dimensions) noexcept;
 
   [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
-  auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
-      -> void override;
+  [[noreturn]] auto DrawPixelsUnblended(const Point2dInt& point,
+                                        const MultiplePixels& colors) noexcept -> void override;
 
   [[nodiscard]] auto GetPixels(const Point2dInt& point) const noexcept -> MultiplePixels;
 

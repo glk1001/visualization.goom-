@@ -273,7 +273,8 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
   if constexpr (NUM_SHAPES > 1U)
   {
     const auto radius = static_cast<float>(m_screenMidPoint.y) / 3.0F;
-    auto angle = IncrementedValue{0.0F, TWO_PI, TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
+    auto angle =
+        IncrementedValue<float>{0.0F, TWO_PI, TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
 
     for (auto i = 1U; i < NUM_SHAPES; ++i)
     {

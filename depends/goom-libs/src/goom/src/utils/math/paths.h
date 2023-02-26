@@ -108,7 +108,7 @@ public:
              const std::shared_ptr<IPath>& path2,
              TValue& lerpT) noexcept;
 
-  [[nodiscard]] auto GetClone() const noexcept -> std::unique_ptr<IPath> override;
+  [[nodiscard]] [[noreturn]] auto GetClone() const noexcept -> std::unique_ptr<IPath> override;
 
   [[nodiscard]] auto GetStartPos() const noexcept -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const noexcept -> Point2dInt override;
@@ -139,7 +139,7 @@ public:
               const std::vector<float>& pathTStarts,
               std::vector<std::unique_ptr<IPath>>&& subPaths) noexcept;
 
-  [[nodiscard]] auto GetClone() const noexcept -> std::unique_ptr<IPath> override;
+  [[nodiscard]] [[noreturn]] auto GetClone() const noexcept -> std::unique_ptr<IPath> override;
 
   [[nodiscard]] auto GetStartPos() const noexcept -> Point2dInt override;
   [[nodiscard]] auto GetEndPos() const noexcept -> Point2dInt override;

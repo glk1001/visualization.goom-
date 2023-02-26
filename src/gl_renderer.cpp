@@ -395,7 +395,7 @@ auto GlRenderer::GLRendererImpl::AllocateGlTextureBuffers() -> void
         static_cast<PixelChannelType*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
     if (nullptr == m_pboMappedBuffer.at(i))
     {
-      throw std::runtime_error(std20::format("Could not allocate mapped buffer for pbo {}.", i));
+      throw std::runtime_error(std_fmt::format("Could not allocate mapped buffer for pbo {}.", i));
     }
 
     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release pointer to mapping buffer

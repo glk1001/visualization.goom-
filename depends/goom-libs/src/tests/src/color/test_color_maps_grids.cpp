@@ -40,7 +40,7 @@ public:
   [[nodiscard]] auto GetMapName() const -> ColorMapName override { return ColorMapName::ACCENT; }
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
-  static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
+  // static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
 
 private:
   std::string m_mapName;
@@ -60,10 +60,12 @@ inline auto TestColorMap::GetColor(const float t) const -> Pixel
   };
 }
 
+/*
 inline auto TestColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t) -> Pixel
 {
   return GetRgbColorLerp(col1, col2, t);
 }
+ */
 
 // NOLINTBEGIN(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 inline const auto SIMPLE_WHITE_MAP_STOPS = std::vector<vivid::srgb_t>{

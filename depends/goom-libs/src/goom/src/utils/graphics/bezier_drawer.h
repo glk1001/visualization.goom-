@@ -30,7 +30,7 @@ public:
   }
 
   using GetColorFunc = std::function<Pixel(float t)>;
-  void SetLineColorFunc(const GetColorFunc& lineColorFunc) { m_lineColorFunc = lineColorFunc; };
+  void SetLineColorFunc(const GetColorFunc& lineColorFunc) { m_lineColorFunc = lineColorFunc; }
   void SetDotColorFunc(const GetColorFunc& dotColorFunc) { m_dotColorFunc = dotColorFunc; }
 
   void Draw(const Bezier::Bezier<3>& bezier, float colorT0, float colorT1);

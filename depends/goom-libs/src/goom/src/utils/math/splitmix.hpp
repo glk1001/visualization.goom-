@@ -110,8 +110,8 @@ class splitmix64_base
 {
 public:
   using result_type = uint64_t;
-  static constexpr result_type min() { return 0; };
-  static constexpr result_type max() { return ~result_type(0); };
+  static constexpr result_type min() { return 0; }
+  static constexpr result_type max() { return ~result_type(0); }
 
 protected:
   uint64_t seed_;
@@ -186,8 +186,8 @@ class splitmix32_base : public splitmix
 {
 public:
   using result_type = uint32_t;
-  static constexpr result_type min() { return 0; };
-  static constexpr result_type max() { return ~result_type(0); };
+  static constexpr result_type min() { return 0; }
+  static constexpr result_type max() { return ~result_type(0); }
 
   using splitmix::splitmix;
 

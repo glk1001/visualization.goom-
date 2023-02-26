@@ -36,8 +36,6 @@ auto Speedway::SetRandomParams() noexcept -> void
     case Modes::MODE2:
       SetMode2RandomParams();
       break;
-    default:
-      FailFast();
   }
 }
 

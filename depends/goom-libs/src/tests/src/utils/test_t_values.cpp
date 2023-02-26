@@ -172,6 +172,9 @@ TEST_CASE("TValue CONTINUOUS_REVERSIBLE")
   REQUIRE(tValue.IsInsideBoundary());
 }
 
+namespace
+{
+
 void GotoUpToValue(const float t, TValue& tValue)
 {
   while (tValue() < t)
@@ -205,6 +208,8 @@ void CheckIsDelayedThenGoPastDelay(TValue& tValue, const uint32_t delayTime, con
     REQUIRE(tValue() == Approx(delayT));
   }
 }
+
+} // namespace
 
 TEST_CASE("TValue CONTINUOUS_REPEATABLE with delay")
 {
@@ -367,7 +372,8 @@ TEST_CASE("IncrementedValue SINGLE_CYCLE")
   static constexpr auto MIN_VALUE = -5.0F;
   static constexpr auto MAX_VALUE = +15.0F;
   static constexpr auto NUM_STEPS = 10U;
-  auto value = IncrementedValue{MIN_VALUE, MAX_VALUE, TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
+  auto value =
+      IncrementedValue<float>{MIN_VALUE, MAX_VALUE, TValue::StepType::SINGLE_CYCLE, NUM_STEPS};
 
   static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(value.GetT().GetStepSize() == Approx(STEP_SIZE));
@@ -400,8 +406,8 @@ TEST_CASE("IncrementedValue CONTINUOUS_REPEATABLE")
   static constexpr auto MIN_VALUE = -5.0F;
   static constexpr auto MAX_VALUE = +15.0F;
   static constexpr auto NUM_STEPS = 10U;
-  auto value =
-      IncrementedValue{MIN_VALUE, MAX_VALUE, TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
+  auto value                      = IncrementedValue<float>{
+      MIN_VALUE, MAX_VALUE, TValue::StepType::CONTINUOUS_REPEATABLE, NUM_STEPS};
 
   static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(value.GetT().GetStepSize() == Approx(STEP_SIZE));
@@ -441,8 +447,8 @@ TEST_CASE("IncrementedValue CONTINUOUS_REVERSIBLE")
   static constexpr auto MAX_VALUE       = +15.0F;
   static constexpr auto INBETWEEN_VALUE = +10.0F;
   static constexpr auto NUM_STEPS       = 10U;
-  auto value =
-      IncrementedValue{MIN_VALUE, MAX_VALUE, TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
+  auto value                            = IncrementedValue<float>{
+      MIN_VALUE, MAX_VALUE, TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_STEPS};
 
   static constexpr auto STEP_SIZE = 1.0F / static_cast<float>(NUM_STEPS);
   REQUIRE(value.GetT().GetStepSize() == Approx(STEP_SIZE));

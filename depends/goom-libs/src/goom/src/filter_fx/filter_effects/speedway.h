@@ -67,8 +67,6 @@ inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
       return GetMode1ZoomInCoefficients(coords, sqDistFromZero);
     case Modes::MODE2:
       return GetMode2ZoomInCoefficients(coords, sqDistFromZero);
-    default:
-      FailFast();
   }
 }
 

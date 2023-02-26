@@ -37,11 +37,11 @@ auto GoomLogger::VLog(LogLevel lvl,
                       const std::string& funcName,
                       const int lineNum,
                       const std::string& formatStr,
-                      std20::format_args args) -> void
+                      std_fmt::format_args args) -> void
 {
-  std20::memory_buffer buffer;
+  std_fmt::memory_buffer buffer;
   // Pass custom argument formatter as a template arg to pass further down.
-  std20::vformat_to(std20::detail::buffer_appender<char>(buffer), formatStr, args);
+  std_fmt::vformat_to(std_fmt::detail::buffer_appender<char>(buffer), formatStr, args);
   Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
 }
 
@@ -50,7 +50,7 @@ auto GoomLogger::Log(const LogLevel lvl,
                      const std::string& funcName,
                      const std::string& msg) -> void
 {
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   if (not m_doLogging or not CanLog())
   {
     return;
@@ -77,19 +77,19 @@ auto GoomLogger::GetLogPrefix(const LogLevel lvl,
                               const int lineNum,
                               const std::string& funcName) const -> std::string
 {
-  return std20::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
+  return std_fmt::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
 }
 
 auto GoomLogger::Start() -> void
 {
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   m_doLogging     = true;
   m_logEntries.clear();
 }
 
 auto GoomLogger::Stop() -> void
 {
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   m_doLogging     = false;
   DoFlush();
 }
@@ -118,7 +118,7 @@ auto GoomLogger::AddHandler(const std::string& name, const HandlerFunc& handlerF
 
 auto GoomLogger::Flush() -> void
 {
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   DoFlush();
 }
 

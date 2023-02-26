@@ -82,6 +82,7 @@ using UTILS::Stopwatch;
 using UTILS::StringSplit;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
+using UTILS::MATH::IsBetween;
 using VISUAL_FX::FxHelper;
 
 class GoomControlLogger : public GoomLogger
@@ -275,21 +276,11 @@ auto GoomControlLogger::StopGoomControl() noexcept -> void
   m_goomControl = nullptr;
 }
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4296)
-#endif
-
 auto GoomControlLogger::CanLog() const -> bool
 {
   return ((m_goomControl == nullptr) or
-          ((MIN_UPDATE_NUM_TO_LOG <= m_goomControl->GetUpdateNum()) and
-           (m_goomControl->GetUpdateNum() <= MAX_UPDATE_NUM_TO_LOG)));
+          IsBetween(m_goomControl->GetUpdateNum(), MIN_UPDATE_NUM_TO_LOG, MAX_UPDATE_NUM_TO_LOG));
 }
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 
 auto GoomControl::MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>
 {
@@ -715,11 +706,11 @@ inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string
   const auto timeLeftStr =
       not m_runningTimeStopwatch.AreTimesValid()
           ? "Time left: not valid!"
-          : std20::format("Time left: {}  ({}%)",
-                          m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
-                          m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
+          : std_fmt::format("Time left: {}  ({}%)",
+                            m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
+                            m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
-  return timeLeftStr + "\n" + std20::format("Update Num: {}", m_updateNum);
+  return timeLeftStr + "\n" + std_fmt::format("Update Num: {}", m_updateNum);
 }
 
 } // namespace GOOM

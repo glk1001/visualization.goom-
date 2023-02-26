@@ -106,7 +106,7 @@ auto GoomBufferProducer::StopProcessGoomBuffersThread() -> void
 {
   LogInfo(*m_goomLogger, "Stopping process Goom buffers thread.");
 
-  auto lock                          = std::unique_lock{m_mutex};
+  auto lock                          = std::unique_lock<std::mutex>{m_mutex};
   m_processGoomBuffersThreadFinished = true;
   m_wait.notify_one();
   lock.unlock();
@@ -132,7 +132,7 @@ auto GoomBufferProducer::ProcessAudioData(const float* const audioData,
     StartProcessGoomBuffersThread();
   }
 
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   if (m_audioBuffer.DataAvailable() >= CIRCULAR_BUFFER_SIZE)
   {
     return;
@@ -162,7 +162,7 @@ auto GoomBufferProducer::ProcessGoomBuffersThread() -> void
 
   while (true)
   {
-    auto lock = std::unique_lock{m_mutex};
+    auto lock = std::unique_lock<std::mutex>{m_mutex};
     if (m_processGoomBuffersThreadFinished)
     {
       break;
@@ -243,7 +243,7 @@ auto GoomBufferProducer::GetNextActivePixelBufferData() -> PixelBufferData
 {
   auto pixelBufferData = PixelBufferData{};
 
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   if (not m_activePixelBufferDataQueue.empty())
   {
     pixelBufferData = m_activePixelBufferDataQueue.front();
@@ -263,7 +263,7 @@ inline auto GoomBufferProducer::MakePixelBufferData() const -> PixelBufferData
 
 auto GoomBufferProducer::PushUsedPixels(const PixelBufferData& pixelBufferData) -> void
 {
-  const auto lock = std::scoped_lock{m_mutex};
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   m_storedPixelBufferDataQueue.push(pixelBufferData);
 }
 
@@ -311,7 +311,8 @@ auto GoomBufferProducer::GetAudioBufferWriter(const std::string& songName) const
   }
   if (not std::filesystem::create_directories(songSaveDirectory))
   {
-    throw std::runtime_error{std20::format("Could not create directory '{}'.", songSaveDirectory)};
+    throw std::runtime_error{
+        STD20_2::format("Could not create directory '{}'.", songSaveDirectory)};
   }
 
   static constexpr auto* AUDIO_BUFFERS_FILE_PREFIX = "audio";

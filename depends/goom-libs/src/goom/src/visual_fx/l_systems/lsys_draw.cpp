@@ -102,6 +102,7 @@ auto LSysDraw::GetPerspectivePoint(const Point3dFlt& point3d) noexcept -> Point2
   //TODO(glk) Why does this look better?
   return {point3d.x, point3d.y};
 
+  /**
   const auto point = Point3dFlt{point3d.x, point3d.y, point3d.z};
 
   const auto zOffset = point.z + 10.0F;
@@ -115,6 +116,7 @@ auto LSysDraw::GetPerspectivePoint(const Point3dFlt& point3d) noexcept -> Point2
   const auto yProj                          = perspectiveFactor * point.y;
 
   return Point2dFlt{xProj, yProj};
+   **/
 }
 
 inline auto LSysDraw::GetPolygon3dFlt(const std::vector<::LSYS::Vector>& polygon) noexcept

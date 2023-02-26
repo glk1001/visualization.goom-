@@ -90,7 +90,7 @@ TEST_CASE("Weighted Events")
       const auto countFraction = fEventCount / DBL_NUM_LOOPS;
       const auto eventFraction = fEventWeight / sumOfWeights;
 
-      UNSCOPED_INFO(std20::format(
+      UNSCOPED_INFO(std_fmt::format(
           "i = {}, countFraction = {}, eventFraction = {}", i, countFraction, eventFraction));
       static constexpr auto CLOSE_ENOUGH = 0.005;
       REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
@@ -122,24 +122,25 @@ TEST_CASE("Weighted Events")
       const auto fConditionalEventCount   = static_cast<double>(conditionalEventCounts.at(i));
       const auto conditionalCountFraction = fConditionalEventCount / DBL_NUM_LOOPS;
 
-      UNSCOPED_INFO(std20::format("i:{}, fConditionalEventCount = {}", i, fConditionalEventCount));
-      UNSCOPED_INFO(std20::format("i:{}, NUM_LOOPS = {}", i, NUM_LOOPS));
       UNSCOPED_INFO(
-          std20::format("i:{}, conditionalCountFraction = {}", i, conditionalCountFraction));
+          std_fmt::format("i:{}, fConditionalEventCount = {}", i, fConditionalEventCount));
+      UNSCOPED_INFO(std_fmt::format("i:{}, NUM_LOOPS = {}", i, NUM_LOOPS));
+      UNSCOPED_INFO(
+          std_fmt::format("i:{}, conditionalCountFraction = {}", i, conditionalCountFraction));
 
       const auto fConditionalEventWeight = static_cast<double>(
           conditionalWeightedEvents.GetWeight({PREVIOUS_EVENT, static_cast<Events>(i)}));
       const auto conditionalEventFraction = fConditionalEventWeight / conditionalSumOfWeights;
-      UNSCOPED_INFO(std20::format("i:{}, fConditionalEventWeight({}) = {}",
-                                  i,
-                                  EnumToString(PREVIOUS_EVENT),
-                                  fConditionalEventWeight));
-      UNSCOPED_INFO(std20::format("i:{}, conditionalSumOfWeights({}) = {}",
-                                  i,
-                                  EnumToString(PREVIOUS_EVENT),
-                                  conditionalSumOfWeights));
+      UNSCOPED_INFO(std_fmt::format("i:{}, fConditionalEventWeight({}) = {}",
+                                    i,
+                                    EnumToString(PREVIOUS_EVENT),
+                                    fConditionalEventWeight));
+      UNSCOPED_INFO(std_fmt::format("i:{}, conditionalSumOfWeights({}) = {}",
+                                    i,
+                                    EnumToString(PREVIOUS_EVENT),
+                                    conditionalSumOfWeights));
       UNSCOPED_INFO(
-          std20::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
+          std_fmt::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
 
       static constexpr auto CLOSE_ENOUGH = 0.005;
       REQUIRE(conditionalCountFraction == Approx(conditionalEventFraction).epsilon(CLOSE_ENOUGH));

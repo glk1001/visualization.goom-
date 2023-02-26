@@ -160,11 +160,11 @@ auto TentacleDriver::SetWeightedColorMaps(
 
   static constexpr auto MIN_SATURATION       = 0.2F;
   static constexpr auto SATURATION_STEP_SIZE = 0.1F;
-  auto saturation                            = IncrementedValue{
+  auto saturation                            = IncrementedValue<float>{
       MIN_SATURATION, 1.0F, TValue::StepType::CONTINUOUS_REVERSIBLE, SATURATION_STEP_SIZE};
   static constexpr auto MIN_LIGHTNESS       = 0.2F;
   static constexpr auto LIGHTNESS_STEP_SIZE = 0.1F;
-  auto lightness                            = IncrementedValue{
+  auto lightness                            = IncrementedValue<float>{
       MIN_LIGHTNESS, 1.0F, TValue::StepType::CONTINUOUS_REVERSIBLE, LIGHTNESS_STEP_SIZE};
 
   std::for_each(

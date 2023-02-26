@@ -194,7 +194,7 @@ CVisualizationGoom::~CVisualizationGoom()
 
 auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 {
-  const auto fullMsg = std20::format("CVisualizationGoom: {}", errorMsg);
+  const auto fullMsg = std_fmt::format("CVisualizationGoom: {}", errorMsg);
 
   LogError(*m_goomLogger, fullMsg);
 
@@ -241,7 +241,7 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels) -> void
   }
   catch (const std::exception& e)
   {
-    HandleError(std20::format("CVisualizationGoom start failed: {}", e.what()));
+    HandleError(std_fmt::format("CVisualizationGoom start failed: {}", e.what()));
   }
 }
 
@@ -305,7 +305,7 @@ auto CVisualizationGoom::StopWithCatch() -> void
   }
   catch (const std::exception& e)
   {
-    HandleError(std20::format("Goom stop failed: {}", e.what()));
+    HandleError(std_fmt::format("Goom stop failed: {}", e.what()));
   }
 }
 
@@ -342,7 +342,9 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
   if (not m_started)
   {
     HandleError("Goom not started - cannot process audio data.");
+#ifndef GOOM_DEBUG
     return;
+#endif
   }
 
   m_goomBufferProducer->ProcessAudioData(audioData, audioDataLength);
@@ -394,4 +396,13 @@ inline auto CVisualizationGoom::DoRender() noexcept -> void
   m_glRenderer->Render();
 }
 
+#ifdef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#endif
+
 ADDONCREATOR(CVisualizationGoom) // Don't touch this!
+
+#ifdef __clang__
+#pragma GCC diagnostic pop
+#endif

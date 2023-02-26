@@ -75,5 +75,9 @@ private:
   std::unique_ptr<PixelBufferGetter> m_pixelBufferGetter;
   auto DoRender() noexcept -> void;
 
-  auto HandleError(const std::string& errorMsg) -> void;
+#ifdef GOOM_DEBUG
+  [[noreturn]]
+#endif
+  auto
+  HandleError(const std::string& errorMsg) -> void;
 };

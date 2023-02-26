@@ -8,14 +8,12 @@
 
 #include <format>
 #include <set>
-#include <stdexcept>
 #include <string_view>
 
 namespace GOOM::CONTROL
 {
 
 using UTILS::EnumMap;
-using UTILS::EnumToString;
 using UTILS::NUM;
 
 namespace
@@ -254,8 +252,7 @@ auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const Goom
     }
   }
 
-  throw std::logic_error(std20::format(
-      "Could not find drawable {} for state {}.", EnumToString(fx), EnumToString(goomState)));
+  FailFast();
 }
 
 } // namespace GOOM::CONTROL

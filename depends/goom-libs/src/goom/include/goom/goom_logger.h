@@ -78,7 +78,7 @@ private:
             const std::string& funcName,
             int lineNum,
             const std::string& formatStr,
-            std20::format_args args) -> void;
+            std_fmt::format_args args) -> void;
 };
 
 inline auto GoomLogger::GetFileLogLevel() const -> GoomLogger::LogLevel
@@ -129,7 +129,7 @@ auto GoomLogger::Log(const LogLevel lvl,
                      const std::string& formatStr,
                      const Args&... args) -> void
 {
-  VLog(lvl, funcName, lineNum, formatStr, std20::make_format_args(args...));
+  VLog(lvl, funcName, lineNum, formatStr, std_fmt::make_format_args(args...));
 }
 
 } // namespace GOOM

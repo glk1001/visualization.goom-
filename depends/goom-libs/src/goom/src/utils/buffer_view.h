@@ -32,7 +32,7 @@ protected:
   auto SetBuffer(size_t buffLen, const T* buff) noexcept -> void;
 
 private:
-  STD_20::span<const T> m_buffer{};
+  std_spn::span<const T> m_buffer{};
 };
 
 template<class T>

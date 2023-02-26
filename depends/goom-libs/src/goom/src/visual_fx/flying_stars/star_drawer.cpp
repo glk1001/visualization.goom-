@@ -70,7 +70,7 @@ auto StarDrawer::DrawStar(const Star& star,
   const auto partMultiplier          = GetPartMultiplier();
   const auto [numParts, elementSize] = GetNumPartsAndElementSize(tAge);
 
-  auto tAgeMix      = IncrementedValue{tAge, tAgeMax, TValue::StepType::SINGLE_CYCLE, numParts};
+  auto tAgeMix = IncrementedValue<float>{tAge, tAgeMax, TValue::StepType::SINGLE_CYCLE, numParts};
   const auto point0 = ToPoint2dInt(star.GetStartPos());
 
   auto point1 = point0;

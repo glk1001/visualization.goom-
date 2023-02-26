@@ -169,8 +169,6 @@ inline auto ZoomVectorAfterEffects::SetRandomRotationSettings() noexcept -> void
       m_afterEffects.GetRotation().SetRandomParams();
       m_afterEffects.GetRotation().ApplyAdjustments(m_rotationAdjustments);
       break;
-    default:
-      FailFast();
   }
 }
 

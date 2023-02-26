@@ -8,4 +8,4 @@
 // NOLINTEND: third-party code
 
 // NOLINTNEXTLINE(misc-unused-alias-decls): Waiting for C++20
-namespace std20 = ::fmt;
+namespace std_fmt = ::fmt;

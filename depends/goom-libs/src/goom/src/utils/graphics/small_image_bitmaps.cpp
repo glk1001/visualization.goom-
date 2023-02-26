@@ -65,18 +65,18 @@ auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name,
 inline auto SmallImageBitmaps::GetImageKey(const ImageNames name, const size_t sizeOfImageSquare)
     -> std::string
 {
-  return std20::format("{}_{:02}", IMAGE_NAMES.at(static_cast<size_t>(name)), sizeOfImageSquare);
+  return std_fmt::format("{}_{:02}", IMAGE_NAMES.at(static_cast<size_t>(name)), sizeOfImageSquare);
 }
 
 auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
                                          const size_t sizeOfImageSquare) const -> std::string
 {
   const auto imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
-  return std20::format("{}/{}{:02}x{:02}.png",
-                       imagesDir,
-                       IMAGE_NAMES.at(static_cast<size_t>(name)),
-                       sizeOfImageSquare,
-                       sizeOfImageSquare);
+  return std_fmt::format("{}/{}{:02}x{:02}.png",
+                         imagesDir,
+                         IMAGE_NAMES.at(static_cast<size_t>(name)),
+                         sizeOfImageSquare,
+                         sizeOfImageSquare);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

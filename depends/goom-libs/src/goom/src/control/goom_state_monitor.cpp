@@ -37,6 +37,9 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
 }
 
 // TODO(glk) - clean this up.
+namespace
+{
+
 [[nodiscard]] auto GetString(const std::unordered_set<std::string>& theSet) noexcept -> std::string
 {
   auto str = std::string{};
@@ -49,6 +52,8 @@ auto GoomStateMonitor::GetCurrentState() const -> std::string
   str.pop_back();
   return str;
 }
+
+} // namespace
 
 auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs
 {

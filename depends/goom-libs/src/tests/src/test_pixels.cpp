@@ -116,6 +116,9 @@ TEST_CASE("Pixels")
   }
 }
 
+namespace
+{
+
 auto GetPixelCount(const PixelBuffer& buffer, const Pixel& pixel) -> uint32_t
 {
   auto count = 0U;
@@ -131,6 +134,8 @@ auto GetPixelCount(const PixelBuffer& buffer, const Pixel& pixel) -> uint32_t
   }
   return count;
 }
+
+} // namespace
 
 TEST_CASE("PixelBuffer Get4RHBNeighbours")
 {

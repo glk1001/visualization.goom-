@@ -2,7 +2,9 @@
 
 //#undef NO_LOGGING
 
+#ifdef _MSC_VER
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#endif
 
 #include "text_drawer.h"
 
@@ -451,7 +453,7 @@ auto TextDrawer::TextDrawerImpl::SetFontFile(const std::string& filename) -> voi
   auto fontFile = std::ifstream{m_fontFilename, std::ios::binary};
   if (!fontFile)
   {
-    throw std::runtime_error(std20::format("Could not open font file \"{}\".", m_fontFilename));
+    throw std::runtime_error(std_fmt::format("Could not open font file \"{}\".", m_fontFilename));
   }
 
   fontFile.seekg(0, std::ios::end);
@@ -476,7 +478,7 @@ inline auto TextDrawer::TextDrawerImpl::SetFaceFontSize() -> void
                          m_horizontalResolution,
                          m_verticalResolution) != 0)
   {
-    throw std::logic_error(std20::format("Could not set face font size to {}.", m_fontSize));
+    throw std::logic_error(std_fmt::format("Could not set face font size to {}.", m_fontSize));
   }
 }
 
@@ -564,15 +566,15 @@ auto TextDrawer::TextDrawerImpl::Prepare() -> void
     if (const auto gIndex = ::FT_Get_Char_Index(m_face, static_cast<FT_ULong>(utf32Text[i]));
         ::FT_Load_Glyph(m_face, gIndex, FT_LOAD_NO_BITMAP) != 0)
     {
-      throw std::runtime_error(
-          std20::format("Could not load font char '{}' and glyph index {}.", m_theText[i], gIndex));
+      throw std::runtime_error(std_fmt::format(
+          "Could not load font char '{}' and glyph index {}.", m_theText[i], gIndex));
     }
 
     // Need an outline for this to work.
     if (m_face->glyph->format != FT_GLYPH_FORMAT_OUTLINE)
     {
       throw std::logic_error(
-          std20::format("Not a correct font format: {}.", m_face->glyph->format));
+          std_fmt::format("Not a correct font format: {}.", m_face->glyph->format));
     }
 
     const auto spans = GetSpans(i);
@@ -607,8 +609,6 @@ auto TextDrawer::TextDrawerImpl::GetStartXPen(const int32_t xPen) const -> int
              (I_HALF * (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin));
     case TextAlignment::RIGHT:
       return xPen - (GetPreparedTextBoundingRect().xMax - GetPreparedTextBoundingRect().xMin);
-    default:
-      throw std::logic_error("Unknown TextAlignment value.");
   }
 }
 

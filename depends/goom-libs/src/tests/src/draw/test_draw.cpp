@@ -25,6 +25,9 @@ struct PixelInfo
 
 // NOLINTBEGIN(misc-const-correctness)
 
+namespace
+{
+
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 void CheckPixels(const std::vector<PixelInfo>& changedPixels,
                  const std::vector<PixelInfo>& expectedPixels)
@@ -37,26 +40,26 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
 
     const auto& coords = changedPixels[i];
 
-    INFO(std20::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})",
-                       i,
-                       coords.point.x,
-                       coords.point.y,
-                       point.x,
-                       point.y));
+    INFO(std_fmt::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})",
+                         i,
+                         coords.point.x,
+                         coords.point.y,
+                         point.x,
+                         point.y));
     REQUIRE(coords.point.x == point.x);
     REQUIRE(coords.point.y == point.y);
 
-    INFO(std20::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})",
-                       0,
-                       coords.colors.color1.R(),
-                       coords.colors.color1.G(),
-                       coords.colors.color1.B(),
-                       coords.colors.color1.A(),
-                       0,
-                       colors.color1.R(),
-                       colors.color1.G(),
-                       colors.color1.B(),
-                       colors.color1.A()));
+    INFO(std_fmt::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})",
+                         0,
+                         coords.colors.color1.R(),
+                         coords.colors.color1.G(),
+                         coords.colors.color1.B(),
+                         coords.colors.color1.A(),
+                         0,
+                         colors.color1.R(),
+                         colors.color1.G(),
+                         colors.color1.B(),
+                         colors.color1.A()));
     REQUIRE(coords.colors.color1 == colors.color1);
     REQUIRE(coords.colors.color2 == BLACK_PIXEL);
   }
@@ -64,7 +67,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
 
 void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo>& expectedPixels)
 {
-  INFO(std20::format("draw.GetNumChangedCoords() = {}", draw.GetNumChangedCoords()));
+  INFO(std_fmt::format("draw.GetNumChangedCoords() = {}", draw.GetNumChangedCoords()));
   REQUIRE(draw.GetNumChangedCoords() == expectedPixels.size());
 
   auto changedPixels       = std::vector<PixelInfo>{};
@@ -130,6 +133,8 @@ auto FillDrawContainer(GoomDrawToContainer* const draw, const uint32_t numChange
 
   return pixelsNewToOld;
 }
+
+} // namespace
 
 TEST_CASE("Test DrawMovingText to Container")
 {

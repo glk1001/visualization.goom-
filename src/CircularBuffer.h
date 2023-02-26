@@ -77,7 +77,7 @@ public:
   }
 
   // TODO(glk) Make this a unit test
-  /** Visual Studio not happy with this
+#if 0 // Visual Studio not happy with this
   [[nodiscard]] auto TestSilence() const -> bool
   {
     auto* begin = static_cast<T*>(&m_buffer[0]);
@@ -92,7 +92,7 @@ public:
     return (ptr == begin) && (static_cast<u_int32_t>(first + SILENCE_THRESHOLD) <=
                               (static_cast<u_int32_t>(SILENCE_THRESHOLD) * 2));
   }
-  **/
+#endif
 
 private:
   size_t m_size;

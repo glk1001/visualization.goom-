@@ -148,7 +148,7 @@ auto ThreadPool::ScheduleAndGetFuture(FuncT&& func, ArgsT&&... args)
 
   // Acquire the lock, and then push the WorkItem onto the queue.
   {
-    const std::scoped_lock lock{m_mutex};
+    const std::scoped_lock<std::mutex> lock{m_mutex};
     WorkItem work{};
     work.func = std::move(wrappedFunc);
     m_workQueue.emplace(std::move(work));

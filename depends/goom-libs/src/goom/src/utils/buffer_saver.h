@@ -92,7 +92,7 @@ inline BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::GetCurrentFilename() const -> std::string
 {
-  return std20::format("{}_{:05}", m_filenamePrefix, m_currentBuffNum);
+  return std_fmt::format("{}_{:05}", m_filenamePrefix, m_currentBuffNum);
 }
 
 template<class T, class HeaderT>
@@ -178,7 +178,7 @@ void BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
   auto file = std::ofstream{filename, std::ios::out | std::ios::binary};
   if (not file.good())
   {
-    throw std::runtime_error(std20::format("Could not open file for writing: '{}'.", filename));
+    throw std::runtime_error(std_fmt::format("Could not open file for writing: '{}'.", filename));
   }
   WriteBinary(file, tag, header, buffer);
 }
@@ -264,7 +264,7 @@ void BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
   for (auto i = 0U; i < buffer.GetBufferLen(); ++i)
   {
     //    file << std20::format("{:#018x}", buffer[i]);
-    file << std20::format("{}", buffer[i]);
+    file << std_fmt::format("{}", buffer[i]);
     if (i < (buffer.GetBufferLen() - 1))
     {
       file << ", ";

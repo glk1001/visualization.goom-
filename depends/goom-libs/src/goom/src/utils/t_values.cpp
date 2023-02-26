@@ -87,8 +87,6 @@ auto TValue::Increment() noexcept -> void
     case StepType::CONTINUOUS_REVERSIBLE:
       ContinuousReversibleIncrement();
       break;
-    default:
-      FailFast();
   }
 }
 

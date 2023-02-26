@@ -3,4 +3,4 @@
 #include "tcb/span.h"
 
 // NOLINTNEXTLINE(misc-unused-alias-decls): Waiting for C++20
-namespace STD_20 = ::tcb;
+namespace std_spn = ::tcb;

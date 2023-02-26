@@ -77,10 +77,10 @@ inline auto DotDrawer::DrawCircleDot(const Point2dInt& centre,
 
   const auto minBrightness = m_globalBrightnessFactor * DOT_INSIDE_MIN_BRIGHTNESS_FACTOR;
   const auto maxBrightness = m_globalBrightnessFactor * DOT_INSIDE_MAX_BRIGHTNESS_FACTOR;
-  auto brightness          = IncrementedValue{minBrightness,
-                                     maxBrightness,
-                                     TValue::StepType::SINGLE_CYCLE,
-                                     static_cast<uint32_t>(maxRadius)};
+  auto brightness          = IncrementedValue<float>{minBrightness,
+                                                     maxBrightness,
+                                                     TValue::StepType::SINGLE_CYCLE,
+                                                     static_cast<uint32_t>(maxRadius)};
 
   // '> 1' means leave a little hole in the middle of the circles.
   for (auto radius = maxRadius; radius > 1; --radius)

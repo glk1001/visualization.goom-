@@ -21,17 +21,17 @@ inline constexpr auto DEGREES_90  = 90.0F;
 inline constexpr auto DEGREES_180 = 180.0F;
 inline constexpr auto DEGREES_360 = 360.0F;
 
-[[nodiscard]] constexpr auto ToRadians(const float degrees) -> float
+[[nodiscard]] constexpr auto ToRadians(const float degrees) noexcept -> float
 {
   return degrees * (TWO_PI / DEGREES_360);
 }
 
-[[nodiscard]] constexpr auto ToDegrees(const float radians) -> float
+[[nodiscard]] constexpr auto ToDegrees(const float radians) noexcept -> float
 {
   return radians * (DEGREES_360 / TWO_PI);
 }
 
-[[nodiscard]] constexpr auto Lcm(const int32_t a, const int32_t b) -> int64_t
+[[nodiscard]] constexpr auto Lcm(const int32_t a, const int32_t b) noexcept -> int64_t
 {
   return (static_cast<int64_t>(a) / std::gcd(a, b)) * static_cast<int64_t>(b);
 }
@@ -43,7 +43,7 @@ struct RationalNumber
   bool isRational;
 };
 
-[[nodiscard]] inline auto FloatToIrreducibleFraction(const float fltVal) -> RationalNumber
+[[nodiscard]] inline auto FloatToIrreducibleFraction(const float fltVal) noexcept -> RationalNumber
 {
   static constexpr auto PRECISION = 10000000.0;
 
@@ -63,19 +63,19 @@ struct RationalNumber
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto Sq(const T& x) -> T
+[[nodiscard]] constexpr auto Sq(const T& x) noexcept -> T
 {
   return x * x;
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto SqDistance(const T x, const T y) -> T
+[[nodiscard]] constexpr auto SqDistance(const T x, const T y) noexcept -> T
 {
   return Sq(x) + Sq(y);
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto PowerOf2(const T n) -> T
+[[nodiscard]] constexpr auto PowerOf2(const T n) noexcept -> T
 {
   auto val = static_cast<T>(1);
   for (auto i = static_cast<T>(1); i <= n; ++i)
@@ -86,7 +86,7 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto Log2(const T n) -> T
+[[nodiscard]] constexpr auto Log2(const T n) noexcept -> T
 {
   Expects(n > 0);
 
@@ -124,13 +124,13 @@ constexpr auto IntPower(T base, uint32_t exp) noexcept -> T
   return result;
 }
 
-[[nodiscard]] inline auto GetSawTooth(const float t, const float period) -> float
+[[nodiscard]] inline auto GetSawTooth(const float t, const float period) noexcept -> float
 {
   const auto tDivPeriod = t / period;
   return HALF + (tDivPeriod - std::floor(HALF + tDivPeriod));
 }
 
-[[nodiscard]] inline auto GetTriangle(const float t, const float period) -> float
+[[nodiscard]] inline auto GetTriangle(const float t, const float period) noexcept -> float
 {
   const auto remainder = std::fmod(t, period);
   return t < (HALF * period) ? remainder : (period - remainder);
@@ -138,27 +138,33 @@ constexpr auto IntPower(T base, uint32_t exp) noexcept -> T
 
 inline constexpr auto SMALL_FLOAT = 0.00001F;
 
-[[nodiscard]] inline bool FloatsEqual(const float x,
+[[nodiscard]] inline auto FloatsEqual(const float x,
                                       const float y,
-                                      const float epsilon = SMALL_FLOAT)
+                                      const float epsilon = SMALL_FLOAT) noexcept -> bool
 {
   return std::fabs(x - y) < epsilon;
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto IsEven(const T& n) -> bool
+[[nodiscard]] constexpr auto IsEven(const T& n) noexcept -> bool
 {
   return 0 == (n % 2);
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto IsOdd(const T& n) -> bool
+[[nodiscard]] constexpr auto IsOdd(const T& n) noexcept -> bool
 {
   return 0 != (n % 2);
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto ModIncrement(T val, const T mod) -> T
+[[nodiscard]] auto IsBetween(const T& value, const T& low, const T& high) noexcept -> bool
+{
+  return (low <= value) and (value <= high);
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto ModIncrement(T val, const T mod) noexcept -> T
 {
   ++val;
   if (val < mod)
@@ -188,9 +194,9 @@ private:
   T m_denominator;
 
   template<typename U>
-  friend constexpr auto operator-(U value, const Fraction<U>& frac) -> Fraction<U>;
+  friend constexpr auto operator-(U value, const Fraction<U>& frac) noexcept -> Fraction<U>;
   template<typename U>
-  friend constexpr auto operator*(const Fraction<U>& frac, U value) -> U;
+  friend constexpr auto operator*(const Fraction<U>& frac, U value) noexcept -> U;
 };
 
 template<typename T>
@@ -230,7 +236,8 @@ inline constexpr auto I_FIFTH = FRAC_FIFTH<int32_t>;
 inline constexpr auto U_FIFTH = FRAC_FIFTH<uint32_t>;
 
 template<typename T>
-[[nodiscard]] constexpr auto GetFltFraction(const typename Fraction<T>::NumDom& numDom) -> float
+[[nodiscard]] constexpr auto GetFltFraction(const typename Fraction<T>::NumDom& numDom) noexcept
+    -> float
 {
   return static_cast<float>(numDom.numerator) / static_cast<float>(numDom.denominator);
 }
@@ -240,9 +247,9 @@ class RangeMapper
 public:
   constexpr RangeMapper() noexcept = default;
   constexpr RangeMapper(double x0, double x1) noexcept;
-  constexpr auto operator()(double x0, double x1, double x) const -> double;
-  [[nodiscard]] constexpr auto GetXMin() const -> double { return m_xMin; }
-  [[nodiscard]] constexpr auto GetXMax() const -> double { return m_xMax; }
+  constexpr auto operator()(double x0, double x1, double x) const noexcept -> double;
+  [[nodiscard]] constexpr auto GetXMin() const noexcept -> double { return m_xMin; }
+  [[nodiscard]] constexpr auto GetXMax() const noexcept -> double { return m_xMax; }
 
 private:
   double m_xMin   = 0;
@@ -255,20 +262,22 @@ constexpr RangeMapper::RangeMapper(const double x0, const double x1) noexcept
 {
 }
 
-constexpr auto RangeMapper::operator()(const double x0, const double x1, const double x) const
-    -> double
+constexpr auto RangeMapper::operator()(const double x0,
+                                       const double x1,
+                                       const double x) const noexcept -> double
 {
   return STD20::lerp(x0, x1, (x - m_xMin) / m_xWidth);
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto operator-(const T value, const Fraction<T>& frac) -> Fraction<T>
+[[nodiscard]] constexpr auto operator-(const T value, const Fraction<T>& frac) noexcept
+    -> Fraction<T>
 {
   return {(value * frac.m_denominator) - frac.m_numerator, frac.m_denominator};
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto operator*(const Fraction<T>& frac, const T value) -> T
+[[nodiscard]] constexpr auto operator*(const Fraction<T>& frac, const T value) noexcept -> T
 {
   return (frac.m_numerator * value) / frac.m_denominator;
 }

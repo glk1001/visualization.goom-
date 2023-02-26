@@ -77,24 +77,24 @@ auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, 
     auto* rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
     if (!rgbImage)
     {
-      throw std::runtime_error(std20::format(R"(Could not load image file "{}".)", m_filename));
+      throw std::runtime_error(std_fmt::format(R"(Could not load image file "{}".)", m_filename));
     }
     if ((0 == width) || (0 == height) || (0 == bpp))
     {
       throw std::runtime_error(
-          std20::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.",
-                        m_filename,
-                        width,
-                        height,
-                        bpp));
+          std_fmt::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.",
+                          m_filename,
+                          width,
+                          height,
+                          bpp));
     }
 
     return {rgbImage, width, height, bpp};
   }
   catch (const std::exception& e)
   {
-    throw std::runtime_error(
-        std20::format(R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));
+    throw std::runtime_error(std_fmt::format(
+        R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));
   }
 }
 
