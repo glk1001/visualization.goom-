@@ -1,4 +1,3 @@
 # Dummy .clang-tidy. Should do nothing
 
 Checks: '-*,llvm-twine-local'
-

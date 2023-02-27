@@ -29,11 +29,23 @@ RUN apt-get update    && \
       ccache             \
       build-essential    \
       gdb                \
-      clang-15           \
-      clang-tidy-15      \
       gcc-12             \
       g++-12          && \
     apt-get clean -y
+
+# Install Clang
+ARG CLANG_VER=""
+
+COPY "llvm.sh" /tmp/llvm.sh
+WORKDIR /tmp
+
+RUN apt-get update                                       && \
+    apt-get install -y                                      \
+      --no-install-recommends software-properties-common    \
+      lsb-release                                           \
+      wget
+
+RUN if [ -n "${CLANG_VER}" ] ; then bash llvm.sh ${CLANG_VER} && apt-get install -y clang-tidy-${CLANG_VER} ; fi
 
 RUN apt-get clean -y
 

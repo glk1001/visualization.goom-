@@ -6,7 +6,7 @@ on:
     branches: []
 
 env:
-  CLANG_VERSION: 15
+  CLANG_VERSION: 16
   GCC_VERSION: 12
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
         config:
         - {
             name: "Ubuntu Clang - RelWithDebInfo",
-            os: ubuntu-20.04,
+            os: ubuntu-latest,
             artifact: "ubuntu_clang-$CLANG_VERSION_RelWithDebInfo.7z",
             cc: "clang-$CLANG_VERSION",
             cxx: "clang-$CLANG_VERSION",
@@ -29,7 +29,7 @@ jobs:
           }
         - {
             name: "Ubuntu Clang - Release",
-            os: ubuntu-20.04,
+            os: ubuntu-latest,
             artifact: "ubuntu_clang-$CLANG_VERSION_Release.7z",
             cc: "clang-$CLANG_VERSION",
             cxx: "clang-$CLANG_VERSION",

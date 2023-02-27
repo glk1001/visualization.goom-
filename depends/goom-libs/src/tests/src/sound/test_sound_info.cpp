@@ -2,9 +2,17 @@
 #include "sound_info.h"
 #include "utils/math/misc.h"
 
+#include <memory>
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <memory>
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 namespace GOOM::UNIT_TESTS
 {

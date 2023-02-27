@@ -1,16 +1,22 @@
 #include "utils/math/randutils.h"
 
-#include <catch2/catch_test_macros.hpp>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <limits>
-#include <string>
 #include <tuple>
 #include <vector>
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+#include <catch2/catch_test_macros.hpp>
 #ifndef NDEBUG
 #include <catch2/matchers/catch_matchers_all.hpp>
+#endif
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
 #endif
 
 namespace GOOM::UNIT_TESTS

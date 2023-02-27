@@ -25,4 +25,5 @@ docker run --rm                                                 \
                       --docker-os-tag ${DOCKER_OS_TAG}          \
                       --compiler ${COMPILER}                    \
                       --build-type ${BUILD_TYPE}                \
-                      --suffix ${BUILD_DIR_SUFFIX}"
+                      --suffix ${BUILD_DIR_SUFFIX}              \
+                      $@"

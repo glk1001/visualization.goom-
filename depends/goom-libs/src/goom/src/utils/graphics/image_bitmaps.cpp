@@ -29,6 +29,10 @@ inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pix
   m_buff.at((y * m_width) + x) = pixel;
 }
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 void ImageBitmap::Load(const std::string& imageFilename)
 {
   m_filename                                = imageFilename;
@@ -64,6 +68,9 @@ void ImageBitmap::Load(const std::string& imageFilename)
 
   ::stbi_image_free(rgbImage);
 }
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>
 {

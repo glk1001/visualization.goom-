@@ -1,9 +1,17 @@
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 
+#include <vector>
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <vector>
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 namespace GOOM::UNIT_TESTS
 {

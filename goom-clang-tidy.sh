@@ -6,10 +6,22 @@ declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 
 source "${THIS_SCRIPT_PATH}/goom-get-vars.sh"
 
-declare -r RUN_CLANG_TIDY="run-clang-tidy-15"
+declare -r RUN_CLANG_TIDY="run-clang-tidy-${COMPILER_VERSION}"
 declare -r GOOM_MAIN_DIR="${THIS_SCRIPT_PATH}/src"
 declare -r GOOM_LIB_DIR="${THIS_SCRIPT_PATH}/depends/goom-libs/src"
 declare -r CLANG_TIDY_LOG="/tmp/goom-clang-tidy.log"
+
+if [[ ! -d "${BUILD_DIRNAME}" ]]; then
+  >&2 echo "ERROR: Could not find build dir: \"${BUILD_DIRNAME}\"."
+  exit 1
+fi
+
+if [[ "${1:-}" != "" ]]; then
+  declare -r CUSTOM_SRCE=$1
+  "${RUN_CLANG_TIDY}" -j 6 -header-filter='^((?!catch2).)*$' -extra-arg=-Wno-unknown-warning-option \
+                      -p "${BUILD_DIRNAME}" "${CUSTOM_SRCE}" |& tee "${CLANG_TIDY_LOG}"
+  exit $?
+fi
 
 if [[ ! -d "${GOOM_MAIN_DIR}" ]]; then
   >&2 echo "ERROR: Could not find goom main source dir: \"${GOOM_MAIN_DIR}\"."
@@ -17,10 +29,6 @@ if [[ ! -d "${GOOM_MAIN_DIR}" ]]; then
 fi
 if [[ ! -d "${GOOM_LIB_DIR}" ]]; then
   >&2 echo "ERROR: Could not find goom lib source dir: \"${GOOM_LIB_DIR}\"."
-  exit 1
-fi
-if [[ ! -d "${BUILD_DIRNAME}" ]]; then
-  >&2 echo "ERROR: Could not find build dir: \"${BUILD_DIRNAME}\"."
   exit 1
 fi
 

@@ -1,8 +1,16 @@
 #include "utils/enum_utils.h"
 
 #include <algorithm>
-#include <catch2/catch_test_macros.hpp>
 #include <string>
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+#include <catch2/catch_test_macros.hpp>
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 namespace GOOM::UNIT_TESTS
 {

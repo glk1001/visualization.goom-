@@ -3,7 +3,15 @@
 #include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 #include <catch2/catch_test_macros.hpp>
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 namespace GOOM::UNIT_TESTS
 {

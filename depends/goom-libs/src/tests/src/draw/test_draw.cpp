@@ -3,9 +3,17 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 
-#include <catch2/catch_test_macros.hpp>
 #include <format>
 #include <vector>
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+#include <catch2/catch_test_macros.hpp>
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 namespace GOOM::UNIT_TESTS
 {

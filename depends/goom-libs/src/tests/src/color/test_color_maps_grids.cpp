@@ -5,8 +5,6 @@
 #include "utils/t_values.h"
 
 #include <algorithm>
-#include <catch2/catch_approx.hpp>
-#include <catch2/catch_test_macros.hpp>
 #include <string>
 
 #if not defined(_MSC_VER)
@@ -16,6 +14,16 @@
 #pragma warning(disable : 4242)
 #include <vivid.h>
 #pragma warning(pop)
+#endif
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
 #endif
 
 namespace GOOM::UNIT_TESTS

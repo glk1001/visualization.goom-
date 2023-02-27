@@ -6,5 +6,5 @@ function get_docker_build_image()
     echo "cpp-toolchain/${os_type}-${os_tag}:1.1"
 }
 
-declare -r DOCKER_BUILD_OS_TYPE=debian
-declare -r DOCKER_BUILD_OS_TAG=bookworm
+declare -r DOCKER_BUILD_OS_TYPE=ubuntu
+declare -r DOCKER_BUILD_OS_TAG=kinetic

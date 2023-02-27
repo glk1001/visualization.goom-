@@ -1,4 +1,8 @@
 // NOLINTBEGIN: Not my code
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 
 //#undef NO_LOGGING
 
@@ -924,4 +928,7 @@ auto TextDrawer::TextDrawerImpl::GetBoundingRect(const SpanArray& stdSpans,
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 // NOLINTEND: Not my code

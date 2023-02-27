@@ -96,21 +96,31 @@ fi
 if [[ "${COMPILER}" == "gcc-11" ]]; then
   declare -r C_COMPILER=gcc-11
   declare -r CPP_COMPILER=g++-11
+  declare -r COMPILER_VERSION=11
 elif [[ "${COMPILER}" == "gcc-12" ]]; then
   declare -r C_COMPILER=gcc-12
   declare -r CPP_COMPILER=g++-12
+  declare -r COMPILER_VERSION=12
 elif [[ "${COMPILER}" == "clang-13" ]]; then
   declare -r C_COMPILER=clang-13
   declare -r CPP_COMPILER=clang-13
+  declare -r COMPILER_VERSION=13
 elif [[ "${COMPILER}" == "clang-14" ]]; then
   declare -r C_COMPILER=clang-14
   declare -r CPP_COMPILER=clang-14
+  declare -r COMPILER_VERSION=14
 elif [[ "${COMPILER}" == "clang-15" ]]; then
   declare -r C_COMPILER=clang-15
   declare -r CPP_COMPILER=clang-15
+  declare -r COMPILER_VERSION=15
 elif [[ "${COMPILER}" == "clang-16" ]]; then
   declare -r C_COMPILER=clang-16
   declare -r CPP_COMPILER=clang-16
+  declare -r COMPILER_VERSION=16
+elif [[ "${COMPILER}" == "clang-17" ]]; then
+  declare -r C_COMPILER=clang-17
+  declare -r CPP_COMPILER=clang-17
+  declare -r COMPILER_VERSION=17
 else
   echo "ERROR: Unknown compiler \"${COMPILER}\"."
   echo

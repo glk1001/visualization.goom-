@@ -129,6 +129,10 @@ inline auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const n
   return GetRandInRange(numberRange.min, numberRange.max);
 }
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 template<class RandomIt>
 inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
 {
@@ -138,6 +142,9 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
     std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
   }
 }
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 template<class E>
 Weights<E>::Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept

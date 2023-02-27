@@ -22,6 +22,10 @@ public:
   [[nodiscard]] auto DataAvailable() const -> size_t { return m_used; }
   [[nodiscard]] auto FreeSpace() const -> size_t { return m_size - m_used; }
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
   auto Write(const T* srce, size_t count) -> bool
   {
     if (count > FreeSpace())
@@ -75,6 +79,9 @@ public:
     }
     return done;
   }
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
   // TODO(glk) Make this a unit test
 #if 0 // Visual Studio not happy with this
