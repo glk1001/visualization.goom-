@@ -1,7 +1,7 @@
 What a GOOM!
 ============
 
-Copyright (c)2000-2009, Jean-Christophe Hoelt <jeko@ios-software.com>
+Jean-Christophe Hoelt <jeko@ios-software.com>
     Programmer and Software Designer at Fovea.
 
 Guillaume Borios <gyom@ios-software.com>
@@ -11,11 +11,13 @@ Fred
     WINAMP/WMP port
 
 ---
+Massimino Pascal <Pascal.Massimon@ens.fr>
+    IFS Dancers
 
+---
 Rémi Duraffort <ivoire@videolan.org>
     Fix our bugs for integration into VLC.
 
 ---
-GOOM++
-    GLK (2021-02-01)
-        C++17 rewrite and more colors from 'vivid'
+GLK (2021-02-01)
+    GOOM++ - C++17 rewrite and more colors from 'vivid'

@@ -8,9 +8,9 @@ declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 source "${THIS_SCRIPT_PATH}/goom-docker-paths.sh"
 
 
-declare -r KODI_BUILD_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/../xbmc/kodi-build/addons)
+declare -r KODI_BUILD_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/../kodi/kodi-build/addons)
 
-declare -r KODI_BUILD_LIB_DIR=${KODI_BUILD_ROOT_DIR}/lib/addons/visualization.goom
+declare -r KODI_BUILD_LIB_DIR=${KODI_BUILD_ROOT_DIR}/lib/kodi/addons/visualization.goom
 if [[ ! -d "${KODI_BUILD_LIB_DIR}" ]]; then
   echo "ERROR: Could not find kodi build lib directory \"${KODI_BUILD_LIB_DIR}\"."
   exit 1

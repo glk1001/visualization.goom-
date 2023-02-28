@@ -6,29 +6,29 @@ set -e
 declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 
 
-declare -r KODI_BUILD_DIR=$(realpath ${THIS_SCRIPT_PATH}/../xbmc/kodi-build/addons/visualization.goom)
-if [[ ! -d "${KODI_BUILD_DIR}" ]]; then
-  echo "ERROR: Could not find kodi build directory \"${KODI_BUILD_DIR}\"."
+declare -r KODI_ADDONS_BUILD_DIR=$(realpath ${THIS_SCRIPT_PATH}/../kodi/kodi-build/addons)
+if [[ ! -d "${KODI_ADDONS_BUILD_DIR}" ]]; then
+  echo "ERROR: Could not find kodi build directory \"${KODI_ADDONS_BUILD_DIR}\"."
   exit 1
 fi
 
-declare -r KODI_LIB_DIR=/usr/lib/x86_64-linux-gnu/kodi/addons/visualization.goom
+declare -r KODI_LIB_DIR=/usr/local/lib/kodi/addons/visualization.goom
 if [[ ! -d "${KODI_LIB_DIR}" ]]; then
   echo "ERROR: Could not find kodi lib directory \"${KODI_LIB_DIR}\"."
   exit 1
 fi
 
-declare -r KODI_RESOURCES_DIR=/usr/share/kodi/addons/visualization.goom
-if [[ ! -d "${KODI_RESOURCES_DIR}" ]]; then
-  echo "ERROR: Could not find kodi resources directory \"${KODI_RESOURCES_DIR}\"."
+declare -r KODI_DATA_DIR=/usr/local/share/kodi/addons/visualization.goom
+if [[ ! -d "${KODI_DATA_DIR}" ]]; then
+  echo "ERROR: Could not find kodi resources directory \"${KODI_DATA_DIR}\"."
   exit 1
 fi
 
-sudo cp -pv ${KODI_BUILD_DIR}/visualization.goom.so.* ${KODI_LIB_DIR}
+sudo cp -pv ${KODI_ADDONS_BUILD_DIR}/lib/kodi/addons/visualization.goom/visualization.goom.so.* ${KODI_LIB_DIR}
 
 echo
-sudo cp -pv ${KODI_BUILD_DIR}/addon.xml ${KODI_RESOURCES_DIR}
+sudo cp -pv ${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom/addon.xml ${KODI_DATA_DIR}
 
 echo
-echo "rsyncing \"${KODI_BUILD_DIR}/resources/\" to \"${KODI_RESOURCES_DIR}/resources/\"..."
-sudo rsync --out-format="%n" --itemize-changes -a ${KODI_BUILD_DIR}/resources/ ${KODI_RESOURCES_DIR}/resources/
+echo "rsyncing \"${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom/resources/\" to \"${KODI_DATA_DIR}/resources/\"..."
+sudo rsync --out-format="%n" --itemize-changes -a ${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom/resources/ ${KODI_DATA_DIR}/resources/

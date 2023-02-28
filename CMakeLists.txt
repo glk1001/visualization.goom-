@@ -36,16 +36,25 @@ endif ()
 
 if (IS_THIS_MAIN_CMAKE_SCRIPT)
     set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}")
+    set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/kodi/kodi-build/addons)
 else ()
+    if (CMAKE_INSTALL_LIBDIR)
+        message(STATUS "CMAKE_INSTALL_LIBDIR = \"${CMAKE_INSTALL_LIBDIR}\".")
+        message(WARNING "Do not set 'CMAKE_INSTALL_LIBDIR'."
+                " This will be set to empty so kodi can reset it later.")
+    endif ()
     # Hack - 'CMAKE_BINARY_DIR' points to a subdirectory below the parent build dir.
     #        Not sure how to cleanly get the parent directory.
     set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}/../../..")
     cmake_path(NORMAL_PATH GOOM_BUILD_DIR OUTPUT_VARIABLE GOOM_BUILD_DIR)
 endif ()
+
 if (NOT EXISTS ${GOOM_BUILD_DIR})
     message(FATAL_ERROR "Could not find goom build directory \"${GOOM_BUILD_DIR}\".")
 endif ()
-set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/xbmc/kodi-build/addons)
+if (NOT EXISTS ${CMAKE_INSTALL_PREFIX})
+    message(FATAL_ERROR "Could not find install directory \"${CMAKE_INSTALL_PREFIX}\".")
+endif ()
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
@@ -63,7 +72,7 @@ else ()
                         -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
                         -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
                         -D PACKAGE_ZIP=1
-                        ${KODI_ROOT_DIR}/xbmc/cmake/addons
+                        ${KODI_ROOT_DIR}/kodi/cmake/addons
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                         RESULT_VARIABLE CMAKE_RESULT)
         if (NOT CMAKE_RESULT EQUAL "0")
@@ -178,8 +187,8 @@ set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp
     src/shader_with_effects.cpp
     src/kodi_shader_with_effects.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
-    src/CircularBuffer.h
     src/build_time.h
+    src/circular_buffer.h
     src/gl_render_types.h
     src/gl_renderer.h
     src/goom_buffer_producer.h
@@ -187,6 +196,9 @@ set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
     src/kodi_shader_with_effects.h)
 
 list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib)
+
+# Let kodi set this:
+set(CMAKE_INSTALL_LIBDIR "")
 
 build_addon(${GOOM_TARGET_NAME} ${GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
@@ -228,6 +240,8 @@ message(STATUS "Visualization.goom: CMAKE_BINARY_DIR   = \"${CMAKE_BINARY_DIR}\"
 message(STATUS "Visualization.goom: CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Visualization.goom: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Visualization.goom: CMAKE_INSTALL_PREFIX = \"${CMAKE_INSTALL_PREFIX}\".")
+message(STATUS "Visualization.goom: CMAKE_INSTALL_LIBDIR = \"${CMAKE_INSTALL_LIBDIR}\".")
+message(STATUS "Visualization.goom: CMAKE_INSTALL_DATADIR = \"${CMAKE_INSTALL_DATADIR}\".")
 message(STATUS "Visualization.goom: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Visualization.goom: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Visualization.goom: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")

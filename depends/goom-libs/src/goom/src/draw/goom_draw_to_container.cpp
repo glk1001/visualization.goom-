@@ -85,7 +85,7 @@ auto GoomDrawToContainer::ResizeChangedCoordsKeepingNewest(const size_t numToKee
 auto GoomDrawToContainer::IterateChangedCoordsNewToOld(const CoordsFunc& func) const noexcept
     -> void
 {
-  const auto runFunc = [&](const size_t i)
+  const auto runFunc = [this, &func](const size_t i)
   {
     const auto& coords     = m_orderedXYPixelList[i];
     const auto& colorsList = GetColorsList(coords);

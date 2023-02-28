@@ -640,7 +640,7 @@ auto TubesFx::TubeFxImpl::DrawPreviousShapes() -> void
 
 auto TubesFx::TubeFxImpl::DrawTubeCircles() -> void
 {
-  const auto drawTubeCircles = [&](const size_t i)
+  const auto drawTubeCircles = [this](const size_t i)
   {
     if (!m_tubes[i].IsActive())
     {

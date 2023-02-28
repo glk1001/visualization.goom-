@@ -2,7 +2,7 @@
 
 // #define SAVE_AUDIO_BUFFERS
 
-#include "CircularBuffer.h"
+#include "circular_buffer.h"
 #include "gl_render_types.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"

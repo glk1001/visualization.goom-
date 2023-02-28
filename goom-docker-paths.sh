@@ -69,6 +69,7 @@ if [[ ! -d "${KODI_DOCKER_RESOURCES_DIR}" ]]; then
 fi
 
 
+# TODO(glk) - Need to read addon.xml from build dir. This kodi addon.xml may not exist yet.
 declare -r ADDON_XML="${KODI_DOCKER_FILES_DIR}/addon.xml"
 if [[ ! -f "${ADDON_XML}" ]]; then
   echo "ERROR: Could not find add-on xml file \"${ADDON_XML}\"."

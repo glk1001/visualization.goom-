@@ -46,11 +46,15 @@ auto KodiShaderWithEffects::CreateGlShaders() -> void
 
   if (not m_cVisualizationGoom->LoadShaderFiles(vertexShaderFilePath, fragmentShaderFilePath))
   {
-    throw std::runtime_error("CVisualizationGoom: Failed to load GL shaders.");
+    const auto* const errorMsg = "CVisualizationGoom: Failed to load GL shaders.";
+    LogError(*m_goomLogger, errorMsg);
+    throw std::runtime_error(errorMsg);
   }
   if (not m_cVisualizationGoom->CompileAndLink())
   {
-    throw std::runtime_error("CVisualizationGoom: Failed to compile GL shaders.");
+    const auto* const errorMsg = "CVisualizationGoom: Failed to compile GL shaders.";
+    LogError(*m_goomLogger, errorMsg);
+    throw std::runtime_error(errorMsg);
   }
 
   m_prog = m_cVisualizationGoom->ProgramHandle();

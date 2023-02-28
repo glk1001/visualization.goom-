@@ -1,14 +1,14 @@
 ********************************
 * What a GOOM++! version C++17 *
 ********************************
-Same algorithms (different tentacles), re-written in C++17 by GLK for
-use as a Kodi visualization addon. With added color from Gurki's 'vivid' 
+Same algorithms (different tentacles) and more, re-written in C++17 by GLK 
+for use as a Kodi visualization addon. With added color from Gurki's 'vivid'
 library.
 
 **************************
 * What a GOOM! version 2 *
 **************************
-copyright 2000-2004, by Jean-Christophe Hoelt <jeko@ios-software.com>
+By Jean-Christophe Hoelt <jeko@ios-software.com>
 
 This is my first visual plugins for XMMS, and I think that it's the best
 I have ever done !

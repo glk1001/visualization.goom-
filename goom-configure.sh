@@ -60,7 +60,6 @@ else
   declare -r KODI_ROOT_DIR_OPTION="-DKODI_ROOT_DIR=${KODI_ROOT_DIR}"
 fi
 
-# NOTE: Catch2 not available in Ubuntu Focal, so enable testing is off.
 cmake -DIS_THIS_MAIN_CMAKE_SCRIPT=1    \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DENABLE_TESTING=1               \
