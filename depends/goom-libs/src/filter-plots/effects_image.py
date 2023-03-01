@@ -69,8 +69,8 @@ if __name__ == "__main__":
     combined_effects = get_combined_effects()
 
     image = mpimg.imread(
-#            '/home/greg/Prj/github/xbmc/visualization.goom/visualization.goom/resources/images/displacements/mountain_sunset.png')
-            '/home/greg/Prj/github/xbmc/visualization.goom/depends/goom-libs/src/filter-plots/tile-pattern-512x512.png')
+#            '/home/greg/Prj/github/xbmc/visualization.goom-pp/visualization.goom-pp/resources/images/displacements/mountain_sunset.png')
+            '/home/greg/Prj/github/xbmc/visualization.goom-pp/depends/goom-libs/src/filter-plots/tile-pattern-512x512.png')
     height = image.shape[0]
     width = image.shape[1]
     depth = image.shape[2]

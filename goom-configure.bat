@@ -15,7 +15,7 @@ MKDIR %BUILD_DIR%
 
 CD %BUILD_DIR%
 
-cmake -DADDONS_TO_BUILD=visualization.goom ^
+cmake -DADDONS_TO_BUILD=visualization.goom-pp ^
       -DADDON_SRC_PREFIX=%VIS_GOOM_PARENT% ^
       -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
       -DCMAKE_INSTALL_PREFIX=%VIS_GOOM_PARENT%\kodi\kodi-build\addons ^

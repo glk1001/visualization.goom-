@@ -101,8 +101,8 @@ function copy_user_addon_files()
 
     mkdir -p "${CONTAINER_GOOM_ADDON_DIR}"
     echo
-    echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
-    rsync -avh "${KODI_DOCKER_FILES_DIR}/visualization.goom.so.${GOOM_VERSION}" "${CONTAINER_GOOM_ADDON_DIR}"
+    echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/visualization.goom-pp.so.${GOOM_VERSION}\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
+    rsync -avh "${KODI_DOCKER_FILES_DIR}/visualization.goom-pp.so.${GOOM_VERSION}" "${CONTAINER_GOOM_ADDON_DIR}"
     echo
     echo "rsyncing \"${KODI_DOCKER_FILES_DIR}/addon.xml\" to \"${CONTAINER_GOOM_ADDON_DIR}\""
     rsync -avh "${KODI_DOCKER_FILES_DIR}/addon.xml" "${CONTAINER_GOOM_ADDON_DIR}/addon.xml"
@@ -113,7 +113,7 @@ function copy_user_addon_files()
 }
 
 declare -r KODI_GOOM_IMAGE="$(get_kodi_goom_image_name ${KODI_IMAGE_OS_TYPE} ${KODI_IMAGE_OS_TAG} ${KODI_VERSION})"
-declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom"
+declare -r CONTAINER_GOOM_ADDON_DIR="${KODI_CONTAINER_HOME_DIR}/.kodi/addons/visualization.goom-pp"
 
 if [[ "${KODI_VERSION}" == "nexus" ]]; then
   declare -r KODI_PPA="ppa:team-xbmc/ppa"
@@ -126,8 +126,8 @@ fi
 
 if [[ "${IS_USER_ADDON}" == "no" ]]; then
   # Copy add-ons to Kodi system directories.
-  declare -r KODI_GOOM_LIB_DIR=/usr/lib/x86_64-linux-gnu/kodi/addons/visualization.goom
-  declare -r KODI_GOOM_ADDON_DIR=/usr/share/kodi/addons/visualization.goom
+  declare -r KODI_GOOM_LIB_DIR=/usr/lib/x86_64-linux-gnu/kodi/addons/visualization.goom-pp
+  declare -r KODI_GOOM_ADDON_DIR=/usr/share/kodi/addons/visualization.goom-pp
 else
   # Copying files to "/tmp" in Docker means the files will be lost when the container starts.
   # We want this for user add-on files because they are copied seperately to the Kodi home

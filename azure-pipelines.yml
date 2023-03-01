@@ -1,5 +1,5 @@
 variables:
-  app_id: 'visualization.goom'
+  app_id: 'visualization.goom-pp'
 
 trigger:
   branches:

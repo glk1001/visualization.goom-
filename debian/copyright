@@ -1,5 +1,5 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: visualization.goom
+Upstream-Name: visualization.goom-pp
 
 Files: *
 Copyright: 2005-2022 Team Kodi

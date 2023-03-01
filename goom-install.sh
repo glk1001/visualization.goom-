@@ -12,23 +12,23 @@ if [[ ! -d "${KODI_ADDONS_BUILD_DIR}" ]]; then
   exit 1
 fi
 
-declare -r KODI_LIB_DIR=/usr/local/lib/kodi/addons/visualization.goom
+declare -r KODI_LIB_DIR=/usr/local/lib/kodi/addons/visualization.goom-pp
 if [[ ! -d "${KODI_LIB_DIR}" ]]; then
   echo "ERROR: Could not find kodi lib directory \"${KODI_LIB_DIR}\"."
   exit 1
 fi
 
-declare -r KODI_DATA_DIR=/usr/local/share/kodi/addons/visualization.goom
+declare -r KODI_DATA_DIR=/usr/local/share/kodi/addons/visualization.goom-pp
 if [[ ! -d "${KODI_DATA_DIR}" ]]; then
   echo "ERROR: Could not find kodi resources directory \"${KODI_DATA_DIR}\"."
   exit 1
 fi
 
-sudo cp -pv ${KODI_ADDONS_BUILD_DIR}/lib/kodi/addons/visualization.goom/visualization.goom.so.* ${KODI_LIB_DIR}
+sudo cp -pv ${KODI_ADDONS_BUILD_DIR}/lib/kodi/addons/visualization.goom-pp/visualization.goom-pp.so.* ${KODI_LIB_DIR}
 
 echo
-sudo cp -pv ${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom/addon.xml ${KODI_DATA_DIR}
+sudo cp -pv ${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom-pp/addon.xml ${KODI_DATA_DIR}
 
 echo
-echo "rsyncing \"${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom/resources/\" to \"${KODI_DATA_DIR}/resources/\"..."
-sudo rsync --out-format="%n" --itemize-changes -a ${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom/resources/ ${KODI_DATA_DIR}/resources/
+echo "rsyncing \"${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom-pp/resources/\" to \"${KODI_DATA_DIR}/resources/\"..."
+sudo rsync --out-format="%n" --itemize-changes -a ${KODI_ADDONS_BUILD_DIR}/share/kodi/addons/visualization.goom-pp/resources/ ${KODI_DATA_DIR}/resources/

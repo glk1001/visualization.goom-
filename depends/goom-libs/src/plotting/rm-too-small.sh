@@ -3,7 +3,7 @@
 set -u
 set -e
 
-declare -r GOOM_DUMPS_DIR="${HOME}/docker/kodi-nightly/.kodi/userdata/addon_data/visualization.goom/goom_dumps"
+declare -r GOOM_DUMPS_DIR="${HOME}/docker/kodi-nightly/.kodi/userdata/addon_data/visualization.goom-pp/goom_dumps"
 declare -r MOVE_TO_DIR="/tmp/goom_dumps_too_small"
 declare -r MIN_LINE_COUNT=2000
 

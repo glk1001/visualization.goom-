@@ -5,7 +5,7 @@ from typing import List
 
 import numpy as np
 
-DATA_DIR = '/home/greg/docker/kodi-nightly/.kodi/userdata/addon_data/visualization.goom/goom_dumps'
+DATA_DIR = '/home/greg/docker/kodi-nightly/.kodi/userdata/addon_data/visualization.goom-pp/goom_dumps'
 MIN_TIMELINE_ELEMENTS = 10
 
 

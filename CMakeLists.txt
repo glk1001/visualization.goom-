@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(visualization.goom)
+project(visualization.goom-pp)
 
 message(STATUS "Cmake version = \"${CMAKE_VERSION}\"")
 message(STATUS "Cmake generator = \"${CMAKE_GENERATOR}\"")
 
-set(GOOM_TARGET_NAME "visualization.goom")
+set(GOOM_TARGET_NAME "visualization.goom-pp")
 set(GOOM_ADDON_PREFIX "GOOM")
 
 option(ENABLE_TESTING "Enable unit testing" OFF)

@@ -91,5 +91,5 @@ declare -r KODI_CONTAINER_HOME_DIR="${HOME}/docker/kodi-${KODI_VERSION}"
 declare -r KODI_CONTAINER_NAME="kodi_goom_dev"
 declare -r MUSIC_SHARE="/mnt/Music"
 
-declare -r REMOTE_KODI_GOOM_DIR="${HOME}/Prj/github/xbmc/visualization.goom"
+declare -r REMOTE_KODI_GOOM_DIR="${HOME}/Prj/github/xbmc/visualization.goom-pp"
 declare -r REMOTE_KODI_BUILD_DIR="${REMOTE_KODI_GOOM_DIR}/dockerize-kodi-goom"

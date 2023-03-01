@@ -118,7 +118,7 @@ constexpr std::array HEIGHTS_BY_QUALITY{
 };
 static_assert(HEIGHTS_BY_QUALITY.size() == WIDTHS_BY_QUALITY.size());
 
-constexpr auto* GOOM_ADDON_DATA_DIR = "special://userdata/addon_data/visualization.goom";
+constexpr auto* GOOM_ADDON_DATA_DIR = "special://userdata/addon_data/visualization.goom-pp";
 
 constexpr auto* QUALITY_SETTING         = "quality";
 constexpr auto* SHOW_TITLE_SETTING      = "show_title";

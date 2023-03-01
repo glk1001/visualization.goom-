@@ -3,8 +3,8 @@
 This is a [Kodi](http://kodi.tv) visualization add-on.
 
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2+-blue.svg)](LICENSE.md)
-[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.visualization.goom?branchName=Nexus)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=38&branchName=Nexus)
-[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/visualization.goom/job/Nexus/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Fvisualization.goom/branches/)
+[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.visualization.goom-pp?branchName=Nexus)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=38&branchName=Nexus)
+[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/visualization.goom-pp/job/Nexus/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Fvisualization.goom-pp/branches/)
 
 ## Build instructions
 
@@ -22,8 +22,8 @@ The following instructions assume, as an example, the `'Nexus'` branch, and that
 directory is `'kodi'`
 
 1. `git clone --branch Nexus https://github.com/xbmc/xbmc.git` kodi
-1. `git clone --branch Nexus https://github.com/xbmc/visualization.goom.git`
-1. `cd visualization.goom`
+1. `git clone --branch Nexus https://github.com/xbmc/visualization.goom-pp.git`
+1. `cd visualization.goom-pp`
 1. `cd docker-toolchains`
 1. `./build-all.sh`
 1. `cd ..`
@@ -32,8 +32,8 @@ directory is `'kodi'`
 1. `./goom-docker-build-run.sh --user-addon`
 1. `cd ..`
 
-The build add-on files will be placed in `'./kodi/kodi-build/addons/lib/kodi/addons/visualization.goom'`
-and `'./kodi/kodi-build/addons/share/kodi/addons/visualization.goom'`. So if you build Kodi from source
+The build add-on files will be placed in `'./kodi/kodi-build/addons/lib/kodi/addons/visualization.goom-pp'`
+and `'./kodi/kodi-build/addons/share/kodi/addons/visualization.goom-pp'`. So if you build Kodi from source
 and run it directly, then the add-on will be available as a system add-on.
 
 Alternatively, the `goom-docker-...` scripts create a Docker image from the latest `'Nexus'` Kodi build and the
@@ -42,12 +42,12 @@ add-on in Docker using the `goom-docker-run.sh` script. See below.
 
 You can also build from within the kodi source tree using the following: Assuming your current local directory is `'kodi'`:
 
-1. `sudo make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX=/usr/local ADDONS="visualization.goom"`
+1. `sudo make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX=/usr/local ADDONS="visualization.goom-pp"`
 
 This will put the output from the build in:
 
-1. `/usr/local/lib/kodi/addons/visualization.goom`
-1. `/usr/local/share/kodi/addons/visualization.goom`
+1. `/usr/local/lib/kodi/addons/visualization.goom-pp`
+1. `/usr/local/share/kodi/addons/visualization.goom-pp`
 
 ### Running Kodi in a Docker Container
 

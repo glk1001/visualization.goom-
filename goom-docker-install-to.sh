@@ -10,12 +10,12 @@ source "${THIS_SCRIPT_PATH}/goom-docker-paths.sh"
 
 declare -r KODI_BUILD_ROOT_DIR=$(realpath ${THIS_SCRIPT_PATH}/../kodi/kodi-build/addons)
 
-declare -r KODI_BUILD_LIB_DIR=${KODI_BUILD_ROOT_DIR}/lib/kodi/addons/visualization.goom
+declare -r KODI_BUILD_LIB_DIR=${KODI_BUILD_ROOT_DIR}/lib/kodi/addons/visualization.goom-pp
 if [[ ! -d "${KODI_BUILD_LIB_DIR}" ]]; then
   echo "ERROR: Could not find kodi build lib directory \"${KODI_BUILD_LIB_DIR}\"."
   exit 1
 fi
-declare -r KODI_BUILD_SHARE_DIR=${KODI_BUILD_ROOT_DIR}/share/kodi/addons/visualization.goom
+declare -r KODI_BUILD_SHARE_DIR=${KODI_BUILD_ROOT_DIR}/share/kodi/addons/visualization.goom-pp
 if [[ ! -d "${KODI_BUILD_SHARE_DIR}" ]]; then
   echo "ERROR: Could not find kodi build share directory \"${KODI_BUILD_SHARE_DIR}\"."
   exit 1
@@ -36,8 +36,8 @@ fi
 echo "Installing Goom add-on to Docker files directory \"${KODI_DOCKER_FILES_DIR}\"..."
 echo
 
-echo "rsyncing \"${KODI_BUILD_LIB_DIR}/visualization.goom.so.*\" to \"${KODI_DOCKER_FILES_DIR}\"..."
-rsync ${DRY_RUN} -avh ${KODI_BUILD_LIB_DIR}/visualization.goom.so.* ${KODI_DOCKER_FILES_DIR}
+echo "rsyncing \"${KODI_BUILD_LIB_DIR}/visualization.goom-pp.so.*\" to \"${KODI_DOCKER_FILES_DIR}\"..."
+rsync ${DRY_RUN} -avh ${KODI_BUILD_LIB_DIR}/visualization.goom-pp.so.* ${KODI_DOCKER_FILES_DIR}
 
 echo
 echo "rsyncing \"${KODI_BUILD_SHARE_DIR}/addon.xml\" to \"${KODI_DOCKER_FILES_DIR}\"..."

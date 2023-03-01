@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(visualization.goom.lib)
+project(visualization.goom-pp.lib)
 
 # set(LSys_SOURCE_DIR "/home/greg/Prj/github/LSys")
 

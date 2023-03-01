@@ -1,7 +1,7 @@
 name: Build and run tests
 on: [push, pull_request]
 env:
-  app_id: visualization.goom
+  app_id: visualization.goom-pp
 
 jobs:
   build:
@@ -33,7 +33,7 @@ jobs:
         repository: xbmc/xbmc
         ref: master
         path: xbmc
-    - name: Checkout visualization.goom repo
+    - name: Checkout visualization.goom-pp repo
       uses: actions/checkout@v2
       with:
         path: ${{ env.app_id }}

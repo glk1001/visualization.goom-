@@ -76,7 +76,7 @@ ARG GOOM_VERSION
 ARG KODI_GOOM_LIB_DIR
 ARG KODI_GOOM_ADDON_DIR
 RUN rm -rf "${KODI_GOOM_ADDON_DIR}/*"
-COPY "files/visualization.goom.so.${GOOM_VERSION}" "${KODI_GOOM_LIB_DIR}/visualization.goom.so.${GOOM_VERSION}"
+COPY "files/visualization.goom-pp.so.${GOOM_VERSION}" "${KODI_GOOM_LIB_DIR}/visualization.goom-pp.so.${GOOM_VERSION}"
 COPY "files/addon.xml"                             "${KODI_GOOM_ADDON_DIR}/"
 COPY "files/resources"                             "${KODI_GOOM_ADDON_DIR}/resources/"
 COPY "files/irexec.lircrc"                         "/etc/lirc/irexec.lircrc"
