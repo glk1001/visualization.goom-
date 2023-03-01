@@ -6,15 +6,22 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 
+#include <filesystem>
+#include <format>
+
 namespace GOOM
 {
 
+using GOOM::GoomLogger;
+
 KodiShaderWithEffects::KodiShaderWithEffects(CVisualizationGoom& cVisualizationGoom,
                                              const std::string& shaderDir,
-                                             glm::mat4 projModelMatrix) noexcept
+                                             glm::mat4 projModelMatrix,
+                                             GoomLogger& goomLogger) noexcept
   : m_shaderDir{shaderDir},
     m_shaderWithEffects{projModelMatrix},
-    m_cVisualizationGoom{&cVisualizationGoom}
+    m_cVisualizationGoom{&cVisualizationGoom},
+    m_goomLogger{&goomLogger}
 {
 }
 
@@ -41,8 +48,23 @@ auto KodiShaderWithEffects::DisableShader() -> void
 
 auto KodiShaderWithEffects::CreateGlShaders() -> void
 {
-  const std::string vertexShaderFilePath   = GetVertexShaderFilepath();
-  const std::string fragmentShaderFilePath = GetFragmentShaderFilepath();
+  const auto vertexShaderFilePath = GetVertexShaderFilepath();
+  if (not std::filesystem::exists(vertexShaderFilePath))
+  {
+    const auto errorMsg = std_fmt::format("CVisualizationGoom: Could not find shader file '{}'.",
+                                          vertexShaderFilePath);
+    LogError(*m_goomLogger, errorMsg);
+    throw std::runtime_error(errorMsg);
+  }
+
+  const auto fragmentShaderFilePath = GetFragmentShaderFilepath();
+  if (not std::filesystem::exists(fragmentShaderFilePath))
+  {
+    const auto errorMsg = std_fmt::format("CVisualizationGoom: Could not find shader file '{}'.",
+                                          fragmentShaderFilePath);
+    LogError(*m_goomLogger, errorMsg);
+    throw std::runtime_error(errorMsg);
+  }
 
   if (not m_cVisualizationGoom->LoadShaderFiles(vertexShaderFilePath, fragmentShaderFilePath))
   {

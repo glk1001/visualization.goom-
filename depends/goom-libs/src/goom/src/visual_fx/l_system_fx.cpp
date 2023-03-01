@@ -371,7 +371,7 @@ inline auto LSystemFx::LSystemFxImpl::DrawLSystem() noexcept -> void
 inline auto LSystemFx::LSystemFxImpl::GetLSystemDirectory(
     const std::string& resourcesDirectory) noexcept -> std::string
 {
-  return resourcesDirectory + "/l-systems";
+  return resourcesDirectory + PATH_SEP + L_SYSTEMS_DIR;
 }
 
 } // namespace GOOM::VISUAL_FX

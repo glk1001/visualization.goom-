@@ -26,7 +26,8 @@ class KodiShaderWithEffects : public IShaderStrategy
 public:
   KodiShaderWithEffects(CVisualizationGoom& cVisualizationGoom,
                         const std::string& shaderDir,
-                        glm::mat4 projModelMatrix) noexcept;
+                        glm::mat4 projModelMatrix,
+                        GoomLogger& goomLogger) noexcept;
 
   auto CreateGlShaders() -> void override;
   [[nodiscard]] auto GetShaderHandle() const noexcept -> GLuint override;
@@ -42,6 +43,7 @@ private:
   ShaderWithEffects m_shaderWithEffects;
   GLuint m_prog = 0;
   CVisualizationGoom* m_cVisualizationGoom;
+  GoomLogger* m_goomLogger;
   const GoomShaderVariables* m_goomShaderVariables{};
 
   static constexpr const auto* VERTEX_SHADER_FILENAME   = "vertex.glsl";

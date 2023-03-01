@@ -1,10 +1,3 @@
-/*
- *  Goom
- *  Copyright (c) 2000-2003 iOS-software. All rights reserved.
- *
- *  - converted to C++17 2021-02-01 (glk)
- */
-
 //#undef NO_LOGGING
 
 #include "line_morph.h"

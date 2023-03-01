@@ -44,8 +44,7 @@ auto ImageDisplacementList::SetRandomImageDisplacement() -> void
 
 auto ImageDisplacementList::GetImageFilename(const std::string& imageFilename) const -> std::string
 {
-  return m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + IMAGE_DISPLACEMENT_DIR +
-         PATH_SEP + imageFilename;
+  return m_resourcesDirectory + PATH_SEP + IMAGE_DISPLACEMENT_DIR + PATH_SEP + imageFilename;
 }
 
 auto ImageDisplacementList::GetParams() const -> Params

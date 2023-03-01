@@ -279,7 +279,7 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
   std::iota(begin(randImageIndexes), end(randImageIndexes), 0);
   m_goomRand->Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
-  const auto imageDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR + PATH_SEP + "image_fx";
+  const auto imageDir              = m_resourcesDirectory + PATH_SEP + IMAGE_FX_DIR;
   static constexpr auto MAX_IMAGES = 5U;
   for (auto i = 0U; i < MAX_IMAGES; ++i)
   {

@@ -25,14 +25,22 @@ namespace GOOM
 {
 
 #ifdef _WIN32PC
-inline constexpr auto* PATH_SEP = "\\";
+#define PATH_SEP "\\"
 #else
-inline constexpr auto* PATH_SEP = "/";
+#define PATH_SEP "/"
 #endif
 
-inline constexpr auto* FONTS_DIR              = "fonts";
-inline constexpr auto* IMAGES_DIR             = "images";
-inline constexpr auto* IMAGE_DISPLACEMENT_DIR = "displacements";
+// TODO(glk) - With C++20 we should be able to do 'inline constexpr FONTS_DIR = ...', etc.
+#define DATA_DIR "data"
+#define MEDIA_DIR "media"
+#define FONTS_DIR DATA_DIR PATH_SEP "fonts"
+#define L_SYSTEMS_DIR DATA_DIR PATH_SEP "l-systems"
+#define IMAGES_DIR MEDIA_DIR PATH_SEP "images"
+#define IMAGE_FX_DIR IMAGES_DIR PATH_SEP "image_fx"
+#define IMAGE_DISPLACEMENT_DIR IMAGES_DIR PATH_SEP "displacements"
+
+#define RESOURCES_DIR "resources"
+#define SHADERS_DIR RESOURCES_DIR PATH_SEP DATA_DIR PATH_SEP "shaders"
 
 #ifdef WORDS_BIGENDIAN
 #define COLOR_ARGB

@@ -120,9 +120,6 @@ static_assert(HEIGHTS_BY_QUALITY.size() == WIDTHS_BY_QUALITY.size());
 
 constexpr auto* GOOM_ADDON_DATA_DIR = "special://userdata/addon_data/visualization.goom";
 
-constexpr auto* RESOURCES_SUBDIR = "resources";
-constexpr auto* SHADERS_SUBDIR   = "resources/shaders/" GL_TYPE_STRING;
-
 constexpr auto* QUALITY_SETTING         = "quality";
 constexpr auto* SHOW_TITLE_SETTING      = "show_title";
 constexpr auto* SHOW_GOOM_STATE_SETTING = "show_goom_state";
@@ -158,7 +155,7 @@ CVisualizationGoom::CVisualizationGoom()
   : m_goomLogger{GoomControl::MakeGoomLogger()},
     m_goomBufferProducer{std::make_unique<GoomBufferProducer>(
         GetTextureBufferDimensions(),
-        KODI_ADDON::GetAddonPath(RESOURCES_SUBDIR),
+        KODI_ADDON::GetAddonPath(RESOURCES_DIR),
         static_cast<GoomControl::ShowTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)),
 #ifdef SAVE_AUDIO_BUFFERS
         GetAudioBuffersSaveDir(),
@@ -166,8 +163,9 @@ CVisualizationGoom::CVisualizationGoom()
         *m_goomLogger)},
     m_glShader{std::make_unique<KodiShaderWithEffects>(
         *this,
-        KODI_ADDON::GetAddonPath(SHADERS_SUBDIR),
-        glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height())))},
+        KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
+        glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height())),
+        *m_goomLogger)},
     m_glRenderer{std::make_unique<GlRenderer>(GetTextureBufferDimensions(),
                                               WindowDimensions{Width(), Height()},
                                               m_glShader.get(),
@@ -251,7 +249,7 @@ auto CVisualizationGoom::StartVis(const int numChannels) -> void
 
   m_goomBufferProducer->SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
   m_goomBufferProducer->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
-      std::string(GOOM_ADDON_DATA_DIR) + GOOM::PATH_SEP + GOOM_DUMPS_SETTING));
+      std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
 
   m_goomBufferProducer->SetNumChannels(static_cast<uint32_t>(numChannels));
   m_goomBufferProducer->Start();
