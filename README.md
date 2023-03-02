@@ -1,12 +1,10 @@
-# Visualization.goom add-on for Kodi
+# Visualization.goom Binary Add-on for Kodi
 
 This is a [Kodi](http://kodi.tv) visualization add-on.
 
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2+-blue.svg)](LICENSE.md)
-[![Build Status](https://dev.azure.com/teamkodi/binary-addons/_apis/build/status/xbmc.visualization.goom-pp?branchName=Nexus)](https://dev.azure.com/teamkodi/binary-addons/_build/latest?definitionId=38&branchName=Nexus)
-[![Build Status](https://jenkins.kodi.tv/view/Addons/job/xbmc/job/visualization.goom-pp/job/Nexus/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/xbmc%2Fvisualization.goom-pp/branches/)
 
-## Build instructions
+## Build Instructions
 
 When building the add-on you have to use the correct branch depending on which version of Kodi you're
 building against. If you want to build the add-on to be compatible with the latest kodi `'Nexus'` commit,
@@ -19,29 +17,39 @@ are available. (Currently 'clang-17' and 'g++-12'.)
 ### Linux Builds
 
 The following instructions assume, as an example, the `'Nexus'` branch, and that your current local
-directory is `'kodi'`
+directory is `'xbmc'`.
+
+For first time use:
 
 1. `git clone --branch Nexus https://github.com/xbmc/xbmc.git` kodi
 1. `git clone --branch Nexus https://github.com/xbmc/visualization.goom-pp.git`
+1. `Edit "cmake/addons/bootstrap/repositories/binary-addons.txt" and change "xbmc" to "glk1001"`
+1. `cd kodi`
+1. `sudo make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX=/usr/local ADDONS="visualization.goom-pp"`
 1. `cd visualization.goom-pp`
 1. `cd docker-toolchains`
-1. `./build-all.sh`
-1. `cd ..`
-1. `./goom-configure-with-docker-toolchain.sh -c clang-17 --build-type RelWithDebInfo --suffix nexus`
-1. `./goom-build-with-docker-toolchain.sh -c clang-17 --build-type RelWithDebInfo --suffix nexus`
-1. `./goom-docker-build-run.sh --user-addon`
+1. `bash build-all.sh`
+1. `cd ../..`
+
+For all future builds:
+
+1. `cd visualization.goom-pp`
+1. `bash scripts/goom-configure-with-docker-toolchain.sh -c clang-17 --build-type RelWithDebInfo --suffix nexus`
+1. `bash scripts/goom-build-with-docker-toolchain.sh -c clang-17 --build-type RelWithDebInfo --suffix nexus`
+1. `bash scripts/goom-docker-build-run.sh --user-addon`
 1. `cd ..`
 
 The build add-on files will be placed in `'./kodi/kodi-build/addons/lib/kodi/addons/visualization.goom-pp'`
 and `'./kodi/kodi-build/addons/share/kodi/addons/visualization.goom-pp'`. So if you build Kodi from source
 and run it directly, then the add-on will be available as a system add-on.
 
-Alternatively, the `goom-docker-...` scripts create a Docker image from the latest `'Nexus'` Kodi build and the
-latest goom++ build files. This allows you to run a current `'Nexus'` Kodi build with a freshly built goom++
-add-on in Docker using the `goom-docker-run.sh` script. See below.
+Alternatively, the `scripts/goom-docker-...` bash scripts create a Docker image from the latest `'Nexus'` Kodi
+build and the latest goom++ build files. This allows you to run a current `'Nexus'` Kodi build with a freshly
+built goom++ add-on in Docker using the `goom-docker-run.sh` script. See below.
 
-You can also build from within the kodi source tree using the following: Assuming your current local directory is `'kodi'`:
+Or you can just build from within the kodi source tree using:
 
+1. `cd kodi`
 1. `sudo make -j$(getconf _NPROCESSORS_ONLN) -C tools/depends/target/binary-addons PREFIX=/usr/local ADDONS="visualization.goom-pp"`
 
 This will put the output from the build in:
@@ -61,9 +69,13 @@ then run Kodi Docker. Here are the steps:
 First set up a symlink, '/mnt/Music', pointing to your music directory.
 Then run the following scripts:
 
-1. `./goom-docker-install-to.sh`
-2. `./goom-docker-build.sh`
-3. `./goom-docker-run.sh`
+1. `bash scripts/goom-docker-install-to.sh`
+2. `bash scripts/goom-docker-build.sh`
+3. `bash scripts/goom-docker-run.sh`
+
+or simply use:
+
+1. `bash scripts/goom-docker-build-run.sh`
 
 Kodi should now start in full-screen mode. To enable the Goom visualisation do the following:
 

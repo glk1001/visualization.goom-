@@ -83,4 +83,5 @@ COPY "files/irexec.lircrc"                         "/etc/lirc/irexec.lircrc"
 
 
 COPY entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

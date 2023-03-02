@@ -22,10 +22,10 @@ if ! ping -q -c 2 ${REMOTE_HOST} ; then
 fi
 
 echo
-echo "Rsyncing \"${THIS_SCRIPT_PATH}/../goom-docker-paths.sh\" to \"${REMOTE_HOST}:${REMOTE_KODI_GOOM_DIR}/\""
+echo "Rsyncing \"${THIS_SCRIPT_PATH}/../scripts/goom-docker-get-paths.sh\" to \"${REMOTE_HOST}:${REMOTE_KODI_GOOM_DIR}/\""
 echo
 ssh ${REMOTE_HOST} mkdir -p ${REMOTE_KODI_GOOM_DIR}
-rsync ${DRY_RUN} -avh "${THIS_SCRIPT_PATH}/../goom-docker-paths.sh" "${REMOTE_HOST}:${REMOTE_KODI_GOOM_DIR}/"
+rsync ${DRY_RUN} -avh "${THIS_SCRIPT_PATH}/../scripts/goom-docker-get-paths.sh" "${REMOTE_HOST}:${REMOTE_KODI_GOOM_DIR}/"
 
 echo
 echo "Rsyncing \"${THIS_SCRIPT_PATH}/\" to \"${REMOTE_HOST}:${REMOTE_KODI_BUILD_DIR}/\""
