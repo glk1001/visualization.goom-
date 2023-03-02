@@ -25,52 +25,72 @@ GoomMusicSettingsReactor::GoomMusicSettingsReactor(
 
 auto GoomMusicSettingsReactor::ChangeZoomEffects() -> void
 {
-  if (not m_filterSettingsService->HasFilterModeChangedSinceLastUpdate())
+  if ((m_updatesSinceLastZoomEffectsChange <= m_maxTimeBetweenZoomEffectsChange) and
+      (not m_filterSettingsService->HasFilterModeChangedSinceLastUpdate()))
   {
-    if (m_updatesSinceLastZoomEffectsChange > m_maxTimeBetweenZoomEffectsChange)
-    {
-      m_updatesSinceLastZoomEffectsChange = 0;
-
-      ChangeRotation();
-      m_visualFx->RefreshAllFx();
-    }
-    else
-    {
-      ++m_updatesSinceLastZoomEffectsChange;
-    }
+    ++m_updatesSinceLastZoomEffectsChange;
   }
   else
   {
     m_updatesSinceLastZoomEffectsChange = 0;
-    m_filterSettingsService->SetDefaultTranLerpIncrement();
-
-    auto diff = static_cast<int32_t>(m_filterSettingsService->GetROVitesse().GetVitesse()) -
-                static_cast<int32_t>(m_previousZoomSpeed);
-    if (diff < 0)
-    {
-      diff = -diff;
-    }
-
-    if (static constexpr auto DIFF_CUT = 2; diff > DIFF_CUT)
-    {
-      m_filterSettingsService->MultiplyTranLerpIncrement(
-          static_cast<uint32_t>((diff + DIFF_CUT) / DIFF_CUT));
-    }
+    UpdateSettings();
     m_previousZoomSpeed = m_filterSettingsService->GetROVitesse().GetVitesse();
-    m_filterSettingsService->SetTranLerpToMaxSwitchMult(1.0F);
-
-    static constexpr auto NUM_CYCLES_BEFORE_LERP_CHANGE = 2U;
-    if ((0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) and
-        (m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle() <
-         NUM_CYCLES_BEFORE_LERP_CHANGE))
-    {
-      m_filterSettingsService->SetTranLerpIncrement(0);
-      m_filterSettingsService->SetTranLerpToMaxDefaultSwitchMult();
-
-      ChangeRotation();
-      m_visualFx->RefreshAllFx();
-    }
   }
+}
+
+inline auto GoomMusicSettingsReactor::UpdateSettings() -> void
+{
+  if (m_filterSettingsService->HasFilterModeChangedSinceLastUpdate())
+  {
+    UpdateTranLerpSettings();
+  }
+  else
+  {
+    ChangeRotation();
+  }
+
+  m_visualFx->RefreshAllFx();
+}
+
+inline auto GoomMusicSettingsReactor::UpdateTranLerpSettings() -> void
+{
+  if (static constexpr auto NUM_CYCLES_BEFORE_LERP_SPEED_CHANGE = 2U;
+      (0 != m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or
+      (m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle() >=
+       NUM_CYCLES_BEFORE_LERP_SPEED_CHANGE))
+  {
+    SetNewTranLerpSettingsBasedOnSpeed();
+  }
+  else
+  {
+    ResetTranLerpSettings();
+    ChangeRotation();
+  }
+}
+
+inline auto GoomMusicSettingsReactor::ResetTranLerpSettings() -> void
+{
+  m_filterSettingsService->SetTranLerpIncrement(0);
+  m_filterSettingsService->SetTranLerpToMaxDefaultSwitchMult();
+}
+
+inline auto GoomMusicSettingsReactor::SetNewTranLerpSettingsBasedOnSpeed() -> void
+{
+  m_filterSettingsService->SetDefaultTranLerpIncrement();
+
+  auto diff = static_cast<int32_t>(m_filterSettingsService->GetROVitesse().GetVitesse()) -
+              static_cast<int32_t>(m_previousZoomSpeed);
+  if (diff < 0)
+  {
+    diff = -diff;
+  }
+  if (static constexpr auto DIFF_CUT = 2; diff > DIFF_CUT)
+  {
+    m_filterSettingsService->MultiplyTranLerpIncrement(
+        static_cast<uint32_t>((diff + DIFF_CUT) / DIFF_CUT));
+  }
+
+  m_filterSettingsService->SetTranLerpToMaxSwitchMult(1.0F);
 }
 
 auto GoomMusicSettingsReactor::ChangeVitesse() -> void

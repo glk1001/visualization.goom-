@@ -595,7 +595,8 @@ inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
 {
-  m_visualFx.UpdateFilterSettings(std::as_const(m_filterSettingsService).GetFilterSettings());
+  const auto& newFilterSettings = std::as_const(m_filterSettingsService).GetFilterSettings();
+  m_visualFx.UpdateFilterSettings(newFilterSettings);
   m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
 }
 

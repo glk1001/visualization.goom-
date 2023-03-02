@@ -12,8 +12,9 @@
 namespace GOOM
 {
 class PluginInfo;
+}
 
-namespace CONTROL
+namespace GOOM::CONTROL
 {
 class GoomAllVisualFx;
 
@@ -61,15 +62,15 @@ private:
 
   uint32_t m_updateNum = 0;
 
-  static constexpr int32_t MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
-  static constexpr int32_t MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 400;
+  static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
+  static constexpr auto MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 400;
   int32_t m_maxTimeBetweenZoomEffectsChange   = MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE;
   int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
   uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::STOP_SPEED;
 
-  static constexpr uint32_t MAX_NUM_STATE_SELECTIONS_BLOCKED = 3;
-  uint32_t m_stateSelectionBlocker                           = MAX_NUM_STATE_SELECTIONS_BLOCKED;
-  uint32_t m_timeInState                                     = 0;
+  static constexpr auto MAX_NUM_STATE_SELECTIONS_BLOCKED = 3U;
+  uint32_t m_stateSelectionBlocker                       = MAX_NUM_STATE_SELECTIONS_BLOCKED;
+  uint32_t m_timeInState                                 = 0U;
   auto ChangeState() -> void;
   auto DoChangeState() -> void;
 
@@ -79,7 +80,12 @@ private:
   auto BigUpdate() -> void;
   auto BigBreak() -> void;
   auto ChangeFilterMode() -> void;
+  auto CheckIfUpdateFilterSettingsNow() -> void;
   auto ChangeFilterExtraSettings() -> void;
+  auto UpdateSettings() -> void;
+  auto UpdateTranLerpSettings() -> void;
+  auto ResetTranLerpSettings() -> void;
+  auto SetNewTranLerpSettingsBasedOnSpeed() -> void;
   auto ChangeRotation() -> void;
   auto ChangeTranBufferSwitchValues() -> void;
   auto ChangeSpeedReverse() -> void;
@@ -89,6 +95,7 @@ private:
   static constexpr auto PROB_CHANGE_FILTER_MODE                       = 0.05F;
   static constexpr auto PROB_CHANGE_STATE                             = 0.50F;
   static constexpr auto PROB_CHANGE_TO_MEGA_LENT_MODE                 = 1.0F / 700.F;
+  static constexpr auto PROB_SLOW_FILTER_SETTINGS_UPDATE              = 0.5F;
   static constexpr auto PROB_FILTER_REVERSE_ON                        = 0.10F;
   static constexpr auto PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED        = 0.20F;
   static constexpr auto PROB_FILTER_VITESSE_STOP_SPEED_MINUS_1        = 0.20F;
@@ -152,8 +159,20 @@ inline auto GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges() -> void
 inline auto GoomMusicSettingsReactor::ChangeFilterMode() -> void
 {
   m_filterSettingsService->SetNewRandomFilter();
-  m_visualFx->UpdateFilterSettings(std::as_const(*m_filterSettingsService).GetFilterSettings());
+  CheckIfUpdateFilterSettingsNow();
   m_visualFx->RefreshAllFx();
+}
+
+inline auto GoomMusicSettingsReactor::CheckIfUpdateFilterSettingsNow() -> void
+{
+  if (m_goomRand->ProbabilityOf(PROB_SLOW_FILTER_SETTINGS_UPDATE) and
+      (m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() > 0))
+  {
+    return;
+  }
+
+  const auto& newFilterSettings = std::as_const(*m_filterSettingsService).GetFilterSettings();
+  m_visualFx->UpdateFilterSettings(newFilterSettings);
   m_filterSettingsService->NotifyUpdatedFilterEffectsSettings();
 }
 
@@ -321,5 +340,4 @@ inline auto GoomMusicSettingsReactor::DoChangeState() -> void
   m_timeInState = 0;
 }
 
-} // namespace CONTROL
-} // namespace GOOM
+} // namespace GOOM::CONTROL
