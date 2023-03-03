@@ -64,8 +64,6 @@ auto PixelBlender::GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendP
   {
     case PixelBlendType::ADD:
       return GetColorAddBlendPixelFunc();
-    case PixelBlendType::REVERSE_ADD:
-      return GetReverseColorAddBlendPixelFunc();
     case PixelBlendType::MULTIPLY:
       return GetColorMultiplyBlendPixelFunc();
     case PixelBlendType::LUMA_MIX:
@@ -84,6 +82,8 @@ auto PixelBlender::GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw:
   return GetLerpedBlendPixelFunc();
 }
 
+// NOTE: Tried reverse add color (where oldColor is multiplied by intensity),
+//       but the resulting black pixels don't look good.
 auto PixelBlender::GetColorAddBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
@@ -97,19 +97,6 @@ auto PixelBlender::GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixe
     return COLOR::GetRgbColorLerp(m_previousBlendPixelFunc(oldColor, newColor, intBuffIntensity),
                                   m_currentBlendPixelFunc(oldColor, newColor, intBuffIntensity),
                                   m_blendT());
-  };
-}
-
-auto PixelBlender::GetReverseColorAddBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
-{
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  {
-    if (IsCloseToBlack(newColor))
-    {
-      static constexpr auto BRIGHTNESS_FOR_OLD = 1.2F;
-      return GetBrighterColor(BRIGHTNESS_FOR_OLD, oldColor);
-    }
-    return GetColorAdd(GetBrighterColorInt(intBuffIntensity, oldColor), newColor);
   };
 }
 

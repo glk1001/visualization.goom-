@@ -69,20 +69,17 @@ private:
   enum class PixelBlendType
   {
     ADD,
-    REVERSE_ADD,
     MULTIPLY,
     LUMA_MIX,
     _num // unused, and marks the enum end
   };
-  static constexpr float ADD_WEIGHT         = 50.0F;
-  static constexpr float REVERSE_ADD_WEIGHT = 3.0F;
-  static constexpr float MULTIPLY_WEIGHT    = 3.0F;
-  static constexpr float LUMA_MIX_WEIGHT    = 3.0F;
+  static constexpr float ADD_WEIGHT      = 50.0F;
+  static constexpr float MULTIPLY_WEIGHT = 5.0F;
+  static constexpr float LUMA_MIX_WEIGHT = 5.0F;
   UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights{
       *m_goomRand,
       {
                   {PixelBlendType::ADD, ADD_WEIGHT},
-                  {PixelBlendType::REVERSE_ADD, REVERSE_ADD_WEIGHT},
                   {PixelBlendType::MULTIPLY, MULTIPLY_WEIGHT},
                   {PixelBlendType::LUMA_MIX, LUMA_MIX_WEIGHT},
                   }
@@ -98,7 +95,6 @@ private:
   [[nodiscard]] auto GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] static auto GetColorAddBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] auto GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] static auto GetReverseColorAddBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   [[nodiscard]] static auto GetColorMultiplyBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
   static constexpr auto MAX_LUMA_MIX_T = 1.0F;
   static constexpr auto MIN_LUMA_MIX_T = 0.3F;
