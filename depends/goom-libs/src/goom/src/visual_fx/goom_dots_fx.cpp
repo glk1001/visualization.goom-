@@ -182,10 +182,10 @@ static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 05.0F;
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
                                            const SmallImageBitmaps& smallBitmaps)
-  : m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
+  : m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
     m_smallBitmaps{&smallBitmaps},
-    m_bitmapDrawer{fxHelper.GetDraw()},
+    m_bitmapDrawer{*fxHelper.draw},
     m_flowerDotTypes{
         *m_goomRand,
         {

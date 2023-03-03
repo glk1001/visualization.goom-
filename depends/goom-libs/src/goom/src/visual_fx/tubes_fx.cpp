@@ -300,9 +300,9 @@ auto TubesFx::ApplyMultiple() noexcept -> void
 
 TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
                                 const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{&fxHelper.GetDraw()},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
+  : m_draw{fxHelper.draw},
+    m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
     m_smallBitmaps{&smallBitmaps}
 {
 }

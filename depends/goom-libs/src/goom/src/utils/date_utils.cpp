@@ -45,7 +45,7 @@ auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
 {
   auto timeTm = tm{};
   ::strptime(otherFormatDateTime.c_str(), otherFormat.c_str(), &timeTm);
-  timeTm.tm_isdst = -1; // check for daylight savings
+  timeTm.tm_isdst  = -1; // check for daylight savings
   const auto timeT = ::mktime(&timeTm);
   return GetTimeTAsString(timeT);
 }

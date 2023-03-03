@@ -206,9 +206,9 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
                                   const FxHelper& fxHelper,
                                   const std::string& resourcesDirectory) noexcept
   : m_parallel{&parallel},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
-    m_pixelDrawer{fxHelper.GetDraw()},
+    m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
+    m_pixelDrawer{*fxHelper.draw},
     m_resourcesDirectory{resourcesDirectory}
 {
 }

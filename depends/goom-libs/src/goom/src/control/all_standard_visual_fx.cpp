@@ -52,7 +52,7 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
                                          const std::string& resourcesDirectory) noexcept
   : m_shaderFx{std::make_unique<ShaderFx>(fxHelper)},
     m_drawablesMap{GetDrawablesMap(parallel, fxHelper, smallBitmaps, resourcesDirectory)},
-    m_visualFxColorMaps{fxHelper.GetGoomRand()}
+    m_visualFxColorMaps{*fxHelper.goomRand}
 {
   Expects(NUM<GoomDrawables> == m_drawablesMap.size());
 }

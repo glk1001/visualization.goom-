@@ -224,9 +224,9 @@ static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT   = 005.0F;
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{&fxHelper.GetDraw()},
-    m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
+  : m_draw{fxHelper.draw},
+    m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
     m_fractal{std::make_unique<Fractal>(m_draw->GetDimensions(),
                                         *m_goomRand,
                                         smallBitmaps)},

@@ -134,9 +134,9 @@ auto ShapesFx::ApplyMultiple() noexcept -> void
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
-  : m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
-    m_shapes{GetShapes(fxHelper.GetDraw())}
+  : m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
+    m_shapes{GetShapes(*fxHelper.draw)}
 {
   UpdateShapePathMinMaxNumSteps();
 }

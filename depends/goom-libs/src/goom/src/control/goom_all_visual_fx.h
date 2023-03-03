@@ -42,7 +42,7 @@ class IGoomRand;
 
 namespace VISUAL_FX
 {
-class FxHelper;
+struct FxHelper;
 }
 
 namespace FILTER_FX

@@ -195,9 +195,9 @@ auto FlyingStarsFx::ApplyMultiple() noexcept -> void
 
 FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
                                                 const SmallImageBitmaps& smallBitmaps)
-  : m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
-    m_starDrawer{fxHelper.GetDraw(), *m_goomRand, smallBitmaps,
+  : m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
+    m_starDrawer{*fxHelper.draw, *m_goomRand, smallBitmaps,
                  [this](float brightness, const Star& star, float t) {
                    return GetMixedColors(brightness, star, t); }},
     m_colorModeWeights{

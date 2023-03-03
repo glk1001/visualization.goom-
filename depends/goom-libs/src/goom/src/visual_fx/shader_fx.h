@@ -10,7 +10,7 @@ struct GoomShaderVariables;
 
 namespace VISUAL_FX
 {
-class FxHelper;
+struct FxHelper;
 
 class ShaderFx : public IVisualFx
 {

@@ -21,7 +21,7 @@ class Parallel;
 
 namespace VISUAL_FX
 {
-class FxHelper;
+struct FxHelper;
 
 class ImageFx : public IVisualFx
 {

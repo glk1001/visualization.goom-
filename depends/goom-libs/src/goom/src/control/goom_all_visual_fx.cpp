@@ -147,19 +147,20 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  IGoomStateHandler& goomStateHandler,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_draw{&fxHelper.GetDraw()},
-    m_goomRand{&fxHelper.GetGoomRand()},
-    m_goomLogger{&fxHelper.GetGoomLogger()},
+  : m_draw{fxHelper.draw},
+    m_goomRand{fxHelper.goomRand},
+    m_goomLogger{fxHelper.goomLogger},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,
-                                                  fxHelper.GetGoomInfo(),
+                                                  *fxHelper.goomInfo,
                                                   std::move(filterBuffersService),
                                                   std::move(filterColorsService))},
     m_goomStateHandler{&goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
                                                       { ResetCurrentDrawBuffSettings(fx); });
+  USED_FOR_DEBUGGING(m_goomLogger);
 }
 
 auto GoomAllVisualFx::Start() noexcept -> void

@@ -292,7 +292,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                                               GoomLogger& goomLogger)
   : m_goomInfo{dimensions, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
-    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, *m_goomLogger},
+    m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
     m_filterSettingsService{
         m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomInCoefficientsEffect},
     m_smallBitmaps{resourcesDirectory},

@@ -105,7 +105,7 @@ private:
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
   int32_t m_extremeMaxShapeDotRadius = EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
   bool m_useExtremeMaxShapeDotRadius = false;
-  static constexpr auto MIN_MAX_RADIUS_STEPS = MinMaxValues<uint32_t>{100U, 200U};
+  static constexpr auto MIN_MAX_RADIUS_STEPS      = MinMaxValues<uint32_t>{100U, 200U};
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
   UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{

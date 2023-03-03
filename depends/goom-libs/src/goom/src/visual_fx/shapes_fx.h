@@ -16,7 +16,7 @@ class RandomColorMaps;
 
 namespace VISUAL_FX
 {
-class FxHelper;
+struct FxHelper;
 
 class ShapesFx : public IVisualFx
 {

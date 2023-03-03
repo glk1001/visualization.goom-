@@ -157,8 +157,8 @@ static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
-  : m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
+  : m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
     m_driverWeights{
       *m_goomRand,
       {
@@ -169,7 +169,7 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
       }},
     // clang-format off
     m_tentacleDrivers{GetTentacleDrivers(
-        fxHelper.GetDraw(),
+        *fxHelper.draw,
         *m_goomRand,
         {{
            CirclesTentacleLayout{{LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES}},

@@ -21,7 +21,7 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelper;
+struct FxHelper;
 
 class CirclesFx : public IVisualFx
 {

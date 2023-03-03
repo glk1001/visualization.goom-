@@ -43,8 +43,8 @@ public:
 private:
   uint32_t m_numCircles;
   const FxHelper* m_fxHelper;
-  uint32_t m_screenWidth         = m_fxHelper->GetGoomInfo().GetScreenWidth();
-  uint32_t m_screenHeight        = m_fxHelper->GetGoomInfo().GetScreenHeight();
+  uint32_t m_screenWidth         = m_fxHelper->goomInfo->GetScreenWidth();
+  uint32_t m_screenHeight        = m_fxHelper->goomInfo->GetScreenHeight();
   Point2dInt m_screenMidpoint    = MidpointFromOrigin(GetPoint2dInt(m_screenWidth, m_screenHeight));
   Point2dInt m_topLeftCorner     = GetPoint2dInt(0U, 0U);
   Point2dInt m_topRightCorner    = GetPoint2dInt(m_screenWidth - 1, 0U);

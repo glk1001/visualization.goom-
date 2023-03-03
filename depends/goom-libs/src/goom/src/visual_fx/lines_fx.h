@@ -24,7 +24,7 @@ class SmallImageBitmaps;
 
 namespace VISUAL_FX
 {
-class FxHelper;
+struct FxHelper;
 
 class LinesFx : public IVisualFx
 {

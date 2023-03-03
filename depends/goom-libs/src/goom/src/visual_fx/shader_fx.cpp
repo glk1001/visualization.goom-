@@ -83,8 +83,8 @@ auto ShaderFx::GetLastShaderVariables() const -> const GoomShaderVariables&
 }
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
-  : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()},
-    m_hueShiftLerper{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()}
+  : m_highContrast{*fxHelper.goomInfo, *fxHelper.goomRand},
+    m_hueShiftLerper{*fxHelper.goomInfo, *fxHelper.goomRand}
 {
 }
 

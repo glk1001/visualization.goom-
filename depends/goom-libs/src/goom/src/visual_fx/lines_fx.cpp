@@ -162,34 +162,34 @@ auto LinesFx::ApplyMultiple() noexcept -> void
 
 LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                               const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
+  : m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
     m_lineMorphs{
         LineMorph{
-            fxHelper.GetDraw(),
-            fxHelper.GetGoomInfo(),
-            fxHelper.GetGoomRand(),
+            *fxHelper.draw,
+            *fxHelper.goomInfo,
+            *fxHelper.goomRand,
             smallBitmaps,
             {
                 {
                     LineType::H_LINE,
-                    static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
+                    static_cast<float>(fxHelper.goomInfo->GetScreenHeight()),
                     BLACK_LINE_COLOR,
                     1.0F
                 },
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
-                        static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
+                        static_cast<float>(fxHelper.goomInfo->GetScreenHeight()),
                     GREEN_LINE_COLOR,
                     1.0F
                 }
             }
         },
         LineMorph{
-            fxHelper.GetDraw(),
-            fxHelper.GetGoomInfo(),
-            fxHelper.GetGoomRand(),
+            *fxHelper.draw,
+            *fxHelper.goomInfo,
+            *fxHelper.goomRand,
             smallBitmaps,
             {
                 {
@@ -201,7 +201,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-                        static_cast<float>(fxHelper.GetGoomInfo().GetScreenHeight()),
+                        static_cast<float>(fxHelper.goomInfo->GetScreenHeight()),
                     RED_LINE_COLOR,
                     1.0F
                 }

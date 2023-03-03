@@ -135,9 +135,9 @@ auto LSystemFx::ApplyMultiple() noexcept -> void
 
 LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory)
-  : m_goomInfo{&fxHelper.GetGoomInfo()},
-    m_goomRand{&fxHelper.GetGoomRand()},
-    m_lSystems{GetLSystems(fxHelper.GetDraw(), *m_goomInfo, *m_goomRand, resourcesDirectory)}
+  : m_goomInfo{fxHelper.goomInfo},
+    m_goomRand{fxHelper.goomRand},
+    m_lSystems{GetLSystems(*fxHelper.draw, *m_goomInfo, *m_goomRand, resourcesDirectory)}
 {
 }
 
