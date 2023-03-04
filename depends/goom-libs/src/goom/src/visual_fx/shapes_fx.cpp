@@ -31,9 +31,9 @@ using SHAPES::Shape;
 using UTILS::IncrementedValue;
 using UTILS::Timer;
 using UTILS::TValue;
+using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::TWO_PI;
-using UTILS::MATH::U_HALF;
 
 class ShapesFx::ShapesFxImpl
 {
@@ -53,8 +53,8 @@ private:
   const IGoomRand* m_goomRand;
   RandomColorMapsManager m_colorMapsManager{};
 
-  Point2dInt m_screenMidPoint =
-      GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(), U_HALF * m_goomInfo->GetScreenHeight());
+  Point2dInt m_screenMidPoint = {I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
+                                 I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
 
   static constexpr float MIN_RADIUS_FRACTION = 0.2F;
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
@@ -241,8 +241,8 @@ inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoi
 auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
     -> Point2dInt
 {
-  const auto xMax    = static_cast<int32_t>(m_goomInfo->GetScreenWidth() - 1);
-  const auto yMax    = static_cast<int32_t>(m_goomInfo->GetScreenHeight() - 1);
+  const auto xMax    = m_goomInfo->GetDimensions().GetIntWidth() - 1;
+  const auto yMax    = m_goomInfo->GetDimensions().GetIntHeight() - 1;
   const auto xCutoff = xMax / 5;
   const auto yCutoff = yMax / 5;
 
@@ -297,8 +297,8 @@ auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoi
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
   static constexpr auto MARGIN = 20;
-  const auto width             = static_cast<int32_t>(m_goomInfo->GetScreenWidth()) - MARGIN;
-  const auto height            = static_cast<int32_t>(m_goomInfo->GetScreenHeight()) - MARGIN;
+  const auto width             = m_goomInfo->GetDimensions().GetIntWidth() - MARGIN;
+  const auto height            = m_goomInfo->GetDimensions().GetIntHeight() - MARGIN;
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {

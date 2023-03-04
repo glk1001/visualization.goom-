@@ -42,6 +42,7 @@ using UTILS::MATH::EpicycloidFunction;
 using UTILS::MATH::EpicycloidPath;
 using UTILS::MATH::HypotrochoidFunction;
 using UTILS::MATH::HypotrochoidPath;
+using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IPath;
 using UTILS::MATH::LissajousFunction;
@@ -68,8 +69,8 @@ private:
   const IGoomRand* m_goomRand;
   const SmallImageBitmaps* m_smallBitmaps;
   BitmapDrawer m_bitmapDrawer;
-  Point2dInt m_screenMidpoint =
-      GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(), U_HALF * m_goomInfo->GetScreenHeight());
+  Point2dInt m_screenMidpoint = {I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
+                                 I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
@@ -467,11 +468,9 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                            const Point2dInt& dotPosition,
                                            const uint32_t radius)
 {
-  const auto diameter = (2 * radius) + 1; // must be odd
-  const auto screenWidthLessDiameter =
-      static_cast<int32_t>(m_goomInfo->GetScreenWidth() - diameter);
-  const auto screenHeightLessDiameter =
-      static_cast<int32_t>(m_goomInfo->GetScreenHeight() - diameter);
+  const auto diameter                 = static_cast<int32_t>((2 * radius) + 1); // must be odd
+  const auto screenWidthLessDiameter  = m_goomInfo->GetDimensions().GetIntWidth() - diameter;
+  const auto screenHeightLessDiameter = m_goomInfo->GetDimensions().GetIntHeight() - diameter;
 
   if ((dotPosition.x < static_cast<int32_t>(diameter)) or
       (dotPosition.y < static_cast<int32_t>(diameter)) or
@@ -500,11 +499,12 @@ void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                        dotPosition.y + static_cast<int32_t>(radius)};
       m_thereIsOneBuffer or m_currentlyUseSingleBufferOnly)
   {
-    m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(diameter), getColor1);
+    m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(static_cast<uint32_t>(diameter)), getColor1);
   }
   else
   {
-    m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(diameter), {getColor1, getColor2});
+    m_bitmapDrawer.Bitmap(
+        midPoint, GetImageBitmap(static_cast<uint32_t>(diameter)), {getColor1, getColor2});
   }
 }
 

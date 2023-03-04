@@ -192,10 +192,10 @@ auto LSystem::GetLSysModelSet(const PluginInfo& goomInfo,
   //        boundingBox2d.max.y);
 
   lSysModelSet.lSystemXScale =
-      static_cast<float>(goomInfo.GetScreenWidth()) / (boundingBox2d.max.x - boundingBox2d.min.x);
+      goomInfo.GetDimensions().GetFltWidth() / (boundingBox2d.max.x - boundingBox2d.min.x);
   //TODO(glk) How to handle scale issues
   lSysModelSet.lSystemYScale =
-      static_cast<float>(goomInfo.GetScreenHeight()) / (boundingBox2d.max.y - boundingBox2d.min.y);
+      goomInfo.GetDimensions().GetFltHeight() / (boundingBox2d.max.y - boundingBox2d.min.y);
 
   lSysModelSet.lSysModel = GetParsedModel(lSysModelSet.lSysProperties);
   lSysModelSet.lSysProperties =

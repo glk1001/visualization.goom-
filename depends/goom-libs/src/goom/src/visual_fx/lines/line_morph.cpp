@@ -146,15 +146,16 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
   switch (lineType)
   {
     case LineType::H_LINE:
-      return GetHorizontalLinePoints({AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenWidth()},
-                                     lineParam);
+      return GetHorizontalLinePoints(
+          {AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetDimensions().GetWidth()}, lineParam);
     case LineType::V_LINE:
-      return GetVerticalLinePoints({AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetScreenHeight()},
-                                   lineParam);
+      return GetVerticalLinePoints(
+          {AudioSamples::AUDIO_SAMPLE_LEN, m_goomInfo->GetDimensions().GetHeight()}, lineParam);
     case LineType::CIRCLE:
-      return GetCircularLinePoints(AudioSamples::AUDIO_SAMPLE_LEN,
-                                   {m_goomInfo->GetScreenWidth(), m_goomInfo->GetScreenHeight()},
-                                   lineParam);
+      return GetCircularLinePoints(
+          AudioSamples::AUDIO_SAMPLE_LEN,
+          {m_goomInfo->GetDimensions().GetWidth(), m_goomInfo->GetDimensions().GetHeight()},
+          lineParam);
     default:
       FailFast();
   }

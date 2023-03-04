@@ -177,7 +177,7 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     const PluginInfo& goomInfo,
     std::unique_ptr<FilterBuffersService> filterBuffersService,
     std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_dimensions{goomInfo.GetScreenDimensions()},
+  : m_dimensions{goomInfo.GetDimensions()},
     m_parallel{&parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)}

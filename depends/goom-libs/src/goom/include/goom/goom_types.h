@@ -32,6 +32,9 @@ public:
   [[nodiscard]] constexpr auto GetIntWidth() const noexcept -> int32_t;
   [[nodiscard]] constexpr auto GetIntHeight() const noexcept -> int32_t;
 
+  [[nodiscard]] constexpr auto GetFltWidth() const noexcept -> float;
+  [[nodiscard]] constexpr auto GetFltHeight() const noexcept -> float;
+
 private:
   uint32_t m_width;
   uint32_t m_height;
@@ -68,6 +71,16 @@ constexpr Dimensions::Dimensions(const uint32_t width, const uint32_t height) no
 [[nodiscard]] constexpr auto Dimensions::GetIntHeight() const noexcept -> int32_t
 {
   return static_cast<int32_t>(m_height);
+}
+
+[[nodiscard]] constexpr auto Dimensions::GetFltWidth() const noexcept -> float
+{
+  return static_cast<float>(m_width);
+}
+
+[[nodiscard]] constexpr auto Dimensions::GetFltHeight() const noexcept -> float
+{
+  return static_cast<float>(m_height);
 }
 
 } // namespace GOOM

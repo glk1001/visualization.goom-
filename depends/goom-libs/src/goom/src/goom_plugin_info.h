@@ -21,10 +21,7 @@ public:
   auto operator=(const PluginInfo&) -> PluginInfo& = delete;
   auto operator=(PluginInfo&&) -> PluginInfo&      = delete;
 
-  [[nodiscard]] auto GetScreenDimensions() const -> const Dimensions&;
-  [[nodiscard]] auto GetScreenWidth() const noexcept -> uint32_t;
-  [[nodiscard]] auto GetScreenHeight() const noexcept -> uint32_t;
-  [[nodiscard]] auto GetScreenSize() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetDimensions() const -> const Dimensions&;
   [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;
 
 private:
@@ -40,24 +37,9 @@ inline PluginInfo::PluginInfo(const Dimensions& dimensions,
   Expects(dimensions.GetHeight() > 0);
 }
 
-inline auto PluginInfo::GetScreenDimensions() const -> const Dimensions&
+inline auto PluginInfo::GetDimensions() const -> const Dimensions&
 {
   return m_dimensions;
-}
-
-inline auto PluginInfo::GetScreenWidth() const noexcept -> uint32_t
-{
-  return m_dimensions.GetWidth();
-}
-
-inline auto PluginInfo::GetScreenHeight() const noexcept -> uint32_t
-{
-  return m_dimensions.GetHeight();
-}
-
-inline auto PluginInfo::GetScreenSize() const noexcept -> uint32_t
-{
-  return m_dimensions.GetSize();
 }
 
 inline auto PluginInfo::GetSoundEvents() const -> const CONTROL::GoomSoundEvents&

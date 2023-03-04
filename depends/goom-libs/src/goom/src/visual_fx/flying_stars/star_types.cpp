@@ -12,12 +12,12 @@
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
+using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::PI;
 using UTILS::MATH::Sq;
 using UTILS::MATH::THIRD_PI;
 using UTILS::MATH::TWO_PI;
-using UTILS::MATH::U_HALF;
 
 static constexpr auto MIN_Y_DISTANCE_OUT_OF_SCREEN = 10;
 static constexpr auto MAX_Y_DISTANCE_OUT_OF_SCREEN = 50;
@@ -25,9 +25,9 @@ static constexpr auto MAX_Y_DISTANCE_OUT_OF_SCREEN = 50;
 IStarType::IStarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
-    m_halfWidth{static_cast<int32_t>(U_HALF * goomInfo.GetScreenWidth())},
-    m_halfHeight{static_cast<int32_t>(U_HALF * goomInfo.GetScreenHeight())},
-    m_xMax{static_cast<float>(goomInfo.GetScreenWidth() - 1)}
+    m_halfWidth{I_HALF * goomInfo.GetDimensions().GetIntWidth()},
+    m_halfHeight{I_HALF * goomInfo.GetDimensions().GetIntHeight()},
+    m_xMax{goomInfo.GetDimensions().GetFltWidth() - 1.0F}
 {
 }
 
@@ -132,8 +132,8 @@ auto FireworksStarType::GetRandomizedSetupParams(const float defaultPathLength) 
   while (true)
   {
     setupParams.startPos = {
-        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenWidth())),
-        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetScreenHeight())),
+        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetDimensions().GetWidth())),
+        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetDimensions().GetHeight())),
     };
     const auto sqDist = SqDistance(setupParams.startPos, GetZoomMidpoint());
     if (sqDist < rSq)
@@ -206,7 +206,7 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
       static_cast<int32_t>(xFracOfHalfWidth * static_cast<float_t>(GetHalfWidth()));
 
   setupParams.startPos.y =
-      static_cast<int32_t>(GetGoomInfo().GetScreenHeight()) +
+      GetGoomInfo().GetDimensions().GetIntHeight() +
       GetGoomRand().GetRandInRange(MIN_Y_DISTANCE_OUT_OF_SCREEN, MAX_Y_DISTANCE_OUT_OF_SCREEN + 1);
 
   setupParams.nominalPathLength = 1.0F + defaultPathLength;

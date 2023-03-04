@@ -134,19 +134,19 @@ private:
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
   GoomRand m_goomRand{};
-  GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetScreenDimensions(), *m_goomLogger};
+  GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   FxHelper m_fxHelper;
 
   bool m_noZooms       = false;
   uint32_t m_updateNum = 0;
-  GoomImageBuffers m_imageBuffers{m_goomInfo.GetScreenDimensions()};
+  GoomImageBuffers m_imageBuffers{m_goomInfo.GetDimensions()};
 
   FilterSettingsService m_filterSettingsService;
 
   SmallImageBitmaps m_smallBitmaps;
   GoomRandomStateHandler m_stateHandler{m_goomRand};
   NormalizedCoordsConverter m_normalizedCoordsConverter{
-      {m_goomInfo.GetScreenWidth(), m_goomInfo.GetScreenHeight()},
+      {m_goomInfo.GetDimensions().GetWidth(), m_goomInfo.GetDimensions().GetHeight()},
       FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL
   };
   GoomAllVisualFx m_visualFx;
@@ -194,7 +194,7 @@ private:
 
   SongInfo m_songInfo{};
   ShowTitleType m_showTitle = ShowTitleType::AT_START;
-  GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetScreenDimensions(), *m_goomLogger};
+  GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetDimensions(), *m_goomLogger};
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
   [[nodiscard]] static auto GetMessagesFontFile(const std::string& resourcesDirectory)
@@ -305,7 +305,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                    m_parallel,
                    m_goomInfo,
                    m_normalizedCoordsConverter,
-                   std::make_unique<FilterZoomVector>(m_goomInfo.GetScreenWidth(),
+                   std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
                                                       resourcesDirectory,
                                                       m_goomRand,
                                                       m_normalizedCoordsConverter)),
@@ -318,12 +318,12 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
 
 inline auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
 {
-  return m_goomInfo.GetScreenWidth();
+  return m_goomInfo.GetDimensions().GetWidth();
 }
 
 inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
 {
-  return m_goomInfo.GetScreenHeight();
+  return m_goomInfo.GetDimensions().GetHeight();
 }
 
 inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t

@@ -25,6 +25,7 @@ using DRAW::IGoomDraw;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 
 using ::LSYS::SetRandFunc;
@@ -47,8 +48,8 @@ public:
 private:
   const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
-  Point2dInt m_screenMidpoint = GetPoint2dInt(UTILS::MATH::U_HALF * m_goomInfo->GetScreenWidth(),
-                                              UTILS::MATH::U_HALF * m_goomInfo->GetScreenHeight());
+  Point2dInt m_screenMidpoint = {I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
+                                 I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
 
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");

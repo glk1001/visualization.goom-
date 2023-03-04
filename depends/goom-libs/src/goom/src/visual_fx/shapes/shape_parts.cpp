@@ -224,10 +224,10 @@ inline auto ShapePart::MakeShapePathColorInfo() noexcept -> ShapePath::ColorInfo
 
 inline auto ShapePart::GetCircleRadius() const noexcept -> float
 {
-  const auto minDimension =
-      static_cast<float>(std::min(m_goomInfo->GetScreenWidth(), m_goomInfo->GetScreenHeight()));
-  const auto minRadius = m_minRadiusFraction * minDimension;
-  const auto maxRadius = m_maxRadiusFraction * minDimension;
+  const auto minDimension = std::min(m_goomInfo->GetDimensions().GetFltWidth(),
+                                     m_goomInfo->GetDimensions().GetFltHeight());
+  const auto minRadius    = m_minRadiusFraction * minDimension;
+  const auto maxRadius    = m_maxRadiusFraction * minDimension;
   const auto t = static_cast<float>(m_shapePartNum) / static_cast<float>(m_totalNumShapeParts - 1);
 
   return STD20::lerp(minRadius, maxRadius, t);

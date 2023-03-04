@@ -21,7 +21,7 @@ ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     const PluginInfo& goomInfo,
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     const ZoomPointFunc& zoomPointFunc) noexcept
-  : m_dimensions{goomInfo.GetScreenDimensions()},
+  : m_dimensions{goomInfo.GetDimensions()},
     m_normalizedCoordsConverter{&normalizedCoordsConverter},
     m_parallel{&parallel},
     m_getZoomPoint{zoomPointFunc},

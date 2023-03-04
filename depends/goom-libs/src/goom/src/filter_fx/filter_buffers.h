@@ -97,7 +97,7 @@ private:
 template<class FilterStriper>
 ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
     const PluginInfo& goomInfo, std::unique_ptr<FilterStriper> filterStriper) noexcept
-  : m_dimensions{goomInfo.GetScreenDimensions()},
+  : m_dimensions{goomInfo.GetDimensions()},
     m_filterStriper{std::move(filterStriper)},
     m_firedec(m_dimensions.GetHeight())
 {

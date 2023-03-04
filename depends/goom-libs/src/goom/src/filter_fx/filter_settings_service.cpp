@@ -24,10 +24,11 @@ using AFTER_EFFECTS::RotationAdjustments;
 using FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
 using UTILS::NUM;
+using UTILS::MATH::I_HALF;
+using UTILS::MATH::I_QUARTER;
+using UTILS::MATH::I_THREE_QUARTERS;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
-using UTILS::MATH::U_QUARTER;
-using UTILS::MATH::U_THREE_QUARTERS;
 using UTILS::MATH::Weights;
 
 namespace
@@ -833,8 +834,8 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                                  createZoomInCoefficientsEffect)
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
-    m_screenMidpoint{GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(),
-                                   U_HALF * m_goomInfo->GetScreenHeight())},
+    m_screenMidpoint{I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
+                     I_HALF * m_goomInfo->GetDimensions().GetIntHeight()},
     m_resourcesDirectory{resourcesDirectory},
     m_randomizedAfterEffects{
         std::make_unique<AfterEffectsStates>(*m_goomRand,
@@ -1133,42 +1134,45 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
   switch (GetWeightRandomMidPoint(allowEdgePoints))
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(), m_goomInfo->GetScreenHeight() - 2U);
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
+          m_goomInfo->GetDimensions().GetIntHeight() - 2};
       break;
     case ZoomMidpointEvents::TOP_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(U_HALF * m_goomInfo->GetScreenWidth(), 1U);
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          I_HALF * m_goomInfo->GetDimensions().GetIntWidth(), 1};
       break;
     case ZoomMidpointEvents::LEFT_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(1U, U_HALF * m_goomInfo->GetScreenHeight());
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          1, I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::RIGHT_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(m_goomInfo->GetScreenWidth() - 2U, U_HALF * m_goomInfo->GetScreenHeight());
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          m_goomInfo->GetDimensions().GetIntWidth() - 2,
+          I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::CENTRE_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
       break;
     case ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(U_QUARTER * m_goomInfo->GetScreenWidth(),
-                        U_THREE_QUARTERS * m_goomInfo->GetScreenHeight());
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          I_QUARTER * m_goomInfo->GetDimensions().GetIntWidth(),
+          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint = GetPoint2dInt(
-          U_QUARTER * m_goomInfo->GetScreenWidth(), U_QUARTER * m_goomInfo->GetScreenHeight());
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          I_QUARTER * m_goomInfo->GetDimensions().GetIntWidth(),
+          I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(U_THREE_QUARTERS * m_goomInfo->GetScreenWidth(),
-                        U_THREE_QUARTERS * m_goomInfo->GetScreenHeight());
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
+          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::TOP_RIGHT_QUARTER_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint =
-          GetPoint2dInt(U_THREE_QUARTERS * m_goomInfo->GetScreenWidth(),
-                        U_QUARTER * m_goomInfo->GetScreenHeight());
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = {
+          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
+          I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     default:
       FailFast();
