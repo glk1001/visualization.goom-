@@ -45,7 +45,7 @@ RUN apt-get update                                       && \
       lsb-release                                           \
       wget
 
-RUN if [ -n "${CLANG_VER}" ] ; then bash llvm.sh ${CLANG_VER} && apt-get install -y clang-tidy-${CLANG_VER} ; fi
+RUN if [ -n "${CLANG_VER}" ] ; then bash llvm.sh ${CLANG_VER} && apt-get install -y clang-tidy-${CLANG_VER} clang-format-${CLANG_VER} ; fi
 
 RUN apt-get clean -y
 

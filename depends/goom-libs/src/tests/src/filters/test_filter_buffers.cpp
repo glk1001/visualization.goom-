@@ -60,8 +60,8 @@ namespace
 constexpr auto LARGE_WIDTH  = 3840U;
 constexpr auto LARGE_HEIGHT = 2160U;
 #ifdef LARGE_SCREEN_TEST
-static constexpr auto WIDTH  = LARGE_WIDTH;
-static constexpr auto HEIGHT = LARGE_HEIGHT;
+constexpr auto WIDTH  = LARGE_WIDTH;
+constexpr auto HEIGHT = LARGE_HEIGHT;
 #else
 constexpr auto WIDTH  = LARGE_WIDTH / 10U;
 constexpr auto HEIGHT = LARGE_HEIGHT / 10U;

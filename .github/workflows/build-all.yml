@@ -111,6 +111,16 @@ jobs:
         run: |
             sudo apt-get install -y clang-tidy-${{ env.CLANG_VERSION }}
 
+      - name: Install clang-format-${{ env.CLANG_VERSION }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        run: |
+            sudo apt-get install -y clang-format-${{ env.CLANG_VERSION }}
+
+      - name: Install python3
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        run: |
+            sudo apt-get install python3
+
       - name: Configure
         shell: bash
         run: |
@@ -131,6 +141,21 @@ jobs:
                                                                   --build ${{ env.BUILD_DIR }} \
                                                                   --config ${{ matrix.config.build_type }}
 
+      - name: Run clang-format-${{ env.CLANG_VERSION }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ env.CLANG_VERSION }}" \
+                                              -i -r -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" \
+                                              "${PWD}"
+          if [[ "$(git diff --name-only)" != "" ]]; then
+            echo "ERROR: clang-format problem."
+            echo
+            git diff --name-only
+            echo
+            exit 1
+          fi
+
       - name: Run clang-tidy-${{ env.CLANG_VERSION }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         shell: bash
@@ -138,7 +163,7 @@ jobs:
           cd ${{ env.GOOM_DIR }}
           run-clang-tidy-${{ env.CLANG_VERSION }} -header-filter='^((?!catch2).)*$' \
                                                   -p ${{ env.BUILD_DIR }} \
-                                                  ${PWD}/src
+                                                  "${PWD}/src"
 
       - name: Run Test Harness
         shell: bash
