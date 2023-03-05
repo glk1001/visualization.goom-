@@ -42,7 +42,6 @@ using UTILS::MATH::EpicycloidFunction;
 using UTILS::MATH::EpicycloidPath;
 using UTILS::MATH::HypotrochoidFunction;
 using UTILS::MATH::HypotrochoidPath;
-using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IPath;
 using UTILS::MATH::LissajousFunction;
@@ -69,8 +68,7 @@ private:
   const IGoomRand* m_goomRand;
   const SmallImageBitmaps* m_smallBitmaps;
   BitmapDrawer m_bitmapDrawer;
-  Point2dInt m_screenMidpoint = {I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
-                                 I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
+  Point2dInt m_screenCentre = m_goomInfo->GetDimensions().GetCentrePoint();
 
   SmallImageBitmaps::ImageNames m_currentBitmapName{};
   static constexpr uint32_t MAX_FLOWERS_IN_ROW = 100;
@@ -105,7 +103,7 @@ private:
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
-  std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenMidpoint)};
+  std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenCentre)};
   [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre)
       -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>;
 
@@ -240,7 +238,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   auto epicycloidPositionT =
       std::make_unique<TValue>(TValue::StepSizeProperties{EPICYCLOID_STEP_SIZE, STEP_TYPE});
 
-  const auto centrePos                       = GetVec2dFlt(ToPoint2dFlt(centre));
+  const auto centrePos                       = ToVec2dFlt(centre);
   static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
 
   return {

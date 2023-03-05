@@ -31,7 +31,6 @@ using SHAPES::Shape;
 using UTILS::IncrementedValue;
 using UTILS::Timer;
 using UTILS::TValue;
-using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::TWO_PI;
 
@@ -53,8 +52,7 @@ private:
   const IGoomRand* m_goomRand;
   RandomColorMapsManager m_colorMapsManager{};
 
-  Point2dInt m_screenMidPoint = {I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
-                                 I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
+  Point2dInt m_screenCentre = m_goomInfo->GetDimensions().GetCentrePoint();
 
   static constexpr float MIN_RADIUS_FRACTION = 0.2F;
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
@@ -143,7 +141,7 @@ ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
 
 auto ShapesFx::ShapesFxImpl::GetShapes(IGoomDraw& draw) noexcept -> std::array<Shape, NUM_SHAPES>
 {
-  const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenMidPoint);
+  const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenCentre);
 
   static constexpr auto SHAPE0_MIN_DOT_RADIUS = 10;
   static constexpr auto SHAPE0_MAX_DOT_RADIUS = 20;
@@ -255,7 +253,7 @@ auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpo
 auto ShapesFx::ShapesFxImpl::GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
     -> std::array<Point2dInt, NUM_SHAPES>
 {
-  if (m_screenMidPoint == zoomMidpoint)
+  if (m_screenCentre == zoomMidpoint)
   {
     return GetRadialZoomMidpoints();
   }
@@ -268,11 +266,11 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
 {
   auto shapeZoomMidpoints = std::array<Point2dInt, NUM_SHAPES>{};
 
-  shapeZoomMidpoints.at(0) = m_screenMidPoint;
+  shapeZoomMidpoints.at(0) = m_screenCentre;
 
   if constexpr (NUM_SHAPES > 1U)
   {
-    const auto radius = static_cast<float>(m_screenMidPoint.y) / 3.0F;
+    const auto radius = static_cast<float>(m_screenCentre.y) / 3.0F;
     auto angle =
         IncrementedValue<float>{0.0F, TWO_PI, TValue::StepType::SINGLE_CYCLE, NUM_SHAPES - 1};
 
@@ -280,7 +278,7 @@ auto ShapesFx::ShapesFxImpl::GetRadialZoomMidpoints() const noexcept
     {
       const Vec2dFlt radialOffset{radius * std::cos(angle()), radius * std::sin(angle())};
 
-      shapeZoomMidpoints.at(i) = m_screenMidPoint + ToVec2dInt(radialOffset);
+      shapeZoomMidpoints.at(i) = m_screenCentre + ToVec2dInt(radialOffset);
 
       angle.Increment();
     }

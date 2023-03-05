@@ -834,8 +834,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                                  createZoomInCoefficientsEffect)
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
-    m_screenMidpoint{I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
-                     I_HALF * m_goomInfo->GetDimensions().GetIntHeight()},
+    m_screenCentre{m_goomInfo->GetDimensions().GetCentrePoint()},
     m_resourcesDirectory{resourcesDirectory},
     m_randomizedAfterEffects{
         std::make_unique<AfterEffectsStates>(*m_goomRand,
@@ -961,7 +960,7 @@ auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() -> void
 auto FilterSettingsService::SetDefaultSettings() -> void
 {
   m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect = GetZoomInCoefficientsEffect();
-  m_filterSettings.filterEffectsSettings.zoomMidpoint             = m_screenMidpoint;
+  m_filterSettings.filterEffectsSettings.zoomMidpoint             = m_screenCentre;
   m_filterSettings.filterBufferSettings.filterEffectViewport      = Viewport{};
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
@@ -1067,7 +1066,7 @@ auto FilterSettingsService::SetRandomZoomMidpoint() -> void
 {
   if (ALL_AFTER_EFFECTS_TURNED_OFF or IsZoomMidpointInTheMiddle())
   {
-    m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
+    m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenCentre;
     return;
   }
 
@@ -1152,7 +1151,7 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
           I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::CENTRE_MID_POINT:
-      m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenMidpoint;
+      m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenCentre;
       break;
     case ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {

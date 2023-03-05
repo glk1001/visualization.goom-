@@ -479,10 +479,8 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   const auto point =
       Point2dInt{static_cast<int32_t>(ifsPoint.GetX()), static_cast<int32_t>(ifsPoint.GetY())};
 
-  const auto tX =
-      static_cast<float>(point.x) / static_cast<float>(m_draw->GetDimensions().GetWidth());
-  const auto tY =
-      static_cast<float>(point.y) / static_cast<float>(m_draw->GetDimensions().GetHeight());
+  const auto tX = static_cast<float>(point.x) / m_draw->GetDimensions().GetFltWidth();
+  const auto tY = static_cast<float>(point.y) / m_draw->GetDimensions().GetFltHeight();
 
   if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())

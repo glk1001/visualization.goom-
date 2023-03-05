@@ -43,9 +43,7 @@ public:
 private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
-  Point2dInt m_screenMidPoint =
-      MidpointFromOrigin({m_fxHelper->goomInfo->GetDimensions().GetIntWidth(),
-                          m_fxHelper->goomInfo->GetDimensions().GetIntHeight()});
+  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
 
   static constexpr uint32_t NUM_CIRCLES = 5;
   Weights<CircleParamsBuilder::CircleStartModes> m_weightedCircleStartModes;
@@ -223,7 +221,7 @@ inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
   static constexpr auto MIN_LERP = 0.0F;
   static constexpr auto MAX_LERP = 1.0F;
   const auto midLerp             = m_fxHelper->goomRand->GetRandInRange(MIN_LERP, MAX_LERP);
-  auto newCircleCentre           = lerp(m_screenMidPoint, zoomMidpoint, midLerp);
+  auto newCircleCentre           = lerp(m_screenCentre, zoomMidpoint, midLerp);
 
   const auto minX = m_fxHelper->goomInfo->GetDimensions().GetWidth() / 10;
   const auto maxX = m_fxHelper->goomInfo->GetDimensions().GetWidth() - minX;

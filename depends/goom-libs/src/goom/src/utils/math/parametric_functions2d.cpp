@@ -156,7 +156,7 @@ auto SineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
   const auto x        = m_distance * t;
   const auto newPoint = Rotate(Point2dFlt{x, y}, m_rotateAngle);
 
-  return (Point2dFlt{newPoint.x, (m_params.amplitude * newPoint.y)} + GetVec2dFlt(m_startPos));
+  return (Point2dFlt{newPoint.x, (m_params.amplitude * newPoint.y)} + ToVec2dFlt(m_startPos));
 }
 
 OscillatingFunction::OscillatingFunction(const StartAndEndPos& startAndEndPos,

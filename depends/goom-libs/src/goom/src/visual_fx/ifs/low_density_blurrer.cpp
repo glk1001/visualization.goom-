@@ -251,10 +251,8 @@ inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
                                                   const float brightness,
                                                   const float logAlpha) const noexcept -> Pixel
 {
-  const auto fx =
-      static_cast<float>(point.GetX()) / static_cast<float>(m_draw->GetDimensions().GetWidth());
-  const auto fy =
-      static_cast<float>(point.GetY()) / static_cast<float>(m_draw->GetDimensions().GetHeight());
+  const auto fx = static_cast<float>(point.GetX()) / m_draw->GetDimensions().GetFltWidth();
+  const auto fy = static_cast<float>(point.GetY()) / m_draw->GetDimensions().GetFltHeight();
 
   const auto neighbourhoodAverageColor = GetColorAverage(neighbours.size(), neighbours);
 

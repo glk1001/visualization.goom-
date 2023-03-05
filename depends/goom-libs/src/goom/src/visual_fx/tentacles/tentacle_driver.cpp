@@ -94,8 +94,7 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
                                const CirclesTentacleLayout& tentacleLayout) noexcept
   : m_goomRand{&goomRand},
-    m_screenMidpoint{MidpointFromOrigin(
-        GetPoint2dInt(draw.GetDimensions().GetWidth(), draw.GetDimensions().GetHeight()))},
+    m_screenCentre{draw.GetDimensions().GetCentrePoint()},
     m_tentacleParams{
         NUM_TENTACLE_NODES, TENTACLE_LENGTH, MIN_SINE_FREQUENCY, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
     m_tentaclePlotter{draw, *m_goomRand},
@@ -240,13 +239,13 @@ inline auto TentacleDriver::GetAcceptableEndCentrePos(
     const Point2dInt& requestedEndCentrePos) const noexcept -> Point2dInt
 {
   static constexpr auto CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
-  return lerp(requestedEndCentrePos, m_screenMidpoint, CLOSE_TO_SCREEN_CENTRE_T);
+  return lerp(requestedEndCentrePos, m_screenCentre, CLOSE_TO_SCREEN_CENTRE_T);
 }
 
 auto TentacleDriver::UpdateTentaclesEndCentrePosOffsets() noexcept -> void
 {
   const auto endCentrePos = lerp(m_previousEndCentrePos, m_targetEndCentrePos, m_endCentrePosT());
-  const auto endCentrePosOffset = endCentrePos - GetVec2dInt(m_screenMidpoint);
+  const auto endCentrePosOffset = endCentrePos - ToVec2dInt(m_screenCentre);
   const auto radiusScale        = m_goomRand->GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR);
 
   std::for_each(begin(m_tentacles),
@@ -290,7 +289,7 @@ auto TentacleDriver::GetNewRadiusEndCentrePosOffset(
   const auto newRadiusEndPosOffset = newTentacleEndPos - oldTentacleEndPosVec;
 
   const auto newRadiusCentreEndPosOffset =
-      newCentreEndPosOffset + GetVec2dInt(newRadiusEndPosOffset);
+      newCentreEndPosOffset + ToVec2dInt(newRadiusEndPosOffset);
 
   return V3dFlt{static_cast<float>(newRadiusCentreEndPosOffset.x),
                 static_cast<float>(newRadiusCentreEndPosOffset.y),

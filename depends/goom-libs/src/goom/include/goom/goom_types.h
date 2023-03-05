@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_config.h"
+#include "point2d.h"
 
 #include <cstdint>
 
@@ -35,6 +36,8 @@ public:
   [[nodiscard]] constexpr auto GetFltWidth() const noexcept -> float;
   [[nodiscard]] constexpr auto GetFltHeight() const noexcept -> float;
 
+  [[nodiscard]] constexpr auto GetCentrePoint() const noexcept -> Point2dInt;
+
 private:
   uint32_t m_width;
   uint32_t m_height;
@@ -48,39 +51,44 @@ constexpr Dimensions::Dimensions(const uint32_t width, const uint32_t height) no
   Expects(height > 0);
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetWidth() const noexcept -> uint32_t
+constexpr auto Dimensions::GetWidth() const noexcept -> uint32_t
 {
   return m_width;
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetHeight() const noexcept -> uint32_t
+constexpr auto Dimensions::GetHeight() const noexcept -> uint32_t
 {
   return m_height;
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetSize() const noexcept -> uint32_t
+constexpr auto Dimensions::GetSize() const noexcept -> uint32_t
 {
   return m_width * m_height;
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetIntWidth() const noexcept -> int32_t
+constexpr auto Dimensions::GetIntWidth() const noexcept -> int32_t
 {
   return static_cast<int32_t>(m_width);
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetIntHeight() const noexcept -> int32_t
+constexpr auto Dimensions::GetIntHeight() const noexcept -> int32_t
 {
   return static_cast<int32_t>(m_height);
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetFltWidth() const noexcept -> float
+constexpr auto Dimensions::GetFltWidth() const noexcept -> float
 {
   return static_cast<float>(m_width);
 }
 
-[[nodiscard]] constexpr auto Dimensions::GetFltHeight() const noexcept -> float
+constexpr auto Dimensions::GetFltHeight() const noexcept -> float
 {
   return static_cast<float>(m_height);
+}
+
+constexpr auto Dimensions::GetCentrePoint() const noexcept -> Point2dInt
+{
+  return MidpointFromOrigin({GetIntWidth(), GetIntHeight()});
 }
 
 } // namespace GOOM

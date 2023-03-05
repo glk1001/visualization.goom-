@@ -45,13 +45,13 @@ private:
   const FxHelper* m_fxHelper;
   uint32_t m_screenWidth         = m_fxHelper->goomInfo->GetDimensions().GetWidth();
   uint32_t m_screenHeight        = m_fxHelper->goomInfo->GetDimensions().GetHeight();
-  Point2dInt m_screenMidpoint    = MidpointFromOrigin(GetPoint2dInt(m_screenWidth, m_screenHeight));
+  Point2dInt m_screenCentre      = MidpointFromOrigin(GetPoint2dInt(m_screenWidth, m_screenHeight));
   Point2dInt m_topLeftCorner     = GetPoint2dInt(0U, 0U);
   Point2dInt m_topRightCorner    = GetPoint2dInt(m_screenWidth - 1, 0U);
   Point2dInt m_bottomLeftCorner  = GetPoint2dInt(0U, m_screenHeight - 1);
   Point2dInt m_bottomRightCorner = GetPoint2dInt(m_screenWidth - 1, m_screenHeight - 1);
-  Point2dInt m_mainCircleCentreStart   = m_screenMidpoint;
-  Point2dInt m_mainCircleCentreTarget  = m_screenMidpoint;
+  Point2dInt m_mainCircleCentreStart   = m_screenCentre;
+  Point2dInt m_mainCircleCentreTarget  = m_screenCentre;
   CircleStartModes m_circleStartMode   = CircleStartModes::SAME_RADIUS;
   CircleTargetModes m_circleTargetMode = CircleTargetModes::FOUR_CORNERS;
 

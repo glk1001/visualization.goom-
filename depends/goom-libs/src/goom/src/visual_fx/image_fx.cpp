@@ -106,10 +106,8 @@ private:
   PixelDrawer m_pixelDrawer;
   std::string m_resourcesDirectory;
 
-  int32_t m_availableWidth =
-      static_cast<int32_t>(m_goomInfo->GetDimensions().GetWidth() - CHUNK_WIDTH);
-  int32_t m_availableHeight =
-      static_cast<int32_t>(m_goomInfo->GetDimensions().GetHeight() - CHUNK_HEIGHT);
+  int32_t m_availableWidth  = m_goomInfo->GetDimensions().GetIntWidth() - CHUNK_WIDTH;
+  int32_t m_availableHeight = m_goomInfo->GetDimensions().GetIntHeight() - CHUNK_HEIGHT;
   Point2dInt m_screenCentre{I_HALF * m_availableWidth, I_HALF* m_availableHeight};
   float m_maxRadius = HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight));
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
@@ -421,7 +419,7 @@ inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
 inline auto ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) const -> Point2dInt
 {
   return lerp(m_currentImage->GetStartPosition(i),
-              m_floatingStartPosition + GetVec2dInt(GetChunkFloatingStartPosition(i)),
+              m_floatingStartPosition + ToVec2dInt(GetChunkFloatingStartPosition(i)),
               m_floatingT());
 }
 
@@ -518,8 +516,7 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
 {
   auto imageAsChunks = ImageAsChunks{};
 
-  const auto centre = Point2dInt{goomInfo.GetDimensions().GetIntWidth() / 2,
-                                 goomInfo.GetDimensions().GetIntHeight() / 2};
+  const auto centre = goomInfo.GetDimensions().GetCentrePoint();
   const auto x0     = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
   const auto y0     = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
 

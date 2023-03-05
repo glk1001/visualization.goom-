@@ -42,7 +42,7 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
-  Point2dInt m_screenMidpoint;
+  Point2dInt m_screenCentre;
 
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
@@ -103,8 +103,8 @@ private:
 
   using StepType = UTILS::TValue::StepType;
 
-  Point2dInt m_previousEndCentrePos             = m_screenMidpoint;
-  Point2dInt m_targetEndCentrePos               = m_screenMidpoint;
+  Point2dInt m_previousEndCentrePos             = m_screenCentre;
+  Point2dInt m_targetEndCentrePos               = m_screenCentre;
   static constexpr auto NUM_STEPS_TO_END_TARGET = 100U;
   UTILS::TValue m_endCentrePosT{
       {StepType::SINGLE_CYCLE, NUM_STEPS_TO_END_TARGET}

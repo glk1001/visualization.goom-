@@ -25,6 +25,8 @@ add_library(goom
             STATIC
             include/goom/goom_config.h
             include/goom/goom_types.h
+            include/goom/math20.h
+            include/goom/point2d.h
             src/color/color_data/color_data_maps.cpp
             src/color/color_data/extra_color_groups.cpp
             src/color/color_adjustment.cpp
@@ -115,7 +117,6 @@ add_library(goom
             src/utils/math/damping_functions.cpp
             src/utils/math/goom_rand.h
             src/utils/math/goom_rand_base.h
-            src/utils/math/math20.h
             src/utils/math/misc.h
             src/utils/math/parametric_functions2d.cpp
             src/utils/math/paths.cpp
@@ -195,6 +196,7 @@ add_library(goom
             src/goom_control.cpp
             src/goom_graphic.cpp
             src/goom_logger.cpp
+            src/goom_plugin_info.h
             src/goom_utils.cpp
             src/goom_version.cpp
             src/sound_info.cpp

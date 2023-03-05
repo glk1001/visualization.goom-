@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/math/misc.h"
+#include "math20.h"
 
 #include <cmath>
 #include <cstdint>
@@ -45,9 +45,9 @@ struct Point2dInt
 [[nodiscard]] constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept
     -> Point2dInt;
 [[nodiscard]] constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dInt;
-[[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t;
-[[nodiscard]] auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept
+[[nodiscard]] constexpr auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept
     -> int32_t;
+[[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t;
 
 struct Vec2dInt
 {
@@ -59,7 +59,7 @@ struct Vec2dInt
 [[nodiscard]] constexpr auto GetVec2dInt(int32_t x, int32_t y) noexcept -> Vec2dInt = delete;
 [[nodiscard]] constexpr auto GetVec2dInt(uint32_t x, uint32_t y) noexcept -> Vec2dInt;
 // NOLINTEND(bugprone-easily-swappable-parameters)
-[[nodiscard]] constexpr auto GetVec2dInt(const Point2dInt& point) noexcept -> Vec2dInt;
+[[nodiscard]] constexpr auto ToVec2dInt(const Point2dInt& point) noexcept -> Vec2dInt;
 [[nodiscard]] constexpr auto ToVec2dFlt(const Vec2dInt& vec2DInt) noexcept -> Vec2dFlt;
 
 [[nodiscard]] constexpr auto operator==(const Vec2dInt& vec1, const Vec2dInt& vec2) noexcept
@@ -108,8 +108,9 @@ struct Point2dFlt
 [[nodiscard]] constexpr auto lerp(const Point2dFlt& point1,
                                   const Point2dFlt& point2,
                                   float t) noexcept -> Point2dFlt;
+[[nodiscard]] constexpr auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept
+    -> float;
 [[nodiscard]] auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float;
-[[nodiscard]] auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float;
 
 struct Vec2dFlt
 {
@@ -117,7 +118,8 @@ struct Vec2dFlt
   float y = 0.0F;
 };
 
-[[nodiscard]] constexpr auto GetVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt;
+[[nodiscard]] constexpr auto ToVec2dFlt(const Point2dInt& point) noexcept -> Vec2dFlt;
+[[nodiscard]] constexpr auto ToVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt;
 [[nodiscard]] auto ToVec2dInt(const Vec2dFlt& vec2DFlt) noexcept -> Vec2dInt;
 
 [[nodiscard]] constexpr auto operator+(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept
@@ -183,7 +185,7 @@ constexpr auto GetVec2dInt(const uint32_t x, const uint32_t y) noexcept -> Vec2d
   return {static_cast<int32_t>(x), static_cast<int32_t>(y)};
 }
 
-constexpr auto GetVec2dInt(const Point2dInt& point) noexcept -> Vec2dInt
+constexpr auto ToVec2dInt(const Point2dInt& point) noexcept -> Vec2dInt
 {
   return {point.x, point.y};
 }
@@ -297,7 +299,12 @@ constexpr auto Scale(const Point2dFlt& point, const float xScalar, const float y
   return {point.x * xScalar, point.y * yScalar};
 }
 
-constexpr auto GetVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt
+constexpr auto ToVec2dFlt(const Point2dInt& point) noexcept -> Vec2dFlt
+{
+  return {static_cast<float>(point.x), static_cast<float>(point.y)};
+}
+
+constexpr auto ToVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt
 {
   return {point.x, point.y};
 }
@@ -368,19 +375,23 @@ inline auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcep
   return static_cast<int32_t>(std::lround(Distance(ToPoint2dFlt(point1), ToPoint2dFlt(point2))));
 }
 
+constexpr auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t
+{
+  const auto xDiff = point1.x - point2.x;
+  const auto yDiff = point1.y - point2.y;
+  return (xDiff * xDiff) + (yDiff * yDiff);
+}
+
+constexpr auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
+{
+  const auto xDiff = point1.x - point2.x;
+  const auto yDiff = point1.y - point2.y;
+  return (xDiff * xDiff) + (yDiff * yDiff);
+}
+
 inline auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
 {
-  return std::sqrt(UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y));
-}
-
-inline auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t
-{
-  return UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y);
-}
-
-inline auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
-{
-  return UTILS::MATH::SqDistance(point1.x - point2.x, point1.y - point2.y);
+  return std::sqrt(SqDistance(point1, point2));
 }
 
 } // namespace GOOM

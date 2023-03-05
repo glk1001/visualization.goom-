@@ -108,8 +108,6 @@ public:
                   const std::string& resourcesDirectory,
                   GoomLogger& goomLogger);
 
-  [[nodiscard]] auto GetScreenWidth() const -> uint32_t;
-  [[nodiscard]] auto GetScreenHeight() const -> uint32_t;
   [[nodiscard]] auto GetUpdateNum() const -> uint32_t;
 
   auto SetShowTitle(ShowTitleType value) -> void;
@@ -314,16 +312,6 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
   RotateBuffers();
-}
-
-inline auto GoomControl::GoomControlImpl::GetScreenWidth() const -> uint32_t
-{
-  return m_goomInfo.GetDimensions().GetWidth();
-}
-
-inline auto GoomControl::GoomControlImpl::GetScreenHeight() const -> uint32_t
-{
-  return m_goomInfo.GetDimensions().GetHeight();
 }
 
 inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
@@ -637,8 +625,8 @@ inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 {
   const auto xPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.050F : 0.085F;
   const auto yPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.130F : 0.300F;
-  const auto xPos         = static_cast<int>(xPosFraction * static_cast<float>(GetScreenWidth()));
-  const auto yPos         = static_cast<int>(yPosFraction * static_cast<float>(GetScreenHeight()));
+  const auto xPos = static_cast<int>(xPosFraction * m_goomInfo.GetDimensions().GetFltWidth());
+  const auto yPos = static_cast<int>(yPosFraction * m_goomInfo.GetDimensions().GetFltHeight());
 
   m_goomTitleDisplayer.SetInitialPosition(xPos, yPos);
 }

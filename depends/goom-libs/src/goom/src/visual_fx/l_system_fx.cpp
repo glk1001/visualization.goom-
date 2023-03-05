@@ -25,7 +25,6 @@ using DRAW::IGoomDraw;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 
 using ::LSYS::SetRandFunc;
@@ -48,8 +47,7 @@ public:
 private:
   const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
-  Point2dInt m_screenMidpoint = {I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
-                                 I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
+  Point2dInt m_screenCentre = m_goomInfo->GetDimensions().GetCentrePoint();
 
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
@@ -297,7 +295,7 @@ auto LSystemFx::LSystemFxImpl::Start() -> void
                 end(m_lSystems),
                 [this](auto& lSystem)
                 {
-                  lSystem->SetPathStart(m_screenMidpoint);
+                  lSystem->SetPathStart(m_screenCentre);
                   lSystem->Start();
                 });
 

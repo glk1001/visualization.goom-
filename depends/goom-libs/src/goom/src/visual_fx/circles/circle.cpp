@@ -101,12 +101,12 @@ Circle::Circle(const FxHelper& fxHelper,
 auto Circle::GetDotStartingPositions(const Point2dInt& centre, const float radius) noexcept
     -> std::vector<Point2dInt>
 {
-  auto positionT = std::make_unique<TValue>(
-      TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, NUM_DOTS});
-  const auto centrePos                       = GetVec2dFlt(ToPoint2dFlt(centre));
-  static constexpr auto DEFAULT_ANGLE_PARAMS = AngleParams{};
+  static constexpr auto STEP_PROPERTIES =
+      TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, NUM_DOTS};
+  auto positionT       = std::make_unique<TValue>(STEP_PROPERTIES);
+  const auto centrePos = ToVec2dFlt(centre);
   const auto path =
-      std::make_unique<CirclePath>(std::move(positionT), centrePos, radius, DEFAULT_ANGLE_PARAMS);
+      std::make_unique<CirclePath>(std::move(positionT), centrePos, radius, AngleParams{});
 
   auto dotStartingPositions = std::vector<Point2dInt>(NUM_DOTS);
 

@@ -81,8 +81,8 @@ private:
   auto ResetLineColorPowers() noexcept -> void;
   auto DrawLines() noexcept -> void;
 
-  float m_screenWidth{static_cast<float>(m_goomInfo->GetDimensions().GetWidth())};
-  float m_screenHeight{static_cast<float>(m_goomInfo->GetDimensions().GetHeight())};
+  float m_screenWidth         = m_goomInfo->GetDimensions().GetFltWidth();
+  float m_screenHeight        = m_goomInfo->GetDimensions().GetFltHeight();
   uint32_t m_updateNum        = 0;
   int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
   int32_t m_lineMode          = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
@@ -173,14 +173,14 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             {
                 {
                     LineType::H_LINE,
-                    static_cast<float>(fxHelper.goomInfo->GetDimensions().GetHeight()),
+                    fxHelper.goomInfo->GetDimensions().GetFltHeight(),
                     BLACK_LINE_COLOR,
                     1.0F
                 },
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
-                        static_cast<float>(fxHelper.goomInfo->GetDimensions().GetHeight()),
+                        fxHelper.goomInfo->GetDimensions().GetFltHeight(),
                     GREEN_LINE_COLOR,
                     1.0F
                 }
@@ -201,7 +201,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-                        static_cast<float>(fxHelper.goomInfo->GetDimensions().GetHeight()),
+                        fxHelper.goomInfo->GetDimensions().GetFltHeight(),
                     RED_LINE_COLOR,
                     1.0F
                 }

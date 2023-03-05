@@ -107,7 +107,7 @@ inline auto TentaclePlotter::GetPerspectivePoint(const V3dFlt& point3D) const ->
   const auto xProj             = perspectiveFactor * point3D.x;
   const auto yProj             = perspectiveFactor * point3D.y;
 
-  return Point2dFlt{xProj, -yProj} + m_screenMidPoint;
+  return Point2dFlt{xProj, -yProj} + m_screenCentre;
 }
 
 inline auto TentaclePlotter::GetLines3D(const std::vector<V3dFlt>& points3D)

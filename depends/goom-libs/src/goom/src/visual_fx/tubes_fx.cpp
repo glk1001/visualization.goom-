@@ -55,7 +55,6 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
-using UTILS::MATH::U_HALF;
 
 static constexpr auto NUM_TUBES = 3U;
 
@@ -176,8 +175,7 @@ private:
   TValue m_allJoinCentreT{
       {ALL_JOIN_CENTRE_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
-  Point2dInt m_screenMidpoint = GetPoint2dInt(U_HALF * m_draw->GetDimensions().GetWidth(),
-                                              U_HALF * m_draw->GetDimensions().GetHeight());
+  Point2dInt m_screenCentre = m_draw->GetDimensions().GetCentrePoint();
   Point2dInt m_targetMiddlePos{0, 0};
   Point2dInt m_previousMiddlePos{0, 0};
   static constexpr auto MIDDLE_POS_NUM_STEPS = 100U;
@@ -210,7 +208,7 @@ private:
   auto DrawCapturedPreviousShapesGroups() -> void;
   [[nodiscard]] static auto GetAverageColor(const GoomDrawToContainer::ColorsList& colorsList)
       -> Pixel;
-  [[nodiscard]] static auto GetClipped(int32_t val, uint32_t maxVal) -> int32_t;
+  [[nodiscard]] static auto GetClipped(int32_t val, int32_t maxVal) -> int32_t;
   auto UpdatePreviousShapesSettings() -> void;
   auto UpdateColorMaps() -> void;
   auto UpdateSpeeds() -> void;
@@ -363,7 +361,7 @@ inline auto TubesFx::TubeFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
 
   if (m_goomRand->ProbabilityOf(PROB_FOLLOW_ZOOM_MID_POINT))
   {
-    m_targetMiddlePos = zoomMidpoint - GetVec2dInt(m_screenMidpoint);
+    m_targetMiddlePos = zoomMidpoint - ToVec2dInt(m_screenCentre);
   }
   else
   {
@@ -682,9 +680,9 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
                                       ? 0
                                       : m_goomRand->GetRandInRange(-PREV_SHAPES_JITTER_AMOUNT,
                                                                    PREV_SHAPES_JITTER_AMOUNT + 1);
-        const auto newPoint =
-            Point2dInt{GetClipped(point.x + jitterAmount, m_draw->GetDimensions().GetWidth() - 1),
-                       GetClipped(point.y + jitterAmount, m_draw->GetDimensions().GetHeight() - 1)};
+        const auto newPoint     = Point2dInt{
+            GetClipped(point.x + jitterAmount, m_draw->GetDimensions().GetIntWidth() - 1),
+            GetClipped(point.y + jitterAmount, m_draw->GetDimensions().GetIntHeight() - 1)};
 
         const auto avColor                      = GetAverageColor(colorsList);
         static constexpr auto BRIGHTNESS_FACTOR = 0.1F;
@@ -711,15 +709,15 @@ inline auto TubesFx::TubeFxImpl::GetAverageColor(const GoomDrawToContainer::Colo
   return GetColorAverage(colorsList.count, colorsList.colorsArray);
 }
 
-inline auto TubesFx::TubeFxImpl::GetClipped(const int32_t val, const uint32_t maxVal) -> int32_t
+inline auto TubesFx::TubeFxImpl::GetClipped(const int32_t val, const int32_t maxVal) -> int32_t
 {
   if (val < 0)
   {
     return 0;
   }
-  if (val > static_cast<int32_t>(maxVal))
+  if (val > maxVal)
   {
-    return static_cast<int32_t>(maxVal);
+    return maxVal;
   }
   return val;
 }
@@ -742,9 +740,9 @@ auto TubesFx::TubeFxImpl::GetTransformedCentreVector(const uint32_t tubeId,
 {
   if ((!m_allowMovingAwayFromCentre) || TUBE_SETTINGS.at(tubeId).noMoveFromCentre)
   {
-    return GetVec2dInt(GetMiddlePos());
+    return ToVec2dInt(GetMiddlePos());
   }
-  return GetVec2dInt(lerp(centre, GetMiddlePos(), m_allJoinCentreT()));
+  return ToVec2dInt(lerp(centre, GetMiddlePos(), m_allJoinCentreT()));
 }
 
 auto TubesFx::TubeFxImpl::IncrementAllJoinCentreT() -> void

@@ -115,7 +115,7 @@ protected:
 private:
   const PluginInfo* m_goomInfo;
   const UTILS::MATH::IGoomRand* m_goomRand;
-  Point2dInt m_screenMidpoint;
+  Point2dInt m_screenCentre;
   std::string m_resourcesDirectory;
   std::experimental::propagate_const<std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates>>
       m_randomizedAfterEffects;

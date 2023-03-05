@@ -156,7 +156,7 @@ auto LSystem::StartBrightnessTimer() noexcept -> void
 
 auto LSystem::Update() noexcept -> void
 {
-  m_lSysGeometry.SetTranslateAdjust(GetVec2dFlt(ToPoint2dFlt(m_lSysPath.GetNextPathPosition())));
+  m_lSysGeometry.SetTranslateAdjust(ToVec2dFlt(m_lSysPath.GetNextPathPosition()));
 
   IncrementTs();
 
