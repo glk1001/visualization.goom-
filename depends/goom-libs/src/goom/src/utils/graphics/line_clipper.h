@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_config.h"
 #include "point2d.h"
 
 #include <cstdint>

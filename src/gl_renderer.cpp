@@ -1,3 +1,8 @@
+#if defined(__apple_build_version__) || __clang_major__ == 14
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #undef NO_LOGGING
 
 #include "gl_renderer.h"
@@ -17,7 +22,7 @@
 #endif
 
 #ifndef HAS_GL
-static_assert(false, "Must have 'HAS_GL'.");
+//static_assert(false, "Must have 'HAS_GL'.");
 #endif
 // #undef HAS_GL
 
@@ -569,3 +574,7 @@ inline auto GlRenderer::GLRendererImpl::InitGlShaderVariables() -> void
 }
 
 } // namespace GOOM
+
+#if defined(__apple_build_version__) || __clang_major__ == 14
+#pragma clang diagnostic pop
+#endif

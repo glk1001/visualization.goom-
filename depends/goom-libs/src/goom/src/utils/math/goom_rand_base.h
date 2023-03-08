@@ -131,6 +131,7 @@ inline auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const n
 
 #if __clang_major__ >= 16
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 template<class RandomIt>

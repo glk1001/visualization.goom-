@@ -10,11 +10,23 @@
 
 #include "goom/goom_config.h"
 
-#include <kodi/addon-instance/Visualization.h>
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
 #endif
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4242) // kodi/tools/StringUtils.h: possible loss of data
+#pragma warning(disable : 4702) // kodi/gui/gl/Shader.h: unreachable code
+#endif
+
+#include <kodi/addon-instance/Visualization.h>
 #include <kodi/gui/gl/Shader.h>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #include <memory>
 #include <string>
 

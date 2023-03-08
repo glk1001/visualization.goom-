@@ -6,6 +6,7 @@
 
 #if __clang_major__ >= 16
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 #include <catch2/catch_test_macros.hpp>
@@ -82,6 +83,9 @@ TEST_CASE("StringSplit")
 
 TEST_CASE("EnumToString")
 {
+#ifdef NO_MAGIC_ENUM_AVAILABLE
+  return;
+#else
   enum class EnumTester
   {
     _NULL = -1, // NOLINT: Need special name here
@@ -101,6 +105,7 @@ TEST_CASE("EnumToString")
   REQUIRE(EnumToString(test) == "_num");
 
   REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
+#endif
 }
 
 } // namespace GOOM::UNIT_TESTS

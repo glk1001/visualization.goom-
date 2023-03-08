@@ -1,3 +1,8 @@
+#if defined(__apple_build_version__) || __clang_major__ == 14
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 #include "shader_with_effects.h"
 
 #include "goom/goom_graphic.h"
@@ -58,3 +63,7 @@ auto ShaderWithEffects::SetShaderVariables(
 }
 
 } // namespace GOOM
+
+#if defined(__apple_build_version__) || __clang_major__ == 14
+#pragma clang diagnostic pop
+#endif
