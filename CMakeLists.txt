@@ -38,6 +38,9 @@ if (IS_THIS_MAIN_CMAKE_SCRIPT)
     set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}")
     set(CMAKE_INSTALL_PREFIX ${KODI_ROOT_DIR}/kodi/kodi-build/addons)
 else ()
+    message(STATUS "This cmake script is being run from the kodi addons cmake script.")
+    message(STATUS "KODI_ROOT_DIR = \"${KODI_ROOT_DIR}\".")
+    message(STATUS "CMAKE_INSTALL_PREFIX = \"${CMAKE_INSTALL_PREFIX}\".")
     if (CMAKE_INSTALL_LIBDIR)
         message(STATUS "CMAKE_INSTALL_LIBDIR = \"${CMAKE_INSTALL_LIBDIR}\".")
         message(WARNING "Do not set 'CMAKE_INSTALL_LIBDIR'."
@@ -58,9 +61,7 @@ endif ()
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
-if (NOT IS_THIS_MAIN_CMAKE_SCRIPT)
-    message(STATUS "This cmake script is being run from the kodi addons cmake script.")
-else ()
+if (IS_THIS_MAIN_CMAKE_SCRIPT)
     # Executing the Kodi addon cmake script here allows this script to be the main cmake script.
     # This fits in with the way CLion works.
     if (EXISTS "${CMAKE_BINARY_DIR}/CMakeCache.txt")
@@ -102,23 +103,14 @@ include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
-    option(WARNINGS_AS_ERRORS
-           "MSVC: Problems with glm 'type_quat.hpp' and kodi 'StringUtils.h'" OFF)
     set(POS_INDEP_CODE "OFF")
 else ()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-        set(CMAKE_COMMON_CXX_WARNINGS ${CMAKE_COMMON_CXX_WARNINGS} -Wno-c++17-extensions)
-    endif ()
     set(POS_INDEP_CODE "ON")
 endif ()
-
 if (CORE_SYSTEM_NAME STREQUAL "osx")
     set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup -flat_namespace")
 endif ()
 
-
-CPMAddPackage("gh:g-truc/glm#0.9.9.8")
-set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 CPMAddPackage("gh:fmtlib/fmt#9.1.0")
 
@@ -161,6 +153,15 @@ add_subdirectory(${GOOM_LIBS_RELDIR})
 
 get_project_warnings(PROJECT_WARNINGS)
 add_compile_options(${PROJECT_WARNINGS})
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    # glm has many 'unsafe-buffer-usage' warnings.
+    message(STATUS "Turning off 'unsafe-buffer-usage' for Clang.")
+    add_compile_options(-Wno-unknown-warning-option -Wno-unsafe-buffer-usage)
+endif ()
+
+CPMAddPackage("gh:g-truc/glm#0.9.9.8")
+set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
 
 # Setup the includes and other dependencies the addon builder needs.

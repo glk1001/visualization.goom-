@@ -8,7 +8,11 @@ declare -r THIS_SCRIPT_PATH="$(cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P)"
 source "${THIS_SCRIPT_PATH}/goom-get-paths.sh"
 source "${THIS_SCRIPT_PATH}/goom-get-vars.sh"
 
-declare -r RUN_CLANG_TIDY="run-clang-tidy-${COMPILER_VERSION}"
+if [[ "${COMPILER_VERSION}" == "" ]]; then
+  declare -r RUN_CLANG_TIDY="run-clang-tidy"
+else
+  declare -r RUN_CLANG_TIDY="run-clang-tidy-${COMPILER_VERSION}"
+fi
 declare -r GOOM_MAIN_SRCE_DIR="${GOOM_MAIN_ROOT_DIR}/src"
 declare -r GOOM_LIB_DIR="${GOOM_MAIN_ROOT_DIR}/depends/goom-libs/src"
 declare -r CLANG_TIDY_LOG="/tmp/goom-clang-tidy.log"
@@ -36,8 +40,9 @@ fi
 
 SECONDS=0
 
-"${RUN_CLANG_TIDY}" -j 6 -header-filter='^((?!catch2).)*$' -extra-arg=-Wno-unknown-warning-option \
-                    -p "${BUILD_DIRNAME}" "${GOOM_MAIN_SRCE_DIR}" "${GOOM_LIB_DIR}" |& tee "${CLANG_TIDY_LOG}"
+"${RUN_CLANG_TIDY}" -j $(getconf _NPROCESSORS_ONLN) -header-filter='^((?!catch2).)*$' \
+                    -extra-arg=-Wno-unknown-warning-option -p "${BUILD_DIRNAME}" \
+                    "${GOOM_MAIN_SRCE_DIR}" "${GOOM_LIB_DIR}" |& tee "${CLANG_TIDY_LOG}"
 if [[ $? != 0 ]]; then
   >&2 echo "ERROR: There were clang-tidy errors."
   >&2 echo "Time of run: $(( SECONDS/60 )) min, $(( SECONDS%60 )) sec."

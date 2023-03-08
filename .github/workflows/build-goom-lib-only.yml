@@ -1,0 +1,167 @@
+name: Build goom-lib only
+on:
+  push:
+    branches: [master]
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: 'Ubuntu Clang - RelWithDebInfo',
+            os: 'ubuntu-latest',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'RelWithDebInfo',
+          }
+        - {
+            name: 'Ubuntu Clang - Release',
+            os: 'ubuntu-latest',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'Release',
+          }
+        - {
+            name: 'Ubuntu GCC - RelWithDebInfo',
+            os: 'ubuntu-latest',
+            cc: 'gcc-${{ vars.GCC_VER }}',
+            cxx: 'g++-${{ vars.GCC_VER }}',
+            build_type: 'RelWithDebInfo',
+          }
+        - {
+            name: 'Ubuntu GCC - Release',
+            os: 'ubuntu-latest',
+            cc: 'gcc-${{ vars.GCC_VER }}',
+            cxx: 'g++-${{ vars.GCC_VER }}',
+            build_type: 'Release',
+          }
+        - {
+            name: 'MacOS Latest Clang - Release',
+            os: 'macos-latest',
+            cc: 'clang',
+            cxx: 'clang++',
+            build_type: 'Release',
+          }
+        - {
+            name: 'Windows Latest MSVC - Release',
+            os: 'windows-latest',
+            cc: 'cl',
+            cxx: 'cl',
+            build_type: 'Release',
+          }
+
+    env:
+      GOOM_LIBS_DIR: depends/goom-libs
+      BUILD_DIR: build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}
+
+    steps:
+      - name: Print env
+        shell: bash
+        run: |
+          echo "cc:                ${{ matrix.config.cc }}"
+          echo "cxx:               ${{ matrix.config.cxx }}"
+          echo "runner.os:         ${{ runner.os }}"
+          echo "github.ref:        ${{ github.ref }}"
+          echo "github.ref_name:   ${{ github.ref_name }}"
+          echo "github.event_name: ${{ github.event_name }}"
+          echo "github.event_path: ${{ github.event_path }}"
+          echo "github.workflow:   ${{ github.workflow }}"
+          echo "github.workspace:  ${{ github.workspace }}"
+          echo "os:                ${{ matrix.config.os }}"
+          echo "GOOM_LIBS_DIR:     ${{ env.GOOM_LIBS_DIR }}"
+          echo "BUILD_DIR:         ${{ env.BUILD_DIR }}"
+
+      - name: Clone this Goom++ Repo
+        uses: actions/checkout@v3
+        with:
+          path: ''
+
+      - name: Install Clang-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ vars.CLANG_VER }}
+          platform: x64
+
+      - name: Install GCC-${{ vars.GCC_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu GCC')
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ vars.GCC_VER }}
+          platform: x64
+
+      - name: Install clang-format-${{ vars.CLANG_VER }} and clang-tidy-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3
+          sudo apt-get install -y clang-format-${{ vars.CLANG_VER }}
+          sudo apt-get install -y clang-tidy-${{ vars.CLANG_VER }}
+
+      - name: Configure
+        shell: bash
+        run: |
+          mkdir ${{ env.GOOM_LIBS_DIR }}/${{ env.BUILD_DIR }}
+          cd ${{ env.GOOM_LIBS_DIR }}/${{ env.BUILD_DIR }}
+          CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
+                                                                  -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+                                                                  -DENABLE_TESTING=1 \
+                                                                  -DUSE_MAGIC_ENUM=1 \
+                                                                  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                                                                  ..
+
+      - name: Build
+        shell: bash
+        run: |
+          cd ${{ env.GOOM_LIBS_DIR }}
+          CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
+                                                                  --build ${{ env.BUILD_DIR }} \
+                                                                  --config ${{ matrix.config.build_type }}
+
+      - name: Run clang-format-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_VER }}" \
+                                              -i -r -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" \
+                                              "${PWD}"
+          if [[ "$(git diff --name-only)" != "" ]]; then
+            echo "ERROR: clang-format problem."
+            echo
+            clang-format-${{ env.vars.CLANG_VER }} --version
+            echo
+            git diff --name-only
+            #git diff
+            echo
+            exit 1
+          fi
+
+      - name: Run clang-tidy-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          cd ${{ env.GOOM_LIBS_DIR }}
+          run-clang-tidy-${{ vars.CLANG_VER}} -j $(getconf _NPROCESSORS_ONLN) \
+                                              -header-filter='^((?!catch2).)*$' \
+                                              -p ${{ env.BUILD_DIR }} \
+                                              "${PWD}/src"
+
+      - name: Run Goom++ Test Harness for ${{ runner.os }}
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          cd ${{ env.GOOM_LIBS_DIR }}
+          ${{ env.BUILD_DIR }}/goom-libs-artifacts/bin/${{ matrix.config.build_type }}/goom_lib_tests -d yes
+
+      - name: Run Goom++ Test Harness for  ${{ runner.os }}
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          cd ${{ env.GOOM_LIBS_DIR }}
+
+          ${{ env.BUILD_DIR }}/goom-libs-artifacts/bin/Release/goom_lib_tests.exe -d yes
+

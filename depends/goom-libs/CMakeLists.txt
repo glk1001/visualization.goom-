@@ -73,13 +73,9 @@ option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(CMAKE_COMMON_CXX_WARNINGS /W2)
     # Windows linker seems to be broken - possibly with multi-threading.
     set(POS_INDEP_CODE "OFF")
 else ()
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-        set(CMAKE_COMMON_CXX_WARNINGS ${CMAKE_COMMON_CXX_WARNINGS} -Wno-c++17-extensions)
-    endif ()
     set(POS_INDEP_CODE "ON")
 endif ()
 
@@ -105,8 +101,8 @@ if (NOT DEFINED LSys_SOURCE_DIR)
     set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 endif ()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    message(WARNING "Freetype on Windows is too hard to install - disabling Freetype.")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    message(WARNING "Freetype on Windows/Mac is too hard to install - disabling Freetype.")
     add_definitions(-DNO_FREETYPE_INSTALLED)
 else ()
     find_package(Freetype)

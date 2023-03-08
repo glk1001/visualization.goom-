@@ -9,7 +9,11 @@ source "${THIS_SCRIPT_PATH}/goom-get-paths.sh"
 source "${THIS_SCRIPT_PATH}/goom-get-vars.sh"
 
 declare -r RUN_CLANG_FORMAT="${THIS_SCRIPT_PATH}/run-clang-format.py"
-declare -r CLANG_FORMAT_EXE="clang-format-${COMPILER_VERSION}"
+if [[ "${COMPILER_VERSION}" == "" ]]; then
+  declare -r CLANG_FORMAT_EXE="clang-format"
+else
+  declare -r CLANG_FORMAT_EXE="clang-format-${COMPILER_VERSION}"
+fi
 declare -r CLANG_FORMAT_LOG="/tmp/goom-clang-format.log"
 
 if [[ ! -d "${BUILD_DIRNAME}" ]]; then
