@@ -50,18 +50,13 @@ public:
   [[nodiscard]] auto GetIPath() const noexcept -> const UTILS::MATH::IPath&;
   [[nodiscard]] auto GetIPath() noexcept -> UTILS::MATH::IPath&;
 
-  struct ShapePathColors
-  {
-    Pixel mainColor;
-    Pixel lowColor;
-  };
   struct DrawParams
   {
     float brightnessAttenuation{};
     bool firstShapePathAtMeetingPoint{};
     int32_t maxRadius{};
     float innerColorMix{};
-    ShapePathColors meetingPointColors;
+    DRAW::MultiplePixels meetingPointColors;
   };
   auto Draw(const DrawParams& drawParams) noexcept -> void;
 
@@ -75,21 +70,21 @@ private:
       -> const std::set<COLOR::RandomColorMaps::ColorMapTypes>&;
 
   [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
-  [[nodiscard]] auto GetCurrentShapeColors() const noexcept -> ShapePathColors;
+  [[nodiscard]] auto GetCurrentShapeColors() const noexcept -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetColors(const DrawParams& drawParams,
                                int32_t radius,
                                float brightness,
-                               const ShapePathColors& shapeColors,
+                               const DRAW::MultiplePixels& shapeColors,
                                int32_t innerColorCutoffRadius,
                                const Pixel& innerColor) const noexcept -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetColorsWithoutInner(float brightness,
-                                           const ShapePathColors& shapeColors) const noexcept
+                                           const DRAW::MultiplePixels& shapeColors) const noexcept
       -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetColorsWithInner(float brightness,
-                                        const ShapePathColors& shapeColors,
+                                        const DRAW::MultiplePixels& shapeColors,
                                         const Pixel& innerColor,
                                         float innerColorMix) const noexcept -> DRAW::MultiplePixels;
-  [[nodiscard]] auto GetFinalMeetingPointColors(const ShapePathColors& meetingPointColors,
+  [[nodiscard]] auto GetFinalMeetingPointColors(const DRAW::MultiplePixels& meetingPointColors,
                                                 float brightness) const noexcept
       -> DRAW::MultiplePixels;
 

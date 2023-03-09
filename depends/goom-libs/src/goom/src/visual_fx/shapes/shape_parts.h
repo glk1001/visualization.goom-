@@ -69,7 +69,7 @@ public:
     float brightnessAttenuation{};
     bool firstShapePathAtMeetingPoint{};
     bool varyDotRadius{};
-    ShapePath::ShapePathColors meetingPointColors;
+    DRAW::MultiplePixels meetingPointColors;
   };
   auto Draw(const DrawParams& drawParams) noexcept -> void;
 

@@ -89,7 +89,7 @@ private:
   UTILS::TValue m_meetingPointColorsT{
       {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}
   };
-  [[nodiscard]] auto GetCurrentMeetingPointColors() const noexcept -> ShapePath::ShapePathColors;
+  [[nodiscard]] auto GetCurrentMeetingPointColors() const noexcept -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetBrightnessAttenuation() const noexcept -> float;
 
   static constexpr float STARTING_FIXED_T_MIN_MAX_LERP = 0.5F;

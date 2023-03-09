@@ -10,6 +10,8 @@ namespace GOOM::VISUAL_FX::SHAPES
 
 using COLOR::IColorMap;
 using COLOR::RandomColorMapsManager;
+using DRAW::GetLowColor;
+using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::TValue;
@@ -69,7 +71,7 @@ inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexce
   return std::max(MIN_CUTOFF, maxRadius / RADIUS_FRAC);
 }
 
-inline auto ShapePath::GetCurrentShapeColors() const noexcept -> ShapePathColors
+inline auto ShapePath::GetCurrentShapeColors() const noexcept -> MultiplePixels
 {
   return {
       m_colorMapsManager->GetColorMap(m_colorInfo.mainColorMapId).GetColor(GetCurrentT()),
@@ -80,7 +82,7 @@ inline auto ShapePath::GetCurrentShapeColors() const noexcept -> ShapePathColors
 auto ShapePath::GetColors(const DrawParams& drawParams,
                           const int32_t radius,
                           const float brightness,
-                          const ShapePathColors& shapeColors,
+                          const MultiplePixels& shapeColors,
                           const int32_t innerColorCutoffRadius,
                           const Pixel& innerColor) const noexcept -> MultiplePixels
 {
@@ -99,17 +101,19 @@ static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR               = 0.5F;
 static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
 
 inline auto ShapePath::GetColorsWithoutInner(const float brightness,
-                                             const ShapePathColors& shapeColors) const noexcept
+                                             const MultiplePixels& shapeColors) const noexcept
     -> MultiplePixels
 {
   return {
-      m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.mainColor),
-      m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_FACTOR * brightness, shapeColors.lowColor),
+      m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+                                  GetMainColor(shapeColors)),
+      m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
+                                  GetLowColor(shapeColors)),
   };
 }
 
 inline auto ShapePath::GetColorsWithInner(const float brightness,
-                                          const ShapePathColors& shapeColors,
+                                          const MultiplePixels& shapeColors,
                                           const Pixel& innerColor,
                                           const float innerColorMix) const noexcept
     -> MultiplePixels
@@ -117,20 +121,20 @@ inline auto ShapePath::GetColorsWithInner(const float brightness,
   return {
       m_colorAdjust.GetAdjustment(
           MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
-          IColorMap::GetColorMix(shapeColors.mainColor, innerColor, innerColorMix)),
+          IColorMap::GetColorMix(GetMainColor(shapeColors), innerColor, innerColorMix)),
       m_colorAdjust.GetAdjustment(
           LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
-          IColorMap::GetColorMix(shapeColors.lowColor, innerColor, innerColorMix)),
+          IColorMap::GetColorMix(GetLowColor(shapeColors), innerColor, innerColorMix)),
   };
 }
 
-inline auto ShapePath::GetFinalMeetingPointColors(const ShapePathColors& meetingPointColors,
+inline auto ShapePath::GetFinalMeetingPointColors(const MultiplePixels& meetingPointColors,
                                                   const float brightness) const noexcept
     -> MultiplePixels
 {
-  return {m_colorAdjust.GetAdjustment(brightness, meetingPointColors.mainColor),
+  return {m_colorAdjust.GetAdjustment(brightness, GetMainColor(meetingPointColors)),
           m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
-                                      meetingPointColors.lowColor)};
+                                      GetLowColor(meetingPointColors))};
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

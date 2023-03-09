@@ -19,6 +19,7 @@ using COLOR::ColorAdjustment;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::IGoomDraw;
+using DRAW::MultiplePixels;
 using UTILS::MATH::IGoomRand;
 
 Shape::Shape(IGoomDraw& draw,
@@ -162,7 +163,7 @@ auto Shape::Draw() noexcept -> void
   }
 }
 
-inline auto Shape::GetCurrentMeetingPointColors() const noexcept -> ShapePath::ShapePathColors
+inline auto Shape::GetCurrentMeetingPointColors() const noexcept -> MultiplePixels
 {
   return {
       m_colorMapsManager->GetColorMap(m_meetingPointMainColorId).GetColor(m_meetingPointColorsT()),
