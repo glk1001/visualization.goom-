@@ -5,6 +5,7 @@
     <excludeRoots>
       <file path="$PROJECT_DIR$/build-clang-15-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-clang-15-RelWithDebInfo-nexus" />
+      <file path="$PROJECT_DIR$/build-clion-clang-16-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-15-Debug-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-15-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-16-RelWithDebInfo-nexus" />

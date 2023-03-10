@@ -34,7 +34,7 @@ using UTILS::MATH::IGoomRand;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES_TUBES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TUBES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES;
-static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_STARS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
@@ -45,7 +45,7 @@ static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLE
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::L_SYSTEM_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
+static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
 

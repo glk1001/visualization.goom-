@@ -10,7 +10,6 @@
 #include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
-#include <functional>
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
@@ -18,13 +17,9 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 class StarDrawer
 {
 public:
-  using GetMixedColorsFunc =
-      std::function<DRAW::MultiplePixels(float brightness, const Star& star, float t)>;
-
   StarDrawer(DRAW::IGoomDraw& draw,
              const UTILS::MATH::IGoomRand& goomRand,
-             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-             const GetMixedColorsFunc& getMixedColorsFunc) noexcept;
+             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   auto ChangeDrawMode() noexcept -> void;
 
@@ -36,7 +31,6 @@ private:
   DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer;
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
   DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer;
-  GetMixedColorsFunc m_getMixedColorsFunc;
 
   enum class DrawElementTypes
   {

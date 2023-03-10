@@ -24,14 +24,12 @@ using UTILS::MATH::IGoomRand;
 
 StarDrawer::StarDrawer(IGoomDraw& draw,
                        const IGoomRand& goomRand,
-                       const SmallImageBitmaps& smallBitmaps,
-                       const GetMixedColorsFunc& getMixedColorsFunc) noexcept
+                       const SmallImageBitmaps& smallBitmaps) noexcept
   : m_goomRand{&goomRand},
     m_smallBitmaps{&smallBitmaps},
     m_bitmapDrawer{draw},
     m_circleDrawer{draw},
     m_lineDrawer{draw},
-    m_getMixedColorsFunc{getMixedColorsFunc},
     m_drawFuncs{{{
         {DrawElementTypes::CIRCLES,
          [this](const Point2dInt& point1,
@@ -62,8 +60,8 @@ auto StarDrawer::DrawStar(const Star& star,
                           const float speedFactor,
                           const DrawFunc& drawFunc) noexcept -> void
 {
-  const auto tAge                   = star.GetAge() / star.GetMaxAge();
-  static constexpr auto EXTRA_T_AGE = 0.5F;
+  const auto tAge                   = star.GetTAge();
+  static constexpr auto EXTRA_T_AGE = 0.25F;
   const auto tAgeMax                = std::min(tAge + EXTRA_T_AGE, 1.0F);
 
   const auto brightness              = GetBrightness(tAge);
@@ -83,7 +81,8 @@ auto StarDrawer::DrawStar(const Star& star,
     const auto point2 = point0 - GetPointVelocity(twistFrequency, thisPartVelocity);
 
     const auto thisPartBrightness = thisPartFraction * brightness;
-    const auto thisPartColors     = m_getMixedColorsFunc(thisPartBrightness, star, tAgeMix());
+    const auto mixedColorParams   = StarColors::MixedColorsParams{thisPartBrightness, tAgeMix()};
+    const auto thisPartColors     = star.GetStarColors().GetMixedColors(mixedColorParams);
 
     drawFunc(point1, point2, elementSize, thisPartColors);
 

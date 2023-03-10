@@ -148,8 +148,12 @@ add_library(goom
             src/visual_fx/circles/dot_drawer.cpp
             src/visual_fx/circles/dot_paths.cpp
             src/visual_fx/circles/helper.h
+            src/visual_fx/flying_stars/star_colors.cpp
+            src/visual_fx/flying_stars/star_colors_maker.h
             src/visual_fx/flying_stars/star_drawer.cpp
-            src/visual_fx/flying_stars/star_types.cpp
+            src/visual_fx/flying_stars/star_maker.cpp
+            src/visual_fx/flying_stars/star_types_base.h
+            src/visual_fx/flying_stars/star_types_container.cpp
             src/visual_fx/flying_stars/stars.cpp
             src/visual_fx/fx_utils/dot_drawer.cpp
             src/visual_fx/fx_utils/lines.cpp

@@ -7,7 +7,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/circles_fx.h"
-#include "visual_fx/flying_stars/star_types.h"
+#include "visual_fx/flying_stars/star_types_container.h"
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx/goom_dots_fx.h"
