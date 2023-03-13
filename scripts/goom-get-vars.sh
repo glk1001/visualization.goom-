@@ -169,7 +169,11 @@ if [[ ${BUILD_DIRNAME} != build* ]]; then
   exit 1
 fi
 
-declare -r BUILD_DIR=${GOOM_MAIN_ROOT_DIR}/${BUILD_DIRNAME}
+if [[ "${OVERRIDE_BUILD_PARENT_DIR:-}" != "" ]]; then
+  declare -r BUILD_DIR=${OVERRIDE_BUILD_PARENT_DIR}/${BUILD_DIRNAME}
+else
+  declare -r BUILD_DIR=${GOOM_MAIN_ROOT_DIR}/${BUILD_DIRNAME}
+fi
 
 
 unset DOCKER_PREFIX

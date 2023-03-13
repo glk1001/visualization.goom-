@@ -4,7 +4,7 @@ function get_this_sourced_script_path()
   for i in "${BASH_SOURCE[@]}"; do
     dirname=$(dirname $i)
     filename=$(basename $i)
-    if [[ "${filename}" == "${GOOM_GET_VARS_SCRIPT_NAME}" ]]; then
+    if [[ "${filename}" == "${GOOM_GET_PATHS_SCRIPT_NAME}" ]]; then
       break
     fi
   done
@@ -12,9 +12,9 @@ function get_this_sourced_script_path()
   echo ${dirname}
 }
 
-declare -r GOOM_GET_VARS_SCRIPT_NAME="goom-get-vars.sh"
-declare -r GOOM_GET_VARS_SCRIPT_PATH=$(get_this_sourced_script_path)
-declare -r GOOM_MAIN_ROOT_DIR=$(realpath ${GOOM_GET_VARS_SCRIPT_PATH}/..)
+declare -r GOOM_GET_PATHS_SCRIPT_NAME="goom-get-paths.sh"
+declare -r GOOM_GET_PATHS_SCRIPT_PATH=$(get_this_sourced_script_path)
+declare -r GOOM_MAIN_ROOT_DIR=$(realpath ${GOOM_GET_PATHS_SCRIPT_PATH}/..)
 
 declare -r HOST_KODI_ROOT_DIR=$(realpath ${GOOM_MAIN_ROOT_DIR}/..)
 declare -r HOST_CCACHE_DIR=${CCACHE_DIR}
