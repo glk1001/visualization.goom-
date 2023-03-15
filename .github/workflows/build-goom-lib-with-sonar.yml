@@ -1,0 +1,84 @@
+name: Build goom-lib only with sonar-scanner
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: 'Ubuntu Clang - RelWithDebInfo',
+            os: 'ubuntu-latest',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'RelWithDebInfo',
+          }
+
+    env:
+      BUILD_WRAPPER_OUTPUT_PATH: ${{ github.workspace }}/build_wrapper_output
+      GOOM_LIBS_DIR: depends/goom-libs
+      BUILD_DIR: build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}
+
+    steps:
+      - name: Print env
+        shell: bash
+        run: |
+          echo "cc:                        ${{ matrix.config.cc }}"
+          echo "cxx:                       ${{ matrix.config.cxx }}"
+          echo "build_type:                ${{ matrix.config.build_type }}"
+          echo "runner.os:                 ${{ runner.os }}"
+          echo "github.ref:                ${{ github.ref }}"
+          echo "github.ref_name:           ${{ github.ref_name }}"
+          echo "github.event_name:         ${{ github.event_name }}"
+          echo "github.event_path:         ${{ github.event_path }}"
+          echo "github.workflow:           ${{ github.workflow }}"
+          echo "github.workspace:          ${{ github.workspace }}"
+          echo "os:                        ${{ matrix.config.os }}"
+          echo "GOOM_LIBS_DIR:             ${{ env.GOOM_LIBS_DIR }}"
+          echo "BUILD_DIR:                 ${{ env.BUILD_DIR }}"
+          echo "BUILD_WRAPPER_OUTPUT_PATH: ${{ env.BUILD_WRAPPER_OUTPUT_PATH }}"
+
+      - name: Clone this Goom++ Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Install Clang-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ vars.CLANG_VER }}
+          platform: x64
+
+      - name: Install sonar-scanner and build-wrapper
+        uses: SonarSource/sonarcloud-github-c-cpp@v1
+
+      - name: Run build-wrapper on Goom++ Lib
+        shell: bash
+        run: |
+          mkdir ${{ env.GOOM_LIBS_DIR }}/${{ env.BUILD_DIR }}
+          cd ${{ env.GOOM_LIBS_DIR }}/${{ env.BUILD_DIR }}
+          CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
+                                                                  -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+                                                                  -DENABLE_TESTING=1 \
+                                                                  -DUSE_MAGIC_ENUM=1 \
+                                                                  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                                                                  ..
+
+          cd ..
+          CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUTPUT_PATH }} \
+                                                                  cmake \
+                                                                  --build ${{ env.BUILD_DIR }} \
+                                                                  --config ${{ matrix.config.build_type }}
+
+      - name: Run sonar-scanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUTPUT_PATH }}"
