@@ -14,11 +14,10 @@ namespace GOOM::VISUAL_FX::IFS
 class FractalHits
 {
 public:
-  FractalHits() noexcept = delete;
   explicit FractalHits(const Dimensions& dimensions) noexcept;
+  FractalHits(const FractalHits&) noexcept = default;
+  FractalHits(FractalHits&&) noexcept      = default;
   ~FractalHits() noexcept;
-  FractalHits(const FractalHits&) noexcept                    = default;
-  FractalHits(FractalHits&&) noexcept                         = default;
   auto operator=(const FractalHits&) noexcept -> FractalHits& = delete;
   auto operator=(FractalHits&&) noexcept -> FractalHits&      = delete;
 

@@ -82,7 +82,7 @@ private:
 };
 
 inline auto VisualFxWeightedColorMaps::GetCurrentRandomColorMapsGroup(
-    GoomEffect goomEffect) const noexcept -> COLOR::RandomColorMapsGroups::Groups
+    const GoomEffect goomEffect) const noexcept -> COLOR::RandomColorMapsGroups::Groups
 {
   return m_goomEffectsWeightedColorMaps[goomEffect].GetRandomWeighted();
 }

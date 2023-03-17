@@ -292,10 +292,7 @@ auto AllStandardVisualFx::ChangeLinesColorMaps() noexcept -> void
 
 auto AllStandardVisualFx::ChangeShapesColorMaps() noexcept -> void
 {
-  static constexpr auto EXPECTED_NUM_SHAPES =
-      1U + ((static_cast<uint32_t>(GoomEffect::SHAPES_MAIN) -
-             static_cast<uint32_t>(GoomEffect::SHAPES_MAIN)) /
-            3U);
+  static constexpr auto EXPECTED_NUM_SHAPES = 1U;
   static_assert(ShapesFx::NUM_SHAPES == EXPECTED_NUM_SHAPES);
 
   for (auto i = 0U; i < ShapesFx::NUM_SHAPES; ++i)

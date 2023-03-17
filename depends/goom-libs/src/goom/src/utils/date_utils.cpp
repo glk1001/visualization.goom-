@@ -8,6 +8,9 @@
 namespace GOOM::UTILS
 {
 
+namespace
+{
+
 inline auto GetTimeTAsString(const std::time_t timeT) noexcept -> std::string
 {
   static constexpr auto BUFF_SIZE = 100U;
@@ -30,6 +33,15 @@ inline auto GetTimeTAsString(const std::time_t timeT) noexcept -> std::string
   return "TIME_ERROR";
 }
 
+inline auto GetSteadyClockAsTimeT(const std::chrono::steady_clock::time_point t) noexcept -> time_t
+{
+  const auto steadyClockDiff = t - std::chrono::steady_clock::now();
+  const auto millisDiff = std::chrono::duration_cast<std::chrono::milliseconds>(steadyClockDiff);
+  return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() + millisDiff);
+}
+
+} // namespace
+
 #ifdef _MSC_VER
 auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
                                [[maybe_unused]] const std::string& otherFormat) noexcept
@@ -50,13 +62,6 @@ auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
   return GetTimeTAsString(timeT);
 }
 #endif
-
-inline auto GetSteadyClockAsTimeT(const std::chrono::steady_clock::time_point t) noexcept -> time_t
-{
-  const auto steadyClockDiff = t - std::chrono::steady_clock::now();
-  const auto millisDiff = std::chrono::duration_cast<std::chrono::milliseconds>(steadyClockDiff);
-  return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() + millisDiff);
-}
 
 auto GetCurrentDateTimeAsString() noexcept -> std::string
 {

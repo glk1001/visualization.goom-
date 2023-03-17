@@ -321,7 +321,7 @@ inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 {
   // Higher sound acceleration increases tentacle wave frequency.
-  Expects(m_currentTentacleDriver);
+  Expects(m_currentTentacleDriver != nullptr);
   const auto tentacleWaveFreqMultiplier =
       m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration() <
               SoundInfo::ACCELERATION_MIDPOINT

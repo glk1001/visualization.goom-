@@ -42,24 +42,18 @@ inline auto IncrementedValue<DefaultParams>::GetMatchingT(const DefaultParams& v
                                                           const DefaultParams& val2) noexcept
     -> float
 {
-  if (std::fabs(static_cast<float>(val2.turnAngleInDegrees) -
-                static_cast<float>(val1.turnAngleInDegrees)) > SMALL_FLOAT)
+  if (std::fabs(val2.turnAngleInDegrees - val1.turnAngleInDegrees) > SMALL_FLOAT)
   {
-    return (
-        (static_cast<float>(val.turnAngleInDegrees) - static_cast<float>(val1.turnAngleInDegrees)) /
-        (static_cast<float>(val2.turnAngleInDegrees) -
-         static_cast<float>(val1.turnAngleInDegrees)));
+    return ((val.turnAngleInDegrees - val1.turnAngleInDegrees) /
+            (val2.turnAngleInDegrees - val1.turnAngleInDegrees));
   }
-  if (std::fabs(static_cast<float>(val2.width) - static_cast<float>(val1.width)) > SMALL_FLOAT)
+  if (std::fabs(val2.width - val1.width) > SMALL_FLOAT)
   {
-    return ((static_cast<float>(val.width) - static_cast<float>(val1.width)) /
-            (static_cast<float>(val2.width) - static_cast<float>(val1.width)));
+    return ((val.width - val1.width) / (val2.width - val1.width));
   }
-  if (std::fabs(static_cast<float>(val2.distance) - static_cast<float>(val1.distance)) >
-      SMALL_FLOAT)
+  if (std::fabs(val2.distance - val1.distance) > SMALL_FLOAT)
   {
-    return ((static_cast<float>(val.distance) - static_cast<float>(val1.distance)) /
-            (static_cast<float>(val2.distance) - static_cast<float>(val1.distance)));
+    return ((val.distance - val1.distance) / (val2.distance - val1.distance));
   }
   return 0.0F;
 }

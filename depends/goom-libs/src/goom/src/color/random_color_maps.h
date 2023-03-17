@@ -90,7 +90,7 @@ public:
                                            float t1) noexcept -> Pixel;
 
 protected:
-  [[nodiscard]] auto GetRandomColorMapName(ColorMapGroup colorMapGroup) const noexcept
+  [[nodiscard]] auto GetRandomColorMapNameFromGroup(ColorMapGroup colorMapGroup) const noexcept
       -> COLOR_DATA::ColorMapName;
 
 private:
@@ -161,7 +161,7 @@ inline auto RandomColorMaps::GetRandomColorMap(const UTILS::MATH::IGoomRand& goo
 }
 
 inline auto RandomColorMaps::GetRandomColorMap(const UTILS::MATH::IGoomRand& goomRand,
-                                               ColorMapGroup colorMapGroup) noexcept
+                                               const ColorMapGroup colorMapGroup) noexcept
     -> const IColorMap&
 {
   return RandomColorMaps{goomRand}.GetRandomColorMap(colorMapGroup);
@@ -169,8 +169,8 @@ inline auto RandomColorMaps::GetRandomColorMap(const UTILS::MATH::IGoomRand& goo
 
 inline auto RandomColorMaps::GetRandomColor(const UTILS::MATH::IGoomRand& goomRand,
                                             const IColorMap& colorMap,
-                                            float t0,
-                                            float t1) noexcept -> Pixel
+                                            const float t0,
+                                            const float t1) noexcept -> Pixel
 {
   return RandomColorMaps{goomRand}.GetRandomColor(colorMap, t0, t1);
 }

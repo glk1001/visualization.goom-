@@ -33,31 +33,33 @@ using UTILS::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SineWaveMultiplier;
 
-static constexpr auto MAIN_BRIGHTNESS_FACTOR = 0.5F;
-static constexpr auto LOW_BRIGHTNESS_FACTOR  = 1.0F;
-static constexpr auto PROB_LOW_MIX_SAME      = 0.5F;
+namespace
+{
 
-static constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
+constexpr auto MAIN_BRIGHTNESS_FACTOR = 0.5F;
+constexpr auto LOW_BRIGHTNESS_FACTOR  = 1.0F;
+constexpr auto PROB_LOW_MIX_SAME      = 0.5F;
 
-static constexpr auto MIN_RADIUS_FACTOR       = 1.0F;
-static constexpr auto MAX_RADIUS_FACTOR       = 1.000001F;
-static constexpr auto MIN_TENTACLE_GROUP_SIZE = 10U;
-static constexpr auto TENTACLE_2D_X_MIN       = 0.0;
-static constexpr auto TENTACLE_2D_Y_MIN       = 0.065736;
-static constexpr auto TENTACLE_2D_Y_MAX       = 10000.0;
-static constexpr auto TENTACLE_LENGTH         = 120.0F;
-static constexpr auto NUM_TENTACLE_NODES      = 100U;
-static constexpr auto MAX_LINE_THICKNESS      = 5U;
-static constexpr auto PROB_THICK_LINES        = 0.9F;
+constexpr size_t CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES = 400U;
 
-static constexpr auto MIN_SINE_FREQUENCY       = 1.0F;
-static constexpr auto MAX_SINE_FREQUENCY       = 3.1F;
-static constexpr auto MIN_BASE_Y_WEIGHT_FACTOR = 0.8F;
-static constexpr auto MAX_BASE_Y_WEIGHT_FACTOR = 1.1F;
-static constexpr auto ITER_ZERO_LERP_FACTOR    = 0.9;
-static constexpr auto MIN_SINE_X0              = 0.0F;
-//static constexpr auto MAX_SINE_X0 = UTILS::MATH::TWO_PI;
-static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START = SineWaveMultiplier{
+constexpr auto MIN_RADIUS_FACTOR       = 1.0F;
+constexpr auto MAX_RADIUS_FACTOR       = 1.000001F;
+constexpr auto MIN_TENTACLE_GROUP_SIZE = 10U;
+constexpr auto TENTACLE_2D_X_MIN       = 0.0;
+constexpr auto TENTACLE_2D_Y_MIN       = 0.065736;
+constexpr auto TENTACLE_2D_Y_MAX       = 10000.0;
+constexpr auto TENTACLE_LENGTH         = 120.0F;
+constexpr auto NUM_TENTACLE_NODES      = 100U;
+constexpr auto MAX_LINE_THICKNESS      = 5U;
+constexpr auto PROB_THICK_LINES        = 0.9F;
+
+constexpr auto MIN_SINE_FREQUENCY          = 1.0F;
+constexpr auto MAX_SINE_FREQUENCY          = 3.1F;
+constexpr auto MIN_BASE_Y_WEIGHT_FACTOR    = 0.8F;
+constexpr auto MAX_BASE_Y_WEIGHT_FACTOR    = 1.1F;
+constexpr auto ITER_ZERO_LERP_FACTOR       = 0.9;
+constexpr auto MIN_SINE_X0                 = 0.0F;
+const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START = SineWaveMultiplier{
     SineWaveMultiplier::SineProperties{MIN_SINE_FREQUENCY, -20.0F, +20.0F, MIN_SINE_X0}
 };
 
@@ -89,6 +91,8 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
 
   return {HIGHEST_BASE_Y_WEIGHT, 1.0F - HIGHEST_BASE_Y_WEIGHT};
 }
+
+} // namespace
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
@@ -200,9 +204,9 @@ auto TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value) -> void
       value * m_tentacleParams.iterZeroYValWaveFreq, MIN_SINE_FREQUENCY, MAX_SINE_FREQUENCY);
   m_tentacleParams.iterZeroYValWave.SetFrequency(newFreq);
 
-  for (auto i = 0U; i < m_tentacles.size(); ++i)
+  for (auto& tentacle : m_tentacles)
   {
-    m_tentacles.at(i).tentacle3D.SetBaseYWeights(GetMatchingBaseYWeights(newFreq));
+    tentacle.tentacle3D.SetBaseYWeights(GetMatchingBaseYWeights(newFreq));
   }
 }
 
@@ -361,12 +365,6 @@ inline auto TentacleDriver::IterateTentacle(Tentacle3D& tentacle) const noexcept
 {
   tentacle.SetIterZeroYVal(m_tentacleParams.iterZeroYValWave.GetNext());
   tentacle.Iterate();
-}
-
-[[nodiscard]] inline auto GetBrighterColors(const float brightness,
-                                            const MultiplePixels& colors) noexcept -> MultiplePixels
-{
-  return {GetBrighterColor(brightness, colors.color1), GetBrighterColor(brightness, colors.color2)};
 }
 
 auto TentacleDriver::GetMixedColors(const float dominantT,

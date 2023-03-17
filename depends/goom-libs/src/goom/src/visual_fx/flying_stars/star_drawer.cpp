@@ -58,7 +58,7 @@ StarDrawer::StarDrawer(IGoomDraw& draw,
 
 auto StarDrawer::DrawStar(const Star& star,
                           const float speedFactor,
-                          const DrawFunc& drawFunc) noexcept -> void
+                          const DrawFunc& drawFunc) const noexcept -> void
 {
   const auto tAge                   = star.GetTAge();
   static constexpr auto EXTRA_T_AGE = 0.25F;

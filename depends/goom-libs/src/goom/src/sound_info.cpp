@@ -12,7 +12,7 @@ namespace GOOM
 AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
   : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(floatAudioData)}
 {
-  Expects((0 < numSampleChannels) && (numSampleChannels <= 2));
+  Expects((0 < numSampleChannels) && (numSampleChannels <= NUM_AUDIO_SAMPLES));
 }
 
 auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
@@ -77,19 +77,19 @@ inline void SoundInfo::UpdateVolume(const AudioSamples& samples)
     m_allTimesMinVolume = samples.GetSampleOverallMinMax().minVal;
   }
 
-  Ensures(0.0F <= m_volume && m_volume <= 1.0F);
+  Ensures((0.0F <= m_volume) and (m_volume <= 1.0F));
 }
 
 inline void SoundInfo::UpdateSpeed(const float prevVolume)
 {
   m_speed = AudioSamples::GetPositiveValue(m_volume - prevVolume);
-  Ensures(0.0F <= m_speed && m_speed <= 1.0F);
+  Ensures((0.0F <= m_speed) and (m_speed <= 1.0F));
 }
 
 inline void SoundInfo::UpdateAcceleration(const float prevSpeed)
 {
   m_acceleration = AudioSamples::GetPositiveValue(m_speed - prevSpeed);
-  Ensures(0.0F <= m_acceleration && m_acceleration <= 1.0F);
+  Ensures((0.0F <= m_acceleration) and (m_acceleration <= 1.0F));
 }
 
 } // namespace GOOM

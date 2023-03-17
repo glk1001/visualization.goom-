@@ -216,7 +216,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::UpdateBuffers() noexcept -> void
 
 auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 {
-  if (not m_activeStars.empty() and (m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() >= 1))
+  if ((not m_activeStars.empty()) and (m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() >= 1))
   {
     return;
   }

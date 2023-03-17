@@ -8,6 +8,8 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using UTILS::MATH::HALF;
 using UTILS::MATH::U_FIFTH;
 
+static constexpr auto FIXED_NUM_CIRCLES = 5U;
+
 CircleParamsBuilder::CircleParamsBuilder(const uint32_t numCircles,
                                          const FxHelper& fxHelper) noexcept
   : m_numCircles{numCircles}, m_fxHelper{&fxHelper}
@@ -111,7 +113,7 @@ inline auto CircleParamsBuilder::GetCircleRadiusReducer() const noexcept -> floa
 inline auto CircleParamsBuilder::GetFourCornersCircleRadii(
     const float mainCircleRadius) const noexcept -> std::vector<float>
 {
-  Expects(5 == m_numCircles);
+  Expects(FIXED_NUM_CIRCLES == m_numCircles);
 
   const auto innerCircleRadius = HALF * mainCircleRadius;
 
@@ -161,7 +163,7 @@ inline auto CircleParamsBuilder::GetReducingRadiusCircleCentreStarts(
 inline auto CircleParamsBuilder::GetFourCornersCircleCentreStarts(
     const float mainCircleRadius) const noexcept -> std::vector<Point2dInt>
 {
-  Expects(5 == m_numCircles);
+  Expects(FIXED_NUM_CIRCLES == m_numCircles);
 
   const auto innerCircleRadius = HALF * mainCircleRadius;
   const auto offset =
@@ -221,7 +223,7 @@ inline auto CircleParamsBuilder::GetSimilarCircleCentreTargets(
 inline auto CircleParamsBuilder::GetFourCornersCircleCentreTargets(
     const Point2dInt& target) const noexcept -> std::vector<Point2dInt>
 {
-  Expects(5 == m_numCircles);
+  Expects(FIXED_NUM_CIRCLES == m_numCircles);
 
   auto circleCentreTargets = std::vector<Point2dInt>(m_numCircles);
 

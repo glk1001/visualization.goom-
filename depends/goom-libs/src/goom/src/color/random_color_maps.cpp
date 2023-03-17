@@ -25,8 +25,8 @@ auto RandomColorMaps::GetRandomColorMapName() const noexcept -> COLOR_DATA::Colo
   return static_cast<ColorMapName>(m_goomRand->GetRandInRange(0U, GetNumColorMapNames()));
 }
 
-auto RandomColorMaps::GetRandomColorMapName(const ColorMapGroup colorMapGroup) const noexcept
-    -> COLOR_DATA::ColorMapName
+auto RandomColorMaps::GetRandomColorMapNameFromGroup(
+    const ColorMapGroup colorMapGroup) const noexcept -> COLOR_DATA::ColorMapName
 {
   const auto& colorMapNames = GetColorMapNames(colorMapGroup);
   return colorMapNames[m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
@@ -40,7 +40,7 @@ auto RandomColorMaps::GetRandomColorMap() const noexcept -> const IColorMap&
 auto RandomColorMaps::GetRandomColorMap(const ColorMapGroup colorMapGroup) const noexcept
     -> const IColorMap&
 {
-  return GetColorMap(GetRandomColorMapName(colorMapGroup));
+  return GetColorMap(GetRandomColorMapNameFromGroup(colorMapGroup));
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const std::set<ColorMapTypes>& types) const noexcept
@@ -64,7 +64,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const ColorMapGroup colorMapGroup,
                                            const std::set<ColorMapTypes>& types) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapName(colorMapGroup)), types);
+  return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapNameFromGroup(colorMapGroup)), types);
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
@@ -115,7 +115,7 @@ auto RandomColorMaps::GetRandomRotatedColorMapPtr(
 auto RandomColorMaps::GetRandomRotatedColorMapPtr(const ColorMapGroup colorMapGroup) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return GetRotatedColorMapPtr(GetRandomColorMapName(colorMapGroup),
+  return GetRotatedColorMapPtr(GetRandomColorMapNameFromGroup(colorMapGroup),
                                m_goomRand->GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
 }
 
@@ -145,7 +145,7 @@ auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapName colorMapName
 auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapGroup colorMapGroup) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return GetTintedColorMapPtr(GetRandomColorMapName(colorMapGroup),
+  return GetTintedColorMapPtr(GetRandomColorMapNameFromGroup(colorMapGroup),
                               {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
                                m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
 }
@@ -252,7 +252,7 @@ auto WeightedColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup
 
 auto WeightedColorMaps::GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName
 {
-  return RandomColorMaps::GetRandomColorMapName(GetRandomGroup());
+  return RandomColorMaps::GetRandomColorMapNameFromGroup(GetRandomGroup());
 }
 
 } // namespace GOOM::COLOR

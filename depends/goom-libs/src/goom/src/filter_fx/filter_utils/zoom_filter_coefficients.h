@@ -24,7 +24,8 @@ using FilterCoeff2dArray =
 using FilterCoeff2dArrayPtrs =
     std::array<std::array<const NeighborhoodCoeffArray*, DIM_FILTER_COEFFS>, DIM_FILTER_COEFFS>;
 
-constexpr auto GetNeighborhoodCoeffArray(const uint32_t coeffH, const uint32_t coeffV) noexcept
+[[nodiscard]] constexpr auto GetNeighborhoodCoeffArray(const uint32_t coeffH,
+                                                       const uint32_t coeffV) noexcept
     -> NeighborhoodCoeffArray
 {
   const auto maxMinusCoeffH = DIM_FILTER_COEFFS - coeffH;
@@ -66,7 +67,7 @@ constexpr auto GetNeighborhoodCoeffArray(const uint32_t coeffH, const uint32_t c
 
 // Modif d'optim by Jeko : precalcul des 4 coeffs resultant des 2 pos.
 // Modification of optim by Jeko: pre-calculation of the 4 coeffs resulting from the 2 positions.
-constexpr auto GetPrecalculatedCoefficientArray() noexcept -> FilterCoeff2dArray
+[[nodiscard]] constexpr auto GetPrecalculatedCoefficientArray() noexcept -> FilterCoeff2dArray
 {
   auto precalculatedCoeffs = FilterCoeff2dArray{};
 
@@ -83,7 +84,7 @@ constexpr auto GetPrecalculatedCoefficientArray() noexcept -> FilterCoeff2dArray
 
 inline constexpr auto PRECALCULATED_COEFF_ARRAY = GetPrecalculatedCoefficientArray();
 
-constexpr auto GetPrecalculatedCoefficientPtrs() noexcept -> FilterCoeff2dArrayPtrs
+[[nodiscard]] constexpr auto GetPrecalculatedCoefficientPtrs() noexcept -> FilterCoeff2dArrayPtrs
 {
   auto precalculatedCoeffPtrs = FilterCoeff2dArrayPtrs{};
 

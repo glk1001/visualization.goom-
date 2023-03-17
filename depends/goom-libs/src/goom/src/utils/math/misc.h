@@ -95,7 +95,7 @@ template<typename T>
   while (m >= static_cast<T>(2))
   {
     m = m >> 1U;
-    log2++;
+    ++log2;
   }
   Ensures(n == PowerOf2(log2));
 

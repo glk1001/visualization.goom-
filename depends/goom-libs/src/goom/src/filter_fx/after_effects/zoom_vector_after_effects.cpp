@@ -82,7 +82,7 @@ auto ZoomVectorAfterEffects::GetAfterEffectsVelocity(
     newVelocity.SetY(m_afterEffects.GetPlanes().GetVerticalPlaneVelocity({coords, newVelocity}));
   }
 
-  /* TODO : Water Mode */
+  /* TODO(glk): Water Mode */
   //    if (data->waveEffect)
 
   /**

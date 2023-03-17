@@ -454,10 +454,11 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
   };
   std::array<Pixel, NUM_NBRS> neighbours;
 
+  static constexpr auto SECOND_INDEX = 2U;
   // NOLINTBEGIN: Optimization
   *reinterpret_cast<TwoPixels*>(&(neighbours[0])) =
       *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos]));
-  *reinterpret_cast<TwoPixels*>(&(neighbours[2])) =
+  *reinterpret_cast<TwoPixels*>(&(neighbours[SECOND_INDEX])) =
       *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos + m_width]));
   // NOLINTEND
 

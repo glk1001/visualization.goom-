@@ -175,9 +175,10 @@ inline auto LSysColors::GetBrightness(const float baseBrightness, const uint32_t
 inline auto LSysColors::GetColorNumToUse(const uint32_t givenColorNum,
                                          const uint32_t lSysColor) const noexcept -> uint32_t
 {
-  return lSysColor == 0
-             ? givenColorNum
-             : (givenColorNum + (lSysColor + 2U)) % static_cast<uint32_t>(m_currentColorTs.size());
+  static constexpr auto SKIP_AMOUNT = 2U;
+  return 0 == lSysColor ? givenColorNum
+                        : ((givenColorNum + (lSysColor + SKIP_AMOUNT)) %
+                           static_cast<uint32_t>(m_currentColorTs.size()));
 }
 
 auto LSysColors::SetMainColorMaps() noexcept -> void

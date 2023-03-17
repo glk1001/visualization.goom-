@@ -95,7 +95,8 @@ private:
                                       uint32_t elementSize,
                                       const DRAW::MultiplePixels& colors)>;
   UTILS::EnumMap<DrawElementTypes, DrawFunc> m_drawFuncs;
-  auto DrawStar(const Star& star, float speedFactor, const DrawFunc& drawFunc) noexcept -> void;
+  auto DrawStar(const Star& star, float speedFactor, const DrawFunc& drawFunc) const noexcept
+      -> void;
   [[nodiscard]] auto GetNumPartsAndElementSize(float tAge) const noexcept
       -> std::pair<uint32_t, uint32_t>;
   [[nodiscard]] auto GetPartMultiplier() const noexcept -> float;

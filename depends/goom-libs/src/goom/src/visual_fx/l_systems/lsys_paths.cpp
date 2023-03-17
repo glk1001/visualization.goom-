@@ -49,7 +49,7 @@ auto LSysPath::SetPathTarget(const Point2dInt& pathTarget) noexcept -> void
   m_lSysPathTarget    = pathTarget;
 }
 
-auto LSysPath::SetPathNumSteps(uint32_t numSteps) noexcept -> void
+auto LSysPath::SetPathNumSteps(const uint32_t numSteps) noexcept -> void
 {
   m_pathNumSteps = numSteps;
 }

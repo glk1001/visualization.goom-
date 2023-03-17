@@ -105,7 +105,7 @@ inline auto LSysColors::SetProbabilityOfSimpleColors(const float probability) no
   m_probabilityOfSimpleColors = probability;
 }
 
-inline auto LSysColors::SetGlobalBrightness(float globalBrightness) noexcept -> void
+inline auto LSysColors::SetGlobalBrightness(const float globalBrightness) noexcept -> void
 {
   m_globalBrightness = globalBrightness;
 }

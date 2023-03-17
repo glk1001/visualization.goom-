@@ -119,7 +119,7 @@ private:
 constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& otherDimensions,
                                                                const float minOtherCoordVal,
                                                                const bool doNotScale) noexcept
-  : m_xRatioOtherToNormalizedCoord{(NormalizedCoords::COORD_WIDTH) /
+  : m_xRatioOtherToNormalizedCoord{NormalizedCoords::COORD_WIDTH /
                                    (doNotScale
                                         ? static_cast<float>(std::max(otherDimensions.GetWidth(),
                                                                       otherDimensions.GetHeight()) -
@@ -127,8 +127,8 @@ constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions&
                                         : static_cast<float>(otherDimensions.GetWidth() - 1))},
     m_yRatioOtherToNormalizedCoord{doNotScale
                                        ? m_xRatioOtherToNormalizedCoord
-                                       : (NormalizedCoords::COORD_WIDTH) /
-                                             static_cast<float>(otherDimensions.GetHeight() - 1)},
+                                       : (NormalizedCoords::COORD_WIDTH /
+                                          static_cast<float>(otherDimensions.GetHeight() - 1))},
     m_xRatioNormalizedToOtherCoord{1.0F / m_xRatioOtherToNormalizedCoord},
     m_yRatioNormalizedToOtherCoord{1.0F / m_yRatioOtherToNormalizedCoord},
     m_xMinNormalizedCoordVal{minOtherCoordVal * m_xRatioOtherToNormalizedCoord},

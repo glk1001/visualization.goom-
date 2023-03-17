@@ -33,11 +33,11 @@ GoomLogger::~GoomLogger() noexcept
   Expects(not m_doLogging);
 }
 
-auto GoomLogger::VLog(LogLevel lvl,
+auto GoomLogger::VLog(const LogLevel lvl,
                       const std::string& funcName,
                       const int lineNum,
                       const std::string& formatStr,
-                      std_fmt::format_args args) -> void
+                      const std_fmt::format_args args) -> void
 {
   std_fmt::memory_buffer buffer;
   // Pass custom argument formatter as a template arg to pass further down.
@@ -51,7 +51,7 @@ auto GoomLogger::Log(const LogLevel lvl,
                      const std::string& msg) -> void
 {
   const auto lock = std::scoped_lock<std::mutex>{m_mutex};
-  if (not m_doLogging or not CanLog())
+  if ((not m_doLogging) or (not CanLog()))
   {
     return;
   }

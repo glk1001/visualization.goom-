@@ -72,7 +72,14 @@ constexpr auto Vitesse::GetVitesse() const noexcept -> uint32_t
 constexpr auto Vitesse::SetVitesse(const uint32_t val) noexcept -> void
 {
   Expects(val <= MAXIMUM_SPEED);
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-unsigned-zero-compare"
+#endif
   Expects(val >= STOP_SPEED);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
   m_vitesse = val;
 }
@@ -87,7 +94,14 @@ constexpr auto Vitesse::GoSlowerBy(const uint32_t amount) noexcept -> void
   m_vitesse -= amount;
 
   Ensures(m_vitesse <= MAXIMUM_SPEED);
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-unsigned-zero-compare"
+#endif
   Ensures(m_vitesse >= STOP_SPEED);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 }
 
 constexpr auto Vitesse::GetFasterBy(const uint32_t speed, const uint32_t amount) noexcept

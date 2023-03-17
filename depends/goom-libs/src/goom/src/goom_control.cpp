@@ -262,8 +262,8 @@ auto GoomControl::GetLastShaderVariables() const -> const GoomShaderVariables&
   return m_pimpl->GetLastShaderVariables();
 }
 
-auto GoomControlLogger::StartGoomControl(const GoomControl::GoomControlImpl* goomControl) noexcept
-    -> void
+auto GoomControlLogger::StartGoomControl(
+    const GoomControl::GoomControlImpl* const goomControl) noexcept -> void
 {
   m_goomControl = goomControl;
 }
@@ -276,7 +276,7 @@ auto GoomControlLogger::StopGoomControl() noexcept -> void
 
 auto GoomControlLogger::CanLog() const -> bool
 {
-  return ((m_goomControl == nullptr) or
+  return ((nullptr == m_goomControl) or
           IsBetween(m_goomControl->GetUpdateNum(), MIN_UPDATE_NUM_TO_LOG, MAX_UPDATE_NUM_TO_LOG));
 }
 

@@ -167,8 +167,8 @@ inline auto Planes::GetRandomPlaneEffects(const IntAmplitude& adjustedIntAmplitu
   return planeEffects;
 }
 
-auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand, PlaneEffectEvents planeEffectsEvent)
-    -> IntAmplitude
+auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand,
+                                   const PlaneEffectEvents planeEffectsEvent) -> IntAmplitude
 {
   auto intAmplitude = IntAmplitude{};
 
@@ -220,7 +220,7 @@ auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand, PlaneEffectEvents 
 auto Planes::GetAdjustedIntAmplitude(const IGoomRand& goomRand,
                                      const IntAmplitude& intAmplitude,
                                      const Point2dInt& zoomMidpoint,
-                                     uint32_t screenWidth) -> IntAmplitude
+                                     const uint32_t screenWidth) -> IntAmplitude
 {
   auto adjustedIntAmplitude = intAmplitude;
 
@@ -307,7 +307,7 @@ auto Planes::GetHorizontalPlaneVelocity(const CoordsAndVelocity& coordsAndVeloci
       m_params.swirlEffects.amplitude.x * GetHorizontalSwirlOffsetFactor(yCoordValue);
 
   return coordsAndVelocity.velocity.GetX() +
-         m_params.planeEffects.amplitude.x * (yCoordValue + horizontalSwirlOffset);
+         (m_params.planeEffects.amplitude.x * (yCoordValue + horizontalSwirlOffset));
 }
 
 auto Planes::GetVerticalPlaneVelocity(const CoordsAndVelocity& coordsAndVelocity) const -> float
@@ -317,7 +317,7 @@ auto Planes::GetVerticalPlaneVelocity(const CoordsAndVelocity& coordsAndVelocity
       m_params.swirlEffects.amplitude.y * GetVerticalSwirlOffsetFactor(xCoordValue);
 
   return coordsAndVelocity.velocity.GetY() +
-         m_params.planeEffects.amplitude.y * (xCoordValue + verticalSwirlOffset);
+         (m_params.planeEffects.amplitude.y * (xCoordValue + verticalSwirlOffset));
 }
 
 auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> float

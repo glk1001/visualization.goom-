@@ -46,7 +46,7 @@ auto LineDrawerManager::SwitchLineDrawers() noexcept -> void
   SwitchLineDrawers(m_switchLineDrawerWeights.GetRandomWeighted());
 }
 
-auto LineDrawerManager::SwitchLineDrawers(SwitchLineDrawerType forceType) noexcept -> void
+auto LineDrawerManager::SwitchLineDrawers(const SwitchLineDrawerType forceType) noexcept -> void
 {
   switch (forceType)
   {

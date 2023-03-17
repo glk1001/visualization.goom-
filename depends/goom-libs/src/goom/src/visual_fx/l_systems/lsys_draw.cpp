@@ -58,7 +58,8 @@ inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices
                                          const uint32_t lSysColor) noexcept -> void
 {
   const auto numVertices = vertices.size();
-  Expects(numVertices >= 2);
+  static constexpr auto MIN_NUM_VERTICES = 2U;
+  Expects(numVertices >= MIN_NUM_VERTICES);
 
   const auto points2d = GetPerspectiveProjection(vertices);
   Expects(points2d.size() == numVertices);

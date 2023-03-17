@@ -18,7 +18,8 @@ struct MinMaxValues
 template<typename T>
 constexpr auto GetAverage(const MinMaxValues<T> minMaxValues) noexcept -> T
 {
-  return (minMaxValues.minValue + minMaxValues.maxValue) / static_cast<T>(2);
+  constexpr auto NUM_VALUES = 2;
+  return (minMaxValues.minValue + minMaxValues.maxValue) / static_cast<T>(NUM_VALUES);
 }
 
 class Dimensions

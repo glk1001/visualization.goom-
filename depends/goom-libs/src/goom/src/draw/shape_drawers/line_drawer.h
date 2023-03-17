@@ -112,7 +112,7 @@ inline auto LineDrawerClippedEndPoints::GetClipMargin() const noexcept -> int32_
 {
   static constexpr auto CLIP_MARGIN_FOR_THIN_LINE = 2;
 
-  return m_lineDrawer.GetLineThickness() == 1U ? CLIP_MARGIN_FOR_THIN_LINE
+  return 1U == m_lineDrawer.GetLineThickness() ? CLIP_MARGIN_FOR_THIN_LINE
                                                : m_lineDrawer.GetLineThickness();
 }
 

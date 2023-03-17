@@ -51,8 +51,8 @@ private:
     float xMax;
     float yMax;
   };
-  static constexpr auto GetFltClipRectangle(const ClipRectangle& clipRectangle) noexcept
-      -> FltClipRectangle;
+  [[nodiscard]] static constexpr auto GetFltClipRectangle(
+      const ClipRectangle& clipRectangle) noexcept -> FltClipRectangle;
   FltClipRectangle m_clipRectangle;
 
   // The region codes relative to the clip rectangle.

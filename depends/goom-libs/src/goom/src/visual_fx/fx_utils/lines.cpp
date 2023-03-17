@@ -53,11 +53,16 @@ auto GetVerticalLinePoints(const LineProperties& lineProperties, const float xVa
   return linePoints;
 }
 
+namespace
+{
+
 inline auto RoundToTwoDecimals(const double x) -> double
 {
   static constexpr auto TEN_TO_THE_TWO = 100.0;
   return std::round(x * TEN_TO_THE_TWO) / TEN_TO_THE_TWO;
 }
+
+} // namespace
 
 auto GetCircularLinePoints(const uint32_t numPoints,
                            const Dimensions& dimensions,

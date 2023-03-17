@@ -30,6 +30,24 @@ uint64_t randSeed = 0UL;
 thread_local xoshiro256plus64 xoshiroEng{GetRandSeed()}; // NOLINT(cert-err58-cpp)
 // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables): Hard to get around!
 
+inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
+{
+  const auto x     = static_cast<uint32_t>(xoshiroEng());
+  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
+  return n0 + static_cast<uint32_t>(m);
+}
+
+#if 0
+inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
+{
+  // thread_local SplitMix32 eng { GetRandSeed() };
+  thread_local splitmix64 s_eng{GetRandSeed()};
+  const auto x     = static_cast<uint32_t>(s_eng());
+  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
+  return n0 + static_cast<uint32_t>(m);
+}
+#endif
+
 } // namespace
 
 const uint32_t G_RAND_MAX = G_RAND_MAX_CONST;
@@ -44,22 +62,6 @@ void SetRandSeed(const uint64_t seed) noexcept
   randSeed   = seed;
   xoshiroEng = randSeed;
   LogDebug("SetRandSeed: GetRandSeed = {}", GetRandSeed());
-}
-
-inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
-{
-  const auto x     = static_cast<uint32_t>(xoshiroEng());
-  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
-  return n0 + static_cast<uint32_t>(m);
-}
-
-inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
-{
-  // thread_local SplitMix32 eng { GetRandSeed() };
-  thread_local splitmix64 s_eng{GetRandSeed()};
-  const auto x     = static_cast<uint32_t>(s_eng());
-  const uint64_t m = (static_cast<uint64_t>(x) * static_cast<uint64_t>(n1 - n0)) >> 32U;
-  return n0 + static_cast<uint32_t>(m);
 }
 
 void SaveRandState(std::ostream& file)

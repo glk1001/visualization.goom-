@@ -141,7 +141,7 @@ auto VisualFxColorMatchedSets::GetOneGroupColorMatchedSet(const Groups group) no
   return matchedSet;
 }
 
-[[nodiscard]] auto VisualFxColorMatchedSets::GetOneGroupArray(Groups group)
+[[nodiscard]] auto VisualFxColorMatchedSets::GetOneGroupArray(const Groups group)
     -> std::array<ColorMatchedSet::KeyValue, NUM<GoomEffect>>
 {
   const auto defaultValue = ColorMatchedSet::KeyValue{static_cast<GoomEffect>(0), group};

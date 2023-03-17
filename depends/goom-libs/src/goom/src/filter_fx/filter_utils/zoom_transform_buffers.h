@@ -148,8 +148,9 @@ inline auto ZoomTransformBuffers::GetTranBuffLerpVal(const SrceDestVals& srceDes
   const auto result    = static_cast<int32_t>(static_cast<int64_t>(srceDestVals.srceBuffVal) +
                                            (numerator >> MAX_TRAN_LERP_EXP));
 
+  static constexpr auto HALF_MAX_TRAN_LERP_VALUE = MAX_TRAN_LERP_VALUE / 2;
   if (const auto mod = numerator & static_cast<int64_t>(MAX_TRAN_LERP_VALUE - 1U);
-      mod >= static_cast<int64_t>(MAX_TRAN_LERP_VALUE / 2))
+      mod >= static_cast<int64_t>(HALF_MAX_TRAN_LERP_VALUE))
   {
     return result + 1;
   }

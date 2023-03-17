@@ -17,8 +17,6 @@ public:
   [[nodiscard]] auto GetLineDrawer() const noexcept -> const ILineDrawerWithEffects&;
   [[nodiscard]] auto GetLineDrawer() noexcept -> ILineDrawerWithEffects&;
 
-  auto SwitchLineDrawers() noexcept -> void;
-
   enum class SwitchLineDrawerType
   {
     CONST,
@@ -26,6 +24,7 @@ public:
     NONE,
     _num // must be last - gives number of enums
   };
+  auto SwitchLineDrawers() noexcept -> void;
   auto SwitchLineDrawers(SwitchLineDrawerType forceType) noexcept -> void;
 
   auto Update() noexcept -> void;

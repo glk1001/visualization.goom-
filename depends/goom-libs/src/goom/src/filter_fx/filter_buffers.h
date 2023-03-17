@@ -282,7 +282,7 @@ template<class FilterStriper>
 inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTempTranBufferStripe() noexcept -> void
 {
   m_filterStriper->UpdateNextStripe();
-  if (m_filterStriper->GetTranBuffYLineStart() == 0)
+  if (0 == m_filterStriper->GetTranBuffYLineStart())
   {
     m_tranBuffersState = TranBuffersState::RESET_TRAN_BUFFERS;
   }

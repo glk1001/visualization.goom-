@@ -8,21 +8,28 @@
 #ifndef HDR_GOOM_CONFIG
 #define HDR_GOOM_CONFIG
 
-#include <exception>
-// NOLINTBEGIN: Need special macros with these names.
-#define USED_FOR_DEBUGGING(x) ((void)(x))
-
 #include <cassert>
-#define Expects(cond) assert(cond)
-#define Ensures(cond) assert(cond)
+#include <exception>
+
+namespace GOOM
+{
+
+#define USED_FOR_DEBUGGING(x) ((void)(x)) // NOLINT: Need special macro for debugging.
+
+constexpr auto Expects(const bool cond) -> void
+{
+  assert(cond);
+}
+
+constexpr auto Ensures(const bool cond) -> void
+{
+  assert(cond);
+}
+
 [[noreturn]] inline auto FailFast() noexcept -> void
 {
   std::terminate();
 }
-// NOLINTEND
-
-namespace GOOM
-{
 
 #ifdef _WIN32PC
 #define PATH_SEP "\\"

@@ -479,7 +479,7 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
                                 const float lineBrightness,
                                 const float tDotColor) noexcept -> void
 {
-  if (not m_dotPaths.IsCloseToStartBoundary(CLOSE_TO_START_T) and
+  if ((not m_dotPaths.IsCloseToStartBoundary(CLOSE_TO_START_T)) and
       ((not m_showLine) or (not IsSpecialLineUpdateNum())))
   {
     return;

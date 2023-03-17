@@ -56,7 +56,10 @@ using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
 
-static constexpr auto NUM_TUBES = 3U;
+namespace
+{
+
+constexpr auto NUM_TUBES = 3U;
 
 struct TubeSettings
 {
@@ -66,16 +69,16 @@ struct TubeSettings
   float radiusEdgeOffset{};
   OscillatingFunction::Params circlePathParams;
 };
-static constexpr auto TUBE_SETTINGS = std::array<TubeSettings, NUM_TUBES>{
+constexpr auto TUBE_SETTINGS = std::array<TubeSettings, NUM_TUBES>{
     {
      {true, false, 3.4F, 150.0F, {10.0F, +0.5F, +0.5F}},
      {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
      {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
      }
 };
-static constexpr auto MAIN_TUBE_INDEX             = 0U;
-static constexpr auto SECONDARY_TUBES_START_INDEX = 1U;
-static constexpr auto COMMON_CIRCLE_PATH_PARAMS = OscillatingFunction::Params{10.0F, +3.0F, +3.0F};
+constexpr auto MAIN_TUBE_INDEX             = 0U;
+constexpr auto SECONDARY_TUBES_START_INDEX = 1U;
+constexpr auto COMMON_CIRCLE_PATH_PARAMS   = OscillatingFunction::Params{10.0F, +3.0F, +3.0F};
 
 [[nodiscard]] inline auto lerp(const OscillatingFunction::Params& params0,
                                const OscillatingFunction::Params& params1,
@@ -88,39 +91,41 @@ static constexpr auto COMMON_CIRCLE_PATH_PARAMS = OscillatingFunction::Params{10
   };
 }
 
-static constexpr auto MIN_COLORMAP_TIME = 100U;
-static constexpr auto MAX_COLORMAP_TIME = 1000U;
+constexpr auto MIN_COLORMAP_TIME = 100U;
+constexpr auto MAX_COLORMAP_TIME = 1000U;
 
-static constexpr auto MIN_BRIGHTNESS_FACTOR = 0.01F;
-static constexpr auto MAX_BRIGHTNESS_FACTOR = 0.20F;
+constexpr auto MIN_BRIGHTNESS_FACTOR = 0.01F;
+constexpr auto MAX_BRIGHTNESS_FACTOR = 0.20F;
 
-static constexpr auto MIN_JITTER_TIME         = 50U;
-static constexpr auto MAX_JITTER_TIME         = 500U;
-static constexpr auto MIN_SHAPE_JITTER_OFFSET = 10.0F;
-static constexpr auto MAX_SHAPE_JITTER_OFFSET = 20.0F;
+constexpr auto MIN_JITTER_TIME         = 50U;
+constexpr auto MAX_JITTER_TIME         = 500U;
+constexpr auto MIN_SHAPE_JITTER_OFFSET = 10.0F;
+constexpr auto MAX_SHAPE_JITTER_OFFSET = 20.0F;
 
-static constexpr auto MIN_DECREASED_SPEED_TIME = 100U;
-static constexpr auto MAX_DECREASED_SPEED_TIME = 500U;
-static constexpr auto MIN_INCREASED_SPEED_TIME = 100U;
-static constexpr auto MAX_INCREASED_SPEED_TIME = 500U;
-static constexpr auto MIN_NORMAL_SPEED_TIME    = 20U;
-static constexpr auto MAX_NORMAL_SPEED_TIME    = 50U;
+constexpr auto MIN_DECREASED_SPEED_TIME = 100U;
+constexpr auto MAX_DECREASED_SPEED_TIME = 500U;
+constexpr auto MIN_INCREASED_SPEED_TIME = 100U;
+constexpr auto MAX_INCREASED_SPEED_TIME = 500U;
+constexpr auto MIN_NORMAL_SPEED_TIME    = 20U;
+constexpr auto MAX_NORMAL_SPEED_TIME    = 50U;
 
-static constexpr auto MIN_STAY_IN_CENTRE_TIME        = 1000U;
-static constexpr auto MAX_STAY_IN_CENTRE_TIME        = 1000U;
-static constexpr auto MIN_STAY_AWAY_FROM_CENTRE_TIME = 100U;
-static constexpr auto MAX_STAY_AWAY_FROM_CENTRE_TIME = 100U;
+constexpr auto MIN_STAY_IN_CENTRE_TIME        = 1000U;
+constexpr auto MAX_STAY_IN_CENTRE_TIME        = 1000U;
+constexpr auto MIN_STAY_AWAY_FROM_CENTRE_TIME = 100U;
+constexpr auto MAX_STAY_AWAY_FROM_CENTRE_TIME = 100U;
 
-static constexpr auto PROB_RESET_COLOR_MAPS       = 1.0F / 3.0F;
-static constexpr auto PROB_DECREASE_SPEED         = 1.0F / 5.0F;
-static constexpr auto PROB_INCREASE_SPEED         = 1.0F / 2.0F;
-static constexpr auto PROB_RANDOM_INCREASE_SPEED  = 1.0F / 20.0F;
-static constexpr auto PROB_NORMAL_SPEED           = 1.0F / 20.0F;
-static constexpr auto PROB_NO_SHAPE_JITTER        = 0.8F;
-static constexpr auto PROB_PREV_SHAPES_JITTER     = 0.0F;
-static constexpr auto PROB_OSCILLATING_SHAPE_PATH = 1.0F;
-static constexpr auto PROB_MOVE_AWAY_FROM_CENTRE  = 0.3F;
-static constexpr auto PROB_FOLLOW_ZOOM_MID_POINT  = 0.3F;
+constexpr auto PROB_RESET_COLOR_MAPS       = 1.0F / 3.0F;
+constexpr auto PROB_DECREASE_SPEED         = 1.0F / 5.0F;
+constexpr auto PROB_INCREASE_SPEED         = 1.0F / 2.0F;
+constexpr auto PROB_RANDOM_INCREASE_SPEED  = 1.0F / 20.0F;
+constexpr auto PROB_NORMAL_SPEED           = 1.0F / 20.0F;
+constexpr auto PROB_NO_SHAPE_JITTER        = 0.8F;
+constexpr auto PROB_PREV_SHAPES_JITTER     = 0.0F;
+constexpr auto PROB_OSCILLATING_SHAPE_PATH = 1.0F;
+constexpr auto PROB_MOVE_AWAY_FROM_CENTRE  = 0.3F;
+constexpr auto PROB_FOLLOW_ZOOM_MID_POINT  = 0.3F;
+
+} // namespace
 
 class TubesFx::TubeFxImpl
 {

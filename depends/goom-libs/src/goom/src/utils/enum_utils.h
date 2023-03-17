@@ -97,12 +97,12 @@ constexpr EnumMap<E, T>::EnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexc
 template<typename E, typename T>
 constexpr auto EnumMap<E, T>::Make(std::vector<KeyValue>&& keyValues) noexcept -> EnumMap<E, T>
 {
-  return EnumMap{GetSortedValuesArray(keyValues)};
+  return EnumMap{GetSortedValuesArray(std::move(keyValues))};
 }
 
 template<typename E, typename T>
 constexpr EnumMap<E, T>::EnumMap(std::array<T, NUM<E>>&& keyValues) noexcept
-  : m_keyValues{keyValues}
+  : m_keyValues{std::move(keyValues)}
 {
 }
 
@@ -140,7 +140,7 @@ template<typename V>
 constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> std::array<T, NUM<E>>
 {
   auto sortedValuesArray = std::array<T, NUM<E>>{};
-  for (auto& keyValue : keyValues)
+  for (auto& keyValue : std::forward<V>(keyValues))
   {
     sortedValuesArray.at(static_cast<uint32_t>(keyValue.key)) = std::move(keyValue.value);
   }
@@ -149,7 +149,7 @@ constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> st
 
 template<typename E, typename T>
 inline RuntimeEnumMap<E, T>::RuntimeEnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexcept
-  : m_keyValues{GetSortedValuesArray(keyValues)}
+  : m_keyValues{GetSortedValuesArray(std::move(keyValues))}
 {
 }
 
@@ -157,12 +157,12 @@ template<typename E, typename T>
 inline auto RuntimeEnumMap<E, T>::Make(std::vector<KeyValue>&& keyValues) noexcept
     -> RuntimeEnumMap<E, T>
 {
-  return RuntimeEnumMap{GetSortedValuesArray(keyValues)};
+  return RuntimeEnumMap{GetSortedValuesArray(std::move(keyValues))};
 }
 
 template<typename E, typename T>
 inline RuntimeEnumMap<E, T>::RuntimeEnumMap(std::vector<T>&& keyValues) noexcept
-  : m_keyValues{keyValues}
+  : m_keyValues{std::move(keyValues)}
 {
 }
 

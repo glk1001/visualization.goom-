@@ -127,12 +127,12 @@ inline auto LSysGeometry::SetSpinDegreesAdjustNumSteps(const uint32_t numSteps) 
   m_spinDegreesAdjust.SetNumSteps(numSteps);
 }
 
-inline auto LSysGeometry::SetVerticalMoveNumSteps(uint32_t numSteps) noexcept -> void
+inline auto LSysGeometry::SetVerticalMoveNumSteps(const uint32_t numSteps) noexcept -> void
 {
   m_verticalMove.SetNumSteps(numSteps);
 }
 
-inline auto LSysGeometry::SetYScaleNumSteps(uint32_t numSteps) noexcept -> void
+inline auto LSysGeometry::SetYScaleNumSteps(const uint32_t numSteps) noexcept -> void
 {
   m_yScaleAdjust.SetNumSteps(numSteps);
 }

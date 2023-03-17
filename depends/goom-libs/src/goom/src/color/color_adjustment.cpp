@@ -52,7 +52,7 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
   return MakePixel(newR, newG, newB, newA);
 }
 
-auto ColorAdjustment::GetAlteredChromaColor(float lchYFactor, const Pixel& color) -> Pixel
+auto ColorAdjustment::GetAlteredChromaColor(const float lchYFactor, const Pixel& color) -> Pixel
 {
   Expects(lchYFactor > 0.0F);
 

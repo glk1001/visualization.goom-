@@ -111,7 +111,7 @@ private:
 
   void ChangeColors();
 
-  void DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius);
+  auto DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius) -> void;
 
   static constexpr auto GAMMA = 2.2F; // Cancel the shader gamma
   ColorAdjustment m_colorAdjust{
@@ -462,16 +462,15 @@ inline void GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap()
   }
 }
 
-void GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
+auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
                                            const Point2dInt& dotPosition,
-                                           const uint32_t radius)
+                                           const uint32_t radius) -> void
 {
   const auto diameter                 = static_cast<int32_t>((2 * radius) + 1); // must be odd
   const auto screenWidthLessDiameter  = m_goomInfo->GetDimensions().GetIntWidth() - diameter;
   const auto screenHeightLessDiameter = m_goomInfo->GetDimensions().GetIntHeight() - diameter;
 
-  if ((dotPosition.x < static_cast<int32_t>(diameter)) or
-      (dotPosition.y < static_cast<int32_t>(diameter)) or
+  if ((dotPosition.x < diameter) or (dotPosition.y < diameter) or
       (dotPosition.x >= screenWidthLessDiameter) or (dotPosition.y >= screenHeightLessDiameter))
   {
     return;
