@@ -80,48 +80,6 @@ auto GoomLogger::GetLogPrefix(const LogLevel lvl,
   return std_fmt::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
 }
 
-auto GoomLogger::Start() -> void
-{
-  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
-  m_doLogging     = true;
-  m_logEntries.clear();
-}
-
-auto GoomLogger::Stop() -> void
-{
-  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
-  m_doLogging     = false;
-  DoFlush();
-}
-
-auto GoomLogger::SetFileLogLevel(const LogLevel lvl) -> void
-{
-  m_cutoffFileLogLevel = lvl;
-}
-
-auto GoomLogger::SetHandlersLogLevel(const LogLevel lvl) -> void
-{
-  m_cutoffHandlersLogLevel = lvl;
-}
-
-auto GoomLogger::AddHandler(const std::string& name, const HandlerFunc& handlerFunc) -> void
-{
-  for (const auto& handler : m_handlers)
-  {
-    if (handler.first == name)
-    {
-      return;
-    }
-  }
-  m_handlers.emplace_back(name, handlerFunc);
-}
-
-auto GoomLogger::Flush() -> void
-{
-  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
-  DoFlush();
-}
-
 auto GoomLogger::DoFlush() -> void
 {
   if (m_logFile.empty())

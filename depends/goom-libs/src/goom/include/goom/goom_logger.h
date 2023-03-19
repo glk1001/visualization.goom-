@@ -5,6 +5,7 @@
 #include <mutex>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -36,14 +37,16 @@ public:
   auto operator=(const GoomLogger&) -> GoomLogger& = delete;
   auto operator=(GoomLogger&&) -> GoomLogger&      = delete;
 
-  auto SetLogFile(const std::string& logF) -> void;
-  auto AddHandler(const std::string& name, const HandlerFunc& handlerFunc) -> void;
+  auto SetLogFile(const std::string_view& logF) -> void;
+  auto AddHandler(const std::string_view& name, const HandlerFunc& handlerFunc) -> void;
   auto SetShowDateTime(bool val) -> void;
+
   auto Start() -> void;
   auto Stop() -> void;
   auto Flush() -> void;
   auto Suspend() -> void;
   auto Resume() -> void;
+
   [[nodiscard]] auto IsLogging() const -> bool;
   [[nodiscard]] auto GetFileLogLevel() const -> LogLevel;
   auto SetFileLogLevel(LogLevel lvl) -> void;
@@ -81,24 +84,47 @@ private:
             std_fmt::format_args args) -> void;
 };
 
-inline auto GoomLogger::GetFileLogLevel() const -> GoomLogger::LogLevel
-{
-  return m_cutoffFileLogLevel;
-}
-
-inline auto GoomLogger::GetHandlersLogLevel() const -> GoomLogger::LogLevel
-{
-  return m_cutoffHandlersLogLevel;
-}
-
-inline auto GoomLogger::SetLogFile(const std::string& logF) -> void
+inline auto GoomLogger::SetLogFile(const std::string_view& logF) -> void
 {
   m_logFile = logF;
+}
+
+inline auto GoomLogger::AddHandler(const std::string_view& name, const HandlerFunc& handlerFunc)
+    -> void
+{
+  for (const auto& handler : m_handlers)
+  {
+    if (handler.first == name)
+    {
+      return;
+    }
+  }
+  m_handlers.emplace_back(name, handlerFunc);
 }
 
 inline auto GoomLogger::SetShowDateTime(const bool val) -> void
 {
   m_showDateTime = val;
+}
+
+inline auto GoomLogger::Start() -> void
+{
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
+  m_doLogging     = true;
+  m_logEntries.clear();
+}
+
+inline auto GoomLogger::Stop() -> void
+{
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
+  m_doLogging     = false;
+  DoFlush();
+}
+
+inline auto GoomLogger::Flush() -> void
+{
+  const auto lock = std::scoped_lock<std::mutex>{m_mutex};
+  DoFlush();
 }
 
 inline auto GoomLogger::Suspend() -> void
@@ -114,6 +140,26 @@ inline auto GoomLogger::Resume() -> void
 inline auto GoomLogger::IsLogging() const -> bool
 {
   return m_doLogging;
+}
+
+inline auto GoomLogger::GetFileLogLevel() const -> GoomLogger::LogLevel
+{
+  return m_cutoffFileLogLevel;
+}
+
+inline auto GoomLogger::SetFileLogLevel(const LogLevel lvl) -> void
+{
+  m_cutoffFileLogLevel = lvl;
+}
+
+inline auto GoomLogger::GetHandlersLogLevel() const -> GoomLogger::LogLevel
+{
+  return m_cutoffHandlersLogLevel;
+}
+
+inline auto GoomLogger::SetHandlersLogLevel(const LogLevel lvl) -> void
+{
+  m_cutoffHandlersLogLevel = lvl;
 }
 
 inline auto GoomLogger::CanLog() const -> bool
@@ -134,39 +180,151 @@ auto GoomLogger::Log(const LogLevel lvl,
 
 } // namespace GOOM
 
-// NOLINTBEGIN: Tricky logging code - need to improve
-
 #ifdef NO_LOGGING
 //#pragma message("Compiling " __FILE__ " with 'NO_LOGGING' = 'ON' - So there will be NO logging.")
-#define SetLogFile(logger, logF)
-#define AddLogHandler(logger, name, h)
-#define SetShowDateTime(logger, val)
-#define LogStart(logger)
-#define LogStop(logger)
-#define LogFlush(logger)
-#define LogSuspend(logger)
-#define LogResume(logger)
-#define IsLogging(logger) false
-#define GetLogLevel(logger)
-#define SetLogLevel(logger, lvl)
+
+constexpr auto SetLogFile([[maybe_unused]] const GOOM::GoomLogger& logger,
+                          [[maybe_unused]] const std::string_view& logF) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto AddLogHandler([[maybe_unused]] const GOOM::GoomLogger& logger,
+                             [[maybe_unused]] const std::string_view& name,
+                             [[maybe_unused]] const GOOM::GoomLogger::HandlerFunc& handlerFunc)
+    -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto SetShowDateTime([[maybe_unused]] const GOOM::GoomLogger& logger,
+                               [[maybe_unused]] const bool val) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto LogStart([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto LogStop([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto LogFlush([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto LogSuspend([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto LogResume([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+{
+  // No logging for Release.
+}
+
+[[nodiscard]] constexpr auto IsLogging([[maybe_unused]] const GOOM::GoomLogger& logger) -> bool
+{
+  return false;
+}
+
+[[nodiscard]] constexpr auto GetLogLevel([[maybe_unused]] const GOOM::GoomLogger& logger)
+    -> GOOM::GoomLogger::LogLevel
+{
+  return GOOM::GoomLogger::LogLevel{};
+}
+
+constexpr auto SetLogLevel([[maybe_unused]] const GOOM::GoomLogger& logger,
+                           [[maybe_unused]] const GOOM::GoomLogger::LogLevel lvl) -> void
+{
+  // No logging for Release.
+}
+
+constexpr auto SetLogLevelForFiles([[maybe_unused]] const GOOM::GoomLogger& logger,
+                                   [[maybe_unused]] const GOOM::GoomLogger::LogLevel lvl) -> void
+{
+  // No logging for Release.
+}
+
+// NOLINTBEGIN: Remove these macros with C++20.
 #define LogDebug(logger, ...)
 #define LogInfo(logger, ...)
 #define LogWarn(logger, ...)
 #define LogError(logger, ...)
+// NOLINTEND: Remove these macros with C++20.
+
 #else
 #pragma message("Compiling " __FILE__ " with 'NO_LOGGING' = 'OFF' - SO THERE WILL BE LOGGING.")
-#define SetLogFile(logger, logF) (logger).SetLogFile(logF)
-#define AddLogHandler(logger, name, h) (logger).AddHandler((name), (h))
-#define SetShowDateTime(logger, val) (logger).SetShowDateTime(val)
-#define LogStart(logger) (logger).Start()
-#define LogStop(logger) (logger).Stop()
-#define LogFlush(logger) (logger).Flush()
-#define LogSuspend(logger) (logger).Suspend()
-#define LogResume(logger) (logger).Resume()
-#define IsLogging(logger) (logger).IsLogging()
-#define GetLogLevel(logger) (logger).GetHandlersLogLevel()
-#define SetLogLevel(logger, lvl) (logger).SetHandlersLogLevel(lvl)
-#define SetLogLevelForFiles(logger, lvl) (logger).SetFileLogLevel(lvl)
+
+inline auto SetLogFile(GOOM::GoomLogger& logger, const std::string& logF) -> void
+{
+  logger.SetLogFile(logF);
+}
+
+inline auto AddLogHandler(GOOM::GoomLogger& logger,
+                          const std::string_view& name,
+                          const GOOM::GoomLogger::HandlerFunc& handlerFunc) -> void
+{
+  logger.AddHandler(name, handlerFunc);
+}
+
+inline auto SetShowDateTime(GOOM::GoomLogger& logger, const bool val) -> void
+{
+  logger.SetShowDateTime(val);
+}
+
+inline auto LogStart(GOOM::GoomLogger& logger) -> void
+{
+  logger.Start();
+}
+
+inline auto LogStop(GOOM::GoomLogger& logger) -> void
+{
+  logger.Stop();
+}
+
+inline auto LogFlush(GOOM::GoomLogger& logger) -> void
+{
+  logger.Flush();
+}
+
+inline auto LogSuspend(GOOM::GoomLogger& logger) -> void
+{
+  logger.Suspend();
+}
+
+inline auto LogResume(GOOM::GoomLogger& logger) -> void
+{
+  logger.Resume();
+}
+
+[[nodiscard]] inline auto IsLogging(const GOOM::GoomLogger& logger) -> bool
+{
+  return logger.IsLogging();
+}
+
+[[nodiscard]] inline auto GetLogLevel(const GOOM::GoomLogger& logger) -> GOOM::GoomLogger::LogLevel
+{
+  return logger.GetHandlersLogLevel();
+}
+
+inline auto SetLogLevel(GOOM::GoomLogger& logger, const GOOM::GoomLogger::LogLevel lvl) -> void
+{
+  logger.SetHandlersLogLevel(lvl);
+}
+
+inline auto SetLogLevelForFiles(GOOM::GoomLogger& logger, const GOOM::GoomLogger::LogLevel lvl)
+    -> void
+{
+  logger.SetFileLogLevel(lvl);
+}
+
+// NOLINTBEGIN: Remove these macros with C++20.
 #define LogDebug(logger, ...) \
   (logger).Log(GOOM::GoomLogger::LogLevel::DEBUG, __LINE__, __func__, __VA_ARGS__)
 #define LogInfo(logger, ...) \
@@ -175,8 +333,7 @@ auto GoomLogger::Log(const LogLevel lvl,
   (logger).Log(GOOM::GoomLogger::LogLevel::WARN, __LINE__, __func__, __VA_ARGS__)
 #define LogError(logger, ...) \
   (logger).Log(GOOM::GoomLogger::LogLevel::ERR, __LINE__, __func__, __VA_ARGS__)
+// NOLINTEND: Remove these macros with C++20.
 #endif
-
-// NOLINTEND
 
 #endif // HDR_GOOM_LOGGER
