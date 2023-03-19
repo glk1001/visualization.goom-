@@ -158,7 +158,7 @@ public:
 private:
   DRAW::IGoomDraw* m_draw;
   const UTILS::MATH::IGoomRand* m_goomRand;
-  GoomLogger* m_goomLogger;
+  [[maybe_unused]] GoomLogger* m_goomLogger;
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
   std::experimental::propagate_const<std::unique_ptr<FILTER_FX::ZoomFilterFx>> m_zoomFilterFx;
 

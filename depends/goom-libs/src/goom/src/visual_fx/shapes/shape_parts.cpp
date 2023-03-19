@@ -186,7 +186,6 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
     shapePaths.emplace_back(*m_draw, basePath, *m_colorMapsManager, colorInfo);
 
     static constexpr auto CLOSE_ENOUGH = 4;
-    USED_FOR_DEBUGGING(CLOSE_ENOUGH);
     if (SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) >
         CLOSE_ENOUGH)
     {

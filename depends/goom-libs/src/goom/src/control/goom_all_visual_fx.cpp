@@ -160,7 +160,6 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
                                                       { ResetCurrentDrawBuffSettings(fx); });
-  USED_FOR_DEBUGGING(m_goomLogger);
 }
 
 auto GoomAllVisualFx::Start() noexcept -> void

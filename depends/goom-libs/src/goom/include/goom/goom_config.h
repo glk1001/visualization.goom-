@@ -1,4 +1,4 @@
-#ifdef GOOM_DEBUG
+#if defined(REQUIRE_ASSERTS_FOR_ALL_BUILDS) or defined(GOOM_DEBUG)
 #undef NDEBUG
 //#define DO_GOOM_STATE_DUMP
 #endif
@@ -14,14 +14,12 @@
 namespace GOOM
 {
 
-#define USED_FOR_DEBUGGING(x) ((void)(x)) // NOLINT: Need special macro for debugging.
-
-constexpr auto Expects(const bool cond) -> void
+constexpr auto Expects([[maybe_unused]] const bool cond) -> void
 {
   assert(cond);
 }
 
-constexpr auto Ensures(const bool cond) -> void
+constexpr auto Ensures([[maybe_unused]] const bool cond) -> void
 {
   assert(cond);
 }
@@ -31,13 +29,13 @@ constexpr auto Ensures(const bool cond) -> void
   std::terminate();
 }
 
+// NOLINTBEGIN: Convert these macros to constexpr std::string with C++20.
 #ifdef _WIN32PC
 #define PATH_SEP "\\"
 #else
 #define PATH_SEP "/"
 #endif
 
-// TODO(glk) - With C++20 we should be able to do 'inline constexpr FONTS_DIR = ...', etc.
 #define DATA_DIR "data"
 #define MEDIA_DIR "media"
 #define FONTS_DIR DATA_DIR PATH_SEP "fonts"
@@ -48,6 +46,7 @@ constexpr auto Ensures(const bool cond) -> void
 
 #define RESOURCES_DIR "resources"
 #define SHADERS_DIR RESOURCES_DIR PATH_SEP DATA_DIR PATH_SEP "shaders"
+// NOLINTEND: Convert these macros to constexpr with C++20.
 
 #ifdef WORDS_BIGENDIAN
 #define COLOR_ARGB

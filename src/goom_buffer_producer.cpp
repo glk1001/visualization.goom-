@@ -41,16 +41,15 @@ GoomBufferProducer::GoomBufferProducer(const TextureBufferDimensions& textureBuf
 {
   LogDebug(*m_goomLogger, "Constructed producer.");
   m_goomControl->SetShowTitle(showTitle);
-  Ensures(m_goomControl);
+  Ensures(nullptr != m_goomControl);
 }
 
 auto GoomBufferProducer::Start() -> void
 {
   LogInfo(*m_goomLogger, "Starting goom buffer producer.");
 
-  Expects(m_goomControl);
+  Expects(nullptr != m_goomControl);
   Expects(not m_started);
-  USED_FOR_DEBUGGING(m_started);
   m_started = true;
 
   LogInfo(*m_goomLogger, "Goom: Version: {}.", GetGoomLibVersionInfo());

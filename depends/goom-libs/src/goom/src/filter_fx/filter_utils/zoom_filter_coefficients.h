@@ -48,7 +48,6 @@ using FilterCoeff2dArrayPtrs =
   {
     coeffsSum += coeff;
   }
-  USED_FOR_DEBUGGING(coeffsSum);
   Ensures(coeffsSum == MAX_SUM_COEFFS);
 
   /**

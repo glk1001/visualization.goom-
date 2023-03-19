@@ -30,7 +30,7 @@ protected:
       -> void override;
 
 private:
-  GoomLogger* m_goomLogger;
+  [[maybe_unused]] GoomLogger* m_goomLogger;
   PixelBuffer* m_buffer{};
 };
 
@@ -50,7 +50,7 @@ protected:
       -> void override;
 
 private:
-  GoomLogger* m_goomLogger;
+  [[maybe_unused]] GoomLogger* m_goomLogger;
   PixelBuffer* m_buffer1{};
   PixelBuffer* m_buffer2{};
 };

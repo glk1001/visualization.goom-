@@ -11,6 +11,7 @@
       <file path="$PROJECT_DIR$/build-clion-docker-clang-16-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-17-Debug-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-17-RelWithDebInfo-nexus" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-17-Release-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-gcc-10-Release-matrix" />
       <file path="$PROJECT_DIR$/build-clion-docker-gcc-12-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-gcc-12-Release-matrix" />

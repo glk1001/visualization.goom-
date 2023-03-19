@@ -17,7 +17,6 @@ ExpDampingFunction::ExpDampingFunction(const ExpProperties& expProperties)
   : m_amplitude{expProperties.amplitude}
 {
   static constexpr auto MIN_AMP = 0.00001;
-  USED_FOR_DEBUGGING(MIN_AMP);
   Expects(std::fabs(expProperties.amplitude) >= MIN_AMP);
   Expects(expProperties.yAtStartToRise > m_amplitude);
   Expects(expProperties.yAtXMax > m_amplitude);
