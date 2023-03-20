@@ -17,6 +17,7 @@ docker run --rm                                                        \
            -e TZ=${HOST_TIME_ZONE}                                     \
            -e CCACHE_DIR=${DOCKER_CCACHE_DIR}                          \
            -v ${GOOM_MAIN_ROOT_DIR}:${DOCKER_GOOM_MAIN_ROOT_DIR}       \
+           -v /tmp:/tmp                                                \
            -t ${DOCKER_BUILD_IMAGE}                                    \
            bash -c "cd ${DOCKER_GOOM_MAIN_ROOT_DIR} &&                 \
                     bash ${DOCKER_GOOM_SCRIPTS_DIR}/goom-clang-tidy.sh \

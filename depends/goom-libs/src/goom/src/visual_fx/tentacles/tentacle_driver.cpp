@@ -22,7 +22,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using COLOR::ColorMaps;
-using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;

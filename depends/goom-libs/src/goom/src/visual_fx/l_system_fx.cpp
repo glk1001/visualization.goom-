@@ -1,6 +1,8 @@
-#include "l_system_fx.h"
-
 //#undef NO_LOGGING
+
+#define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
+
+#include "l_system_fx.h"
 
 #include "draw/goom_draw.h"
 #include "fx_helper.h"

@@ -60,6 +60,7 @@ CheckOptions:
   - { key: readability-identifier-length.IgnoredParameterNames,             value: 'a|b|t|x.*|y.*|z.*|i|m|n|k.*' }
   - { key: readability-identifier-length.MinimumLoopCounterNameLength,      value: 3 }
   - { key: readability-identifier-length.IgnoredLoopCounterNames,           value: 'x|y|i|j|k' }
+  - { key: readability-identifier-naming.FunctionIgnoredRegexp,             value: 'lerp' }
   - { key: readability-identifier-naming.LocalConstantCase,                 value: camelBack }
   - { key: readability-identifier-naming.MacroDefinitionCase,               value: UPPER_CASE }
   - { key: readability-identifier-naming.MethodCase,                        value: CamelCase }

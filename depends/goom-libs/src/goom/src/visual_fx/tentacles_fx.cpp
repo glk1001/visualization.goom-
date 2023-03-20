@@ -1,5 +1,7 @@
 //#undef NO_LOGGING
 
+#define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
+
 #include "tentacles_fx.h"
 
 #include "color/color_maps.h"
@@ -284,6 +286,8 @@ inline auto TentaclesFx::TentaclesImpl::SetZoomMidpoint(const Point2dInt& zoomMi
 
 inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
 {
+  Expects(m_currentTentacleDriver != nullptr);
+
   if (!m_timeWithThisDominantColor.Finished())
   {
     return;
@@ -308,6 +312,8 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTimers() -> void
 
 inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 {
+  Expects(m_currentTentacleDriver != nullptr);
+
   if (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom())
   {
     ChangeDominantColor();
@@ -320,8 +326,9 @@ inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 
 inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 {
-  // Higher sound acceleration increases tentacle wave frequency.
   Expects(m_currentTentacleDriver != nullptr);
+
+  // Higher sound acceleration increases tentacle wave frequency.
   const auto tentacleWaveFreqMultiplier =
       m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration() <
               SoundInfo::ACCELERATION_MIDPOINT
