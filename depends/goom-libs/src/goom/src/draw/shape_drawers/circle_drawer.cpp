@@ -59,7 +59,7 @@ auto CircleDrawer::DrawHorizontalLine(const Point2dInt& point1,
   }
 }
 
-// Function for circle-generation using Bresenham's algorithm
+// Function for circle-generation using Bresenham's algorithm.
 auto CircleDrawer::DrawBresenhamCircle(const Point2dInt& centre,
                                        const int32_t radius,
                                        const PlotCirclePointsFunc& plot) noexcept -> void

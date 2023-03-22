@@ -19,10 +19,8 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
 {
 }
 
-ImageDisplacement::~ImageDisplacement() noexcept = default;
-
-auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalizedCoords) const
-    -> Point2dFlt
+auto ImageDisplacement::GetDisplacementVector(
+    const NormalizedCoords& normalizedCoords) const noexcept -> Point2dFlt
 {
   const auto imagePoint = NormalizedCoordsToImagePoint(normalizedCoords);
 
@@ -42,13 +40,14 @@ auto ImageDisplacement::GetDisplacementVector(const NormalizedCoords& normalized
 }
 
 inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
-    const NormalizedCoords& normalizedCoords) const -> Point2dInt
+    const NormalizedCoords& normalizedCoords) const noexcept -> Point2dInt
 {
   const auto normalizedZoom = m_zoomFactor * normalizedCoords;
   return ToPoint2dInt(m_normalizedCoordsConverter.NormalizedToOtherCoordsFlt(normalizedZoom));
 }
 
-inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt
+inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const noexcept
+    -> Point2dFlt
 {
   const auto normalizedDisplacementX =
       NormalizedCoords::MAX_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);

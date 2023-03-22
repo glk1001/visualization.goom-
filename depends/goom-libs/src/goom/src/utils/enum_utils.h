@@ -12,7 +12,6 @@
 
 #ifndef NO_MAGIC_ENUM_AVAILABLE
 #include <magic_enum.hpp>
-#include <stdexcept>
 #endif
 
 namespace GOOM::UTILS
@@ -85,7 +84,7 @@ private:
   explicit RuntimeEnumMap(std::vector<T>&& keyValues) noexcept;
   std::vector<T> m_keyValues;
   template<typename V>
-  [[nodiscard]] static auto GetSortedValuesArray(V&& keyValues) noexcept -> std::vector<T>;
+  [[nodiscard]] static auto GetSortedValuesArray(const V& keyValues) noexcept -> std::vector<T>;
 };
 
 template<typename E, typename T>
@@ -186,7 +185,8 @@ inline auto RuntimeEnumMap<E, T>::size() const noexcept -> size_t
 
 template<typename E, typename T>
 template<typename V>
-inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> std::vector<T>
+inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(const V& keyValues) noexcept
+    -> std::vector<T>
 {
   Expects(keyValues.size() == NUM<E>);
 
@@ -229,7 +229,7 @@ auto StringToEnum(const std::string& eStr) -> E
     return *val;
   }
 
-  throw std::runtime_error("Unknown enum value \"" + eStr + "\".");
+  FailFast();
 }
 #endif
 

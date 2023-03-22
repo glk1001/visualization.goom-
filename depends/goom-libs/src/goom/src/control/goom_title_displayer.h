@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace GOOM
@@ -31,7 +32,6 @@ namespace CONTROL
 class GoomTitleDisplayer
 {
 public:
-  GoomTitleDisplayer() noexcept = delete;
   GoomTitleDisplayer(DRAW::IGoomDraw& draw,
                      const UTILS::MATH::IGoomRand& goomRand,
                      const std::string& fontDirectory);

@@ -82,8 +82,7 @@ inline auto CVisualizationGoom::PixelBufferGetter::GetNextPixelBuffer() const no
   {
     return nullptr;
   }
-  return static_cast<const PixelChannelType*>(
-      static_cast<const void*>(m_pixelBufferData.pixelBuffer->GetIntBuff()));
+  return m_pixelBufferData.pixelBuffer->GetBuffPtr();
 }
 
 inline auto CVisualizationGoom::PixelBufferGetter::GetNextGoomShaderVariables() const noexcept

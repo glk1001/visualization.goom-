@@ -87,7 +87,7 @@ auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, 
     {
       throw std::runtime_error(std_fmt::format(R"(Could not load image file "{}".)", m_filename));
     }
-    if ((0 == width) || (0 == height) || (0 == bpp))
+    if ((0 == width) or (0 == height) or (0 == bpp))
     {
       throw std::runtime_error(
           std_fmt::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.",

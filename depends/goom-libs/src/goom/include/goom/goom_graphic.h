@@ -192,7 +192,7 @@ public:
   auto Fill(const Pixel& pixel) noexcept -> void;
   auto CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void;
   [[nodiscard]] static auto GetIntBufferSize(const Dimensions& dimensions) noexcept -> size_t;
-  [[nodiscard]] auto GetIntBuff() const noexcept -> const PixelIntType*;
+  [[nodiscard]] auto GetBuffPtr() const noexcept -> const PixelChannelType*;
 
   [[nodiscard]] auto operator()(size_t x, size_t y) const noexcept -> const Pixel&;
   [[nodiscard]] auto operator()(int32_t x, int32_t y) const noexcept -> const Pixel&;
@@ -342,10 +342,10 @@ inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept
   return static_cast<size_t>(dimensions.GetSize()) * sizeof(Pixel);
 }
 
-inline auto PixelBuffer::GetIntBuff() const noexcept -> const PixelIntType*
+inline auto PixelBuffer::GetBuffPtr() const noexcept -> const PixelChannelType*
 {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
-  return reinterpret_cast<const PixelIntType*>(m_buff.data());
+  return reinterpret_cast<const PixelChannelType*>(m_buff.data());
 }
 
 // TODO(glk) - AppleClang does not seem to optimize std::copy - ignore it for now.

@@ -2,12 +2,12 @@
 
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/normalized_coords.h"
+#include "goom_config.h"
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <memory>
-#include <stdexcept>
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {
@@ -16,24 +16,19 @@ class ImageDisplacement
 {
 public:
   ImageDisplacement(const std::string& imageFilename, const UTILS::MATH::IGoomRand& goomRand);
-  ImageDisplacement(const ImageDisplacement&) noexcept = delete;
-  ImageDisplacement(ImageDisplacement&&) noexcept      = default;
-  ~ImageDisplacement() noexcept;
-  auto operator=(const ImageDisplacement&) noexcept -> ImageDisplacement& = delete;
-  auto operator=(ImageDisplacement&&) noexcept -> ImageDisplacement&      = delete;
 
-  [[nodiscard]] auto GetImageFilename() const -> std::string;
-  [[nodiscard]] auto GetXColorCutoff() const -> float;
-  [[nodiscard]] auto GetYColorCutoff() const -> float;
-  auto SetXyColorCutoffs(float xColorCutoff, float yColorCutoff) -> void;
+  [[nodiscard]] auto GetImageFilename() const noexcept -> std::string;
+  [[nodiscard]] auto GetXColorCutoff() const noexcept -> float;
+  [[nodiscard]] auto GetYColorCutoff() const noexcept -> float;
+  auto SetXyColorCutoffs(float xColorCutoff, float yColorCutoff) noexcept -> void;
 
-  [[nodiscard]] auto GetZoomFactor() const -> float;
-  auto SetZoomFactor(float value) -> void;
+  [[nodiscard]] auto GetZoomFactor() const noexcept -> float;
+  auto SetZoomFactor(float value) noexcept -> void;
 
-  [[nodiscard]] auto GetAmplitude() const -> float;
-  auto SetAmplitude(float value) -> void;
+  [[nodiscard]] auto GetAmplitude() const noexcept -> float;
+  auto SetAmplitude(float value) noexcept -> void;
 
-  [[nodiscard]] auto GetDisplacementVector(const NormalizedCoords& normalizedCoords) const
+  [[nodiscard]] auto GetDisplacementVector(const NormalizedCoords& normalizedCoords) const noexcept
       -> Point2dFlt;
 
 private:
@@ -51,58 +46,52 @@ private:
   static constexpr float INITIAL_CUTOFF = 0.5F;
   float m_xColorCutoff                  = INITIAL_CUTOFF;
   float m_yColorCutoff                  = INITIAL_CUTOFF;
-  [[nodiscard]] auto NormalizedCoordsToImagePoint(const NormalizedCoords& normalizedCoords) const
-      -> Point2dInt;
-  [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const -> Point2dFlt;
+  [[nodiscard]] auto NormalizedCoordsToImagePoint(
+      const NormalizedCoords& normalizedCoords) const noexcept -> Point2dInt;
+  [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const noexcept -> Point2dFlt;
 };
 
-inline auto ImageDisplacement::GetImageFilename() const -> std::string
+inline auto ImageDisplacement::GetImageFilename() const noexcept -> std::string
 {
   return m_imageFilename;
 }
 
-inline auto ImageDisplacement::GetXColorCutoff() const -> float
+inline auto ImageDisplacement::GetXColorCutoff() const noexcept -> float
 {
   return m_xColorCutoff;
 }
 
-inline auto ImageDisplacement::GetYColorCutoff() const -> float
+inline auto ImageDisplacement::GetYColorCutoff() const noexcept -> float
 {
   return m_yColorCutoff;
 }
 
-inline auto ImageDisplacement::SetXyColorCutoffs(const float xColorCutoff, const float yColorCutoff)
-    -> void
+inline auto ImageDisplacement::SetXyColorCutoffs(const float xColorCutoff,
+                                                 const float yColorCutoff) noexcept -> void
 {
   m_xColorCutoff = xColorCutoff;
   m_yColorCutoff = yColorCutoff;
 }
 
-inline auto ImageDisplacement::GetZoomFactor() const -> float
+inline auto ImageDisplacement::GetZoomFactor() const noexcept -> float
 {
   return m_zoomFactor;
 }
 
-inline auto ImageDisplacement::SetZoomFactor(const float value) -> void
+inline auto ImageDisplacement::SetZoomFactor(const float value) noexcept -> void
 {
-  if (value <= 0.0F)
-  {
-    throw std::logic_error("Negative zoom factor.");
-  }
+  Expects(value > 0.0F);
   m_zoomFactor = value;
 }
 
-inline auto ImageDisplacement::GetAmplitude() const -> float
+inline auto ImageDisplacement::GetAmplitude() const noexcept -> float
 {
   return m_amplitude;
 }
 
-inline auto ImageDisplacement::SetAmplitude(const float value) -> void
+inline auto ImageDisplacement::SetAmplitude(const float value) noexcept -> void
 {
-  if (value <= 0.0F)
-  {
-    throw std::logic_error("Negative amplitude.");
-  }
+  Expects(value > 0.0F);
   m_amplitude = value;
 }
 

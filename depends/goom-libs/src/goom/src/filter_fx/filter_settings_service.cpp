@@ -1091,15 +1091,32 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
     return true;
   }
 
-  if (((m_filterMode == ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) or
-       (m_filterMode == ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) or
-       (m_filterMode == ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0) or
-       (m_filterMode == ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1)) and
-      m_goomRand->ProbabilityOf(PROB_WAVE_IN_MIDDLE))
+  if (IsFilterModeAWaveMode() and m_goomRand->ProbabilityOf(PROB_WAVE_IN_MIDDLE))
   {
     return true;
   }
 
+  return false;
+}
+
+inline auto FilterSettingsService::IsFilterModeAWaveMode() const -> bool
+{
+  if (m_filterMode == ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0)
+  {
+    return true;
+  }
+  if (m_filterMode == ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1)
+  {
+    return true;
+  }
+  if (m_filterMode == ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0)
+  {
+    return true;
+  }
+  if (m_filterMode == ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1)
+  {
+    return true;
+  }
   return false;
 }
 
@@ -1130,12 +1147,14 @@ inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPo
 
 auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints) -> void
 {
+  static constexpr auto HEIGHT_MARGIN = 2;
+
   switch (GetWeightRandomMidPoint(allowEdgePoints))
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
           I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
-          m_goomInfo->GetDimensions().GetIntHeight() - 2};
+          m_goomInfo->GetDimensions().GetIntHeight() - HEIGHT_MARGIN};
       break;
     case ZoomMidpointEvents::TOP_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
@@ -1147,7 +1166,7 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
       break;
     case ZoomMidpointEvents::RIGHT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          m_goomInfo->GetDimensions().GetIntWidth() - 2,
+          m_goomInfo->GetDimensions().GetIntWidth() - HEIGHT_MARGIN,
           I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::CENTRE_MID_POINT:

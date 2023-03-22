@@ -25,9 +25,10 @@ PALETTABLE_SUBDIR = 'palettable'
 FINAL_PALETTABLE_INCLUDE_RELDIR = PALETTABLE_SUBDIR
 
 INCLUDE_RELDIR = f'{SRCE_RELDIR}/{COLOR_DATA_DIRNAME}'
-INCLUDE_DIR = '/tmp/' + INCLUDE_RELDIR
-PALETTABLE_INCLUDE_DIR = '/tmp/' + INCLUDE_RELDIR + '/' + PALETTABLE_SUBDIR
-SRCE_DIR = '/tmp/' + SRCE_RELDIR
+TEMP_DIR = '/tmp'
+INCLUDE_DIR = TEMP_DIR + '/' + INCLUDE_RELDIR
+PALETTABLE_INCLUDE_DIR = TEMP_DIR + '/' + INCLUDE_RELDIR + '/' + PALETTABLE_SUBDIR
+SRCE_DIR = TEMP_DIR + '/' + SRCE_RELDIR
 
 COLOR_MAP_ENUMS_H = 'color_map_enums.h'
 COLOR_DATA_MAPS_H = 'color_data_maps.h'
@@ -239,11 +240,11 @@ def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
         f.write('\n')
         f.write(f'enum class {MAPS_ENUM_NAME}\n')
         f.write('{\n')
-        f.write(f'  _NULL = -1, // NOLINT: Need special name here\n')
+        f.write('  _NULL = -1, // NOLINT: Need special name here\n')
         for m in maps:
             f.write(f'  {get_upper_cpp_name(m)},' + get_enum_line_end(m, dupl))
-        f.write(f'  _num,\n')
-        f.write(f'}};\n')
+        f.write('  _num,\n')
+        f.write('};\n')
         f.write('\n')
         write_namespace_end(f)
 

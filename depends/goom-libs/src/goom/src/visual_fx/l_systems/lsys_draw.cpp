@@ -57,7 +57,7 @@ auto LSysDraw::DrawPolygon(const uint32_t lSysColor,
 inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices,
                                          const uint32_t lSysColor) noexcept -> void
 {
-  const auto numVertices = vertices.size();
+  const auto numVertices                 = vertices.size();
   static constexpr auto MIN_NUM_VERTICES = 2U;
   Expects(numVertices >= MIN_NUM_VERTICES);
 

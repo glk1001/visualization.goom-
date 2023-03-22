@@ -169,6 +169,7 @@ private:
   };
   UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
+  [[nodiscard]] auto IsFilterModeAWaveMode() const -> bool;
   auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
   [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
   [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) -> bool;

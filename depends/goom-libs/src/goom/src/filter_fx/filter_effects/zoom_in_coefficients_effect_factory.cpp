@@ -5,6 +5,7 @@
 #include "distance_field.h"
 #include "exp_reciprocal.h"
 #include "filter_fx/filter_settings_service.h"
+#include "goom_config.h"
 #include "image_zoom_in_coeffs.h"
 #include "scrunch.h"
 #include "speedway.h"
@@ -71,7 +72,7 @@ auto CreateZoomInCoefficientsEffect(const ZoomFilterMode filterMode,
     case ZoomFilterMode::Y_ONLY_MODE:
       return std::make_shared<YOnly>(goomRand);
     default:
-      throw std::logic_error("Invalid filter mode.");
+      FailFast();
   }
 }
 
