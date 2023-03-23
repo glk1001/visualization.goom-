@@ -1,0 +1,132 @@
+name: Build kodi goom-pp using 'make'
+on:
+  push:
+    branches: []
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: 'Ubuntu Clang - Release',
+            os: 'ubuntu-latest',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'Release',
+          }
+        - {
+            name: 'Ubuntu GCC - Release',
+            os: 'ubuntu-latest',
+            cc: 'gcc-${{ vars.GCC_VER }}',
+            cxx: 'g++-${{ vars.GCC_VER }}',
+            build_type: 'Release',
+          }
+        - {
+            name: 'MacOS Latest Clang - Release',
+            os: 'macos-latest',
+            cc: 'clang',
+            cxx: 'clang++',
+            build_type: 'Release',
+          }
+
+    env:
+      BINARY_ADDONS_FILE: 'cmake/addons/bootstrap/repositories/binary-addons.txt'
+      ARCHIVE_NAME: 'kodi-${{ vars.KODI_BRANCH }}-goom++-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+      ARTIFACTS_PATH: '${{ github.workspace }}/artifacts-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+
+    steps:
+      - name: Print env
+        shell: bash
+        run: |
+          echo "cc:                 ${{ matrix.config.cc }}"
+          echo "cxx:                ${{ matrix.config.cxx }}"
+          echo "runner.os:          ${{ runner.os }}"
+          echo "github.ref:         ${{ github.ref }}"
+          echo "github.ref_name:    ${{ github.ref_name }}"
+          echo "github.event_name:  ${{ github.event_name }}"
+          echo "github.event_path:  ${{ github.event_path }}"
+          echo "github.workflow:    ${{ github.workflow }}"
+          echo "github.workspace:   ${{ github.workspace }}"
+          echo "os:                 ${{ matrix.config.os }}"
+          echo "KODI_ROOT_DIR:      ${{ vars.KODI_ROOT_DIR }}"
+          echo "KODI_BRANCH:        ${{ vars.KODI_BRANCH }}"
+          echo "ARCHIVE_NAME:       ${{ env.ARCHIVE_NAME }}"
+          echo "ARTIFACTS_PATH:     ${{ env.ARTIFACTS_PATH }}"
+          echo "BINARY_ADDONS_FILE: ${{ env.BINARY_ADDONS_FILE }}"
+
+      - name: Clone the Kodi Repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'xbmc/xbmc'
+          ref: ${{ vars.KODI_BRANCH }}
+          path: ${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}
+
+      - name: Change Kodi Binary Repo for ${{ runner.os }}
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          cd ${{ vars.KODI_ROOT_DIR }}
+          sed -i 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
+          sed -i 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
+          cat ${{ env.BINARY_ADDONS_FILE }}
+
+      - name: Change Kodi Binary Repo for ${{ runner.os }}
+        if: ${{ runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          cd ${{ vars.KODI_ROOT_DIR }}
+          sed -i '' 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
+          sed -i '' 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
+          cat ${{ env.BINARY_ADDONS_FILE }}
+
+      - name: Install Clang-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ vars.CLANG_VER }}
+          platform: x64
+
+      - name: Install GCC-${{ vars.GCC_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu GCC')
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ vars.GCC_VER }}
+          platform: x64
+
+      - name: Install Necessary Ubuntu Packages
+        if: ${{ startsWith(matrix.config.name, 'Ubuntu') }}
+        run:  |
+          sudo apt-get update
+          sudo apt-get install mesa-common-dev
+
+      - name: Build Goom++ for ${{ runner.os }}
+        shell: bash
+        run: |
+          cd ${{ vars.KODI_ROOT_DIR }}
+
+          declare -r OUTPUT_DIR=${{ runner.temp }}/goom_out
+          mkdir ${OUTPUT_DIR}
+          CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} make -C "tools/depends/target/binary-addons" \
+                                                                       PREFIX="${OUTPUT_DIR}" ADDONS="visualization.goom-pp"
+
+          mkdir -p ${{ env.ARTIFACTS_PATH }}/lib ${{ env.ARTIFACTS_PATH }}/share
+          cp -pr ${OUTPUT_DIR}/lib/kodi/addons/visualization.goom-pp/* ${{ env.ARTIFACTS_PATH }}/lib/
+          cp -pr ${OUTPUT_DIR}/share/kodi/addons/visualization.goom-pp/* ${{ env.ARTIFACTS_PATH }}/share/
+
+          ls -al ${{ env.ARTIFACTS_PATH }}/lib/
+          ls -al ${{ env.ARTIFACTS_PATH }}/share/
+          ls -al ${{ env.ARTIFACTS_PATH }}/share/resources/
+
+      - name: Archive Goom++ Artifacts
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARTIFACTS_PATH }}
+          retention-days: 1

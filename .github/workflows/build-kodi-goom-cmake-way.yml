@@ -1,0 +1,278 @@
+name: Build kodi goom-pp using 'cmake'
+on:
+  push:
+    branches: []
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: 'Ubuntu Clang - RelWithDebInfo',
+            os: 'ubuntu-latest',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'RelWithDebInfo',
+          }
+        - {
+            name: 'Ubuntu Clang - Release',
+            os: 'ubuntu-latest',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'Release',
+          }
+        - {
+            name: 'Ubuntu GCC - RelWithDebInfo',
+            os: 'ubuntu-latest',
+            cc: 'gcc-${{ vars.GCC_VER }}',
+            cxx: 'g++-${{ vars.GCC_VER }}',
+            build_type: 'RelWithDebInfo',
+          }
+        - {
+            name: 'Ubuntu GCC - Release',
+            os: 'ubuntu-latest',
+            cc: 'gcc-${{ vars.GCC_VER }}',
+            cxx: 'g++-${{ vars.GCC_VER }}',
+            build_type: 'Release',
+          }
+        - {
+            name: 'MacOS Latest Clang - Release',
+            os: 'macos-latest',
+            cc: 'clang',
+            cxx: 'clang++',
+            build_type: 'Release',
+          }
+        - {
+            name: 'Windows Latest MSVC - Release',
+            os: 'windows-latest',
+            cc: 'cl',
+            cxx: 'cl',
+            build_type: 'Release',
+          }
+
+    env:
+      KODI_PATH:              ${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}
+      KODI_ADDONS_BUILD_PATH: ${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}/kodi-build/addons
+      VIS_GOOM_PATH: ${{ github.workspace }}/${{ vars.VIS_GOOM_ROOT_DIR }}
+      BINARY_ADDONS_FILE: 'cmake/addons/bootstrap/repositories/binary-addons.txt'
+      ARCHIVE_NAME: 'kodi-${{ vars.KODI_BRANCH }}-goom++-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+      ARTIFACTS_PATH: '${{ github.workspace }}/artifacts-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
+      BUILD_PATH:                                 'build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+
+    steps:
+      - name: Print env
+        shell: bash
+        run: |
+          echo "cc:                     ${{ matrix.config.cc }}"
+          echo "cxx:                    ${{ matrix.config.cxx }}"
+          echo "runner.os:              ${{ runner.os }}"
+          echo "github.ref:             ${{ github.ref }}"
+          echo "github.ref_name:        ${{ github.ref_name }}"
+          echo "github.event_name:      ${{ github.event_name }}"
+          echo "github.event_path:      ${{ github.event_path }}"
+          echo "github.workflow:        ${{ github.workflow }}"
+          echo "github.workspace:       ${{ github.workspace }}"
+          echo "os:                     ${{ matrix.config.os }}"
+          echo "VIS_GOOM_PATH:          ${{ env.VIS_GOOM_PATH }}"
+          echo "KODI_ROOT_DIR:          ${{ vars.KODI_ROOT_DIR }}"
+          echo "KODI_BRANCH:            ${{ vars.KODI_BRANCH }}"
+          echo "KODI_PATH:              ${{ env.KODI_PATH }}"
+          echo "KODI_ADDONS_BUILD_PATH: ${{ env.KODI_ADDONS_BUILD_PATH  }}"
+          echo "BUILD_PATH:             ${{ env.BUILD_PATH }}"
+          echo "ARCHIVE_NAME:           ${{ env.ARCHIVE_NAME }}"
+          echo "ARTIFACTS_PATH:         ${{ env.ARTIFACTS_PATH }}"
+          echo "BINARY_ADDONS_FILE:     ${{ env.BINARY_ADDONS_FILE }}"
+
+      - name: Clone this Goom++ Repo
+        uses: actions/checkout@v3
+        with:
+          path: '${{ env.VIS_GOOM_PATH }}'
+
+      - name: Clone the Kodi Repo
+        uses: actions/checkout@v3
+        with:
+          repository: 'xbmc/xbmc'
+          ref: ${{ vars.KODI_BRANCH }}
+          path: ${{ env.KODI_PATH }}
+
+      - name: Change Kodi Binary Repo for ${{ runner.os }}
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          cd ${{ vars.KODI_ROOT_DIR }}
+          sed -i 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
+          sed -i 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
+          cat ${{ env.BINARY_ADDONS_FILE }}
+
+      - name: Change Kodi Binary Repo for ${{ runner.os }}
+        if: ${{ runner.os == 'macOS' }}
+        shell: bash
+        run: |
+          cd ${{ vars.KODI_ROOT_DIR }}
+          sed -i '' 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
+          sed -i '' 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
+          cat ${{ env.BINARY_ADDONS_FILE }}
+
+      - name: Change Kodi Binary Repo for ${{ runner.os }}
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          cd ${{ vars.KODI_ROOT_DIR }}
+          (Get-Content '${{ env.BINARY_ADDONS_FILE }}') -replace 'xbmc', 'glk1001' | Set-Content '${{ env.BINARY_ADDONS_FILE }}'
+          (Get-Content '${{ env.BINARY_ADDONS_FILE }}') -replace ' ${{ vars.KODI_BRANCH }}', ' ${{ github.ref_name }}' | Set-Content '${{ env.BINARY_ADDONS_FILE }}'
+          type ${{ env.BINARY_ADDONS_FILE }}
+
+      - name: Install Clang-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{ vars.CLANG_VER }}
+          platform: x64
+
+      - name: Install GCC-${{ vars.GCC_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu GCC')
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ vars.GCC_VER }}
+          platform: x64
+
+      - name: Install clang-format-${{ vars.CLANG_VER }} and clang-tidy-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3
+          sudo apt-get install -y clang-format-${{ vars.CLANG_VER }}
+          sudo apt-get install -y clang-tidy-${{ vars.CLANG_VER }}
+
+      - name: Install Necessary Ubuntu Packages
+        if: ${{ startsWith(matrix.config.name, 'Ubuntu') }}
+        run:  |
+          sudo apt-get update
+          sudo apt-get install mesa-common-dev
+
+      - name: Install Necessary MacOS Packages
+        if: ${{ runner.os == 'macOS' }}
+        run:  |
+          brew install coreutils
+
+      - name: Configure Goom++ for ${{ runner.os }}
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          mkdir -p ${{ env.KODI_ADDONS_BUILD_PATH }}
+
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          export CCACHE_DIR=${{ runner.temp }}
+          bash scripts/goom-configure.sh -c ${{ matrix.config.cc }} --build-type ${{ matrix.config.build_type }} --suffix ${{ github.ref_name }}
+
+      - name: Build Goom++ for ${{ runner.os }}
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          export CCACHE_DIR=${{ runner.temp }}
+          bash scripts/goom-build.sh -c ${{ matrix.config.cc }} --build-type ${{ matrix.config.build_type }} --suffix ${{ github.ref_name }}
+
+          mkdir -p ${{ env.ARTIFACTS_PATH }}
+          cp -pr ${{ env.KODI_ADDONS_BUILD_PATH }}/lib/kodi/addons/visualization.goom-pp/*   ${{ env.ARTIFACTS_PATH }}/
+          cp -pr ${{ env.KODI_ADDONS_BUILD_PATH }}/share/kodi/addons/visualization.goom-pp/* ${{ env.ARTIFACTS_PATH }}/
+
+          echo "Artifacts contents:"
+          ls ${{ env.ARTIFACTS_PATH }}/
+
+      - name: Run clang-format-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_VER }}" \
+                                              -i -r -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" \
+                                              "${PWD}"
+
+          if [[ "$(git diff --name-only)" != "" ]]; then
+            echo "ERROR: clang-format problem."
+            echo
+            clang-format-${{ vars.CLANG_VER }} --version
+            echo
+            git diff --name-only
+            #git diff
+            echo
+            exit 1
+          fi
+          echo "Success: Everything is clang-formatted correctly."
+
+      - name: Run clang-tidy-${{ vars.CLANG_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          run-clang-tidy-${{ vars.CLANG_VER }} -j $(getconf _NPROCESSORS_ONLN) \
+                                               -header-filter='^((?!catch2).)*$' \
+                                               -p ${{ env.BUILD_PATH }} \
+                                               "${PWD}/src" \
+                                               "${PWD}/depends/goom-libs/src"
+
+          if [[ $? != 0 ]]; then
+            echo "ERROR: clang-tidy problem."
+            echo
+            clang-tidy-${{ vars.CLANG_VER }} --version
+            echo
+            exit 1
+          fi
+          echo "Success: Everything is 'clang-tidy' correct."
+
+      - name: Configure Goom++ for Windows
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          ./scripts/goom-configure.bat ${{ matrix.config.build_type }} ${{ github.ref_name }}
+
+      - name: Build Goom++ for Windows
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          ./scripts/goom-build.bat ${{ matrix.config.build_type }} ${{ github.ref_name }}
+
+          New-Item -Type Directory -Path ${{ env.ARTIFACTS_PATH }}
+          copy-item -path ${{ env.KODI_ADDONS_BUILD_PATH }}/${{ vars.VIS_GOOM_ROOT_DIR }}/* ${{ env.ARTIFACTS_PATH }}/ -recurse
+
+          echo "Artifacts contents:"
+          ls ${{ env.ARTIFACTS_PATH }}/
+
+      - name: Run Goom++ Test Harness for ${{ runner.os }}
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          ${{ env.BUILD_PATH }}/goom-libs-artifacts/bin/${{ matrix.config.build_type }}/goom_lib_tests -d yes
+
+      - name: Run Goom++ Test Harness for  ${{ runner.os }}
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          ${{ env.BUILD_PATH }}/visualization.goom-pp-prefix/src/visualization.goom-pp-build/goom-libs-artifacts/bin/Release/goom_lib_tests.exe -d yes
+
+      - name: Archive Goom++ Artifacts
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARTIFACTS_PATH }}
+          retention-days: 1
