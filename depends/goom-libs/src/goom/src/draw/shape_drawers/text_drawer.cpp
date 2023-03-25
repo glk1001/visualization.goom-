@@ -20,6 +20,7 @@
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
+#include "goom_utils.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
 
@@ -465,7 +466,7 @@ auto TextDrawer::TextDrawerImpl::SetFontFile(const std::string& filename) -> voi
   const auto fontFileSize = fontFile.tellg();
   fontFile.seekg(0);
   m_fontBuffer.resize(static_cast<size_t>(fontFileSize));
-  fontFile.read(reinterpret_cast<char*>(m_fontBuffer.data()), fontFileSize);
+  fontFile.read(ptr_cast<char*>(m_fontBuffer.data()), fontFileSize);
 
   // Create a face from a memory buffer.  Be sure not to delete the memory buffer
   // until we are done using that font as FreeType will reference it directly.
@@ -875,7 +876,7 @@ auto TextDrawer::TextDrawerImpl::GetOutlineSpans() const -> SpanArray
   }
 
   // Render the outline spans to the span list
-  auto* const outline = &reinterpret_cast<FT_OutlineGlyph>(glyph)->outline;
+  auto* const outline = &ptr_cast<FT_OutlineGlyph>(glyph)->outline;
   auto outlineSpans   = SpanArray{};
   RenderSpans(outline, &outlineSpans);
   if (outlineSpans.empty())

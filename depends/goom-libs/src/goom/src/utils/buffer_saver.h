@@ -1,6 +1,7 @@
 #pragma once
 
 #include "buffer_view.h"
+#include "goom/goom_utils.h"
 
 #include <cstdint>
 #include <format>
@@ -191,17 +192,14 @@ void BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
 {
   if (typeid(HeaderT) != typeid(EmptyHeaderType))
   {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
-    file.write(reinterpret_cast<const char*>(&header), sizeof(HeaderT));
+    file.write(ptr_cast<const char*>(&header), sizeof(HeaderT));
   }
 
   const auto bufferLen = buffer.GetBufferLen();
-  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
-  file.write(reinterpret_cast<const char*>(&tag), sizeof(tag));
-  file.write(reinterpret_cast<const char*>(&bufferLen), sizeof(bufferLen));
-  file.write(reinterpret_cast<const char*>(buffer.Data()),
+  file.write(ptr_cast<const char*>(&tag), sizeof(tag));
+  file.write(ptr_cast<const char*>(&bufferLen), sizeof(bufferLen));
+  file.write(ptr_cast<const char*>(buffer.Data()),
              static_cast<std::streamsize>(bufferLen * sizeof(T)));
-  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
 }
 
 template<class T, class HeaderT>
@@ -221,8 +219,7 @@ auto BufferSaver<T, HeaderT>::PeekHeaderBinary(std::istream& file, HeaderT& head
   if (typeid(HeaderT) != typeid(EmptyHeaderType))
   {
     HeaderT header1;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
-    file.read(reinterpret_cast<char*>(&header1), sizeof(HeaderT));
+    file.read(ptr_cast<char*>(&header1), sizeof(HeaderT));
     header = header1;
     file.seekg(0);
   }

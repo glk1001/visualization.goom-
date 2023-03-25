@@ -8,6 +8,7 @@
 #include "gl_renderer.h"
 
 #include "goom/goom_logger.h"
+#include "goom/goom_utils.h"
 
 #include <array>
 #include <cstring>
@@ -202,17 +203,12 @@ auto GlRenderer::GLRendererImpl::InitGl() -> void
   LogDebug(*m_goomLogger, "Start InitGl.");
   LogDebug(*m_goomLogger, "glGetError() = {}", glGetError());
 
-  // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
-  LogDebug(
-      *m_goomLogger, "GL_VERSION  : {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-  LogDebug(
-      *m_goomLogger, "GL_VENDOR   : {}", reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
-  LogDebug(
-      *m_goomLogger, "GL_RENDERER : {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  LogDebug(*m_goomLogger, "GL_VERSION  : {}", ptr_cast<const char*>(glGetString(GL_VERSION)));
+  LogDebug(*m_goomLogger, "GL_VENDOR   : {}", ptr_cast<const char*>(glGetString(GL_VENDOR)));
+  LogDebug(*m_goomLogger, "GL_RENDERER : {}", ptr_cast<const char*>(glGetString(GL_RENDERER)));
   LogDebug(*m_goomLogger,
            "GLSL VERSION: {}",
-           reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
-  // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
+           ptr_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
   InitGlShaders();
   InitGlObjects();

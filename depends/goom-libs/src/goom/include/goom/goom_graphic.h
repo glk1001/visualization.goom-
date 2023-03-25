@@ -2,6 +2,7 @@
 
 #include "goom_config.h"
 #include "goom_types.h"
+#include "goom_utils.h"
 
 #include <array>
 #include <cstdint>
@@ -344,8 +345,7 @@ inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept
 
 inline auto PixelBuffer::GetBuffPtr() const noexcept -> const PixelChannelType*
 {
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): Wait for C++20 std::bitcast?
-  return reinterpret_cast<const PixelChannelType*>(m_buff.data());
+  return ptr_cast<const PixelChannelType*>(m_buff.data());
 }
 
 // TODO(glk) - AppleClang does not seem to optimize std::copy - ignore it for now.
@@ -454,13 +454,10 @@ inline auto PixelBuffer::Get4RHBNeighbours(const size_t x, const size_t y) const
   };
   std::array<Pixel, NUM_NBRS> neighbours;
 
-  static constexpr auto SECOND_INDEX = 2U;
-  // NOLINTBEGIN: Optimization
-  *reinterpret_cast<TwoPixels*>(&(neighbours[0])) =
-      *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos]));
-  *reinterpret_cast<TwoPixels*>(&(neighbours[SECOND_INDEX])) =
-      *reinterpret_cast<const TwoPixels*>(&(m_buff[xPos + m_width]));
-  // NOLINTEND
+  static constexpr auto SECOND_INDEX       = 2U;
+  *ptr_cast<TwoPixels*>(neighbours.data()) = *ptr_cast<const TwoPixels*>(&(m_buff[xPos]));
+  *ptr_cast<TwoPixels*>(&(neighbours[SECOND_INDEX])) =
+      *ptr_cast<const TwoPixels*>(&(m_buff[xPos + m_width]));
 
   return neighbours;
 }
