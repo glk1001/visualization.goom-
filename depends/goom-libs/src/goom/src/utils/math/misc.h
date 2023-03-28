@@ -175,6 +175,19 @@ template<typename T>
 }
 
 template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+[[nodiscard]] constexpr auto ModDecrement(const T val, const T mod) noexcept -> T
+{
+  auto iVal = static_cast<int32_t>(val);
+  --iVal;
+  if (iVal >= 0)
+  {
+    return static_cast<T>(iVal);
+  }
+  return mod - 1;
+}
+
+template<typename T>
 class Fraction
 {
 public:

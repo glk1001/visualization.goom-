@@ -9,50 +9,48 @@ DotDiameters::DotDiameters(const UTILS::MATH::IGoomRand& goomRand,
                            const DotProperties& dotProperties) noexcept
   : m_goomRand{&goomRand},
     m_numDots{dotProperties.numDots},
-    m_minDotDiameter{dotProperties.minDotDiameter + MIN_DIAMETER_EXTRA},
-    m_maxDotDiameter{dotProperties.maxDotDiameter}
+    m_minDiameter{dotProperties.minDiameter + MIN_DIAMETER_EXTRA},
+    m_maxDiameter{dotProperties.maxDiameter}
 {
   Expects(dotProperties.numDots > 0);
-  Expects((dotProperties.minDotDiameter + MIN_DIAMETER_EXTRA) <= dotProperties.maxDotDiameter);
-  ChangeDotDiameters();
+  Expects((dotProperties.minDiameter + MIN_DIAMETER_EXTRA) <= dotProperties.maxDiameter);
+  ChangeDiameters();
 }
 
-auto DotDiameters::GetInitialDotDiameters(
-    const NumDotsAndMaxDiameter& numDotsAndMaxDiameter) noexcept -> std::vector<uint32_t>
+auto DotDiameters::GetInitialDiameters(const NumDotsAndMaxDiameter& numDotsAndMaxDiameter) noexcept
+    -> std::vector<uint32_t>
 {
   auto diameters = std::vector<uint32_t>(numDotsAndMaxDiameter.numDots);
-  std::fill(begin(diameters), end(diameters), numDotsAndMaxDiameter.maxDotDiameter);
+  std::fill(begin(diameters), end(diameters), numDotsAndMaxDiameter.maxDiameter);
   return diameters;
 }
 
-auto DotDiameters::ChangeDotDiameters() noexcept -> void
+auto DotDiameters::ChangeDiameters() noexcept -> void
 {
   if (m_goomRand->ProbabilityOf(PROB_FIXED_DIAMETER))
   {
-    ChangeToFixedDotDiameters();
+    ChangeToFixedDiameters();
   }
   else
   {
-    ChangeToVariableDotDiameters();
+    ChangeToVariableDiameters();
   }
 }
 
-auto DotDiameters::ChangeToFixedDotDiameters() noexcept -> void
+auto DotDiameters::ChangeToFixedDiameters() noexcept -> void
 {
-  const auto fixedDotDiameter = m_goomRand->GetRandInRange(m_minDotDiameter, m_maxDotDiameter + 1);
+  const auto fixedDiameter = m_goomRand->GetRandInRange(m_minDiameter, m_maxDiameter + 1);
 
-  std::fill(begin(m_dotDiameters), end(m_dotDiameters), fixedDotDiameter);
+  std::fill(begin(m_diameters), end(m_diameters), fixedDiameter);
 }
 
-auto DotDiameters::ChangeToVariableDotDiameters() noexcept -> void
+auto DotDiameters::ChangeToVariableDiameters() noexcept -> void
 {
-  const auto smallDotDiameter = m_goomRand->GetRandInRange(m_minDotDiameter, m_maxDotDiameter - 1);
+  const auto smallDiameter = m_goomRand->GetRandInRange(m_minDiameter, m_maxDiameter - 1);
 
   static constexpr auto INCREASED_DIAMETER = 3U;
-  const auto minLargerDotDiameter =
-      std::min(m_maxDotDiameter, smallDotDiameter + INCREASED_DIAMETER);
-  const auto largerDotDiameter =
-      m_goomRand->GetRandInRange(minLargerDotDiameter, m_maxDotDiameter + 1);
+  const auto minLargerDiameter = std::min(m_maxDiameter, smallDiameter + INCREASED_DIAMETER);
+  const auto largerDotDiameter = m_goomRand->GetRandInRange(minLargerDiameter, m_maxDiameter + 1);
 
   static constexpr auto MIN_LARGER_DIAMETER_FREQ = 2U;
   static constexpr auto MAX_LARGER_DIAMETER_FREQ = 5U;
@@ -61,7 +59,7 @@ auto DotDiameters::ChangeToVariableDotDiameters() noexcept -> void
 
   for (auto i = 1U; i < m_numDots; ++i)
   {
-    m_dotDiameters.at(i) = 0 == (i % largerDiameterEvery) ? largerDotDiameter : smallDotDiameter;
+    m_diameters.at(i) = 0 == (i % largerDiameterEvery) ? largerDotDiameter : smallDiameter;
   }
 }
 

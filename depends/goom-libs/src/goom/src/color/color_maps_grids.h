@@ -20,11 +20,6 @@ public:
                 const UTILS::TValue& verticalT,
                 const std::vector<const IColorMap*>& verticalColorMaps,
                 const ColorMixingTFunc& colorMixingTFunc) noexcept;
-  ColorMapsGrid(const ColorMapsGrid&) noexcept = delete;
-  ColorMapsGrid(ColorMapsGrid&&) noexcept      = default;
-  ~ColorMapsGrid() noexcept;
-  auto operator=(const ColorMapsGrid&) noexcept = delete;
-  auto operator=(ColorMapsGrid&&) noexcept      = delete;
 
   auto SetVerticalT(const UTILS::TValue& val) noexcept -> void;
   auto SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,

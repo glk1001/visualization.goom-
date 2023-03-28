@@ -37,6 +37,7 @@ public:
            const DotTargetsToAndFrom& dotTargetsToAndFrom,
            const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept;
 
+  [[nodiscard]] auto GetNumDots() const noexcept -> uint32_t;
   enum class Direction
   {
     TO_TARGET,
@@ -154,6 +155,11 @@ inline auto DotPaths::CheckReverse(const Direction currentDirection,
   ChangeDirectionWithToTargetFixup(GetOppositeDirection(currentDirection));
 
   m_changeDirectionPending = false;
+}
+
+inline auto DotPaths::GetNumDots() const noexcept -> uint32_t
+{
+  return m_numDots;
 }
 
 inline auto DotPaths::GetCurrentDirection() const noexcept -> Direction

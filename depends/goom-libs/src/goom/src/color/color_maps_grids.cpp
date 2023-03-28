@@ -24,8 +24,6 @@ ColorMapsGrid::ColorMapsGrid(const std::vector<const IColorMap*>& horizontalColo
 {
 }
 
-ColorMapsGrid::~ColorMapsGrid() noexcept = default;
-
 auto ColorMapsGrid::GetCurrentHorizontalLineColors() const -> std::vector<Pixel>
 {
   auto nextColors = std::vector<Pixel>(m_width);
