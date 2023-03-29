@@ -26,6 +26,7 @@ struct ZoomFilterEffectsSettings
 
   float maxZoomInCoeff;
   float baseZoomInCoeffFactorMultiplier;
+  float afterEffectsVelocityContribution;
   std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect;
 
   Point2dInt zoomMidpoint; // milieu de l'effet

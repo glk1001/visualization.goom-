@@ -82,10 +82,11 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
 
 [[nodiscard]] auto GetZoomFilterEffectsSettings() -> ZoomFilterEffectsSettings
 {
-  static constexpr auto DEFAULT_ZOOM_MID_X                        = 16;
-  static constexpr auto DEFAULT_ZOOM_MID_Y                        = 1;
-  static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                 = 2.01F;
-  static constexpr auto UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
+  static constexpr auto DEFAULT_ZOOM_MID_X                          = 16;
+  static constexpr auto DEFAULT_ZOOM_MID_Y                          = 1;
+  static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                   = 2.01F;
+  static constexpr auto UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER   = 1.0F;
+  static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION = 0.5F;
 
   static constexpr auto ALL_OFF_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
       {AfterEffectsTypes::BLOCK_WAVY, false},
@@ -102,6 +103,7 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
       Vitesse{},
       DEFAULT_MAX_ZOOM_IN_COEFF,
       UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
+      DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
       std::make_shared<UniformZoomInCoefficientsEffect>(),
       {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
       {

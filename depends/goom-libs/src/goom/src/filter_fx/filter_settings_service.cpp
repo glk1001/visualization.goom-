@@ -36,7 +36,7 @@ namespace
 
 // For debugging:
 
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
+constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
@@ -48,7 +48,7 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
@@ -792,7 +792,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES = EnumMap<AfterEffectsTypes, uint
       {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::Y_ONLY_MODE, Y_ONLY_HYPERCOS_WEIGHTS},
   }}};
-  Expects(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
+  static_assert(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
   return std::vector<Weights<HypercosOverlay>::KeyValue>{cbegin(HYPERCOS_WEIGHTS[filterMode]),
                                                          cend(HYPERCOS_WEIGHTS[filterMode])};
@@ -805,8 +805,8 @@ auto FilterSettingsService::GetFilterModeData(
     const std::string& resourcesDirectory,
     const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect) -> FilterModeEnumMap
 {
-  Expects(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
-  Expects(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
+  static_assert(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
+  static_assert(EFFECTS_PROBABILITIES.size() == NUM<ZoomFilterMode>);
 
   auto filterModeVec = std::vector<FilterModeEnumMap::KeyValue>{};
 
@@ -849,6 +849,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
            Vitesse{},
            DEFAULT_MAX_ZOOM_IN_COEFF,
            DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
+           DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
            {
@@ -1062,6 +1063,14 @@ auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> voi
       m_goomRand->GetRandInRange(MULTIPLIER_RANGE);
 }
 
+auto FilterSettingsService::SetAfterEffectsVelocityContribution() noexcept -> void
+{
+  static constexpr auto CONTRIBUTION_RANGE = IGoomRand::NumberRange<float>{0.1F, 1.0F};
+
+  m_filterSettings.filterEffectsSettings.afterEffectsVelocityContribution =
+      m_goomRand->GetRandInRange(CONTRIBUTION_RANGE);
+}
+
 auto FilterSettingsService::SetRandomZoomMidpoint() -> void
 {
   if (ALL_AFTER_EFFECTS_TURNED_OFF or IsZoomMidpointInTheMiddle())
@@ -1079,13 +1088,13 @@ auto FilterSettingsService::SetRandomZoomMidpoint() -> void
 
 auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
 {
-  if ((m_filterMode == ZoomFilterMode::WATER_MODE) || (m_filterMode == ZoomFilterMode::AMULET_MODE))
+  if ((m_filterMode == ZoomFilterMode::WATER_MODE) or (m_filterMode == ZoomFilterMode::AMULET_MODE))
   {
     return true;
   }
 
-  if (((m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) ||
-       (m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) &&
+  if (((m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) or
+       (m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) and
       m_goomRand->ProbabilityOf(PROB_CRYSTAL_BALL_IN_MIDDLE))
   {
     return true;
@@ -1139,9 +1148,9 @@ auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) 
 
 inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPointEvent) -> bool
 {
-  return (midPointEvent == ZoomMidpointEvents::BOTTOM_MID_POINT) ||
-         (midPointEvent == ZoomMidpointEvents::TOP_MID_POINT) ||
-         (midPointEvent == ZoomMidpointEvents::RIGHT_MID_POINT) ||
+  return (midPointEvent == ZoomMidpointEvents::BOTTOM_MID_POINT) or
+         (midPointEvent == ZoomMidpointEvents::TOP_MID_POINT) or
+         (midPointEvent == ZoomMidpointEvents::RIGHT_MID_POINT) or
          (midPointEvent == ZoomMidpointEvents::LEFT_MID_POINT);
 }
 

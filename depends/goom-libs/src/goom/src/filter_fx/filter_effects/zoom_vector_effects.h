@@ -50,6 +50,7 @@ public:
                                              float sqDistFromZero,
                                              const NormalizedCoords& zoomInVelocity) const noexcept
       -> NormalizedCoords;
+  [[nodiscard]] auto GetAfterEffectsVelocityContribution() const noexcept -> float;
 
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
@@ -146,6 +147,11 @@ inline auto ZoomVectorEffects::GetAfterEffectsVelocity(
     const NormalizedCoords& zoomInVelocity) const noexcept -> NormalizedCoords
 {
   return m_zoomVectorAfterEffects.GetAfterEffectsVelocity(coords, sqDistFromZero, zoomInVelocity);
+}
+
+inline auto ZoomVectorEffects::GetAfterEffectsVelocityContribution() const noexcept -> float
+{
+  return m_filterEffectsSettings->afterEffectsVelocityContribution;
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

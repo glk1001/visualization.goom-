@@ -45,20 +45,38 @@ auto FilterZoomVector::GetZoomInPoint(const NormalizedCoords& coords,
                                       const NormalizedCoords& filterViewportCoords) const noexcept
     -> NormalizedCoords
 {
+  const auto filterEffectsZoomInPoint = GetFilterEffectsZoomInPoint(coords, filterViewportCoords);
+  const auto afterEffectsVelocity     = GetAfterEffectsVelocity(coords, filterEffectsZoomInPoint);
+
+  const auto finalZoomInPoint =
+      filterEffectsZoomInPoint -
+      (m_zoomVectorEffects.GetAfterEffectsVelocityContribution() * afterEffectsVelocity);
+
+  return m_zoomVectorEffects.GetCleanedCoords(finalZoomInPoint);
+}
+
+inline auto FilterZoomVector::GetFilterEffectsZoomInPoint(
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+    const NormalizedCoords& coords,
+    const NormalizedCoords& filterViewportCoords) const noexcept -> NormalizedCoords
+{
   const auto absSqFilterViewportCoords =
       SqDistance(filterViewportCoords.GetX(), filterViewportCoords.GetY());
   const auto zoomInCoeffs =
       m_zoomVectorEffects.GetZoomInCoefficients(filterViewportCoords, absSqFilterViewportCoords);
   const auto zoomInFactor = 1.0F - zoomInCoeffs;
-  const auto zoomInPoint  = zoomInFactor * coords;
 
-  const auto zoomInVelocity = coords - zoomInPoint;
+  return zoomInFactor * coords;
+}
+
+inline auto FilterZoomVector::GetAfterEffectsVelocity(
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+    const NormalizedCoords& coords,
+    const NormalizedCoords& filterEffectsZoomInPoint) const noexcept -> NormalizedCoords
+{
+  const auto zoomInVelocity = coords - filterEffectsZoomInPoint;
   const auto absSqCoords    = SqDistance(coords.GetX(), coords.GetY());
-  const auto afterEffectsVelocity =
-      m_zoomVectorEffects.GetAfterEffectsVelocity(coords, absSqCoords, zoomInVelocity);
-  const auto afterEffectsZoomInPoint = zoomInPoint - afterEffectsVelocity;
-
-  return m_zoomVectorEffects.GetCleanedCoords(afterEffectsZoomInPoint);
+  return m_zoomVectorEffects.GetAfterEffectsVelocity(coords, absSqCoords, zoomInVelocity);
 }
 
 } // namespace GOOM::FILTER_FX

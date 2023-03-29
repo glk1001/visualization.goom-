@@ -139,20 +139,22 @@ private:
       const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect)
       -> FilterModeEnumMap;
 
-  static constexpr uint32_t DEFAULT_ZOOM_MID_X                        = 16;
-  static constexpr uint32_t DEFAULT_ZOOM_MID_Y                        = 1;
-  static constexpr Viewport DEFAULT_FILTER_VIEWPORT                   = Viewport{};
-  static constexpr uint32_t DEFAULT_TRAN_LERP_INCREMENT               = 0x7fU;
-  static constexpr float DEFAULT_SWITCH_MULT                          = 29.0F / 30.0F;
-  static constexpr float DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
-  static constexpr float DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
-  static constexpr float MAX_MAX_ZOOM_IN_COEFF                        = 4.01F;
+  static constexpr auto DEFAULT_ZOOM_MID_X                           = 16U;
+  static constexpr auto DEFAULT_ZOOM_MID_Y                           = 1U;
+  static constexpr auto DEFAULT_FILTER_VIEWPORT                      = Viewport{};
+  static constexpr auto DEFAULT_TRAN_LERP_INCREMENT                  = 0x7fU;
+  static constexpr auto DEFAULT_SWITCH_MULT                          = 29.0F / 30.0F;
+  static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
+  static constexpr auto DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
+  static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION  = 0.5F;
+  static constexpr auto MAX_MAX_ZOOM_IN_COEFF                        = 4.01F;
   ZoomFilterSettings m_filterSettings;
   UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
   auto SetMaxZoomInCoeff() -> void;
   auto SetBaseZoomInCoeffFactorMultiplier() noexcept -> void;
+  auto SetAfterEffectsVelocityContribution() noexcept -> void;
 
   enum class ZoomMidpointEvents
   {
@@ -236,6 +238,7 @@ inline auto FilterSettingsService::ChangeMilieu() -> void
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   SetMaxZoomInCoeff();
   SetBaseZoomInCoeffFactorMultiplier();
+  SetAfterEffectsVelocityContribution();
   SetRandomZoomMidpoint();
 }
 

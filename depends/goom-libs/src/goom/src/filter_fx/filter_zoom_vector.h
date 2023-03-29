@@ -38,6 +38,12 @@ public:
 
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;
+  [[nodiscard]] auto GetFilterEffectsZoomInPoint(
+      const NormalizedCoords& coords, const NormalizedCoords& filterViewportCoords) const noexcept
+      -> NormalizedCoords;
+  [[nodiscard]] auto GetAfterEffectsVelocity(
+      const NormalizedCoords& coords,
+      const NormalizedCoords& filterEffectsZoomInPoint) const noexcept -> NormalizedCoords;
 };
 
 } // namespace GOOM::FILTER_FX
