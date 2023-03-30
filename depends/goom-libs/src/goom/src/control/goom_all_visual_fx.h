@@ -62,7 +62,7 @@ public:
 
   auto Update() noexcept -> void;
   auto ChangePixelBlendFunc() noexcept -> void;
-  [[nodiscard]] auto GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -73,9 +73,9 @@ private:
     LUMA_MIX,
     _num // unused, and marks the enum end
   };
-  static constexpr float ADD_WEIGHT      = 50.0F;
-  static constexpr float MULTIPLY_WEIGHT = 5.0F;
-  static constexpr float LUMA_MIX_WEIGHT = 5.0F;
+  static constexpr auto ADD_WEIGHT      = 50.0F;
+  static constexpr auto MULTIPLY_WEIGHT = 5.0F;
+  static constexpr auto LUMA_MIX_WEIGHT = 5.0F;
   UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights{
       *m_goomRand,
       {
@@ -84,27 +84,39 @@ private:
                   {PixelBlendType::LUMA_MIX, LUMA_MIX_WEIGHT},
                   }
   };
-  PixelBlendType m_currentPixelBlendType                   = PixelBlendType::ADD;
-  DRAW::IGoomDraw::BlendPixelFunc m_currentBlendPixelFunc  = GetColorAddBlendPixelFunc();
-  DRAW::IGoomDraw::BlendPixelFunc m_previousBlendPixelFunc = GetColorAddBlendPixelFunc();
-  static constexpr auto MAX_BLEND_STEPS                    = 500U;
-  static constexpr auto MIN_BLEND_STEPS                    = 50U;
-  UTILS::TValue m_blendT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_BLEND_STEPS}
+  PixelBlendType m_nextPixelBlendType                      = PixelBlendType::ADD;
+  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetColorAddPixelBlendFunc();
+  DRAW::IGoomDraw::PixelBlendFunc m_nextPixelBlendFunc     = m_previousPixelBlendFunc;
+  DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
+  static constexpr auto MAX_LERP_STEPS                     = 500U;
+  static constexpr auto MIN_LERP_STEPS                     = 50U;
+  UTILS::TValue m_lerpT{
+      {UTILS::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
   };
-  [[nodiscard]] auto GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] static auto GetColorAddBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] auto GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
-  [[nodiscard]] static auto GetColorMultiplyBlendPixelFunc() -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetNextPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc;
+  [[nodiscard]] auto GetLerpedPixelBlendFunc() const -> DRAW::IGoomDraw::PixelBlendFunc;
+  [[nodiscard]] static auto GetColorAddPixelBlendFunc() -> DRAW::IGoomDraw::PixelBlendFunc;
+  [[nodiscard]] static auto GetColorMultiplyPixelBlendFunc() -> DRAW::IGoomDraw::PixelBlendFunc;
   static constexpr auto MAX_LUMA_MIX_T = 1.0F;
   static constexpr auto MIN_LUMA_MIX_T = 0.3F;
   float m_lumaMixT                     = MIN_LUMA_MIX_T;
-  [[nodiscard]] auto GetSameLumaMixBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc;
+  [[nodiscard]] auto GetSameLumaMixPixelBlendFunc() const -> DRAW::IGoomDraw::PixelBlendFunc;
 };
 
 inline auto PixelBlender::Update() noexcept -> void
 {
-  m_blendT.Increment();
+  m_lerpT.Increment();
+
+  if (m_lerpT() >= 1.0F)
+  {
+    m_currentPixelBlendFunc = m_nextPixelBlendFunc;
+  }
+}
+
+inline auto PixelBlender::GetCurrentPixelBlendFunc() const noexcept
+    -> DRAW::IGoomDraw::PixelBlendFunc
+{
+  return m_currentPixelBlendFunc;
 }
 
 class AllStandardVisualFx;

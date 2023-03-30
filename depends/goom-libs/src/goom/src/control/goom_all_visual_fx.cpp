@@ -50,70 +50,69 @@ PixelBlender::PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_
 
 auto PixelBlender::ChangePixelBlendFunc() noexcept -> void
 {
+  const auto previousPixelBlendType = m_nextPixelBlendType;
+
   m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
-  m_previousBlendPixelFunc = m_currentBlendPixelFunc;
-  m_currentPixelBlendType  = m_pixelBlendTypeWeights.GetRandomWeighted();
-  m_currentBlendPixelFunc  = GetPixelBlendFunc();
-  m_blendT.SetNumSteps(m_goomRand->GetRandInRange(MIN_BLEND_STEPS, MAX_BLEND_STEPS + 1U));
-  m_blendT.Reset();
+  m_previousPixelBlendFunc = m_nextPixelBlendFunc;
+  m_nextPixelBlendType     = m_pixelBlendTypeWeights.GetRandomWeighted();
+
+  if (previousPixelBlendType != m_nextPixelBlendType)
+  {
+    m_nextPixelBlendFunc    = GetNextPixelBlendFunc();
+    m_currentPixelBlendFunc = GetLerpedPixelBlendFunc();
+  }
+
+  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(MIN_LERP_STEPS, MAX_LERP_STEPS + 1U));
+  m_lerpT.Reset();
 }
 
-auto PixelBlender::GetPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetNextPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc
 {
-  switch (m_currentPixelBlendType)
+  switch (m_nextPixelBlendType)
   {
     case PixelBlendType::ADD:
-      return GetColorAddBlendPixelFunc();
+      return GetColorAddPixelBlendFunc();
     case PixelBlendType::MULTIPLY:
-      return GetColorMultiplyBlendPixelFunc();
+      return GetColorMultiplyPixelBlendFunc();
     case PixelBlendType::LUMA_MIX:
-      return GetSameLumaMixBlendPixelFunc();
+      return GetSameLumaMixPixelBlendFunc();
     default:
       FailFast();
   }
 }
 
-auto PixelBlender::GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::BlendPixelFunc
-{
-  if (m_currentPixelBlendType == PixelBlendType::ADD)
-  {
-    return GetColorAddBlendPixelFunc();
-  }
-  return GetLerpedBlendPixelFunc();
-}
-
 // NOTE: Tried reverse add color (where oldColor is multiplied by intensity),
 //       but the resulting black pixels don't look good.
-auto PixelBlender::GetColorAddBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetColorAddPixelBlendFunc() -> IGoomDraw::PixelBlendFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   { return GetColorAdd(oldColor, GetBrighterColorInt(intBuffIntensity, newColor)); };
 }
 
-auto PixelBlender::GetLerpedBlendPixelFunc() const -> DRAW::IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetLerpedPixelBlendFunc() const -> DRAW::IGoomDraw::PixelBlendFunc
 {
   return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
-    return COLOR::GetRgbColorLerp(m_previousBlendPixelFunc(oldColor, newColor, intBuffIntensity),
-                                  m_currentBlendPixelFunc(oldColor, newColor, intBuffIntensity),
-                                  m_blendT());
+    return COLOR::GetRgbColorLerp(m_previousPixelBlendFunc(oldColor, newColor, intBuffIntensity),
+                                  m_nextPixelBlendFunc(oldColor, newColor, intBuffIntensity),
+                                  m_lerpT());
   };
 }
 
-auto PixelBlender::GetColorMultiplyBlendPixelFunc() -> IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetColorMultiplyPixelBlendFunc() -> IGoomDraw::PixelBlendFunc
 {
   return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
-    if (IsCloseToBlack(oldColor))
+    if (IsCloseToBlack(newColor))
     {
-      return newColor;
+      return oldColor;
     }
     return GetColorAdd(GetColorMultiply(oldColor, newColor),
                        GetBrighterColorInt(intBuffIntensity, newColor));
   };
 }
 
-auto PixelBlender::GetSameLumaMixBlendPixelFunc() const -> IGoomDraw::BlendPixelFunc
+auto PixelBlender::GetSameLumaMixPixelBlendFunc() const -> IGoomDraw::PixelBlendFunc
 {
   return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
   {
@@ -260,7 +259,7 @@ auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
 auto GoomAllVisualFx::ChangeDrawPixelBlend() noexcept -> void
 {
   m_pixelBlender.ChangePixelBlendFunc();
-  m_draw->SetBlendPixelFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
 }
 
 auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) noexcept
