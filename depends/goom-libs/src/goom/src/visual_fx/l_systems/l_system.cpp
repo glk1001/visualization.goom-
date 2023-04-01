@@ -84,6 +84,7 @@ using ::LSYS::GraphicsGenerator;
 using ::LSYS::Interpreter;
 using ::LSYS::List;
 using ::LSYS::Module;
+using ::LSYS::SetParserDebug;
 using ::LSYS::Value;
 
 LSystem::LSystem(DRAW::IGoomDraw& draw,
@@ -124,6 +125,8 @@ auto LSystem::GetLSysDrawFuncs() noexcept -> GraphicsGenerator::DrawFuncs
 
 auto LSystem::Start() noexcept -> void
 {
+  SetParserDebug(false);
+
   InitNextLSysInterpreter();
   RestartLSysInterpreter();
 
