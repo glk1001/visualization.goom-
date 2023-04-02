@@ -1,7 +1,5 @@
-name: Build kodi goom-pp using 'cmake'
+name: TEST - Build kodi goom-pp using 'cmake' with archive deploy
 on:
-  push:
-    branches: []
   workflow_dispatch:
 
 jobs:
@@ -35,31 +33,10 @@ jobs:
       matrix:
         config:
         - {
-            name: 'Ubuntu Clang - RelWithDebInfo',
-            os: 'ubuntu-latest',
-            cc: 'clang-${{ vars.CLANG_VER }}',
-            cxx: 'clang++-${{ vars.CLANG_VER }}',
-            build_type: 'RelWithDebInfo',
-          }
-        - {
             name: 'Ubuntu Clang - Release',
             os: 'ubuntu-latest',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
-            build_type: 'Release',
-          }
-        - {
-            name: 'Ubuntu GCC - RelWithDebInfo',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
-            build_type: 'RelWithDebInfo',
-          }
-        - {
-            name: 'Ubuntu GCC - Release',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
             build_type: 'Release',
           }
         - {
@@ -201,49 +178,6 @@ jobs:
           echo "Artifacts contents (${{ env.ARTIFACTS_PATH }}/):"
           ls ${{ env.ARTIFACTS_PATH }}/
 
-      - name: Run clang-format-${{ vars.CLANG_VER }}
-        if: startsWith(matrix.config.name, 'Ubuntu Clang')
-        shell: bash
-        run: |
-          cd ${{ env.VIS_GOOM_PATH }}
-
-          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_VER }}" \
-                                              -i -r -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" \
-                                              "${PWD}"
-
-          if [[ "$(git diff --name-only)" != "" ]]; then
-            echo "ERROR: clang-format problem."
-            echo
-            clang-format-${{ vars.CLANG_VER }} --version
-            echo
-            git diff --name-only
-            #git diff
-            echo
-            exit 1
-          fi
-          echo "Success: Everything is clang-formatted correctly."
-
-      - name: Run clang-tidy-${{ vars.CLANG_VER }}
-        if: startsWith(matrix.config.name, 'Ubuntu Clang')
-        shell: bash
-        run: |
-          cd ${{ env.VIS_GOOM_PATH }}
-
-          run-clang-tidy-${{ vars.CLANG_VER }} -j $(getconf _NPROCESSORS_ONLN) \
-                                               -header-filter='^((?!catch2).)*$' \
-                                               -p ${{ env.BUILD_PATH }} \
-                                               "${PWD}/src" \
-                                               "${PWD}/depends/goom-libs/src"
-
-          if [[ $? != 0 ]]; then
-            echo "ERROR: clang-tidy problem."
-            echo
-            clang-tidy-${{ vars.CLANG_VER }} --version
-            echo
-            exit 1
-          fi
-          echo "Success: Everything is 'clang-tidy' correct."
-
       - name: Configure Goom++ for Windows
         if: ${{ runner.os == 'Windows' }}
         shell: powershell
@@ -265,22 +199,6 @@ jobs:
 
           echo "Artifacts contents:"
           ls ${{ env.ARTIFACTS_PATH }}/
-
-      - name: Run Goom++ Test Harness for ${{ runner.os }}
-        if: ${{ runner.os != 'Windows' }}
-        shell: bash
-        run: |
-          cd ${{ env.VIS_GOOM_PATH }}
-
-          ${{ env.BUILD_PATH }}/goom-libs-artifacts/bin/${{ matrix.config.build_type }}/goom_lib_tests -d yes
-
-      - name: Run Goom++ Test Harness for  ${{ runner.os }}
-        if: ${{ runner.os == 'Windows' }}
-        shell: powershell
-        run: |
-          cd ${{ env.VIS_GOOM_PATH }}
-
-          ${{ env.BUILD_PATH }}/visualization.goom-pp-prefix/src/visualization.goom-pp-build/goom-libs-artifacts/bin/Release/goom_lib_tests.exe -d yes
 
       - name: Archive Goom++ Artifacts
         if: ${{ github.event_name == 'workflow_dispatch' }}

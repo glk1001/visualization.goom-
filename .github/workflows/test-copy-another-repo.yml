@@ -1,0 +1,23 @@
+name: Copy File Test
+on:
+  workflow_dispatch:
+
+jobs:
+  copy-file:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Copies test file
+      uses: dmnemec/copy_file_to_another_repo_action@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.ACTIONS_GITHUB }}
+      with:
+        source_file: 'goom-spell.dic'
+        destination_repo: 'glk1001/glk1001.github.io'
+        destination_folder: ''
+        destination_branch: 'master'
+        user_email: 'gregg.kay@gmail.com'
+        user_name: 'glk1001'
+        commit_message: 'Test copy of goom-spell.dic'
