@@ -123,6 +123,14 @@ TEST_CASE("Pixels")
     static constexpr auto RG_PRODUCT = R_CHANNEL * G_CHANNEL;
     REQUIRE(MultiplyColorChannels(PIXEL.R(), PIXEL.G()) == RG_PRODUCT / MAX_COLOR_VAL);
   }
+  SECTION("Pixel Rgba")
+  {
+    static constexpr auto PIXEL = Pixel{
+        {0xFEU, 0xEEU, 0x32U, 0x00FFU}
+    };
+    static constexpr auto INT_PIXEL = 0x00FE00EE003200FFU;
+    REQUIRE(Rgba(PIXEL) == INT_PIXEL);
+  }
 }
 
 namespace
@@ -239,7 +247,7 @@ TEST_CASE("PixelBuffer Copy Time")
   };
 
   auto intSrceBuff        = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
-  const auto intTestPixel = TEST_PIXEL.Rgba();
+  const auto intTestPixel = Rgba(TEST_PIXEL);
   std::fill(intSrceBuff->begin(), intSrceBuff->end(), intTestPixel);
   auto intDestBuff = std::make_unique<std::vector<PixelIntType>>(WIDTH * HEIGHT);
 

@@ -101,7 +101,7 @@ static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::ma
               "Invalid MAX_CHANNEL_VALUE_HDR");
 
 // TODO(glk) - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
-class Pixel // NOLINT: union hard to fix here
+class Pixel
 {
 public:
   struct RGB
@@ -112,7 +112,7 @@ public:
     PixelChannelType alpha = MAX_ALPHA;
   };
 
-  constexpr Pixel() noexcept;
+  constexpr Pixel() noexcept = default;
   constexpr explicit Pixel(const RGB& color) noexcept;
   constexpr Pixel(PixelChannelType red,
                   PixelChannelType green,
@@ -132,8 +132,6 @@ public:
   [[nodiscard]] constexpr auto RFlt() const noexcept -> float;
   [[nodiscard]] constexpr auto GFlt() const noexcept -> float;
   [[nodiscard]] constexpr auto BFlt() const noexcept -> float;
-
-  [[nodiscard]] constexpr auto Rgba() const noexcept -> PixelIntType;
 
   [[nodiscard]] constexpr auto IsBlack() const noexcept -> bool;
 
@@ -158,13 +156,11 @@ private:
   };
 #endif /* COLOR_BGRA */
 
-  union Color
-  {
-    Channels channels{};
-    PixelIntType intVal;
-  };
-  Color m_color{};
+  Channels m_color{};
 };
+
+static_assert(sizeof(Pixel) == sizeof(PixelIntType));
+[[nodiscard]] constexpr auto Rgba(const Pixel& color) noexcept -> PixelIntType;
 
 struct FXBuffSettings
 {
@@ -226,16 +222,8 @@ private:
   Buffer m_buff;
 };
 
-static_assert(sizeof(Pixel) == sizeof(PixelIntType), "Invalid Pixel size.");
-
-constexpr Pixel::Pixel() noexcept : m_color{Channels{}}
-{
-}
-
 constexpr Pixel::Pixel(const RGB& color) noexcept
-  : m_color{
-        {color.red, color.green, color.blue, color.alpha}
-}
+  : m_color{color.red, color.green, color.blue, color.alpha}
 {
 }
 
@@ -243,9 +231,7 @@ constexpr Pixel::Pixel(const PixelChannelType red,
                        const PixelChannelType green,
                        const PixelChannelType blue,
                        const PixelChannelType alpha) noexcept
-  : m_color{
-        {red, green, blue, alpha}
-}
+  : m_color{red, green, blue, alpha}
 {
 }
 
@@ -255,47 +241,48 @@ static inline constexpr auto WHITE_PIXEL =
 
 constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {
-  return pixel1.m_color.intVal == pixel2.m_color.intVal; // NOLINT: union hard to fix here
+  return (pixel1.m_color.r == pixel2.m_color.r) and (pixel1.m_color.g == pixel2.m_color.g) and
+         (pixel1.m_color.b == pixel2.m_color.b) and (pixel1.m_color.a == pixel2.m_color.a);
 }
 
 constexpr auto Pixel::R() const noexcept -> PixelChannelType
 {
-  return m_color.channels.r; // NOLINT: union hard to fix here
+  return m_color.r;
 }
 
 constexpr auto Pixel::SetR(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.r = val; // NOLINT: union hard to fix here
+  m_color.r = val;
 }
 
 constexpr auto Pixel::G() const noexcept -> PixelChannelType
 {
-  return m_color.channels.g; // NOLINT: union hard to fix here
+  return m_color.g;
 }
 
 constexpr auto Pixel::SetG(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.g = val; // NOLINT: union hard to fix here
+  m_color.g = val;
 }
 
 constexpr auto Pixel::B() const noexcept -> PixelChannelType
 {
-  return m_color.channels.b; // NOLINT: union hard to fix here
+  return m_color.b;
 }
 
 constexpr auto Pixel::SetB(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.b = val; // NOLINT: union hard to fix here
+  m_color.b = val;
 }
 
 constexpr auto Pixel::A() const noexcept -> PixelChannelType
 {
-  return m_color.channels.a; // NOLINT: union hard to fix here
+  return m_color.a;
 }
 
 constexpr auto Pixel::SetA(const PixelChannelType val) noexcept -> void
 {
-  m_color.channels.a = val; // NOLINT: union hard to fix here
+  m_color.a = val;
 }
 
 constexpr auto Pixel::RFlt() const noexcept -> float
@@ -313,14 +300,29 @@ constexpr auto Pixel::BFlt() const noexcept -> float
   return static_cast<float>(B()) / channel_limits<float>::max();
 }
 
-constexpr auto Pixel::Rgba() const noexcept -> PixelIntType
+constexpr auto Rgba(const Pixel& color) noexcept -> PixelIntType
 {
-  return m_color.intVal; // NOLINT: union hard to fix here
+  constexpr auto CHANNEL_DEPTH = sizeof(PixelChannelType) * 8U;
+  constexpr auto SHIFT_AMOUNT1 = 3U * CHANNEL_DEPTH;
+  constexpr auto SHIFT_AMOUNT2 = 2U * CHANNEL_DEPTH;
+  constexpr auto SHIFT_AMOUNT3 = 1U * CHANNEL_DEPTH;
+  constexpr auto SHIFT_AMOUNT4 = 0U * CHANNEL_DEPTH;
+#ifdef COLOR_BGRA
+  return (static_cast<PixelIntType>(color.R()) << SHIFT_AMOUNT1) +
+         (static_cast<PixelIntType>(color.G()) << SHIFT_AMOUNT2) +
+         (static_cast<PixelIntType>(color.B()) << SHIFT_AMOUNT3) +
+         (static_cast<PixelIntType>(color.A()) << SHIFT_AMOUNT4);
+#else
+  return (static_cast<PixelIntType>(color.A()) << SHIFT_AMOUNT1) +
+         (static_cast<PixelIntType>(color.B()) << SHIFT_AMOUNT2) +
+         (static_cast<PixelIntType>(color.G()) << SHIFT_AMOUNT3) +
+         (static_cast<PixelIntType>(color.R()) << SHIFT_AMOUNT4);
+#endif
 }
 
 constexpr auto Pixel::IsBlack() const noexcept -> bool
 {
-  return 0 == m_color.intVal; // NOLINT: union hard to fix here
+  return (0 == m_color.r) and (0 == m_color.g) and (0 == m_color.b);
 }
 
 inline auto PixelBuffer::GetWidth() const noexcept -> uint32_t
