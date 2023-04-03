@@ -1,5 +1,6 @@
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
+#define IS_RELEASE_BUILD_TYPE
 #endif
 
 //#define __apple_build_version__
@@ -239,6 +240,7 @@ TEST_CASE("PixelBuffer Copy")
   REQUIRE(GetPixelCount(srceBuffer, TEST_PIXEL) == GetPixelCount(destBuffer, TEST_PIXEL));
 }
 
+#ifdef IS_RELEASE_BUILD_TYPE
 TEST_CASE("PixelBuffer Copy Time")
 {
   static constexpr auto NUM_LOOPS  = 100U;
@@ -282,13 +284,16 @@ TEST_CASE("PixelBuffer Copy Time")
 
 // AppleClang does not seem to optimize std::copy - ignore it for now.
 #ifndef __apple_build_version__
-  const auto tolerance = (durationCopyTo * 10) / 100;
+  static constexpr auto TOLERANCE_FRAC = 10;
+  const auto tolerance                 = durationCopyTo.count() / TOLERANCE_FRAC;
   UNSCOPED_INFO("durationCopyTo.count() = " << durationCopyTo.count());
   UNSCOPED_INFO("durationMemmove.count() = " << durationMemmove.count());
-  UNSCOPED_INFO("tolerance.count() = " << tolerance.count());
-  REQUIRE(durationCopyTo < (durationMemmove + tolerance));
+  UNSCOPED_INFO("tolerance.count() = " << tolerance);
+  REQUIRE(durationCopyTo.count() < (durationMemmove.count() + tolerance));
 #endif
 }
+#endif // IS_RELEASE_BUILD_TYPE
+
 // NOLINTEND(readability-function-cognitive-complexity)
 
 } // namespace GOOM::UNIT_TESTS
