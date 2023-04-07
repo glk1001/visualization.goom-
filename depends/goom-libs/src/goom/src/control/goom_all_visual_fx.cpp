@@ -38,8 +38,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  IGoomStateHandler& goomStateHandler,
                                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept
-  : m_draw{fxHelper.draw},
-    m_goomRand{fxHelper.goomRand},
+  : m_goomRand{fxHelper.goomRand},
     m_goomLogger{fxHelper.goomLogger},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
@@ -55,7 +54,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
 
 auto GoomAllVisualFx::Start() noexcept -> void
 {
-  ChangeAllFxPixelBlends();
+  ChangeAllFxPixelBlenders();
 
   m_allStandardVisualFx->Start();
   m_adaptiveExposure.Start();
@@ -117,11 +116,6 @@ auto GoomAllVisualFx::SetSingleBufferDots(const bool value) noexcept -> void
   m_allStandardVisualFx->SetSingleBufferDots(value);
 }
 
-auto GoomAllVisualFx::RefreshAllFx() noexcept -> void
-{
-  m_allStandardVisualFx->RefreshAllFx();
-}
-
 inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx) noexcept -> void
 {
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
@@ -137,15 +131,19 @@ inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) cons
   return {INTENSITY_FACTOR * buffIntensity};
 }
 
+auto GoomAllVisualFx::RefreshAllFx() noexcept -> void
+{
+  m_allStandardVisualFx->RefreshAllFx();
+}
+
 auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
 {
   m_allStandardVisualFx->ChangeColorMaps();
 }
 
-auto GoomAllVisualFx::ChangeAllFxPixelBlends() noexcept -> void
+auto GoomAllVisualFx::ChangeAllFxPixelBlenders() noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
-  m_draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_allStandardVisualFx->ChangeAllFxPixelBlenders();
 }
 
 auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) noexcept

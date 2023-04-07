@@ -52,11 +52,6 @@ auto ShaderFx::GetFxName() const noexcept -> std::string
   return "shader";
 }
 
-auto ShaderFx::ChangeEffects() noexcept -> void
-{
-  m_pimpl->ChangeEffects();
-}
-
 auto ShaderFx::Start() noexcept -> void
 {
   // nothing to do
@@ -65,6 +60,16 @@ auto ShaderFx::Start() noexcept -> void
 auto ShaderFx::Finish() noexcept -> void
 {
   // nothing to do
+}
+
+auto ShaderFx::ChangePixelBlender() noexcept -> void
+{
+  // nothing to do.
+}
+
+auto ShaderFx::ChangeEffects() noexcept -> void
+{
+  m_pimpl->ChangeEffects();
 }
 
 auto ShaderFx::ApplyMultiple() noexcept -> void

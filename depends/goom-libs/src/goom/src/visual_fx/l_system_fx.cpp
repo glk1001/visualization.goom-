@@ -14,6 +14,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <lsys/rand.h>
 #include <memory>
@@ -24,6 +25,7 @@ namespace GOOM::VISUAL_FX
 {
 
 using DRAW::IGoomDraw;
+using FX_UTILS::RandomPixelBlender;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -37,25 +39,28 @@ public:
   LSystemFxImpl(const FxHelper& fxHelper, const std::string& resourcesDirectory);
 
   auto Start() -> void;
+  auto Resume() -> void;
 
-  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
-
+  auto ChangePixelBlender() noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto Resume() -> void;
+  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
 
   auto ApplyMultiple() -> void;
 
 private:
-  const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
-  Point2dInt m_screenCentre = m_goomInfo->GetDimensions().GetCentrePoint();
+  const FxHelper* m_fxHelper;
+  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
 
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   auto Update() noexcept -> void;
   auto ChangeColors() noexcept -> void;
+
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
 
   [[nodiscard]] static auto GetLSystemFileList() noexcept -> std::vector<LSystem::LSystemFile>;
   static inline const std::vector<LSystem::LSystemFile> L_SYS_FILE_LIST = GetLSystemFileList();
@@ -73,8 +78,8 @@ private:
   std::vector<LSystem*> m_activeLSystems{m_lSystems.at(0).get()};
   static constexpr auto MIN_TIME_TO_KEEP_ACTIVE_LSYS = 200U;
   static constexpr auto MAX_TIME_TO_KEEP_ACTIVE_LSYS = 1000U;
-  Timer m_timeForTheseActiveLSys{
-      m_goomRand->GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
+  Timer m_timeForTheseActiveLSys{m_fxHelper->goomRand->GetRandInRange(
+      MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
 
   static constexpr auto MIN_NUM_ROTATE_DEGREES_STEPS = 50U;
   static constexpr auto MAX_NUM_ROTATE_DEGREES_STEPS = 500U;
@@ -91,20 +96,9 @@ LSystemFx::LSystemFx(const FxHelper& fxHelper, const std::string& resourcesDirec
 {
 }
 
-auto LSystemFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+auto LSystemFx::GetFxName() const noexcept -> std::string
 {
-  return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto LSystemFx::SetWeightedColorMaps(
-    [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  // Nothing to do
-}
-
-auto LSystemFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
-{
-  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+  return "L-System";
 }
 
 auto LSystemFx::Start() noexcept -> void
@@ -127,9 +121,25 @@ auto LSystemFx::Suspend() noexcept -> void
   // nothing to do
 }
 
-auto LSystemFx::GetFxName() const noexcept -> std::string
+auto LSystemFx::ChangePixelBlender() noexcept -> void
 {
-  return "L-System";
+  m_pimpl->ChangePixelBlender();
+}
+
+auto LSystemFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+}
+
+auto LSystemFx::SetWeightedColorMaps(
+    [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  // Nothing to do
+}
+
+auto LSystemFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto LSystemFx::ApplyMultiple() noexcept -> void
@@ -139,9 +149,9 @@ auto LSystemFx::ApplyMultiple() noexcept -> void
 
 LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory)
-  : m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
-    m_lSystems{GetLSystems(*fxHelper.draw, *m_goomInfo, *m_goomRand, resourcesDirectory)}
+  : m_fxHelper{&fxHelper},
+    m_lSystems{GetLSystems(
+        *fxHelper.draw, *m_fxHelper->goomInfo, *m_fxHelper->goomRand, resourcesDirectory)}
 {
 }
 
@@ -291,17 +301,17 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
   //LogInfo("Setting new active l-systems.");
 
   m_activeLSystems.clear();
-  const auto lSystemIndex = m_goomRand->GetRandInRange(0U, NUM_L_SYSTEMS);
+  const auto lSystemIndex = m_fxHelper->goomRand->GetRandInRange(0U, NUM_L_SYSTEMS);
   //const auto lSystemIndex = 1U;
   // m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
-  m_timeForTheseActiveLSys.SetTimeLimit(
-      m_goomRand->GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
+  m_timeForTheseActiveLSys.SetTimeLimit(m_fxHelper->goomRand->GetRandInRange(
+      MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
 }
 
 auto LSystemFx::LSystemFxImpl::Start() -> void
 {
-  SetRandFunc([this]() { return m_goomRand->GetRandInRange(0.0, 1.0); });
+  SetRandFunc([this]() { return m_fxHelper->goomRand->GetRandInRange(0.0, 1.0); });
 
   std::for_each(begin(m_lSystems),
                 end(m_lSystems),
@@ -328,6 +338,11 @@ inline auto LSystemFx::LSystemFxImpl::GetCurrentColorMapsNames() noexcept
   return {};
 }
 
+inline auto LSystemFx::LSystemFxImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
+}
+
 inline auto LSystemFx::LSystemFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
     -> void
 {
@@ -352,9 +367,11 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
 {
   //LogInfo("Doing update.");
 
+  UpdatePixelBlender();
+
   if (static constexpr auto PROB_CHANGE_COLORS = 0.01F;
-      (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or
-      m_goomRand->ProbabilityOf(PROB_CHANGE_COLORS))
+      (0 == m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or
+      m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_COLORS))
   {
     ChangeColors();
   }
@@ -368,6 +385,12 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
 
   std::for_each(
       begin(m_activeLSystems), end(m_activeLSystems), [](auto* lSystem) { lSystem->Update(); });
+}
+
+inline auto LSystemFx::LSystemFxImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
 }
 
 inline auto LSystemFx::LSystemFxImpl::DrawLSystem() noexcept -> void

@@ -3,19 +3,17 @@
 #include "shapes_fx.h"
 
 #include "color/random_color_maps_manager.h"
-#include "draw/goom_draw.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_logger.h"
-#include "goom_plugin_info.h"
 #include "goom_types.h"
 #include "point2d.h"
 #include "shapes/shapes.h"
 #include "spimpl.h"
-#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <array>
@@ -26,12 +24,11 @@ namespace GOOM::VISUAL_FX
 {
 
 using COLOR::RandomColorMapsManager;
-using DRAW::IGoomDraw;
+using FX_UTILS::RandomPixelBlender;
 using SHAPES::Shape;
 using UTILS::IncrementedValue;
 using UTILS::Timer;
 using UTILS::TValue;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::TWO_PI;
 
 class ShapesFx::ShapesFxImpl
@@ -39,20 +36,25 @@ class ShapesFx::ShapesFxImpl
 public:
   explicit ShapesFxImpl(const FxHelper& fxHelper) noexcept;
 
-  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  auto Start() noexcept -> void;
+
+  auto ChangePixelBlender() noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto Start() noexcept -> void;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
 
   auto ApplyMultiple() noexcept -> void;
 
 private:
-  const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const FxHelper* m_fxHelper;
   RandomColorMapsManager m_colorMapsManager{};
 
-  Point2dInt m_screenCentre = m_goomInfo->GetDimensions().GetCentrePoint();
+  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr float MIN_RADIUS_FRACTION = 0.2F;
   static constexpr float MAX_RADIUS_FRACTION = 0.5F;
@@ -63,7 +65,7 @@ private:
   static_assert(0 < MIN_NUM_SHAPE_PATH_STEPS);
   static_assert(MIN_NUM_SHAPE_PATH_STEPS < MAX_NUM_SHAPE_PATH_STEPS);
 
-  [[nodiscard]] auto GetShapes(IGoomDraw& draw) noexcept -> std::array<Shape, NUM_SHAPES>;
+  [[nodiscard]] auto GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>;
   std::array<Shape, NUM_SHAPES> m_shapes;
   [[nodiscard]] auto GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
       -> std::array<Point2dInt, NUM_SHAPES>;
@@ -80,8 +82,8 @@ private:
   static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 10;
   static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
   static_assert(MIN_INCREMENTS_PER_UPDATE <= MAX_INCREMENTS_PER_UPDATE);
-  uint32_t m_numIncrementsPerUpdate =
-      m_goomRand->GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+  uint32_t m_numIncrementsPerUpdate = m_fxHelper->goomRand->GetRandInRange(
+      MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   auto UpdateShapeEffects() noexcept -> void;
   auto UpdateShapeSpeeds() noexcept -> void;
   auto SetShapeSpeeds() noexcept -> void;
@@ -101,21 +103,6 @@ auto ShapesFx::GetFxName() const noexcept -> std::string
   return "shapes";
 }
 
-auto ShapesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
-{
-  return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto ShapesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
-}
-
-auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
-{
-  m_pimpl->SetZoomMidpoint(zoomMidpoint);
-}
-
 auto ShapesFx::Start() noexcept -> void
 {
   m_pimpl->Start();
@@ -126,20 +113,38 @@ auto ShapesFx::Finish() noexcept -> void
   // nothing to do
 }
 
+auto ShapesFx::ChangePixelBlender() noexcept -> void
+{
+  m_pimpl->ChangePixelBlender();
+}
+
+auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+}
+
+auto ShapesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto ShapesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
+}
+
 auto ShapesFx::ApplyMultiple() noexcept -> void
 {
   m_pimpl->ApplyMultiple();
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
-  : m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
-    m_shapes{GetShapes(*fxHelper.draw)}
+  : m_fxHelper{&fxHelper}, m_shapes{GetShapes()}
 {
   UpdateShapePathMinMaxNumSteps();
 }
 
-auto ShapesFx::ShapesFxImpl::GetShapes(IGoomDraw& draw) noexcept -> std::array<Shape, NUM_SHAPES>
+auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>
 {
   const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenCentre);
 
@@ -149,9 +154,9 @@ auto ShapesFx::ShapesFxImpl::GetShapes(IGoomDraw& draw) noexcept -> std::array<S
 
   return {
       {
-       Shape{draw,
-       *m_goomRand,
-       *m_goomInfo,
+       Shape{*m_fxHelper->draw,
+       *m_fxHelper->goomRand,
+       *m_fxHelper->goomInfo,
        m_colorMapsManager,
        {MIN_RADIUS_FRACTION,
        MAX_RADIUS_FRACTION,
@@ -199,14 +204,14 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 {
   if (static constexpr auto PROB_UPDATE_NUM_INCREMENTS = 0.1F;
-      m_goomRand->ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
+      m_fxHelper->goomRand->ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
   {
-    m_numIncrementsPerUpdate =
-        m_goomRand->GetRandInRange(MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+    m_numIncrementsPerUpdate = m_fxHelper->goomRand->GetRandInRange(MIN_INCREMENTS_PER_UPDATE,
+                                                                    MAX_INCREMENTS_PER_UPDATE + 1);
   }
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.1F;
-  const auto varyDotRadius                   = m_goomRand->ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  const auto varyDotRadius = m_fxHelper->goomRand->ProbabilityOf(PROB_VARY_DOT_RADIUS);
   std::for_each(begin(m_shapes),
                 end(m_shapes),
                 [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
@@ -221,6 +226,11 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> 
                 end(m_shapes),
                 [&newMinMaxNumShapePathSteps](Shape& shape)
                 { shape.SetShapePathsMinMaxNumSteps(newMinMaxNumShapePathSteps); });
+}
+
+inline auto ShapesFx::ShapesFxImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
 }
 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -239,8 +249,8 @@ inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoi
 auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
     -> Point2dInt
 {
-  const auto xMax    = m_goomInfo->GetDimensions().GetIntWidth() - 1;
-  const auto yMax    = m_goomInfo->GetDimensions().GetIntHeight() - 1;
+  const auto xMax    = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - 1;
+  const auto yMax    = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - 1;
   const auto xCutoff = xMax / 5;
   const auto yCutoff = yMax / 5;
 
@@ -295,13 +305,13 @@ auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoi
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
   static constexpr auto MARGIN = 20;
-  const auto width             = m_goomInfo->GetDimensions().GetIntWidth() - MARGIN;
-  const auto height            = m_goomInfo->GetDimensions().GetIntHeight() - MARGIN;
+  const auto width             = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - MARGIN;
+  const auto height            = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - MARGIN;
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
-    shapeZoomMidpoints.at(i) = {m_goomRand->GetRandInRange(MARGIN, width),
-                                m_goomRand->GetRandInRange(MARGIN, height)};
+    shapeZoomMidpoints.at(i) = {m_fxHelper->goomRand->GetRandInRange(MARGIN, width),
+                                m_fxHelper->goomRand->GetRandInRange(MARGIN, height)};
   }
 
   return shapeZoomMidpoints;
@@ -322,8 +332,15 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::ApplyMultiple() noexcept -> void
 {
+  UpdatePixelBlender();
   UpdateShapeSpeeds();
   UpdateShapes();
+}
+
+inline auto ShapesFx::ShapesFxImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeSpeeds() noexcept -> void

@@ -6,15 +6,12 @@
 #include <string>
 #include <vector>
 
-namespace GOOM
-{
-
-namespace COLOR
+namespace GOOM::COLOR
 {
 class RandomColorMaps;
 }
 
-namespace VISUAL_FX
+namespace GOOM::VISUAL_FX
 {
 struct FxHelper;
 
@@ -30,9 +27,10 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  auto ChangePixelBlender() noexcept -> void override;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
 
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
 
   auto ApplyMultiple() noexcept -> void override;
@@ -42,5 +40,4 @@ private:
   spimpl::unique_impl_ptr<ShapesFxImpl> m_pimpl;
 };
 
-} // namespace VISUAL_FX
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX

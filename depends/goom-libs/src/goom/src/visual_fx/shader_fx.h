@@ -7,8 +7,9 @@
 namespace GOOM
 {
 struct GoomShaderVariables;
+}
 
-namespace VISUAL_FX
+namespace GOOM::VISUAL_FX
 {
 struct FxHelper;
 
@@ -22,6 +23,7 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
+  auto ChangePixelBlender() noexcept -> void override;
   auto ChangeEffects() noexcept -> void;
 
   auto ApplyMultiple() noexcept -> void override;
@@ -39,5 +41,4 @@ private:
   spimpl::unique_impl_ptr<ShaderFxImpl> m_pimpl;
 };
 
-} // namespace VISUAL_FX
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX

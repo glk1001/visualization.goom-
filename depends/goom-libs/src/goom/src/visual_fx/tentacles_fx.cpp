@@ -17,6 +17,7 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <array>
 #include <memory>
@@ -28,6 +29,7 @@ namespace GOOM::VISUAL_FX
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
+using FX_UTILS::RandomPixelBlender;
 using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::NUM;
@@ -40,19 +42,19 @@ class TentaclesFx::TentaclesImpl
 public:
   explicit TentaclesImpl(const FxHelper& fxHelper);
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
-
-  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
-
   auto Start() -> void;
   auto Resume() -> void;
 
-  auto Update() -> void;
+  auto ChangePixelBlender() noexcept -> void;
+  auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
+
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
+
+  auto ApplyMultiple() -> void;
 
 private:
-  const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const FxHelper* m_fxHelper;
 
   enum class Drivers
   {
@@ -79,6 +81,10 @@ private:
   std::shared_ptr<const IColorMap> m_dominantLowColorMap{};
   auto ChangeDominantColor() -> void;
 
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
+
   static constexpr uint32_t MAX_TIME_FOR_DOMINANT_COLOR = 100;
   Timer m_timeWithThisDominantColor{MAX_TIME_FOR_DOMINANT_COLOR};
   auto UpdateTimers() -> void;
@@ -96,21 +102,6 @@ TentaclesFx::TentaclesFx(const FxHelper& fxHelper) noexcept
 auto TentaclesFx::GetFxName() const noexcept -> std::string
 {
   return "Tentacles FX";
-}
-
-auto TentaclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
-{
-  return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto TentaclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
-}
-
-auto TentaclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
-{
-  m_pimpl->SetZoomMidpoint(zoomMidpoint);
 }
 
 auto TentaclesFx::Start() noexcept -> void
@@ -133,9 +124,29 @@ auto TentaclesFx::Suspend() noexcept -> void
   // nothing to do
 }
 
+auto TentaclesFx::ChangePixelBlender() noexcept -> void
+{
+  m_pimpl->ChangePixelBlender();
+}
+
+auto TentaclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+}
+
+auto TentaclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto TentaclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
+}
+
 auto TentaclesFx::ApplyMultiple() noexcept -> void
 {
-  m_pimpl->Update();
+  m_pimpl->ApplyMultiple();
 }
 
 static constexpr auto LAYOUT0_START_RADIUS = 380.0F;
@@ -159,10 +170,9 @@ static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
 TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
-  : m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
+  : m_fxHelper{&fxHelper},
     m_driverWeights{
-      *m_goomRand,
+      *m_fxHelper->goomRand,
       {
           {Drivers::NUM0, DRIVERS_NUM0_WEIGHT},
           {Drivers::NUM1, DRIVERS_NUM1_WEIGHT},
@@ -172,7 +182,7 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
     // clang-format off
     m_tentacleDrivers{GetTentacleDrivers(
         *fxHelper.draw,
-        *m_goomRand,
+        *m_fxHelper->goomRand,
         {{
            CirclesTentacleLayout{{LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES}},
            CirclesTentacleLayout{{LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES}},
@@ -195,7 +205,8 @@ inline auto TentaclesFx::TentaclesImpl::Start() -> void
 
 inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 {
-  if (static constexpr auto PROB_NEW_DRIVER = 0.5F; m_goomRand->ProbabilityOf(PROB_NEW_DRIVER))
+  if (static constexpr auto PROB_NEW_DRIVER = 0.5F;
+      m_fxHelper->goomRand->ProbabilityOf(PROB_NEW_DRIVER))
   {
     m_currentTentacleDriver = GetNextDriver();
   }
@@ -276,6 +287,11 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   }
 }
 
+inline auto TentaclesFx::TentaclesImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
+}
+
 inline auto TentaclesFx::TentaclesImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
     -> void
 {
@@ -298,11 +314,17 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
   m_currentTentacleDriver->SetDominantColorMaps(m_dominantMainColorMap, m_dominantLowColorMap);
 }
 
-inline auto TentaclesFx::TentaclesImpl::Update() -> void
+inline auto TentaclesFx::TentaclesImpl::ApplyMultiple() -> void
 {
+  UpdatePixelBlender();
   UpdateTimers();
-
   DoTentaclesUpdate();
+}
+
+inline auto TentaclesFx::TentaclesImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
 }
 
 inline auto TentaclesFx::TentaclesImpl::UpdateTimers() -> void
@@ -314,7 +336,7 @@ inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 {
   Expects(m_currentTentacleDriver != nullptr);
 
-  if (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom())
+  if (0 == m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom())
   {
     ChangeDominantColor();
   }
@@ -330,10 +352,11 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 
   // Higher sound acceleration increases tentacle wave frequency.
   const auto tentacleWaveFreqMultiplier =
-      m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration() <
+      m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration() <
               SoundInfo::ACCELERATION_MIDPOINT
           ? 0.95F
-          : (1.0F / (1.1F - m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration()));
+          : (1.0F /
+             (1.1F - m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration()));
   m_currentTentacleDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreqMultiplier);
 }
 

@@ -9,7 +9,6 @@
 
 namespace GOOM
 {
-
 class AudioSamples;
 
 namespace COLOR
@@ -21,8 +20,9 @@ namespace UTILS::GRAPHICS
 {
 class SmallImageBitmaps;
 }
+} // namespace GOOM
 
-namespace VISUAL_FX
+namespace GOOM::VISUAL_FX
 {
 struct FxHelper;
 
@@ -38,15 +38,16 @@ public:
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
-
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
+  auto ChangePixelBlender() noexcept -> void override;
+  auto SetSoundData(const AudioSamples& soundData) noexcept -> void override;
   auto ResetLineModes() noexcept -> void;
 
-  auto SetSoundData(const AudioSamples& soundData) noexcept -> void override;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
+
   auto ApplyMultiple() noexcept -> void override;
 
 private:
@@ -54,5 +55,4 @@ private:
   spimpl::unique_impl_ptr<LinesImpl> m_pimpl;
 };
 
-} // namespace VISUAL_FX
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX

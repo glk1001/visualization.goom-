@@ -39,7 +39,7 @@ public:
 
   virtual auto Refresh() noexcept -> void;
 
-  virtual auto PostStateUpdate(bool wasActiveInPreviousState) noexcept -> void;
+  virtual auto ChangePixelBlender() noexcept -> void = 0;
   virtual auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
   virtual auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
 
@@ -70,12 +70,6 @@ inline auto IVisualFx::Suspend() noexcept -> void
 }
 
 inline auto IVisualFx::Refresh() noexcept -> void
-{
-  // default does nothing
-}
-
-inline auto IVisualFx::PostStateUpdate(
-    [[maybe_unused]] const bool wasActiveInPreviousState) noexcept -> void
 {
   // default does nothing
 }

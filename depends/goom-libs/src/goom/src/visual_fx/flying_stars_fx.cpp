@@ -15,6 +15,7 @@
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <string>
@@ -28,8 +29,8 @@ using FLYING_STARS::Star;
 using FLYING_STARS::StarDrawer;
 using FLYING_STARS::StarMaker;
 using FLYING_STARS::StarTypesContainer;
+using FX_UTILS::RandomPixelBlender;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
 static constexpr auto COLOR_MAP_MODE_ONE_MAP_PER_ANGLE_WEIGHT      = 30.0F;
@@ -41,15 +42,16 @@ class FlyingStarsFx::FlyingStarsImpl
 public:
   FlyingStarsImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
-  [[nodiscard]] auto GetCurrentStarTypeColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  auto ChangePixelBlender() noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto UpdateBuffers() noexcept -> void;
+  [[nodiscard]] auto GetCurrentStarTypeColorMapsNames() const noexcept -> std::vector<std::string>;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+
+  auto ApplyMultiple() noexcept -> void;
 
 private:
-  const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const FxHelper* m_fxHelper;
   StarMaker m_starMaker;
   StarDrawer m_starDrawer;
   StarTypesContainer m_starTypesContainer;
@@ -60,6 +62,10 @@ private:
   using ColorMapMode = IStarType::ColorMapMode;
   Weights<ColorMapMode> m_colorMapModeWeights;
   auto ChangeMapsAndModes() -> void;
+
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr uint32_t MAX_TOTAL_NUM_ACTIVE_STARS = 1024;
   static constexpr uint32_t MIN_TOTAL_NUM_ACTIVE_STARS = 100;
@@ -77,7 +83,8 @@ private:
   static constexpr auto MAX_STAR_CLUSTER_HEIGHT = 200.0F;
   // Why 320,200 ? Because the FX was developed on 320x200.
   static constexpr auto MIN_STAR_CLUSTER_HEIGHT = 50.0F;
-  float m_heightRatio = m_goomInfo->GetDimensions().GetFltHeight() / MAX_STAR_CLUSTER_HEIGHT;
+  float m_heightRatio =
+      m_fxHelper->goomInfo->GetDimensions().GetFltHeight() / MAX_STAR_CLUSTER_HEIGHT;
   auto AddStarClusters() -> void;
   auto AddStarCluster(const IStarType& starType, uint32_t totalNumActiveStars) noexcept -> void;
   [[nodiscard]] auto GetNumStarsToAdd(uint32_t totalNumActiveStars) const noexcept -> uint32_t;
@@ -94,22 +101,6 @@ FlyingStarsFx::FlyingStarsFx(const FxHelper& fxHelper,
 auto FlyingStarsFx::GetFxName() const noexcept -> std::string
 {
   return "Flying Stars FX";
-}
-
-auto FlyingStarsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
-{
-  return m_pimpl->GetCurrentStarTypeColorMapsNames();
-}
-
-auto FlyingStarsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
-    -> void
-{
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
-}
-
-auto FlyingStarsFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
-{
-  m_pimpl->SetZoomMidpoint(zoomMidpoint);
 }
 
 auto FlyingStarsFx::Start() noexcept -> void
@@ -132,20 +123,40 @@ auto FlyingStarsFx::Suspend() noexcept -> void
   // nothing to be done
 }
 
+auto FlyingStarsFx::ChangePixelBlender() noexcept -> void
+{
+  m_pimpl->ChangePixelBlender();
+}
+
+auto FlyingStarsFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+}
+
+auto FlyingStarsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
+    -> void
+{
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto FlyingStarsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentStarTypeColorMapsNames();
+}
+
 auto FlyingStarsFx::ApplyMultiple() noexcept -> void
 {
-  m_pimpl->UpdateBuffers();
+  m_pimpl->ApplyMultiple();
 }
 
 FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
                                                 const SmallImageBitmaps& smallBitmaps)
-  : m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
+  : m_fxHelper{&fxHelper},
     m_starMaker{*fxHelper.goomRand},
-    m_starDrawer{*fxHelper.draw, *m_goomRand, smallBitmaps},
+    m_starDrawer{*fxHelper.draw, *m_fxHelper->goomRand, smallBitmaps},
     m_starTypesContainer{*fxHelper.goomInfo, *fxHelper.goomRand},
     m_colorMapModeWeights{
-        *m_goomRand,
+        *m_fxHelper->goomRand,
         {
             { ColorMapMode::ONE_MAP_PER_ANGLE,      COLOR_MAP_MODE_ONE_MAP_PER_ANGLE_WEIGHT },
             { ColorMapMode::ONE_MAP_FOR_ALL_ANGLES, COLOR_MAP_MODE_ONE_MAP_FOR_ALL_ANGLES_WEIGHT },
@@ -190,6 +201,11 @@ inline auto FlyingStarsFx::FlyingStarsImpl::ChangeMapsAndModes() -> void
   m_starDrawer.ChangeDrawMode();
 }
 
+inline auto FlyingStarsFx::FlyingStarsImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
+}
+
 inline auto FlyingStarsFx::FlyingStarsImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
     -> void
 {
@@ -205,18 +221,26 @@ inline auto FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred() noexcept -> voi
   AddStarClusters();
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::UpdateBuffers() noexcept -> void
+inline auto FlyingStarsFx::FlyingStarsImpl::ApplyMultiple() noexcept -> void
 {
   ++m_counter;
 
+  UpdatePixelBlender();
   CheckForStarEvents();
   DrawStars();
   RemoveDeadStars();
 }
 
+inline auto FlyingStarsFx::FlyingStarsImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
+}
+
 auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 {
-  if ((not m_activeStars.empty()) and (m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() >= 1))
+  if ((not m_activeStars.empty()) and
+      (m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom() >= 1))
   {
     return;
   }
@@ -224,7 +248,7 @@ auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
   SoundEventOccurred();
 
   if (static constexpr auto PROB_CHANGE_MAPS_AND_MODES = 1.0F / 20.0F;
-      m_goomRand->ProbabilityOf(PROB_CHANGE_MAPS_AND_MODES))
+      m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_MAPS_AND_MODES))
   {
     ChangeMapsAndModes();
   }
@@ -237,7 +261,7 @@ auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 
 auto FlyingStarsFx::FlyingStarsImpl::DrawStars() noexcept -> void
 {
-  const auto speedFactor = m_goomRand->GetRandInRange(0.1F, 10.0F);
+  const auto speedFactor = m_fxHelper->goomRand->GetRandInRange(0.1F, 10.0F);
 
   for (auto& star : m_activeStars)
   {
@@ -269,13 +293,13 @@ auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept
 
   if ((star.GetStartPos().x < -DEAD_MARGIN) ||
       (star.GetStartPos().x >
-       static_cast<float>(m_goomInfo->GetDimensions().GetWidth() + DEAD_MARGIN)))
+       static_cast<float>(m_fxHelper->goomInfo->GetDimensions().GetWidth() + DEAD_MARGIN)))
   {
     return true;
   }
   if ((star.GetStartPos().y < -DEAD_MARGIN) ||
       (star.GetStartPos().y >
-       static_cast<float>(m_goomInfo->GetDimensions().GetHeight() + DEAD_MARGIN)))
+       static_cast<float>(m_fxHelper->goomInfo->GetDimensions().GetHeight() + DEAD_MARGIN)))
   {
     return true;
   }
@@ -286,9 +310,9 @@ auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept
 auto FlyingStarsFx::FlyingStarsImpl::AddStarClusters() -> void
 {
   const auto numStarClusters =
-      m_goomRand->GetRandInRange(MIN_NUM_STAR_CLUSTERS, MAX_NUM_STAR_CLUSTERS + 1);
-  const auto totalNumActiveStars =
-      m_goomRand->GetRandInRange(MIN_TOTAL_NUM_ACTIVE_STARS, MAX_TOTAL_NUM_ACTIVE_STARS + 1);
+      m_fxHelper->goomRand->GetRandInRange(MIN_NUM_STAR_CLUSTERS, MAX_NUM_STAR_CLUSTERS + 1);
+  const auto totalNumActiveStars = m_fxHelper->goomRand->GetRandInRange(
+      MIN_TOTAL_NUM_ACTIVE_STARS, MAX_TOTAL_NUM_ACTIVE_STARS + 1);
 
   for (auto i = 0U; i < numStarClusters; ++i)
   {
@@ -323,12 +347,13 @@ auto FlyingStarsFx::FlyingStarsImpl::GetStarProperties() const noexcept -> StarM
 
   return StarMaker::StarProperties{
       /* .heightRatio = */ m_heightRatio,
-      /* .defaultPathLength = */ (1.0F + m_goomInfo->GetSoundEvents().GetGoomPower()) *
-          (m_goomRand->GetRandInRange(MIN_STAR_CLUSTER_HEIGHT, MAX_STAR_CLUSTER_HEIGHT) /
+      /* .defaultPathLength = */ (1.0F + m_fxHelper->goomInfo->GetSoundEvents().GetGoomPower()) *
+          (m_fxHelper->goomRand->GetRandInRange(MIN_STAR_CLUSTER_HEIGHT, MAX_STAR_CLUSTER_HEIGHT) /
            MAX_STAR_CLUSTER_WIDTH),
       /* .nominalPathLengthFactor = */
-      (m_goomInfo->GetSoundEvents().GetTimeSinceLastBigGoom() >= 1) ? 1.0F
-                                                                    : NOMINAL_PATH_LENGTH_FACTOR};
+      (m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastBigGoom() >= 1)
+          ? 1.0F
+          : NOMINAL_PATH_LENGTH_FACTOR};
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::GetNumStarsToAdd(
@@ -344,10 +369,10 @@ auto FlyingStarsFx::FlyingStarsImpl::GetNumStarsToAdd(
 auto FlyingStarsFx::FlyingStarsImpl::GetMaxStarsInACluster() const noexcept -> uint32_t
 {
   const auto maxStarsInACluster = static_cast<uint32_t>(
-      m_heightRatio * (100.0F + ((m_goomInfo->GetSoundEvents().GetGoomPower() + 1.0F) *
-                                 m_goomRand->GetRandInRange(0.0F, 150.0F))));
+      m_heightRatio * (100.0F + ((m_fxHelper->goomInfo->GetSoundEvents().GetGoomPower() + 1.0F) *
+                                 m_fxHelper->goomRand->GetRandInRange(0.0F, 150.0F))));
 
-  if (m_goomInfo->GetSoundEvents().GetTimeSinceLastBigGoom() < 1)
+  if (m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastBigGoom() < 1)
   {
     return 2 * maxStarsInACluster;
   }

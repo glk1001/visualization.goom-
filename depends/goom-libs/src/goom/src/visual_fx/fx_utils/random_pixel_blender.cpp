@@ -11,9 +11,31 @@ using UTILS::GRAPHICS::GetColorMultiplyPixelBlend;
 using UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetSameLumaMixPixelBlend;
+using UTILS::MATH::IGoomRand;
 
-RandomPixelBlender::RandomPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand}
+static constexpr auto ADD_WEIGHT          = 50.0F;
+static constexpr auto DARKEN_ONLY_WEIGHT  = 10.0F;
+static constexpr auto LIGHTEN_ONLY_WEIGHT = 10.0F;
+static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
+static constexpr auto MULTIPLY_WEIGHT     = 5.0F;
+
+auto RandomPixelBlender::GetDefaultPixelBlender(const IGoomRand& goomRand) noexcept
+    -> RandomPixelBlender
+{
+  return {
+      goomRand,
+      {{RandomPixelBlender::PixelBlendType::ADD, ADD_WEIGHT},
+        {RandomPixelBlender::PixelBlendType::DARKEN_ONLY, DARKEN_ONLY_WEIGHT},
+        {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
+        {RandomPixelBlender::PixelBlendType::LUMA_MIX, LUMA_MIX_WEIGHT},
+        {RandomPixelBlender::PixelBlendType::MULTIPLY, MULTIPLY_WEIGHT}}
+  };
+}
+
+RandomPixelBlender::RandomPixelBlender(
+    const UTILS::MATH::IGoomRand& goomRand,
+    const UTILS::MATH::Weights<PixelBlendType>::EventWeightPairs& weights) noexcept
+  : m_goomRand{&goomRand}, m_pixelBlendTypeWeights{goomRand, weights}
 {
 }
 

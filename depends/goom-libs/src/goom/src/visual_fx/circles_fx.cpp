@@ -11,6 +11,7 @@
 #include "utils/timer.h"
 #include "visual_fx/circles/circle_params_builder.h"
 #include "visual_fx/circles/circles.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <memory>
 #include <vector>
@@ -22,6 +23,7 @@ using CIRCLES::Circle;
 using CIRCLES::CircleParamsBuilder;
 using CIRCLES::Circles;
 using CIRCLES::DotPaths;
+using FX_UTILS::RandomPixelBlender;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;
@@ -35,9 +37,11 @@ public:
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
+  auto Start() noexcept -> void;
+
+  auto ChangePixelBlender() noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto Start() noexcept -> void;
   auto ApplyMultiple() noexcept -> void;
 
 private:
@@ -67,6 +71,10 @@ private:
   WeightedColorMaps m_lastWeightedColorMaps{};
   auto CheckCirclesFullReset() noexcept -> void;
 
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
+
   static constexpr uint32_t MIN_BLANK_AT_TARGET_TIME = 1;
   static constexpr uint32_t MAX_BLANK_AT_TARGET_TIME = 5;
   uint32_t m_blankAtTargetTime =
@@ -85,19 +93,9 @@ CirclesFx::CirclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBit
 {
 }
 
-auto CirclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+auto CirclesFx::GetFxName() const noexcept -> std::string
 {
-  return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto CirclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
-}
-
-auto CirclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
-{
-  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+  return "circles";
 }
 
 auto CirclesFx::Start() noexcept -> void
@@ -110,9 +108,24 @@ auto CirclesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto CirclesFx::GetFxName() const noexcept -> std::string
+auto CirclesFx::ChangePixelBlender() noexcept -> void
 {
-  return "circles";
+  m_pimpl->ChangePixelBlender();
+}
+
+auto CirclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
+{
+  m_pimpl->SetZoomMidpoint(zoomMidpoint);
+}
+
+auto CirclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto CirclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto CirclesFx::ApplyMultiple() noexcept -> void
@@ -201,6 +214,11 @@ inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
   m_lastWeightedColorMaps = weightedColorMaps;
 }
 
+inline auto CirclesFx::CirclesFxImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
+}
+
 inline auto CirclesFx::CirclesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
     -> void
 {
@@ -247,6 +265,7 @@ inline auto CirclesFx::CirclesFxImpl::Start() noexcept -> void
 
 inline auto CirclesFx::CirclesFxImpl::ApplyMultiple() noexcept -> void
 {
+  UpdatePixelBlender();
   UpdateStates();
   DrawCircles();
   CheckCirclesFullReset();
@@ -304,6 +323,12 @@ inline auto CirclesFx::CirclesFxImpl::UpdateStates() noexcept -> void
   m_circlesFullReset = true;
 
   UpdateCirclePathParams();
+}
+
+inline auto CirclesFx::CirclesFxImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
 }
 
 inline auto CirclesFx::CirclesFxImpl::UpdateCirclePathParams() noexcept -> void

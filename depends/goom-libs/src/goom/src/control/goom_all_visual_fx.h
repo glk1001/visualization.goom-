@@ -13,7 +13,6 @@
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/t_values.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -91,7 +90,7 @@ public:
   auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) noexcept -> void;
 
   auto ChangeAllFxColorMaps() noexcept -> void;
-  auto ChangeAllFxPixelBlends() noexcept -> void;
+  auto ChangeAllFxPixelBlenders() noexcept -> void;
   auto RefreshAllFx() noexcept -> void;
 
   auto ApplyCurrentStateToSingleBuffer() noexcept -> void;
@@ -105,7 +104,6 @@ public:
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
-  DRAW::IGoomDraw* m_draw;
   const UTILS::MATH::IGoomRand* m_goomRand;
   [[maybe_unused]] GoomLogger* m_goomLogger;
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
@@ -125,8 +123,6 @@ private:
   bool m_doExposureControl = false;
   auto UpdateZoomFilterLuminance() noexcept -> void;
   [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
-
-  VISUAL_FX::FX_UTILS::RandomPixelBlender m_pixelBlender{*m_goomRand};
 };
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
@@ -143,7 +139,7 @@ inline auto GoomAllVisualFx::SetNextState() noexcept -> void
 {
   ChangeState();
   ChangeAllFxColorMaps();
-  ChangeAllFxPixelBlends();
+  ChangeAllFxPixelBlenders();
 }
 
 inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(
@@ -158,7 +154,6 @@ inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
   m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
 
   UpdateZoomFilterLuminance();
-  m_pixelBlender.Update();
 }
 
 inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() noexcept -> void

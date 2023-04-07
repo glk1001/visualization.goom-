@@ -36,7 +36,6 @@
 
 #include "ifs_dancers_fx.h"
 
-#include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
 #include "fx_helper.h"
@@ -51,6 +50,7 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/propagate_const.h"
 #include "utils/t_values.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <array>
 #include <cmath>
@@ -60,9 +60,9 @@
 namespace GOOM::VISUAL_FX
 {
 
-using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
+using FX_UTILS::RandomPixelBlender;
 using IFS::BlurrerColorMode;
 using IFS::Colorizer;
 using IFS::Fractal;
@@ -71,7 +71,6 @@ using IFS::LowDensityBlurrer;
 using std::experimental::propagate_const;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
 class IfsDancersFx::IfsDancersFxImpl
@@ -79,29 +78,35 @@ class IfsDancersFx::IfsDancersFxImpl
 public:
   IfsDancersFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  auto ApplyNoDraw() noexcept -> void;
-  auto UpdateIfs() noexcept -> void;
-  auto UpdateLowDensityThreshold() noexcept -> void;
+  auto Start() noexcept -> void;
+
   auto Refresh() noexcept -> void;
   auto Suspend() noexcept -> void;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  auto ChangePixelBlender() noexcept -> void;
 
-  auto Start() noexcept -> void;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
+
+  auto ApplyMultiple() noexcept -> void;
+  auto UpdateLowDensityThreshold() noexcept -> void;
+
+  auto ApplyNoDraw() noexcept -> void;
 
 private:
   static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
   static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
   int32_t m_cycleLength                     = MIN_CYCLE_LENGTH;
 
-  IGoomDraw* m_draw;
-  BitmapDrawer m_bitmapDrawer{*m_draw};
-  PixelDrawer m_pixelDrawer{*m_draw};
-  const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const FxHelper* m_fxHelper;
+  BitmapDrawer m_bitmapDrawer;
+  PixelDrawer m_pixelDrawer;
 
-  Colorizer m_colorizer{*m_goomRand};
+  Colorizer m_colorizer;
+
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
 
   propagate_const<std::unique_ptr<Fractal>> m_fractal{};
 
@@ -165,16 +170,6 @@ auto IfsDancersFx::GetFxName() const noexcept -> std::string
   return "IFS FX";
 }
 
-auto IfsDancersFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
-{
-  return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
-{
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
-}
-
 auto IfsDancersFx::Start() noexcept -> void
 {
   m_pimpl->Start();
@@ -195,6 +190,21 @@ auto IfsDancersFx::Suspend() noexcept -> void
   // nothing to do
 }
 
+auto IfsDancersFx::ChangePixelBlender() noexcept -> void
+{
+  m_pimpl->ChangePixelBlender();
+}
+
+auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto IfsDancersFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
+}
+
 auto IfsDancersFx::ApplyNoDraw() noexcept -> void
 {
   m_pimpl->ApplyNoDraw();
@@ -202,7 +212,7 @@ auto IfsDancersFx::ApplyNoDraw() noexcept -> void
 
 auto IfsDancersFx::ApplyMultiple() noexcept -> void
 {
-  m_pimpl->UpdateIfs();
+  m_pimpl->ApplyMultiple();
 }
 
 auto IfsDancersFx::Refresh() noexcept -> void
@@ -219,15 +229,16 @@ static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT   = 005.0F;
 
 IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_draw{fxHelper.draw},
-    m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
-    m_fractal{std::make_unique<Fractal>(m_draw->GetDimensions(),
-                                        *m_goomRand,
+  : m_fxHelper{&fxHelper},
+    m_bitmapDrawer{*fxHelper.draw},
+    m_pixelDrawer{*fxHelper.draw},
+    m_colorizer{*fxHelper.goomRand},
+    m_fractal{std::make_unique<Fractal>(fxHelper.draw->GetDimensions(),
+                                        *fxHelper.goomRand,
                                         smallBitmaps)},
-    m_blurrer{*m_draw, *m_goomRand, BLUR_WIDTH, m_colorizer, smallBitmaps},
+    m_blurrer{*fxHelper.draw, *fxHelper.goomRand, BLUR_WIDTH, m_colorizer, smallBitmaps},
     m_blurrerColorModeWeights{
-      *m_goomRand,
+      *fxHelper.goomRand,
       {
         {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WGT},
         {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WGT},
@@ -242,19 +253,24 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
 inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() const noexcept -> bool
 {
   static constexpr auto PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
-  return m_goomRand->ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
+  return m_fxHelper->goomRand->ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() const noexcept -> bool
 {
   static constexpr auto PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
-  return m_goomRand->ProbabilityOf(PROB_IFS_RENEW_EVENT);
+  return m_fxHelper->goomRand->ProbabilityOf(PROB_IFS_RENEW_EVENT);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::InitFractal() noexcept -> void
 {
   m_fractal->Init();
   UpdateLowDensityThreshold();
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::GetCurrentColorMapsNames() const noexcept
@@ -307,10 +323,10 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() noexcept -> void
   static constexpr auto MIN_SPEED_AMP    = 1.1F;
   static constexpr auto MAX_SPEED_AMP    = 5.1F;
   static constexpr auto MAX_SPEED_WEIGHT = 10.0F;
-  const auto speedAmp =
-      std::min(m_goomRand->GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
+  const auto speedAmp                    = std::min(
+      m_fxHelper->goomRand->GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
   const auto accelFactor =
-      1.0F / (1.1F - m_goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration());
+      1.0F / (1.1F - m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
 }
@@ -319,7 +335,7 @@ auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() noexcept -> void
 {
   m_colorizer.ChangeColorMaps();
 
-  m_drawLowDensityPoints = m_goomRand->ProbabilityOf(PROB_DRAW_LOW_DENSITY_POINTS);
+  m_drawLowDensityPoints = m_fxHelper->goomRand->ProbabilityOf(PROB_DRAW_LOW_DENSITY_POINTS);
 
   if (m_drawLowDensityPoints)
   {
@@ -336,8 +352,10 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw() noexcept -> void
   UpdateDecay();
 }
 
-auto IfsDancersFx::IfsDancersFxImpl::UpdateIfs() noexcept -> void
+auto IfsDancersFx::IfsDancersFxImpl::ApplyMultiple() noexcept -> void
 {
+  UpdatePixelBlender();
+
   UpdateDecayAndRecay();
   if (m_ifsIncr <= 0)
   {
@@ -347,6 +365,12 @@ auto IfsDancersFx::IfsDancersFxImpl::UpdateIfs() noexcept -> void
   UpdateCycle();
 
   DrawNextIfsPoints();
+}
+
+inline auto IfsDancersFx::IfsDancersFxImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
 }
 
 auto IfsDancersFx::IfsDancersFxImpl::UpdateDecayAndRecay() noexcept -> void
@@ -410,7 +434,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() noexcept -> void
   }
 
   m_cycle       = 0;
-  m_cycleLength = m_goomRand->GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
+  m_cycleLength = m_fxHelper->goomRand->GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
 
   UpdateLowDensityBlurThreshold();
 
@@ -424,7 +448,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() noex
   static constexpr auto PROB_HIGH_BLUR_THRESHOLD = 0.75F;
   static constexpr auto HIGH_BLUR_THRESHOLD      = 0.99F;
   static constexpr auto LOW_BLUR_THRESHOLD       = 0.40F;
-  m_lowDensityBlurThreshold = m_goomRand->ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD)
+  m_lowDensityBlurThreshold = m_fxHelper->goomRand->ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD)
                                   ? HIGH_BLUR_THRESHOLD
                                   : LOW_BLUR_THRESHOLD;
 }
@@ -470,8 +494,8 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   const auto point =
       Point2dInt{static_cast<int32_t>(ifsPoint.GetX()), static_cast<int32_t>(ifsPoint.GetY())};
 
-  const auto tX = static_cast<float>(point.x) / m_draw->GetDimensions().GetFltWidth();
-  const auto tY = static_cast<float>(point.y) / m_draw->GetDimensions().GetFltHeight();
+  const auto tX = static_cast<float>(point.x) / m_fxHelper->draw->GetDimensions().GetFltWidth();
+  const auto tY = static_cast<float>(point.y) / m_fxHelper->draw->GetDimensions().GetFltHeight();
 
   if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
@@ -567,7 +591,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
     std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) noexcept -> void
 {
   if (static constexpr auto PROB_FIXED_MIX_FACTOR = 0.8F;
-      m_goomRand->ProbabilityOf(PROB_FIXED_MIX_FACTOR))
+      m_fxHelper->goomRand->ProbabilityOf(PROB_FIXED_MIX_FACTOR))
   {
     static constexpr auto FIXED_MIX_FACTOR = 0.98F;
     m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
@@ -576,7 +600,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
   {
     static constexpr auto MIN_MIX_FACTOR = 0.9F;
     static constexpr auto MAX_MIX_FACTOR = 1.0F;
-    m_blurrer.SetNeighbourMixFactor(m_goomRand->GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
+    m_blurrer.SetNeighbourMixFactor(
+        m_fxHelper->goomRand->GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
   }
 
   m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
@@ -584,7 +609,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() noexcept -> void
 {
-  m_lowDensityCount = m_goomRand->GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
+  m_lowDensityCount = m_fxHelper->goomRand->GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
 
   m_blurrer.SetWidth(GetNewBlurWidth());
 }

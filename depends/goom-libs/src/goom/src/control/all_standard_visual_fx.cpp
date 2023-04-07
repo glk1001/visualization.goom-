@@ -130,6 +130,14 @@ auto AllStandardVisualFx::ResumeFx() -> void
                 { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
 
+auto AllStandardVisualFx::ChangeAllFxPixelBlenders() noexcept -> void
+{
+  std::for_each(begin(m_currentGoomDrawables),
+                end(m_currentGoomDrawables),
+                [this](const auto currentlyDrawable)
+                { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(); });
+}
+
 auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
 {
   std::for_each(begin(m_currentGoomDrawables),

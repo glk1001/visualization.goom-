@@ -12,6 +12,7 @@
 #include "sound_info.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <array>
 #include <vector>
@@ -21,6 +22,7 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::GetSimpleColor;
 using COLOR::SimpleColors;
+using FX_UTILS::RandomPixelBlender;
 using LINES::LineMorph;
 using LINES::LineType;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -55,21 +57,21 @@ public:
   // builds a line effect (a horizontal line to start with)
   LinesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
-
   auto Start() noexcept -> void;
 
+  auto ChangePixelBlender() noexcept -> void;
+  auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
   auto ResetLineModes() noexcept -> void;
 
-  auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
+  auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
+  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
+
   auto ApplyMultiple() noexcept -> void;
 
   [[nodiscard]] auto GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>;
 
 private:
-  const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const FxHelper* m_fxHelper;
 
   static_assert(2 == NUM_LINES);
   static constexpr std::array<uint32_t, NUM_LINES> SOUND_SAMPLE_NUM_TO_USE{0, 1};
@@ -81,16 +83,20 @@ private:
   auto ResetLineColorPowers() noexcept -> void;
   auto DrawLines() noexcept -> void;
 
-  float m_screenWidth         = m_goomInfo->GetDimensions().GetFltWidth();
-  float m_screenHeight        = m_goomInfo->GetDimensions().GetFltHeight();
+  RandomPixelBlender m_pixelBlender =
+      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  auto UpdatePixelBlender() noexcept -> void;
+
+  float m_screenWidth         = m_fxHelper->goomInfo->GetDimensions().GetFltWidth();
+  float m_screenHeight        = m_fxHelper->goomInfo->GetDimensions().GetFltHeight();
   uint32_t m_updateNum        = 0;
   int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
   int32_t m_lineMode          = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
   uint32_t m_stopLines        = 0;
   Weights<LineType> m_lineTypeWeights;
 
-  bool m_isNearScope = m_goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
-  bool m_isFarScope  = m_goomRand->ProbabilityOf(PROB_FAR_SCOPE);
+  bool m_isNearScope = m_fxHelper->goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
+  bool m_isFarScope  = m_fxHelper->goomRand->ProbabilityOf(PROB_FAR_SCOPE);
   auto UpdateScopes() noexcept -> void;
   [[nodiscard]] auto CanDisplayLines() const noexcept -> bool;
   auto ChangeGoomLines() noexcept -> void;
@@ -124,17 +130,6 @@ auto LinesFx::GetFxName() const noexcept -> std::string
   return "lines";
 }
 
-auto LinesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
-{
-  return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto LinesFx::SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept
-    -> void
-{
-  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
-}
-
 auto LinesFx::Start() noexcept -> void
 {
   m_pimpl->Start();
@@ -145,14 +140,30 @@ auto LinesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto LinesFx::ResetLineModes() noexcept -> void
+auto LinesFx::ChangePixelBlender() noexcept -> void
 {
-  m_pimpl->ResetLineModes();
+  m_pimpl->ChangePixelBlender();
 }
 
 auto LinesFx::SetSoundData(const AudioSamples& soundData) noexcept -> void
 {
   m_pimpl->SetSoundData(soundData);
+}
+
+auto LinesFx::ResetLineModes() noexcept -> void
+{
+  m_pimpl->ResetLineModes();
+}
+
+auto LinesFx::SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept
+    -> void
+{
+  m_pimpl->SetWeightedColorMaps(weightedColorMaps);
+}
+
+auto LinesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
+{
+  return m_pimpl->GetCurrentColorMapsNames();
 }
 
 auto LinesFx::ApplyMultiple() noexcept -> void
@@ -162,8 +173,7 @@ auto LinesFx::ApplyMultiple() noexcept -> void
 
 LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                               const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
+  : m_fxHelper{&fxHelper},
     m_lineMorphs{
         LineMorph{
             *fxHelper.draw,
@@ -209,7 +219,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
         }
     },
     m_lineTypeWeights{
-        *m_goomRand,
+        *m_fxHelper->goomRand,
         {
             { LineType::CIRCLE, CIRCLE_LINE_TYPE_WEIGHT },
             { LineType::H_LINE, H_LINE_LINE_TYPE_WEIGHT },
@@ -288,6 +298,11 @@ inline auto LinesFx::LinesImpl::GetRandomLineColors() const noexcept -> std::arr
   return colors;
 }
 
+inline auto LinesFx::LinesImpl::ChangePixelBlender() noexcept -> void
+{
+  m_pixelBlender.ChangePixelBlendFunc();
+}
+
 inline auto LinesFx::LinesImpl::SetSoundData(const AudioSamples& soundData) noexcept -> void
 {
   m_soundData = &soundData;
@@ -297,6 +312,7 @@ inline auto LinesFx::LinesImpl::ApplyMultiple() noexcept -> void
 {
   ++m_updateNum;
 
+  UpdatePixelBlender();
   UpdateScopes();
   UpdateLineModes();
 
@@ -311,13 +327,19 @@ inline auto LinesFx::LinesImpl::ApplyMultiple() noexcept -> void
   ChangeGoomLines();
 }
 
+inline auto LinesFx::LinesImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
+}
+
 inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
 {
   static constexpr auto NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200U;
   if (0 == (m_updateNum % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
-    m_isNearScope = m_goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
-    m_isFarScope  = m_goomRand->ProbabilityOf(PROB_FAR_SCOPE);
+    m_isNearScope = m_fxHelper->goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
+    m_isFarScope  = m_fxHelper->goomRand->ProbabilityOf(PROB_FAR_SCOPE);
   }
 }
 
@@ -349,7 +371,7 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
   static constexpr auto GOOM_CYCLE_MOD_CHANGE   = 9U;
 
   if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) and
-      m_goomRand->ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
+      m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
       ((0 == m_lineMode) or (m_lineMode == m_drawLinesDuration)))
   {
     ResetGoomLines();
@@ -361,7 +383,7 @@ inline auto LinesFx::LinesImpl::CanDisplayLines() const noexcept -> bool
   static constexpr auto DISPLAY_LINES_GOOM_NUM = 5U;
 
   return ((m_lineMode != 0) or
-          (m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
+          (m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
 }
 
 inline auto LinesFx::LinesImpl::UpdateLineModes() noexcept -> void
@@ -451,13 +473,13 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
     param2    = NEW_FAR_VAL_PARAM2;
     amplitude = NEW_FAR_VAL_AMPLITUDE;
   }
-  else if (m_goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
+  else if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
   {
     param1    = 0.0F;
     param2    = 0.0F;
     amplitude = NEW_NON_FAR_VAL_AMPLITUDE;
   }
-  else if (m_goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
+  else if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
   {
     param1    = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
     param2    = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
@@ -493,7 +515,7 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
   float param1; // NOLINT(cppcoreguidelines-init-variables)
   float param2; // NOLINT(cppcoreguidelines-init-variables)
 
-  if (m_goomRand->ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
+  if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
   {
     param1    = NEW_PARAM1_FACTOR * m_screenHeight;
     param2    = NEW_PARAM2_FACTOR * m_screenHeight;
@@ -529,7 +551,7 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
   float param1; // NOLINT(cppcoreguidelines-init-variables)
   float param2; // NOLINT(cppcoreguidelines-init-variables)
 
-  if (m_goomRand->ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
+  if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
   {
     param1    = NEW_PARAM1_FACTOR * m_screenWidth;
     param2    = NEW_PARAM2_FACTOR * m_screenWidth;
@@ -553,7 +575,7 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
 auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcept
     -> std::array<Pixel, NUM_LINES>
 {
-  if ((farVal != 0) and m_goomRand->ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
+  if ((farVal != 0) and m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
   {
     return {BLACK_LINE_COLOR, BLACK_LINE_COLOR};
   }
@@ -577,13 +599,13 @@ auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
     }
   }
   else if ((0 == (m_updateNum % DEC_LINE_MODE_CYCLES)) and
-           m_goomRand->ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
+           m_fxHelper->goomRand->ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
   {
     --m_lineMode;
   }
 
   if ((0 == (m_updateNum % UPDATE_LINE_MODE_CYCLES)) and
-      m_goomRand->ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
+      m_fxHelper->goomRand->ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
   {
     if (0 == m_lineMode)
     {
