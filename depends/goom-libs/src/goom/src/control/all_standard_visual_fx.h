@@ -65,7 +65,6 @@ public:
   auto SuspendFx() -> void;
   auto ResumeFx() -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
-  auto PostStateUpdate(const GoomDrawablesSet& oldGoomDrawables) -> void;
 
   auto ApplyCurrentStateToSingleBuffer() -> void;
   auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void;

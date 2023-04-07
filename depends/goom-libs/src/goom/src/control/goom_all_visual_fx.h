@@ -177,7 +177,6 @@ private:
   IGoomStateHandler* m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
   auto ChangeState() noexcept -> void;
-  auto PostStateUpdate(const std::unordered_set<GoomDrawables>& oldGoomDrawables) noexcept -> void;
   std::unordered_set<GoomDrawables> m_currentGoomDrawables{};
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
@@ -208,7 +207,6 @@ inline auto GoomAllVisualFx::SetNextState() noexcept -> void
   ChangeState();
   ChangeAllFxColorMaps();
   ChangeDrawPixelBlend();
-  PostStateUpdate(m_currentGoomDrawables);
 }
 
 inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(

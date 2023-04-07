@@ -225,12 +225,6 @@ auto GoomAllVisualFx::SetSingleBufferDots(const bool value) noexcept -> void
   m_allStandardVisualFx->SetSingleBufferDots(value);
 }
 
-auto GoomAllVisualFx::PostStateUpdate(
-    const std::unordered_set<GoomDrawables>& oldGoomDrawables) noexcept -> void
-{
-  m_allStandardVisualFx->PostStateUpdate(oldGoomDrawables);
-}
-
 auto GoomAllVisualFx::RefreshAllFx() noexcept -> void
 {
   m_allStandardVisualFx->RefreshAllFx();

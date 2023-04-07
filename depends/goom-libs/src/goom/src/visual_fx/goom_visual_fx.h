@@ -44,11 +44,6 @@ public:
   { /* default does nothing */
   }
 
-  virtual auto PostStateUpdate([[maybe_unused]] const bool wasActiveInPreviousState) noexcept
-      -> void
-  { /* default does nothing */
-  }
-
   virtual auto SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept -> void
   { /* default does nothing */
   }

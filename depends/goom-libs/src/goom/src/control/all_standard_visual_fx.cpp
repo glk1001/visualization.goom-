@@ -138,18 +138,6 @@ auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> voi
                 { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
 }
 
-auto AllStandardVisualFx::PostStateUpdate(const GoomDrawablesSet& oldGoomDrawables) -> void
-{
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this, &oldGoomDrawables](const auto currentlyDrawable)
-                {
-                  const auto wasActiveInPreviousState =
-                      oldGoomDrawables.find(currentlyDrawable) != cend(oldGoomDrawables);
-                  m_drawablesMap[currentlyDrawable]->PostStateUpdate(wasActiveInPreviousState);
-                });
-}
-
 auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::string>
 {
   auto activeColorMapsNames = std::unordered_set<std::string>{};
