@@ -19,8 +19,6 @@ namespace GOOM::UNIT_TESTS
 
 using COLOR::GetBrighterChannelColor;
 using COLOR::GetBrighterColor;
-using COLOR::GetColorAdd;
-using COLOR::GetColorChannelAdd;
 using COLOR::GetLightenedColor;
 using COLOR::GetRgbColorLerp;
 using GOOM::UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR;
@@ -37,28 +35,6 @@ TEST_CASE("Test max channels")
   REQUIRE(channel_limits<int>::max() == CHANNEL_MAX);
   REQUIRE(channel_limits<float>::min() == 0.0F);
   REQUIRE(channel_limits<float>::max() == static_cast<float>(CHANNEL_MAX));
-}
-
-TEST_CASE("Color channels are added")
-{
-  REQUIRE(GetColorChannelAdd(100, 120) == 220);
-  REQUIRE(GetColorChannelAdd(200, 120) == 320);
-  REQUIRE(GetColorChannelAdd(0, 120) == 120);
-  REQUIRE(GetColorChannelAdd(0, 0) == 0);
-}
-
-TEST_CASE("Colors are added")
-{
-  static constexpr auto COLOR1 = Pixel{
-      {100, 50, 20}
-  };
-  static constexpr auto COLOR2 = Pixel{
-      {120, 250, 70}
-  };
-  static constexpr auto COLOR3 = GetColorAdd(COLOR1, COLOR2);
-  REQUIRE(static_cast<uint32_t>(COLOR3.R()) == 220);
-  REQUIRE(static_cast<uint32_t>(COLOR3.G()) == 300);
-  REQUIRE(static_cast<uint32_t>(COLOR3.B()) == 90);
 }
 
 TEST_CASE("Color channels are brightened")

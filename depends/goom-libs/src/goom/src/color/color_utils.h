@@ -17,12 +17,6 @@ template<typename T>
 [[nodiscard]] constexpr auto GetColorAverage(size_t num, const T& colors) -> Pixel;
 
 [[nodiscard]] constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
-[[nodiscard]] constexpr auto ColorChannelMultiply(PixelChannelType ch1, PixelChannelType ch2)
-    -> uint32_t;
-[[nodiscard]] constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel;
-[[nodiscard]] constexpr auto GetColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
-    -> uint32_t;
-[[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
 
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
 [[nodiscard, maybe_unused]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&)
@@ -102,6 +96,7 @@ constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 
 constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel
 {
+  using UTILS::GRAPHICS::GetColorChannelAdd;
   const auto newR = static_cast<PixelChannelType>(GetColorChannelAdd(color1.R(), color2.R()) / 2);
   const auto newG = static_cast<PixelChannelType>(GetColorChannelAdd(color1.G(), color2.G()) / 2);
   const auto newB = static_cast<PixelChannelType>(GetColorChannelAdd(color1.B(), color2.B()) / 2);
@@ -133,38 +128,6 @@ constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   return Pixel{newR, newG, newB, newA};
 }
 
-constexpr auto GetColorMultiply(const Pixel& srce, const Pixel& dest) -> Pixel
-{
-  const auto newR = static_cast<PixelChannelType>(ColorChannelMultiply(srce.R(), dest.R()));
-  const auto newG = static_cast<PixelChannelType>(ColorChannelMultiply(srce.G(), dest.G()));
-  const auto newB = static_cast<PixelChannelType>(ColorChannelMultiply(srce.B(), dest.B()));
-  const auto newA = static_cast<PixelChannelType>(ColorChannelMultiply(srce.A(), dest.A()));
-
-  return Pixel{newR, newG, newB, newA};
-}
-
-constexpr auto ColorChannelMultiply(const PixelChannelType ch1, const PixelChannelType ch2)
-    -> uint32_t
-{
-  return UTILS::GRAPHICS::MultiplyColorChannels(ch1, ch2);
-}
-
-constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
-{
-  const auto newR = GetColorChannelAdd(color1.R(), color2.R());
-  const auto newG = GetColorChannelAdd(color1.G(), color2.G());
-  const auto newB = GetColorChannelAdd(color1.B(), color2.B());
-  const auto newA = GetColorChannelAdd(color1.A(), color2.A());
-
-  return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newA);
-}
-
-constexpr auto GetColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
-    -> uint32_t
-{
-  return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
-}
-
 constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -> Pixel
 {
   const auto newR = GetBrighterChannelColor(brightness, color.R());
@@ -178,7 +141,7 @@ constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color
 constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelChannelType channelVal)
     -> uint32_t
 {
-  return UTILS::GRAPHICS::MultiplyChannelColorByScalar(brightness, channelVal);
+  return UTILS::GRAPHICS::GetChannelColorMultiplyByScalar(brightness, channelVal);
 }
 
 inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixel

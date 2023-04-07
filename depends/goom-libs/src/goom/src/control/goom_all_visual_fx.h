@@ -13,6 +13,7 @@
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/t_values.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -55,70 +56,6 @@ struct ZoomFilterSettings;
 namespace CONTROL
 {
 
-class PixelBlender
-{
-public:
-  explicit PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-
-  auto Update() noexcept -> void;
-  auto ChangePixelBlendFunc() noexcept -> void;
-  [[nodiscard]] auto GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc;
-
-private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  enum class PixelBlendType
-  {
-    ADD,
-    MULTIPLY,
-    LUMA_MIX,
-    _num // unused, and marks the enum end
-  };
-  static constexpr auto ADD_WEIGHT      = 50.0F;
-  static constexpr auto MULTIPLY_WEIGHT = 5.0F;
-  static constexpr auto LUMA_MIX_WEIGHT = 5.0F;
-  UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights{
-      *m_goomRand,
-      {
-                  {PixelBlendType::ADD, ADD_WEIGHT},
-                  {PixelBlendType::MULTIPLY, MULTIPLY_WEIGHT},
-                  {PixelBlendType::LUMA_MIX, LUMA_MIX_WEIGHT},
-                  }
-  };
-  PixelBlendType m_nextPixelBlendType                      = PixelBlendType::ADD;
-  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetColorAddPixelBlendFunc();
-  DRAW::IGoomDraw::PixelBlendFunc m_nextPixelBlendFunc     = m_previousPixelBlendFunc;
-  DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
-  static constexpr auto MAX_LERP_STEPS                     = 500U;
-  static constexpr auto MIN_LERP_STEPS                     = 50U;
-  UTILS::TValue m_lerpT{
-      {UTILS::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
-  };
-  [[nodiscard]] auto GetNextPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc;
-  [[nodiscard]] auto GetLerpedPixelBlendFunc() const -> DRAW::IGoomDraw::PixelBlendFunc;
-  [[nodiscard]] static auto GetColorAddPixelBlendFunc() -> DRAW::IGoomDraw::PixelBlendFunc;
-  [[nodiscard]] static auto GetColorMultiplyPixelBlendFunc() -> DRAW::IGoomDraw::PixelBlendFunc;
-  static constexpr auto MAX_LUMA_MIX_T = 1.0F;
-  static constexpr auto MIN_LUMA_MIX_T = 0.3F;
-  float m_lumaMixT                     = MIN_LUMA_MIX_T;
-  [[nodiscard]] auto GetSameLumaMixPixelBlendFunc() const -> DRAW::IGoomDraw::PixelBlendFunc;
-};
-
-inline auto PixelBlender::Update() noexcept -> void
-{
-  m_lerpT.Increment();
-
-  if (m_lerpT() >= 1.0F)
-  {
-    m_currentPixelBlendFunc = m_nextPixelBlendFunc;
-  }
-}
-
-inline auto PixelBlender::GetCurrentPixelBlendFunc() const noexcept
-    -> DRAW::IGoomDraw::PixelBlendFunc
-{
-  return m_currentPixelBlendFunc;
-}
-
 class AllStandardVisualFx;
 
 class GoomAllVisualFx
@@ -154,7 +91,7 @@ public:
   auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) noexcept -> void;
 
   auto ChangeAllFxColorMaps() noexcept -> void;
-  auto ChangeDrawPixelBlend() noexcept -> void;
+  auto ChangeAllFxPixelBlends() noexcept -> void;
   auto RefreshAllFx() noexcept -> void;
 
   auto ApplyCurrentStateToSingleBuffer() noexcept -> void;
@@ -189,7 +126,7 @@ private:
   auto UpdateZoomFilterLuminance() noexcept -> void;
   [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
 
-  PixelBlender m_pixelBlender{*m_goomRand};
+  VISUAL_FX::FX_UTILS::RandomPixelBlender m_pixelBlender{*m_goomRand};
 };
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
@@ -206,7 +143,7 @@ inline auto GoomAllVisualFx::SetNextState() noexcept -> void
 {
   ChangeState();
   ChangeAllFxColorMaps();
-  ChangeDrawPixelBlend();
+  ChangeAllFxPixelBlends();
 }
 
 inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(

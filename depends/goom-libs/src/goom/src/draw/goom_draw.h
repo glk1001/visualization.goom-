@@ -4,7 +4,7 @@
 #include "goom_graphic.h"
 #include "goom_types.h"
 #include "point2d.h"
-#include "utils/graphics/pixel_utils.h"
+#include "utils/graphics/pixel_blend.h"
 
 #include <cmath>
 #include <cstddef>
@@ -149,7 +149,7 @@ inline auto IGoomDraw::ColorAddPixelBlend(const Pixel& oldColor,
                                           const Pixel& newColor,
                                           const uint32_t intBuffIntensity) noexcept -> Pixel
 {
-  return COLOR::GetColorAdd(oldColor, COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
+  return UTILS::GRAPHICS::GetColorAddPixelBlend(oldColor, newColor, intBuffIntensity);
 }
 
 inline auto IGoomDraw::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept

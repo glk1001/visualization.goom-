@@ -7,12 +7,14 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "utils/graphics/pixel_utils.h"
 #include "utils/math/misc.h"
 
+#ifdef IS_RELEASE_BUILD_TYPE
 #include <algorithm>
 #include <chrono>
 #include <cstring>
+#endif
+
 #include <memory>
 #include <vector>
 
@@ -29,9 +31,6 @@
 namespace GOOM::UNIT_TESTS
 {
 
-using UTILS::GRAPHICS::MakePixel;
-using UTILS::GRAPHICS::MultiplyChannelColorByScalar;
-using UTILS::GRAPHICS::MultiplyColorChannels;
 using UTILS::MATH::FloatsEqual;
 using namespace std::chrono_literals;
 using std::chrono::high_resolution_clock;
@@ -54,18 +53,6 @@ TEST_CASE("Pixels")
     REQUIRE(FloatsEqual(static_cast<float>(TEST_R) / channel_limits<float>::max(), PIXEL.RFlt()));
     REQUIRE(FloatsEqual(static_cast<float>(TEST_G) / channel_limits<float>::max(), PIXEL.GFlt()));
     REQUIRE(FloatsEqual(static_cast<float>(TEST_B) / channel_limits<float>::max(), PIXEL.BFlt()));
-  }
-  SECTION("Pixel uint32_t RGB")
-  {
-    static constexpr auto RED   = 299U;
-    static constexpr auto GREEN = 200U;
-    static constexpr auto BLUE  = MAX_CHANNEL_VALUE_HDR + 10U;
-    static constexpr auto ALPHA = 256U;
-    static constexpr auto PIXEL = MakePixel(RED, GREEN, BLUE, ALPHA);
-    REQUIRE(PIXEL.R() == RED);
-    REQUIRE(PIXEL.G() == GREEN);
-    REQUIRE(PIXEL.B() == MAX_CHANNEL_VALUE_HDR);
-    REQUIRE(PIXEL.A() == 255);
   }
   SECTION("Pixel Set")
   {
@@ -103,26 +90,6 @@ TEST_CASE("Pixels")
         {MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA}
     };
     REQUIRE(EXPECTED_WHITE == WHITE_PIXEL);
-  }
-  SECTION("Pixel Multiply Scalar")
-  {
-    static constexpr auto PIXEL = Pixel{
-        {TEST_R, TEST_G, TEST_B}
-    };
-    static constexpr auto R_CHANNEL = PIXEL.R();
-    static constexpr auto SCALAR    = 32U;
-    REQUIRE(MultiplyChannelColorByScalar(SCALAR, PIXEL.R()) ==
-            ((SCALAR * R_CHANNEL) / MAX_COLOR_VAL));
-  }
-  SECTION("Pixel Multiply Channels")
-  {
-    static constexpr auto PIXEL = Pixel{
-        {TEST_R, TEST_G, TEST_B}
-    };
-    static constexpr auto R_CHANNEL  = PIXEL.R();
-    static constexpr auto G_CHANNEL  = PIXEL.G();
-    static constexpr auto RG_PRODUCT = R_CHANNEL * G_CHANNEL;
-    REQUIRE(MultiplyColorChannels(PIXEL.R(), PIXEL.G()) == RG_PRODUCT / MAX_COLOR_VAL);
   }
   SECTION("Pixel Rgba")
   {

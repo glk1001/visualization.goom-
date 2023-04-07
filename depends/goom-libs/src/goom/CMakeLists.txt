@@ -112,6 +112,7 @@ add_library(goom
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/image_bitmaps.cpp
             src/utils/graphics/line_clipper.h
+            src/utils/graphics/pixel_blend.h
             src/utils/graphics/pixel_utils.h
             src/utils/graphics/small_image_bitmaps.cpp
             src/utils/math/damping_functions.cpp
@@ -157,6 +158,7 @@ add_library(goom
             src/visual_fx/flying_stars/stars.cpp
             src/visual_fx/fx_utils/dot_drawer.cpp
             src/visual_fx/fx_utils/lines.cpp
+            src/visual_fx/fx_utils/random_pixel_blender.cpp
             src/visual_fx/ifs/colorizer.cpp
             src/visual_fx/ifs/fractal.cpp
             src/visual_fx/ifs/fractal_hits.cpp

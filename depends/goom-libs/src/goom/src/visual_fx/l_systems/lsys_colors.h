@@ -8,6 +8,7 @@
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
@@ -138,7 +139,7 @@ inline auto ColorShadesAndTints::GetTint(const float t) const noexcept -> Pixel
                                static_cast<PixelChannelType>(WHITE_PIXEL.B() - m_baseColor.B()),
                                MAX_ALPHA};
   const auto brightness = STD20::lerp(DEFAULT_MIN_TINT, DEFAULT_MAX_TINT, t);
-  return COLOR::GetColorAdd(m_baseColor, COLOR::GetBrighterColor(brightness, fromWhite));
+  return UTILS::GRAPHICS::GetColorAdd(m_baseColor, COLOR::GetBrighterColor(brightness, fromWhite));
 }
 
 } // namespace GOOM::VISUAL_FX::L_SYSTEM

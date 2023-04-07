@@ -25,6 +25,7 @@ add_executable(${GOOM_LIB_TESTS_NAME}
                src/filters/test_filter_zoom_vector.cpp
                src/filters/test_normalized_coords.cpp
                src/sound/test_sound_info.cpp
+               src/utils/graphics/test_pixel_utils.cpp
                src/utils/math/test_goom_rand.cpp
                src/utils/math/test_misc.cpp
                src/utils/math/test_randutils.cpp

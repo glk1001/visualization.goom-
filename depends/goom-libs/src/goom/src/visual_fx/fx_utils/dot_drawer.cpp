@@ -1,9 +1,11 @@
 #include "dot_drawer.h"
 
+#include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
+#include "utils/graphics/pixel_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -11,10 +13,10 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
 using COLOR::GetBrighterColor;
-using COLOR::GetColorMultiply;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using UTILS::NUM;
+using UTILS::GRAPHICS::GetColorMultiply;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;

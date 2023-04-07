@@ -14,8 +14,9 @@ namespace COLOR
 {
 class RandomColorMaps;
 }
+} // namespace GOOM
 
-namespace VISUAL_FX
+namespace GOOM::VISUAL_FX
 {
 
 class IVisualFx
@@ -33,20 +34,14 @@ public:
   virtual auto Start() noexcept -> void  = 0;
   virtual auto Finish() noexcept -> void = 0;
 
-  virtual auto Resume() noexcept -> void
-  { /* default does nothing */
-  }
-  virtual auto Suspend() noexcept -> void
-  { /* default does nothing */
-  }
+  virtual auto Resume() noexcept -> void;
+  virtual auto Suspend() noexcept -> void;
 
-  virtual auto Refresh() noexcept -> void
-  { /* default does nothing */
-  }
+  virtual auto Refresh() noexcept -> void;
 
-  virtual auto SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept -> void
-  { /* default does nothing */
-  }
+  virtual auto PostStateUpdate(bool wasActiveInPreviousState) noexcept -> void;
+  virtual auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
+  virtual auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
 
   [[nodiscard]] virtual auto GetCurrentColorMapsNames() const noexcept
       -> std::vector<std::string> = 0;
@@ -57,25 +52,63 @@ public:
     std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps   = nullptr;
     std::shared_ptr<const COLOR::RandomColorMaps> extraColorMaps = nullptr;
   };
-  virtual auto SetWeightedColorMaps(
-      [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept -> void
-  { /* default does nothing */
-  }
+  virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  virtual auto SetSoundData([[maybe_unused]] const AudioSamples& soundData) noexcept -> void
-  { /* default does nothing */
-  }
-
-  virtual auto ApplyNoDraw() noexcept -> void
-  { /* default does nothing */
-  }
-  virtual auto ApplySingle() noexcept -> void
-  { /* default does nothing */
-  }
-  virtual auto ApplyMultiple() noexcept -> void
-  { /* default does nothing */
-  }
+  virtual auto ApplyNoDraw() noexcept -> void;
+  virtual auto ApplySingle() noexcept -> void;
+  virtual auto ApplyMultiple() noexcept -> void;
 };
 
-} // namespace VISUAL_FX
-} // namespace GOOM
+inline auto IVisualFx::Resume() noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::Suspend() noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::Refresh() noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::PostStateUpdate(
+    [[maybe_unused]] const bool wasActiveInPreviousState) noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::SetZoomMidpoint([[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept
+    -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::SetWeightedColorMaps(
+    [[maybe_unused]] const WeightedColorMaps& weightedColorMaps) noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::SetSoundData([[maybe_unused]] const AudioSamples& soundData) noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::ApplyNoDraw() noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::ApplySingle() noexcept -> void
+{ /* default does nothing */
+}
+
+inline auto IVisualFx::ApplyMultiple() noexcept -> void
+{
+  // default does nothing
+}
+
+} // namespace GOOM::VISUAL_FX

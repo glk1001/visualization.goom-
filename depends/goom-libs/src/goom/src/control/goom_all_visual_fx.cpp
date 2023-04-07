@@ -3,34 +3,23 @@
 #include "goom_all_visual_fx.h"
 
 #include "all_standard_visual_fx.h"
-#include "color/color_maps.h"
-#include "color/color_utils.h"
-#include "draw/goom_draw.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "sound_info.h"
-#include "utils/graphics/pixel_utils.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx/lines_fx.h"
 
-#include <array>
 #include <memory>
+#include <string>
+#include <unordered_set>
 
 namespace GOOM::CONTROL
 {
 
-using COLOR::GetBrighterColor;
-using COLOR::GetBrighterColorInt;
-using COLOR::GetColorAdd;
-using COLOR::GetColorMultiply;
-using COLOR::GetLuma;
-using COLOR::IColorMap;
-using COLOR::IsCloseToBlack;
 using CONTROL::GoomDrawables;
-using DRAW::IGoomDraw;
 using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterFx;
@@ -41,103 +30,6 @@ using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
-
-static constexpr auto SMALL_LUMA = 0.1F;
-
-PixelBlender::PixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
-{
-}
-
-auto PixelBlender::ChangePixelBlendFunc() noexcept -> void
-{
-  const auto previousPixelBlendType = m_nextPixelBlendType;
-
-  m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
-  m_previousPixelBlendFunc = m_nextPixelBlendFunc;
-  m_nextPixelBlendType     = m_pixelBlendTypeWeights.GetRandomWeighted();
-
-  if (previousPixelBlendType != m_nextPixelBlendType)
-  {
-    m_nextPixelBlendFunc    = GetNextPixelBlendFunc();
-    m_currentPixelBlendFunc = GetLerpedPixelBlendFunc();
-  }
-
-  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(MIN_LERP_STEPS, MAX_LERP_STEPS + 1U));
-  m_lerpT.Reset();
-}
-
-auto PixelBlender::GetNextPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc
-{
-  switch (m_nextPixelBlendType)
-  {
-    case PixelBlendType::ADD:
-      return GetColorAddPixelBlendFunc();
-    case PixelBlendType::MULTIPLY:
-      return GetColorMultiplyPixelBlendFunc();
-    case PixelBlendType::LUMA_MIX:
-      return GetSameLumaMixPixelBlendFunc();
-    default:
-      FailFast();
-  }
-}
-
-// NOTE: Tried reverse add color (where oldColor is multiplied by intensity),
-//       but the resulting black pixels don't look good.
-auto PixelBlender::GetColorAddPixelBlendFunc() -> IGoomDraw::PixelBlendFunc
-{
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return GetColorAdd(oldColor, GetBrighterColorInt(intBuffIntensity, newColor)); };
-}
-
-auto PixelBlender::GetLerpedPixelBlendFunc() const -> DRAW::IGoomDraw::PixelBlendFunc
-{
-  return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  {
-    return COLOR::GetRgbColorLerp(m_previousPixelBlendFunc(oldColor, newColor, intBuffIntensity),
-                                  m_nextPixelBlendFunc(oldColor, newColor, intBuffIntensity),
-                                  m_lerpT());
-  };
-}
-
-auto PixelBlender::GetColorMultiplyPixelBlendFunc() -> IGoomDraw::PixelBlendFunc
-{
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  {
-    if (IsCloseToBlack(newColor))
-    {
-      return oldColor;
-    }
-    return GetColorAdd(GetColorMultiply(oldColor, newColor),
-                       GetBrighterColorInt(intBuffIntensity, newColor));
-  };
-}
-
-auto PixelBlender::GetSameLumaMixPixelBlendFunc() const -> IGoomDraw::PixelBlendFunc
-{
-  return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  {
-    const auto newColorLuma = GetLuma(newColor);
-    if (newColorLuma < SMALL_LUMA)
-    {
-      return GetColorAdd(oldColor, newColor);
-    }
-
-    const auto oldColorLuma = GetLuma(oldColor);
-    if (oldColorLuma < SMALL_LUMA)
-    {
-      return GetColorAdd(oldColor, newColor);
-    }
-
-    const auto buffIntensity = static_cast<float>(intBuffIntensity) / channel_limits<float>::max();
-
-    const auto brightness = std::min((oldColorLuma + (buffIntensity * newColorLuma)) /
-                                         STD20::lerp(oldColorLuma, newColorLuma, m_lumaMixT),
-                                     COLOR::MAX_BRIGHTNESS);
-
-    const auto finalNewColor = IColorMap::GetColorMix(oldColor, newColor, m_lumaMixT);
-    return GetBrighterColor(brightness, finalNewColor);
-  };
-}
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const FxHelper& fxHelper,
@@ -163,7 +55,7 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
 
 auto GoomAllVisualFx::Start() noexcept -> void
 {
-  ChangeDrawPixelBlend();
+  ChangeAllFxPixelBlends();
 
   m_allStandardVisualFx->Start();
   m_adaptiveExposure.Start();
@@ -250,7 +142,7 @@ auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
   m_allStandardVisualFx->ChangeColorMaps();
 }
 
-auto GoomAllVisualFx::ChangeDrawPixelBlend() noexcept -> void
+auto GoomAllVisualFx::ChangeAllFxPixelBlends() noexcept -> void
 {
   m_pixelBlender.ChangePixelBlendFunc();
   m_draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
