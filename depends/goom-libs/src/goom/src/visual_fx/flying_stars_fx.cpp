@@ -42,7 +42,7 @@ class FlyingStarsFx::FlyingStarsImpl
 public:
   FlyingStarsImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   [[nodiscard]] auto GetCurrentStarTypeColorMapsNames() const noexcept -> std::vector<std::string>;
@@ -63,8 +63,7 @@ private:
   Weights<ColorMapMode> m_colorMapModeWeights;
   auto ChangeMapsAndModes() -> void;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr uint32_t MAX_TOTAL_NUM_ACTIVE_STARS = 1024;
@@ -123,9 +122,10 @@ auto FlyingStarsFx::Suspend() noexcept -> void
   // nothing to be done
 }
 
-auto FlyingStarsFx::ChangePixelBlender() noexcept -> void
+auto FlyingStarsFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept
+    -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto FlyingStarsFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -162,7 +162,8 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
             { ColorMapMode::ONE_MAP_FOR_ALL_ANGLES, COLOR_MAP_MODE_ONE_MAP_FOR_ALL_ANGLES_WEIGHT },
             { ColorMapMode::ALL_MAPS_RANDOM,        COLOR_MAP_MODE_MEGA_RANDOM_WEIGHT },
         }
-    }
+    },
+    m_pixelBlender{*fxHelper.goomRand}
 {
   m_activeStars.reserve(MAX_TOTAL_NUM_ACTIVE_STARS);
 }
@@ -201,9 +202,10 @@ inline auto FlyingStarsFx::FlyingStarsImpl::ChangeMapsAndModes() -> void
   m_starDrawer.ChangeDrawMode();
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::ChangePixelBlender() noexcept -> void
+inline auto FlyingStarsFx::FlyingStarsImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept

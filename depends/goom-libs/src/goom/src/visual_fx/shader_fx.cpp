@@ -62,7 +62,8 @@ auto ShaderFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto ShaderFx::ChangePixelBlender() noexcept -> void
+auto ShaderFx::ChangePixelBlender(
+    [[maybe_unused]] const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
   // nothing to do.
 }

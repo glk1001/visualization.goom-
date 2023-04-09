@@ -59,7 +59,7 @@ public:
 
   auto Start() noexcept -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
   auto ResetLineModes() noexcept -> void;
 
@@ -83,8 +83,7 @@ private:
   auto ResetLineColorPowers() noexcept -> void;
   auto DrawLines() noexcept -> void;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   float m_screenWidth         = m_fxHelper->goomInfo->GetDimensions().GetFltWidth();
@@ -140,9 +139,9 @@ auto LinesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto LinesFx::ChangePixelBlender() noexcept -> void
+auto LinesFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto LinesFx::SetSoundData(const AudioSamples& soundData) noexcept -> void
@@ -218,6 +217,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             }
         }
     },
+    m_pixelBlender{*fxHelper.goomRand},
     m_lineTypeWeights{
         *m_fxHelper->goomRand,
         {
@@ -298,9 +298,10 @@ inline auto LinesFx::LinesImpl::GetRandomLineColors() const noexcept -> std::arr
   return colors;
 }
 
-inline auto LinesFx::LinesImpl::ChangePixelBlender() noexcept -> void
+inline auto LinesFx::LinesImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto LinesFx::LinesImpl::SetSoundData(const AudioSamples& soundData) noexcept -> void

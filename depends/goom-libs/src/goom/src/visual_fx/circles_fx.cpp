@@ -39,7 +39,7 @@ public:
 
   auto Start() noexcept -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto ApplyMultiple() noexcept -> void;
@@ -71,8 +71,7 @@ private:
   WeightedColorMaps m_lastWeightedColorMaps{};
   auto CheckCirclesFullReset() noexcept -> void;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr uint32_t MIN_BLANK_AT_TARGET_TIME = 1;
@@ -108,9 +107,9 @@ auto CirclesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto CirclesFx::ChangePixelBlender() noexcept -> void
+auto CirclesFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto CirclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -159,7 +158,8 @@ CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelper& fxHelper,
             {CircleTargetModes::SIMILAR_TARGETS, CIRCLE_TARGET_SIMILAR_TARGETS_WEIGHT},
             {CircleTargetModes::FOUR_CORNERS, CIRCLE_TARGET_FOUR_CORNERS_WEIGHT},
         }
-    }
+    },
+    m_pixelBlender{*fxHelper.goomRand}
 {
 }
 
@@ -214,9 +214,10 @@ inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
   m_lastWeightedColorMaps = weightedColorMaps;
 }
 
-inline auto CirclesFx::CirclesFxImpl::ChangePixelBlender() noexcept -> void
+inline auto CirclesFx::CirclesFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto CirclesFx::CirclesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept

@@ -11,6 +11,7 @@
 #include "visual_fx/flying_stars_fx.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx/goom_dots_fx.h"
+#include "visual_fx/goom_visual_fx.h"
 #include "visual_fx/ifs_dancers_fx.h"
 #include "visual_fx/image_fx.h"
 #include "visual_fx/l_system_fx.h"
@@ -38,6 +39,7 @@ using VISUAL_FX::FxHelper;
 using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
+using VISUAL_FX::IVisualFx;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::LSystemFx;
 using VISUAL_FX::ShaderFx;
@@ -130,12 +132,13 @@ auto AllStandardVisualFx::ResumeFx() -> void
                 { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
 
-auto AllStandardVisualFx::ChangeAllFxPixelBlenders() noexcept -> void
+auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
+    const IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
   std::for_each(begin(m_currentGoomDrawables),
                 end(m_currentGoomDrawables),
-                [this](const auto currentlyDrawable)
-                { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(); });
+                [this, &pixelBlenderParams](const auto currentlyDrawable)
+                { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams); });
 }
 
 auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void

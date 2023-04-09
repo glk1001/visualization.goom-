@@ -38,7 +38,7 @@ public:
 
   auto Start() noexcept -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
@@ -52,8 +52,7 @@ private:
 
   Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr float MIN_RADIUS_FRACTION = 0.2F;
@@ -113,9 +112,9 @@ auto ShapesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto ShapesFx::ChangePixelBlender() noexcept -> void
+auto ShapesFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto ShapesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -139,7 +138,7 @@ auto ShapesFx::ApplyMultiple() noexcept -> void
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
-  : m_fxHelper{&fxHelper}, m_shapes{GetShapes()}
+  : m_fxHelper{&fxHelper}, m_pixelBlender{*fxHelper.goomRand}, m_shapes{GetShapes()}
 {
   UpdateShapePathMinMaxNumSteps();
 }
@@ -228,9 +227,10 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> 
                 { shape.SetShapePathsMinMaxNumSteps(newMinMaxNumShapePathSteps); });
 }
 
-inline auto ShapesFx::ShapesFxImpl::ChangePixelBlender() noexcept -> void
+inline auto ShapesFx::ShapesFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void

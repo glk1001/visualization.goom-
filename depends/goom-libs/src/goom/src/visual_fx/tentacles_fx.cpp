@@ -45,7 +45,7 @@ public:
   auto Start() -> void;
   auto Resume() -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
@@ -81,8 +81,7 @@ private:
   std::shared_ptr<const IColorMap> m_dominantLowColorMap{};
   auto ChangeDominantColor() -> void;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr uint32_t MAX_TIME_FOR_DOMINANT_COLOR = 100;
@@ -124,9 +123,9 @@ auto TentaclesFx::Suspend() noexcept -> void
   // nothing to do
 }
 
-auto TentaclesFx::ChangePixelBlender() noexcept -> void
+auto TentaclesFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto TentaclesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -189,8 +188,9 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
            CirclesTentacleLayout{{LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_TENTACLES}},
            CirclesTentacleLayout{{LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES}},
         }}
-    )}
-// clang-format on
+    )},
+    // clang-format on
+    m_pixelBlender{*fxHelper.goomRand}
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
   Ensures(m_currentTentacleDriver != nullptr);
@@ -287,9 +287,10 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   }
 }
 
-inline auto TentaclesFx::TentaclesImpl::ChangePixelBlender() noexcept -> void
+inline auto TentaclesFx::TentaclesImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto TentaclesFx::TentaclesImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept

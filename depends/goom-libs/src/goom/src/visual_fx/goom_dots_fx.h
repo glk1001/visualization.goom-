@@ -34,7 +34,7 @@ public:
   auto Resume() noexcept -> void override;
   auto Suspend() noexcept -> void override;
 
-  auto ChangePixelBlender() noexcept -> void override;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void override;
 
   static constexpr uint32_t NUM_DOT_TYPES = 5;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;

@@ -30,7 +30,7 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
-  auto ChangePixelBlender() noexcept -> void override;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void override;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;

@@ -12,24 +12,30 @@ using UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetSameLumaMixPixelBlend;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::Weights;
 
-static constexpr auto ADD_WEIGHT          = 50.0F;
-static constexpr auto DARKEN_ONLY_WEIGHT  = 10.0F;
-static constexpr auto LIGHTEN_ONLY_WEIGHT = 10.0F;
-static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
-static constexpr auto MULTIPLY_WEIGHT     = 5.0F;
+const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
+    // NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
+    RandomPixelBlender::DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS{
+        {         RandomPixelBlender::PixelBlendType::ADD,          DEFAULT_ADD_WEIGHT},
+        { RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DEFAULT_DARKEN_ONLY_WEIGHT},
+        {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, DEFAULT_LIGHTEN_ONLY_WEIGHT},
+        {    RandomPixelBlender::PixelBlendType::LUMA_MIX,     DEFAULT_LUMA_MIX_WEIGHT},
+        {    RandomPixelBlender::PixelBlendType::MULTIPLY,     DEFAULT_MULTIPLY_WEIGHT}
+};
 
-auto RandomPixelBlender::GetDefaultPixelBlender(const IGoomRand& goomRand) noexcept
-    -> RandomPixelBlender
+auto RandomPixelBlender::GetRandomPixelBlendType(const IGoomRand& goomRand) noexcept
+    -> PixelBlendType
 {
-  return {
-      goomRand,
-      {{RandomPixelBlender::PixelBlendType::ADD, ADD_WEIGHT},
-        {RandomPixelBlender::PixelBlendType::DARKEN_ONLY, DARKEN_ONLY_WEIGHT},
-        {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
-        {RandomPixelBlender::PixelBlendType::LUMA_MIX, LUMA_MIX_WEIGHT},
-        {RandomPixelBlender::PixelBlendType::MULTIPLY, MULTIPLY_WEIGHT}}
-  };
+  const auto pixelBlendTypeWeights =
+      UTILS::MATH::Weights<PixelBlendType>{goomRand, DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS};
+
+  return pixelBlendTypeWeights.GetRandomWeighted();
+}
+
+RandomPixelBlender::RandomPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept
+  : m_goomRand{&goomRand}, m_pixelBlendTypeWeights{goomRand, DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS}
+{
 }
 
 RandomPixelBlender::RandomPixelBlender(
@@ -39,13 +45,36 @@ RandomPixelBlender::RandomPixelBlender(
 {
 }
 
-auto RandomPixelBlender::ChangePixelBlendFunc() noexcept -> void
+auto RandomPixelBlender::SetPixelBlendType(const PixelBlenderParams& pixelBlenderParams) noexcept
+    -> void
+{
+  if (pixelBlenderParams.useRandomBlender)
+  {
+    SetRandomPixelBlendType();
+  }
+  else
+  {
+    SetPixelBlendType(pixelBlenderParams.forceBlenderType);
+  }
+}
+
+auto RandomPixelBlender::SetPixelBlendType(const PixelBlendType pixelBlendType) noexcept -> void
+{
+  SetPixelBlendFunc(pixelBlendType);
+}
+
+auto RandomPixelBlender::SetRandomPixelBlendType() noexcept -> void
+{
+  SetPixelBlendFunc(m_pixelBlendTypeWeights.GetRandomWeighted());
+}
+
+auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) noexcept -> void
 {
   const auto previousPixelBlendType = m_nextPixelBlendType;
 
   m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
   m_previousPixelBlendFunc = m_nextPixelBlendFunc;
-  m_nextPixelBlendType     = m_pixelBlendTypeWeights.GetRandomWeighted();
+  m_nextPixelBlendType     = pixelBlendType;
 
   if (previousPixelBlendType != m_nextPixelBlendType)
   {

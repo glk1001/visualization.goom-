@@ -8,8 +8,11 @@
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "sound_info.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/fx_helper.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
+#include "visual_fx/goom_visual_fx.h"
 #include "visual_fx/lines_fx.h"
 
 #include <memory>
@@ -30,6 +33,8 @@ using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::FxHelper;
+using VISUAL_FX::IVisualFx;
+using VISUAL_FX::FX_UTILS::RandomPixelBlender;
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
                                  const FxHelper& fxHelper,
@@ -143,7 +148,22 @@ auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
 
 auto GoomAllVisualFx::ChangeAllFxPixelBlenders() noexcept -> void
 {
-  m_allStandardVisualFx->ChangeAllFxPixelBlenders();
+  m_allStandardVisualFx->ChangeAllFxPixelBlenders(GetNextPixelBlenderParams());
+}
+
+auto GoomAllVisualFx::GetNextPixelBlenderParams() const noexcept -> IVisualFx::PixelBlenderParams
+{
+  switch (m_globalBlendTypeWeight.GetRandomWeighted())
+  {
+    case GlobalBlendType::NONRANDOM:
+      return {false, RandomPixelBlender::PixelBlendType::ADD};
+    case GlobalBlendType::ASYNC_RANDOM:
+      return {true};
+    case GlobalBlendType::SYNC_RANDOM:
+      return {false, RandomPixelBlender::GetRandomPixelBlendType(*m_goomRand)};
+    default:
+      FailFast();
+  }
 }
 
 auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSettings) noexcept

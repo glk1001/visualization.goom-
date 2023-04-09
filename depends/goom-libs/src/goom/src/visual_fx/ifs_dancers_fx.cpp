@@ -83,7 +83,7 @@ public:
   auto Refresh() noexcept -> void;
   auto Suspend() noexcept -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
@@ -104,8 +104,7 @@ private:
 
   Colorizer m_colorizer;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   propagate_const<std::unique_ptr<Fractal>> m_fractal{};
@@ -190,9 +189,9 @@ auto IfsDancersFx::Suspend() noexcept -> void
   // nothing to do
 }
 
-auto IfsDancersFx::ChangePixelBlender() noexcept -> void
+auto IfsDancersFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -233,6 +232,7 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
     m_bitmapDrawer{*fxHelper.draw},
     m_pixelDrawer{*fxHelper.draw},
     m_colorizer{*fxHelper.goomRand},
+    m_pixelBlender{*fxHelper.goomRand},
     m_fractal{std::make_unique<Fractal>(fxHelper.draw->GetDimensions(),
                                         *fxHelper.goomRand,
                                         smallBitmaps)},
@@ -268,9 +268,10 @@ inline auto IfsDancersFx::IfsDancersFxImpl::InitFractal() noexcept -> void
   UpdateLowDensityThreshold();
 }
 
-inline auto IfsDancersFx::IfsDancersFxImpl::ChangePixelBlender() noexcept -> void
+inline auto IfsDancersFx::IfsDancersFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::GetCurrentColorMapsNames() const noexcept

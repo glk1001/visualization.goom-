@@ -134,7 +134,7 @@ public:
   auto Start() -> void;
   auto Resume() -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
@@ -172,8 +172,7 @@ private:
   };
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   std::vector<Tube> m_tubes{};
@@ -286,9 +285,9 @@ auto TubesFx::Suspend() noexcept -> void
   // Not needed.
 }
 
-auto TubesFx::ChangePixelBlender() noexcept -> void
+auto TubesFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto TubesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -313,7 +312,7 @@ auto TubesFx::ApplyMultiple() noexcept -> void
 
 TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
                                 const SmallImageBitmaps& smallBitmaps) noexcept
-  : m_fxHelper{&fxHelper}, m_smallBitmaps{&smallBitmaps}
+  : m_fxHelper{&fxHelper}, m_smallBitmaps{&smallBitmaps}, m_pixelBlender{*fxHelper.goomRand}
 {
 }
 
@@ -366,9 +365,10 @@ auto TubesFx::TubeFxImpl::SetWeightedColorMaps(const WeightedColorMaps& weighted
   }
 }
 
-inline auto TubesFx::TubeFxImpl::ChangePixelBlender() noexcept -> void
+inline auto TubesFx::TubeFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto TubesFx::TubeFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void

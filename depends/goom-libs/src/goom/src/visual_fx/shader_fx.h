@@ -23,7 +23,7 @@ public:
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
 
-  auto ChangePixelBlender() noexcept -> void override;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void override;
   auto ChangeEffects() noexcept -> void;
 
   auto ApplyMultiple() noexcept -> void override;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "visual_fx/fx_utils/random_pixel_blender.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -39,7 +41,9 @@ public:
 
   virtual auto Refresh() noexcept -> void;
 
-  virtual auto ChangePixelBlender() noexcept -> void = 0;
+  using PixelBlenderParams = FX_UTILS::RandomPixelBlender::PixelBlenderParams;
+  virtual auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept
+      -> void = 0;
   virtual auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
   virtual auto SetSoundData(const AudioSamples& soundData) noexcept -> void;
 

@@ -57,7 +57,7 @@ public:
 
   auto Start() -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
@@ -105,8 +105,7 @@ private:
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenCentre)};
@@ -155,9 +154,9 @@ auto GoomDotsFx::Suspend() noexcept -> void
   // nothing to do
 }
 
-auto GoomDotsFx::ChangePixelBlender() noexcept -> void
+auto GoomDotsFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto GoomDotsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -203,7 +202,8 @@ GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
             {SmallImageBitmaps::ImageNames::RED_FLOWER,    IMAGE_NAMES_RED_FLOWER_WEIGHT},
             {SmallImageBitmaps::ImageNames::WHITE_FLOWER,  IMAGE_NAMES_WHITE_FLOWER_WEIGHT},
         }
-    }
+    },
+    m_pixelBlender{*fxHelper.goomRand}
 {
 }
 
@@ -325,9 +325,10 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
       MAX_MIX_T);
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::ChangePixelBlender() noexcept -> void
+inline auto GoomDotsFx::GoomDotsFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetCurrentColorMapsNames() const noexcept

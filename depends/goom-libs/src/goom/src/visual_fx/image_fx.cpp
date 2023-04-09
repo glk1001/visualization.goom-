@@ -95,7 +95,7 @@ public:
   auto Start() -> void;
   auto Resume() -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
@@ -123,8 +123,25 @@ private:
   static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.2F;
   float m_brightnessBase                         = DEFAULT_BRIGHTNESS_BASE;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  static constexpr auto ADD_WEIGHT          = 100.0F;
+  static constexpr auto DARKEN_ONLY_WEIGHT  = 0.0F;
+  static constexpr auto LIGHTEN_ONLY_WEIGHT = 5.0F;
+  static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
+  static constexpr auto MULTIPLY_WEIGHT     = 0.0F;
+  // clang-format off
+  RandomPixelBlender m_pixelBlender{
+      *m_fxHelper->goomRand,
+      {
+          {RandomPixelBlender::PixelBlendType::ADD,          ADD_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DARKEN_ONLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::LUMA_MIX,     LUMA_MIX_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::MULTIPLY,     MULTIPLY_WEIGHT}
+      }
+  };
+  // clang-format on
+  [[nodiscard]] static auto GetAcceptablePixelBlenderParams(
+      const PixelBlenderParams& pixelBlenderParams) noexcept -> PixelBlenderParams;
   auto UpdatePixelBlender() noexcept -> void;
 
   std::vector<std::unique_ptr<ChunkedImage>> m_images{};
@@ -193,9 +210,9 @@ auto ImageFx::Resume() noexcept -> void
   m_pimpl->Resume();
 }
 
-auto ImageFx::ChangePixelBlender() noexcept -> void
+auto ImageFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto ImageFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void
@@ -229,9 +246,25 @@ inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
   return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
 }
 
-inline auto ImageFx::ImageFxImpl::ChangePixelBlender() noexcept -> void
+inline auto ImageFx::ImageFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(GetAcceptablePixelBlenderParams(pixelBlenderParams));
+}
+
+auto ImageFx::ImageFxImpl::GetAcceptablePixelBlenderParams(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> PixelBlenderParams
+{
+  if (pixelBlenderParams.useRandomBlender)
+  {
+    return pixelBlenderParams;
+  }
+  if ((pixelBlenderParams.forceBlenderType == RandomPixelBlender::PixelBlendType::DARKEN_ONLY) or
+      (pixelBlenderParams.forceBlenderType == RandomPixelBlender::PixelBlendType::MULTIPLY))
+  {
+    return {false, RandomPixelBlender::PixelBlendType::ADD};
+  }
+  return pixelBlenderParams;
 }
 
 inline auto ImageFx::ImageFxImpl::GetCurrentColorMapsNames() const noexcept

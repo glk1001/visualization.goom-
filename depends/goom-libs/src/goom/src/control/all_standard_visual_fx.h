@@ -64,7 +64,8 @@ public:
   auto RefreshAllFx() -> void;
   auto SuspendFx() -> void;
   auto ResumeFx() -> void;
-  auto ChangeAllFxPixelBlenders() noexcept -> void;
+  auto ChangeAllFxPixelBlenders(
+      const VISUAL_FX::IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
 
   auto ApplyCurrentStateToSingleBuffer() -> void;

@@ -41,7 +41,7 @@ public:
   auto Start() -> void;
   auto Resume() -> void;
 
-  auto ChangePixelBlender() noexcept -> void;
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
@@ -58,8 +58,7 @@ private:
   auto Update() noexcept -> void;
   auto ChangeColors() noexcept -> void;
 
-  RandomPixelBlender m_pixelBlender =
-      RandomPixelBlender::GetDefaultPixelBlender(*m_fxHelper->goomRand);
+  RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
   [[nodiscard]] static auto GetLSystemFileList() noexcept -> std::vector<LSystem::LSystemFile>;
@@ -121,9 +120,9 @@ auto LSystemFx::Suspend() noexcept -> void
   // nothing to do
 }
 
-auto LSystemFx::ChangePixelBlender() noexcept -> void
+auto LSystemFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pimpl->ChangePixelBlender();
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto LSystemFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -150,6 +149,7 @@ auto LSystemFx::ApplyMultiple() noexcept -> void
 LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory)
   : m_fxHelper{&fxHelper},
+    m_pixelBlender{*fxHelper.goomRand},
     m_lSystems{GetLSystems(
         *fxHelper.draw, *m_fxHelper->goomInfo, *m_fxHelper->goomRand, resourcesDirectory)}
 {
@@ -338,9 +338,10 @@ inline auto LSystemFx::LSystemFxImpl::GetCurrentColorMapsNames() noexcept
   return {};
 }
 
-inline auto LSystemFx::LSystemFxImpl::ChangePixelBlender() noexcept -> void
+inline auto LSystemFx::LSystemFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  m_pixelBlender.ChangePixelBlendFunc();
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
 }
 
 inline auto LSystemFx::LSystemFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept

@@ -13,6 +13,7 @@
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/t_values.h"
+#include "visual_fx/goom_visual_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -123,6 +124,25 @@ private:
   bool m_doExposureControl = false;
   auto UpdateZoomFilterLuminance() noexcept -> void;
   [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
+
+  [[nodiscard]] auto GetNextPixelBlenderParams() const noexcept
+      -> VISUAL_FX::IVisualFx::PixelBlenderParams;
+  enum class GlobalBlendType
+  {
+    NONRANDOM,
+    ASYNC_RANDOM,
+    SYNC_RANDOM,
+    _num // unused, and marks the enum end
+  };
+  static constexpr auto NONRANDOM_WEIGHT    = 50.0F;
+  static constexpr auto SYNC_RANDOM_WEIGHT  = 50.0F;
+  static constexpr auto ASYNC_RANDOM_WEIGHT = 50.0F;
+  UTILS::MATH::Weights<GlobalBlendType> m_globalBlendTypeWeight{
+      *m_goomRand,
+      {{GlobalBlendType::NONRANDOM, NONRANDOM_WEIGHT},
+                  {GlobalBlendType::SYNC_RANDOM, SYNC_RANDOM_WEIGHT},
+                  {GlobalBlendType::ASYNC_RANDOM, ASYNC_RANDOM_WEIGHT}}
+  };
 };
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void

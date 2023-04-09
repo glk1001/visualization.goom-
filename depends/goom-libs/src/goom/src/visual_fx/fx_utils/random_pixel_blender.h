@@ -20,16 +20,31 @@ public:
     MULTIPLY,
     _num // unused, and marks the enum end
   };
-  [[nodiscard]] static auto GetDefaultPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept
-      -> RandomPixelBlender;
+  static constexpr auto DEFAULT_ADD_WEIGHT          = 50.0F;
+  static constexpr auto DEFAULT_DARKEN_ONLY_WEIGHT  = 10.0F;
+  static constexpr auto DEFAULT_LIGHTEN_ONLY_WEIGHT = 10.0F;
+  static constexpr auto DEFAULT_LUMA_MIX_WEIGHT     = 5.0F;
+  static constexpr auto DEFAULT_MULTIPLY_WEIGHT     = 5.0F;
 
+  explicit RandomPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept;
   RandomPixelBlender(
       const UTILS::MATH::IGoomRand& goomRand,
       const UTILS::MATH::Weights<PixelBlendType>::EventWeightPairs& weights) noexcept;
 
   auto Update() noexcept -> void;
-  auto ChangePixelBlendFunc() noexcept -> void;
+
+  struct PixelBlenderParams
+  {
+    bool useRandomBlender{};
+    FX_UTILS::RandomPixelBlender::PixelBlendType forceBlenderType{};
+  };
+  auto SetPixelBlendType(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
+  auto SetPixelBlendType(PixelBlendType pixelBlendType) noexcept -> void;
+  auto SetRandomPixelBlendType() noexcept -> void;
   [[nodiscard]] auto GetCurrentPixelBlendFunc() const noexcept -> DRAW::IGoomDraw::PixelBlendFunc;
+
+  [[nodiscard]] static auto GetRandomPixelBlendType(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> PixelBlendType;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -43,6 +58,11 @@ private:
   UTILS::TValue m_lerpT{
       {UTILS::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
   };
+
+  static const UTILS::MATH::Weights<PixelBlendType>::EventWeightPairs
+      DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS;
+
+  auto SetPixelBlendFunc(PixelBlendType pixelBlendType) noexcept -> void;
   using PixelBlendFunc = DRAW::IGoomDraw::PixelBlendFunc;
   [[nodiscard]] auto GetNextPixelBlendFunc() const noexcept -> PixelBlendFunc;
   [[nodiscard]] auto GetLerpedPixelBlendFunc() const -> PixelBlendFunc;
