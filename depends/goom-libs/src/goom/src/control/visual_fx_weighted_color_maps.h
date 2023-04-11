@@ -51,6 +51,10 @@ private:
       -> WeightedGroups;
   [[nodiscard]] static auto GetParticlesLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
       -> WeightedGroups;
+  [[nodiscard]] static auto GetRaindropsMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
+  [[nodiscard]] static auto GetRaindropsLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
+      -> WeightedGroups;
   [[nodiscard]] static auto GetShapesMainGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept
       -> WeightedGroups;
   [[nodiscard]] static auto GetShapesLowGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept

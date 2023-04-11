@@ -136,6 +136,7 @@ CPMAddPackage(NAME "blend2d"
               GIT_TAG "master"
               FORCE False
 )
+set_target_properties(blend2d PROPERTIES POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE})
 CPMAddPackage(NAME "LSys"
               GITHUB_REPOSITORY "glk1001/LSys"
               GIT_TAG "master"
@@ -304,11 +305,18 @@ message(STATUS "Visualization.goom: GOOM_BUILD_DIR             = \"${GOOM_BUILD_
 message(STATUS "Visualization.goom: GOOM_INCLUDE_DIRS          = \"${GOOM_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: GOOM_BIN_LIBS              = \"${GOOM_BIN_LIBS}\".")
 message(STATUS "Visualization.goom: GOOM_BUILD_ARTIFACTS_DIR   = \"${GOOM_BUILD_ARTIFACTS_DIR}\".")
+message(STATUS "Visualization.goom: blend2d_SOURCE_DIR         = \"${blend2d_SOURCE_DIR}\".")
+message(STATUS "Visualization.goom: LSys_SOURCE_DIR            = \"${LSys_SOURCE_DIR}\".")
+message(STATUS "Visualization.goom: particles_SOURCE_DIR       = \"${particles_SOURCE_DIR}\".")
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
+message(STATUS "Visualization.goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")
+message(STATUS "Visualization.goom: magic_enum_SOURCE_DIR      = \"${magic_enum_SOURCE_DIR}\".")
+message(STATUS "Visualization.goom: fmt_SOURCE_DIR             = \"${fmt_SOURCE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_ROOT_DIR              = \"${KODI_ROOT_DIR}\".")
 message(STATUS "Visualization.goom: KODI_CONFIG_DIR            = \"${KODI_CONFIG_DIR}\".")
 message(STATUS "Visualization.goom: KODI_INCLUDE_DIR           = \"${KODI_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_FIXED_INCLUDE_DIR     = \"${KODI_FIXED_INCLUDE_DIR}\".")
+message(STATUS "Visualization.goom: DEPLIBS                    = \"${DEPLIBS}\".")
 message(STATUS "Visualization.goom: NO_SAN                     = \"${NO_SAN}\".")
 message(STATUS "Visualization.goom: ENABLE_SANITIZER_ADDRESS   = \"${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}\".")
 message(STATUS "Visualization.goom: ENABLE_SANITIZER_LEAK      = \"${vis_goom_pp_ENABLE_SANITIZER_LEAK}\".")

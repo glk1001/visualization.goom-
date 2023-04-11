@@ -169,6 +169,25 @@ OscillatingFunction::OscillatingFunction(const StartAndEndPos& startAndEndPos,
 {
 }
 
+OscillatingFunction::OscillatingFunction(const UTILS::TValue& angleT,
+                                         const StartAndEndPos& startAndEndPos,
+                                         const Params& params) noexcept
+  : m_usingAngleT{true},
+    m_angleT{angleT},
+    m_params{params},
+    m_startPos{GetAdjustedStartPos(startAndEndPos.startPos)},
+    m_endPos{startAndEndPos.endPos}
+{
+}
+
+auto OscillatingFunction::Increment() noexcept -> void
+{
+  if (m_usingAngleT)
+  {
+    m_angleT.Increment();
+  }
+}
+
 auto OscillatingFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto linearPoint = lerp(m_startPos, m_endPos, t);
@@ -181,11 +200,16 @@ inline auto OscillatingFunction::GetOscillatingPoint(const Point2dFlt& linearPoi
   return linearPoint + GetOscillatingOffset(t);
 }
 
-inline auto OscillatingFunction::GetOscillatingOffset(const float t) const noexcept -> Vec2dFlt
+inline auto OscillatingFunction::GetOscillatingOffset(float t) const noexcept -> Vec2dFlt
 {
   if (not m_allowOscillatingPath)
   {
     return {0, 0};
+  }
+
+  if (m_usingAngleT)
+  {
+    t = m_angleT();
   }
 
   return {

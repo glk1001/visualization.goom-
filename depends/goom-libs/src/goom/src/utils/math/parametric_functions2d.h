@@ -4,6 +4,7 @@
 #include "goom/math20.h"
 #include "goom/point2d.h"
 #include "misc.h"
+#include "utils/t_values.h"
 
 #include <cmath>
 #include <cstdint>
@@ -28,6 +29,7 @@ public:
   auto operator=(const IParametricFunction2d&) -> IParametricFunction2d& = delete;
   auto operator=(IParametricFunction2d&&) -> IParametricFunction2d&      = delete;
 
+  virtual auto Increment() noexcept -> void {}
   [[nodiscard]] virtual auto GetPoint(float t) const noexcept -> Point2dFlt = 0;
 
   struct PointData
@@ -233,16 +235,22 @@ public:
   };
 
   OscillatingFunction(const StartAndEndPos& startAndEndPos, const Params& params) noexcept;
+  OscillatingFunction(const UTILS::TValue& angleT,
+                      const StartAndEndPos& startAndEndPos,
+                      const Params& params) noexcept;
 
   auto SetParams(const Params& params) noexcept -> void;
   auto SetStartPos(const Point2dFlt& startPos) noexcept -> void;
   auto SetEndPos(const Point2dFlt& endPos) noexcept -> void;
   auto SetAllowOscillatingPath(bool val) noexcept -> void;
 
+  auto Increment() noexcept -> void override;
   [[nodiscard]] auto GetPoint(float t) const noexcept -> Point2dFlt override;
 
 private:
   bool m_allowOscillatingPath = true;
+  bool m_usingAngleT          = false;
+  UTILS::TValue m_angleT{UTILS::TValue::StepSizeProperties{}};
   Params m_params;
   Point2dFlt m_startPos;
   Point2dFlt m_endPos;

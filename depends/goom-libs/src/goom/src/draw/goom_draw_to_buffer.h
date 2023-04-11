@@ -19,6 +19,8 @@ class GoomDrawToSingleBuffer : public IGoomDraw
 public:
   GoomDrawToSingleBuffer(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept;
 
+  [[nodiscard]] auto GetBuffer() const noexcept -> const PixelBuffer&;
+  [[nodiscard]] auto GetBuffer() noexcept -> PixelBuffer&;
   auto SetBuffer(PixelBuffer& buff) noexcept -> void;
 
   [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
@@ -39,6 +41,10 @@ class GoomDrawToTwoBuffers : public IGoomDraw
 public:
   GoomDrawToTwoBuffers(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept;
 
+  [[nodiscard]] auto GetBuffer1() const noexcept -> const PixelBuffer&;
+  [[nodiscard]] auto GetBuffer1() noexcept -> PixelBuffer&;
+  [[nodiscard]] auto GetBuffer2() const noexcept -> const PixelBuffer&;
+  [[nodiscard]] auto GetBuffer2() noexcept -> PixelBuffer&;
   auto SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept -> void;
 
   [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
@@ -54,6 +60,16 @@ private:
   PixelBuffer* m_buffer1{};
   PixelBuffer* m_buffer2{};
 };
+
+inline auto GoomDrawToSingleBuffer::GetBuffer() const noexcept -> const PixelBuffer&
+{
+  return *m_buffer;
+}
+
+inline auto GoomDrawToSingleBuffer::GetBuffer() noexcept -> PixelBuffer&
+{
+  return *m_buffer;
+}
 
 inline auto GoomDrawToSingleBuffer::SetBuffer(PixelBuffer& buff) noexcept -> void
 {
@@ -81,6 +97,26 @@ inline auto GoomDrawToSingleBuffer::DrawPixelsToDevice(const Point2dInt& point,
 
   auto& pixel = m_buffer->GetPixel(buffPos);
   pixel       = GetBlendedPixel(pixel, GetIntBuffIntensity(), colors.color1, colors.color1.A());
+}
+
+inline auto GoomDrawToTwoBuffers::GetBuffer1() const noexcept -> const PixelBuffer&
+{
+  return *m_buffer1;
+}
+
+inline auto GoomDrawToTwoBuffers::GetBuffer1() noexcept -> PixelBuffer&
+{
+  return *m_buffer1;
+}
+
+inline auto GoomDrawToTwoBuffers::GetBuffer2() const noexcept -> const PixelBuffer&
+{
+  return *m_buffer2;
+}
+
+inline auto GoomDrawToTwoBuffers::GetBuffer2() noexcept -> PixelBuffer&
+{
+  return *m_buffer2;
 }
 
 inline auto GoomDrawToTwoBuffers::SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept

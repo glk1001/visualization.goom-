@@ -56,6 +56,8 @@ public:
   virtual auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
       -> void = 0;
 
+  [[nodiscard]] static auto GetIntBuffIntensity(float buffIntensity) noexcept -> uint32_t;
+
 protected:
   [[nodiscard]] auto GetIntBuffIntensity() const noexcept -> uint32_t;
 
@@ -79,7 +81,6 @@ private:
   static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
   float m_buffIntensity                         = DEFAULT_BUFF_INTENSITY;
   uint32_t m_intBuffIntensity                   = GetIntBuffIntensity(DEFAULT_BUFF_INTENSITY);
-  [[nodiscard]] static auto GetIntBuffIntensity(float buffIntensity) noexcept -> uint32_t;
 };
 
 inline IGoomDraw::IGoomDraw(const Dimensions& dimensions) noexcept : m_dimensions{dimensions}

@@ -104,6 +104,24 @@ if (NOT DEFINED GLM_INCLUDE_DIR)
     CPMAddPackage("gh:g-truc/glm#0.9.9.8")
     set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 endif ()
+if (NOT blend2d_SOURCE_DIR)
+    set(ASMJIT_EMBED True)
+    set(BLEND2D_STATIC True)
+    set(BLEND2D_NO_INSTALL True)
+    CPMAddPackage(NAME "asmjit"
+                  GITHUB_REPOSITORY "asmjit/asmjit"
+                  GIT_TAG "master"
+                  FORCE False
+                  DOWNLOAD_ONLY True
+    )
+    set(ASMJIT_DIR "${asmjit_SOURCE_DIR}")
+    CPMAddPackage(NAME "blend2d"
+                  GITHUB_REPOSITORY "blend2d/blend2d"
+                  GIT_TAG "master"
+                  FORCE False
+    )
+    set_target_properties(blend2d PROPERTIES POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE})
+endif ()
 if (NOT DEFINED LSys_SOURCE_DIR)
     CPMAddPackage(NAME "LSys"
                   GITHUB_REPOSITORY "glk1001/LSys"
@@ -173,10 +191,13 @@ message(STATUS "Goom-libs: C++ extensions                 = \"${CMAKE_CXX_EXTENS
 message(STATUS "Goom-libs: BUILD_SHARED_LIBS              = \"${BUILD_SHARED_LIBS}\".")
 message(STATUS "Goom-libs: ENABLE_TESTING                 = \"${ENABLE_TESTING}\".")
 message(STATUS "Goom-libs: GOOM_LIBS_DIR                  = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Goom-libs: blend2d_SOURCE_DIR             = \"${blend2d_SOURCE_DIR}\".")
+message(STATUS "Goom-libs: LSys_SOURCE_DIR                = \"${LSys_SOURCE_DIR}\".")
+message(STATUS "Goom-libs: particles_SOURCE_DIR           = \"${particles_SOURCE_DIR}\".")
+message(STATUS "Goom-libs: GLM_INCLUDE_DIR                = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS          = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR         = \"${magic_enum_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: fmt_SOURCE_DIR                 = \"${fmt_SOURCE_DIR}\".")
-message(STATUS "Goom-libs: GLM_INCLUDE_DIR                = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: NO_SAN                         = \"${NO_SAN}\".")
 message(STATUS "Goom-libs: ENABLE_SANITIZER_ADDRESS       = \"${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}\".")
 message(STATUS "Goom-libs: ENABLE_SANITIZER_LEAK          = \"${vis_goom_pp_ENABLE_SANITIZER_LEAK}\".")

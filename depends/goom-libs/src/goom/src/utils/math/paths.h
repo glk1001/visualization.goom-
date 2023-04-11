@@ -177,6 +177,7 @@ public:
 
   [[nodiscard]] auto GetParametricFunction() noexcept -> T&;
 
+  auto IncrementT() noexcept -> void override;
   [[nodiscard]] auto GetNextPoint() const noexcept -> Point2dInt override;
 
 private:
@@ -434,6 +435,13 @@ template<typename T>
 inline auto ParametricPath<T>::GetParametricFunction() noexcept -> T&
 {
   return m_parametricFunction;
+}
+
+template<typename T>
+inline auto ParametricPath<T>::IncrementT() noexcept -> void
+{
+  ISimplePath::IncrementT();
+  m_parametricFunction.Increment();
 }
 
 template<typename T>

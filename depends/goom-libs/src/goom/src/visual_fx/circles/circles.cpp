@@ -23,7 +23,6 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using COLOR::WeightedRandomColorMaps;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;
-using UTILS::MATH::OscillatingPath;
 
 static constexpr auto LINE_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER;
 static constexpr auto MIN_DOT_DIAMETER  = BitmapGetter::MIN_DOT_DIAMETER + 4;

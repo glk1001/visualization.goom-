@@ -175,6 +175,8 @@ public:
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer&      = delete;
 
+  [[nodiscard]] auto GetPixelBuffer() const noexcept -> const Buffer&;
+  [[nodiscard]] auto GetPixelBuffer() noexcept -> Buffer&;
   auto SetPixelBuffer(const Buffer& buffer, const Dimensions& dimensions) noexcept -> void;
   auto Fill(const Pixel& pixel) noexcept -> void;
 
@@ -341,6 +343,16 @@ inline auto PixelBuffer::GetWidth() const noexcept -> uint32_t
 inline auto PixelBuffer::GetHeight() const noexcept -> uint32_t
 {
   return m_height;
+}
+
+inline auto PixelBuffer::GetPixelBuffer() const noexcept -> const Buffer&
+{
+  return m_buff;
+}
+
+inline auto PixelBuffer::GetPixelBuffer() noexcept -> Buffer&
+{
+  return m_buff;
 }
 
 inline auto PixelBuffer::Fill(const Pixel& pixel) noexcept -> void

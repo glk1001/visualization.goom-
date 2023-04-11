@@ -53,10 +53,10 @@ public:
   [[nodiscard]] auto GetStepType() const noexcept -> StepType;
 
   [[nodiscard]] auto GetStepSize() const noexcept -> float;
-  auto SetStepSize(float val) noexcept -> void;
+  auto SetStepSize(float stepSize) noexcept -> void;
 
   [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
-  auto SetNumSteps(uint32_t val) noexcept -> void;
+  auto SetNumSteps(uint32_t numSteps) noexcept -> void;
 
   [[nodiscard]] auto IsInsideBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;

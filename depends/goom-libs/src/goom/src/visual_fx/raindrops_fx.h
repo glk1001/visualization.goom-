@@ -6,29 +6,19 @@
 #include <string>
 #include <vector>
 
-namespace GOOM::UTILS::GRAPHICS
-{
-class SmallImageBitmaps;
-}
-
 namespace GOOM::VISUAL_FX
 {
 struct FxHelper;
 
-class FlyingStarsFx : public IVisualFx
+class RaindropsFx : public IVisualFx
 {
 public:
-  FlyingStarsFx() noexcept = delete;
-  FlyingStarsFx(const FxHelper& fxHelper,
-                const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  explicit RaindropsFx(const FxHelper& fxHelper) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
   auto Start() noexcept -> void override;
   auto Finish() noexcept -> void override;
-
-  auto Resume() noexcept -> void override;
-  auto Suspend() noexcept -> void override;
 
   auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void override;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void override;
@@ -39,8 +29,8 @@ public:
   auto ApplyToImageBuffers() noexcept -> void override;
 
 private:
-  class FlyingStarsImpl;
-  spimpl::unique_impl_ptr<FlyingStarsImpl> m_pimpl;
+  class RaindropsFxImpl;
+  spimpl::unique_impl_ptr<RaindropsFxImpl> m_pimpl;
 };
 
 } // namespace GOOM::VISUAL_FX

@@ -17,7 +17,6 @@ TValue::TValue(const StepSizeProperties& stepSizeProperties) noexcept
     m_stepSize{stepSizeProperties.stepSize},
     m_t{stepSizeProperties.startingT}
 {
-  Expects(stepSizeProperties.stepSize > 0.0F);
   Expects(stepSizeProperties.startingT >= MIN_T_VALUE);
   Expects(stepSizeProperties.startingT <= MAX_T_VALUE);
 }
@@ -29,7 +28,6 @@ TValue::TValue(const StepSizeProperties& stepSizeProperties,
     m_t{stepSizeProperties.startingT},
     m_delayPoints{delayPoints}
 {
-  Expects(stepSizeProperties.stepSize > 0.0F);
   Expects(stepSizeProperties.startingT >= MIN_T_VALUE);
   Expects(stepSizeProperties.startingT <= MAX_T_VALUE);
   ValidateDelayPoints();
@@ -223,14 +221,14 @@ inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
   // NOLINTEND(readability-use-anyofallof)
 }
 
-auto TValue::SetStepSize(const float val) noexcept -> void
+auto TValue::SetStepSize(const float stepSize) noexcept -> void
 {
-  Expects(val > 0.0F);
+  Expects(stepSize > 0.0F);
   Expects((m_stepType != StepType::SINGLE_CYCLE) or (m_currentStep >= 0.0F));
 
   const auto oldCurrentStep = m_currentStep;
 
-  m_stepSize    = val;
+  m_stepSize    = stepSize;
   m_currentStep = m_currentStep < 0.0F ? -m_stepSize : +m_stepSize;
 
   if (((oldCurrentStep < 0.0F) and (m_currentStep > 0.0F)) or
@@ -242,14 +240,16 @@ auto TValue::SetStepSize(const float val) noexcept -> void
 
 auto TValue::GetNumSteps() const noexcept -> uint32_t
 {
+  Expects(m_stepSize > 0.0F);
+
   return static_cast<uint32_t>(1.0F / m_stepSize);
 }
 
-auto TValue::SetNumSteps(const uint32_t val) noexcept -> void
+auto TValue::SetNumSteps(const uint32_t numSteps) noexcept -> void
 {
-  Expects(val > 0U);
+  Expects(numSteps > 0U);
 
-  SetStepSize(1.0F / static_cast<float>(val));
+  SetStepSize(1.0F / static_cast<float>(numSteps));
 }
 
 

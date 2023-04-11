@@ -22,6 +22,8 @@ enum class GoomEffect : UnderlyingEnumType
   LINES2,
   PARTICLES_MAIN,
   PARTICLES_LOW,
+  RAINDROPS_MAIN,
+  RAINDROPS_LOW,
   SHAPES_MAIN,
   SHAPES_LOW,
   SHAPES_INNER,

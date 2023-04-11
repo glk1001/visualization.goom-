@@ -7,6 +7,9 @@ project(Goom LANGUAGES CXX)
 if (NOT GLM_INCLUDE_DIR)
     message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined.")
 endif ()
+if (NOT blend2d_SOURCE_DIR)
+    message(FATAL_ERROR "\"blend2d_SOURCE_DIR\" must be defined.")
+endif ()
 if (NOT LSys_SOURCE_DIR)
     message(FATAL_ERROR "\"LSys_SOURCE_DIR\" must be defined.")
 endif ()
@@ -127,6 +130,7 @@ add_library(goom
             src/filter_fx/normalized_coords.h
             src/filter_fx/zoom_adjustment_effect.h
             src/utils/graphics/bezier_drawer.cpp
+            src/utils/graphics/blend2d_to_goom.cpp
             src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp
             src/utils/graphics/line_clipper.h
@@ -190,6 +194,8 @@ add_library(goom
             src/visual_fx/l_systems/lsys_geom.cpp
             src/visual_fx/l_systems/lsys_paths.cpp
             src/visual_fx/l_systems/line_drawer_manager.cpp
+            src/visual_fx/raindrops/raindrop_positions.cpp
+            src/visual_fx/raindrops/raindrops.cpp
             src/visual_fx/shaders/chroma_factor_lerper.cpp
             src/visual_fx/shaders/color_multiplier_lerper.cpp
             src/visual_fx/shaders/high_contrast.cpp
@@ -215,6 +221,7 @@ add_library(goom
             src/visual_fx/l_system_fx.cpp
             src/visual_fx/lines_fx.cpp
             src/visual_fx/particles_fx.cpp
+            src/visual_fx/raindrops_fx.cpp
             src/visual_fx/shader_fx.cpp
             src/visual_fx/shapes_fx.cpp
             src/visual_fx/tentacles_fx.cpp
@@ -245,6 +252,7 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/lib/span/include
                            ${LSys_SOURCE_DIR}/include
                            ${particles_SOURCE_DIR}/include
+                           ${blend2d_SOURCE_DIR}/src
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
@@ -268,14 +276,15 @@ set_target_properties(goom
 get_target_property(goom_compile_options goom COMPILE_OPTIONS)
 get_target_property(goom_compile_features goom COMPILE_FEATURES)
 
-message(STATUS "Goom: C++ standard = \"${CMAKE_CXX_STANDARD}\".")
-message(STATUS "Goom: C++ compile features = \"${goom_compile_features}\".")
-message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
+message(STATUS "Goom: C++ standard               = \"${CMAKE_CXX_STANDARD}\".")
+message(STATUS "Goom: C++ compile features       = \"${goom_compile_features}\".")
+message(STATUS "Goom: C++ compile options        = \"${goom_compile_options}\".")
 message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSYS}\".")
-message(STATUS "Goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
-message(STATUS "Goom: LSys_SOURCE_DIR = \"${LSys_SOURCE_DIR}\".")
-message(STATUS "Goom: particles_SOURCE_DIR = \"${particles_SOURCE_DIR}\".")
-message(STATUS "Goom: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
-message(STATUS "Goom: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
-message(STATUS "Goom: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
-message(STATUS "Goom: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
+message(STATUS "Goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Goom: blend2d_SOURCE_DIR         = \"${blend2d_SOURCE_DIR}\".")
+message(STATUS "Goom: LSys_SOURCE_DIR            = \"${LSys_SOURCE_DIR}\".")
+message(STATUS "Goom: particles_SOURCE_DIR       = \"${particles_SOURCE_DIR}\".")
+message(STATUS "Goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
+message(STATUS "Goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")
+message(STATUS "Goom: magic_enum_INCLUDE_DIR     = \"${magic_enum_INCLUDE_DIR}\".")
+message(STATUS "Goom: fmt_SOURCE_DIR             = \"${fmt_SOURCE_DIR}\".")
