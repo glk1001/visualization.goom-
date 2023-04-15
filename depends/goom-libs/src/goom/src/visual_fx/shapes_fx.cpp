@@ -249,15 +249,13 @@ inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoi
 auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
     -> Point2dInt
 {
-  const auto xMax    = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - 1;
-  const auto yMax    = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - 1;
-  const auto xCutoff = xMax / 5;
-  const auto yCutoff = yMax / 5;
+  const auto xMax = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - 1;
+  const auto yMax = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - 1;
 
-  return {
-      std::clamp(zoomMidpoint.x, xCutoff, xMax - xCutoff),
-      std::clamp(zoomMidpoint.y, yCutoff, yMax - yCutoff),
-  };
+  const auto minZoomMidpoint = Point2dInt{xMax / 5, yMax / 5};
+  const auto maxZoomMidpoint = Point2dInt{xMax - minZoomMidpoint.x, yMax - zoomMidpoint.y};
+
+  return clamp(zoomMidpoint, minZoomMidpoint, maxZoomMidpoint);
 }
 
 auto ShapesFx::ShapesFxImpl::GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept

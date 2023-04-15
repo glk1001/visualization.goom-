@@ -332,9 +332,8 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1)};
   const auto expectedUnclippedTranPoint =
       COORD_TRANSFORMS.NormalizedToTranPoint(normalizedMidPt + expectedNmlCoord1);
-  const auto expectedTranPoint =
-      Point2dInt{std::clamp(expectedUnclippedTranPoint.x, 0, MAX_TRAN_POINT.x),
-                 std::clamp(expectedUnclippedTranPoint.y, 0, MAX_TRAN_POINT.y)};
+  // NOLINTNEXTLINE(readability-suspicious-call-argument)
+  const auto expectedTranPoint = clamp(expectedUnclippedTranPoint, {0, 0}, MAX_TRAN_POINT);
   UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().x = " << filterBuffers.GetBuffMidpoint().x);
   UNSCOPED_INFO("filterBuffers.GetBuffMidpoint().y = " << filterBuffers.GetBuffMidpoint().y);
   UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
@@ -473,9 +472,8 @@ auto TestCorrectSrceDestTranPoint(const uint32_t tranLerpFactor,
   UNSCOPED_INFO("expectedUnclippedTranPoint.x = " << expectedUnclippedTranPoint.x);
   UNSCOPED_INFO("expectedUnclippedTranPoint.y = " << expectedUnclippedTranPoint.y);
 
-  const auto expectedTranPoint =
-      Point2dInt{std::clamp(expectedUnclippedTranPoint.x, 0, MAX_TRAN_POINT.x),
-                 std::clamp(expectedUnclippedTranPoint.y, 0, MAX_TRAN_POINT.y)};
+  // NOLINTNEXTLINE(readability-suspicious-call-argument)
+  const auto expectedTranPoint = clamp(expectedUnclippedTranPoint, {0, 0}, MAX_TRAN_POINT);
   UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);
   UNSCOPED_INFO("expectedTranPoint.y = " << expectedTranPoint.y);
 
@@ -566,8 +564,9 @@ auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
   const auto expectedUnclippedSrcePoint =
       ZoomCoordTransforms::TranToScreenPoint(expectedSrceTranPoint);
   const auto expectedSrcePoint =
-      Point2dInt{std::clamp(expectedUnclippedSrcePoint.x, 0, static_cast<int32_t>(WIDTH - 1U)),
-                 std::clamp(expectedUnclippedSrcePoint.y, 0, static_cast<int32_t>(HEIGHT - 1U))};
+      clamp(expectedUnclippedSrcePoint,
+            {0, 0},
+            {static_cast<int32_t>(WIDTH - 1U), static_cast<int32_t>(HEIGHT - 1U)});
   UNSCOPED_INFO("expectedSrceTranPoint.x = " << expectedSrceTranPoint.x);
   UNSCOPED_INFO("expectedSrceTranPoint.y = " << expectedSrceTranPoint.y);
   UNSCOPED_INFO("expectedUnclippedSrcePoint.x = " << expectedSrcePoint.x);
@@ -597,8 +596,9 @@ auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
   const auto expectedUnclippedDestPoint =
       ZoomCoordTransforms::TranToScreenPoint(expectedDestTranPoint);
   const auto expectedDestPoint =
-      Point2dInt{std::clamp(expectedUnclippedDestPoint.x, 0, static_cast<int32_t>(WIDTH - 1U)),
-                 std::clamp(expectedUnclippedDestPoint.y, 0, static_cast<int32_t>(HEIGHT - 1U))};
+      clamp(expectedUnclippedDestPoint,
+            {0, 0},
+            {static_cast<int32_t>(WIDTH - 1U), static_cast<int32_t>(HEIGHT - 1U)});
   UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
   UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
   UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_2.x = " << NML_CONST_ZOOM_VECTOR_COORDS2.GetX());

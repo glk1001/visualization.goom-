@@ -2,6 +2,7 @@
 
 #include "math20.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 
@@ -42,6 +43,9 @@ struct Point2dInt
     -> Point2dInt;
 [[nodiscard]] auto lerp(const Point2dInt& point1, const Point2dInt& point2, float t) noexcept
     -> Point2dInt;
+[[nodiscard]] constexpr auto clamp(const Point2dInt& point,
+                                   const Point2dInt& point1,
+                                   const Point2dInt& point2) noexcept -> Point2dInt;
 [[nodiscard]] constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept
     -> Point2dInt;
 [[nodiscard]] constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dInt;
@@ -108,6 +112,9 @@ struct Point2dFlt
 [[nodiscard]] constexpr auto lerp(const Point2dFlt& point1,
                                   const Point2dFlt& point2,
                                   float t) noexcept -> Point2dFlt;
+[[nodiscard]] constexpr auto clamp(const Point2dFlt& point,
+                                   const Point2dFlt& point1,
+                                   const Point2dFlt& point2) noexcept -> Point2dFlt;
 [[nodiscard]] constexpr auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept
     -> float;
 [[nodiscard]] auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float;
@@ -351,6 +358,13 @@ inline auto lerp(const Point2dInt& point1, const Point2dInt& point2, const float
   };
 }
 
+constexpr auto clamp(const Point2dInt& point,
+                     const Point2dInt& point1,
+                     const Point2dInt& point2) noexcept -> Point2dInt
+{
+  return {std::clamp(point.x, point1.x, point2.x), std::clamp(point.y, point1.y, point2.y)};
+}
+
 constexpr auto lerp(const Point2dFlt& point1, const Point2dFlt& point2, const float t) noexcept
     -> Point2dFlt
 {
@@ -358,6 +372,13 @@ constexpr auto lerp(const Point2dFlt& point1, const Point2dFlt& point2, const fl
       STD20::lerp(point1.x, point2.x, t),
       STD20::lerp(point1.y, point2.y, t),
   };
+}
+
+constexpr auto clamp(const Point2dFlt& point,
+                     const Point2dFlt& point1,
+                     const Point2dFlt& point2) noexcept -> Point2dFlt
+{
+  return {std::clamp(point.x, point1.x, point2.x), std::clamp(point.y, point1.y, point2.y)};
 }
 
 constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept -> Point2dInt

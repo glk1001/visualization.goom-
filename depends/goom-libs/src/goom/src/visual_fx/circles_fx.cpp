@@ -242,16 +242,14 @@ inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
   const auto midLerp             = m_fxHelper->goomRand->GetRandInRange(MIN_LERP, MAX_LERP);
   auto newCircleCentre           = lerp(m_screenCentre, zoomMidpoint, midLerp);
 
-  const auto minX = m_fxHelper->goomInfo->GetDimensions().GetWidth() / 10;
-  const auto maxX = m_fxHelper->goomInfo->GetDimensions().GetWidth() - minX;
-  const auto minY = m_fxHelper->goomInfo->GetDimensions().GetHeight() / 10;
-  const auto maxY = m_fxHelper->goomInfo->GetDimensions().GetHeight() - minY;
-  newCircleCentre.x =
-      std::clamp(newCircleCentre.x, static_cast<int32_t>(minX), static_cast<int32_t>(maxX));
-  newCircleCentre.y =
-      std::clamp(newCircleCentre.y, static_cast<int32_t>(minY), static_cast<int32_t>(maxY));
+  const auto minPoint = Point2dInt{m_fxHelper->goomInfo->GetDimensions().GetIntWidth() / 10,
+                                   m_fxHelper->goomInfo->GetDimensions().GetIntHeight() / 10};
+  const auto maxPoint =
+      Point2dInt{m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - minPoint.x,
+                 m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - minPoint.y};
 
-  return newCircleCentre;
+  // NOLINTNEXTLINE(readability-suspicious-call-argument)
+  return clamp(newCircleCentre, minPoint, maxPoint);
 }
 
 inline auto CirclesFx::CirclesFxImpl::Start() noexcept -> void
