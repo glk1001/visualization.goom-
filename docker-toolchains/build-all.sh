@@ -11,6 +11,7 @@ source "${THIS_SCRIPT_PATH}/build-get-vars.sh"
 declare NO_CACHE=""
 declare DOCKER_OS_TYPE="${DOCKER_BUILD_OS_TYPE}"
 declare DOCKER_OS_TAG="${DOCKER_BUILD_OS_TAG}"
+declare CLANG_VER=""
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -30,6 +31,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    --clang-ver)
+      CLANG_VER=${2}
+      shift # past argument
+      shift # past value
+      ;;
     *)
       echo "Unknown option \"${key}\"."
       echo
@@ -40,15 +46,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-declare -r BUILD_CLANG_VER="17"
+if [[ "${CLANG_VER}" == "" ]]; then
+  declare -r BUILD_CLANG_VER=""
+else
+  declare -r BUILD_CLANG_VER="${CLANG_VER}"
+fi
+
 declare -r BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 
 if [[ "${NO_CACHE}" == "" ]]; then
-  echo "Building \"${BUILD_IMAGE}\"..."
+  echo "Building \"${BUILD_IMAGE}\" with clang version \"${BUILD_CLANG_VER}\"..."
   echo
 else
-  echo "Building \"${BUILD_IMAGE}\" with \"${NO_CACHE}\"..."
+  echo "Building \"${BUILD_IMAGE}\" with clang version \"${BUILD_CLANG_VER}\" and \"${NO_CACHE}\"..."
   echo
 fi
 
@@ -64,4 +75,3 @@ docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_IMAGE} -f Dockerfile .
 docker system prune -f
 
 popd > /dev/null
-

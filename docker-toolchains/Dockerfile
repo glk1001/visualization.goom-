@@ -28,9 +28,7 @@ RUN apt-get update    && \
       catch2             \
       ccache             \
       build-essential    \
-      gdb                \
-      gcc-12             \
-      g++-12          && \
+      gdb             && \
     apt-get clean -y
 
 # Install Clang
