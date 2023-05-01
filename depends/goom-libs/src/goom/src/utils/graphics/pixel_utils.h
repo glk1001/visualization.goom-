@@ -12,6 +12,8 @@ namespace GOOM::UTILS::GRAPHICS
                                        uint32_t green,
                                        uint32_t blue,
                                        uint32_t alpha) noexcept -> Pixel;
+[[nodiscard]] constexpr auto MakePixel(float red, float green, float blue, float alpha) noexcept
+    -> Pixel;
 
 [[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
 [[nodiscard]] constexpr auto GetColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
@@ -51,6 +53,19 @@ constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t a
                static_cast<PixelChannelType>(green),
                static_cast<PixelChannelType>(blue),
                static_cast<PixelChannelType>(alpha)};
+}
+
+constexpr auto MakePixel(const float red,
+                         const float green,
+                         const float blue,
+                         const float alpha) noexcept -> Pixel
+{
+  constexpr auto MAX_CHANNEL_VALUE = channel_limits<float>::max();
+
+  return MakePixel(static_cast<uint32_t>(red * MAX_CHANNEL_VALUE),
+                   static_cast<uint32_t>(green * MAX_CHANNEL_VALUE),
+                   static_cast<uint32_t>(blue * MAX_CHANNEL_VALUE),
+                   static_cast<uint32_t>(alpha * MAX_CHANNEL_VALUE));
 }
 
 constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
