@@ -28,6 +28,7 @@ using UTILS::MATH::IGoomRand;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_IMAGE;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_LINES_STARS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_ONLY;
+static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_PARTICLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS_TENTACLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES;
@@ -40,9 +41,13 @@ using UTILS::MATH::IGoomRand;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TUBES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_PARTICLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_STARS;
-static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::L_SYSTEM_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::PARTICLES_ONLY;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::PARTICLES_TENTACLES;
+//static constexpr auto FORCED_GOOM_STATE = GoomStates::PARTICLES_TUBES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
@@ -77,6 +82,7 @@ static constexpr auto IFS_IMAGE_WEIGHT                    = 100.0F;
 static constexpr auto IFS_IMAGE_SHAPES_WEIGHT             = 100.0F;
 static constexpr auto IFS_LINES_STARS_WEIGHT              = 200.0F;
 static constexpr auto IFS_ONLY_WEIGHT                     = 100.0F;
+static constexpr auto IFS_PARTICLES_WEIGHT                = 300.0F;
 static constexpr auto IFS_SHAPES_WEIGHT                   = 100.0F;
 static constexpr auto IFS_STARS_WEIGHT                    = 200.0F;
 static constexpr auto IFS_STARS_TENTACLES_WEIGHT          = 070.0F;
@@ -97,9 +103,13 @@ static constexpr auto IMAGE_TENTACLES_WEIGHT              = 070.0F;
 static constexpr auto IMAGE_TUBES_WEIGHT                  = 200.0F;
 static constexpr auto L_SYSTEM_ONLY_WEIGHT                = 100.0F;
 static constexpr auto LINES_ONLY_WEIGHT                   = 100.0F;
+static constexpr auto LINES_PARTICLES_WEIGHT              = 300.0F;
 static constexpr auto LINES_SHAPES_STARS_WEIGHT           = 200.0F;
 static constexpr auto LINES_STARS_WEIGHT                  = 100.0F;
 static constexpr auto LINES_TENTACLES_WEIGHT              = 200.0F;
+static constexpr auto PARTICLES_ONLY_WEIGHT               = 100.0F;
+static constexpr auto PARTICLES_TENTACLES_WEIGHT          = 300.0F;
+static constexpr auto PARTICLES_TUBES_WEIGHT              = 300.0F;
 static constexpr auto SHAPES_ONLY_WEIGHT                  = 001.0F;
 static constexpr auto SHAPES_STARS_WEIGHT                 = 200.0F;
 static constexpr auto SHAPES_TUBES_WEIGHT                 = 200.0F;
@@ -139,6 +149,7 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
           {GoomStates::IFS_IMAGE_SHAPES, IFS_IMAGE_SHAPES_WEIGHT},
           {GoomStates::IFS_LINES_STARS, IFS_LINES_STARS_WEIGHT},
           {GoomStates::IFS_ONLY, IFS_ONLY_WEIGHT},
+          {GoomStates::IFS_PARTICLES, IFS_PARTICLES_WEIGHT},
           {GoomStates::IFS_SHAPES, IFS_SHAPES_WEIGHT},
           {GoomStates::IFS_STARS, IFS_STARS_WEIGHT},
           {GoomStates::IFS_STARS_TENTACLES, IFS_STARS_TENTACLES_WEIGHT},
@@ -162,9 +173,14 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
           {GoomStates::L_SYSTEM_ONLY, L_SYSTEM_ONLY_WEIGHT},
 
           {GoomStates::LINES_ONLY, LINES_ONLY_WEIGHT},
+          {GoomStates::LINES_PARTICLES, LINES_PARTICLES_WEIGHT},
           {GoomStates::LINES_SHAPES_STARS, LINES_SHAPES_STARS_WEIGHT},
           {GoomStates::LINES_STARS, LINES_STARS_WEIGHT},
           {GoomStates::LINES_TENTACLES, LINES_TENTACLES_WEIGHT},
+
+          {GoomStates::PARTICLES_ONLY, PARTICLES_ONLY_WEIGHT},
+          {GoomStates::PARTICLES_TENTACLES, PARTICLES_TENTACLES_WEIGHT},
+          {GoomStates::PARTICLES_TUBES, PARTICLES_TUBES_WEIGHT},
 
           {GoomStates::SHAPES_ONLY, SHAPES_ONLY_WEIGHT},
           {GoomStates::SHAPES_STARS, SHAPES_STARS_WEIGHT},

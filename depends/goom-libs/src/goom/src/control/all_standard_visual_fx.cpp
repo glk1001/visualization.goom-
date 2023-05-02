@@ -16,6 +16,7 @@
 #include "visual_fx/image_fx.h"
 #include "visual_fx/l_system_fx.h"
 #include "visual_fx/lines_fx.h"
+#include "visual_fx/particles_fx.h"
 #include "visual_fx/shader_fx.h"
 #include "visual_fx/shapes_fx.h"
 #include "visual_fx/tentacles_fx.h"
@@ -42,6 +43,7 @@ using VISUAL_FX::ImageFx;
 using VISUAL_FX::IVisualFx;
 using VISUAL_FX::LinesFx;
 using VISUAL_FX::LSystemFx;
+using VISUAL_FX::ParticlesFx;
 using VISUAL_FX::ShaderFx;
 using VISUAL_FX::ShapesFx;
 using VISUAL_FX::TentaclesFx;
@@ -72,6 +74,7 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
       {GoomDrawables::IMAGE, std::make_unique<ImageFx>(parallel, fxHelper, resourcesDirectory)},
       {GoomDrawables::L_SYSTEM, std::make_unique<LSystemFx>(fxHelper, resourcesDirectory)},
       {GoomDrawables::LINES, std::make_unique<LinesFx>(fxHelper, smallBitmaps)},
+      {GoomDrawables::PARTICLES, std::make_unique<ParticlesFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::SHAPES, std::make_unique<ShapesFx>(fxHelper)},
       {GoomDrawables::STARS, std::make_unique<FlyingStarsFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::TENTACLES, std::make_unique<TentaclesFx>(fxHelper)},
@@ -229,6 +232,11 @@ auto AllStandardVisualFx::ChangeColorMaps() -> void
        m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::L_SYSTEM_LOW)});
 
   ChangeLinesColorMaps();
+
+  m_drawablesMap[GoomDrawables::PARTICLES]->SetWeightedColorMaps(
+      {0,
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::PARTICLES_MAIN),
+       m_visualFxColorMaps.GetCurrentRandomColorMaps(GoomEffect::PARTICLES_LOW)});
 
   ChangeShapesColorMaps();
 

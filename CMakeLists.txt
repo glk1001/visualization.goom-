@@ -121,6 +121,13 @@ CPMAddPackage(NAME "LSys"
               )
 set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 
+CPMAddPackage(NAME "particles"
+              GITHUB_REPOSITORY "glk1001/particles"
+              GIT_TAG "public_cleaned"
+              FORCE True
+              )
+set_target_properties(cpuTest PROPERTIES EXCLUDE_FROM_ALL True)
+
 find_package(Kodi REQUIRED)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
@@ -196,7 +203,7 @@ set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
     src/shader_with_effects.h
     src/kodi_shader_with_effects.h)
 
-list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib)
+list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib particles::lib)
 
 # Let kodi set this:
 set(CMAKE_INSTALL_LIBDIR "")

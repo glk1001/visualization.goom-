@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 project(visualization.goom-pp.lib)
 
 # set(LSys_SOURCE_DIR "/home/greg/Prj/github/LSys")
+# set(Particles_SOURCE_DIR "/home/greg/Prj/github/particles")
 
 if (NOT DEFINED GOOM_BUILD_ARTIFACTS_DIR)
     set(GOOM_BUILD_ARTIFACTS_DIR "${CMAKE_BINARY_DIR}/goom-libs-artifacts")
@@ -99,6 +100,14 @@ if (NOT DEFINED LSys_SOURCE_DIR)
                   FORCE True
                   )
     set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
+endif ()
+if (NOT DEFINED Particles_SOURCE_DIR)
+    CPMAddPackage(NAME "particles"
+                  GITHUB_REPOSITORY "glk1001/particles"
+                  GIT_TAG "public_cleaned"
+                  FORCE True
+                  )
+    set_target_properties(cpuTest PROPERTIES EXCLUDE_FROM_ALL True)
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")

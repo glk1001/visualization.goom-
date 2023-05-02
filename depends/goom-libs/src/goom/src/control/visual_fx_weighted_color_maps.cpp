@@ -22,6 +22,8 @@ VisualFxWeightedColorMaps::VisualFxWeightedColorMaps(const IGoomRand& goomRand) 
         {GoomEffect::L_SYSTEM_LOW, GetLSystemLowGroups(goomRand)},
         {GoomEffect::LINES1, GetLines1Groups(goomRand)},
         {GoomEffect::LINES2, GetLines2Groups(goomRand)},
+        {GoomEffect::PARTICLES_MAIN, GetParticlesMainGroups(goomRand)},
+        {GoomEffect::PARTICLES_LOW, GetParticlesLowGroups(goomRand)},
         {GoomEffect::SHAPES_MAIN, GetShapesMainGroups(goomRand)},
         {GoomEffect::SHAPES_LOW, GetShapesLowGroups(goomRand)},
         {GoomEffect::SHAPES_INNER, GetShapesInnerGroups(goomRand)},
@@ -687,6 +689,112 @@ auto VisualFxWeightedColorMaps::GetLSystemLowGroups(const IGoomRand& goomRand) n
   static constexpr auto YELLOW_STANDARD_MAPS_WEIGHT             = 00.0F;
   static constexpr auto ORANGE_STANDARD_MAPS_WEIGHT             = 00.0F;
   static constexpr auto PURPLE_STANDARD_MAPS_WEIGHT             = 00.0F;
+  static constexpr auto CITIES_STANDARD_MAPS_WEIGHT             = 90.0F;
+  static constexpr auto SEASONS_STANDARD_MAPS_WEIGHT            = 90.0F;
+  static constexpr auto HEAT_STANDARD_MAPS_WEIGHT               = 90.0F;
+  static constexpr auto COLD_STANDARD_MAPS_WEIGHT               = 90.0F;
+  static constexpr auto PASTEL_STANDARD_MAPS_WEIGHT             = 90.0F;
+  static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
+
+  // clang-format off
+  return {
+      goomRand,
+      {
+          {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
+          {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
+          {Groups::ALL_SLIM_MAPS, ALL_SLIM_MAPS_WEIGHT},
+          {Groups::MOSTLY_SEQUENTIAL_STANDARD_MAPS, MOSTLY_SEQUENTIAL_STANDARD_MAPS_WEIGHT},
+          {Groups::MOSTLY_SEQUENTIAL_SLIM_MAPS, MOSTLY_SEQUENTIAL_SLIM_MAPS_WEIGHT},
+          {Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS, SLIGHTLY_DIVERGING_STANDARD_MAPS_WEIGHT},
+          {Groups::SLIGHTLY_DIVERGING_SLIM_MAPS, SLIGHTLY_DIVERGING_SLIM_MAPS_WEIGHT},
+          {Groups::DIVERGING_BLACK_STANDARD_MAPS, DIVERGING_BLACK_STANDARD_MAPS_WEIGHT},
+          {Groups::RED_STANDARD_MAPS, RED_STANDARD_MAPS_WEIGHT},
+          {Groups::GREEN_STANDARD_MAPS, GREEN_STANDARD_MAPS_WEIGHT},
+          {Groups::BLUE_STANDARD_MAPS, BLUE_STANDARD_MAPS_WEIGHT},
+          {Groups::YELLOW_STANDARD_MAPS, YELLOW_STANDARD_MAPS_WEIGHT},
+          {Groups::ORANGE_STANDARD_MAPS, ORANGE_STANDARD_MAPS_WEIGHT},
+          {Groups::PURPLE_STANDARD_MAPS, PURPLE_STANDARD_MAPS_WEIGHT},
+          {Groups::CITIES_STANDARD_MAPS, CITIES_STANDARD_MAPS_WEIGHT},
+          {Groups::SEASONS_STANDARD_MAPS, SEASONS_STANDARD_MAPS_WEIGHT},
+          {Groups::HEAT_STANDARD_MAPS, HEAT_STANDARD_MAPS_WEIGHT},
+          {Groups::COLD_STANDARD_MAPS, COLD_STANDARD_MAPS_WEIGHT},
+          {Groups::PASTEL_STANDARD_MAPS, PASTEL_STANDARD_MAPS_WEIGHT},
+          {Groups::WES_ANDERSON_MAPS, WES_ANDERSON_MAPS_WEIGHT},
+      }
+  };
+  // clang-format on
+}
+
+auto VisualFxWeightedColorMaps::GetParticlesMainGroups(const IGoomRand& goomRand) noexcept
+    -> WeightedGroups
+{
+  static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
+  static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
+  static constexpr auto ALL_SLIM_MAPS_WEIGHT                    = 05.0F;
+  static constexpr auto MOSTLY_SEQUENTIAL_STANDARD_MAPS_WEIGHT  = 05.0F;
+  static constexpr auto MOSTLY_SEQUENTIAL_SLIM_MAPS_WEIGHT      = 05.0F;
+  static constexpr auto SLIGHTLY_DIVERGING_STANDARD_MAPS_WEIGHT = 05.0F;
+  static constexpr auto SLIGHTLY_DIVERGING_SLIM_MAPS_WEIGHT     = 20.0F;
+  static constexpr auto DIVERGING_BLACK_STANDARD_MAPS_WEIGHT    = 35.0F;
+  static constexpr auto RED_STANDARD_MAPS_WEIGHT                = 35.0F;
+  static constexpr auto GREEN_STANDARD_MAPS_WEIGHT              = 40.0F;
+  static constexpr auto BLUE_STANDARD_MAPS_WEIGHT               = 40.0F;
+  static constexpr auto YELLOW_STANDARD_MAPS_WEIGHT             = 40.0F;
+  static constexpr auto ORANGE_STANDARD_MAPS_WEIGHT             = 40.0F;
+  static constexpr auto PURPLE_STANDARD_MAPS_WEIGHT             = 90.0F;
+  static constexpr auto CITIES_STANDARD_MAPS_WEIGHT             = 90.0F;
+  static constexpr auto SEASONS_STANDARD_MAPS_WEIGHT            = 90.0F;
+  static constexpr auto HEAT_STANDARD_MAPS_WEIGHT               = 90.0F;
+  static constexpr auto COLD_STANDARD_MAPS_WEIGHT               = 90.0F;
+  static constexpr auto PASTEL_STANDARD_MAPS_WEIGHT             = 90.0F;
+  static constexpr auto WES_ANDERSON_MAPS_WEIGHT                = 90.0F;
+
+  // clang-format off
+  return {
+      goomRand,
+      {
+          {Groups::ALL_MAPS_UNWEIGHTED, ALL_MAPS_UNWEIGHTED_WEIGHT},
+          {Groups::ALL_STANDARD_MAPS, ALL_STANDARD_MAPS_WEIGHT},
+          {Groups::ALL_SLIM_MAPS, ALL_SLIM_MAPS_WEIGHT},
+          {Groups::MOSTLY_SEQUENTIAL_STANDARD_MAPS, MOSTLY_SEQUENTIAL_STANDARD_MAPS_WEIGHT},
+          {Groups::MOSTLY_SEQUENTIAL_SLIM_MAPS, MOSTLY_SEQUENTIAL_SLIM_MAPS_WEIGHT},
+          {Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS, SLIGHTLY_DIVERGING_STANDARD_MAPS_WEIGHT},
+          {Groups::SLIGHTLY_DIVERGING_SLIM_MAPS, SLIGHTLY_DIVERGING_SLIM_MAPS_WEIGHT},
+          {Groups::DIVERGING_BLACK_STANDARD_MAPS, DIVERGING_BLACK_STANDARD_MAPS_WEIGHT},
+          {Groups::RED_STANDARD_MAPS, RED_STANDARD_MAPS_WEIGHT},
+          {Groups::GREEN_STANDARD_MAPS, GREEN_STANDARD_MAPS_WEIGHT},
+          {Groups::BLUE_STANDARD_MAPS, BLUE_STANDARD_MAPS_WEIGHT},
+          {Groups::YELLOW_STANDARD_MAPS, YELLOW_STANDARD_MAPS_WEIGHT},
+          {Groups::ORANGE_STANDARD_MAPS, ORANGE_STANDARD_MAPS_WEIGHT},
+          {Groups::PURPLE_STANDARD_MAPS, PURPLE_STANDARD_MAPS_WEIGHT},
+          {Groups::CITIES_STANDARD_MAPS, CITIES_STANDARD_MAPS_WEIGHT},
+          {Groups::SEASONS_STANDARD_MAPS, SEASONS_STANDARD_MAPS_WEIGHT},
+          {Groups::HEAT_STANDARD_MAPS, HEAT_STANDARD_MAPS_WEIGHT},
+          {Groups::COLD_STANDARD_MAPS, COLD_STANDARD_MAPS_WEIGHT},
+          {Groups::PASTEL_STANDARD_MAPS, PASTEL_STANDARD_MAPS_WEIGHT},
+          {Groups::WES_ANDERSON_MAPS, WES_ANDERSON_MAPS_WEIGHT},
+      }
+  };
+  // clang-format on
+}
+
+auto VisualFxWeightedColorMaps::GetParticlesLowGroups(const IGoomRand& goomRand) noexcept
+    -> WeightedGroups
+{
+  static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
+  static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
+  static constexpr auto ALL_SLIM_MAPS_WEIGHT                    = 05.0F;
+  static constexpr auto MOSTLY_SEQUENTIAL_STANDARD_MAPS_WEIGHT  = 05.0F;
+  static constexpr auto MOSTLY_SEQUENTIAL_SLIM_MAPS_WEIGHT      = 05.0F;
+  static constexpr auto SLIGHTLY_DIVERGING_STANDARD_MAPS_WEIGHT = 05.0F;
+  static constexpr auto SLIGHTLY_DIVERGING_SLIM_MAPS_WEIGHT     = 20.0F;
+  static constexpr auto DIVERGING_BLACK_STANDARD_MAPS_WEIGHT    = 35.0F;
+  static constexpr auto RED_STANDARD_MAPS_WEIGHT                = 35.0F;
+  static constexpr auto GREEN_STANDARD_MAPS_WEIGHT              = 40.0F;
+  static constexpr auto BLUE_STANDARD_MAPS_WEIGHT               = 40.0F;
+  static constexpr auto YELLOW_STANDARD_MAPS_WEIGHT             = 40.0F;
+  static constexpr auto ORANGE_STANDARD_MAPS_WEIGHT             = 40.0F;
+  static constexpr auto PURPLE_STANDARD_MAPS_WEIGHT             = 90.0F;
   static constexpr auto CITIES_STANDARD_MAPS_WEIGHT             = 90.0F;
   static constexpr auto SEASONS_STANDARD_MAPS_WEIGHT            = 90.0F;
   static constexpr auto HEAT_STANDARD_MAPS_WEIGHT               = 90.0F;

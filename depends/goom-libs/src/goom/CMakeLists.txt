@@ -8,6 +8,9 @@ endif ()
 if (NOT LSys_SOURCE_DIR)
     message(FATAL_ERROR "\"LSys_SOURCE_DIR\" must be defined.")
 endif ()
+if (NOT particles_SOURCE_DIR)
+    message(FATAL_ERROR "\"particles_SOURCE_DIR\" must be defined.")
+endif ()
 
 if (WIN32)
     add_definitions(-D_WIN32PC)
@@ -110,6 +113,7 @@ add_library(goom
             src/filter_fx/zoom_in_coefficients_effect.h
             src/filter_fx/zoom_filter_fx.cpp
             src/utils/graphics/bezier_drawer.cpp
+            src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp
             src/utils/graphics/line_clipper.h
             src/utils/graphics/pixel_blend.h
@@ -196,6 +200,7 @@ add_library(goom
             src/visual_fx/image_fx.cpp
             src/visual_fx/l_system_fx.cpp
             src/visual_fx/lines_fx.cpp
+            src/visual_fx/particles_fx.cpp
             src/visual_fx/shader_fx.cpp
             src/visual_fx/shapes_fx.cpp
             src/visual_fx/tentacles_fx.cpp
@@ -225,6 +230,7 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/fmt/include
                            ${LSys_SOURCE_DIR}/include
+                           ${particles_SOURCE_DIR}/include
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
@@ -248,6 +254,7 @@ message(STATUS "Goom: C++ compile options = \"${goom_compile_options}\".")
 message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSYS}\".")
 message(STATUS "Goom: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom: LSys_SOURCE_DIR = \"${LSys_SOURCE_DIR}\".")
+message(STATUS "Goom: particles_SOURCE_DIR = \"${particles_SOURCE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
 message(STATUS "Goom: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
