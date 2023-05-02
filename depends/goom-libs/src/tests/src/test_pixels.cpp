@@ -83,7 +83,7 @@ TEST_CASE("Pixels")
     REQUIRE(PIXEL1 == PIXEL2);
     REQUIRE(not(PIXEL1 == PIXEL3));
     static constexpr auto EXPECTED_BLACK = Pixel{
-        {0, 0, 0, 255}
+        {0, 0, 0, MAX_ALPHA}
     };
     REQUIRE(EXPECTED_BLACK == BLACK_PIXEL);
     static constexpr auto EXPECTED_WHITE = Pixel{

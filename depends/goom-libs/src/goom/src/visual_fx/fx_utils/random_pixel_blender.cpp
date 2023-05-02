@@ -7,6 +7,7 @@
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 using UTILS::GRAPHICS::GetColorAddPixelBlend;
+using UTILS::GRAPHICS::GetColorAlphaBlend;
 using UTILS::GRAPHICS::GetColorMultiplyPixelBlend;
 using UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
@@ -21,7 +22,8 @@ const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
         { RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DEFAULT_DARKEN_ONLY_WEIGHT},
         {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, DEFAULT_LIGHTEN_ONLY_WEIGHT},
         {    RandomPixelBlender::PixelBlendType::LUMA_MIX,     DEFAULT_LUMA_MIX_WEIGHT},
-        {    RandomPixelBlender::PixelBlendType::MULTIPLY,     DEFAULT_MULTIPLY_WEIGHT}
+        {    RandomPixelBlender::PixelBlendType::MULTIPLY,     DEFAULT_MULTIPLY_WEIGHT},
+        {       RandomPixelBlender::PixelBlendType::ALPHA,        DEFAULT_ALPHA_WEIGHT}
 };
 
 auto RandomPixelBlender::GetRandomPixelBlendType(const IGoomRand& goomRand) noexcept
@@ -75,6 +77,7 @@ auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) 
   m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
   m_previousPixelBlendFunc = m_nextPixelBlendFunc;
   m_nextPixelBlendType     = pixelBlendType;
+  m_nextPixelBlendType     = PixelBlendType::LIGHTEN_ONLY;
 
   if (previousPixelBlendType != m_nextPixelBlendType)
   {
@@ -100,6 +103,8 @@ auto RandomPixelBlender::GetNextPixelBlendFunc() const noexcept -> PixelBlendFun
       return GetSameLumaMixPixelBlendFunc(m_lumaMixT);
     case PixelBlendType::MULTIPLY:
       return GetColorMultiplyPixelBlendFunc();
+    case PixelBlendType::ALPHA:
+      return GetAlphaPixelBlendFunc();
     default:
       FailFast();
   }
@@ -107,42 +112,70 @@ auto RandomPixelBlender::GetNextPixelBlendFunc() const noexcept -> PixelBlendFun
 
 auto RandomPixelBlender::GetLerpedPixelBlendFunc() const -> PixelBlendFunc
 {
-  return [this](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
+  return [this](const Pixel& bgndColor,
+                const uint32_t intBuffIntensity,
+                const Pixel& fgndColor,
+                const PixelChannelType newAlpha)
   {
-    return COLOR::GetRgbColorLerp(m_previousPixelBlendFunc(oldColor, newColor, intBuffIntensity),
-                                  m_nextPixelBlendFunc(oldColor, newColor, intBuffIntensity),
-                                  m_lerpT());
+    return COLOR::GetRgbColorLerp(
+        m_previousPixelBlendFunc(bgndColor, intBuffIntensity, fgndColor, newAlpha),
+        m_nextPixelBlendFunc(bgndColor, intBuffIntensity, fgndColor, newAlpha),
+        m_lerpT());
   };
 }
 
 auto RandomPixelBlender::GetColorAddPixelBlendFunc() -> PixelBlendFunc
 {
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return GetColorAddPixelBlend(oldColor, newColor, intBuffIntensity); };
+  return [](const Pixel& bgndColor,
+            const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  { return GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
 auto RandomPixelBlender::GetDarkenOnlyPixelBlendFunc() -> PixelBlendFunc
 {
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return GetDarkenOnlyPixelBlend(oldColor, newColor, intBuffIntensity); };
+  return [](const Pixel& bgndColor,
+            const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  { return GetDarkenOnlyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
 auto RandomPixelBlender::GetLightenOnlyPixelBlendFunc() -> PixelBlendFunc
 {
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return GetLightenOnlyPixelBlend(oldColor, newColor, intBuffIntensity); };
+  return [](const Pixel& bgndColor,
+            const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  { return GetLightenOnlyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
 auto RandomPixelBlender::GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc
 {
-  return [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return GetColorMultiplyPixelBlend(oldColor, newColor, intBuffIntensity); };
+  return [](const Pixel& bgndColor,
+            const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  { return GetColorMultiplyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+}
+
+auto RandomPixelBlender::GetAlphaPixelBlendFunc() -> PixelBlendFunc
+{
+  return [](const Pixel& bgndColor,
+            const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  { return GetColorAlphaBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
 auto RandomPixelBlender::GetSameLumaMixPixelBlendFunc(const float lumaMixT) -> PixelBlendFunc
 {
-  return [lumaMixT](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return GetSameLumaMixPixelBlend(lumaMixT, oldColor, newColor, intBuffIntensity); };
+  return [lumaMixT](const Pixel& bgndColor,
+                    const uint32_t intBuffIntensity,
+                    const Pixel& fgndColor,
+                    const PixelChannelType newAlpha)
+  { return GetSameLumaMixPixelBlend(lumaMixT, bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
 } // namespace GOOM::VISUAL_FX::FX_UTILS

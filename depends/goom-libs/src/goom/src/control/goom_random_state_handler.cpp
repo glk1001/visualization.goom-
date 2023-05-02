@@ -51,7 +51,7 @@ static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_PARTICLES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
+static constexpr auto FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
 //static constexpr auto FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
 
 // End debugging

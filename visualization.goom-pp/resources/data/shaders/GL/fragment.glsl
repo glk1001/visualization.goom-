@@ -41,7 +41,9 @@ in vec2 texCoords;
 void main()
 {
   vec2 uvTex = texCoords;
-  vec3 hdrColor = texture(texBuffer, uvTex).rgb;
+  vec4 tex = texture(texBuffer, uvTex);
+  vec3 hdrColor = tex.rgb;
+  float alpha = tex.a;
 
 
 /**
@@ -83,5 +85,5 @@ void main()
   //toneMappedColor = max((contrast * (toneMappedColor - 0.5)) + 0.5, -0.0);
   toneMappedColor = max((u_texContrast * (toneMappedColor - 0.5)) + 0.5, u_texContrastMinChan);
 
-  fragColor = vec4(toneMappedColor, 1.0);
+  fragColor = vec4(toneMappedColor, alpha);
 }

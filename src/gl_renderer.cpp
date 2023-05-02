@@ -453,6 +453,9 @@ inline auto GlRenderer::GLRendererImpl::DrawGlTexture() -> void
 {
   // Setup texture.
   glDisable(GL_BLEND);
+  //glEnable(GL_BLEND);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -461,13 +464,13 @@ inline auto GlRenderer::GLRendererImpl::DrawGlTexture() -> void
 
   UpdateGlTextureBuffer();
 
-  glDrawArrays(GL_TRIANGLE_FAN, 0, NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE);
 
   DisableShader();
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
-  glEnable(GL_BLEND);
+  glDisable(GL_BLEND);
 }
 
 inline auto GlRenderer::GLRendererImpl::UpdateGlTextureBuffer() -> void

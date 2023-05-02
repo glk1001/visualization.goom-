@@ -15,19 +15,27 @@ namespace GOOM::UTILS::GRAPHICS
 [[nodiscard]] constexpr auto MakePixel(float red, float green, float blue, float alpha) noexcept
     -> Pixel;
 
-[[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel;
+[[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1,
+                                         const Pixel& color2,
+                                         PixelChannelType newAlpha) -> Pixel;
 [[nodiscard]] constexpr auto GetColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
     -> uint32_t;
 
-[[nodiscard]] constexpr auto GetColorMultiply(const Pixel& color1, const Pixel& color2) -> Pixel;
+[[nodiscard]] constexpr auto GetColorMultiply(const Pixel& color1,
+                                              const Pixel& color2,
+                                              PixelChannelType newAlpha) -> Pixel;
 [[nodiscard]] constexpr auto GetColorChannelMultiply(PixelChannelType ch1,
                                                      PixelChannelType ch2) noexcept -> uint32_t;
 [[nodiscard]] constexpr auto GetChannelColorMultiplyByScalar(uint32_t scalar,
                                                              PixelChannelType channelVal) noexcept
     -> uint32_t;
 
-[[nodiscard]] constexpr auto GetColorMin(const Pixel& color1, const Pixel& color2) -> Pixel;
-[[nodiscard]] constexpr auto GetColorMax(const Pixel& color1, const Pixel& color2) -> Pixel;
+[[nodiscard]] constexpr auto GetColorMin(const Pixel& color1,
+                                         const Pixel& color2,
+                                         PixelChannelType newAlpha) -> Pixel;
+[[nodiscard]] constexpr auto GetColorMax(const Pixel& color1,
+                                         const Pixel& color2,
+                                         PixelChannelType newAlpha) -> Pixel;
 
 constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept
     -> Pixel
@@ -65,17 +73,18 @@ constexpr auto MakePixel(const float red,
   return MakePixel(static_cast<uint32_t>(red * MAX_CHANNEL_VALUE),
                    static_cast<uint32_t>(green * MAX_CHANNEL_VALUE),
                    static_cast<uint32_t>(blue * MAX_CHANNEL_VALUE),
-                   static_cast<uint32_t>(alpha * MAX_CHANNEL_VALUE));
+                   static_cast<uint32_t>(alpha * MAX_ALPHA));
 }
 
-constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel
+constexpr auto GetColorAdd(const Pixel& color1,
+                           const Pixel& color2,
+                           const PixelChannelType newAlpha) -> Pixel
 {
   const auto newR = GetColorChannelAdd(color1.R(), color2.R());
   const auto newG = GetColorChannelAdd(color1.G(), color2.G());
   const auto newB = GetColorChannelAdd(color1.B(), color2.B());
-  const auto newA = GetColorChannelAdd(color1.A(), color2.A());
 
-  return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newA);
+  return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newAlpha);
 }
 
 constexpr auto GetColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
@@ -84,14 +93,15 @@ constexpr auto GetColorChannelAdd(const PixelChannelType ch1, const PixelChannel
   return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
 }
 
-constexpr auto GetColorMultiply(const Pixel& color1, const Pixel& color2) -> Pixel
+constexpr auto GetColorMultiply(const Pixel& color1,
+                                const Pixel& color2,
+                                const PixelChannelType newAlpha) -> Pixel
 {
   const auto newR = static_cast<PixelChannelType>(GetColorChannelMultiply(color1.R(), color2.R()));
   const auto newG = static_cast<PixelChannelType>(GetColorChannelMultiply(color1.G(), color2.G()));
   const auto newB = static_cast<PixelChannelType>(GetColorChannelMultiply(color1.B(), color2.B()));
-  const auto newA = static_cast<PixelChannelType>(GetColorChannelMultiply(color1.A(), color2.A()));
 
-  return Pixel{newR, newG, newB, newA};
+  return Pixel{newR, newG, newB, newAlpha};
 }
 
 constexpr auto GetColorChannelMultiply(const PixelChannelType ch1,
@@ -112,24 +122,26 @@ constexpr auto GetChannelColorMultiplyByScalar(const uint32_t scalar,
   return (scalar * static_cast<uint32_t>(channelVal)) >> CHANNEL_COLOR_SCALAR_DIVISOR_EXP;
 }
 
-constexpr auto GetColorMin(const Pixel& color1, const Pixel& color2) -> Pixel
+constexpr auto GetColorMin(const Pixel& color1,
+                           const Pixel& color2,
+                           const PixelChannelType newAlpha) -> Pixel
 {
   const auto minR = std::min(color1.R(), color2.R());
   const auto minG = std::min(color1.G(), color2.G());
   const auto minB = std::min(color1.B(), color2.B());
-  const auto minA = std::min(color1.A(), color2.A());
 
-  return Pixel{minR, minG, minB, minA};
+  return Pixel{minR, minG, minB, newAlpha};
 }
 
-constexpr auto GetColorMax(const Pixel& color1, const Pixel& color2) -> Pixel
+constexpr auto GetColorMax(const Pixel& color1,
+                           const Pixel& color2,
+                           const PixelChannelType newAlpha) -> Pixel
 {
   const auto maxR = std::max(color1.R(), color2.R());
   const auto maxG = std::max(color1.G(), color2.G());
   const auto maxB = std::max(color1.B(), color2.B());
-  const auto maxA = std::max(color1.A(), color2.A());
 
-  return Pixel{maxR, maxG, maxB, maxA};
+  return Pixel{maxR, maxG, maxB, newAlpha};
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

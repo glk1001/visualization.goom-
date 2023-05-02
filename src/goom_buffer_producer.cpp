@@ -234,7 +234,7 @@ auto GoomBufferProducer::StartActivePixelBufferDataQueue() -> void
 {
   // Make one initial frame in black
   const auto initialBufferData = PixelBufferData{MakePixelBufferData()};
-  initialBufferData.pixelBuffer->Fill(GOOM::BLACK_PIXEL);
+  initialBufferData.pixelBuffer->Fill({0, 0, 0, 0});
   m_activePixelBufferDataQueue.push(initialBufferData);
 }
 

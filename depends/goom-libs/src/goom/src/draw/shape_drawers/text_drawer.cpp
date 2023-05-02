@@ -15,13 +15,13 @@
 
 //#define NO_FREETYPE_INSTALLED
 
-#include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_utils.h"
 #include "spimpl.h"
+#include "utils/graphics/pixel_blend.h"
 #include "utils/math/misc.h"
 
 #ifndef NO_FREETYPE_INSTALLED
@@ -39,7 +39,7 @@
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
-using COLOR::GetColorBlend;
+using UTILS::GRAPHICS::GetColorAlphaBlend;
 using UTILS::MATH::I_HALF;
 
 #ifdef NO_FREETYPE_INSTALLED
@@ -743,7 +743,7 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
 {
   const auto xPos0    = xPen + (span.x - rect.xMin);
   const auto xf0      = span.x - rect.xMin;
-  const auto coverage = static_cast<uint8_t>(span.coverage);
+  const auto coverage = ToPixelAlpha(static_cast<uint8_t>(span.coverage));
   for (auto width = 0; width < span.width; ++width)
   {
     const auto xPos = xPos0 + width;
@@ -754,12 +754,12 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
 
     const auto pen       = Point2dInt{xf0 + width, IntHeight(rect) - (span.y - rect.yMin)};
     const auto color     = getColor(textIndexOfChar, pen, {Width(rect), Height(rect)});
-    const auto srceColor = Pixel{
+    const auto fgndColor = Pixel{
         {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
     };
-    const auto destColor = m_draw->GetPixel({xPos, yPos});
+    const auto bgndColor = m_draw->GetPixel({xPos, yPos});
 
-    const auto blendedColor = GetColorBlend(srceColor, destColor);
+    const auto blendedColor = GetColorAlphaBlend(bgndColor, fgndColor, MAX_ALPHA);
     m_draw->DrawPixelsUnblended({xPos, yPos}, {blendedColor, blendedColor});
   }
 }

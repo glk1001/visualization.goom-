@@ -47,7 +47,7 @@ auto ColorAdjustment::GetAdjustment(const float brightness, const Pixel& color) 
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.GFlt(), m_gamma)));
   const auto newB = static_cast<uint32_t>(std::round(
       channel_limits<float>::max() * std::pow(brightness * adjustedColor.BFlt(), m_gamma)));
-  const auto newA = adjustedColor.A();
+  const auto newA = color.A();
 
   return MakePixel(newR, newG, newB, newA);
 }
@@ -69,7 +69,7 @@ auto ColorAdjustment::GetAlteredChromaColor(const float lchYFactor, const Pixel&
 
   const auto newRgb8 = vivid::rgb8::fromRgb(vivid::srgb::fromLch(lch));
   return Pixel{
-      {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}  // NOLINT: union hard to fix here
+      {newRgb8.r, newRgb8.g, newRgb8.b, color.A()}  // NOLINT: union hard to fix here
   };
 }
 

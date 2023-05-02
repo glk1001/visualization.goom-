@@ -371,13 +371,16 @@ auto TentacleDriver::GetMixedColors(const float dominantT,
                                     const TentacleAndAttributes& tentacleAndAttributes,
                                     const float brightness) const -> MultiplePixels
 {
-  const auto mixedColors =
+  auto mixedColors =
       MultiplePixels{IColorMap::GetColorMix(m_dominantMainColorMap->GetColor(dominantT),
                                             tentacleAndAttributes.mainColorMap->GetColor(nodeT),
                                             m_mainColorSegmentMixT),
                      IColorMap::GetColorMix(m_dominantLowColorMap->GetColor(dominantT),
                                             tentacleAndAttributes.lowColorMap->GetColor(nodeT),
                                             m_lowColorSegmentMixT)};
+
+  mixedColors.color1.SetA(MAX_ALPHA / 10);
+  mixedColors.color2.SetA(MAX_ALPHA / 10);
 
   return {
       m_colorAdjust.GetAdjustment(MAIN_BRIGHTNESS_FACTOR * brightness, GetMainColor(mixedColors)),

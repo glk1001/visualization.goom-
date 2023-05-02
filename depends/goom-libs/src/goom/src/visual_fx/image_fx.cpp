@@ -128,6 +128,7 @@ private:
   static constexpr auto LIGHTEN_ONLY_WEIGHT = 5.0F;
   static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
   static constexpr auto MULTIPLY_WEIGHT     = 0.0F;
+  static constexpr auto ALPHA_WEIGHT        = 5.0F;
   // clang-format off
   RandomPixelBlender m_pixelBlender{
       *m_fxHelper->goomRand,
@@ -136,7 +137,8 @@ private:
           {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DARKEN_ONLY_WEIGHT},
           {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
           {RandomPixelBlender::PixelBlendType::LUMA_MIX,     LUMA_MIX_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::MULTIPLY,     MULTIPLY_WEIGHT}
+          {RandomPixelBlender::PixelBlendType::MULTIPLY,     MULTIPLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::ALPHA,        ALPHA_WEIGHT}
       }
   };
   // clang-format on

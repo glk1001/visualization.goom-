@@ -37,7 +37,11 @@ public:
                   [[maybe_unused]] const float brightness,
                   MultiplePixels colors) noexcept -> void
   {
+    Expects(colors.color1.A() < MAX_ALPHA / 9);
+    Expects(colors.color2.A() < MAX_ALPHA / 9);
     BrightenColors(brightness, colors);
+    Expects(colors.color1.A() < MAX_ALPHA / 9);
+    Expects(colors.color2.A() < MAX_ALPHA / 9);
     m_draw->DrawClippedPixels(point, colors);
   }
 

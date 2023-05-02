@@ -139,7 +139,8 @@ inline auto ColorShadesAndTints::GetTint(const float t) const noexcept -> Pixel
                                static_cast<PixelChannelType>(WHITE_PIXEL.B() - m_baseColor.B()),
                                MAX_ALPHA};
   const auto brightness = STD20::lerp(DEFAULT_MIN_TINT, DEFAULT_MAX_TINT, t);
-  return UTILS::GRAPHICS::GetColorAdd(m_baseColor, COLOR::GetBrighterColor(brightness, fromWhite));
+  return UTILS::GRAPHICS::GetColorAdd(
+      m_baseColor, COLOR::GetBrighterColor(brightness, fromWhite), m_baseColor.A());
 }
 
 } // namespace GOOM::VISUAL_FX::L_SYSTEM

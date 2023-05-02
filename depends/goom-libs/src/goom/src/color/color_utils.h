@@ -16,8 +16,6 @@ namespace GOOM::COLOR
 template<typename T>
 [[nodiscard]] constexpr auto GetColorAverage(size_t num, const T& colors) -> Pixel;
 
-[[nodiscard]] constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
-
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
 [[nodiscard, maybe_unused]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&)
     -> Pixel = delete;
@@ -101,29 +99,6 @@ constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixe
   const auto newG = static_cast<PixelChannelType>(GetColorChannelAdd(color1.G(), color2.G()) / 2);
   const auto newB = static_cast<PixelChannelType>(GetColorChannelAdd(color1.B(), color2.B()) / 2);
   const auto newA = static_cast<PixelChannelType>(GetColorChannelAdd(color1.A(), color2.A()) / 2);
-
-  return Pixel{newR, newG, newB, newA};
-}
-
-constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
-{
-  const auto fgndR = static_cast<int>(fgnd.R());
-  const auto fgndG = static_cast<int>(fgnd.G());
-  const auto fgndB = static_cast<int>(fgnd.B());
-  const auto fgndA = static_cast<int>(fgnd.A());
-  const auto bgndR = static_cast<int>(bgnd.R());
-  const auto bgndG = static_cast<int>(bgnd.G());
-  const auto bgndB = static_cast<int>(bgnd.B());
-  const auto bgndA = static_cast<int>(bgnd.A());
-
-  const auto newR = static_cast<PixelChannelType>(
-      bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
-  const auto newG = static_cast<PixelChannelType>(
-      bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
-  const auto newB = static_cast<PixelChannelType>(
-      bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
-  const auto newA =
-      static_cast<PixelChannelType>(std::min(channel_limits<int32_t>::max(), fgndA + bgndA));
 
   return Pixel{newR, newG, newB, newA};
 }
