@@ -16,7 +16,9 @@ namespace GOOM::COLOR
 template<typename T>
 [[nodiscard]] constexpr auto GetColorAverage(size_t num, const T& colors) -> Pixel;
 
-[[nodiscard]] constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel;
+[[nodiscard]] constexpr auto GetColorBlend(const Pixel& fgnd,
+                                           const Pixel& bgnd,
+                                           PixelChannelType newAlpha = MAX_ALPHA) -> Pixel;
 
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
 [[nodiscard, maybe_unused]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&)
@@ -105,7 +107,8 @@ constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixe
   return Pixel{newR, newG, newB, newA};
 }
 
-constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
+constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd, const PixelChannelType newAlpha)
+    -> Pixel
 {
   const auto fgndR = static_cast<int>(fgnd.R());
   const auto fgndG = static_cast<int>(fgnd.G());
@@ -114,7 +117,6 @@ constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
   const auto bgndR = static_cast<int>(bgnd.R());
   const auto bgndG = static_cast<int>(bgnd.G());
   const auto bgndB = static_cast<int>(bgnd.B());
-  const auto bgndA = static_cast<int>(bgnd.A());
 
   const auto newR = static_cast<PixelChannelType>(
       bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
@@ -122,10 +124,8 @@ constexpr auto GetColorBlend(const Pixel& fgnd, const Pixel& bgnd) -> Pixel
       bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
   const auto newB = static_cast<PixelChannelType>(
       bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
-  const auto newA =
-      static_cast<PixelChannelType>(std::min(channel_limits<int32_t>::max(), fgndA + bgndA));
 
-  return Pixel{newR, newG, newB, newA};
+  return Pixel{newR, newG, newB, newAlpha};
 }
 
 constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color) -> Pixel

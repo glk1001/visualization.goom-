@@ -65,7 +65,7 @@ constexpr auto MakePixel(const float red,
   return MakePixel(static_cast<uint32_t>(red * MAX_CHANNEL_VALUE),
                    static_cast<uint32_t>(green * MAX_CHANNEL_VALUE),
                    static_cast<uint32_t>(blue * MAX_CHANNEL_VALUE),
-                   static_cast<uint32_t>(alpha * MAX_CHANNEL_VALUE));
+                   static_cast<uint32_t>(alpha * MAX_ALPHA));
 }
 
 constexpr auto GetColorAdd(const Pixel& color1, const Pixel& color2) -> Pixel

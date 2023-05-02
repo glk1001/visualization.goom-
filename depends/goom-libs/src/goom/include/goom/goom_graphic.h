@@ -93,12 +93,10 @@ using PixelChannelType = uint16_t;
 using PixelIntType     = uint64_t;
 
 inline constexpr auto MAX_CHANNEL_VALUE_HDR = 30U * 1024U;
+static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max());
 
 inline constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
-inline constexpr auto MAX_ALPHA     = MAX_COLOR_VAL;
-
-static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::max(),
-              "Invalid MAX_CHANNEL_VALUE_HDR");
+inline constexpr auto MAX_ALPHA     = std::numeric_limits<PixelChannelType>::max();
 
 // TODO(glk) - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
 class Pixel

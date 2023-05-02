@@ -743,7 +743,7 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
 {
   const auto xPos0    = xPen + (span.x - rect.xMin);
   const auto xf0      = span.x - rect.xMin;
-  const auto coverage = static_cast<uint8_t>(span.coverage);
+  const auto coverage = static_cast<PixelChannelType>(span.coverage);
   for (auto width = 0; width < span.width; ++width)
   {
     const auto xPos = xPos0 + width;

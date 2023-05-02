@@ -517,7 +517,9 @@ void main()
   float gamma = 2.2;
 
   vec2 uvTex = texCoords;
-  vec3 hdrColor = texture(texBuffer, uvTex).rgb;
+  vec4 tex = texture(texBuffer, uvTex);
+  vec3 hdrColor = tex.rgb;
+  float alpha = tex.a;
 
 
 /**
@@ -624,5 +626,5 @@ void main()
 
   mapped = A * pow(mapped, vec3(1.0 / gamma));
 
-  fragColor = vec4(mapped, 1.0);
+  fragColor = vec4(mapped, alpha);
 }
