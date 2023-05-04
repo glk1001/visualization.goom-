@@ -3,6 +3,7 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/circle_drawer.h"
 #include "draw/shape_drawers/line_drawer.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "tentacle3d.h"
 #include "utils/graphics/line_clipper.h"
@@ -39,8 +40,7 @@ private:
 
   using LineClipper = UTILS::GRAPHICS::LineClipper;
   LineClipper m_lineClipper{GetLineClipRectangle(1U)};
-  [[nodiscard]] auto GetLineClipRectangle(uint8_t lineThickness) const noexcept
-      -> LineClipper::ClipRectangle;
+  [[nodiscard]] auto GetLineClipRectangle(uint8_t lineThickness) const noexcept -> Rectangle2dInt;
 
   GetColorsFunc m_getColors{};
   DRAW::MultiplePixels m_endDotColors{};

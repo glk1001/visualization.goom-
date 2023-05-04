@@ -114,6 +114,7 @@ add_library(goom
             src/utils/graphics/line_clipper.h
             src/utils/graphics/pixel_blend.h
             src/utils/graphics/pixel_utils.h
+            src/utils/graphics/point_utils.h
             src/utils/graphics/small_image_bitmaps.cpp
             src/utils/math/damping_functions.cpp
             src/utils/math/goom_rand.h

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_config.h"
+#include "goom_types.h"
 #include "point2d.h"
 
 #include <cstdint>
@@ -17,17 +18,9 @@ struct LineFlt
 class LineClipper
 {
 public:
-  struct ClipRectangle
-  {
-    uint32_t xMin;
-    uint32_t yMin;
-    uint32_t xMax;
-    uint32_t yMax;
-  };
+  explicit constexpr LineClipper(const Rectangle2dInt& clipRectangle) noexcept;
 
-  explicit constexpr LineClipper(const ClipRectangle& clipRectangle) noexcept;
-
-  constexpr auto SetClipRectangle(const ClipRectangle& clipRectangle) noexcept -> void;
+  constexpr auto SetClipRectangle(const Rectangle2dInt& clipRectangle) noexcept -> void;
 
   enum class ClipResult
   {
@@ -44,16 +37,7 @@ public:
   [[nodiscard]] constexpr auto GetClippedLine(const LineFlt& line) const -> ClippedLine;
 
 private:
-  struct FltClipRectangle
-  {
-    float xMin;
-    float yMin;
-    float xMax;
-    float yMax;
-  };
-  [[nodiscard]] static constexpr auto GetFltClipRectangle(
-      const ClipRectangle& clipRectangle) noexcept -> FltClipRectangle;
-  FltClipRectangle m_clipRectangle;
+  Rectangle2dFlt m_clipRectangle;
 
   // The region codes relative to the clip rectangle.
   static constexpr auto INSIDE = static_cast<uint32_t>(0b0000);
@@ -70,23 +54,14 @@ private:
   [[nodiscard]] static constexpr auto GetYIntercept(float x, const LineFlt& line) -> float;
 };
 
-constexpr auto LineClipper::GetFltClipRectangle(const ClipRectangle& clipRectangle) noexcept
-    -> FltClipRectangle
-{
-  return {static_cast<float>(clipRectangle.xMin),
-          static_cast<float>(clipRectangle.yMin),
-          static_cast<float>(clipRectangle.xMax),
-          static_cast<float>(clipRectangle.yMax)};
-}
-
-constexpr LineClipper::LineClipper(const ClipRectangle& clipRectangle) noexcept
-  : m_clipRectangle{GetFltClipRectangle(clipRectangle)}
+constexpr LineClipper::LineClipper(const Rectangle2dInt& clipRectangle) noexcept
+  : m_clipRectangle{ToRectangle2dFlt(clipRectangle)}
 {
 }
 
-constexpr auto LineClipper::SetClipRectangle(const ClipRectangle& clipRectangle) noexcept -> void
+constexpr auto LineClipper::SetClipRectangle(const Rectangle2dInt& clipRectangle) noexcept -> void
 {
-  m_clipRectangle = GetFltClipRectangle(clipRectangle);
+  m_clipRectangle = ToRectangle2dFlt(clipRectangle);
 }
 
 constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> ClippedLine
@@ -100,22 +75,22 @@ constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> Clipped
 {
   auto code = INSIDE;
 
-  if (point.x < m_clipRectangle.xMin) // to the left of rectangle
+  if (point.x < m_clipRectangle.topLeft.x) // to the left of rectangle
   {
     code |= LEFT;
   }
-  else if (point.x > m_clipRectangle.xMax) // to the right of rectangle
+  else if (point.x > m_clipRectangle.bottomRight.x) // to the right of rectangle
   {
     code |= RIGHT;
   }
 
-  if (point.y < m_clipRectangle.yMin) // below the rectangle
-  {
-    code |= BOTTOM;
-  }
-  else if (point.y > m_clipRectangle.yMax) // above the rectangle
+  if (point.y < m_clipRectangle.topLeft.y) // above the rectangle
   {
     code |= TOP;
+  }
+  else if (point.y > m_clipRectangle.bottomRight.y) // below the rectangle
+  {
+    code |= BOTTOM;
   }
 
   return code;
@@ -133,7 +108,7 @@ constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> Clipped
   auto code1 = ComputeCode(newPoint1);
   auto code2 = ComputeCode(newPoint2);
 
-  if ((code1 == INSIDE) && (code2 == INSIDE))
+  if ((code1 == INSIDE) and (code2 == INSIDE))
   {
     // Both endpoints lie within the clip rectangle.
     return {
@@ -167,7 +142,7 @@ constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> Clipped
       code2     = ComputeCode(newPoint2);
     }
 
-    if ((code1 == INSIDE) && (code2 == INSIDE))
+    if ((code1 == INSIDE) and (code2 == INSIDE))
     {
       // Both endpoints lie within the clip rectangle.
       break;
@@ -194,25 +169,25 @@ constexpr auto LineClipper::GetIntersectionPoint(const LineFlt& line,
   if (codeOutside & TOP)
   {
     // The intersection point is above the clip rectangle.
-    intersectionPoint.y = m_clipRectangle.yMax;
+    intersectionPoint.y = m_clipRectangle.topLeft.y;
     intersectionPoint.x = GetXIntercept(intersectionPoint.y, line);
   }
   else if (codeOutside & BOTTOM)
   {
     // The intersection point is below the clip rectangle.
-    intersectionPoint.y = m_clipRectangle.yMin;
+    intersectionPoint.y = m_clipRectangle.bottomRight.y;
     intersectionPoint.x = GetXIntercept(intersectionPoint.y, line);
   }
   else if (codeOutside & RIGHT)
   {
     // The intersection point is to the right of the clip rectangle.
-    intersectionPoint.x = m_clipRectangle.xMax;
+    intersectionPoint.x = m_clipRectangle.bottomRight.x;
     intersectionPoint.y = GetYIntercept(intersectionPoint.x, line);
   }
   else if (codeOutside & LEFT)
   {
     // The intersection point is to the left of the clip rectangle.
-    intersectionPoint.x = m_clipRectangle.xMin;
+    intersectionPoint.x = m_clipRectangle.topLeft.x;
     intersectionPoint.y = GetYIntercept(intersectionPoint.x, line);
   }
   else

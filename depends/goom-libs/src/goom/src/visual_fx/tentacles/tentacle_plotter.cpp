@@ -30,13 +30,14 @@ auto TentaclePlotter::SetTentacleLineThickness(const uint8_t lineThickness) noex
 }
 
 inline auto TentaclePlotter::GetLineClipRectangle(const uint8_t lineThickness) const noexcept
-    -> LineClipper::ClipRectangle
+    -> Rectangle2dInt
 {
-  const auto clipMargin = lineThickness + 1U;
-  return {clipMargin,
-          clipMargin,
-          m_draw->GetDimensions().GetWidth() - clipMargin,
-          m_draw->GetDimensions().GetHeight() - clipMargin};
+  const auto clipMargin  = static_cast<int32_t>(lineThickness + 1U);
+  const auto topLeft     = Point2dInt{clipMargin, clipMargin};
+  const auto bottomRight = Point2dInt{m_draw->GetDimensions().GetIntWidth() - clipMargin,
+                                      m_draw->GetDimensions().GetIntHeight() - clipMargin};
+
+  return {topLeft, bottomRight};
 }
 
 auto TentaclePlotter::Plot3D(const Tentacle3D& tentacle) noexcept -> void

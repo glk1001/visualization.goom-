@@ -240,7 +240,7 @@ inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
   static constexpr auto MIN_LERP = 0.0F;
   static constexpr auto MAX_LERP = 1.0F;
   const auto midLerp             = m_fxHelper->goomRand->GetRandInRange(MIN_LERP, MAX_LERP);
-  auto newCircleCentre           = lerp(m_screenCentre, zoomMidpoint, midLerp);
+  const auto newCircleCentre     = lerp(m_screenCentre, zoomMidpoint, midLerp);
 
   const auto minPoint = Point2dInt{m_fxHelper->goomInfo->GetDimensions().GetIntWidth() / 10,
                                    m_fxHelper->goomInfo->GetDimensions().GetIntHeight() / 10};

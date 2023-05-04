@@ -22,6 +22,19 @@ constexpr auto GetAverage(const MinMaxValues<T> minMaxValues) noexcept -> T
   return (minMaxValues.minValue + minMaxValues.maxValue) / static_cast<T>(NUM_VALUES);
 }
 
+struct Rectangle2dInt
+{
+  Point2dInt topLeft{};
+  Point2dInt bottomRight{};
+};
+struct Rectangle2dFlt
+{
+  Point2dFlt topLeft{};
+  Point2dFlt bottomRight{};
+};
+[[nodiscard]] constexpr auto ToRectangle2dFlt(const Rectangle2dInt& rectangle) noexcept
+    -> Rectangle2dFlt;
+
 class Dimensions
 {
 public:
@@ -90,6 +103,11 @@ constexpr auto Dimensions::GetFltHeight() const noexcept -> float
 constexpr auto Dimensions::GetCentrePoint() const noexcept -> Point2dInt
 {
   return MidpointFromOrigin({GetIntWidth(), GetIntHeight()});
+}
+
+constexpr auto ToRectangle2dFlt(const Rectangle2dInt& rectangle) noexcept -> Rectangle2dFlt
+{
+  return {ToPoint2dFlt(rectangle.topLeft), ToPoint2dFlt(rectangle.bottomRight)};
 }
 
 } // namespace GOOM

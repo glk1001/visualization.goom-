@@ -11,7 +11,7 @@ namespace GOOM::UTILS
 class Timer
 {
 public:
-  Timer() noexcept = delete;
+  Timer() noexcept = default;
   explicit Timer(uint32_t numCount, bool setToFinished = false) noexcept;
 
   [[nodiscard]] auto GetTimeLimit() const noexcept -> uint32_t;
@@ -25,8 +25,8 @@ public:
   [[nodiscard]] auto GetCurrentCount() const noexcept -> uint64_t;
 
 private:
-  uint32_t m_numCount;
-  uint64_t m_count;
+  uint32_t m_numCount{};
+  uint64_t m_count{};
 };
 
 class OnOffTimer

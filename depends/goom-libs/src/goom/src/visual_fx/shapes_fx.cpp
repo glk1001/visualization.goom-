@@ -10,6 +10,7 @@
 #include "point2d.h"
 #include "shapes/shapes.h"
 #include "spimpl.h"
+#include "utils/graphics/point_utils.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
@@ -29,6 +30,7 @@ using SHAPES::Shape;
 using UTILS::IncrementedValue;
 using UTILS::Timer;
 using UTILS::TValue;
+using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::MATH::TWO_PI;
 
 class ShapesFx::ShapesFxImpl
@@ -252,10 +254,12 @@ auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpo
   const auto xMax = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - 1;
   const auto yMax = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - 1;
 
-  const auto minZoomMidpoint = Point2dInt{xMax / 5, yMax / 5};
-  const auto maxZoomMidpoint = Point2dInt{xMax - minZoomMidpoint.x, yMax - zoomMidpoint.y};
+  const auto minZoomMidpoint   = Point2dInt{xMax / 5, yMax / 5};
+  const auto maxZoomMidpoint   = Point2dInt{xMax - minZoomMidpoint.x, yMax - minZoomMidpoint.y};
+  const auto zoomClipRectangle = Rectangle2dInt{minZoomMidpoint, maxZoomMidpoint};
 
-  return clamp(zoomMidpoint, minZoomMidpoint, maxZoomMidpoint);
+  return GetPointClippedToRectangle(
+      zoomMidpoint, zoomClipRectangle, m_fxHelper->goomInfo->GetDimensions().GetCentrePoint());
 }
 
 auto ShapesFx::ShapesFxImpl::GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
