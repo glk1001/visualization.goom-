@@ -2,7 +2,7 @@
 
 #include "goom_states.h"
 
-#include <unordered_set>
+#include <vector>
 
 namespace GOOM::CONTROL
 {
@@ -10,7 +10,7 @@ namespace GOOM::CONTROL
 class IGoomStateHandler
 {
 public:
-  using DrawablesState = std::unordered_set<GoomDrawables>;
+  using DrawablesState = std::vector<GoomDrawables>;
 
   IGoomStateHandler() noexcept                                   = default;
   IGoomStateHandler(const IGoomStateHandler&) noexcept           = delete;

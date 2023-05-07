@@ -7,8 +7,8 @@
 #include "utils/enum_utils.h"
 
 #include <format>
-#include <set>
 #include <string_view>
+#include <vector>
 
 namespace GOOM::CONTROL
 {
@@ -109,10 +109,10 @@ constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
 }}};
 
 [[nodiscard]] inline auto GetStateDrawables() noexcept
-    -> const EnumMap<GoomStates, std::set<GoomDrawables>>&
+    -> const EnumMap<GoomStates, std::vector<GoomDrawables>>&
 {
   // clang-format off
-  static const auto s_STATE_DRAWABLES = EnumMap<GoomStates, std::set<GoomDrawables>>{{{
+  static const auto s_STATE_DRAWABLES = EnumMap<GoomStates, std::vector<GoomDrawables>>{{{
       {GoomStates::CIRCLES_ONLY,                {GoomDrawables::CIRCLES}},
       {GoomStates::CIRCLES_IFS,                 {GoomDrawables::CIRCLES, GoomDrawables::IFS}},
       {GoomStates::CIRCLES_IMAGE,               {GoomDrawables::CIRCLES, GoomDrawables::IMAGE}},
@@ -201,9 +201,9 @@ constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
 
 auto GoomStateInfo::GetStateInfoMap() noexcept -> StateInfoMap
 {
-  Expects(DEFAULT_BUFF_INTENSITY_RANGES.size() == NUM<GoomDrawables>);
+  static_assert(DEFAULT_BUFF_INTENSITY_RANGES.size() == NUM<GoomDrawables>);
+  static_assert(STATE_NAMES.size() == NUM<GoomStates>);
   Expects(GetStateDrawables().size() == NUM<GoomStates>);
-  Expects(STATE_NAMES.size() == NUM<GoomStates>);
 
   auto statesArray = std::vector<StateInfoMap::KeyValue>{};
 

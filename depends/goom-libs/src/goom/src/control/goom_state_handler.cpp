@@ -6,9 +6,9 @@ namespace GOOM::CONTROL
 auto IGoomStateHandler::GetCurrentDrawables() const -> DrawablesState
 {
   DrawablesState currentDrawables{};
-  for (const auto drawableInfo : GoomStateInfo::GetStateInfo(GetCurrentState()).drawablesInfo)
+  for (const auto& drawableInfo : GoomStateInfo::GetStateInfo(GetCurrentState()).drawablesInfo)
   {
-    currentDrawables.insert(drawableInfo.fx);
+    currentDrawables.push_back(drawableInfo.fx);
   }
   return currentDrawables;
 }

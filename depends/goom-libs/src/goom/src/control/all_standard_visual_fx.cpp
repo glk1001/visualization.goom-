@@ -89,15 +89,6 @@ auto AllStandardVisualFx::SetSingleBufferDots(const bool val) -> void
   dynamic_cast<GoomDotsFx*>(m_drawablesMap[GoomDrawables::DOTS].get())->SetSingleBufferDots(val);
 }
 
-inline auto AllStandardVisualFx::IsCurrentlyDrawable(const GoomDrawables goomDrawable) const -> bool
-{
-#if __cplusplus <= 201703L
-  return m_currentGoomDrawables.find(goomDrawable) != cend(m_currentGoomDrawables);
-#else
-  return m_currentGoomDrawables.contains(goomDrawable);
-#endif
-}
-
 auto AllStandardVisualFx::Start() -> void
 {
   std::for_each(begin(m_drawablesMap), end(m_drawablesMap), [](auto& value) { value->Start(); });
@@ -169,44 +160,28 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
 
 auto AllStandardVisualFx::ApplyCurrentStateToSingleBuffer() -> void
 {
-  const auto drawablesKeys = m_drawablesMap.keys();
-
-  std::for_each(begin(drawablesKeys),
-                end(drawablesKeys),
-                [this](auto& key)
+  std::for_each(begin(m_currentGoomDrawables),
+                end(m_currentGoomDrawables),
+                [this](const auto& drawable)
                 {
-                  auto& visualFx = *m_drawablesMap[key];
+                  auto& visualFx = *m_drawablesMap[drawable];
 
-                  if (not IsCurrentlyDrawable(key))
-                  {
-                    visualFx.ApplyNoDraw();
-                    return;
-                  }
-
-                  ResetDrawBuffSettings(key);
+                  ResetDrawBuffSettings(drawable);
                   visualFx.ApplySingle();
                 });
 }
 
 auto AllStandardVisualFx::ApplyStandardFxToMultipleBuffers(const AudioSamples& soundData) -> void
 {
-  const auto drawablesKeys = m_drawablesMap.keys();
-
-  std::for_each(begin(drawablesKeys),
-                end(drawablesKeys),
-                [this, &soundData](auto& key)
+  std::for_each(begin(m_currentGoomDrawables),
+                end(m_currentGoomDrawables),
+                [this, &soundData](const auto& drawable)
                 {
-                  auto& visualFx = *m_drawablesMap[key];
+                  auto& visualFx = *m_drawablesMap[drawable];
 
                   visualFx.SetSoundData(soundData);
 
-                  if (not IsCurrentlyDrawable(key))
-                  {
-                    visualFx.ApplyNoDraw();
-                    return;
-                  }
-
-                  ResetDrawBuffSettings(key);
+                  ResetDrawBuffSettings(drawable);
                   visualFx.ApplyMultiple();
                 });
 }

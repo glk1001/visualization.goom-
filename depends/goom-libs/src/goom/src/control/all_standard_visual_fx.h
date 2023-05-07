@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom_graphic.h"
+#include "goom_state_handler.h"
 #include "goom_states.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
@@ -12,6 +13,7 @@
 #include <functional>
 #include <memory>
 #include <unordered_set>
+#include <vector>
 
 namespace GOOM
 {
@@ -40,15 +42,13 @@ namespace CONTROL
 class AllStandardVisualFx
 {
 public:
-  using GoomDrawablesSet = std::unordered_set<GoomDrawables>;
-
   AllStandardVisualFx(UTILS::Parallel& parallel,
                       const VISUAL_FX::FxHelper& fxHelper,
                       const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                       const std::string& resourcesDirectory) noexcept;
 
-  [[nodiscard]] auto GetCurrentGoomDrawables() const -> const GoomDrawablesSet&;
-  auto SetCurrentGoomDrawables(const GoomDrawablesSet& goomDrawablesSet) -> void;
+  [[nodiscard]] auto GetCurrentGoomDrawables() const -> const IGoomStateHandler::DrawablesState&;
+  auto SetCurrentGoomDrawables(const IGoomStateHandler::DrawablesState& goomDrawablesSet) -> void;
 
   auto ChangeColorMaps() -> void;
   [[nodiscard]] static auto GetActiveColorMapsNames() -> std::unordered_set<std::string>;
@@ -94,8 +94,7 @@ private:
   auto ChangeStarsColorMaps() noexcept -> void;
   auto ChangeTentaclesColorMaps() noexcept -> void;
 
-  GoomDrawablesSet m_currentGoomDrawables{};
-  [[nodiscard]] auto IsCurrentlyDrawable(GoomDrawables goomDrawable) const -> bool;
+  IGoomStateHandler::DrawablesState m_currentGoomDrawables{};
   ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc{};
   auto ResetDrawBuffSettings(GoomDrawables fx) -> void;
 
@@ -103,12 +102,14 @@ private:
   auto ApplyShaderToBothBuffersIfRequired() -> void;
 };
 
-inline auto AllStandardVisualFx::GetCurrentGoomDrawables() const -> const GoomDrawablesSet&
+inline auto AllStandardVisualFx::GetCurrentGoomDrawables() const
+    -> const IGoomStateHandler::DrawablesState&
 {
   return m_currentGoomDrawables;
 }
 
-inline void AllStandardVisualFx::SetCurrentGoomDrawables(const GoomDrawablesSet& goomDrawablesSet)
+inline void AllStandardVisualFx::SetCurrentGoomDrawables(
+    const IGoomStateHandler::DrawablesState& goomDrawablesSet)
 {
   m_currentGoomDrawables = goomDrawablesSet;
 }

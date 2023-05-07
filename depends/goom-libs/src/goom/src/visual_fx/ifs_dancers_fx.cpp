@@ -91,8 +91,6 @@ public:
   auto ApplyMultiple() noexcept -> void;
   auto UpdateLowDensityThreshold() noexcept -> void;
 
-  auto ApplyNoDraw() noexcept -> void;
-
 private:
   static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
   static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
@@ -202,11 +200,6 @@ auto IfsDancersFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMa
 auto IfsDancersFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
   return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto IfsDancersFx::ApplyNoDraw() noexcept -> void
-{
-  m_pimpl->ApplyNoDraw();
 }
 
 auto IfsDancersFx::ApplyMultiple() noexcept -> void
@@ -345,12 +338,6 @@ auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() noexcept -> void
     m_blurrer.SetSingleColor(
         m_colorizer.GetColorMaps().GetRandomColorMap().GetColor(SINGLE_COLOR_T));
   }
-}
-
-inline auto IfsDancersFx::IfsDancersFxImpl::ApplyNoDraw() noexcept -> void
-{
-  UpdateDecayAndRecay();
-  UpdateDecay();
 }
 
 auto IfsDancersFx::IfsDancersFxImpl::ApplyMultiple() noexcept -> void
