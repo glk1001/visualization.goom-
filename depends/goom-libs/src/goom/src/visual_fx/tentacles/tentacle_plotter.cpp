@@ -63,6 +63,8 @@ inline auto TentaclePlotter::PlotPoints(const std::vector<V3dFlt>& points3D) -> 
   for (const auto& line : lines2D)
   {
     const auto colors = m_getColors(nodeT());
+    Expects(colors.color1.A() < MAX_ALPHA / 9);
+    Expects(colors.color2.A() < MAX_ALPHA / 9);
     m_lineDrawer.DrawLine(line.point1, line.point2, colors);
     nodeT.Increment();
   }

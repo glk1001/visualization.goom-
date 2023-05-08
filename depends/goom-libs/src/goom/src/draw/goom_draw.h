@@ -43,8 +43,10 @@ public:
   [[nodiscard]] auto GetBuffIntensity() const noexcept -> float;
   auto SetBuffIntensity(float val) noexcept -> void;
 
-  using PixelBlendFunc =
-      std::function<Pixel(const Pixel& oldColor, const Pixel& newColor, uint32_t intBuffIntensity)>;
+  using PixelBlendFunc = std::function<Pixel(const Pixel& bgndColor,
+                                             uint32_t intBuffIntensity,
+                                             const Pixel& fgndColor,
+                                             PixelChannelType newAlpha)>;
   auto SetPixelBlendFunc(const PixelBlendFunc& func) noexcept -> void;
   auto SetDefaultPixelBlendFunc() noexcept -> void;
 
@@ -59,9 +61,10 @@ protected:
   [[nodiscard]] auto GetIntBuffIntensity() const noexcept -> uint32_t;
 
   // Use the following to set the final pixel in the buffer.
-  [[nodiscard]] auto GetBlendedPixel(const Pixel& oldColor,
-                                     const Pixel& newColor,
-                                     uint32_t intBuffIntensity) const noexcept -> Pixel;
+  [[nodiscard]] auto GetBlendedPixel(const Pixel& bgndColor,
+                                     uint32_t intBuffIntensity,
+                                     const Pixel& fgndColor,
+                                     PixelChannelType newAlpha) const noexcept -> Pixel;
 
   virtual auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
       -> void = 0;
@@ -70,12 +73,14 @@ private:
   Dimensions m_dimensions;
 
   PixelBlendFunc m_pixelBlendFunc{};
-  [[nodiscard]] static auto ColorAddPixelBlend(const Pixel& oldColor,
-                                               const Pixel& newColor,
-                                               uint32_t intBuffIntensity) noexcept -> Pixel;
+  [[nodiscard]] static auto GetColorAddPixelBlend(const Pixel& bgndColor,
+                                                  uint32_t intBuffIntensity,
+                                                  const Pixel& fgndColor,
+                                                  PixelChannelType newAlpha) noexcept -> Pixel;
   static constexpr float DEFAULT_BUFF_INTENSITY = 0.5F;
   float m_buffIntensity                         = DEFAULT_BUFF_INTENSITY;
-  uint32_t m_intBuffIntensity{};
+  uint32_t m_intBuffIntensity                   = GetIntBuffIntensity(DEFAULT_BUFF_INTENSITY);
+  [[nodiscard]] static auto GetIntBuffIntensity(float buffIntensity) noexcept -> uint32_t;
 };
 
 inline IGoomDraw::IGoomDraw(const Dimensions& dimensions) noexcept : m_dimensions{dimensions}
@@ -117,8 +122,13 @@ inline auto IGoomDraw::GetBuffIntensity() const noexcept -> float
 inline auto IGoomDraw::SetBuffIntensity(const float val) noexcept -> void
 {
   m_buffIntensity    = val;
-  m_intBuffIntensity = static_cast<uint32_t>(std::round(
-      static_cast<float>(UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR) * m_buffIntensity));
+  m_intBuffIntensity = GetIntBuffIntensity(m_buffIntensity);
+}
+
+inline auto IGoomDraw::GetIntBuffIntensity(const float buffIntensity) noexcept -> uint32_t
+{
+  return static_cast<uint32_t>(std::round(
+      static_cast<float>(UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR) * buffIntensity));
 }
 
 inline auto IGoomDraw::GetIntBuffIntensity() const noexcept -> uint32_t
@@ -133,23 +143,27 @@ inline auto IGoomDraw::SetPixelBlendFunc(const PixelBlendFunc& func) noexcept ->
 
 inline auto IGoomDraw::SetDefaultPixelBlendFunc() noexcept -> void
 {
-  m_pixelBlendFunc =
-      [](const Pixel& oldColor, const Pixel& newColor, const uint32_t intBuffIntensity)
-  { return ColorAddPixelBlend(oldColor, newColor, intBuffIntensity); };
+  m_pixelBlendFunc = [](const Pixel& bgndColor,
+                        const uint32_t intBuffIntensity,
+                        const Pixel& fgndColor,
+                        const PixelChannelType newAlpha)
+  { return GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
-inline auto IGoomDraw::GetBlendedPixel(const Pixel& oldColor,
-                                       const Pixel& newColor,
-                                       const uint32_t intBuffIntensity) const noexcept -> Pixel
+inline auto IGoomDraw::GetBlendedPixel(const Pixel& bgndColor,
+                                       const uint32_t intBuffIntensity,
+                                       const Pixel& fgndColor,
+                                       const PixelChannelType newAlpha) const noexcept -> Pixel
 {
-  return m_pixelBlendFunc(oldColor, newColor, intBuffIntensity);
+  return m_pixelBlendFunc(bgndColor, intBuffIntensity, fgndColor, newAlpha);
 }
 
-inline auto IGoomDraw::ColorAddPixelBlend(const Pixel& oldColor,
-                                          const Pixel& newColor,
-                                          const uint32_t intBuffIntensity) noexcept -> Pixel
+inline auto IGoomDraw::GetColorAddPixelBlend(const Pixel& bgndColor,
+                                             const uint32_t intBuffIntensity,
+                                             const Pixel& fgndColor,
+                                             const PixelChannelType newAlpha) noexcept -> Pixel
 {
-  return UTILS::GRAPHICS::GetColorAddPixelBlend(oldColor, newColor, intBuffIntensity);
+  return UTILS::GRAPHICS::GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
 }
 
 inline auto IGoomDraw::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept
@@ -166,6 +180,8 @@ inline auto IGoomDraw::DrawPixels(const Point2dInt& point, const MultiplePixels&
 inline auto IGoomDraw::DrawClippedPixels(const Point2dInt& point,
                                          const MultiplePixels& colors) noexcept -> void
 {
+  Expects(colors.color1.A() < MAX_ALPHA / 9);
+  Expects(colors.color2.A() < MAX_ALPHA / 9);
   if ((point.x < 0) or (point.y < 0) or (point.x >= m_dimensions.GetIntWidth()) or
       (point.y >= m_dimensions.GetIntHeight()))
   {

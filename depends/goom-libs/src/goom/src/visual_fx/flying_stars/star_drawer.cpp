@@ -191,10 +191,10 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt& point1,
 {
   const auto getMainColor =
       [&colors]([[maybe_unused]] const Point2dInt& bitmapPoint, const Pixel& bgnd)
-  { return GetColorMultiply(bgnd, colors.color1); };
+  { return GetColorMultiply(bgnd, colors.color1, colors.color1.A()); };
   const auto getLowColor =
       [&colors]([[maybe_unused]] const Point2dInt& bitmapPoint, const Pixel& bgnd)
-  { return GetColorMultiply(bgnd, colors.color2); };
+  { return GetColorMultiply(bgnd, colors.color2, colors.color2.A()); };
 
   const auto& bitmap   = GetImageBitmap(elementSize);
   const auto getColors = std::vector<BitmapDrawer::GetBitmapColorFunc>{getMainColor, getLowColor};

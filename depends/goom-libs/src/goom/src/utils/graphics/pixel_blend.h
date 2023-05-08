@@ -13,109 +13,150 @@ namespace GOOM::UTILS::GRAPHICS
 
 // NOTE: Tried reverse add color (where oldColor is multiplied by intensity),
 //       but the resulting black pixels don't look good.
-[[nodiscard]] constexpr auto GetColorAddPixelBlend(const Pixel& oldColor,
-                                                   const Pixel& newColor,
-                                                   uint32_t intBuffIntensity) -> Pixel;
+[[nodiscard]] constexpr auto GetColorAddPixelBlend(const Pixel& bgndColor,
+                                                   uint32_t fgndIntBuffIntensity,
+                                                   const Pixel& fgndColor,
+                                                   PixelChannelType newAlpha) -> Pixel;
 
-[[nodiscard]] constexpr auto GetDarkenOnlyPixelBlend(const Pixel& oldColor,
-                                                     const Pixel& newColor,
-                                                     uint32_t intBuffIntensity) -> Pixel;
+[[nodiscard]] constexpr auto GetDarkenOnlyPixelBlend(const Pixel& bgndColor,
+                                                     uint32_t fgndIntBuffIntensity,
+                                                     const Pixel& fgndColor,
+                                                     PixelChannelType newAlpha) -> Pixel;
 
-[[nodiscard]] constexpr auto GetLightenOnlyPixelBlend(const Pixel& oldColor,
-                                                      const Pixel& newColor,
-                                                      uint32_t intBuffIntensity) -> Pixel;
+[[nodiscard]] constexpr auto GetLightenOnlyPixelBlend(const Pixel& bgndColor,
+                                                      uint32_t fgndIntBuffIntensity,
+                                                      const Pixel& fgndColor,
+                                                      PixelChannelType newAlpha) -> Pixel;
 
 [[nodiscard]] constexpr auto GetSameLumaMixPixelBlend(float lumaMixT,
-                                                      const Pixel& oldColor,
-                                                      const Pixel& newColor,
-                                                      uint32_t intBuffIntensity) -> Pixel;
+                                                      const Pixel& bgndColor,
+                                                      uint32_t fgndIntBuffIntensity,
+                                                      const Pixel& fgndColor,
+                                                      PixelChannelType newAlpha) -> Pixel;
 
-[[nodiscard]] constexpr auto GetColorMultiplyPixelBlend(const Pixel& oldColor,
-                                                        const Pixel& newColor,
-                                                        uint32_t intBuffIntensity) -> Pixel;
+[[nodiscard]] constexpr auto GetColorMultiplyPixelBlend(const Pixel& bgndColor,
+                                                        uint32_t fgndIntBuffIntensity,
+                                                        const Pixel& fgndColor,
+                                                        PixelChannelType newAlpha) -> Pixel;
 
-constexpr auto GetColorAddPixelBlend(const Pixel& oldColor,
-                                     const Pixel& newColor,
-                                     const uint32_t intBuffIntensity) -> Pixel
+[[nodiscard]] constexpr auto GetColorAlphaBlend(const Pixel& bgndColor,
+                                                const Pixel& fgndColor,
+                                                PixelChannelType newAlpha) -> Pixel;
+
+constexpr auto GetColorAddPixelBlend(const Pixel& bgndColor,
+                                     const uint32_t fgndIntBuffIntensity,
+                                     const Pixel& fgndColor,
+                                     const PixelChannelType newAlpha) -> Pixel
 {
-  return GetColorAdd(oldColor, COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
+  return GetColorAdd(
+      bgndColor, COLOR::GetBrighterColorInt(fgndIntBuffIntensity, fgndColor), newAlpha);
 }
 
-constexpr auto GetColorMultiplyPixelBlend(const Pixel& oldColor,
-                                          const Pixel& newColor,
-                                          const uint32_t intBuffIntensity) -> Pixel
+constexpr auto GetColorMultiplyPixelBlend(const Pixel& bgndColor,
+                                          const uint32_t fgndIntBuffIntensity,
+                                          const Pixel& fgndColor,
+                                          const PixelChannelType newAlpha) -> Pixel
 {
   constexpr auto BRIGHTNESS_INCREASE = 2.0F;
   constexpr auto BLACK_THRESHOLD     = 30U;
 
-  if (COLOR::IsCloseToBlack(newColor, BLACK_THRESHOLD))
+  if (COLOR::IsCloseToBlack(fgndColor, BLACK_THRESHOLD))
   {
-    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, oldColor);
+    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, bgndColor);
   }
 
-  if (COLOR::IsCloseToBlack(oldColor, BLACK_THRESHOLD))
+  if (COLOR::IsCloseToBlack(bgndColor, BLACK_THRESHOLD))
   {
-    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, newColor);
+    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, fgndColor);
   }
 
-  return GetColorAdd(GetColorMultiply(oldColor, newColor),
-                     COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
+  return GetColorAdd(GetColorMultiply(bgndColor, fgndColor, newAlpha),
+                     COLOR::GetBrighterColorInt(fgndIntBuffIntensity, fgndColor),
+                     newAlpha);
 }
 
-constexpr auto GetDarkenOnlyPixelBlend(const Pixel& oldColor,
-                                       const Pixel& newColor,
-                                       const uint32_t intBuffIntensity) -> Pixel
+constexpr auto GetDarkenOnlyPixelBlend(const Pixel& bgndColor,
+                                       const uint32_t fgndIntBuffIntensity,
+                                       const Pixel& fgndColor,
+                                       const PixelChannelType newAlpha) -> Pixel
 {
   constexpr auto BRIGHTNESS_INCREASE = 2.0F;
   constexpr auto BLACK_THRESHOLD     = 30U;
 
-  if (COLOR::IsCloseToBlack(newColor, BLACK_THRESHOLD))
+  if (COLOR::IsCloseToBlack(fgndColor, BLACK_THRESHOLD))
   {
-    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, oldColor);
+    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, bgndColor);
   }
 
-  if (COLOR::IsCloseToBlack(oldColor, BLACK_THRESHOLD))
+  if (COLOR::IsCloseToBlack(bgndColor, BLACK_THRESHOLD))
   {
-    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, newColor);
+    return COLOR::GetBrighterColor(BRIGHTNESS_INCREASE, fgndColor);
   }
 
-  return GetColorMin(oldColor, COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
+  return GetColorMin(
+      bgndColor, COLOR::GetBrighterColorInt(fgndIntBuffIntensity, fgndColor), newAlpha);
 }
 
-constexpr auto GetLightenOnlyPixelBlend(const Pixel& oldColor,
-                                        const Pixel& newColor,
-                                        const uint32_t intBuffIntensity) -> Pixel
+constexpr auto GetLightenOnlyPixelBlend(const Pixel& bgndColor,
+                                        const uint32_t fgndIntBuffIntensity,
+                                        const Pixel& fgndColor,
+                                        const PixelChannelType newAlpha) -> Pixel
 {
-  return GetColorMax(oldColor, COLOR::GetBrighterColorInt(intBuffIntensity, newColor));
+  return GetColorMax(
+      bgndColor, COLOR::GetBrighterColorInt(fgndIntBuffIntensity, fgndColor), newAlpha);
 }
 
 constexpr auto GetSameLumaMixPixelBlend(const float lumaMixT,
-                                        const Pixel& oldColor,
-                                        const Pixel& newColor,
-                                        const uint32_t intBuffIntensity) -> Pixel
+                                        const Pixel& bgndColor,
+                                        const uint32_t fgndIntBuffIntensity,
+                                        const Pixel& fgndColor,
+                                        const PixelChannelType newAlpha) -> Pixel
 {
   constexpr auto SMALL_LUMA = 0.1F;
 
-  const auto newColorLuma = COLOR::GetLuma(newColor);
-  if (newColorLuma < SMALL_LUMA)
+  const auto fgndColorLuma = COLOR::GetLuma(fgndColor);
+  if (fgndColorLuma < SMALL_LUMA)
   {
-    return GetColorAdd(oldColor, newColor);
+    return GetColorAdd(bgndColor, fgndColor, newAlpha);
   }
 
-  const auto oldColorLuma = COLOR::GetLuma(oldColor);
-  if (oldColorLuma < SMALL_LUMA)
+  const auto bgndColorLuma = COLOR::GetLuma(bgndColor);
+  if (bgndColorLuma < SMALL_LUMA)
   {
-    return GetColorAdd(oldColor, newColor);
+    return GetColorAdd(bgndColor, fgndColor, newAlpha);
   }
 
-  const auto buffIntensity = static_cast<float>(intBuffIntensity) / channel_limits<float>::max();
+  const auto buffIntensity =
+      static_cast<float>(fgndIntBuffIntensity) / channel_limits<float>::max();
 
-  const auto brightness = std::min((oldColorLuma + (buffIntensity * newColorLuma)) /
-                                       STD20::lerp(oldColorLuma, newColorLuma, lumaMixT),
+  const auto brightness = std::min((bgndColorLuma + (buffIntensity * fgndColorLuma)) /
+                                       STD20::lerp(bgndColorLuma, fgndColorLuma, lumaMixT),
                                    COLOR::MAX_BRIGHTNESS);
 
-  const auto finalNewColor = COLOR::IColorMap::GetColorMix(oldColor, newColor, lumaMixT);
-  return COLOR::GetBrighterColor(brightness, finalNewColor);
+  const auto finalFgndColor = COLOR::IColorMap::GetColorMix(bgndColor, fgndColor, lumaMixT);
+  return COLOR::GetBrighterColor(brightness, finalFgndColor);
+}
+
+constexpr auto GetColorAlphaBlend(const Pixel& bgndColor,
+                                  const Pixel& fgndColor,
+                                  const PixelChannelType newAlpha) -> Pixel
+{
+  const auto fgndR = static_cast<int32_t>(fgndColor.R());
+  const auto fgndG = static_cast<int32_t>(fgndColor.G());
+  const auto fgndB = static_cast<int32_t>(fgndColor.B());
+  const auto fgndA = static_cast<int32_t>(fgndColor.A());
+  const auto bgndR = static_cast<int32_t>(bgndColor.R());
+  const auto bgndG = static_cast<int32_t>(bgndColor.G());
+  const auto bgndB = static_cast<int32_t>(bgndColor.B());
+
+  const auto newR = static_cast<PixelChannelType>(
+      bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
+  const auto newG = static_cast<PixelChannelType>(
+      bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
+  const auto newB = static_cast<PixelChannelType>(
+      bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
+
+  return Pixel{newR, newG, newB, newAlpha};
 }
 
 } // namespace GOOM::UTILS::GRAPHICS
