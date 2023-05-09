@@ -76,8 +76,8 @@ private:
 
   std::shared_ptr<const RandomColorMaps> m_weightedDominantMainColorMaps{};
   std::shared_ptr<const RandomColorMaps> m_weightedDominantLowColorMaps{};
-  COLOR::ColorMapSharedPtrWrapper m_dominantMainColorMap{nullptr};
-  COLOR::ColorMapSharedPtrWrapper m_dominantLowColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
   auto ChangeDominantColor() -> void;
 
   RandomPixelBlender m_pixelBlender;

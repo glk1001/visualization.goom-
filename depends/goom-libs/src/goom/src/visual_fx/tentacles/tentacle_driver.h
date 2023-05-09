@@ -34,8 +34,8 @@ public:
   auto SetTentaclesEndCentrePos(const Point2dInt& newEndCentrePos) noexcept -> void;
 
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
-  auto SetDominantColorMaps(const COLOR::ColorMapSharedPtrWrapper& dominantMainColorMap,
-                            const COLOR::ColorMapSharedPtrWrapper& dominantLowColorMap) -> void;
+  auto SetDominantColorMaps(const COLOR::ColorMapSharedPtr& dominantMainColorMap,
+                            const COLOR::ColorMapSharedPtr& dominantLowColorMap) -> void;
 
   auto Update() -> void;
 
@@ -45,8 +45,8 @@ private:
 
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
   COLOR::ColorMaps m_colorMaps{m_defaultAlpha};
-  COLOR::ColorMapSharedPtrWrapper m_dominantMainColorMap{nullptr};
-  COLOR::ColorMapSharedPtrWrapper m_dominantLowColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
 
   struct IterationParams
   {
@@ -61,8 +61,8 @@ private:
   struct TentacleAndAttributes
   {
     Tentacle3D tentacle3D;
-    COLOR::ColorMapSharedPtrWrapper mainColorMap{nullptr};
-    COLOR::ColorMapSharedPtrWrapper lowColorMap{nullptr};
+    COLOR::ColorMapSharedPtr mainColorMap{nullptr};
+    COLOR::ColorMapSharedPtr lowColorMap{nullptr};
     Pixel currentMainColor;
     Pixel currentLowColor;
   };
@@ -133,8 +133,8 @@ private:
 };
 
 inline auto TentacleDriver::SetDominantColorMaps(
-    const COLOR::ColorMapSharedPtrWrapper& dominantMainColorMap,
-    const COLOR::ColorMapSharedPtrWrapper& dominantLowColorMap) -> void
+    const COLOR::ColorMapSharedPtr& dominantMainColorMap,
+    const COLOR::ColorMapSharedPtr& dominantLowColorMap) -> void
 {
   m_dominantMainColorMap = dominantMainColorMap;
   m_dominantLowColorMap  = dominantLowColorMap;

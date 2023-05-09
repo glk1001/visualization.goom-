@@ -6,7 +6,7 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
 using COLOR::ColorMaps;
-using COLOR::ColorMapSharedPtrWrapper;
+using COLOR::ColorMapSharedPtr;
 using COLOR::SimpleColors;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::MakePixels;
@@ -39,10 +39,10 @@ auto LSysColors::SetNumColors(const uint32_t numColors) noexcept -> void
 {
   Expects(numColors > 0U);
 
-  m_currentMainColorMapList.resize(numColors, ColorMapSharedPtrWrapper{nullptr});
-  m_currentLowColorMapList.resize(numColors, ColorMapSharedPtrWrapper{nullptr});
-  m_currentThickerMainColorMapList.resize(numColors, ColorMapSharedPtrWrapper{nullptr});
-  m_currentThickerLowColorMapList.resize(numColors, ColorMapSharedPtrWrapper{nullptr});
+  m_currentMainColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
+  m_currentLowColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
+  m_currentThickerMainColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
+  m_currentThickerLowColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
 
   m_simpleColorsList = GetSimpleColorsList(numColors);
 
@@ -152,17 +152,17 @@ auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) co
   if (m_lineWidth <= LINE_WIDTH_CUTOFF)
   {
     const auto mainColor = m_colorAdjust.GetAdjustment(
-        mainBrightness, m_currentMainColorMapList.at(colorNumToUse).GetColor(colorT));
+        mainBrightness, m_currentMainColorMapList.at(colorNumToUse)->GetColor(colorT));
     const auto lowColor = m_colorAdjust.GetAdjustment(
-        lowBrightness, m_currentLowColorMapList.at(colorNumToUse).GetColor(colorT));
+        lowBrightness, m_currentLowColorMapList.at(colorNumToUse)->GetColor(colorT));
     return MakePixels(mainColor, lowColor);
   }
 
   const auto thickerColorT = m_currentThickerColorTs.at(colorNumToUse)();
   const auto mainColor     = m_colorAdjust.GetAdjustment(
-      mainBrightness, m_currentThickerMainColorMapList.at(colorNumToUse).GetColor(thickerColorT));
+      mainBrightness, m_currentThickerMainColorMapList.at(colorNumToUse)->GetColor(thickerColorT));
   const auto lowColor = m_colorAdjust.GetAdjustment(
-      lowBrightness, m_currentThickerLowColorMapList.at(colorNumToUse).GetColor(thickerColorT));
+      lowBrightness, m_currentThickerLowColorMapList.at(colorNumToUse)->GetColor(thickerColorT));
   return MakePixels(mainColor, lowColor);
 }
 
@@ -311,8 +311,7 @@ auto LSysColors::SetThickerLowColorMaps() noexcept -> void
   SetNonMainColorMaps(colorMapsList);
 }
 
-auto LSysColors::SetNonMainColorMaps(std::vector<ColorMapSharedPtrWrapper>& colorMapsList) noexcept
-    -> void
+auto LSysColors::SetNonMainColorMaps(std::vector<ColorMapSharedPtr>& colorMapsList) noexcept -> void
 {
   for (auto i = NUM_MAIN_COLORS; i < colorMapsList.size(); ++i)
   {

@@ -320,8 +320,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
   static constexpr auto MIN_MIX_T = 0.1F;
   static constexpr auto MAX_MIX_T = 1.0F;
   return m_randomColorMaps.GetRandomColor(
-      m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
-                                                  RandomColorMaps::GetAllColorMapsTypes()),
+      *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
+                                                   RandomColorMaps::GetAllColorMapsTypes()),
       MIN_MIX_T,
       MAX_MIX_T);
 }

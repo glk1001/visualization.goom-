@@ -56,10 +56,10 @@ private:
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{
       m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
-  COLOR::ColorMapSharedPtrWrapper m_prevMixerMap1{nullptr};
+  COLOR::ColorMapSharedPtr m_prevMixerMap1{nullptr};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id{
       m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
-  COLOR::ColorMapSharedPtrWrapper m_prevMixerMap2{nullptr};
+  COLOR::ColorMapSharedPtr m_prevMixerMap2{nullptr};
   auto UpdateMixerMaps() -> void;
   mutable uint32_t m_countSinceColorMapChange              = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;

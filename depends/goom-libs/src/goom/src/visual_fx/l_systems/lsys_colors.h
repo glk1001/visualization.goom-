@@ -67,10 +67,10 @@ private:
   static constexpr float MAX_SATURATION = 1.0F;
   static constexpr float MIN_LIGHTNESS  = 0.5F;
   static constexpr float MAX_LIGHTNESS  = 1.0F;
-  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentMainColorMapList{};
-  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentLowColorMapList{};
-  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentThickerMainColorMapList{};
-  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentThickerLowColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentMainColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentLowColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentThickerMainColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentThickerLowColorMapList{};
   float m_probabilityOfSimpleColors                   = 1.0F;
   std::vector<ColorShadesAndTints> m_simpleColorsList = GetSimpleColorsList(NUM_MAIN_COLORS);
   [[nodiscard]] auto GetSimpleColorsList(uint32_t numColors) const noexcept
@@ -79,8 +79,8 @@ private:
   auto SetLowColorMaps() noexcept -> void;
   auto SetThickerMainColorMaps() noexcept -> void;
   auto SetThickerLowColorMaps() noexcept -> void;
-  static auto SetNonMainColorMaps(
-      std::vector<COLOR::ColorMapSharedPtrWrapper>& colorMapsList) noexcept -> void;
+  static auto SetNonMainColorMaps(std::vector<COLOR::ColorMapSharedPtr>& colorMapsList) noexcept
+      -> void;
   bool m_useSimpleColors = true;
   std::function<Pixel(uint32_t colorNum, float t)> m_simpleColorGet{};
   auto SetSimpleColors() noexcept -> void;

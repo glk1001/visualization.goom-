@@ -152,7 +152,7 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
                            static_cast<float>(m_colorMapChangeCompleted);
   --m_countSinceColorMapChange;
   const auto prevNextColor =
-      IColorMap::GetColorMix(m_prevMixerMap1.GetColor(tX), m_prevMixerMap2.GetColor(tY), t);
+      IColorMap::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
   return IColorMap::GetColorMix(nextColor, prevNextColor, tTransition);
 }
 

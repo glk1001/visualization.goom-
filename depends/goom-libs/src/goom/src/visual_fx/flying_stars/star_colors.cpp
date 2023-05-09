@@ -18,9 +18,9 @@ StarColors::StarColors(const std::shared_ptr<const ColorProperties>& colorProper
                        const float withinClusterT) noexcept
   : m_colorProperties{colorProperties},
     m_withinClusterMainColor{
-        m_colorProperties->colorMapsSet.dominantMainColormap.GetColor(withinClusterT)},
+        m_colorProperties->colorMapsSet.dominantMainColormap->GetColor(withinClusterT)},
     m_withinClusterLowColor{
-        m_colorProperties->colorMapsSet.dominantLowColormap.GetColor(withinClusterT)}
+        m_colorProperties->colorMapsSet.dominantLowColormap->GetColor(withinClusterT)}
 {
 }
 
@@ -90,8 +90,8 @@ inline auto StarColors::GetFinalTMix(const float lengthT) const noexcept -> floa
 
 inline auto StarColors::GetColors(const float t) const noexcept -> MultiplePixels
 {
-  return {m_colorProperties->colorMapsSet.currentMainColorMap.GetColor(t),
-          m_colorProperties->colorMapsSet.currentLowColorMap.GetColor(t)};
+  return {m_colorProperties->colorMapsSet.currentMainColorMap->GetColor(t),
+          m_colorProperties->colorMapsSet.currentLowColorMap->GetColor(t)};
 }
 
 inline auto StarColors::GetReversedMixColors(const float t) const noexcept -> MultiplePixels
@@ -109,8 +109,8 @@ inline auto StarColors::GetSineMixColors() const noexcept -> MultiplePixels
   const auto tSin = T_MIX_FACTOR * (1.0F + std::sin(FREQ * s_t));
 
   auto starColors =
-      MultiplePixels{m_colorProperties->colorMapsSet.currentMainColorMap.GetColor(tSin),
-                     m_colorProperties->colorMapsSet.currentLowColorMap.GetColor(tSin)};
+      MultiplePixels{m_colorProperties->colorMapsSet.currentMainColorMap->GetColor(tSin),
+                     m_colorProperties->colorMapsSet.currentLowColorMap->GetColor(tSin)};
 
   s_t += T_STEP;
 

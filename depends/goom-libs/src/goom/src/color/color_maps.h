@@ -46,7 +46,8 @@ private:
 class ColorMapPtrWrapper : public IColorMap
 {
 public:
-  ColorMapPtrWrapper(const IColorMap* colorMap, PixelChannelType defaultAlpha) noexcept;
+  explicit ColorMapPtrWrapper(const IColorMap* colorMap,
+                              PixelChannelType defaultAlpha = MAX_ALPHA) noexcept;
   ColorMapPtrWrapper(const ColorMapPtrWrapper&) noexcept           = default;
   ColorMapPtrWrapper(ColorMapPtrWrapper&&) noexcept                = default;
   ~ColorMapPtrWrapper() noexcept override                          = default;
@@ -66,37 +67,6 @@ protected:
 private:
   const IColorMap* m_colorMap;
   PixelChannelType m_defaultAlpha;
-};
-
-class ColorMapSharedPtrWrapper : public IColorMap
-{
-public:
-  ColorMapSharedPtrWrapper(const std::shared_ptr<const IColorMap>& colorMap,
-                           PixelChannelType defaultAlpha) noexcept;
-  ColorMapSharedPtrWrapper(const ColorMapSharedPtrWrapper&) noexcept           = default;
-  ColorMapSharedPtrWrapper(ColorMapSharedPtrWrapper&&) noexcept                = default;
-  ~ColorMapSharedPtrWrapper() noexcept override                                = default;
-  auto operator=(const ColorMapSharedPtrWrapper&) -> ColorMapSharedPtrWrapper& = default;
-  auto operator=(ColorMapSharedPtrWrapper&&) -> ColorMapSharedPtrWrapper&      = default;
-
-  [[nodiscard]] auto GetNumStops() const -> size_t override;
-  [[nodiscard]] auto GetMapName() const -> COLOR_DATA::ColorMapName override;
-  [[nodiscard]] auto GetColor(float t) const -> Pixel override;
-
-  [[nodiscard]] auto IsNotNull() const -> bool;
-
-protected:
-  [[nodiscard]] auto GetColorMap() const -> const IColorMap& { return *m_colorMap; }
-  [[nodiscard]] auto GetColorMapPtr() const -> const std::shared_ptr<const IColorMap>&
-  {
-    return m_colorMap;
-  }
-  [[nodiscard]] auto GetDefaultAlpha() const -> PixelChannelType { return m_defaultAlpha; }
-
-private:
-  std::shared_ptr<const IColorMap> m_colorMap;
-  PixelChannelType m_defaultAlpha;
-  friend class RandomColorMaps;
 };
 
 enum class ColorMapGroup : int
@@ -146,6 +116,8 @@ constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGro
   return arr.at(static_cast<size_t>(idx));
 }
 
+using ColorMapSharedPtr = std::shared_ptr<const IColorMap>;
+
 class ColorMaps
 {
 public:
@@ -160,15 +132,10 @@ public:
   [[nodiscard]] auto GetColorMap(COLOR_DATA::ColorMapName mapName) const noexcept
       -> ColorMapPtrWrapper;
 
-  [[nodiscard]] auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName mapName) const noexcept
-      -> ColorMapSharedPtrWrapper;
-
   [[nodiscard]] auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName mapName,
-                                           float tRotatePoint) const noexcept
-      -> ColorMapSharedPtrWrapper;
-  [[nodiscard]] auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                           float tRotatePoint) const noexcept
-      -> ColorMapSharedPtrWrapper;
+                                           float tRotatePoint) const noexcept -> ColorMapSharedPtr;
+  [[nodiscard]] auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMapPtr,
+                                           float tRotatePoint) const noexcept -> ColorMapSharedPtr;
 
   struct TintProperties
   {
@@ -177,10 +144,10 @@ public:
   };
   [[nodiscard]] auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
                                           const TintProperties& tintProperties) const noexcept
-      -> ColorMapSharedPtrWrapper;
-  [[nodiscard]] auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
+      -> ColorMapSharedPtr;
+  [[nodiscard]] auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMapPtr,
                                           const TintProperties& tintProperties) const noexcept
-      -> ColorMapSharedPtrWrapper;
+      -> ColorMapSharedPtr;
 
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;
 
@@ -215,32 +182,6 @@ inline auto ColorMapPtrWrapper::GetColor(const float t) const -> Pixel
 }
 
 inline auto ColorMapPtrWrapper::IsNotNull() const -> bool
-{
-  return m_colorMap != nullptr;
-}
-
-inline ColorMapSharedPtrWrapper::ColorMapSharedPtrWrapper(
-    const std::shared_ptr<const IColorMap>& colorMap, const PixelChannelType defaultAlpha) noexcept
-  : m_colorMap{colorMap}, m_defaultAlpha{defaultAlpha}
-{
-}
-
-inline auto ColorMapSharedPtrWrapper::GetNumStops() const -> size_t
-{
-  return m_colorMap->GetNumStops();
-}
-
-inline auto ColorMapSharedPtrWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
-{
-  return m_colorMap->GetMapName();
-}
-
-inline auto ColorMapSharedPtrWrapper::GetColor(const float t) const -> Pixel
-{
-  return m_colorMap->GetColor(t);
-}
-
-inline auto ColorMapSharedPtrWrapper::IsNotNull() const -> bool
 {
   return m_colorMap != nullptr;
 }

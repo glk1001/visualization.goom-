@@ -16,10 +16,10 @@ class StarColors
 public:
   struct ColorMapsSet
   {
-    COLOR::ColorMapSharedPtrWrapper currentMainColorMap{nullptr};
-    COLOR::ColorMapSharedPtrWrapper currentLowColorMap{nullptr};
-    COLOR::ColorMapSharedPtrWrapper dominantMainColormap{nullptr};
-    COLOR::ColorMapSharedPtrWrapper dominantLowColormap{nullptr};
+    COLOR::ColorMapSharedPtr currentMainColorMap{nullptr};
+    COLOR::ColorMapSharedPtr currentLowColorMap{nullptr};
+    COLOR::ColorMapSharedPtr dominantMainColormap{nullptr};
+    COLOR::ColorMapSharedPtr dominantLowColormap{nullptr};
   };
   enum class ColorMode
   {
