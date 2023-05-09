@@ -8,7 +8,7 @@
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-using COLOR::IColorMap;
+using COLOR::ColorMaps;
 using COLOR::RandomColorMapsManager;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
@@ -121,10 +121,10 @@ inline auto ShapePath::GetColorsWithInner(const float brightness,
   return {
       m_colorAdjust.GetAdjustment(
           MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
-          IColorMap::GetColorMix(GetMainColor(shapeColors), innerColor, innerColorMix)),
+          ColorMaps::GetColorMix(GetMainColor(shapeColors), innerColor, innerColorMix)),
       m_colorAdjust.GetAdjustment(
           LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
-          IColorMap::GetColorMix(GetLowColor(shapeColors), innerColor, innerColorMix)),
+          ColorMaps::GetColorMix(GetLowColor(shapeColors), innerColor, innerColorMix)),
   };
 }
 

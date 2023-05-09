@@ -53,27 +53,6 @@ private:
   PixelChannelType m_defaultAlpha;
 };
 
-inline ColorMapSharedPtrWrapper::ColorMapSharedPtrWrapper(
-    const ColorMapSharedPtr& colorMapPtr, const PixelChannelType defaultAlpha) noexcept
-  : m_colorMapPtr{colorMapPtr}, m_defaultAlpha{defaultAlpha}
-{
-}
-
-inline auto ColorMapSharedPtrWrapper::GetNumStops() const -> size_t
-{
-  return m_colorMapPtr->GetNumStops();
-}
-
-inline auto ColorMapSharedPtrWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
-{
-  return m_colorMapPtr->GetMapName();
-}
-
-inline auto ColorMapSharedPtrWrapper::GetColor(const float t) const -> Pixel
-{
-  return m_colorMapPtr->GetColor(t);
-}
-
 class RotatedColorMap : public ColorMapSharedPtrWrapper
 {
 public:
@@ -88,25 +67,6 @@ private:
   static constexpr float MAX_ROTATE_POINT = 1.0F;
   float m_tRotatePoint;
 };
-
-RotatedColorMap::RotatedColorMap(const ColorMapSharedPtr& colorMapPtr,
-                                 const PixelChannelType defaultAlpha,
-                                 const float tRotatePoint)
-  : ColorMapSharedPtrWrapper{colorMapPtr, defaultAlpha}, m_tRotatePoint{tRotatePoint}
-{
-  Expects(tRotatePoint >= MIN_ROTATE_POINT);
-  Expects(tRotatePoint <= MAX_ROTATE_POINT);
-}
-
-inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
-{
-  auto tNew = m_tRotatePoint + t;
-  if (tNew > 1.0F)
-  {
-    tNew = tNew - 1.0F;
-  }
-  return GetColorMap().GetColor(tNew);
-}
 
 class TintedColorMap : public ColorMapSharedPtrWrapper
 {
@@ -123,35 +83,6 @@ private:
   float m_saturation;
   float m_lightness;
 };
-
-TintedColorMap::TintedColorMap(const ColorMapSharedPtr& colorMapPtr,
-                               const PixelChannelType defaultAlpha,
-                               const ColorMaps::TintProperties& tintProperties)
-  : ColorMapSharedPtrWrapper{colorMapPtr, defaultAlpha},
-    m_saturation{tintProperties.saturation},
-    m_lightness{tintProperties.lightness}
-{
-  Expects(tintProperties.lightness >= MIN_LIGHTNESS);
-  Expects(tintProperties.lightness <= MAX_LIGHTNESS);
-}
-
-auto TintedColorMap::GetColor(const float t) const -> Pixel
-{
-  const auto color = GetColorMap().GetColor(t);
-  const auto rgb8  = vivid::col8_t{color.R(), color.G(), color.B()};
-
-  static constexpr auto SATURATION_INDEX = 1;
-  static constexpr auto LIGHTNESS_INDEX  = 2;
-
-  auto hsv              = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
-  hsv[SATURATION_INDEX] = m_saturation;
-  hsv[LIGHTNESS_INDEX]  = m_lightness;
-
-  const auto newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
-  return Pixel{
-      {newRgb8.r, newRgb8.g, newRgb8.b, GetDefaultAlpha()}  // NOLINT: union hard to fix here
-  };
-}
 
 class PrebuiltColorMap : public IColorMap
 {
@@ -192,7 +123,7 @@ public:
 
   [[nodiscard]] auto GetColorMap(ColorMapName mapName) const noexcept -> ColorMapPtrWrapper;
 
-  [[nodiscard]] auto GetColorMapPtr(ColorMapName mapName) const noexcept -> ColorMapSharedPtr;
+  [[nodiscard]] static auto GetColorMapPtr(ColorMapName mapName) noexcept -> ColorMapSharedPtr;
 
   [[nodiscard]] auto GetRotatedColorMapPtr(ColorMapName mapName, float tRotatePoint) const noexcept
       -> ColorMapSharedPtr;
@@ -221,7 +152,7 @@ private:
   [[nodiscard]] static auto MakeColorGroupNames() -> ColorGroupNamesArray;
 };
 
-auto IColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t) -> Pixel
+auto ColorMaps::GetColorMix(const Pixel& col1, const Pixel& col2, const float t) -> Pixel
 {
   return PrebuiltColorMap::GetColorMix(col1, col2, t);
 }
@@ -313,7 +244,7 @@ static const auto MAKE_SHARED_ADDR = [](const IColorMap* const colorMap)
                            []([[maybe_unused]] const IColorMap* const cm) { /* never delete */ }};
 };
 
-inline auto ColorMaps::ColorMapsImpl::GetColorMapPtr(const ColorMapName mapName) const noexcept
+inline auto ColorMaps::ColorMapsImpl::GetColorMapPtr(const ColorMapName mapName) noexcept
     -> ColorMapSharedPtr
 {
   return MAKE_SHARED_ADDR(&GetPreBuiltColorMaps().at(static_cast<size_t>(mapName)));
@@ -460,6 +391,75 @@ auto ColorMaps::ColorMapsImpl::MakeColorGroupNames() -> ColorGroupNamesArray
       groups.cbegin(), groups.cend(), [](const auto& group) { return group != nullptr; }));
 
   return groups;
+}
+
+inline ColorMapSharedPtrWrapper::ColorMapSharedPtrWrapper(
+    const ColorMapSharedPtr& colorMapPtr, const PixelChannelType defaultAlpha) noexcept
+  : m_colorMapPtr{colorMapPtr}, m_defaultAlpha{defaultAlpha}
+{
+}
+
+inline auto ColorMapSharedPtrWrapper::GetNumStops() const -> size_t
+{
+  return m_colorMapPtr->GetNumStops();
+}
+
+inline auto ColorMapSharedPtrWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
+{
+  return m_colorMapPtr->GetMapName();
+}
+
+inline auto ColorMapSharedPtrWrapper::GetColor(const float t) const -> Pixel
+{
+  return m_colorMapPtr->GetColor(t);
+}
+
+RotatedColorMap::RotatedColorMap(const ColorMapSharedPtr& colorMapPtr,
+                                 const PixelChannelType defaultAlpha,
+                                 const float tRotatePoint)
+  : ColorMapSharedPtrWrapper{colorMapPtr, defaultAlpha}, m_tRotatePoint{tRotatePoint}
+{
+  Expects(tRotatePoint >= MIN_ROTATE_POINT);
+  Expects(tRotatePoint <= MAX_ROTATE_POINT);
+}
+
+inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
+{
+  auto tNew = m_tRotatePoint + t;
+  if (tNew > 1.0F)
+  {
+    tNew = tNew - 1.0F;
+  }
+  return GetColorMap().GetColor(tNew);
+}
+
+TintedColorMap::TintedColorMap(const ColorMapSharedPtr& colorMapPtr,
+                               const PixelChannelType defaultAlpha,
+                               const ColorMaps::TintProperties& tintProperties)
+  : ColorMapSharedPtrWrapper{colorMapPtr, defaultAlpha},
+    m_saturation{tintProperties.saturation},
+    m_lightness{tintProperties.lightness}
+{
+  Expects(tintProperties.lightness >= MIN_LIGHTNESS);
+  Expects(tintProperties.lightness <= MAX_LIGHTNESS);
+}
+
+auto TintedColorMap::GetColor(const float t) const -> Pixel
+{
+  const auto color = GetColorMap().GetColor(t);
+  const auto rgb8  = vivid::col8_t{color.R(), color.G(), color.B()};
+
+  static constexpr auto SATURATION_INDEX = 1;
+  static constexpr auto LIGHTNESS_INDEX  = 2;
+
+  auto hsv              = vivid::hsv_t{vivid::rgb::fromRgb8(rgb8)};
+  hsv[SATURATION_INDEX] = m_saturation;
+  hsv[LIGHTNESS_INDEX]  = m_lightness;
+
+  const auto newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
+  return Pixel{
+      {newRgb8.r, newRgb8.g, newRgb8.b, GetDefaultAlpha()}  // NOLINT: union hard to fix here
+  };
 }
 
 inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName,

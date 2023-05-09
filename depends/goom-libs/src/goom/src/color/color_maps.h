@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color_data/color_map_enums.h"
+#include "color_maps_base.h"
 #include "goom_graphic.h"
 #include "spimpl.h"
 #include "utils/enum_utils.h"
@@ -21,27 +22,6 @@ struct magic_enum::customize::enum_range<GOOM::COLOR::COLOR_DATA::ColorMapName>
 
 namespace GOOM::COLOR
 {
-
-class IColorMap
-{
-public:
-  IColorMap() noexcept                           = default;
-  IColorMap(const IColorMap&) noexcept           = default;
-  IColorMap(IColorMap&&) noexcept                = default;
-  virtual ~IColorMap() noexcept                  = default;
-  auto operator=(const IColorMap&) -> IColorMap& = default;
-  auto operator=(IColorMap&&) -> IColorMap&      = default;
-
-  [[nodiscard]] virtual auto GetNumStops() const -> size_t                  = 0;
-  [[nodiscard]] virtual auto GetMapName() const -> COLOR_DATA::ColorMapName = 0;
-
-  [[nodiscard]] virtual auto GetColor(float t) const -> Pixel = 0;
-
-  static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
-
-private:
-  friend class ColorMaps;
-};
 
 class ColorMapPtrWrapper : public IColorMap
 {
@@ -69,9 +49,9 @@ private:
   PixelChannelType m_defaultAlpha;
 };
 
-enum class ColorMapGroup : int
+enum class ColorMapGroup
 {
-  ALL = 0, // all possible maps
+  ALL, // all possible maps
   PERCEPTUALLY_UNIFORM_SEQUENTIAL,
   SEQUENTIAL,
   SEQUENTIAL2,
@@ -103,19 +83,6 @@ enum class ColorMapGroup : int
   _num // unused, and marks the enum end
 };
 
-//constexpr size_t to_int(const ColorMapGroup i) { return static_cast<size_t>(i); }
-template<class T>
-constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
-{
-  return arr.at(static_cast<size_t>(idx));
-}
-
-template<class T>
-constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
-{
-  return arr.at(static_cast<size_t>(idx));
-}
-
 using ColorMapSharedPtr = std::shared_ptr<const IColorMap>;
 
 class ColorMaps
@@ -124,6 +91,8 @@ public:
   explicit ColorMaps(PixelChannelType defaultAlpha) noexcept;
 
   auto SetDefaultAlpha(PixelChannelType defaultAlpha) noexcept -> void;
+
+  static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
 
   [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
@@ -159,6 +128,19 @@ private:
   [[nodiscard]] auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName mapName) const noexcept
       -> ColorMapSharedPtr;
 };
+
+//constexpr size_t to_int(const ColorMapGroup i) { return static_cast<size_t>(i); }
+template<class T>
+constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
+{
+  return arr.at(static_cast<size_t>(idx));
+}
+
+template<class T>
+constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
+{
+  return arr.at(static_cast<size_t>(idx));
+}
 
 inline ColorMapPtrWrapper::ColorMapPtrWrapper(const IColorMap* const colorMap,
                                               const PixelChannelType defaultAlpha) noexcept

@@ -515,7 +515,7 @@ auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     const auto newColor =
         m_useMiddleColor and IsImagePointCloseToMiddle(bitmapPoint, radius) ? m_middleColor : color;
     static constexpr auto COLOR_MIX_T = 0.6F;
-    const auto mixedColor             = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
+    const auto mixedColor             = COLOR::ColorMaps::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
   };
   const auto getColor2 = [&getColor1](const Point2dInt& bitmapPoint, const Pixel& bgnd)

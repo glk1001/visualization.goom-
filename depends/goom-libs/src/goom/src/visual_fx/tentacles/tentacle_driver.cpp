@@ -23,7 +23,6 @@ namespace GOOM::VISUAL_FX::TENTACLES
 
 using COLOR::ColorMaps;
 using COLOR::ColorMapSharedPtr;
-using COLOR::IColorMap;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
@@ -377,10 +376,10 @@ auto TentacleDriver::GetMixedColors(const float dominantT,
                                     const float brightness) const -> MultiplePixels
 {
   auto mixedColors =
-      MultiplePixels{IColorMap::GetColorMix(m_dominantMainColorMap->GetColor(dominantT),
+      MultiplePixels{ColorMaps::GetColorMix(m_dominantMainColorMap->GetColor(dominantT),
                                             tentacleAndAttributes.mainColorMap->GetColor(nodeT),
                                             m_mainColorSegmentMixT),
-                     IColorMap::GetColorMix(m_dominantLowColorMap->GetColor(dominantT),
+                     ColorMaps::GetColorMix(m_dominantLowColorMap->GetColor(dominantT),
                                             tentacleAndAttributes.lowColorMap->GetColor(nodeT),
                                             m_lowColorSegmentMixT)};
 

@@ -24,9 +24,9 @@
 namespace GOOM::VISUAL_FX::LINES
 {
 
+using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
-using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::SimpleColors;
 using DRAW::IGoomDraw;
@@ -188,7 +188,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
 
   static constexpr auto COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceLineParams.color =
-      IColorMap::GetColorMix(m_srceLineParams.color, m_destLineParams.color, COLOR_MIX_AMOUNT);
+      ColorMaps::GetColorMix(m_srceLineParams.color, m_destLineParams.color, COLOR_MIX_AMOUNT);
 
   static constexpr auto MIN_POW_INC = 0.03F;
   static constexpr auto MAX_POW_INC = 0.10F;
@@ -367,7 +367,7 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
 
   const auto brightness = m_currentBrightness * tData;
   const auto modColor =
-      m_colorAdjust.GetAdjustment(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
+      m_colorAdjust.GetAdjustment(brightness, ColorMaps::GetColorMix(mainColor, randColor, tData));
 
   return {nextPointData, modColor};
 }

@@ -1,6 +1,6 @@
 #include "bezier_flower.h"
 
-#include "color/color_maps.h"
+#include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
 
 namespace GOOM::VISUAL_FX::SHAPES

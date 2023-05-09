@@ -133,7 +133,7 @@ constexpr auto GetSameLumaMixPixelBlend(const float lumaMixT,
                                        STD20::lerp(bgndColorLuma, fgndColorLuma, lumaMixT),
                                    COLOR::MAX_BRIGHTNESS);
 
-  const auto finalFgndColor = COLOR::IColorMap::GetColorMix(bgndColor, fgndColor, lumaMixT);
+  const auto finalFgndColor = COLOR::ColorMaps::GetColorMix(bgndColor, fgndColor, lumaMixT);
   return COLOR::GetBrighterColor(brightness, finalFgndColor);
 }
 

@@ -28,8 +28,8 @@ namespace GOOM::VISUAL_FX::TUBES
 
 using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
+using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
-using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
@@ -1022,13 +1022,13 @@ inline auto ShapeColorizer::GetShapesAndCirclesColors(const LowColorTypes& lowCo
   const auto circleColors = GetCircleColors(circleNum, brightness);
 
   return {
-      IColorMap::GetColorMix(shapeColors.mainColor, circleColors.mainColor, m_mixT()),
+      ColorMaps::GetColorMix(shapeColors.mainColor, circleColors.mainColor, m_mixT()),
       GetLowMixedColor(lowColorType, shapeColors, circleColors, m_mixT()),
-      IColorMap::GetColorMix(shapeColors.innerMainColor, circleColors.innerMainColor, m_mixT()),
+      ColorMaps::GetColorMix(shapeColors.innerMainColor, circleColors.innerMainColor, m_mixT()),
       GetInnerLowMixedColor(lowColorType, shapeColors, circleColors, m_mixT()),
-      IColorMap::GetColorMix(
+      ColorMaps::GetColorMix(
           shapeColors.outerCircleMainColor, circleColors.outerCircleMainColor, m_mixT()),
-      IColorMap::GetColorMix(
+      ColorMaps::GetColorMix(
           shapeColors.outerCircleLowColor, circleColors.outerCircleLowColor, m_mixT()),
   };
 }
@@ -1068,15 +1068,15 @@ inline auto ShapeColorizer::GetLowMixedColor(const LowColorTypes colorType,
 {
   if (colorType == LowColorTypes::LIGHTENED_LOW_COLOR)
   {
-    const auto mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
+    const auto mixedColor = ColorMaps::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
     return GetLightenedColor(mixedColor, LIGHTER_COLOR_POWER);
   }
   if (colorType == LowColorTypes::MAIN_COLOR)
   {
-    const auto mixedColor = IColorMap::GetColorMix(colors1.mainColor, colors2.mainColor, mixT);
+    const auto mixedColor = ColorMaps::GetColorMix(colors1.mainColor, colors2.mainColor, mixT);
     return mixedColor;
   }
-  const auto mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
+  const auto mixedColor = ColorMaps::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
   return mixedColor;
 }
 
@@ -1088,17 +1088,17 @@ inline auto ShapeColorizer::GetInnerLowMixedColor(const LowColorTypes colorType,
   if (colorType == LowColorTypes::LIGHTENED_LOW_COLOR)
   {
     const auto mixedColor =
-        IColorMap::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
+        ColorMaps::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
     return GetLightenedColor(mixedColor, LIGHTER_COLOR_POWER);
   }
   if (colorType == LowColorTypes::MAIN_COLOR)
   {
     const auto mixedColor =
-        IColorMap::GetColorMix(colors1.innerMainColor, colors2.innerMainColor, mixT);
+        ColorMaps::GetColorMix(colors1.innerMainColor, colors2.innerMainColor, mixT);
     return mixedColor;
   }
   const auto mixedColor =
-      IColorMap::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
+      ColorMaps::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
   return mixedColor;
 }
 
@@ -1155,7 +1155,7 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
 inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
     -> Pixel
 {
-  return IColorMap::GetColorMix(oldColor, color, m_oldT());
+  return ColorMaps::GetColorMix(oldColor, color, m_oldT());
 }
 
 BrightnessAttenuation::BrightnessAttenuation(const Properties& properties) noexcept

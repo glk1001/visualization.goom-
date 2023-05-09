@@ -2,6 +2,7 @@
 
 #include "color_maps_grids.h"
 
+#include "color_maps.h"
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "utils/t_values.h"
@@ -38,7 +39,7 @@ auto ColorMapsGrid::GetCurrentHorizontalLineColors() const -> std::vector<Pixel>
     const auto horizontalColor = horizontalColorMap.GetColor(horizontalT());
     const auto verticalColor   = m_verticalColorMaps.at(i).GetColor((*m_verticalT)());
     const auto mixT            = m_colorMixingT(horizontalT(), (*m_verticalT)());
-    nextColors.at(i)           = IColorMap::GetColorMix(horizontalColor, verticalColor, mixT);
+    nextColors.at(i)           = ColorMaps::GetColorMix(horizontalColor, verticalColor, mixT);
 
     horizontalT.Increment();
   }

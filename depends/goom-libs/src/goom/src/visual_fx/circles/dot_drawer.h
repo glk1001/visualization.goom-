@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"

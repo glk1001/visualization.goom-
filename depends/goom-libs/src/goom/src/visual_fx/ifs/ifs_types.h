@@ -9,11 +9,6 @@
 namespace GOOM
 {
 
-namespace COLOR
-{
-class IColorMap;
-}
-
 namespace VISUAL_FX::IFS
 {
 

@@ -31,6 +31,7 @@ add_library(goom
             src/color/color_data/extra_color_groups.cpp
             src/color/color_adjustment.cpp
             src/color/color_maps.cpp
+            src/color/color_maps_base.h
             src/color/color_maps_grids.cpp
             src/color/color_utils.cpp
             src/color/random_color_maps.cpp

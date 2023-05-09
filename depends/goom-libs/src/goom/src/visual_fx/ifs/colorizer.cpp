@@ -8,7 +8,7 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::IColorMap;
+using COLOR::ColorMaps;
 using COLOR::RandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
@@ -140,7 +140,7 @@ auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
 auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
 {
   const auto nextColor =
-      IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
+      ColorMaps::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
                              m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY),
                              t);
   if (0 == m_countSinceColorMapChange)
@@ -152,8 +152,8 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
                            static_cast<float>(m_colorMapChangeCompleted);
   --m_countSinceColorMapChange;
   const auto prevNextColor =
-      IColorMap::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
-  return IColorMap::GetColorMix(nextColor, prevNextColor, tTransition);
+      ColorMaps::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
+  return ColorMaps::GetColorMix(nextColor, prevNextColor, tTransition);
 }
 
 inline auto Colorizer::GetMapColorsTBaseMix() const -> float
@@ -190,10 +190,10 @@ inline auto Colorizer::GetFinalMixedColor(const Pixel& baseColor,
 {
   if (m_colorMode == IfsDancersFx::ColorMode::REVERSE_MIX_COLORS)
   {
-    return IColorMap::GetColorMix(mixColor, baseColor, tBaseMix);
+    return ColorMaps::GetColorMix(mixColor, baseColor, tBaseMix);
   }
 
-  return IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
+  return ColorMaps::GetColorMix(baseColor, mixColor, tBaseMix);
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

@@ -1,5 +1,7 @@
 #include "dot_drawer.h"
 
+#include "color/color_maps.h"
+#include "color/color_maps_base.h"
 #include "color/color_utils.h"
 #include "goom_config.h"
 #include "utils/math/misc.h"
@@ -8,6 +10,7 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
+using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -114,9 +117,9 @@ inline auto DotDrawer::GetCircleColorsWithInner(const float brightness,
 {
   return {
       GetBrighterColor(brightness,
-                       IColorMap::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
+                       ColorMaps::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
       GetBrighterColor(brightness,
-                       IColorMap::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
+                       ColorMaps::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
   };
 }
 
@@ -150,7 +153,7 @@ inline auto DotDrawer::GetDotMixedColor(const Point2dInt& bitmapPoint,
     return BLACK_PIXEL;
   }
 
-  const auto mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
+  const auto mixedColor = ColorMaps::GetColorMix(bgnd, color, mixT);
 
   if (not IsSpecialPoint(bitmapPoint, diameter))
   {

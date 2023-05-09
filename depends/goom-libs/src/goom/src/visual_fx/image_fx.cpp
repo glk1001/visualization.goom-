@@ -35,8 +35,8 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
+using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
-using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
 using DRAW::MultiplePixels;
@@ -528,7 +528,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
                                                  const float brightness) const -> MultiplePixels
 {
   const auto mixedColor =
-      IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
+      ColorMaps::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
   const auto color0 = GetBrighterColor(brightness, mixedColor);
   const auto color1 = GetBrighterColor(0.5F * brightness, pixelColor);
 

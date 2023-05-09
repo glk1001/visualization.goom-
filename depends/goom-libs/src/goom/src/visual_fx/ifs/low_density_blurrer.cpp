@@ -16,8 +16,8 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
+using COLOR::ColorMaps;
 using COLOR::GetColorAverage;
-using COLOR::IColorMap;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::GRAPHICS::ImageBitmap;
@@ -182,7 +182,7 @@ auto LowDensityBlurrer::GetPointColor(const IfsPoint& point,
       pointColor = m_singleColor;
       break;
     case BlurrerColorMode::SINGLE_WITH_NEIGHBOURS:
-      pointColor = IColorMap::GetColorMix(
+      pointColor = ColorMaps::GetColorMix(
           m_singleColor, GetColorAverage(neighbours.size(), neighbours), m_neighbourMixFactor);
       break;
     case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
@@ -257,7 +257,7 @@ inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
   const auto neighbourhoodAverageColor = GetColorAverage(neighbours.size(), neighbours);
 
   const auto baseAndNeighbourhoodMixedColor =
-      IColorMap::GetColorMix(baseColor, neighbourhoodAverageColor, m_neighbourMixFactor);
+      ColorMaps::GetColorMix(baseColor, neighbourhoodAverageColor, m_neighbourMixFactor);
 
   return m_colorizer->GetMixedColor(
       baseAndNeighbourhoodMixedColor, point.GetCount(), {brightness, logAlpha, fx, fy});
