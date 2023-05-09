@@ -275,9 +275,9 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     m_weightedDominantMainColorMaps = weightedColorMaps.mainColorMaps;
     m_weightedDominantLowColorMaps  = weightedColorMaps.lowColorMaps;
 
-    m_dominantMainColorMap = m_weightedDominantMainColorMaps->GetRandomColorMapPtr(
+    m_dominantMainColorMap = m_weightedDominantMainColorMaps->GetRandomColorMapSharedPtr(
         RandomColorMaps::GetAllColorMapsTypes());
-    m_dominantLowColorMap = m_weightedDominantLowColorMaps->GetRandomColorMapPtr(
+    m_dominantLowColorMap = m_weightedDominantLowColorMaps->GetRandomColorMapSharedPtr(
         RandomColorMaps::GetAllColorMapsTypes());
   }
   else

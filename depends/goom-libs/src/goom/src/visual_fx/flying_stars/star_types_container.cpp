@@ -295,20 +295,22 @@ auto StarType::GetColorMapsSet() const noexcept -> StarColors::ColorMapsSet
       m_goomRand->ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
     return {
-        GetWeightedMainColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedLowColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedMainColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedLowColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
     };
   }
 
   return {
-      GetWeightedMainColorMaps().GetRandomColorMapPtr(GetMainColorMapName(),
-                                                      DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedLowColorMaps().GetRandomColorMapPtr(GetLowColorMapName(), DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedMainColorMaps().GetRandomColorMapPtr(GetMainColorMapName(),
-                                                      DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedLowColorMaps().GetRandomColorMapPtr(GetLowColorMapName(), DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(GetMainColorMapName(),
+                                                            DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(GetLowColorMapName(),
+                                                           DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(GetMainColorMapName(),
+                                                            DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(GetLowColorMapName(),
+                                                           DEFAULT_COLOR_MAP_TYPES),
   };
 }
 

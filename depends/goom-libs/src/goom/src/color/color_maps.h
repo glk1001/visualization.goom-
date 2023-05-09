@@ -134,7 +134,7 @@ public:
 
   [[nodiscard]] auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName mapName,
                                            float tRotatePoint) const noexcept -> ColorMapSharedPtr;
-  [[nodiscard]] auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMapPtr,
+  [[nodiscard]] auto GetRotatedColorMapPtr(const ColorMapSharedPtr& colorMapPtr,
                                            float tRotatePoint) const noexcept -> ColorMapSharedPtr;
 
   struct TintProperties
@@ -145,7 +145,7 @@ public:
   [[nodiscard]] auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
                                           const TintProperties& tintProperties) const noexcept
       -> ColorMapSharedPtr;
-  [[nodiscard]] auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMapPtr,
+  [[nodiscard]] auto GetTintedColorMapPtr(const ColorMapSharedPtr& colorMapPtr,
                                           const TintProperties& tintProperties) const noexcept
       -> ColorMapSharedPtr;
 
@@ -156,8 +156,8 @@ private:
   spimpl::unique_impl_ptr<ColorMapsImpl> m_pimpl;
 
   friend class RandomColorMaps;
-  [[nodiscard]] auto GetColorMapSharedPtr1(COLOR_DATA::ColorMapName mapName) const noexcept
-      -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName mapName) const noexcept
+      -> ColorMapSharedPtr;
 };
 
 inline ColorMapPtrWrapper::ColorMapPtrWrapper(const IColorMap* const colorMap,
