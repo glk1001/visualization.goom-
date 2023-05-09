@@ -34,6 +34,7 @@ namespace GOOM::VISUAL_FX
 {
 
 using COLOR::ColorAdjustment;
+using COLOR::ColorMapPtrWrapper;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -117,8 +118,8 @@ private:
 
   std::shared_ptr<const RandomColorMaps> m_colorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_fxHelper->goomRand)};
-  const IColorMap* m_currentColorMap{&GetRandomColorMap()};
-  [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
+  ColorMapPtrWrapper m_currentColorMap{GetRandomColorMap()};
+  [[nodiscard]] auto GetRandomColorMap() const -> ColorMapPtrWrapper;
   bool m_pixelColorIsDominant                    = false;
   static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.2F;
   float m_brightnessBase                         = DEFAULT_BRIGHTNESS_BASE;
@@ -240,7 +241,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
 {
 }
 
-inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
+inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> ColorMapPtrWrapper
 {
   Expects(m_colorMaps != nullptr);
   return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
@@ -473,7 +474,7 @@ inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
     ResetStartPositions();
     SetNewFloatingStartPosition();
     m_floatingT.Reset(1.0F);
-    m_currentColorMap = &GetRandomColorMap();
+    m_currentColorMap = GetRandomColorMap();
   }
 }
 
@@ -542,7 +543,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
 inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const -> Pixel
 {
   const auto t = (pixelColor.RFlt() + pixelColor.GFlt() + pixelColor.BFlt()) / 3.0F;
-  return m_currentColorMap->GetColor(t);
+  return m_currentColorMap.GetColor(t);
 }
 
 ChunkedImage::ChunkedImage(std::shared_ptr<ImageBitmap> image, const PluginInfo& goomInfo) noexcept

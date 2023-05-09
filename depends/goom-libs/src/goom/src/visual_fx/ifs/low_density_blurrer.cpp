@@ -197,11 +197,11 @@ auto LowDensityBlurrer::GetPointColor(const IfsPoint& point,
       break;
     }
     case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
-      pointColor = point.GetSimi()->GetColorMap()->GetColor(t);
+      pointColor = point.GetSimi()->GetColorMap().GetColor(t);
       break;
     case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
     {
-      const auto simiSmoothColor = point.GetSimi()->GetColorMap()->GetColor(t);
+      const auto simiSmoothColor = point.GetSimi()->GetColorMap().GetColor(t);
       const auto mixedPointColor =
           GetMixedPointColor(simiSmoothColor, point, neighbours, brightness, logAlpha);
       pointColor = mixedPointColor;

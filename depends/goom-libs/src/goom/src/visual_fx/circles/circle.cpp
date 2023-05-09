@@ -22,9 +22,9 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
+using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMapsGrid;
 using COLOR::GetBrighterColor;
-using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
 using DRAW::MultiplePixels;
@@ -175,10 +175,10 @@ Circle::Circle(const FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
-  : m_lineDrawer{*fxHelper.draw, *fxHelper.goomRand,
-                 {CIRCLE_NOISE_RADIUS, NUM_CIRCLE_NOISE_PIXELS}},
-    m_goomRand{fxHelper.goomRand},
+  : m_goomRand{fxHelper.goomRand},
     m_helper{helper},
+    m_lineDrawer{*fxHelper.draw, *fxHelper.goomRand,
+                 {CIRCLE_NOISE_RADIUS, NUM_CIRCLE_NOISE_PIXELS}},
     m_circleDots{std::make_unique<CircleDots>(*m_goomRand,
                                               m_helper,
                                               circleParams,
@@ -268,22 +268,22 @@ inline auto Circle::GetLowColorMapsGrid() const noexcept -> ColorMapsGrid
           [this](const float tX, const float tY) { return GetColorMixT(tX, tY); }};
 }
 
-inline auto Circle::GetHorizontalMainColorMaps() const noexcept -> std::vector<const IColorMap*>
+inline auto Circle::GetHorizontalMainColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
-  return {&m_mainColorMaps->GetRandomColorMap()};
+  return {m_mainColorMaps->GetRandomColorMap()};
 }
 
-inline auto Circle::GetVerticalMainColorMaps() const noexcept -> std::vector<const IColorMap*>
+inline auto Circle::GetVerticalMainColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
   return GetAllDotColorMaps(*m_mainColorMaps);
 }
 
-inline auto Circle::GetHorizontalLowColorMaps() const noexcept -> std::vector<const IColorMap*>
+inline auto Circle::GetHorizontalLowColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
-  return {&m_lowColorMaps->GetRandomColorMap()};
+  return {m_lowColorMaps->GetRandomColorMap()};
 }
 
-inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<const IColorMap*>
+inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
   return GetAllDotColorMaps(*m_lowColorMaps);
 }
@@ -309,29 +309,31 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
     dotNum = m_goomRand->GetRandInRange(0U, m_circleDots->GetNumDots());
   }
 
-  m_rotatingMainColorMaps.resize(m_numRotatingColors);
+  m_rotatingMainColorMaps.resize(m_numRotatingColors, ColorMapPtrWrapper{nullptr});
   for (auto& colorMap : m_rotatingMainColorMaps)
   {
-    colorMap = &m_mainColorMaps->GetRandomColorMap();
+    colorMap = m_mainColorMaps->GetRandomColorMap();
   }
 
-  m_rotatingLowColorMaps.resize(m_numRotatingColors);
+  m_rotatingLowColorMaps.resize(m_numRotatingColors, ColorMapPtrWrapper{nullptr});
   for (auto& colorMap : m_rotatingLowColorMaps)
   {
-    colorMap = &m_lowColorMaps->GetRandomColorMap();
+    colorMap = m_lowColorMaps->GetRandomColorMap();
   }
 }
 
 auto Circle::GetAllDotColorMaps(const RandomColorMaps& baseRandomColorMaps) const noexcept
-    -> std::vector<const IColorMap*>
+    -> std::vector<ColorMapPtrWrapper>
 {
-  auto differentMaps = std::vector<const IColorMap*>(m_numDifferentGridMaps);
+  auto differentMaps =
+      std::vector<ColorMapPtrWrapper>(m_numDifferentGridMaps, ColorMapPtrWrapper{nullptr});
   for (auto& map : differentMaps)
   {
-    map = &baseRandomColorMaps.GetRandomColorMap();
+    map = baseRandomColorMaps.GetRandomColorMap();
   }
 
-  auto dotColorMaps = std::vector<const IColorMap*>(m_circleDots->GetNumDots());
+  auto dotColorMaps =
+      std::vector<ColorMapPtrWrapper>(m_circleDots->GetNumDots(), ColorMapPtrWrapper{nullptr});
 
   auto start = 0U;
   for (auto k = 0U; k < m_numDifferentGridMaps; ++k)
@@ -479,9 +481,9 @@ inline auto Circle::GetSingleDotColors(const uint32_t dotNum,
   {
     if (dotNum == m_rotatingDotNums.at(i))
     {
-      return {m_rotatingMainColorMaps.at(i)->GetColor(m_rotatingColorsT()),
+      return {m_rotatingMainColorMaps.at(i).GetColor(m_rotatingColorsT()),
               GetBrighterColor(DOT_ROTATING_COLOR_BRIGHTNESS_FACTOR * dotBrightness,
-                               m_rotatingLowColorMaps.at(i)->GetColor(m_rotatingColorsT()))};
+                               m_rotatingLowColorMaps.at(i).GetColor(m_rotatingColorsT()))};
     }
   }
 
@@ -567,9 +569,9 @@ inline auto Circle::DrawLineDots(const float lineBrightness,
   {
     const auto dotPos    = lerp(position1, position2, tDotPos);
     const auto mainColor = GetCorrectedColor(LINE_MAIN_COLOR_BRIGHTNESS_FACTOR * lineBrightness,
-                                             m_linesMainColorMap->GetColor(tDotColor));
+                                             m_linesMainColorMap.GetColor(tDotColor));
     const auto lowColor  = GetCorrectedColor(LINE_LOW_COLOR_BRIGHTNESS_FACTOR * lineBrightness,
-                                            m_linesLowColorMap->GetColor(tDotColor));
+                                            m_linesLowColorMap.GetColor(tDotColor));
 
     DrawDot(i, dotPos, {mainColor, lowColor});
 
@@ -606,9 +608,9 @@ auto Circle::DrawConnectingLine(const Point2dInt& position1,
   }
 
   const auto mainColor = GetCorrectedColor(LINE_MAIN_COLOR_BRIGHTNESS_FACTOR * lineBrightness,
-                                           m_linesMainColorMap->GetColor(tDotColor));
+                                           m_linesMainColorMap.GetColor(tDotColor));
   const auto lowColor  = GetCorrectedColor(LINE_LOW_COLOR_BRIGHTNESS_FACTOR * lineBrightness,
-                                          m_linesLowColorMap->GetColor(tDotColor));
+                                          m_linesLowColorMap.GetColor(tDotColor));
   LogInfo("corrected lowColor = {},{},{}", lowColor.R(), lowColor.G(), lowColor.B());
 
 

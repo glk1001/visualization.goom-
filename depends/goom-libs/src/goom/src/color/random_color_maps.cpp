@@ -9,7 +9,6 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <memory>
 #include <set>
 
 namespace GOOM::COLOR
@@ -32,51 +31,53 @@ auto RandomColorMaps::GetRandomColorMapNameFromGroup(
   return colorMapNames[m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(colorMapNames.size()))];
 }
 
-auto RandomColorMaps::GetRandomColorMap() const noexcept -> const IColorMap&
+auto RandomColorMaps::GetRandomColorMap() const noexcept -> ColorMapPtrWrapper
 {
   return GetColorMap(GetRandomColorMapName());
 }
 
 auto RandomColorMaps::GetRandomColorMap(const ColorMapGroup colorMapGroup) const noexcept
-    -> const IColorMap&
+    -> ColorMapPtrWrapper
 {
   return GetColorMap(GetRandomColorMapNameFromGroup(colorMapGroup));
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const std::set<ColorMapTypes>& types) const noexcept
-    -> std::shared_ptr<const IColorMap>
+    -> ColorMapSharedPtrWrapper
 {
-  return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapName()), types);
+  return ColorMapSharedPtrWrapper{
+      GetRandomColorMapPtr(GetColorMapSharedPtr1(GetRandomColorMapName()), types)};
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const COLOR_DATA::ColorMapName colorMapName,
                                            const std::set<ColorMapTypes>& types) const noexcept
-    -> std::shared_ptr<const IColorMap>
+    -> ColorMapSharedPtrWrapper
 {
   if (colorMapName == COLOR_DATA::ColorMapName::_NULL)
   {
     return GetRandomColorMapPtr(types);
   }
-  return GetRandomColorMapPtr(GetColorMapPtr(colorMapName), types);
+  return GetRandomColorMapPtr(GetColorMapSharedPtr1(colorMapName), types);
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const ColorMapGroup colorMapGroup,
                                            const std::set<ColorMapTypes>& types) const noexcept
-    -> std::shared_ptr<const IColorMap>
+    -> ColorMapSharedPtrWrapper
 {
-  return GetRandomColorMapPtr(GetColorMapPtr(GetRandomColorMapNameFromGroup(colorMapGroup)), types);
+  return GetRandomColorMapPtr(GetColorMapSharedPtr1(GetRandomColorMapNameFromGroup(colorMapGroup)),
+                              types);
 }
 
 auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
                                            const std::set<ColorMapTypes>& types) const noexcept
-    -> std::shared_ptr<const IColorMap>
+    -> ColorMapSharedPtrWrapper
 {
   if (types.empty())
   {
-    return colorMap;
+    return ColorMapSharedPtrWrapper{colorMap};
   }
 
-  auto newColorMap = colorMap;
+  auto newColorMap = ColorMapSharedPtrWrapper{colorMap};
 
 #if __cplusplus <= 201703L
   if (types.find(ColorMapTypes::ROTATED_T) != cend(types))
@@ -84,7 +85,7 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
   if (types.contains(ColorMapTypes::ROTATED_T))
 #endif
   {
-    newColorMap = GetRandomRotatedColorMapPtr(newColorMap);
+    newColorMap = GetRandomRotatedColorMapPtr(colorMap);
   }
 #if __cplusplus <= 201703L
   if (types.find(ColorMapTypes::SHADES) != cend(types))
@@ -92,66 +93,21 @@ auto RandomColorMaps::GetRandomColorMapPtr(const std::shared_ptr<const IColorMap
   if (types.contains(ColorMapTypes::SHADES))
 #endif
   {
-    newColorMap = GetRandomTintedColorMapPtr(newColorMap);
+    newColorMap = GetRandomTintedColorMapPtr(newColorMap.GetColorMapPtr());
   }
 
   return newColorMap;
 }
 
-auto RandomColorMaps::GetRandomRotatedColorMapPtr() const noexcept
-    -> std::shared_ptr<const IColorMap>
-{
-  return GetRotatedColorMapPtr(GetRandomColorMapName(),
-                               m_goomRand->GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
-}
-
 auto RandomColorMaps::GetRandomRotatedColorMapPtr(
-    const COLOR_DATA::ColorMapName colorMapName) const noexcept -> std::shared_ptr<const IColorMap>
-{
-  return GetRotatedColorMapPtr(colorMapName,
-                               m_goomRand->GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
-}
-
-auto RandomColorMaps::GetRandomRotatedColorMapPtr(const ColorMapGroup colorMapGroup) const noexcept
-    -> std::shared_ptr<const IColorMap>
-{
-  return GetRotatedColorMapPtr(GetRandomColorMapNameFromGroup(colorMapGroup),
-                               m_goomRand->GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
-}
-
-auto RandomColorMaps::GetRandomRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap)
-    const noexcept -> std::shared_ptr<const IColorMap>
+    const std::shared_ptr<const IColorMap>& colorMap) const noexcept -> ColorMapSharedPtrWrapper
 {
   return GetRotatedColorMapPtr(colorMap,
                                m_goomRand->GetRandInRange(m_minRotationPoint, m_maxRotationPoint));
 }
 
-auto RandomColorMaps::GetRandomTintedColorMapPtr() const noexcept
-    -> std::shared_ptr<const IColorMap>
-{
-  return GetTintedColorMapPtr(GetRandomColorMapName(),
-                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
-}
-
-auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapName colorMapName) const noexcept
-    -> std::shared_ptr<const IColorMap>
-{
-  return GetTintedColorMapPtr(colorMapName,
-                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
-}
-
-auto RandomColorMaps::GetRandomTintedColorMapPtr(const ColorMapGroup colorMapGroup) const noexcept
-    -> std::shared_ptr<const IColorMap>
-{
-  return GetTintedColorMapPtr(GetRandomColorMapNameFromGroup(colorMapGroup),
-                              {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
-                               m_goomRand->GetRandInRange(m_minLightness, m_maxLightness)});
-}
-
-auto RandomColorMaps::GetRandomTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap)
-    const noexcept -> std::shared_ptr<const IColorMap>
+auto RandomColorMaps::GetRandomTintedColorMapPtr(
+    const std::shared_ptr<const IColorMap>& colorMap) const noexcept -> ColorMapSharedPtrWrapper
 {
   return GetTintedColorMapPtr(colorMap,
                               {m_goomRand->GetRandInRange(m_minSaturation, m_maxSaturation),
@@ -233,10 +189,11 @@ auto RandomColorMaps::SetLightnessLimits(const MinMaxValues<float>& minMaxLightn
   m_maxLightness = minMaxLightness.maxValue;
 }
 
-WeightedColorMaps::WeightedColorMaps(const IGoomRand& goomRand,
+WeightedColorMaps::WeightedColorMaps(const PixelChannelType defaultAlpha,
+                                     const IGoomRand& goomRand,
                                      const Weights<ColorMapGroup>& weights,
                                      const std::string& colorMapsName) noexcept
-  : RandomColorMaps{goomRand, colorMapsName}, m_weights{weights}
+  : RandomColorMaps{defaultAlpha, goomRand, colorMapsName}, m_weights{weights}
 {
 }
 

@@ -29,10 +29,44 @@ namespace GOOM::COLOR
 using COLOR_DATA::ColorMapName;
 using UTILS::NUM;
 
-class RotatedColorMap : public ColorMapWrapper
+class ColorMapImpl : public IColorMap
 {
 public:
-  RotatedColorMap(const std::shared_ptr<const IColorMap>& cm, float tRotatePoint);
+  ColorMapImpl(const std::shared_ptr<const IColorMap>& colorMap,
+               PixelChannelType defaultAlpha) noexcept;
+  ColorMapImpl(const ColorMapImpl&) noexcept           = default;
+  ColorMapImpl(ColorMapImpl&&) noexcept                = default;
+  ~ColorMapImpl() noexcept override                    = default;
+  auto operator=(const ColorMapImpl&) -> ColorMapImpl& = default;
+  auto operator=(ColorMapImpl&&) -> ColorMapImpl&      = default;
+
+  [[nodiscard]] auto GetNumStops() const -> size_t override { return m_colorMap->GetNumStops(); }
+  [[nodiscard]] auto GetMapName() const -> COLOR_DATA::ColorMapName override
+  {
+    return m_colorMap->GetMapName();
+  }
+
+protected:
+  [[nodiscard]] auto GetColorMap() const -> const IColorMap& { return *m_colorMap; }
+  [[nodiscard]] auto GetDefaultAlpha() const -> PixelChannelType { return m_defaultAlpha; }
+
+private:
+  std::shared_ptr<const IColorMap> m_colorMap;
+  PixelChannelType m_defaultAlpha;
+};
+
+ColorMapImpl::ColorMapImpl(const std::shared_ptr<const IColorMap>& colorMap,
+                           const PixelChannelType defaultAlpha) noexcept
+  : m_colorMap{colorMap}, m_defaultAlpha{defaultAlpha}
+{
+}
+
+class RotatedColorMap : public ColorMapImpl
+{
+public:
+  RotatedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
+                  PixelChannelType defaultAlpha,
+                  float tRotatePoint);
 
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
 
@@ -42,9 +76,10 @@ private:
   float m_tRotatePoint;
 };
 
-RotatedColorMap::RotatedColorMap(const std::shared_ptr<const IColorMap>& cm,
+RotatedColorMap::RotatedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
+                                 const PixelChannelType defaultAlpha,
                                  const float tRotatePoint)
-  : ColorMapWrapper{cm}, m_tRotatePoint{tRotatePoint}
+  : ColorMapImpl{colorMap, defaultAlpha}, m_tRotatePoint{tRotatePoint}
 {
   Expects(tRotatePoint >= MIN_ROTATE_POINT);
   Expects(tRotatePoint <= MAX_ROTATE_POINT);
@@ -60,10 +95,11 @@ inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
   return GetColorMap().GetColor(tNew);
 }
 
-class TintedColorMap : public ColorMapWrapper
+class TintedColorMap : public ColorMapImpl
 {
 public:
   TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
+                 PixelChannelType defaultAlpha,
                  const ColorMaps::TintProperties& tintProperties);
 
   [[nodiscard]] auto GetColor(float t) const -> Pixel override;
@@ -76,8 +112,9 @@ private:
 };
 
 TintedColorMap::TintedColorMap(const std::shared_ptr<const IColorMap>& colorMap,
+                               PixelChannelType defaultAlpha,
                                const ColorMaps::TintProperties& tintProperties)
-  : ColorMapWrapper{colorMap},
+  : ColorMapImpl{colorMap, defaultAlpha},
     m_saturation{tintProperties.saturation},
     m_lightness{tintProperties.lightness}
 {
@@ -99,14 +136,13 @@ auto TintedColorMap::GetColor(const float t) const -> Pixel
 
   const auto newRgb8 = vivid::rgb8::fromRgb(vivid::rgb::fromHsv(hsv));
   return Pixel{
-      {newRgb8.r, newRgb8.g, newRgb8.b, MAX_ALPHA}  // NOLINT: union hard to fix here
+      {newRgb8.r, newRgb8.g, newRgb8.b, GetDefaultAlpha()}  // NOLINT: union hard to fix here
   };
 }
 
 class PrebuiltColorMap : public IColorMap
 {
 public:
-  PrebuiltColorMap() noexcept = delete;
   PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap) noexcept;
   PrebuiltColorMap(const PrebuiltColorMap&) noexcept           = delete;
   PrebuiltColorMap(PrebuiltColorMap&&) noexcept                = default;
@@ -128,36 +164,44 @@ private:
 class ColorMaps::ColorMapsImpl
 {
 public:
-  ColorMapsImpl() noexcept;
+  explicit ColorMapsImpl(PixelChannelType defaultAlpha) noexcept;
   ColorMapsImpl(const ColorMapsImpl&) noexcept             = delete;
   ColorMapsImpl(ColorMapsImpl&&) noexcept                  = delete;
   virtual ~ColorMapsImpl() noexcept                        = default;
   auto operator=(const ColorMapsImpl&) -> ColorMapsImpl&   = delete;
   auto operator=(ColorMapsImpl&&) -> const ColorMapsImpl&& = delete;
 
+  auto SetDefaultAlpha(PixelChannelType defaultAlpha) noexcept -> void;
+
   [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
   using ColorMapNames = std::vector<ColorMapName>;
   [[nodiscard]] static auto GetColorMapNames(ColorMapGroup groupName) -> const ColorMapNames&;
 
-  [[nodiscard]] static auto GetColorMap(ColorMapName mapName) -> const IColorMap&;
+  [[nodiscard]] auto GetColorMap(ColorMapName mapName) const noexcept -> ColorMapPtrWrapper;
 
-  [[nodiscard]] static auto GetColorMapPtr(ColorMapName mapName)
+  [[nodiscard]] auto GetColorMapPtr(ColorMapName mapName) const noexcept
+      -> ColorMapSharedPtrWrapper;
+
+  [[nodiscard]] auto GetColorMapPtr1(ColorMapName mapName) const noexcept
       -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] static auto GetRotatedColorMapPtr(ColorMapName mapName, float tRotatePoint)
-      -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] static auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                                  float tRotatePoint)
-      -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] static auto GetTintedColorMapPtr(ColorMapName mapName,
-                                                 const TintProperties& tintProperties)
-      -> std::shared_ptr<const IColorMap>;
-  [[nodiscard]] static auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                                 const TintProperties& tintProperties)
-      -> std::shared_ptr<const IColorMap>;
+
+  [[nodiscard]] auto GetRotatedColorMapPtr(ColorMapName mapName, float tRotatePoint) const noexcept
+      -> ColorMapSharedPtrWrapper;
+  [[nodiscard]] auto GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
+                                           float tRotatePoint) const noexcept
+      -> ColorMapSharedPtrWrapper;
+
+  [[nodiscard]] auto GetTintedColorMapPtr(ColorMapName mapName,
+                                          const TintProperties& tintProperties) const noexcept
+      -> ColorMapSharedPtrWrapper;
+  [[nodiscard]] auto GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
+                                          const TintProperties& tintProperties) const noexcept
+      -> ColorMapSharedPtrWrapper;
 
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;
 
 private:
+  PixelChannelType m_defaultAlpha;
   [[nodiscard]] static auto GetAllColorMapNames() -> const std::vector<ColorMapName>&;
   [[nodiscard]] static auto MakeAllColorMapNames() -> std::vector<ColorMapName>;
 
@@ -174,7 +218,15 @@ auto IColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t)
   return PrebuiltColorMap::GetColorMix(col1, col2, t);
 }
 
-ColorMaps::ColorMaps() noexcept = default;
+ColorMaps::ColorMaps(const PixelChannelType defaultAlpha) noexcept
+  : m_pimpl{spimpl::make_unique_impl<ColorMapsImpl>(defaultAlpha)}
+{
+}
+
+auto ColorMaps::SetDefaultAlpha(PixelChannelType defaultAlpha) noexcept -> void
+{
+  m_pimpl->SetDefaultAlpha(defaultAlpha);
+}
 
 auto ColorMaps::GetNumColorMapNames() -> uint32_t
 {
@@ -186,40 +238,50 @@ auto ColorMaps::GetColorMapNames(const ColorMapGroup cmg) -> const ColorMaps::Co
   return ColorMapsImpl::GetColorMapNames(cmg);
 }
 
-auto ColorMaps::GetColorMap(const ColorMapName mapName) -> const IColorMap&
+auto ColorMaps::GetColorMap(const ColorMapName mapName) const noexcept -> ColorMapPtrWrapper
 {
-  return ColorMapsImpl::GetColorMap(mapName);
+  return m_pimpl->GetColorMap(mapName);
 }
 
-auto ColorMaps::GetColorMapPtr(const ColorMapName mapName) -> std::shared_ptr<const IColorMap>
+// Rename to sharedPtr
+auto ColorMaps::GetColorMapSharedPtr(const COLOR_DATA::ColorMapName mapName) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return ColorMapsImpl::GetColorMapPtr(mapName);
+  return m_pimpl->GetColorMapPtr(mapName);
 }
 
-auto ColorMaps::GetRotatedColorMapPtr(const ColorMapName mapName, const float tRotatePoint)
+auto ColorMaps::GetColorMapSharedPtr1(const COLOR_DATA::ColorMapName mapName) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return ColorMapsImpl::GetRotatedColorMapPtr(mapName, tRotatePoint);
+  return m_pimpl->GetColorMapPtr1(mapName);
+}
+
+auto ColorMaps::GetRotatedColorMapPtr(const ColorMapName mapName,
+                                      const float tRotatePoint) const noexcept
+    -> ColorMapSharedPtrWrapper
+{
+  return m_pimpl->GetRotatedColorMapPtr(mapName, tRotatePoint);
 }
 
 auto ColorMaps::GetRotatedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                      const float tRotatePoint) -> std::shared_ptr<const IColorMap>
+                                      const float tRotatePoint) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return ColorMapsImpl::GetRotatedColorMapPtr(cm, tRotatePoint);
+  return m_pimpl->GetRotatedColorMapPtr(cm, tRotatePoint);
 }
 
 auto ColorMaps::GetTintedColorMapPtr(const ColorMapName mapName,
-                                     const TintProperties& tintProperties)
-    -> std::shared_ptr<const IColorMap>
+                                     const TintProperties& tintProperties) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return ColorMapsImpl::GetTintedColorMapPtr(mapName, tintProperties);
+  return m_pimpl->GetTintedColorMapPtr(mapName, tintProperties);
 }
 
-auto ColorMaps::GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& cm,
-                                     const TintProperties& tintProperties)
-    -> std::shared_ptr<const IColorMap>
+auto ColorMaps::GetTintedColorMapPtr(const std::shared_ptr<const IColorMap>& colorMap,
+                                     const TintProperties& tintProperties) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return std::make_shared<TintedColorMap>(cm, tintProperties);
+  return ColorMapSharedPtrWrapper{std::make_shared<TintedColorMap>(colorMap, tintProperties)};
 }
 
 auto ColorMaps::GetNumGroups() -> uint32_t
@@ -227,12 +289,22 @@ auto ColorMaps::GetNumGroups() -> uint32_t
   return ColorMapsImpl::GetNumGroups();
 }
 
-
-ColorMaps::ColorMapsImpl::ColorMapsImpl() noexcept = default;
-
-inline auto ColorMaps::ColorMapsImpl::GetColorMap(const ColorMapName mapName) -> const IColorMap&
+ColorMaps::ColorMapsImpl::ColorMapsImpl(const PixelChannelType defaultAlpha) noexcept
+  : m_defaultAlpha{defaultAlpha}
 {
-  return GetPreBuiltColorMaps().at(static_cast<size_t>(mapName));
+}
+
+inline auto ColorMaps::ColorMapsImpl::SetDefaultAlpha(const PixelChannelType defaultAlpha) noexcept
+    -> void
+{
+  m_defaultAlpha = defaultAlpha;
+}
+
+inline auto ColorMaps::ColorMapsImpl::GetColorMap(const ColorMapName mapName) const noexcept
+    -> ColorMapPtrWrapper
+{
+  return ColorMapPtrWrapper{&GetPreBuiltColorMaps().at(static_cast<size_t>(mapName)),
+                            m_defaultAlpha};
 }
 
 // Wrap a raw pointer in a shared_ptr and make sure the raw pointer is never deleted.
@@ -242,38 +314,56 @@ static const auto MAKE_SHARED_ADDR = [](const IColorMap* const colorMap)
       colorMap, []([[maybe_unused]] const IColorMap* const cm) { /* never delete */ }};
 };
 
-inline auto ColorMaps::ColorMapsImpl::GetColorMapPtr(const ColorMapName mapName)
+inline auto ColorMaps::ColorMapsImpl::GetColorMapPtr(const ColorMapName mapName) const noexcept
+    -> ColorMapSharedPtrWrapper
+{
+  return ColorMapSharedPtrWrapper{
+      MAKE_SHARED_ADDR(&GetPreBuiltColorMaps().at(static_cast<size_t>(mapName))), m_defaultAlpha};
+}
+
+inline auto ColorMaps::ColorMapsImpl::GetColorMapPtr1(const ColorMapName mapName) const noexcept
     -> std::shared_ptr<const IColorMap>
 {
-  return MAKE_SHARED_ADDR(&GetColorMap(mapName));
+  return MAKE_SHARED_ADDR(&GetPreBuiltColorMaps().at(static_cast<size_t>(mapName)));
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetRotatedColorMapPtr(const ColorMapName mapName,
-                                                            const float tRotatePoint)
-    -> std::shared_ptr<const IColorMap>
+                                                            const float tRotatePoint) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return std::make_shared<RotatedColorMap>(MAKE_SHARED_ADDR(&GetColorMap(mapName)), tRotatePoint);
+  return ColorMapSharedPtrWrapper{
+      std::make_shared<RotatedColorMap>(
+          MAKE_SHARED_ADDR(&GetPreBuiltColorMaps().at(static_cast<size_t>(mapName))),
+          m_defaultAlpha,
+          tRotatePoint),
+      m_defaultAlpha};
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetRotatedColorMapPtr(
-    const std::shared_ptr<const IColorMap>& cm, const float tRotatePoint)
-    -> std::shared_ptr<const IColorMap>
+    const std::shared_ptr<const IColorMap>& cm, const float tRotatePoint) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return std::make_shared<RotatedColorMap>(cm, tRotatePoint);
-}
-
-inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(const ColorMapName mapName,
-                                                           const TintProperties& tintProperties)
-    -> std::shared_ptr<const IColorMap>
-{
-  return std::make_shared<TintedColorMap>(MAKE_SHARED_ADDR(&GetColorMap(mapName)), tintProperties);
+  return ColorMapSharedPtrWrapper{
+      std::make_shared<RotatedColorMap>(cm, m_defaultAlpha, tRotatePoint), m_defaultAlpha};
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(
-    const std::shared_ptr<const IColorMap>& cm, const TintProperties& tintProperties)
-    -> std::shared_ptr<const IColorMap>
+    const ColorMapName mapName, const TintProperties& tintProperties) const noexcept
+    -> ColorMapSharedPtrWrapper
 {
-  return std::make_shared<TintedColorMap>(cm, tintProperties);
+  return ColorMapSharedPtrWrapper{
+      std::make_shared<TintedColorMap>(
+          MAKE_SHARED_ADDR(&GetPreBuiltColorMaps().at(static_cast<size_t>(mapName))),
+          m_defaultAlpha,
+          tintProperties),
+      m_defaultAlpha};
+}
+
+inline auto ColorMaps::ColorMapsImpl::GetTintedColorMapPtr(
+    const std::shared_ptr<const IColorMap>& colorMap,
+    const TintProperties& tintProperties) const noexcept -> ColorMapSharedPtrWrapper
+{
+  return TintedColorMap{colorMap, m_defaultAlpha, tintProperties};
 }
 
 inline auto ColorMaps::ColorMapsImpl::GetNumColorMapNames() -> uint32_t

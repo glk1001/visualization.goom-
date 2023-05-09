@@ -14,6 +14,9 @@ using UTILS::MATH::Weights;
 
 namespace
 {
+
+constexpr auto DEFAULT_ALPHA = MAX_ALPHA;
+
 namespace IMPL
 {
 
@@ -24,6 +27,7 @@ auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -53,6 +57,7 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
   // TODO(glk) - Investigate clang-format issue with this.
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
         goomRand,
@@ -87,6 +92,7 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_pt
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -123,6 +129,7 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
         goomRand,
@@ -158,6 +165,7 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -194,6 +202,7 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
         goomRand,
@@ -229,6 +238,7 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -256,6 +266,7 @@ auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -275,6 +286,7 @@ auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -294,6 +306,7 @@ auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -313,6 +326,7 @@ auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -332,6 +346,7 @@ auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -351,6 +366,7 @@ auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -370,6 +386,7 @@ auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -389,6 +406,7 @@ auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -408,6 +426,7 @@ auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -427,6 +446,7 @@ auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -446,6 +466,7 @@ auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -465,6 +486,7 @@ auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,
@@ -484,6 +506,7 @@ auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
 
   // clang-format off
   return std::make_shared<WeightedColorMaps>(
+      DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{
           goomRand,

@@ -34,9 +34,8 @@ public:
   auto SetTentaclesEndCentrePos(const Point2dInt& newEndCentrePos) noexcept -> void;
 
   auto MultiplyIterZeroYValWaveFreq(float value) -> void;
-  auto SetDominantColorMaps(const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,
-                            const std::shared_ptr<const COLOR::IColorMap>& dominantLowColorMap)
-      -> void;
+  auto SetDominantColorMaps(const COLOR::ColorMapSharedPtrWrapper& dominantMainColorMap,
+                            const COLOR::ColorMapSharedPtrWrapper& dominantLowColorMap) -> void;
 
   auto Update() -> void;
 
@@ -44,8 +43,10 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Point2dInt m_screenCentre;
 
-  std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
-  std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
+  PixelChannelType m_defaultAlpha = MAX_ALPHA;
+  COLOR::ColorMaps m_colorMaps{m_defaultAlpha};
+  COLOR::ColorMapSharedPtrWrapper m_dominantMainColorMap{nullptr};
+  COLOR::ColorMapSharedPtrWrapper m_dominantLowColorMap{nullptr};
 
   struct IterationParams
   {
@@ -60,8 +61,8 @@ private:
   struct TentacleAndAttributes
   {
     Tentacle3D tentacle3D;
-    std::shared_ptr<const COLOR::IColorMap> mainColorMap;
-    std::shared_ptr<const COLOR::IColorMap> lowColorMap;
+    COLOR::ColorMapSharedPtrWrapper mainColorMap{nullptr};
+    COLOR::ColorMapSharedPtrWrapper lowColorMap{nullptr};
     Pixel currentMainColor;
     Pixel currentLowColor;
   };
@@ -132,8 +133,8 @@ private:
 };
 
 inline auto TentacleDriver::SetDominantColorMaps(
-    const std::shared_ptr<const COLOR::IColorMap>& dominantMainColorMap,
-    const std::shared_ptr<const COLOR::IColorMap>& dominantLowColorMap) -> void
+    const COLOR::ColorMapSharedPtrWrapper& dominantMainColorMap,
+    const COLOR::ColorMapSharedPtrWrapper& dominantLowColorMap) -> void
 {
   m_dominantMainColorMap = dominantMainColorMap;
   m_dominantLowColorMap  = dominantLowColorMap;

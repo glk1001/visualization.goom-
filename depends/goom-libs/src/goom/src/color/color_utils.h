@@ -57,7 +57,8 @@ enum class SimpleColors
   BLACK,
   _num // unused, and marks the enum end
 };
-[[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor) -> Pixel;
+[[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor, PixelChannelType alpha)
+    -> Pixel;
 
 template<typename T>
 constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
@@ -182,7 +183,7 @@ constexpr auto GetLuma(const Pixel& color) -> float
          (LUMA_BLUE_COMPONENT * color.BFlt());
 }
 
-constexpr auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
+constexpr auto GetSimpleColor(const SimpleColors simpleColor, const PixelChannelType alpha) -> Pixel
 {
   constexpr auto SIMPLE_COLORS_MAP = UTILS::EnumMap<SimpleColors, Pixel>{{{
       {SimpleColors::PURE_RED, Pixel{255, 0, 0, MAX_ALPHA}},
@@ -203,7 +204,14 @@ constexpr auto GetSimpleColor(const SimpleColors simpleColor) -> Pixel
       {SimpleColors::BLACK, Pixel{16, 16, 16, MAX_ALPHA}},
   }}};
 
-  return SIMPLE_COLORS_MAP[simpleColor];
+  if (alpha == MAX_ALPHA)
+  {
+    return SIMPLE_COLORS_MAP[simpleColor];
+  }
+
+  auto simpleColorPixel = SIMPLE_COLORS_MAP[simpleColor];
+  simpleColorPixel.SetA(alpha);
+  return simpleColorPixel;
 }
 
 } // namespace GOOM::COLOR

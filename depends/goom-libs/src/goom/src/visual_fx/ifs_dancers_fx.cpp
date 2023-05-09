@@ -485,7 +485,7 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   const auto tX = static_cast<float>(point.x) / m_fxHelper->draw->GetDimensions().GetFltWidth();
   const auto tY = static_cast<float>(point.y) / m_fxHelper->draw->GetDimensions().GetFltHeight();
 
-  if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
+  if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap().GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
   {
     const auto mixedColor =

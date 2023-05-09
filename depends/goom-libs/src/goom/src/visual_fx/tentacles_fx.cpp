@@ -26,7 +26,6 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using FX_UTILS::RandomPixelBlender;
@@ -77,8 +76,8 @@ private:
 
   std::shared_ptr<const RandomColorMaps> m_weightedDominantMainColorMaps{};
   std::shared_ptr<const RandomColorMaps> m_weightedDominantLowColorMaps{};
-  std::shared_ptr<const IColorMap> m_dominantMainColorMap{};
-  std::shared_ptr<const IColorMap> m_dominantLowColorMap{};
+  COLOR::ColorMapSharedPtrWrapper m_dominantMainColorMap{nullptr};
+  COLOR::ColorMapSharedPtrWrapper m_dominantLowColorMap{nullptr};
   auto ChangeDominantColor() -> void;
 
   RandomPixelBlender m_pixelBlender;

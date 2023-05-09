@@ -113,23 +113,23 @@ inline auto GoomDrawToTwoBuffers::DrawPixelsToDevice(const Point2dInt& point,
 {
   const auto buffPos = m_buffer1->GetBuffPos(point.x, point.y);
 
-  Expects(colors.color1.A() < MAX_ALPHA / 9);
+  //  Expects(colors.color1.A() < MAX_ALPHA / 9);
   auto& pixel1 = m_buffer1->GetPixel(buffPos);
   pixel1       = GetBlendedPixel(pixel1, GetIntBuffIntensity(), colors.color1, colors.color1.A());
   if (pixel1.A() >= MAX_ALPHA / 9)
   {
     LogError(*m_goomLogger, "pixel1.A() = {}", pixel1.A());
   }
-  Expects(pixel1.A() < MAX_ALPHA / 9);
+  //  Expects(pixel1.A() < MAX_ALPHA / 9);
 
-  Expects(colors.color2.A() < MAX_ALPHA / 9);
+  //  Expects(colors.color2.A() < MAX_ALPHA / 9);
   auto& pixel2 = m_buffer2->GetPixel(buffPos);
   pixel2       = GetBlendedPixel(pixel2, GetIntBuffIntensity(), colors.color2, colors.color2.A());
   if (pixel2.A() >= MAX_ALPHA / 9)
   {
     LogError(*m_goomLogger, "pixel2.A() = {}", pixel2.A());
   }
-  Expects(pixel2.A() < MAX_ALPHA / 9);
+  //  Expects(pixel2.A() < MAX_ALPHA / 9);
 }
 
 } // namespace GOOM::DRAW

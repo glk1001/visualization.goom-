@@ -230,9 +230,9 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
     simi.m_cosA2  = 0;
     simi.m_sinA2  = 0;
 
-    simi.m_colorMap = &m_colorMaps->GetRandomColorMap(colorMapGroup);
-    simi.m_color    = RandomColorMaps::GetRandomColor(
-        *m_goomRand, m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
+    simi.m_colorMap = m_colorMaps->GetRandomColorMap(colorMapGroup);
+    simi.m_color =
+        m_colorMaps->GetRandomColor(m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
 
     simi.m_currentPointBitmap = GetSimiBitmap(useBitmaps);
   }

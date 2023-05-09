@@ -31,6 +31,7 @@ namespace GOOM::UNIT_TESTS
 {
 
 using Catch::Approx;
+using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMapsGrid;
 using COLOR::GetRgbColorLerp;
 using COLOR::IColorMap;
@@ -114,13 +115,13 @@ constexpr auto NUM_VERTICAL_COLORS = 3U;
     const UTILS::TValue& verticalT,
     const ColorMapsGrid::ColorMixingTFunc& colorMixingTFunc) noexcept -> ColorMapsGrid
 {
-  const auto horizontalColorMaps = std::vector<const IColorMap*>{
-      &SIMPLE_WHITE_MAP,
+  const auto horizontalColorMaps = std::vector<ColorMapPtrWrapper>{
+      ColorMapPtrWrapper{&SIMPLE_WHITE_MAP},
   };
-  const auto verticalColorMaps = std::vector<const IColorMap*>{
-      &SIMPLE_RED_MAP,
-      &SIMPLE_GREEN_MAP,
-      &SIMPLE_BLUE_MAP,
+  const auto verticalColorMaps = std::vector<ColorMapPtrWrapper>{
+      ColorMapPtrWrapper{&SIMPLE_RED_MAP},
+      ColorMapPtrWrapper{&SIMPLE_GREEN_MAP},
+      ColorMapPtrWrapper{&SIMPLE_BLUE_MAP},
   };
 
   return ColorMapsGrid{horizontalColorMaps, verticalT, verticalColorMaps, colorMixingTFunc};

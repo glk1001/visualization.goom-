@@ -48,11 +48,11 @@ public:
 
   [[nodiscard]] auto GetColorMap(ColorMapId id) const noexcept -> const IColorMap&;
   [[nodiscard]] auto GetColorMapPtr(ColorMapId id) const noexcept
-      -> std::shared_ptr<const IColorMap>;
+      -> const ColorMapSharedPtrWrapper&;
 
 private:
   std::vector<ColorMapInfo> m_infoList{};
-  std::vector<std::shared_ptr<const IColorMap>> m_colorMapPtrs{};
+  std::vector<ColorMapSharedPtrWrapper> m_colorMapPtrs{};
   auto RandomizeColorMaps(size_t id) noexcept -> void;
 };
 
@@ -75,11 +75,11 @@ inline auto RandomColorMapsManager::ColorMapId::IsSet() const noexcept -> bool
 inline auto RandomColorMapsManager::GetColorMap(const ColorMapId id) const noexcept
     -> const IColorMap&
 {
-  return *m_colorMapPtrs.at(id());
+  return m_colorMapPtrs.at(id());
 }
 
 inline auto RandomColorMapsManager::GetColorMapPtr(const ColorMapId id) const noexcept
-    -> std::shared_ptr<const IColorMap>
+    -> const ColorMapSharedPtrWrapper&
 {
   return m_colorMapPtrs.at(id());
 }

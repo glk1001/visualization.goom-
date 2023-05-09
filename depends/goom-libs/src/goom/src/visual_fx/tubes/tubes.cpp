@@ -27,6 +27,7 @@ namespace GOOM::VISUAL_FX::TUBES
 {
 
 using COLOR::ColorAdjustment;
+using COLOR::ColorMapPtrWrapper;
 using COLOR::GetLightenedColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -320,10 +321,10 @@ class ShapeColorizer
 public:
   struct ShapeColorMaps
   {
-    const IColorMap* mainColorMap{};
-    const IColorMap* lowColorMap{};
-    const IColorMap* innerMainColorMap{};
-    const IColorMap* innerLowColorMap{};
+    ColorMapPtrWrapper mainColorMap{nullptr};
+    ColorMapPtrWrapper lowColorMap{nullptr};
+    ColorMapPtrWrapper innerMainColorMap{nullptr};
+    ColorMapPtrWrapper innerLowColorMap{nullptr};
   };
 
   ShapeColorizer(uint32_t numShapes, const TubeData& data, uint32_t numCircles) noexcept;
@@ -365,8 +366,8 @@ private:
       {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP}
   };
 
-  const IColorMap* m_outerCircleMainColorMap;
-  const IColorMap* m_outerCircleLowColorMap;
+  ColorMapPtrWrapper m_outerCircleMainColorMap;
+  ColorMapPtrWrapper m_outerCircleLowColorMap;
   static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
   TValue m_outerCircleT{
       {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS}
@@ -814,8 +815,8 @@ ShapeColorizer::ShapeColorizer(const uint32_t numShapes,
     m_oldShapeColors(numShapes),
     m_circleColorMaps(numCircles),
     m_oldCircleColors(numCircles),
-    m_outerCircleMainColorMap{&m_data.mainColorMaps->GetRandomColorMap()},
-    m_outerCircleLowColorMap{&m_data.lowColorMaps->GetRandomColorMap()},
+    m_outerCircleMainColorMap{m_data.mainColorMaps->GetRandomColorMap()},
+    m_outerCircleLowColorMap{m_data.lowColorMaps->GetRandomColorMap()},
     m_colorMapMixModes{
         *m_data.goomRand,
         {
@@ -893,8 +894,8 @@ auto ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
   const auto numColorMaps = colorMaps->size();
   Expects(numColorMaps == oldColors->size());
 
-  m_outerCircleMainColorMap = &m_data.mainColorMaps->GetRandomColorMap();
-  m_outerCircleLowColorMap  = &m_data.lowColorMaps->GetRandomColorMap();
+  m_outerCircleMainColorMap = m_data.mainColorMaps->GetRandomColorMap();
+  m_outerCircleLowColorMap  = m_data.lowColorMaps->GetRandomColorMap();
 
   for (auto i = 0U; i < numColorMaps; ++i)
   {
@@ -906,22 +907,22 @@ auto ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
 
 auto ShapeColorizer::ResetColorMaps(ShapeColorMaps* const colorMaps) const noexcept -> void
 {
-  colorMaps->mainColorMap      = &m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->lowColorMap       = &m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->innerMainColorMap = &m_data.lowColorMaps->GetRandomColorMap();
-  colorMaps->innerLowColorMap  = &m_data.lowColorMaps->GetRandomColorMap();
+  colorMaps->mainColorMap      = m_data.mainColorMaps->GetRandomColorMap();
+  colorMaps->lowColorMap       = m_data.mainColorMaps->GetRandomColorMap();
+  colorMaps->innerMainColorMap = m_data.lowColorMaps->GetRandomColorMap();
+  colorMaps->innerLowColorMap  = m_data.lowColorMaps->GetRandomColorMap();
 }
 
 auto ShapeColorizer::CopyColors(const ShapeColorMaps& colorMaps,
                                 const TValue& t,
                                 ShapeColors* const oldColors) const noexcept -> void
 {
-  oldColors->mainColor            = colorMaps.mainColorMap->GetColor(t());
-  oldColors->lowColor             = colorMaps.lowColorMap->GetColor(t());
-  oldColors->innerMainColor       = colorMaps.innerMainColorMap->GetColor(t());
-  oldColors->innerLowColor        = colorMaps.innerLowColorMap->GetColor(t());
-  oldColors->outerCircleMainColor = m_outerCircleMainColorMap->GetColor(t());
-  oldColors->outerCircleLowColor  = m_outerCircleLowColorMap->GetColor(t());
+  oldColors->mainColor            = colorMaps.mainColorMap.GetColor(t());
+  oldColors->lowColor             = colorMaps.lowColorMap.GetColor(t());
+  oldColors->innerMainColor       = colorMaps.innerMainColorMap.GetColor(t());
+  oldColors->innerLowColor        = colorMaps.innerLowColorMap.GetColor(t());
+  oldColors->outerCircleMainColor = m_outerCircleMainColorMap.GetColor(t());
+  oldColors->outerCircleLowColor  = m_outerCircleLowColorMap.GetColor(t());
 }
 
 inline auto ShapeColorizer::ResetColorMixMode() noexcept -> void
@@ -1129,17 +1130,17 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
                                const float brightness) const noexcept -> ShapeColors
 {
   const auto mainColor =
-      GetFinalColor(oldShapeColors.mainColor, shapeColorMaps.mainColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.mainColor, shapeColorMaps.mainColorMap.GetColor(t()));
   const auto lowColor =
-      GetFinalColor(oldShapeColors.lowColor, shapeColorMaps.lowColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.lowColor, shapeColorMaps.lowColorMap.GetColor(t()));
   const auto innerMainColor =
-      GetFinalColor(oldShapeColors.innerMainColor, shapeColorMaps.innerMainColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.innerMainColor, shapeColorMaps.innerMainColorMap.GetColor(t()));
   const auto innerLowColor =
-      GetFinalColor(oldShapeColors.innerLowColor, shapeColorMaps.innerLowColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.innerLowColor, shapeColorMaps.innerLowColorMap.GetColor(t()));
   const auto outerCircleMainColor = GetFinalColor(
-      oldShapeColors.outerCircleMainColor, m_outerCircleMainColorMap->GetColor(m_outerCircleT()));
+      oldShapeColors.outerCircleMainColor, m_outerCircleMainColorMap.GetColor(m_outerCircleT()));
   const auto outerCircleLowColor = GetFinalColor(
-      oldShapeColors.outerCircleLowColor, m_outerCircleLowColorMap->GetColor(m_outerCircleT()));
+      oldShapeColors.outerCircleLowColor, m_outerCircleLowColorMap.GetColor(m_outerCircleT()));
 
   return {
       m_colorAdjust.GetAdjustment(brightness, mainColor),

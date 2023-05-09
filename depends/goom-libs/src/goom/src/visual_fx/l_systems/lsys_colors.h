@@ -60,28 +60,31 @@ private:
   float m_globalBrightness = 1.0F;
   uint8_t m_lineWidth      = 1U;
 
+  PixelChannelType m_defaultAlpha = MAX_ALPHA;
+  COLOR::ColorMaps m_colorMaps{m_defaultAlpha};
   static constexpr auto NUM_MAIN_COLORS = 5U;
   static constexpr float MIN_SATURATION = 0.5F;
   static constexpr float MAX_SATURATION = 1.0F;
   static constexpr float MIN_LIGHTNESS  = 0.5F;
   static constexpr float MAX_LIGHTNESS  = 1.0F;
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentMainColorMaps{};
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentLowColorMaps{};
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentThickerMainColorMaps{};
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentThickerLowColorMaps{};
+  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentMainColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentLowColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentThickerMainColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtrWrapper> m_currentThickerLowColorMapList{};
   float m_probabilityOfSimpleColors                   = 1.0F;
   std::vector<ColorShadesAndTints> m_simpleColorsList = GetSimpleColorsList(NUM_MAIN_COLORS);
-  [[nodiscard]] static auto GetSimpleColorsList(uint32_t numColors) noexcept
+  [[nodiscard]] auto GetSimpleColorsList(uint32_t numColors) const noexcept
       -> std::vector<ColorShadesAndTints>;
   auto SetMainColorMaps() noexcept -> void;
   auto SetLowColorMaps() noexcept -> void;
   auto SetThickerMainColorMaps() noexcept -> void;
   auto SetThickerLowColorMaps() noexcept -> void;
   static auto SetNonMainColorMaps(
-      std::vector<std::shared_ptr<const COLOR::IColorMap>>& colorMaps) noexcept -> void;
+      std::vector<COLOR::ColorMapSharedPtrWrapper>& colorMapsList) noexcept -> void;
   bool m_useSimpleColors = true;
   std::function<Pixel(uint32_t colorNum, float t)> m_simpleColorGet{};
   auto SetSimpleColors() noexcept -> void;
+
   static constexpr auto MIN_NUM_COLOR_STEPS = 10U;
   static constexpr auto MAX_NUM_COLOR_STEPS = 100U;
   std::vector<UTILS::TValue> m_currentColorTs{};
@@ -90,6 +93,7 @@ private:
   uint32_t m_currentMaxNumColorSteps                = MAX_NUM_COLOR_STEPS;
   std::vector<UTILS::TValue> m_currentThickerColorTs{};
   auto ResetColorTs() noexcept -> void;
+
   static constexpr auto GAMMA = 1.0F / 2.2F;
   COLOR::ColorAdjustment m_colorAdjust{
       {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}

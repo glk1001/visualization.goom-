@@ -68,11 +68,12 @@ private:
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
 
-  const COLOR::IColorMap* m_textColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(*m_goomRand)};
-  const COLOR::IColorMap* m_textOutlineColorMap{
-      &COLOR::RandomColorMaps::GetRandomColorMap(*m_goomRand)};
-  const COLOR::IColorMap* m_charColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(
-      *m_goomRand, COLOR::ColorMapGroup::DIVERGING_BLACK)};
+  static constexpr auto DEFAULT_ALPHA = MAX_ALPHA;
+  COLOR::RandomColorMaps m_randomColorMaps{DEFAULT_ALPHA, *m_goomRand};
+  COLOR::ColorMapPtrWrapper m_textColorMap{m_randomColorMaps.GetRandomColorMap()};
+  COLOR::ColorMapPtrWrapper m_textOutlineColorMap{m_randomColorMaps.GetRandomColorMap()};
+  COLOR::ColorMapPtrWrapper m_charColorMap{
+      m_randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
   void DrawText(const std::string& text);
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;

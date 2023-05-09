@@ -142,10 +142,10 @@ inline void GoomTitleDisplayer::UpdateTextPosition()
 
 inline void GoomTitleDisplayer::SetFinalPhaseColorMaps()
 {
-  const auto randomColorMaps = RandomColorMaps{*m_goomRand};
-  m_textColorMap        = &randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
-  m_textOutlineColorMap = &randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::HEAT);
-  m_charColorMap        = &randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
+  const auto randomColorMaps = RandomColorMaps{DEFAULT_ALPHA, *m_goomRand};
+  m_textColorMap        = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
+  m_textOutlineColorMap = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::HEAT);
+  m_charColorMap        = randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
 }
 
 inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTitleDisplay) const
@@ -250,7 +250,7 @@ inline auto GoomTitleDisplayer::GetInteriorColor(const float fontColorT,
 
 inline auto GoomTitleDisplayer::GetInitialPhaseInteriorColor(const float fontColorT) const -> Pixel
 {
-  return m_textColorMap->GetColor(fontColorT);
+  return m_textColorMap.GetColor(fontColorT);
 }
 
 inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const Point2dInt& point,
@@ -258,10 +258,10 @@ inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const Point2dInt& po
                                                             const Dimensions& charDimensions) const
     -> Pixel
 {
-  const auto fontColor = m_textColorMap->GetColor(fontTs.fontColorT);
+  const auto fontColor = m_textColorMap.GetColor(fontTs.fontColorT);
   const auto charColor1 =
-      m_charColorMap->GetColor(GetFltFraction<int32_t>({point.x, charDimensions.GetIntWidth()}));
-  const auto charColor2 = m_textOutlineColorMap->GetColor(
+      m_charColorMap.GetColor(GetFltFraction<int32_t>({point.x, charDimensions.GetIntWidth()}));
+  const auto charColor2 = m_textOutlineColorMap.GetColor(
       GetFltFraction<int32_t>({point.y, charDimensions.GetIntHeight()}));
   static constexpr auto CHAR_COLOR_MIX = 0.5F;
   const auto charColor = IColorMap::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
@@ -274,10 +274,10 @@ inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(const Point2dInt& poi
                                                            const Dimensions& charDimensions) const
     -> Pixel
 {
-  const auto fontColor = m_textColorMap->GetColor(fontCharColorMixT);
+  const auto fontColor = m_textColorMap.GetColor(fontCharColorMixT);
   const auto charColor1 =
-      m_charColorMap->GetColor(GetFltFraction<int32_t>({point.x, charDimensions.GetIntWidth()}));
-  const auto charColor2 = m_textOutlineColorMap->GetColor(
+      m_charColorMap.GetColor(GetFltFraction<int32_t>({point.x, charDimensions.GetIntWidth()}));
+  const auto charColor2 = m_textOutlineColorMap.GetColor(
       GetFltFraction<int32_t>({point.y, charDimensions.GetIntHeight()}));
   static constexpr auto CHAR_COLOR_MIX = 0.8F;
   const auto charColor  = IColorMap::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
@@ -304,13 +304,13 @@ inline auto GoomTitleDisplayer::GetOutlineColor(const int32_t x,
 {
   if (IsFinalPhase())
   {
-    return m_textOutlineColorMap->GetColor(fontTs.fontColorT);
+    return m_textOutlineColorMap.GetColor(fontTs.fontColorT);
   }
 
   const auto outlineFontColor =
-      (not IsMiddlePhase()) ? WHITE_PIXEL : m_textOutlineColorMap->GetColor(fontTs.fontColorT);
+      (not IsMiddlePhase()) ? WHITE_PIXEL : m_textOutlineColorMap.GetColor(fontTs.fontColorT);
 
-  const auto charColor = m_textOutlineColorMap->GetColor(GetFltFraction<int32_t>({x, charWidth}));
+  const auto charColor = m_textOutlineColorMap.GetColor(GetFltFraction<int32_t>({x, charWidth}));
   return IColorMap::GetColorMix(outlineFontColor, charColor, fontTs.fontCharColorMixT);
 }
 

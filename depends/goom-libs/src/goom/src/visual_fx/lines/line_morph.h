@@ -42,7 +42,8 @@ public:
             const PluginInfo& goomInfo,
             const UTILS::MATH::IGoomRand& goomRand,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-            const SrceDestLineParams& srceDestLineParams) noexcept;
+            const SrceDestLineParams& srceDestLineParams,
+            PixelChannelType defaultAlpha) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(
@@ -66,9 +67,9 @@ private:
   DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{*m_draw};
   const PluginInfo* m_goomInfo;
   const UTILS::MATH::IGoomRand* m_goomRand;
+  PixelChannelType m_defaultAlpha;
 
-  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
+  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{nullptr};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_currentColorMapID{
       m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
@@ -97,7 +98,7 @@ private:
   bool m_useLineColor             = true;
   float m_lineColorPower          = 0.0F;
   float m_lineColorPowerIncrement = 0.0F;
-  [[nodiscard]] auto GetRandomColorMap() const noexcept -> const COLOR::IColorMap&;
+  [[nodiscard]] auto GetRandomColorMap() const noexcept -> COLOR::ColorMapPtrWrapper;
   [[nodiscard]] auto GetFinalLineColor(const Pixel& color) const noexcept -> Pixel;
   auto UpdateColorInfo() noexcept -> void;
 
