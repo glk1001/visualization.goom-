@@ -149,12 +149,9 @@ constexpr auto GetColorAlphaBlend(const Pixel& bgndColor,
   const auto bgndG = static_cast<int32_t>(bgndColor.G());
   const auto bgndB = static_cast<int32_t>(bgndColor.B());
 
-  const auto newR = static_cast<PixelChannelType>(
-      bgndR + ((fgndA * (fgndR - bgndR)) / channel_limits<int32_t>::max()));
-  const auto newG = static_cast<PixelChannelType>(
-      bgndG + ((fgndA * (fgndG - bgndG)) / channel_limits<int32_t>::max()));
-  const auto newB = static_cast<PixelChannelType>(
-      bgndB + ((fgndA * (fgndB - bgndB)) / channel_limits<int32_t>::max()));
+  const auto newR = static_cast<PixelChannelType>(bgndR + ((fgndA * (fgndR - bgndR)) / MAX_ALPHA));
+  const auto newG = static_cast<PixelChannelType>(bgndG + ((fgndA * (fgndG - bgndG)) / MAX_ALPHA));
+  const auto newB = static_cast<PixelChannelType>(bgndB + ((fgndA * (fgndB - bgndB)) / MAX_ALPHA));
 
   return Pixel{newR, newG, newB, newAlpha};
 }

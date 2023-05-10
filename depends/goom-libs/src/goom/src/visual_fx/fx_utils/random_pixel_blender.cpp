@@ -7,6 +7,7 @@
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 using UTILS::GRAPHICS::GetColorAddPixelBlend;
+using UTILS::GRAPHICS::GetColorAlphaBlend;
 using UTILS::GRAPHICS::GetColorMultiplyPixelBlend;
 using UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
@@ -21,7 +22,8 @@ const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
         { RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DEFAULT_DARKEN_ONLY_WEIGHT},
         {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, DEFAULT_LIGHTEN_ONLY_WEIGHT},
         {    RandomPixelBlender::PixelBlendType::LUMA_MIX,     DEFAULT_LUMA_MIX_WEIGHT},
-        {    RandomPixelBlender::PixelBlendType::MULTIPLY,     DEFAULT_MULTIPLY_WEIGHT}
+        {    RandomPixelBlender::PixelBlendType::MULTIPLY,     DEFAULT_MULTIPLY_WEIGHT},
+        {       RandomPixelBlender::PixelBlendType::ALPHA,        DEFAULT_ALPHA_WEIGHT}
 };
 
 auto RandomPixelBlender::GetRandomPixelBlendType(const IGoomRand& goomRand) noexcept
@@ -100,6 +102,8 @@ auto RandomPixelBlender::GetNextPixelBlendFunc() const noexcept -> PixelBlendFun
       return GetSameLumaMixPixelBlendFunc(m_lumaMixT);
     case PixelBlendType::MULTIPLY:
       return GetColorMultiplyPixelBlendFunc();
+    case PixelBlendType::ALPHA:
+      return GetAlphaPixelBlendFunc();
     default:
       FailFast();
   }
@@ -153,6 +157,15 @@ auto RandomPixelBlender::GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   { return GetColorMultiplyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+}
+
+auto RandomPixelBlender::GetAlphaPixelBlendFunc() -> PixelBlendFunc
+{
+  return [](const Pixel& bgndColor,
+            [[maybe_unused]] const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  { return GetColorAlphaBlend(bgndColor, fgndColor, newAlpha); };
 }
 
 auto RandomPixelBlender::GetSameLumaMixPixelBlendFunc(const float lumaMixT) -> PixelBlendFunc
