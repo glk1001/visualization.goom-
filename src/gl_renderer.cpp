@@ -452,7 +452,8 @@ inline auto GlRenderer::GLRendererImpl::DeinitVertexAttributes() const -> void
 inline auto GlRenderer::GLRendererImpl::DrawGlTexture() -> void
 {
   // Setup texture.
-  glEnable(GL_BLEND);
+  glDisable(GL_BLEND);
+  //glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
