@@ -135,7 +135,7 @@ private:
     _num // unused, and marks the enum end
   };
   static constexpr auto NONRANDOM_WEIGHT    = 50.0F;
-  static constexpr auto SYNC_RANDOM_WEIGHT  = 50000000000.0F;
+  static constexpr auto SYNC_RANDOM_WEIGHT  = 50.0F;
   static constexpr auto ASYNC_RANDOM_WEIGHT = 50.0F;
   UTILS::MATH::Weights<GlobalBlendType> m_globalBlendTypeWeight{
       *m_goomRand,
