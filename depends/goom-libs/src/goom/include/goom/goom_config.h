@@ -13,16 +13,8 @@
 
 namespace GOOM
 {
-
-constexpr auto Expects([[maybe_unused]] const bool cond) -> void
-{
-  assert(cond);
-}
-
-constexpr auto Ensures([[maybe_unused]] const bool cond) -> void
-{
-  assert(cond);
-}
+#define Expects(cond) assert(cond)
+#define Ensures(cond) assert(cond)
 
 [[noreturn]] inline auto FailFast() noexcept -> void
 {
