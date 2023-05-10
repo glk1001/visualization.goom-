@@ -180,8 +180,6 @@ inline auto IGoomDraw::DrawPixels(const Point2dInt& point, const MultiplePixels&
 inline auto IGoomDraw::DrawClippedPixels(const Point2dInt& point,
                                          const MultiplePixels& colors) noexcept -> void
 {
-  Expects(colors.color1.A() < MAX_ALPHA / 9);
-  Expects(colors.color2.A() < MAX_ALPHA / 9);
   if ((point.x < 0) or (point.y < 0) or (point.x >= m_dimensions.GetIntWidth()) or
       (point.y >= m_dimensions.GetIntHeight()))
   {

@@ -125,7 +125,7 @@ private:
   spimpl::unique_impl_ptr<ColorMapsImpl> m_pimpl;
 
   friend class RandomColorMaps;
-  [[nodiscard]] auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName mapName) const noexcept
+  [[nodiscard]] static auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName mapName) noexcept
       -> ColorMapSharedPtr;
 };
 
@@ -160,7 +160,10 @@ inline auto ColorMapPtrWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
 
 inline auto ColorMapPtrWrapper::GetColor(const float t) const -> Pixel
 {
-  return m_colorMap->GetColor(t);
+  const auto color = m_colorMap->GetColor(t);
+  return Pixel{
+      {color.R(), color.G(), color.B(), m_defaultAlpha}
+  };
 }
 
 inline auto ColorMapPtrWrapper::IsNotNull() const -> bool

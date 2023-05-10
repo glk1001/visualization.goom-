@@ -51,8 +51,8 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 }
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
-    COLOR_DATA::ColorMapName colorMapName, const std::set<ColorMapTypes>& types) const noexcept
-    -> ColorMapSharedPtr
+    const COLOR_DATA::ColorMapName colorMapName,
+    const std::set<ColorMapTypes>& types) const noexcept -> ColorMapSharedPtr
 {
   if (colorMapName == COLOR_DATA::ColorMapName::_NULL)
   {
@@ -62,7 +62,7 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 }
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
-    ColorMapGroup colorMapGroup, const std::set<ColorMapTypes>& types) const noexcept
+    const ColorMapGroup colorMapGroup, const std::set<ColorMapTypes>& types) const noexcept
     -> ColorMapSharedPtr
 {
   return GetRandomColorMapSharedPtr(

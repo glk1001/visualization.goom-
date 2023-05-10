@@ -75,7 +75,6 @@ auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) 
   m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
   m_previousPixelBlendFunc = m_nextPixelBlendFunc;
   m_nextPixelBlendType     = pixelBlendType;
-  m_nextPixelBlendType     = PixelBlendType::LIGHTEN_ONLY;
 
   if (previousPixelBlendType != m_nextPixelBlendType)
   {
