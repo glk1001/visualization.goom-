@@ -3,7 +3,6 @@
 #include "color_data/color_map_enums.h"
 #include "color_maps_base.h"
 #include "goom_graphic.h"
-#include "spimpl.h"
 #include "utils/enum_utils.h"
 
 #include <cstdint>
@@ -92,16 +91,16 @@ public:
 
   auto SetDefaultAlpha(PixelChannelType defaultAlpha) noexcept -> void;
 
-  static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
+  static auto GetColorMix(const Pixel& color1, const Pixel& color2, float t) -> Pixel;
 
   [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
-  [[nodiscard]] static auto GetColorMapNames(ColorMapGroup cmg) -> const ColorMapNames&;
+  [[nodiscard]] static auto GetColorMapNames(ColorMapGroup colorMapGroup) -> const ColorMapNames&;
 
-  [[nodiscard]] auto GetColorMap(COLOR_DATA::ColorMapName mapName) const noexcept
+  [[nodiscard]] auto GetColorMap(COLOR_DATA::ColorMapName colorMapName) const noexcept
       -> ColorMapPtrWrapper;
 
-  [[nodiscard]] auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName mapName,
+  [[nodiscard]] auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName colorMapName,
                                            float tRotatePoint) const noexcept -> ColorMapSharedPtr;
   [[nodiscard]] auto GetRotatedColorMapPtr(const ColorMapSharedPtr& colorMapPtr,
                                            float tRotatePoint) const noexcept -> ColorMapSharedPtr;
@@ -111,7 +110,7 @@ public:
     float saturation;
     float lightness;
   };
-  [[nodiscard]] auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName mapName,
+  [[nodiscard]] auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName colorMapName,
                                           const TintProperties& tintProperties) const noexcept
       -> ColorMapSharedPtr;
   [[nodiscard]] auto GetTintedColorMapPtr(const ColorMapSharedPtr& colorMapPtr,
@@ -121,11 +120,10 @@ public:
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;
 
 private:
-  class ColorMapsImpl;
-  spimpl::unique_impl_ptr<ColorMapsImpl> m_pimpl;
+  PixelChannelType m_defaultAlpha;
 
   friend class RandomColorMaps;
-  [[nodiscard]] static auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName mapName) noexcept
+  [[nodiscard]] static auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName colorMapName) noexcept
       -> ColorMapSharedPtr;
 };
 

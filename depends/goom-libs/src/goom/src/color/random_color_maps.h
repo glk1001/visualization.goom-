@@ -20,11 +20,11 @@ public:
   RandomColorMaps(PixelChannelType defaultAlpha,
                   const UTILS::MATH::IGoomRand& goomRand,
                   const std::string& colorMapsName = "") noexcept;
-  RandomColorMaps(const RandomColorMaps&)                    = delete;
-  RandomColorMaps(RandomColorMaps&&)                         = delete;
+  RandomColorMaps(const RandomColorMaps&)                    = default;
+  RandomColorMaps(RandomColorMaps&&)                         = default;
   virtual ~RandomColorMaps()                                 = default;
-  auto operator=(const RandomColorMaps&) -> RandomColorMaps& = delete;
-  auto operator=(RandomColorMaps&&) -> RandomColorMaps&      = delete;
+  auto operator=(const RandomColorMaps&) -> RandomColorMaps& = default;
+  auto operator=(RandomColorMaps&&) -> RandomColorMaps&      = default;
 
   [[nodiscard]] auto GetColorMapsName() const noexcept -> const std::string&;
   [[nodiscard]] virtual auto GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName;
