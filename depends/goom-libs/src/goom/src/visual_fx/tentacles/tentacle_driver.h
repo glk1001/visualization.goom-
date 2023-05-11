@@ -43,7 +43,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Point2dInt m_screenCentre;
 
-  PixelChannelType m_defaultAlpha = MAX_ALPHA / 2;
+  PixelChannelType m_defaultAlpha = MAX_ALPHA / 1;
   COLOR::ColorMaps m_colorMaps{m_defaultAlpha};
   COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
   COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};

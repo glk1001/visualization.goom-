@@ -47,9 +47,10 @@ RandomPixelBlender::RandomPixelBlender(
 {
 }
 
-auto RandomPixelBlender::SetPixelBlendType(const PixelBlenderParams& pixelBlenderParams) noexcept
-    -> void
+auto RandomPixelBlender::SetPixelBlendType(
+    [[maybe_unused]] const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
+  /**
   if (pixelBlenderParams.useRandomBlender)
   {
     SetRandomPixelBlendType();
@@ -58,6 +59,7 @@ auto RandomPixelBlender::SetPixelBlendType(const PixelBlenderParams& pixelBlende
   {
     SetPixelBlendType(pixelBlenderParams.forceBlenderType);
   }
+   **/
 }
 
 auto RandomPixelBlender::SetPixelBlendType(const PixelBlendType pixelBlendType) noexcept -> void

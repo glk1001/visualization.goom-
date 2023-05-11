@@ -51,8 +51,10 @@ public:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights;
-  PixelBlendType m_nextPixelBlendType                      = PixelBlendType::ADD;
-  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetColorAddPixelBlendFunc();
+  //  PixelBlendType m_nextPixelBlendType                      = PixelBlendType::ADD;
+  //  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetColorAddPixelBlendFunc();
+  PixelBlendType m_nextPixelBlendType                      = PixelBlendType::ALPHA;
+  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetAlphaPixelBlendFunc();
   DRAW::IGoomDraw::PixelBlendFunc m_nextPixelBlendFunc     = m_previousPixelBlendFunc;
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
   static constexpr auto MAX_LERP_STEPS                     = 500U;
