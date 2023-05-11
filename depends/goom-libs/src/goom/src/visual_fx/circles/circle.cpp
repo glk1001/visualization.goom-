@@ -26,7 +26,7 @@ using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMapsGrid;
 using COLOR::GetBrighterColor;
 using COLOR::RandomColorMapsGroups;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
 using UTILS::EnumMap;
@@ -322,7 +322,7 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   }
 }
 
-auto Circle::GetAllDotColorMaps(const WeightedColorMaps& baseRandomColorMaps) const noexcept
+auto Circle::GetAllDotColorMaps(const WeightedRandomColorMaps& baseRandomColorMaps) const noexcept
     -> std::vector<ColorMapPtrWrapper>
 {
   auto differentMaps =
@@ -348,8 +348,8 @@ auto Circle::GetAllDotColorMaps(const WeightedColorMaps& baseRandomColorMaps) co
   return dotColorMaps;
 }
 
-auto Circle::SetWeightedColorMaps(const WeightedColorMaps& weightedMainMaps,
-                                  const WeightedColorMaps& weightedLowMaps) noexcept -> void
+auto Circle::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainMaps,
+                                  const WeightedRandomColorMaps& weightedLowMaps) noexcept -> void
 {
   m_mainColorMaps = weightedMainMaps;
   m_lowColorMaps  = weightedLowMaps;

@@ -12,7 +12,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::RandomColorMapsGroups;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::DEGREES_180;
@@ -45,7 +45,7 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
   ResetCurrentIfsFunc();
 }
 
-auto Similitudes::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) -> void
+auto Similitudes::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void
 {
   m_colorMaps = weightedColorMaps;
 }

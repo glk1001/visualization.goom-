@@ -21,7 +21,7 @@ public:
   auto ChangeRandomColorMaps() -> void;
 
   [[nodiscard]] auto GetCurrentRandomColorMaps(GoomEffect goomEffect) const
-      -> COLOR::WeightedColorMaps;
+      -> COLOR::WeightedRandomColorMaps;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -45,7 +45,7 @@ inline auto VisualFxColorMaps::ChangeRandomColorMaps() -> void
 }
 
 inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEffect) const
-    -> COLOR::WeightedColorMaps
+    -> COLOR::WeightedRandomColorMaps
 {
   return m_randomColorMapsGroups.MakeRandomColorMapsGroup(GetNextRandomColorMapsGroup(goomEffect));
 }

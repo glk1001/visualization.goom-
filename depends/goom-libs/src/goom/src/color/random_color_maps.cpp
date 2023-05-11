@@ -190,15 +190,15 @@ auto RandomColorMaps::SetLightnessLimits(const MinMaxValues<float>& minMaxLightn
   m_maxLightness = minMaxLightness.maxValue;
 }
 
-WeightedColorMaps::WeightedColorMaps(const PixelChannelType defaultAlpha,
-                                     const IGoomRand& goomRand,
-                                     const Weights<ColorMapGroup>& weights,
-                                     const std::string& colorMapsName) noexcept
+WeightedRandomColorMaps::WeightedRandomColorMaps(const PixelChannelType defaultAlpha,
+                                                 const IGoomRand& goomRand,
+                                                 const Weights<ColorMapGroup>& weights,
+                                                 const std::string& colorMapsName) noexcept
   : RandomColorMaps{defaultAlpha, goomRand, colorMapsName}, m_weights{weights}
 {
 }
 
-auto WeightedColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup
+auto WeightedRandomColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup
 {
   if (not m_weightsActive)
   {
@@ -208,7 +208,7 @@ auto WeightedColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup
   return m_weights.GetRandomWeighted();
 }
 
-auto WeightedColorMaps::GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName
+auto WeightedRandomColorMaps::GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName
 {
   return RandomColorMaps::GetRandomColorMapNameFromGroup(GetRandomGroup());
 }

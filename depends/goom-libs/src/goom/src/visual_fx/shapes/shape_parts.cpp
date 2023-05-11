@@ -18,6 +18,7 @@ namespace GOOM::VISUAL_FX::SHAPES
 
 using COLOR::RandomColorMapsGroups;
 using COLOR::RandomColorMapsManager;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;
@@ -262,7 +263,7 @@ inline auto ShapePart::GetCircleFunction(const ShapeFunctionParams& params) -> C
   return {CENTRE_POS, params.radius, params.angleParams, params.direction};
 }
 
-auto ShapePart::SetWeightedMainColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept
+auto ShapePart::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
   m_colorInfo.mainColorMaps = weightedMaps;
@@ -273,7 +274,7 @@ auto ShapePart::SetWeightedMainColorMaps(const COLOR::WeightedColorMaps& weighte
                 { shapePath.UpdateMainColorInfo(m_colorInfo.mainColorMaps); });
 }
 
-auto ShapePart::SetWeightedLowColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept
+auto ShapePart::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
   m_colorInfo.lowColorMaps = weightedMaps;
@@ -284,7 +285,7 @@ auto ShapePart::SetWeightedLowColorMaps(const COLOR::WeightedColorMaps& weighted
                 { shapePath.UpdateLowColorInfo(m_colorInfo.lowColorMaps); });
 }
 
-auto ShapePart::SetWeightedInnerColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept
+auto ShapePart::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
   m_colorInfo.innerColorMix =

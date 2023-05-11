@@ -22,8 +22,8 @@ class Colorizer
 public:
   explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
 
-  [[nodiscard]] auto GetWeightedColorMaps() const -> const COLOR::WeightedColorMaps&;
-  auto SetWeightedColorMaps(const COLOR::WeightedColorMaps& weightedColorMaps) -> void;
+  [[nodiscard]] auto GetWeightedColorMaps() const -> const COLOR::WeightedRandomColorMaps&;
+  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
@@ -49,7 +49,7 @@ public:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 
-  COLOR::WeightedColorMaps m_colorMaps{
+  COLOR::WeightedRandomColorMaps m_colorMaps{
       COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{
@@ -112,7 +112,7 @@ inline auto Colorizer::SetMaxHitCount(const uint32_t val) -> void
   m_logMaxHitCount = std::log(static_cast<float>(m_maxHitCount));
 }
 
-inline auto Colorizer::GetWeightedColorMaps() const -> const COLOR::WeightedColorMaps&
+inline auto Colorizer::GetWeightedColorMaps() const -> const COLOR::WeightedRandomColorMaps&
 {
   return m_colorMaps;
 }

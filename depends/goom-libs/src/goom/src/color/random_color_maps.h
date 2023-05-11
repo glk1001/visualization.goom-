@@ -97,14 +97,14 @@ private:
       const ColorMapSharedPtr& colorMapPtr) const noexcept -> ColorMapSharedPtr;
 };
 
-class WeightedColorMaps : public RandomColorMaps
+class WeightedRandomColorMaps : public RandomColorMaps
 {
 public:
-  WeightedColorMaps() noexcept = default;
-  WeightedColorMaps(PixelChannelType defaultAlpha,
-                    const UTILS::MATH::IGoomRand& goomRand,
-                    const UTILS::MATH::Weights<ColorMapGroup>& weights,
-                    const std::string& colorMapsName = "") noexcept;
+  WeightedRandomColorMaps() noexcept = default;
+  WeightedRandomColorMaps(PixelChannelType defaultAlpha,
+                          const UTILS::MATH::IGoomRand& goomRand,
+                          const UTILS::MATH::Weights<ColorMapGroup>& weights,
+                          const std::string& colorMapsName = "") noexcept;
 
   [[nodiscard]] auto GetRandomGroup() const noexcept -> ColorMapGroup override;
   [[nodiscard]] auto GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName override;

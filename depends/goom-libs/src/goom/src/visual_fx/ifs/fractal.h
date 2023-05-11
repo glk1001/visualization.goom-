@@ -37,7 +37,7 @@ public:
   auto Init() -> void;
   auto Reset() -> void;
 
-  auto SetWeightedColorMaps(const COLOR::WeightedColorMaps& weightedColorMaps) -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   [[nodiscard]] auto GetSpeed() const -> uint32_t;
   auto SetSpeed(uint32_t val) -> void;

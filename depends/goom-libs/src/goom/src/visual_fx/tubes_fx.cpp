@@ -34,7 +34,7 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
-//using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
 using DRAW::MultiplePixels;
@@ -159,8 +159,8 @@ private:
   LineDrawerClippedEndPoints m_lineToManyDrawer{m_drawToMany};
   PixelDrawer m_pixelDrawer{*m_fxHelper->draw};
 
-  COLOR::WeightedColorMaps m_mainColorMaps{};
-  COLOR::WeightedColorMaps m_lowColorMaps{};
+  WeightedRandomColorMaps m_mainColorMaps{};
+  WeightedRandomColorMaps m_lowColorMaps{};
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath{m_fxHelper->goomRand->ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
   uint32_t m_numCapturedPrevShapesGroups              = 0;

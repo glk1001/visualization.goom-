@@ -18,7 +18,7 @@ class RandomColorMapsManager
 public:
   struct ColorMapInfo
   {
-    WeightedColorMaps colorMaps{};
+    WeightedRandomColorMaps colorMaps{};
     std::set<RandomColorMaps::ColorMapTypes> colorMapTypes{};
   };
 

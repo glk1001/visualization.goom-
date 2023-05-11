@@ -7,7 +7,7 @@ namespace GOOM::COLOR
 {
 
 using COLOR::ColorMapGroup;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
@@ -19,11 +19,11 @@ constexpr auto DEFAULT_ALPHA = MAX_ALPHA;
 namespace IMPL
 {
 
-auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllMapsUnweighted";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -34,7 +34,7 @@ auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> Weighted
   };
 }
 
-auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllStandardMaps";
 
@@ -47,7 +47,7 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedCo
   static constexpr auto QUALITATIVE_WEIGHT                     = 1.0F;
   static constexpr auto MISC_WEIGHT                            = 1.0F;
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -66,7 +66,7 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedCo
   };
 }
 
-auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllSlimMaps";
 
@@ -79,7 +79,7 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedColorM
   static constexpr auto QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
   static constexpr auto MISC_SLIM_WEIGHT                            = 1.0F;
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -98,7 +98,8 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedColorM
   };
 }
 
-auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
+    -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialStandardMaps";
 
@@ -111,7 +112,7 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept 
   static constexpr auto QUALITATIVE_WEIGHT                     = 1.0F;
   static constexpr auto MISC_WEIGHT                            = 1.0F;
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -130,7 +131,8 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept 
   };
 }
 
-auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
+    -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialSlimMaps";
 
@@ -143,7 +145,7 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept -> W
   static constexpr auto QUALITATIVE_SLIM_WEIGHT                     = 1.0F;
   static constexpr auto MISC_SLIM_WEIGHT                            = 1.0F;
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -163,7 +165,7 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept -> W
 }
 
 auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
-    -> WeightedColorMaps
+    -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingStandardMaps";
 
@@ -176,7 +178,7 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
   static constexpr auto QUALITATIVE_WEIGHT                     = 10.0F;
   static constexpr auto MISC_WEIGHT                            = 20.0F;
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -195,7 +197,8 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
   };
 }
 
-auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
+    -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingSlimMaps";
 
@@ -208,7 +211,7 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept -> 
   static constexpr auto QUALITATIVE_SLIM_WEIGHT                     = 10.0F;
   static constexpr auto MISC_SLIM_WEIGHT                            = 20.0F;
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -227,11 +230,11 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept -> 
   };
 }
 
-auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "BlueStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -242,11 +245,11 @@ auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedC
   };
 }
 
-auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "RedStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -257,11 +260,11 @@ auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedCo
   };
 }
 
-auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "GreenStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -272,11 +275,11 @@ auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept -> Weighted
   };
 }
 
-auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "YellowStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -287,11 +290,11 @@ auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "OrangeStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -302,11 +305,11 @@ auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "PurpleStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -317,11 +320,11 @@ auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "CitiesStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -332,11 +335,11 @@ auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SeasonsStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -347,11 +350,11 @@ auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> Weight
   };
 }
 
-auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "HeatStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -362,11 +365,11 @@ auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedC
   };
 }
 
-auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "ColdStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -377,11 +380,11 @@ auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedC
   };
 }
 
-auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "PastelStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -392,11 +395,12 @@ auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
+    -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "DivergingBlackStandardMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -407,11 +411,12 @@ auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept ->
   };
 }
 
-auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedColorMaps
+auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
+    -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "WesAndersonMaps";
 
-  return WeightedColorMaps{
+  return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
       Weights<ColorMapGroup>{goomRand,
@@ -431,7 +436,7 @@ RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
 }
 
 auto RandomColorMapsGroups::MakeRandomColorMapsGroup(
-    const Groups randomColorMapsGroup) const noexcept -> WeightedColorMaps
+    const Groups randomColorMapsGroup) const noexcept -> WeightedRandomColorMaps
 {
   switch (randomColorMapsGroup)
   {

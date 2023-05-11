@@ -50,8 +50,8 @@ public:
          const Params& circleParams,
          const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
 
-  auto SetWeightedColorMaps(const COLOR::WeightedColorMaps& weightedMainMaps,
-                            const COLOR::WeightedColorMaps& weightedLowMaps) noexcept -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedMainMaps,
+                            const COLOR::WeightedRandomColorMaps& weightedLowMaps) noexcept -> void;
   auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept -> void;
   [[nodiscard]] auto GetCurrentDirection() const noexcept -> DotPaths::Direction;
   auto ChangeDirection(DotPaths::Direction newDirection) noexcept -> void;
@@ -122,8 +122,8 @@ private:
                           float lineBrightness,
                           float tDotColor) noexcept -> void;
 
-  COLOR::WeightedColorMaps m_mainColorMaps;
-  COLOR::WeightedColorMaps m_lowColorMaps;
+  COLOR::WeightedRandomColorMaps m_mainColorMaps;
+  COLOR::WeightedRandomColorMaps m_lowColorMaps;
   COLOR::ColorMapPtrWrapper m_linesMainColorMap{nullptr};
   COLOR::ColorMapPtrWrapper m_linesLowColorMap{nullptr};
   uint32_t m_numRotatingColors = 0;
@@ -162,7 +162,7 @@ private:
       -> std::vector<COLOR::ColorMapPtrWrapper>;
   [[nodiscard]] auto GetVerticalLowColorMaps() const noexcept
       -> std::vector<COLOR::ColorMapPtrWrapper>;
-  [[nodiscard]] auto GetAllDotColorMaps(const COLOR::WeightedColorMaps& baseRandomColorMaps)
+  [[nodiscard]] auto GetAllDotColorMaps(const COLOR::WeightedRandomColorMaps& baseRandomColorMaps)
       const noexcept -> std::vector<COLOR::ColorMapPtrWrapper>;
 
   [[nodiscard]] auto GetColorMixT(float tX, float tY) const noexcept -> float;

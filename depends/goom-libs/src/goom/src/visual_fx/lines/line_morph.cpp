@@ -27,7 +27,7 @@ using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
 using COLOR::SimpleColors;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
@@ -124,11 +124,11 @@ auto LineMorph::GetCurrentColorMapsNames() const noexcept -> std::vector<std::st
   return {m_colorMaps.GetColorMapsName()};
 }
 
-auto LineMorph::SetWeightedColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
+auto LineMorph::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_colorMaps = weightedMaps;
-  m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
-                                        {m_colorMaps, WeightedColorMaps::GetAllColorMapsTypes()});
+  m_colorMapsManager.UpdateColorMapInfo(
+      m_currentColorMapID, {m_colorMaps, WeightedRandomColorMaps::GetAllColorMapsTypes()});
 }
 
 inline auto LineMorph::UpdateColorInfo() noexcept -> void

@@ -34,6 +34,7 @@ using COLOR::GetSimpleColor;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using FX_UTILS::RandomPixelBlender;
 using UTILS::TValue;
@@ -86,7 +87,7 @@ private:
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
-  std::array<COLOR::WeightedColorMaps, NUM_DOT_TYPES> m_dotColorMapsList{};
+  std::array<WeightedRandomColorMaps, NUM_DOT_TYPES> m_dotColorMapsList{};
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
   RandomColorMaps m_randomColorMaps{m_defaultAlpha, *m_fxHelper->goomRand};
   RandomColorMapsManager m_randomColorMapsManager{};

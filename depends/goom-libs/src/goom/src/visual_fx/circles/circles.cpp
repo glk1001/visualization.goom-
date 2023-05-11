@@ -12,7 +12,7 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
@@ -56,8 +56,8 @@ auto Circles::GetCircles(const FxHelper& fxHelper,
   return circles;
 }
 
-auto Circles::SetWeightedColorMaps(const WeightedColorMaps& weightedMaps,
-                                   const WeightedColorMaps& weightedLowMaps) noexcept -> void
+auto Circles::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps,
+                                   const WeightedRandomColorMaps& weightedLowMaps) noexcept -> void
 {
   std::for_each(begin(m_circles),
                 end(m_circles),

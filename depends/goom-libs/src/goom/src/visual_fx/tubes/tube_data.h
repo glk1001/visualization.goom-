@@ -44,8 +44,8 @@ struct TubeData
   uint32_t screenWidth{};
   uint32_t screenHeight{};
   const UTILS::MATH::IGoomRand* goomRand{};
-  COLOR::WeightedColorMaps mainColorMaps{};
-  COLOR::WeightedColorMaps lowColorMaps{};
+  COLOR::WeightedRandomColorMaps mainColorMaps{};
+  COLOR::WeightedRandomColorMaps lowColorMaps{};
   float radiusEdgeOffset{};
   float brightnessFactor{};
 };

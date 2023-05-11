@@ -13,7 +13,7 @@
 
 namespace GOOM::COLOR
 {
-class WeightedColorMaps;
+class WeightedRandomColorMaps;
 }
 
 namespace GOOM::VISUAL_FX::TUBES
@@ -67,8 +67,9 @@ public:
 
   [[nodiscard]] auto IsActive() const noexcept -> bool;
 
-  auto SetWeightedMainColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedLowColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
+      -> void;
+  auto SetWeightedLowColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
 

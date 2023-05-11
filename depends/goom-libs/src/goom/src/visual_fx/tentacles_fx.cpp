@@ -25,6 +25,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using FX_UTILS::RandomPixelBlender;
 using TENTACLES::CirclesTentacleLayout;
@@ -72,8 +73,8 @@ private:
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
-  COLOR::WeightedColorMaps m_weightedDominantMainColorMaps{};
-  COLOR::WeightedColorMaps m_weightedDominantLowColorMaps{};
+  WeightedRandomColorMaps m_weightedDominantMainColorMaps{};
+  WeightedRandomColorMaps m_weightedDominantLowColorMaps{};
   COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
   COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
   auto ChangeDominantColor() -> void;
@@ -271,9 +272,9 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     m_weightedDominantLowColorMaps  = weightedColorMaps.lowColorMaps;
 
     m_dominantMainColorMap = m_weightedDominantMainColorMaps.GetRandomColorMapSharedPtr(
-        COLOR::WeightedColorMaps::GetAllColorMapsTypes());
+        WeightedRandomColorMaps::GetAllColorMapsTypes());
     m_dominantLowColorMap = m_weightedDominantLowColorMaps.GetRandomColorMapSharedPtr(
-        COLOR::WeightedColorMaps::GetAllColorMapsTypes());
+        WeightedRandomColorMaps::GetAllColorMapsTypes());
   }
   else
   {

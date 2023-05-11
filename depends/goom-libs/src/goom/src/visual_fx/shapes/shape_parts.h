@@ -49,9 +49,11 @@ public:
   auto operator=(const ShapePart&) -> ShapePart& = delete;
   auto operator=(ShapePart&&) -> ShapePart&      = delete;
 
-  auto SetWeightedMainColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedLowColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedInnerColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
+      -> void;
+  auto SetWeightedLowColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedInnerColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
+      -> void;
   auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
@@ -114,9 +116,9 @@ private:
   static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
   struct ColorInfo
   {
-    COLOR::WeightedColorMaps mainColorMaps;
-    COLOR::WeightedColorMaps lowColorMaps;
-    COLOR::WeightedColorMaps innerColorMaps;
+    COLOR::WeightedRandomColorMaps mainColorMaps;
+    COLOR::WeightedRandomColorMaps lowColorMaps;
+    COLOR::WeightedRandomColorMaps innerColorMaps;
     float innerColorMix;
   };
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;

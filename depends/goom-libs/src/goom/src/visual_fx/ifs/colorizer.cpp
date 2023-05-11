@@ -9,7 +9,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::ColorMaps;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
@@ -41,7 +41,7 @@ Colorizer::Colorizer(const IGoomRand& goomRand)
   UpdateMixerMaps();
 }
 
-auto Colorizer::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) -> void
+auto Colorizer::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void
 {
   m_colorMaps = weightedColorMaps;
 
@@ -52,8 +52,8 @@ auto Colorizer::UpdateMixerMaps() -> void
 {
   static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const auto& colorMapTypes = m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
-                                  ? WeightedColorMaps::GetNoColorMapsTypes()
-                                  : WeightedColorMaps::GetAllColorMapsTypes();
+                                  ? WeightedRandomColorMaps::GetNoColorMapsTypes()
+                                  : WeightedRandomColorMaps::GetAllColorMapsTypes();
 
   m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id, {m_colorMaps, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);

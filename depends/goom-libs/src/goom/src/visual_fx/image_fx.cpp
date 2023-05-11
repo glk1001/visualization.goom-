@@ -38,6 +38,7 @@ using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
 using COLOR::RandomColorMapsGroups;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
@@ -115,7 +116,7 @@ private:
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
   float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
 
-  COLOR::WeightedColorMaps m_colorMaps{
+  WeightedRandomColorMaps m_colorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_fxHelper->goomRand)};
   ColorMapPtrWrapper m_currentColorMap{GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> ColorMapPtrWrapper;

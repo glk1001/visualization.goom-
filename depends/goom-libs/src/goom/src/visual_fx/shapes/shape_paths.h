@@ -29,9 +29,9 @@ public:
             COLOR::RandomColorMapsManager& colorMapsManager,
             ColorInfo colorInfo) noexcept;
 
-  auto UpdateMainColorInfo(const COLOR::WeightedColorMaps& mainColorMaps) noexcept -> void;
-  auto UpdateLowColorInfo(const COLOR::WeightedColorMaps& lowColorMaps) noexcept -> void;
-  auto UpdateInnerColorInfo(const COLOR::WeightedColorMaps& innerColorMaps) noexcept -> void;
+  auto UpdateMainColorInfo(const COLOR::WeightedRandomColorMaps& mainColorMaps) noexcept -> void;
+  auto UpdateLowColorInfo(const COLOR::WeightedRandomColorMaps& lowColorMaps) noexcept -> void;
+  auto UpdateInnerColorInfo(const COLOR::WeightedRandomColorMaps& innerColorMaps) noexcept -> void;
   auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetNumSteps(uint32_t val) noexcept -> void;
@@ -152,22 +152,22 @@ inline auto ShapePath::GetColorMapTypes() noexcept
   return COLOR::RandomColorMaps::GetAllColorMapsTypes();
 }
 
-inline auto ShapePath::UpdateMainColorInfo(const COLOR::WeightedColorMaps& mainColorMaps) noexcept
-    -> void
+inline auto ShapePath::UpdateMainColorInfo(
+    const COLOR::WeightedRandomColorMaps& mainColorMaps) noexcept -> void
 {
   m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.mainColorMapId,
                                          {mainColorMaps, GetColorMapTypes()});
 }
 
-inline auto ShapePath::UpdateLowColorInfo(const COLOR::WeightedColorMaps& lowColorMaps) noexcept
-    -> void
+inline auto ShapePath::UpdateLowColorInfo(
+    const COLOR::WeightedRandomColorMaps& lowColorMaps) noexcept -> void
 {
   m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.lowColorMapId,
                                          {lowColorMaps, GetColorMapTypes()});
 }
 
-inline auto ShapePath::UpdateInnerColorInfo(const COLOR::WeightedColorMaps& innerColorMaps) noexcept
-    -> void
+inline auto ShapePath::UpdateInnerColorInfo(
+    const COLOR::WeightedRandomColorMaps& innerColorMaps) noexcept -> void
 {
   m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.innerColorMapId,
                                          {innerColorMaps, GetColorMapTypes()});

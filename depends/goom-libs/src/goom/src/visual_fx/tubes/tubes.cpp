@@ -30,7 +30,7 @@ using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
 using UTILS::Timer;
@@ -146,8 +146,8 @@ public:
   [[nodiscard]] auto GetTubeId() const noexcept -> uint32_t;
   [[nodiscard]] auto IsActive() const noexcept -> bool;
 
-  auto SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
   auto RotateShapeColorMaps() noexcept -> void;
@@ -227,12 +227,12 @@ Tube::Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) 
 {
 }
 
-auto Tube::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
+auto Tube::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_pimpl->SetWeightedMainColorMaps(weightedMaps);
 }
 
-auto Tube::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
+auto Tube::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_pimpl->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -328,8 +328,8 @@ public:
   [[nodiscard]] auto GetBrightnessFactor() const noexcept -> float;
   auto SetBrightnessFactor(float val) noexcept -> void;
 
-  auto SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
   auto RotateShapeColorMaps() noexcept -> void;
@@ -496,13 +496,14 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
   return shapes;
 }
 
-auto Tube::TubeImpl::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept
+auto Tube::TubeImpl::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
   m_colorizer->SetWeightedMainColorMaps(weightedMaps);
 }
 
-auto Tube::TubeImpl::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
+auto Tube::TubeImpl::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorizer->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -848,13 +849,14 @@ auto ShapeColorizer::InitColorMaps() noexcept -> void
   }
 }
 
-auto ShapeColorizer::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept
+auto ShapeColorizer::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
   m_data.mainColorMaps = weightedMaps;
 }
 
-auto ShapeColorizer::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
+auto ShapeColorizer::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_data.lowColorMaps = weightedMaps;
 }

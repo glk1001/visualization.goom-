@@ -17,7 +17,7 @@ class PluginInfo;
 
 namespace COLOR
 {
-class WeightedColorMaps;
+class WeightedRandomColorMaps;
 }
 }
 
@@ -39,8 +39,9 @@ public:
   [[nodiscard]] auto GetRandomStarType() noexcept -> IStarType&;
 
   auto SetWeightedColorMaps(uint32_t starTypeId,
-                            const COLOR::WeightedColorMaps& weightedMainColorMaps,
-                            const COLOR::WeightedColorMaps& weightedLowColorMaps) noexcept -> void;
+                            const COLOR::WeightedRandomColorMaps& weightedMainColorMaps,
+                            const COLOR::WeightedRandomColorMaps& weightedLowColorMaps) noexcept
+      -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
   auto ChangeColorMode() noexcept -> void;

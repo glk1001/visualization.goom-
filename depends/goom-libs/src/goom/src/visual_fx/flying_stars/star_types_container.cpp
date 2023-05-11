@@ -15,7 +15,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
 using COLOR::RandomColorMapsGroups;
-using COLOR::WeightedColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::NUM;
 using UTILS::MATH::I_HALF;
@@ -57,9 +57,9 @@ private:
   Point2dInt m_zoomMidpoint;
 
   ColorMapMode m_currentColorMapMode{};
-  WeightedColorMaps m_weightedMainColorMaps{
+  WeightedRandomColorMaps m_weightedMainColorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
-  WeightedColorMaps m_weightedLowColorMaps{
+  WeightedRandomColorMaps m_weightedLowColorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   ColorMapName m_fixedMainColorMapName = ColorMapName::_NULL;
   ColorMapName m_fixedLowColorMapName  = ColorMapName::_NULL;
@@ -95,10 +95,10 @@ private:
   auto SetColorMapMode(ColorMapMode colorMapMode) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  [[nodiscard]] auto GetWeightedMainColorMaps() const noexcept -> const WeightedColorMaps&;
-  [[nodiscard]] auto GetWeightedLowColorMaps() const noexcept -> const WeightedColorMaps&;
-  auto SetWeightedColorMaps(const WeightedColorMaps& weightedMainColorMaps,
-                            const WeightedColorMaps& weightedLowColorMaps) noexcept -> void;
+  [[nodiscard]] auto GetWeightedMainColorMaps() const noexcept -> const WeightedRandomColorMaps&;
+  [[nodiscard]] auto GetWeightedLowColorMaps() const noexcept -> const WeightedRandomColorMaps&;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainColorMaps,
+                            const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void;
 };
 
 namespace
@@ -179,8 +179,8 @@ auto StarTypesContainer::GetCurrentColorMapsNames() const noexcept -> std::vecto
 
 auto StarTypesContainer::SetWeightedColorMaps(
     const uint32_t starTypeId,
-    const WeightedColorMaps& weightedMainColorMaps,
-    const WeightedColorMaps& weightedLowColorMaps) noexcept -> void
+    const WeightedRandomColorMaps& weightedMainColorMaps,
+    const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void
 {
   Expects(starTypeId < NUM<StarTypesContainer::AvailableStarTypes>);
   m_starTypesList.at(starTypeId)->SetWeightedColorMaps(weightedMainColorMaps, weightedLowColorMaps);
@@ -212,7 +212,7 @@ auto StarTypesContainer::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcep
 }
 
 // NOLINTNEXTLINE(cert-err58-cpp)
-static const auto DEFAULT_COLOR_MAP_TYPES = WeightedColorMaps::GetAllColorMapsTypes();
+static const auto DEFAULT_COLOR_MAP_TYPES = WeightedRandomColorMaps::GetAllColorMapsTypes();
 
 static constexpr auto MIN_Y_DISTANCE_OUT_OF_SCREEN = 10;
 static constexpr auto MAX_Y_DISTANCE_OUT_OF_SCREEN = 50;
@@ -238,12 +238,12 @@ inline auto StarType::UpdateFixedColorMapNames() noexcept -> void
   m_fixedLowColorMapName  = m_weightedLowColorMaps.GetRandomColorMapName();
 }
 
-inline auto StarType::GetWeightedMainColorMaps() const noexcept -> const WeightedColorMaps&
+inline auto StarType::GetWeightedMainColorMaps() const noexcept -> const WeightedRandomColorMaps&
 {
   return m_weightedMainColorMaps;
 }
 
-inline auto StarType::GetWeightedLowColorMaps() const noexcept -> const WeightedColorMaps&
+inline auto StarType::GetWeightedLowColorMaps() const noexcept -> const WeightedRandomColorMaps&
 {
   return m_weightedLowColorMaps;
 }
@@ -263,9 +263,9 @@ inline auto StarType::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -
   m_zoomMidpoint = zoomMidpoint;
 }
 
-inline auto StarType::SetWeightedColorMaps(const WeightedColorMaps& weightedMainColorMaps,
-                                           const WeightedColorMaps& weightedLowColorMaps) noexcept
-    -> void
+inline auto StarType::SetWeightedColorMaps(
+    const WeightedRandomColorMaps& weightedMainColorMaps,
+    const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void
 {
   m_weightedMainColorMaps = weightedMainColorMaps;
   m_weightedLowColorMaps  = weightedLowColorMaps;

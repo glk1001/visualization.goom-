@@ -48,9 +48,9 @@ public:
   struct WeightedColorMaps
   {
     uint32_t id = 0;
-    COLOR::WeightedColorMaps mainColorMaps{};
-    COLOR::WeightedColorMaps lowColorMaps{};
-    COLOR::WeightedColorMaps extraColorMaps{};
+    COLOR::WeightedRandomColorMaps mainColorMaps{};
+    COLOR::WeightedRandomColorMaps lowColorMaps{};
+    COLOR::WeightedRandomColorMaps extraColorMaps{};
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 

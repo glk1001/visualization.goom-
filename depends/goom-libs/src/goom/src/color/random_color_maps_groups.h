@@ -39,17 +39,17 @@ public:
   };
 
   [[nodiscard]] auto MakeRandomColorMapsGroup(Groups randomColorMapsGroup) const noexcept
-      -> WeightedColorMaps;
+      -> WeightedRandomColorMaps;
 
   [[nodiscard]] static auto MakeSharedAllMapsUnweighted(
-      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedColorMaps;
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 };
 
 inline auto RandomColorMapsGroups::MakeSharedAllMapsUnweighted(
-    const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedColorMaps
+    const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   return RandomColorMapsGroups{goomRand}.MakeRandomColorMapsGroup(Groups::ALL_MAPS_UNWEIGHTED);
 }
