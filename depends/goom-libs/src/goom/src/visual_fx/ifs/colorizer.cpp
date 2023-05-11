@@ -3,6 +3,7 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
+#include "goom_config.h"
 
 #include <cmath>
 
@@ -27,8 +28,6 @@ static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 Colorizer::Colorizer(const IGoomRand& goomRand, const PixelChannelType defaultAlpha)
   : m_goomRand{&goomRand},
     m_colorMaps{GetUnweightedRandomColorMaps(*m_goomRand, defaultAlpha)},
-    m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
-    m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
     m_colorModeWeights{
         *m_goomRand,
         {
@@ -43,28 +42,42 @@ Colorizer::Colorizer(const IGoomRand& goomRand, const PixelChannelType defaultAl
         }
     }
 {
-  UpdateMixerMaps();
 }
 
 auto Colorizer::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void
 {
   m_colorMaps = weightedColorMaps;
+}
 
-  UpdateMixerMaps();
+auto Colorizer::InitColorMaps() -> void
+{
+  const auto& colorMapTypes = GetNextColorMapTypes();
+
+  m_mixerColorMap1 = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+  m_mixerColorMap2 = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+
+  m_previousMixerColorMap1 = m_mixerColorMap1;
+  m_previousMixerColorMap2 = m_mixerColorMap2;
 }
 
 auto Colorizer::UpdateMixerMaps() -> void
 {
+  const auto& colorMapTypes = GetNextColorMapTypes();
+
+  m_previousMixerColorMap1 = m_mixerColorMap1;
+  m_mixerColorMap1         = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+
+  m_previousMixerColorMap2 = m_mixerColorMap2;
+  m_mixerColorMap2         = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+}
+
+inline auto Colorizer::GetNextColorMapTypes() const noexcept
+    -> const std::set<WeightedRandomColorMaps::ColorMapTypes>&
+{
   static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
-  const auto& colorMapTypes = m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
-                                  ? WeightedRandomColorMaps::GetNoColorMapsTypes()
-                                  : WeightedRandomColorMaps::GetAllColorMapsTypes();
-
-  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id, {m_colorMaps, colorMapTypes});
-  m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
-
-  m_colorMapsManager.UpdateColorMapInfo(m_mixerMap2Id, {m_colorMaps, colorMapTypes});
-  m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
+  return m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
+             ? WeightedRandomColorMaps::GetNoColorMapsTypes()
+             : WeightedRandomColorMaps::GetAllColorMapsTypes();
 }
 
 auto Colorizer::ChangeColorMode() -> void
@@ -86,9 +99,7 @@ inline auto Colorizer::GetNextColorMode() const -> IfsDancersFx::ColorMode
 
 auto Colorizer::ChangeColorMaps() -> void
 {
-  m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
-  m_prevMixerMap2 = m_colorMapsManager.GetColorMapPtr(m_mixerMap2Id);
-  m_colorMapsManager.ChangeAllColorMapsNow();
+  UpdateMixerMaps();
 
   m_colorMapChangeCompleted =
       m_goomRand->GetRandInRange(MIN_COLOR_MAP_CHANGE_COMPLETED, MAX_COLOR_MAP_CHANGE_COMPLETED);
@@ -143,10 +154,13 @@ auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
 
 auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
 {
+  Expects(m_mixerColorMap1 != nullptr);
+  Expects(m_mixerColorMap2 != nullptr);
+  Expects(m_previousMixerColorMap1 != nullptr);
+  Expects(m_previousMixerColorMap2 != nullptr);
+
   const auto nextColor =
-      ColorMaps::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
-                             m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY),
-                             t);
+      ColorMaps::GetColorMix(m_mixerColorMap1->GetColor(tX), m_mixerColorMap2->GetColor(tY), t);
   if (0 == m_countSinceColorMapChange)
   {
     return nextColor;
@@ -155,8 +169,8 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
   const auto tTransition = static_cast<float>(m_countSinceColorMapChange) /
                            static_cast<float>(m_colorMapChangeCompleted);
   --m_countSinceColorMapChange;
-  const auto prevNextColor =
-      ColorMaps::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
+  const auto prevNextColor = ColorMaps::GetColorMix(
+      m_previousMixerColorMap1->GetColor(tX), m_previousMixerColorMap2->GetColor(tY), t);
   return ColorMaps::GetColorMix(nextColor, prevNextColor, tTransition);
 }
 

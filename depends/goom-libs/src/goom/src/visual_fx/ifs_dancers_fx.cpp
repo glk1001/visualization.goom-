@@ -128,6 +128,7 @@ private:
   };
   static constexpr auto POINT_BRIGHTNESS  = 3.0F;
   static constexpr auto BITMAP_BRIGHTNESS = 2.0F;
+  auto InitColorMaps() noexcept -> void;
   auto ChangeColorMaps() noexcept -> void;
   auto ChangeSpeed() noexcept -> void;
   auto DrawNextIfsPoints() noexcept -> void;
@@ -288,6 +289,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
 inline auto IfsDancersFx::IfsDancersFxImpl::Start() noexcept -> void
 {
   InitFractal();
+  InitColorMaps();
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::Suspend() noexcept -> void
@@ -326,6 +328,11 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() noexcept -> void
       1.0F / (1.1F - m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
+}
+
+auto IfsDancersFx::IfsDancersFxImpl::InitColorMaps() noexcept -> void
+{
+  m_colorizer.InitColorMaps();
 }
 
 auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() noexcept -> void
