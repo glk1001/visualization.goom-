@@ -16,7 +16,7 @@
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-using COLOR::RandomColorMapsGroups;
+using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
@@ -69,9 +69,9 @@ ShapePart::ShapePart(IGoomDraw& draw,
 
 auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
 {
-  return {RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand),
-          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand),
-          RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand),
+  return {GetUnweightedRandomColorMaps(*m_goomRand, m_defaultAlpha),
+          GetUnweightedRandomColorMaps(*m_goomRand, m_defaultAlpha),
+          GetUnweightedRandomColorMaps(*m_goomRand, m_defaultAlpha),
           m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
 }
 

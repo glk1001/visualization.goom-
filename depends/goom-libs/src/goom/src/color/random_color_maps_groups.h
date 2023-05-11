@@ -38,27 +38,28 @@ public:
     _num // unused, and marks the enum end
   };
 
-  [[nodiscard]] auto MakeRandomColorMapsGroup(Groups randomColorMapsGroup) const noexcept
+  [[nodiscard]] auto GetWeightedRandomColorMapsForGroup(Groups randomColorMapsGroup) const noexcept
       -> WeightedRandomColorMaps;
 
-  [[nodiscard]] static auto MakeSharedAllMapsUnweighted(
+  [[nodiscard]] static auto GetUnweightedRandomColorMaps(
       const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 };
 
-[[nodiscard]] inline auto MakeSharedAllMapsUnweighted(const UTILS::MATH::IGoomRand& goomRand,
-                                                      const PixelChannelType defaultAlpha) noexcept
+[[nodiscard]] inline auto GetUnweightedRandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+                                                       const PixelChannelType defaultAlpha) noexcept
     -> WeightedRandomColorMaps
 {
-  return {RandomColorMapsGroups::MakeSharedAllMapsUnweighted(goomRand), defaultAlpha};
+  return {RandomColorMapsGroups::GetUnweightedRandomColorMaps(goomRand), defaultAlpha};
 }
 
-inline auto RandomColorMapsGroups::MakeSharedAllMapsUnweighted(
+inline auto RandomColorMapsGroups::GetUnweightedRandomColorMaps(
     const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
-  return RandomColorMapsGroups{goomRand}.MakeRandomColorMapsGroup(Groups::ALL_MAPS_UNWEIGHTED);
+  return RandomColorMapsGroups{goomRand}.GetWeightedRandomColorMapsForGroup(
+      Groups::ALL_MAPS_UNWEIGHTED);
 }
 
 } // namespace GOOM::COLOR

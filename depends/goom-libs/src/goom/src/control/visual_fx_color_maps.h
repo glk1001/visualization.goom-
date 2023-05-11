@@ -47,7 +47,8 @@ inline auto VisualFxColorMaps::ChangeRandomColorMaps() -> void
 inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEffect) const
     -> COLOR::WeightedRandomColorMaps
 {
-  return m_randomColorMapsGroups.MakeRandomColorMapsGroup(GetNextRandomColorMapsGroup(goomEffect));
+  return m_randomColorMapsGroups.GetWeightedRandomColorMapsForGroup(
+      GetNextRandomColorMapsGroup(goomEffect));
 }
 
 inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goomEffect) const

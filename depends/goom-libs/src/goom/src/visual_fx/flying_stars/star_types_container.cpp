@@ -14,7 +14,7 @@
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
-using COLOR::RandomColorMapsGroups;
+using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::NUM;
@@ -58,9 +58,9 @@ private:
 
   ColorMapMode m_currentColorMapMode{};
   WeightedRandomColorMaps m_weightedMainColorMaps{
-      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
+      GetUnweightedRandomColorMaps(*m_goomRand, MAX_ALPHA)};
   WeightedRandomColorMaps m_weightedLowColorMaps{
-      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
+      GetUnweightedRandomColorMaps(*m_goomRand, MAX_ALPHA)};
   ColorMapName m_fixedMainColorMapName = ColorMapName::_NULL;
   ColorMapName m_fixedLowColorMapName  = ColorMapName::_NULL;
   [[nodiscard]] auto GetMainColorMapName() const noexcept -> ColorMapName;

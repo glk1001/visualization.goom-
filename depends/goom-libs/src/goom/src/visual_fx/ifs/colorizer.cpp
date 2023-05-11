@@ -10,7 +10,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::ColorMaps;
-using COLOR::MakeSharedAllMapsUnweighted;
+using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
@@ -26,7 +26,7 @@ static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 
 Colorizer::Colorizer(const IGoomRand& goomRand, const PixelChannelType defaultAlpha)
   : m_goomRand{&goomRand},
-    m_colorMaps{MakeSharedAllMapsUnweighted(*m_goomRand, defaultAlpha)},
+    m_colorMaps{GetUnweightedRandomColorMaps(*m_goomRand, defaultAlpha)},
     m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
     m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
     m_colorModeWeights{

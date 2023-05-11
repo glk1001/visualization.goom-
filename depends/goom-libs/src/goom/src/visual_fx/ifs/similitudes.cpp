@@ -11,7 +11,7 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::RandomColorMapsGroups;
+using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -28,7 +28,7 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
                          const SmallImageBitmaps& smallBitmaps)
   : m_goomRand{&goomRand},
     m_smallBitmaps{&smallBitmaps},
-    m_colorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
+    m_colorMaps{GetUnweightedRandomColorMaps(*m_goomRand, MAX_ALPHA)},
     m_centreWeights{
         *m_goomRand,
         {

@@ -15,10 +15,8 @@ auto RandomColorMapsManager::AddDefaultColorMapInfo(const IGoomRand& goomRand,
                                                     const PixelChannelType defaultAlpha) noexcept
     -> ColorMapId
 {
-  const auto weightedColorMaps = WeightedRandomColorMaps{
-      RandomColorMapsGroups::MakeSharedAllMapsUnweighted(goomRand), defaultAlpha};
-
-  return AddColorMapInfo({weightedColorMaps, RandomColorMaps::GetAllColorMapsTypes()});
+  return AddColorMapInfo({GetUnweightedRandomColorMaps(goomRand, defaultAlpha),
+                          RandomColorMaps::GetAllColorMapsTypes()});
 }
 
 auto RandomColorMapsManager::AddColorMapInfo(
