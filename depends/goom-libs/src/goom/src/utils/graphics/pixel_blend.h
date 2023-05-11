@@ -53,7 +53,7 @@ inline auto GetColorAddPixelBlend(const Pixel& bgndColor,
                                   const Pixel& fgndColor,
                                   const PixelChannelType newAlpha) -> Pixel
 {
-  Expects(false);
+  //Expects(false);
   return GetColorAdd(
       bgndColor, COLOR::GetBrighterColorInt(fgndIntBuffIntensity, fgndColor), newAlpha);
 }
@@ -63,7 +63,7 @@ inline auto GetColorMultiplyPixelBlend(const Pixel& bgndColor,
                                        const Pixel& fgndColor,
                                        const PixelChannelType newAlpha) -> Pixel
 {
-  Expects(false);
+  //Expects(false);
   constexpr auto BRIGHTNESS_INCREASE = 2.0F;
   constexpr auto BLACK_THRESHOLD     = 30U;
 
@@ -87,7 +87,7 @@ inline auto GetDarkenOnlyPixelBlend(const Pixel& bgndColor,
                                     const Pixel& fgndColor,
                                     const PixelChannelType newAlpha) -> Pixel
 {
-  Expects(false);
+  //Expects(false);
   constexpr auto BRIGHTNESS_INCREASE = 2.0F;
   constexpr auto BLACK_THRESHOLD     = 30U;
 
@@ -110,7 +110,7 @@ inline auto GetLightenOnlyPixelBlend(const Pixel& bgndColor,
                                      const Pixel& fgndColor,
                                      const PixelChannelType newAlpha) -> Pixel
 {
-  Expects(false);
+  //Expects(false);
   return GetColorMax(
       bgndColor, COLOR::GetBrighterColorInt(fgndIntBuffIntensity, fgndColor), newAlpha);
 }
@@ -121,7 +121,7 @@ inline auto GetSameLumaMixPixelBlend(const float lumaMixT,
                                      const Pixel& fgndColor,
                                      const PixelChannelType newAlpha) -> Pixel
 {
-  Expects(false);
+  //Expects(false);
   constexpr auto SMALL_LUMA = 0.1F;
 
   const auto fgndColorLuma = COLOR::GetLuma(fgndColor);
