@@ -262,8 +262,8 @@ inline auto ShapePart::GetCircleFunction(const ShapeFunctionParams& params) -> C
   return {CENTRE_POS, params.radius, params.angleParams, params.direction};
 }
 
-auto ShapePart::SetWeightedMainColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapePart::SetWeightedMainColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorInfo.mainColorMaps = weightedMaps;
 
@@ -273,8 +273,8 @@ auto ShapePart::SetWeightedMainColorMaps(
                 { shapePath.UpdateMainColorInfo(m_colorInfo.mainColorMaps); });
 }
 
-auto ShapePart::SetWeightedLowColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapePart::SetWeightedLowColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorInfo.lowColorMaps = weightedMaps;
 
@@ -284,8 +284,8 @@ auto ShapePart::SetWeightedLowColorMaps(
                 { shapePath.UpdateLowColorInfo(m_colorInfo.lowColorMaps); });
 }
 
-auto ShapePart::SetWeightedInnerColorMaps(
-    const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapePart::SetWeightedInnerColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorInfo.innerColorMix =
       m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);

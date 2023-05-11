@@ -4,7 +4,6 @@
 
 #include "color/random_color_maps.h"
 #include "goom_logger.h"
-#include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/paths.h"
 
@@ -13,7 +12,7 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using COLOR::RandomColorMaps;
+using COLOR::WeightedColorMaps;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
@@ -57,9 +56,8 @@ auto Circles::GetCircles(const FxHelper& fxHelper,
   return circles;
 }
 
-auto Circles::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMaps,
-    const std::shared_ptr<const RandomColorMaps> weightedLowMaps) noexcept -> void
+auto Circles::SetWeightedColorMaps(const WeightedColorMaps& weightedMaps,
+                                   const WeightedColorMaps& weightedLowMaps) noexcept -> void
 {
   std::for_each(begin(m_circles),
                 end(m_circles),

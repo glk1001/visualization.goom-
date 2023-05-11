@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/random_color_maps.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <cstdint>
@@ -11,12 +12,7 @@ namespace GOOM
 {
 struct Point2dInt;
 class AudioSamples;
-
-namespace COLOR
-{
-class WeightedColorMaps;
 }
-} // namespace GOOM
 
 namespace GOOM::VISUAL_FX
 {
@@ -51,10 +47,10 @@ public:
       -> std::vector<std::string> = 0;
   struct WeightedColorMaps
   {
-    uint32_t id                                                  = 0;
-    std::shared_ptr<const COLOR::WeightedColorMaps> mainColorMaps  = nullptr;
-    std::shared_ptr<const COLOR::WeightedColorMaps> lowColorMaps   = nullptr;
-    std::shared_ptr<const COLOR::WeightedColorMaps> extraColorMaps = nullptr;
+    uint32_t id = 0;
+    COLOR::WeightedColorMaps mainColorMaps{};
+    COLOR::WeightedColorMaps lowColorMaps{};
+    COLOR::WeightedColorMaps extraColorMaps{};
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 

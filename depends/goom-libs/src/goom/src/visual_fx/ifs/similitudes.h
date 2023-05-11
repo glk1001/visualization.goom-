@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color/color_maps.h"
+#include "color/random_color_maps.h"
 #include "goom_graphic.h"
 #include "ifs_types.h"
 #include "utils/math/goom_rand_base.h"
@@ -13,11 +14,6 @@
 
 namespace GOOM
 {
-
-namespace COLOR
-{
-class RandomColorMaps;
-}
 
 namespace UTILS::GRAPHICS
 {
@@ -65,8 +61,7 @@ public:
 
   auto Init() -> void;
 
-  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps)
-      -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedColorMaps& weightedColorMaps) -> void;
 
   auto UpdateMainSimis(Dbl uValue) -> void;
   auto IterateSimis() -> void;
@@ -98,7 +93,7 @@ private:
 
   const UTILS::MATH::IGoomRand* m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
-  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps;
+  COLOR::WeightedColorMaps m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
   IfsFunc m_currentIfsFunc{};

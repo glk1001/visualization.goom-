@@ -206,9 +206,6 @@ inline auto CirclesFx::CirclesFxImpl::GetCurrentColorMapsNames() noexcept
 inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-
   m_circles->SetWeightedColorMaps(weightedColorMaps.mainColorMaps, weightedColorMaps.lowColorMaps);
 
   m_lastWeightedColorMaps = weightedColorMaps;

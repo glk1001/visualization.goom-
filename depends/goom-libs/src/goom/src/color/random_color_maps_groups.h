@@ -39,17 +39,17 @@ public:
   };
 
   [[nodiscard]] auto MakeRandomColorMapsGroup(Groups randomColorMapsGroup) const noexcept
-      -> std::shared_ptr<WeightedColorMaps>;
+      -> WeightedColorMaps;
 
   [[nodiscard]] static auto MakeSharedAllMapsUnweighted(
-      const UTILS::MATH::IGoomRand& goomRand) noexcept -> std::shared_ptr<WeightedColorMaps>;
+      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedColorMaps;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 };
 
 inline auto RandomColorMapsGroups::MakeSharedAllMapsUnweighted(
-    const UTILS::MATH::IGoomRand& goomRand) noexcept -> std::shared_ptr<WeightedColorMaps>
+    const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedColorMaps
 {
   return RandomColorMapsGroups{goomRand}.MakeRandomColorMapsGroup(Groups::ALL_MAPS_UNWEIGHTED);
 }

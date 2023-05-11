@@ -26,9 +26,8 @@ public:
           const std::vector<UTILS::MATH::OscillatingFunction::Params>& pathParams,
           const std::vector<Circle::Params>& circleParams) noexcept;
 
-  auto SetWeightedColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps,
-                            std::shared_ptr<const COLOR::RandomColorMaps> weightedLowMaps) noexcept
-      -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedColorMaps& weightedMaps,
+                            const COLOR::WeightedColorMaps& weightedLowMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentDirection() const noexcept -> DotPaths::Direction;
   auto ChangeDirection(DotPaths::Direction newDirection) noexcept -> void;
   auto SetPathParams(

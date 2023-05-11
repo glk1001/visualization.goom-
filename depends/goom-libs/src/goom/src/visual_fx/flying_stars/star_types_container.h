@@ -38,10 +38,9 @@ public:
 
   [[nodiscard]] auto GetRandomStarType() noexcept -> IStarType&;
 
-  auto SetWeightedColorMaps(
-      uint32_t starTypeId,
-      const std::shared_ptr<const COLOR::WeightedColorMaps>& weightedMainColorMaps,
-      const std::shared_ptr<const COLOR::WeightedColorMaps>& weightedLowColorMaps) noexcept -> void;
+  auto SetWeightedColorMaps(uint32_t starTypeId,
+                            const COLOR::WeightedColorMaps& weightedMainColorMaps,
+                            const COLOR::WeightedColorMaps& weightedLowColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
   auto ChangeColorMode() noexcept -> void;

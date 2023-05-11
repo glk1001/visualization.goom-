@@ -17,6 +17,7 @@ namespace GOOM::COLOR
 class RandomColorMaps : public ColorMaps
 {
 public:
+  RandomColorMaps() noexcept = default;
   RandomColorMaps(PixelChannelType defaultAlpha,
                   const UTILS::MATH::IGoomRand& goomRand,
                   const std::string& colorMapsName = "") noexcept;
@@ -74,8 +75,8 @@ protected:
       -> COLOR_DATA::ColorMapName;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  std::string m_colorMapsName;
+  const UTILS::MATH::IGoomRand* m_goomRand = nullptr;
+  std::string m_colorMapsName{};
   static constexpr float MIN_ROTATION_POINT = 0.5F;
   static constexpr float MAX_ROTATION_POINT = 0.9F;
   float m_minRotationPoint                  = MIN_ROTATION_POINT;
@@ -99,6 +100,7 @@ private:
 class WeightedColorMaps : public RandomColorMaps
 {
 public:
+  WeightedColorMaps() noexcept = default;
   WeightedColorMaps(PixelChannelType defaultAlpha,
                     const UTILS::MATH::IGoomRand& goomRand,
                     const UTILS::MATH::Weights<ColorMapGroup>& weights,
@@ -108,7 +110,7 @@ public:
   [[nodiscard]] auto GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName override;
 
 private:
-  UTILS::MATH::Weights<ColorMapGroup> m_weights;
+  UTILS::MATH::Weights<ColorMapGroup> m_weights{};
   bool m_weightsActive = true;
 };
 

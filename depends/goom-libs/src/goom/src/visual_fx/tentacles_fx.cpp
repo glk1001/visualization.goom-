@@ -4,7 +4,6 @@
 
 #include "tentacles_fx.h"
 
-#include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
@@ -26,7 +25,6 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using FX_UTILS::RandomPixelBlender;
 using TENTACLES::CirclesTentacleLayout;
@@ -74,8 +72,8 @@ private:
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
-  std::shared_ptr<const RandomColorMaps> m_weightedDominantMainColorMaps{};
-  std::shared_ptr<const RandomColorMaps> m_weightedDominantLowColorMaps{};
+  COLOR::WeightedColorMaps m_weightedDominantMainColorMaps{};
+  COLOR::WeightedColorMaps m_weightedDominantLowColorMaps{};
   COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
   COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
   auto ChangeDominantColor() -> void;
@@ -253,16 +251,13 @@ inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 auto TentaclesFx::TentaclesImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_weightedDominantMainColorMaps->GetColorMapsName(),
-          m_weightedDominantLowColorMaps->GetColorMapsName()};
+  return {m_weightedDominantMainColorMaps.GetColorMapsName(),
+          m_weightedDominantLowColorMaps.GetColorMapsName()};
 }
 
 auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-
   if (weightedColorMaps.id == NORMAL_COLOR_TYPE)
   {
     std::for_each(begin(m_tentacleDrivers),
@@ -275,10 +270,10 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     m_weightedDominantMainColorMaps = weightedColorMaps.mainColorMaps;
     m_weightedDominantLowColorMaps  = weightedColorMaps.lowColorMaps;
 
-    m_dominantMainColorMap = m_weightedDominantMainColorMaps->GetRandomColorMapSharedPtr(
-        RandomColorMaps::GetAllColorMapsTypes());
-    m_dominantLowColorMap = m_weightedDominantLowColorMaps->GetRandomColorMapSharedPtr(
-        RandomColorMaps::GetAllColorMapsTypes());
+    m_dominantMainColorMap = m_weightedDominantMainColorMaps.GetRandomColorMapSharedPtr(
+        COLOR::WeightedColorMaps::GetAllColorMapsTypes());
+    m_dominantLowColorMap = m_weightedDominantLowColorMaps.GetRandomColorMapSharedPtr(
+        COLOR::WeightedColorMaps::GetAllColorMapsTypes());
   }
   else
   {

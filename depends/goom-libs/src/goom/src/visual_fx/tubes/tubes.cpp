@@ -30,7 +30,7 @@ using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
-using COLOR::RandomColorMaps;
+using COLOR::WeightedColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
 using UTILS::Timer;
@@ -146,10 +146,8 @@ public:
   [[nodiscard]] auto GetTubeId() const noexcept -> uint32_t;
   [[nodiscard]] auto IsActive() const noexcept -> bool;
 
-  auto SetWeightedMainColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
   auto RotateShapeColorMaps() noexcept -> void;
@@ -229,14 +227,12 @@ Tube::Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) 
 {
 }
 
-auto Tube::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   m_pimpl->SetWeightedMainColorMaps(weightedMaps);
 }
 
-auto Tube::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   m_pimpl->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -332,10 +328,8 @@ public:
   [[nodiscard]] auto GetBrightnessFactor() const noexcept -> float;
   auto SetBrightnessFactor(float val) noexcept -> void;
 
-  auto SetWeightedMainColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
   auto RotateShapeColorMaps() noexcept -> void;
@@ -502,14 +496,13 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
   return shapes;
 }
 
-auto Tube::TubeImpl::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::TubeImpl::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorizer->SetWeightedMainColorMaps(weightedMaps);
 }
 
-auto Tube::TubeImpl::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::TubeImpl::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   m_colorizer->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -815,8 +808,8 @@ ShapeColorizer::ShapeColorizer(const uint32_t numShapes,
     m_oldShapeColors(numShapes),
     m_circleColorMaps(numCircles),
     m_oldCircleColors(numCircles),
-    m_outerCircleMainColorMap{m_data.mainColorMaps->GetRandomColorMap()},
-    m_outerCircleLowColorMap{m_data.lowColorMaps->GetRandomColorMap()},
+    m_outerCircleMainColorMap{m_data.mainColorMaps.GetRandomColorMap()},
+    m_outerCircleLowColorMap{m_data.lowColorMaps.GetRandomColorMap()},
     m_colorMapMixModes{
         *m_data.goomRand,
         {
@@ -855,14 +848,13 @@ auto ShapeColorizer::InitColorMaps() noexcept -> void
   }
 }
 
-auto ShapeColorizer::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapeColorizer::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_data.mainColorMaps = weightedMaps;
 }
 
-auto ShapeColorizer::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapeColorizer::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   m_data.lowColorMaps = weightedMaps;
 }
@@ -894,8 +886,8 @@ auto ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
   const auto numColorMaps = colorMaps->size();
   Expects(numColorMaps == oldColors->size());
 
-  m_outerCircleMainColorMap = m_data.mainColorMaps->GetRandomColorMap();
-  m_outerCircleLowColorMap  = m_data.lowColorMaps->GetRandomColorMap();
+  m_outerCircleMainColorMap = m_data.mainColorMaps.GetRandomColorMap();
+  m_outerCircleLowColorMap  = m_data.lowColorMaps.GetRandomColorMap();
 
   for (auto i = 0U; i < numColorMaps; ++i)
   {
@@ -907,10 +899,10 @@ auto ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
 
 auto ShapeColorizer::ResetColorMaps(ShapeColorMaps* const colorMaps) const noexcept -> void
 {
-  colorMaps->mainColorMap      = m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->lowColorMap       = m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->innerMainColorMap = m_data.lowColorMaps->GetRandomColorMap();
-  colorMaps->innerLowColorMap  = m_data.lowColorMaps->GetRandomColorMap();
+  colorMaps->mainColorMap      = m_data.mainColorMaps.GetRandomColorMap();
+  colorMaps->lowColorMap       = m_data.mainColorMaps.GetRandomColorMap();
+  colorMaps->innerMainColorMap = m_data.lowColorMaps.GetRandomColorMap();
+  colorMaps->innerLowColorMap  = m_data.lowColorMaps.GetRandomColorMap();
 }
 
 auto ShapeColorizer::CopyColors(const ShapeColorMaps& colorMaps,

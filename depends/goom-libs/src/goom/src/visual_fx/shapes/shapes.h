@@ -36,12 +36,9 @@ public:
         COLOR::RandomColorMapsManager& colorMapsManager,
         const Params& params) noexcept;
 
-  auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
-      -> void;
-  auto SetWeightedInnerColorMaps(
-      std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
+  auto SetWeightedMainColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedInnerColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
 
   auto SetVaryDotRadius(bool val) -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;

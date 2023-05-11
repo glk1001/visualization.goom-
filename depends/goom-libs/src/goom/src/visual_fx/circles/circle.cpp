@@ -25,8 +25,8 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMapsGrid;
 using COLOR::GetBrighterColor;
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
+using COLOR::WeightedColorMaps;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
 using UTILS::EnumMap;
@@ -270,22 +270,22 @@ inline auto Circle::GetLowColorMapsGrid() const noexcept -> ColorMapsGrid
 
 inline auto Circle::GetHorizontalMainColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
-  return {m_mainColorMaps->GetRandomColorMap()};
+  return {m_mainColorMaps.GetRandomColorMap()};
 }
 
 inline auto Circle::GetVerticalMainColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
-  return GetAllDotColorMaps(*m_mainColorMaps);
+  return GetAllDotColorMaps(m_mainColorMaps);
 }
 
 inline auto Circle::GetHorizontalLowColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
-  return {m_lowColorMaps->GetRandomColorMap()};
+  return {m_lowColorMaps.GetRandomColorMap()};
 }
 
 inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>
 {
-  return GetAllDotColorMaps(*m_lowColorMaps);
+  return GetAllDotColorMaps(m_lowColorMaps);
 }
 
 auto Circle::UpdateRotatingColorMaps() noexcept -> void
@@ -312,17 +312,17 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   m_rotatingMainColorMaps.resize(m_numRotatingColors, ColorMapPtrWrapper{nullptr});
   for (auto& colorMap : m_rotatingMainColorMaps)
   {
-    colorMap = m_mainColorMaps->GetRandomColorMap();
+    colorMap = m_mainColorMaps.GetRandomColorMap();
   }
 
   m_rotatingLowColorMaps.resize(m_numRotatingColors, ColorMapPtrWrapper{nullptr});
   for (auto& colorMap : m_rotatingLowColorMaps)
   {
-    colorMap = m_lowColorMaps->GetRandomColorMap();
+    colorMap = m_lowColorMaps.GetRandomColorMap();
   }
 }
 
-auto Circle::GetAllDotColorMaps(const RandomColorMaps& baseRandomColorMaps) const noexcept
+auto Circle::GetAllDotColorMaps(const WeightedColorMaps& baseRandomColorMaps) const noexcept
     -> std::vector<ColorMapPtrWrapper>
 {
   auto differentMaps =
@@ -348,9 +348,8 @@ auto Circle::GetAllDotColorMaps(const RandomColorMaps& baseRandomColorMaps) cons
   return dotColorMaps;
 }
 
-auto Circle::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMainMaps,
-    const std::shared_ptr<const RandomColorMaps>& weightedLowMaps) noexcept -> void
+auto Circle::SetWeightedColorMaps(const WeightedColorMaps& weightedMainMaps,
+                                  const WeightedColorMaps& weightedLowMaps) noexcept -> void
 {
   m_mainColorMaps = weightedMainMaps;
   m_lowColorMaps  = weightedLowMaps;
@@ -369,7 +368,7 @@ auto Circle::SetWeightedColorMaps(
 
   m_circleDots->GetDotDiameters().ChangeDiameters();
   m_alternateMainLowDotColors = m_goomRand->ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
-  m_dotDrawer->SetWeightedColorMaps(*weightedMainMaps);
+  m_dotDrawer->SetWeightedColorMaps(weightedMainMaps);
 }
 
 auto Circle::SetPathParams(const OscillatingFunction::Params& pathParams) noexcept -> void

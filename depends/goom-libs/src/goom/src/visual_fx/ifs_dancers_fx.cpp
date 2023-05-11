@@ -270,14 +270,12 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangePixelBlender(
 inline auto IfsDancersFx::IfsDancersFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_colorizer.GetWeightedColorMaps()->GetColorMapsName()};
+  return {m_colorizer.GetWeightedColorMaps().GetColorMapsName()};
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-
   m_fractal->SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
   m_colorizer.SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
 }

@@ -16,8 +16,8 @@ namespace GOOM::VISUAL_FX::SHAPES
 {
 
 using COLOR::ColorAdjustment;
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
+using COLOR::WeightedColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using UTILS::MATH::IGoomRand;
@@ -63,8 +63,7 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
   return shapeParts;
 }
 
-auto Shape::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
+auto Shape::SetWeightedMainColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts),
@@ -74,8 +73,7 @@ auto Shape::SetWeightedMainColorMaps(
   Ensures(AllColorMapsValid());
 }
 
-auto Shape::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
+auto Shape::SetWeightedLowColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts),
@@ -85,8 +83,7 @@ auto Shape::SetWeightedLowColorMaps(
   Ensures(AllColorMapsValid());
 }
 
-auto Shape::SetWeightedInnerColorMaps(
-    const std::shared_ptr<const RandomColorMaps> weightedMaps) noexcept -> void
+auto Shape::SetWeightedInnerColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts),

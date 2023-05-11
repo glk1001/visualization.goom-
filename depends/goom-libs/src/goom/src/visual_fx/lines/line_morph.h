@@ -46,8 +46,7 @@ public:
             PixelChannelType defaultAlpha) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(
-      const std::shared_ptr<const COLOR::RandomColorMaps>& weightedMaps) noexcept -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedColorMaps& weightedMaps) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -69,7 +68,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   PixelChannelType m_defaultAlpha;
 
-  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{nullptr};
+  COLOR::WeightedColorMaps m_colorMaps{};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_currentColorMapID{
       m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};

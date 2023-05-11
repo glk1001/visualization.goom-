@@ -177,9 +177,6 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetCurrentStarTypeColorMapsNames() c
 auto FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-
   //LogInfo("Setting weighted color maps for id {}", weightedColorMaps.id);
   //LogInfo("Main color maps: {}", weightedColorMaps.mainColorMaps->GetColorMapsName());
   //LogInfo("Low color maps: {}", weightedColorMaps.lowColorMaps->GetColorMapsName());

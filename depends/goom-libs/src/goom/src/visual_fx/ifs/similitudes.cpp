@@ -11,8 +11,8 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
+using COLOR::WeightedColorMaps;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::DEGREES_180;
@@ -45,8 +45,7 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
   ResetCurrentIfsFunc();
 }
 
-auto Similitudes::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedColorMaps) -> void
+auto Similitudes::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) -> void
 {
   m_colorMaps = weightedColorMaps;
 }
@@ -207,7 +206,7 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
   const auto r1Factor = m_centreAttributes.dr1Mean * r1_1_minus_exp_neg_S;
   const auto r2Factor = m_centreAttributes.dr2Mean * r2_1_minus_exp_neg_S;
 
-  const auto colorMapGroup               = m_colorMaps->GetRandomGroup();
+  const auto colorMapGroup               = m_colorMaps.GetRandomGroup();
   static constexpr auto PROB_USE_BITMAPS = 0.7F;
   const auto useBitmaps                  = m_goomRand->ProbabilityOf(PROB_USE_BITMAPS);
 
@@ -230,9 +229,9 @@ auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
     simi.m_cosA2  = 0;
     simi.m_sinA2  = 0;
 
-    simi.m_colorMap = m_colorMaps->GetRandomColorMap(colorMapGroup);
+    simi.m_colorMap = m_colorMaps.GetRandomColorMap(colorMapGroup);
     simi.m_color =
-        m_colorMaps->GetRandomColor(m_colorMaps->GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
+        m_colorMaps.GetRandomColor(m_colorMaps.GetRandomColorMap(colorMapGroup), 0.0F, 1.0F);
 
     simi.m_currentPointBitmap = GetSimiBitmap(useBitmaps);
   }

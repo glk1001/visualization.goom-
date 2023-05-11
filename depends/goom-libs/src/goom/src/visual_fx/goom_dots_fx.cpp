@@ -86,7 +86,7 @@ private:
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
-  std::array<std::shared_ptr<const RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
+  std::array<COLOR::WeightedColorMaps, NUM_DOT_TYPES> m_dotColorMapsList{};
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
   RandomColorMaps m_randomColorMaps{m_defaultAlpha, *m_fxHelper->goomRand};
   RandomColorMapsManager m_randomColorMapsManager{};
@@ -320,8 +320,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
   static constexpr auto MIN_MIX_T = 0.1F;
   static constexpr auto MAX_MIX_T = 1.0F;
   return m_randomColorMaps.GetRandomColor(
-      *m_dotColorMapsList[0]->GetRandomColorMapSharedPtr(ColorMapGroup::MISC,
-                                                         RandomColorMaps::GetAllColorMapsTypes()),
+      *m_dotColorMapsList[0].GetRandomColorMapSharedPtr(ColorMapGroup::MISC,
+                                                        RandomColorMaps::GetAllColorMapsTypes()),
       MIN_MIX_T,
       MAX_MIX_T);
 }
@@ -335,14 +335,12 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ChangePixelBlender(
 inline auto GoomDotsFx::GoomDotsFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_dotColorMapsList.at(0)->GetColorMapsName()};
+  return {m_dotColorMapsList.at(0).GetColorMapsName()};
 }
 
 auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-
   const auto dotNum = weightedColorMaps.id;
 
   m_dotColorMapsList.at(dotNum) = weightedColorMaps.mainColorMaps;

@@ -37,7 +37,6 @@ using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
@@ -116,7 +115,7 @@ private:
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
   float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
 
-  std::shared_ptr<const RandomColorMaps> m_colorMaps{
+  COLOR::WeightedColorMaps m_colorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_fxHelper->goomRand)};
   ColorMapPtrWrapper m_currentColorMap{GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> ColorMapPtrWrapper;
@@ -243,8 +242,7 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
 
 inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> ColorMapPtrWrapper
 {
-  Expects(m_colorMaps != nullptr);
-  return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+  return m_colorMaps.GetRandomColorMap(m_colorMaps.GetRandomGroup());
 }
 
 inline auto ImageFx::ImageFxImpl::ChangePixelBlender(
@@ -271,14 +269,12 @@ auto ImageFx::ImageFxImpl::GetAcceptablePixelBlenderParams(
 inline auto ImageFx::ImageFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_colorMaps->GetColorMapsName()};
+  return {m_colorMaps.GetColorMapsName()};
 }
 
 inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-
   m_colorMaps            = weightedColorMaps.mainColorMaps;
   m_pixelColorIsDominant = m_fxHelper->goomRand->ProbabilityOf(0.0F);
   m_randBrightnessFactor = GetNewRandBrightnessFactor();

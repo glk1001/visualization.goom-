@@ -3,7 +3,6 @@
 #include "tentacle_driver.h"
 
 #include "color/color_maps.h"
-#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_logger.h"
@@ -160,8 +159,8 @@ auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
 auto TentacleDriver::SetWeightedColorMaps(
     const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  const auto baseMainColorMapName = weightedColorMaps.mainColorMaps->GetRandomColorMapName();
-  const auto baseLowColorMapName  = weightedColorMaps.lowColorMaps->GetRandomColorMapName();
+  const auto baseMainColorMapName = weightedColorMaps.mainColorMaps.GetRandomColorMapName();
+  const auto baseLowColorMapName  = weightedColorMaps.lowColorMaps.GetRandomColorMapName();
 
   static constexpr auto MIN_SATURATION       = 0.2F;
   static constexpr auto SATURATION_STEP_SIZE = 0.1F;

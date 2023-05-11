@@ -192,10 +192,6 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() noexcept -> std::
 inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-  Expects(weightedColorMaps.extraColorMaps != nullptr);
-
   const auto shapeNum = weightedColorMaps.id;
   m_shapes.at(shapeNum).SetWeightedMainColorMaps(weightedColorMaps.mainColorMaps);
   m_shapes.at(shapeNum).SetWeightedLowColorMaps(weightedColorMaps.lowColorMaps);

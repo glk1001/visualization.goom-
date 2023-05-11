@@ -18,7 +18,6 @@
 #include "utils/math/misc.h"
 
 #include <cmath>
-#include <memory>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::LINES
@@ -27,8 +26,8 @@ namespace GOOM::VISUAL_FX::LINES
 using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
-using COLOR::RandomColorMaps;
 using COLOR::SimpleColors;
+using COLOR::WeightedColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
@@ -107,8 +106,7 @@ LineMorph::LineMorph(IGoomDraw& draw,
 
 auto LineMorph::GetRandomColorMap() const noexcept -> COLOR::ColorMapPtrWrapper
 {
-  Expects(m_colorMaps != nullptr);
-  return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+  return m_colorMaps.GetRandomColorMap(m_colorMaps.GetRandomGroup());
 }
 
 auto LineMorph::Start() noexcept -> void
@@ -123,15 +121,14 @@ auto LineMorph::Start() noexcept -> void
 
 auto LineMorph::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return {m_colorMaps->GetColorMapsName()};
+  return {m_colorMaps.GetColorMapsName()};
 }
 
-auto LineMorph::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto LineMorph::SetWeightedColorMaps(const WeightedColorMaps& weightedMaps) noexcept -> void
 {
   m_colorMaps = weightedMaps;
   m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
-                                        {m_colorMaps, RandomColorMaps::GetAllColorMapsTypes()});
+                                        {m_colorMaps, WeightedColorMaps::GetAllColorMapsTypes()});
 }
 
 inline auto LineMorph::UpdateColorInfo() noexcept -> void
@@ -239,7 +236,7 @@ auto LineMorph::GetRandomLineColor() const noexcept -> Pixel
     return GetSimpleColor(static_cast<SimpleColors>(m_goomRand->GetNRand(NUM<SimpleColors>)),
                           m_defaultAlpha);
   }
-  return m_colorMaps->GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
+  return m_colorMaps.GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
 }
 
 inline auto LineMorph::GetFinalLineColor(const Pixel& color) const noexcept -> Pixel

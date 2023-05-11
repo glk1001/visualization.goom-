@@ -87,6 +87,7 @@ using ColorMapSharedPtr = std::shared_ptr<const IColorMap>;
 class ColorMaps
 {
 public:
+  ColorMaps() noexcept = default;
   explicit ColorMaps(PixelChannelType defaultAlpha) noexcept;
 
   auto SetDefaultAlpha(PixelChannelType defaultAlpha) noexcept -> void;
@@ -120,7 +121,7 @@ public:
   [[nodiscard]] static auto GetNumGroups() -> uint32_t;
 
 private:
-  PixelChannelType m_defaultAlpha;
+  PixelChannelType m_defaultAlpha = MAX_ALPHA;
 
   friend class RandomColorMaps;
   [[nodiscard]] static auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName colorMapName) noexcept
