@@ -132,6 +132,7 @@ public:
   [[nodiscard]] constexpr auto RFlt() const noexcept -> float;
   [[nodiscard]] constexpr auto GFlt() const noexcept -> float;
   [[nodiscard]] constexpr auto BFlt() const noexcept -> float;
+  [[nodiscard]] constexpr auto AFlt() const noexcept -> float;
 
   [[nodiscard]] constexpr auto IsBlack() const noexcept -> bool;
 
@@ -298,6 +299,11 @@ constexpr auto Pixel::GFlt() const noexcept -> float
 constexpr auto Pixel::BFlt() const noexcept -> float
 {
   return static_cast<float>(B()) / channel_limits<float>::max();
+}
+
+constexpr auto Pixel::AFlt() const noexcept -> float
+{
+  return static_cast<float>(A()) / MAX_ALPHA;
 }
 
 constexpr auto Rgba(const Pixel& color) noexcept -> PixelIntType
