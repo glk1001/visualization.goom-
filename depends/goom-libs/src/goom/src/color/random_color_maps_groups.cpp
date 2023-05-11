@@ -21,7 +21,7 @@ namespace IMPL
 {
 
 auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "AllMapsUnweighted";
 
@@ -41,7 +41,7 @@ auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "AllStandardMaps";
 
@@ -77,7 +77,7 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept
   // clang-format on
 }
 
-auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_ptr<RandomColorMaps>
+auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "AllSlimMaps";
 
@@ -114,7 +114,7 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> std::shared_pt
 }
 
 auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialStandardMaps";
 
@@ -150,7 +150,7 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialSlimMaps";
 
@@ -187,7 +187,7 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingStandardMaps";
 
@@ -223,7 +223,7 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingSlimMaps";
 
@@ -260,7 +260,7 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "BlueStandardMaps";
 
@@ -280,7 +280,7 @@ auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "RedStandardMaps";
 
@@ -300,7 +300,7 @@ auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "GreenStandardMaps";
 
@@ -320,7 +320,7 @@ auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "YellowStandardMaps";
 
@@ -340,7 +340,7 @@ auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "OrangeStandardMaps";
 
@@ -360,7 +360,7 @@ auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "PurpleStandardMaps";
 
@@ -380,7 +380,7 @@ auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "CitiesStandardMaps";
 
@@ -400,7 +400,7 @@ auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "SeasonsStandardMaps";
 
@@ -420,7 +420,7 @@ auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "HeatStandardMaps";
 
@@ -440,7 +440,7 @@ auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "ColdStandardMaps";
 
@@ -460,7 +460,7 @@ auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "PastelStandardMaps";
 
@@ -480,7 +480,7 @@ auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "DivergingBlackStandardMaps";
 
@@ -500,7 +500,7 @@ auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
 }
 
 auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> std::shared_ptr<RandomColorMaps>
+    -> std::shared_ptr<WeightedColorMaps>
 {
   static constexpr auto* MAPS_NAME = "WesAndersonMaps";
 
@@ -528,7 +528,7 @@ RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
 }
 
 auto RandomColorMapsGroups::MakeRandomColorMapsGroup(
-    const Groups randomColorMapsGroup) const noexcept -> std::shared_ptr<RandomColorMaps>
+    const Groups randomColorMapsGroup) const noexcept -> std::shared_ptr<WeightedColorMaps>
 {
   switch (randomColorMapsGroup)
   {

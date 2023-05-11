@@ -14,7 +14,7 @@ class AudioSamples;
 
 namespace COLOR
 {
-class RandomColorMaps;
+class WeightedColorMaps;
 }
 } // namespace GOOM
 
@@ -52,9 +52,9 @@ public:
   struct WeightedColorMaps
   {
     uint32_t id                                                  = 0;
-    std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps  = nullptr;
-    std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps   = nullptr;
-    std::shared_ptr<const COLOR::RandomColorMaps> extraColorMaps = nullptr;
+    std::shared_ptr<const COLOR::WeightedColorMaps> mainColorMaps  = nullptr;
+    std::shared_ptr<const COLOR::WeightedColorMaps> lowColorMaps   = nullptr;
+    std::shared_ptr<const COLOR::WeightedColorMaps> extraColorMaps = nullptr;
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
