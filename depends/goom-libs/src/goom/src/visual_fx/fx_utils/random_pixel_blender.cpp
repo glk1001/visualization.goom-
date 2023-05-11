@@ -162,10 +162,10 @@ auto RandomPixelBlender::GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc
 auto RandomPixelBlender::GetAlphaPixelBlendFunc() -> PixelBlendFunc
 {
   return [](const Pixel& bgndColor,
-            [[maybe_unused]] const uint32_t intBuffIntensity,
+            const uint32_t intBuffIntensity,
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
-  { return GetColorAlphaBlend(bgndColor, fgndColor, newAlpha); };
+  { return GetColorAlphaBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
 }
 
 auto RandomPixelBlender::GetSameLumaMixPixelBlendFunc(const float lumaMixT) -> PixelBlendFunc

@@ -43,6 +43,11 @@ namespace GOOM::UTILS::GRAPHICS
                                                 const Pixel& fgndColor,
                                                 PixelChannelType newAlpha) -> Pixel;
 
+[[nodiscard]] constexpr auto GetColorAlphaBlend(const Pixel& bgndColor,
+                                                uint32_t fgndIntBuffIntensity,
+                                                const Pixel& fgndColor,
+                                                PixelChannelType newAlpha) -> Pixel;
+
 constexpr auto GetColorAddPixelBlend(const Pixel& bgndColor,
                                      const uint32_t fgndIntBuffIntensity,
                                      const Pixel& fgndColor,
@@ -154,6 +159,22 @@ constexpr auto GetColorAlphaBlend(const Pixel& bgndColor,
   const auto newB = static_cast<PixelChannelType>(bgndB + ((fgndA * (fgndB - bgndB)) / MAX_ALPHA));
 
   return Pixel{newR, newG, newB, newAlpha};
+}
+
+constexpr auto GetColorAlphaBlend(const Pixel& bgndColor,
+                                  const uint32_t fgndIntBuffIntensity,
+                                  const Pixel& fgndColor,
+                                  const PixelChannelType newAlpha) -> Pixel
+{
+  if (fgndColor.A() == MAX_ALPHA)
+  {
+    return GetColorAddPixelBlend(bgndColor, fgndIntBuffIntensity, fgndColor, newAlpha);
+  }
+
+  return GetColorAddPixelBlend(bgndColor,
+                               fgndIntBuffIntensity,
+                               GetColorAlphaBlend(bgndColor, fgndColor, newAlpha),
+                               newAlpha);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS
