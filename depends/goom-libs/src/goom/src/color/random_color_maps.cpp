@@ -198,6 +198,16 @@ WeightedRandomColorMaps::WeightedRandomColorMaps(const PixelChannelType defaultA
 {
 }
 
+WeightedRandomColorMaps::WeightedRandomColorMaps(
+    const WeightedRandomColorMaps& weightedRandomColorMaps,
+    PixelChannelType newDefaultAlpha) noexcept
+  : RandomColorMaps{newDefaultAlpha,
+                    weightedRandomColorMaps.GetGoomRand(),
+                    weightedRandomColorMaps.GetColorMapsName()},
+    m_weights{weightedRandomColorMaps.m_weights}
+{
+}
+
 auto WeightedRandomColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup
 {
   if (not m_weightsActive)

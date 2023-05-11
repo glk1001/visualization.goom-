@@ -60,6 +60,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::WeightedRandomColorMaps;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
@@ -99,6 +100,7 @@ private:
   const FxHelper* m_fxHelper;
   BitmapDrawer m_bitmapDrawer;
   PixelDrawer m_pixelDrawer;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   Colorizer m_colorizer;
 
@@ -224,7 +226,7 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
   : m_fxHelper{&fxHelper},
     m_bitmapDrawer{*fxHelper.draw},
     m_pixelDrawer{*fxHelper.draw},
-    m_colorizer{*fxHelper.goomRand},
+    m_colorizer{*fxHelper.goomRand, m_defaultAlpha},
     m_pixelBlender{*fxHelper.goomRand},
     m_fractal{std::make_unique<Fractal>(fxHelper.draw->GetDimensions(),
                                         *fxHelper.goomRand,
@@ -276,8 +278,11 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetCurrentColorMapsNames() const noe
 inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_fractal->SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
-  m_colorizer.SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
+  const auto newWeightedMainColorMaps =
+      WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
+
+  m_fractal->SetWeightedColorMaps(newWeightedMainColorMaps);
+  m_colorizer.SetWeightedColorMaps(newWeightedMainColorMaps);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::Start() noexcept -> void

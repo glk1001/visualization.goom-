@@ -52,6 +52,7 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   StarMaker m_starMaker;
   StarDrawer m_starDrawer;
   StarTypesContainer m_starTypesContainer;
@@ -177,12 +178,12 @@ inline auto FlyingStarsFx::FlyingStarsImpl::GetCurrentStarTypeColorMapsNames() c
 auto FlyingStarsFx::FlyingStarsImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  //LogInfo("Setting weighted color maps for id {}", weightedColorMaps.id);
-  //LogInfo("Main color maps: {}", weightedColorMaps.mainColorMaps->GetColorMapsName());
-  //LogInfo("Low color maps: {}", weightedColorMaps.lowColorMaps->GetColorMapsName());
+  const auto newWeightedColorMaps =
+      GetWeightedColorMapsWithNewAlpha(weightedColorMaps, m_defaultAlpha);
 
-  m_starTypesContainer.SetWeightedColorMaps(
-      weightedColorMaps.id, weightedColorMaps.mainColorMaps, weightedColorMaps.lowColorMaps);
+  m_starTypesContainer.SetWeightedColorMaps(newWeightedColorMaps.id,
+                                            newWeightedColorMaps.mainColorMaps,
+                                            newWeightedColorMaps.lowColorMaps);
 
   ChangeColorMapMode();
 }

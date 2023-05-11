@@ -34,7 +34,8 @@ public:
         const UTILS::MATH::IGoomRand& goomRand,
         const PluginInfo& goomInfo,
         COLOR::RandomColorMapsManager& colorMapsManager,
-        const Params& params) noexcept;
+        const Params& params,
+        PixelChannelType defaultAlpha) noexcept;
 
   auto SetWeightedMainColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
       -> void;
@@ -75,15 +76,14 @@ private:
                                                  const UTILS::MATH::IGoomRand& goomRand,
                                                  const PluginInfo& goomInfo,
                                                  COLOR::RandomColorMapsManager& colorMapsManager,
-                                                 const Params& params) noexcept
+                                                 const Params& params,
+                                                 PixelChannelType defaultAlpha) noexcept
       -> std::vector<ShapePart>;
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 
   bool m_varyDotRadius = false;
-  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointMainColorId{
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
-  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId{
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
+  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointMainColorId;
+  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId;
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;
   UTILS::TValue m_meetingPointColorsT{
       {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}

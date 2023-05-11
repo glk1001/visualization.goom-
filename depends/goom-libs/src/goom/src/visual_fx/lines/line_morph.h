@@ -71,7 +71,7 @@ private:
   COLOR::WeightedRandomColorMaps m_colorMaps{};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_currentColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
+      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, m_defaultAlpha)};
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;

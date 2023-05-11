@@ -88,7 +88,7 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   std::array<WeightedRandomColorMaps, NUM_DOT_TYPES> m_dotColorMapsList{};
-  PixelChannelType m_defaultAlpha = MAX_ALPHA;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   RandomColorMaps m_randomColorMaps{m_defaultAlpha, *m_fxHelper->goomRand};
   RandomColorMapsManager m_randomColorMapsManager{};
   std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds{
@@ -217,7 +217,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
 
   for (auto& colorMapsId : colorMapsIds)
   {
-    colorMapsId = m_randomColorMapsManager.AddDefaultColorMapInfo(*m_fxHelper->goomRand);
+    colorMapsId =
+        m_randomColorMapsManager.AddDefaultColorMapInfo(*m_fxHelper->goomRand, m_defaultAlpha);
   }
 
   return colorMapsIds;
@@ -344,7 +345,9 @@ auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
 {
   const auto dotNum = weightedColorMaps.id;
 
-  m_dotColorMapsList.at(dotNum) = weightedColorMaps.mainColorMaps;
+  m_dotColorMapsList.at(dotNum) =
+      WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
+
   m_randomColorMapsManager.UpdateColorMapInfo(
       m_colorMapIds.at(dotNum),
       {m_dotColorMapsList.at(dotNum), RandomColorMaps::GetAllColorMapsTypes()});

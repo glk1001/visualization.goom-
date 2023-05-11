@@ -2,6 +2,7 @@
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 
 #include <cmath>
 
@@ -9,6 +10,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::ColorMaps;
+using COLOR::MakeSharedAllMapsUnweighted;
 using COLOR::WeightedRandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
@@ -22,8 +24,11 @@ static constexpr auto SINGLE_COLORS_WEIGHT         = 05.0F;
 static constexpr auto SINE_MIX_COLORS_WEIGHT       = 05.0F;
 static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 
-Colorizer::Colorizer(const IGoomRand& goomRand)
+Colorizer::Colorizer(const IGoomRand& goomRand, const PixelChannelType defaultAlpha)
   : m_goomRand{&goomRand},
+    m_colorMaps{MakeSharedAllMapsUnweighted(*m_goomRand, defaultAlpha)},
+    m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
+    m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
     m_colorModeWeights{
         *m_goomRand,
         {

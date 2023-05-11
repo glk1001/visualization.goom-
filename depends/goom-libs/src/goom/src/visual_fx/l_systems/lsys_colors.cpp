@@ -17,7 +17,8 @@ using UTILS::MATH::IGoomRand;
 
 using TintProperties = ColorMaps::TintProperties;
 
-LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
+LSysColors::LSysColors(const IGoomRand& goomRand, const PixelChannelType defaultAlpha) noexcept
+  : m_goomRand{&goomRand}, m_defaultAlpha{defaultAlpha}
 {
 }
 

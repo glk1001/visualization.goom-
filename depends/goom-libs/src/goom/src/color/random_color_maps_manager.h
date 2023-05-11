@@ -37,8 +37,8 @@ public:
 
   RandomColorMapsManager() = default;
 
-  [[nodiscard]] auto AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand) noexcept
-      -> ColorMapId;
+  [[nodiscard]] auto AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand,
+                                            PixelChannelType defaultAlpha) noexcept -> ColorMapId;
   [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) noexcept -> ColorMapId;
 
   auto UpdateColorMapInfo(ColorMapId id, const ColorMapInfo& info) noexcept -> void;

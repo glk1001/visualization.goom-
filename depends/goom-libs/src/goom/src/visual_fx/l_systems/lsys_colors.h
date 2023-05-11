@@ -35,7 +35,7 @@ private:
 class LSysColors
 {
 public:
-  explicit LSysColors(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  LSysColors(const UTILS::MATH::IGoomRand& goomRand, PixelChannelType defaultAlpha) noexcept;
 
   auto SetNumColors(uint32_t numColors) noexcept -> void;
   auto SetMaxNumColorSteps(uint32_t numSteps) noexcept -> void;
@@ -60,7 +60,7 @@ private:
   float m_globalBrightness = 1.0F;
   uint8_t m_lineWidth      = 1U;
 
-  PixelChannelType m_defaultAlpha = MAX_ALPHA;
+  PixelChannelType m_defaultAlpha;
   COLOR::ColorMaps m_colorMaps{m_defaultAlpha};
   static constexpr auto NUM_MAIN_COLORS = 5U;
   static constexpr float MIN_SATURATION = 0.5F;

@@ -22,6 +22,7 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::GetSimpleColor;
 using COLOR::SimpleColors;
+using COLOR::WeightedRandomColorMaps;
 using FX_UTILS::RandomPixelBlender;
 using LINES::LineMorph;
 using LINES::LineType;
@@ -68,7 +69,7 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
-  PixelChannelType m_defaultAlpha = MAX_ALPHA;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   Pixel m_blackLineColor          = GetSimpleColor(SimpleColors::BLACK, m_defaultAlpha);
 
   static_assert(2 == NUM_LINES);
@@ -255,7 +256,11 @@ inline auto LinesFx::LinesImpl::SetWeightedColorMaps(
 {
   const auto lineNum = weightedColorMaps.id;
   Expects(lineNum < NUM_LINES);
-  m_lineMorphs.at(lineNum).SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
+
+  const auto mainColorMaps =
+      WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
+
+  m_lineMorphs.at(lineNum).SetWeightedColorMaps(mainColorMaps);
 }
 
 inline auto LinesFx::LinesImpl::CanResetDestLines() const noexcept -> bool

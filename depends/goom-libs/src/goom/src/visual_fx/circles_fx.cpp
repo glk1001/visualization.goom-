@@ -47,7 +47,8 @@ public:
 private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
-  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  Point2dInt m_screenCentre       = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   static constexpr uint32_t NUM_CIRCLES = 5;
   Weights<CircleParamsBuilder::CircleStartModes> m_weightedCircleStartModes;
@@ -206,9 +207,13 @@ inline auto CirclesFx::CirclesFxImpl::GetCurrentColorMapsNames() noexcept
 inline auto CirclesFx::CirclesFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_circles->SetWeightedColorMaps(weightedColorMaps.mainColorMaps, weightedColorMaps.lowColorMaps);
+  const auto newWeightedColorMaps =
+      GetWeightedColorMapsWithNewAlpha(weightedColorMaps, m_defaultAlpha);
 
-  m_lastWeightedColorMaps = weightedColorMaps;
+  m_circles->SetWeightedColorMaps(newWeightedColorMaps.mainColorMaps,
+                                  newWeightedColorMaps.lowColorMaps);
+
+  m_lastWeightedColorMaps = newWeightedColorMaps;
 }
 
 inline auto CirclesFx::CirclesFxImpl::ChangePixelBlender(

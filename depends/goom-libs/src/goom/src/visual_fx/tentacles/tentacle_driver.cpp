@@ -94,9 +94,11 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
-                               const CirclesTentacleLayout& tentacleLayout) noexcept
+                               const CirclesTentacleLayout& tentacleLayout,
+                               const PixelChannelType defaultAlpha) noexcept
   : m_goomRand{&goomRand},
     m_screenCentre{draw.GetDimensions().GetCentrePoint()},
+    m_colorMaps{defaultAlpha},
     m_tentacleParams{
         NUM_TENTACLE_NODES, TENTACLE_LENGTH, MIN_SINE_FREQUENCY, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
     m_tentaclePlotter{draw, *m_goomRand},

@@ -50,9 +50,9 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
-  RandomColorMapsManager m_colorMapsManager{};
-
   Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  RandomColorMapsManager m_colorMapsManager{};
 
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
@@ -166,7 +166,8 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
        SHAPE0_MAX_NUM_PATHS,
        initialShapeZoomMidpoints.at(0),
        MIN_NUM_SHAPE_PATH_STEPS,
-       MAX_NUM_SHAPE_PATH_STEPS}},
+       MAX_NUM_SHAPE_PATH_STEPS},
+       m_defaultAlpha},
        /**
        Shape{m_goomRand,
        m_goomInfo,
@@ -192,10 +193,13 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() noexcept -> std::
 inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  const auto shapeNum = weightedColorMaps.id;
-  m_shapes.at(shapeNum).SetWeightedMainColorMaps(weightedColorMaps.mainColorMaps);
-  m_shapes.at(shapeNum).SetWeightedLowColorMaps(weightedColorMaps.lowColorMaps);
-  m_shapes.at(shapeNum).SetWeightedInnerColorMaps(weightedColorMaps.extraColorMaps);
+  const auto newWeightedColorMaps =
+      GetWeightedColorMapsWithNewAlpha(weightedColorMaps, m_defaultAlpha);
+
+  const auto shapeNum = newWeightedColorMaps.id;
+  m_shapes.at(shapeNum).SetWeightedMainColorMaps(newWeightedColorMaps.mainColorMaps);
+  m_shapes.at(shapeNum).SetWeightedLowColorMaps(newWeightedColorMaps.lowColorMaps);
+  m_shapes.at(shapeNum).SetWeightedInnerColorMaps(newWeightedColorMaps.extraColorMaps);
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void

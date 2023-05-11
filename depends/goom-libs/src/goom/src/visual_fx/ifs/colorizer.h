@@ -20,7 +20,7 @@ namespace GOOM::VISUAL_FX::IFS
 class Colorizer
 {
 public:
-  explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
+  Colorizer(const UTILS::MATH::IGoomRand& goomRand, PixelChannelType defaultAlpha);
 
   [[nodiscard]] auto GetWeightedColorMaps() const -> const COLOR::WeightedRandomColorMaps&;
   auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
@@ -49,14 +49,11 @@ public:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 
-  COLOR::WeightedRandomColorMaps m_colorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
+  COLOR::WeightedRandomColorMaps m_colorMaps;
   COLOR::RandomColorMapsManager m_colorMapsManager{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id;
   COLOR::ColorMapSharedPtr m_prevMixerMap1{nullptr};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id;
   COLOR::ColorMapSharedPtr m_prevMixerMap2{nullptr};
   auto UpdateMixerMaps() -> void;
   mutable uint32_t m_countSinceColorMapChange              = 0;

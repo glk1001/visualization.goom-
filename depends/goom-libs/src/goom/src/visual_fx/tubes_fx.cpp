@@ -145,7 +145,8 @@ public:
 private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
-  uint64_t m_updateNum = 0;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  uint64_t m_updateNum            = 0;
 
   GoomDrawToContainer m_drawToContainer{m_fxHelper->draw->GetDimensions()};
   GoomDrawToMany m_drawToMany{
@@ -350,13 +351,13 @@ auto TubesFx::TubeFxImpl::GetCurrentColorMapsNames() const noexcept -> std::vect
 auto TubesFx::TubeFxImpl::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
     -> void
 {
-  m_mainColorMaps = weightedColorMaps.mainColorMaps;
+  m_mainColorMaps = WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
   for (auto& tube : m_tubes)
   {
     tube.SetWeightedMainColorMaps(m_mainColorMaps);
   }
 
-  m_lowColorMaps = weightedColorMaps.lowColorMaps;
+  m_lowColorMaps = WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha};
   for (auto& tube : m_tubes)
   {
     tube.SetWeightedLowColorMaps(m_lowColorMaps);

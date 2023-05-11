@@ -71,6 +71,7 @@ public:
       -> Pixel;
 
 protected:
+  [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&;
   [[nodiscard]] auto GetRandomColorMapNameFromGroup(ColorMapGroup colorMapGroup) const noexcept
       -> COLOR_DATA::ColorMapName;
 
@@ -105,6 +106,8 @@ public:
                           const UTILS::MATH::IGoomRand& goomRand,
                           const UTILS::MATH::Weights<ColorMapGroup>& weights,
                           const std::string& colorMapsName = "") noexcept;
+  WeightedRandomColorMaps(const WeightedRandomColorMaps& weightedRandomColorMaps,
+                          PixelChannelType newDefaultAlpha) noexcept;
 
   [[nodiscard]] auto GetRandomGroup() const noexcept -> ColorMapGroup override;
   [[nodiscard]] auto GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName override;
@@ -141,6 +144,11 @@ inline auto RandomColorMaps::GetAllColorMapsTypes() noexcept -> const std::set<C
 inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::string&
 {
   return m_colorMapsName;
+}
+
+inline auto RandomColorMaps::GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&
+{
+  return *m_goomRand;
 }
 
 } // namespace GOOM::COLOR

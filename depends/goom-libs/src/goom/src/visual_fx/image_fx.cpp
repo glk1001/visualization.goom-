@@ -108,6 +108,7 @@ private:
   const FxHelper* m_fxHelper;
   PixelDrawer m_pixelDrawer;
   std::string m_resourcesDirectory;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   int32_t m_availableWidth  = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - CHUNK_WIDTH;
   int32_t m_availableHeight = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - CHUNK_HEIGHT;
@@ -276,7 +277,7 @@ inline auto ImageFx::ImageFxImpl::GetCurrentColorMapsNames() const noexcept
 inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  m_colorMaps            = weightedColorMaps.mainColorMaps;
+  m_colorMaps            = WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
   m_pixelColorIsDominant = m_fxHelper->goomRand->ProbabilityOf(0.0F);
   m_randBrightnessFactor = GetNewRandBrightnessFactor();
 }
