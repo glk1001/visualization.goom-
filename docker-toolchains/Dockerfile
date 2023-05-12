@@ -37,7 +37,9 @@ ARG CLANG_VER=""
 COPY "llvm.sh" /tmp/llvm.sh
 WORKDIR /tmp
 
-RUN apt-get update                                       && \
+RUN ln -s /usr/local/bin/gcc /usr/local/bin/gcc-13       && \
+    ln -s /usr/local/bin/g++ /usr/local/bin/g++-13       && \
+    apt-get update                                       && \
     apt-get install -y                                      \
       --no-install-recommends software-properties-common    \
       lsb-release                                           \
