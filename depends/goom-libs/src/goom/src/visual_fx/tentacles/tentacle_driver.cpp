@@ -180,9 +180,9 @@ auto TentacleDriver::SetWeightedColorMaps(
       {
         const auto tintProperties = ColorMaps::TintProperties{saturation(), lightness()};
 
-        tentacle.mainColorMap =
+        tentacle.mainColorMapPtr =
             m_colorMaps.GetTintedColorMapPtr(baseMainColorMapName, tintProperties);
-        tentacle.lowColorMap =
+        tentacle.lowColorMapPtr =
             m_colorMaps.GetTintedColorMapPtr(baseLowColorMapName, tintProperties);
 
         saturation.Increment();
@@ -334,14 +334,14 @@ auto TentacleDriver::DrawTentacles() noexcept -> void
     auto& tentacleAndAttributes = m_tentacles.at(i);
 
     tentacleAndAttributes.currentMainColor =
-        tentacleAndAttributes.mainColorMap->GetColor(m_currentColorT());
+        tentacleAndAttributes.mainColorMapPtr->GetColor(m_currentColorT());
     tentacleAndAttributes.currentLowColor =
-        tentacleAndAttributes.lowColorMap->GetColor(m_currentColorT());
+        tentacleAndAttributes.lowColorMapPtr->GetColor(m_currentColorT());
 
     IterateTentacle(tentacleAndAttributes.tentacle3D);
 
-    m_tentaclePlotter.SetEndDotColors(
-        {m_dominantMainColorMap->GetColor(colorT()), m_dominantLowColorMap->GetColor(colorT())});
+    m_tentaclePlotter.SetEndDotColors({m_dominantMainColorMapPtr->GetColor(colorT()),
+                                       m_dominantLowColorMapPtr->GetColor(colorT())});
 
     m_tentaclePlotter.SetTentacleLineThickness(GetLineThickness(i));
 
@@ -377,11 +377,11 @@ auto TentacleDriver::GetMixedColors(const float dominantT,
                                     const float brightness) const -> MultiplePixels
 {
   const auto mixedColors =
-      MultiplePixels{ColorMaps::GetColorMix(m_dominantMainColorMap->GetColor(dominantT),
-                                            tentacleAndAttributes.mainColorMap->GetColor(nodeT),
+      MultiplePixels{ColorMaps::GetColorMix(m_dominantMainColorMapPtr->GetColor(dominantT),
+                                            tentacleAndAttributes.mainColorMapPtr->GetColor(nodeT),
                                             m_mainColorSegmentMixT),
-                     ColorMaps::GetColorMix(m_dominantLowColorMap->GetColor(dominantT),
-                                            tentacleAndAttributes.lowColorMap->GetColor(nodeT),
+                     ColorMaps::GetColorMix(m_dominantLowColorMapPtr->GetColor(dominantT),
+                                            tentacleAndAttributes.lowColorMapPtr->GetColor(nodeT),
                                             m_lowColorSegmentMixT)};
 
   return {

@@ -131,7 +131,7 @@ auto LineMorph::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps
 
 inline auto LineMorph::UpdateColorInfo() noexcept -> void
 {
-  m_currentColorMapID =
+  m_currentColorMapPtr =
       m_colorMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
   static constexpr auto PROB_USE_LINE_COLOR = 0.5F;
@@ -374,7 +374,7 @@ inline auto LineMorph::GetMainColor(const Pixel& lineColor, const float t) const
   {
     return lineColor;
   }
-  return m_currentColorMapID->GetColor(t);
+  return m_currentColorMapPtr->GetColor(t);
 }
 
 } // namespace GOOM::VISUAL_FX::LINES

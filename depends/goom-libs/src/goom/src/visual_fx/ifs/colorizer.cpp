@@ -53,22 +53,22 @@ auto Colorizer::InitColorMaps() -> void
 {
   const auto& colorMapTypes = GetNextColorMapTypes();
 
-  m_mixerColorMap1 = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
-  m_mixerColorMap2 = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+  m_mixerColorMapPtr1 = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+  m_mixerColorMapPtr2 = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
 
-  m_previousMixerColorMap1 = m_mixerColorMap1;
-  m_previousMixerColorMap2 = m_mixerColorMap2;
+  m_previousMixerColorMapPtr1 = m_mixerColorMapPtr1;
+  m_previousMixerColorMapPtr2 = m_mixerColorMapPtr2;
 }
 
 auto Colorizer::UpdateMixerMaps() -> void
 {
   const auto& colorMapTypes = GetNextColorMapTypes();
 
-  m_previousMixerColorMap1 = m_mixerColorMap1;
-  m_mixerColorMap1         = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+  m_previousMixerColorMapPtr1 = m_mixerColorMapPtr1;
+  m_mixerColorMapPtr1         = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
 
-  m_previousMixerColorMap2 = m_mixerColorMap2;
-  m_mixerColorMap2         = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
+  m_previousMixerColorMapPtr2 = m_mixerColorMapPtr2;
+  m_mixerColorMapPtr2         = m_colorMaps.GetRandomColorMapSharedPtr(colorMapTypes);
 }
 
 inline auto Colorizer::GetNextColorMapTypes() const noexcept
@@ -154,13 +154,13 @@ auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
 
 auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
 {
-  Expects(m_mixerColorMap1 != nullptr);
-  Expects(m_mixerColorMap2 != nullptr);
-  Expects(m_previousMixerColorMap1 != nullptr);
-  Expects(m_previousMixerColorMap2 != nullptr);
+  Expects(m_mixerColorMapPtr1 != nullptr);
+  Expects(m_mixerColorMapPtr2 != nullptr);
+  Expects(m_previousMixerColorMapPtr1 != nullptr);
+  Expects(m_previousMixerColorMapPtr2 != nullptr);
 
-  const auto nextColor =
-      ColorMaps::GetColorMix(m_mixerColorMap1->GetColor(tX), m_mixerColorMap2->GetColor(tY), t);
+  const auto nextColor = ColorMaps::GetColorMix(
+      m_mixerColorMapPtr1->GetColor(tX), m_mixerColorMapPtr2->GetColor(tY), t);
   if (0 == m_countSinceColorMapChange)
   {
     return nextColor;
@@ -170,7 +170,7 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
                            static_cast<float>(m_colorMapChangeCompleted);
   --m_countSinceColorMapChange;
   const auto prevNextColor = ColorMaps::GetColorMix(
-      m_previousMixerColorMap1->GetColor(tX), m_previousMixerColorMap2->GetColor(tY), t);
+      m_previousMixerColorMapPtr1->GetColor(tX), m_previousMixerColorMapPtr2->GetColor(tY), t);
   return ColorMaps::GetColorMix(nextColor, prevNextColor, tTransition);
 }
 

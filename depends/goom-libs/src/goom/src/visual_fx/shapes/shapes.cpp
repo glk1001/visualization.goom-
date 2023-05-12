@@ -63,7 +63,7 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
 
 auto Shape::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
-  m_meetingPointMainColorMap =
+  m_meetingPointMainColorMapPtr =
       weightedMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
   std::for_each(begin(m_shapeParts),
@@ -74,7 +74,7 @@ auto Shape::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps
 
 auto Shape::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
-  m_meetingPointLowColorMap =
+  m_meetingPointLowColorMapPtr =
       weightedMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
   std::for_each(begin(m_shapeParts),
@@ -143,8 +143,8 @@ auto Shape::Draw() noexcept -> void
 
 inline auto Shape::GetCurrentMeetingPointColors() const noexcept -> MultiplePixels
 {
-  return {m_meetingPointMainColorMap->GetColor(m_meetingPointColorsT()),
-          m_meetingPointLowColorMap->GetColor(m_meetingPointColorsT())};
+  return {m_meetingPointMainColorMapPtr->GetColor(m_meetingPointColorsT()),
+          m_meetingPointLowColorMapPtr->GetColor(m_meetingPointColorsT())};
 }
 
 inline auto Shape::GetBrightnessAttenuation() const noexcept -> float

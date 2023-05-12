@@ -51,10 +51,10 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 
   COLOR::WeightedRandomColorMaps m_colorMaps;
-  COLOR::ColorMapSharedPtr m_mixerColorMap1{nullptr};
-  COLOR::ColorMapSharedPtr m_previousMixerColorMap1{nullptr};
-  COLOR::ColorMapSharedPtr m_mixerColorMap2{nullptr};
-  COLOR::ColorMapSharedPtr m_previousMixerColorMap2{nullptr};
+  COLOR::ColorMapSharedPtr m_mixerColorMapPtr1         = nullptr;
+  COLOR::ColorMapSharedPtr m_previousMixerColorMapPtr1 = nullptr;
+  COLOR::ColorMapSharedPtr m_mixerColorMapPtr2         = nullptr;
+  COLOR::ColorMapSharedPtr m_previousMixerColorMapPtr2 = nullptr;
   auto UpdateMixerMaps() -> void;
   [[nodiscard]] auto GetNextColorMapTypes() const noexcept
       -> const std::set<COLOR::WeightedRandomColorMaps::ColorMapTypes>&;

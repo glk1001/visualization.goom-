@@ -19,9 +19,9 @@ class ShapePath
 public:
   struct ColorInfo
   {
-    COLOR::ColorMapSharedPtr mainColorMapPtr{};
-    COLOR::ColorMapSharedPtr lowColorMapPtr{};
-    COLOR::ColorMapSharedPtr innerColorMapPtr{};
+    COLOR::ColorMapSharedPtr mainColorMapPtr  = nullptr;
+    COLOR::ColorMapSharedPtr lowColorMapPtr   = nullptr;
+    COLOR::ColorMapSharedPtr innerColorMapPtr = nullptr;
     float chromaFactor = 1.0F;
   };
   ShapePath(DRAW::IGoomDraw& draw,
