@@ -33,15 +33,15 @@ public:
   auto operator=(const ColorMapPtrWrapper&) -> ColorMapPtrWrapper& = default;
   auto operator=(ColorMapPtrWrapper&&) -> ColorMapPtrWrapper&      = default;
 
-  [[nodiscard]] auto GetNumStops() const -> size_t override;
-  [[nodiscard]] auto GetMapName() const -> COLOR_DATA::ColorMapName override;
-  [[nodiscard]] auto GetColor(float t) const -> Pixel override;
+  [[nodiscard]] auto GetNumStops() const noexcept -> size_t override;
+  [[nodiscard]] auto GetMapName() const noexcept -> COLOR_DATA::ColorMapName override;
+  [[nodiscard]] auto GetColor(float t) const noexcept -> Pixel override;
 
-  [[nodiscard]] auto IsNotNull() const -> bool;
+  [[nodiscard]] auto IsNotNull() const noexcept -> bool;
 
 protected:
-  [[nodiscard]] auto GetColorMap() const -> const IColorMap& { return *m_colorMap; }
-  [[nodiscard]] auto GetDefaultAlpha() const -> PixelChannelType { return m_defaultAlpha; }
+  [[nodiscard]] auto GetColorMap() const noexcept -> const IColorMap& { return *m_colorMap; }
+  [[nodiscard]] auto GetDefaultAlpha() const noexcept -> PixelChannelType { return m_defaultAlpha; }
 
 private:
   const IColorMap* m_colorMap;
@@ -90,13 +90,13 @@ public:
   ColorMaps() noexcept = default;
   explicit ColorMaps(PixelChannelType defaultAlpha) noexcept;
 
-  auto SetDefaultAlpha(PixelChannelType defaultAlpha) noexcept -> void;
+  [[nodiscard]] static auto GetColorMix(const Pixel& color1, const Pixel& color2, float t) noexcept
+      -> Pixel;
 
-  static auto GetColorMix(const Pixel& color1, const Pixel& color2, float t) -> Pixel;
-
-  [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
-  using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;
-  [[nodiscard]] static auto GetColorMapNames(ColorMapGroup colorMapGroup) -> const ColorMapNames&;
+  [[nodiscard]] static auto GetNumGroups() noexcept -> uint32_t;
+  [[nodiscard]] static auto GetNumColorMapNames() noexcept -> uint32_t;
+  [[nodiscard]] static auto GetColorMapNames(ColorMapGroup colorMapGroup) noexcept
+      -> const std::vector<COLOR_DATA::ColorMapName>&;
 
   [[nodiscard]] auto GetColorMap(COLOR_DATA::ColorMapName colorMapName) const noexcept
       -> ColorMapPtrWrapper;
@@ -118,8 +118,6 @@ public:
                                           const TintProperties& tintProperties) const noexcept
       -> ColorMapSharedPtr;
 
-  [[nodiscard]] static auto GetNumGroups() -> uint32_t;
-
 private:
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
 
@@ -128,36 +126,23 @@ private:
       -> ColorMapSharedPtr;
 };
 
-//constexpr size_t to_int(const ColorMapGroup i) { return static_cast<size_t>(i); }
-template<class T>
-constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
-{
-  return arr.at(static_cast<size_t>(idx));
-}
-
-template<class T>
-constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx)
-{
-  return arr.at(static_cast<size_t>(idx));
-}
-
 inline ColorMapPtrWrapper::ColorMapPtrWrapper(const IColorMap* const colorMap,
                                               const PixelChannelType defaultAlpha) noexcept
   : m_colorMap{colorMap}, m_defaultAlpha{defaultAlpha}
 {
 }
 
-inline auto ColorMapPtrWrapper::GetNumStops() const -> size_t
+inline auto ColorMapPtrWrapper::GetNumStops() const noexcept -> size_t
 {
   return m_colorMap->GetNumStops();
 }
 
-inline auto ColorMapPtrWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
+inline auto ColorMapPtrWrapper::GetMapName() const noexcept -> COLOR_DATA::ColorMapName
 {
   return m_colorMap->GetMapName();
 }
 
-inline auto ColorMapPtrWrapper::GetColor(const float t) const -> Pixel
+inline auto ColorMapPtrWrapper::GetColor(const float t) const noexcept -> Pixel
 {
   const auto color = m_colorMap->GetColor(t);
   return Pixel{
@@ -165,7 +150,7 @@ inline auto ColorMapPtrWrapper::GetColor(const float t) const -> Pixel
   };
 }
 
-inline auto ColorMapPtrWrapper::IsNotNull() const -> bool
+inline auto ColorMapPtrWrapper::IsNotNull() const noexcept -> bool
 {
   return m_colorMap != nullptr;
 }

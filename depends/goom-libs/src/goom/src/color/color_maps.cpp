@@ -34,19 +34,19 @@ class ColorMapSharedPtrWrapper : public IColorMap
 public:
   ColorMapSharedPtrWrapper(const ColorMapSharedPtr& colorMapPtr,
                            PixelChannelType defaultAlpha) noexcept;
-  ColorMapSharedPtrWrapper(const ColorMapSharedPtrWrapper&) noexcept           = default;
-  ColorMapSharedPtrWrapper(ColorMapSharedPtrWrapper&&) noexcept                = default;
-  ~ColorMapSharedPtrWrapper() noexcept override                                = default;
-  auto operator=(const ColorMapSharedPtrWrapper&) -> ColorMapSharedPtrWrapper& = default;
-  auto operator=(ColorMapSharedPtrWrapper&&) -> ColorMapSharedPtrWrapper&      = default;
+  ColorMapSharedPtrWrapper(const ColorMapSharedPtrWrapper&) noexcept                    = default;
+  ColorMapSharedPtrWrapper(ColorMapSharedPtrWrapper&&) noexcept                         = default;
+  ~ColorMapSharedPtrWrapper() noexcept override                                         = default;
+  auto operator=(const ColorMapSharedPtrWrapper&) noexcept -> ColorMapSharedPtrWrapper& = default;
+  auto operator=(ColorMapSharedPtrWrapper&&) noexcept -> ColorMapSharedPtrWrapper&      = default;
 
-  [[nodiscard]] auto GetNumStops() const -> size_t override;
-  [[nodiscard]] auto GetMapName() const -> COLOR_DATA::ColorMapName override;
-  [[nodiscard]] auto GetColor(float t) const -> Pixel override;
+  [[nodiscard]] auto GetNumStops() const noexcept -> size_t override;
+  [[nodiscard]] auto GetMapName() const noexcept -> COLOR_DATA::ColorMapName override;
+  [[nodiscard]] auto GetColor(float t) const noexcept -> Pixel override;
 
 protected:
-  [[nodiscard]] auto GetColorMap() const -> const IColorMap& { return *m_colorMapPtr; }
-  [[nodiscard]] auto GetDefaultAlpha() const -> PixelChannelType { return m_defaultAlpha; }
+  [[nodiscard]] auto GetColorMap() const noexcept -> const IColorMap& { return *m_colorMapPtr; }
+  [[nodiscard]] auto GetDefaultAlpha() const noexcept -> PixelChannelType { return m_defaultAlpha; }
 
 private:
   ColorMapSharedPtr m_colorMapPtr;
@@ -58,9 +58,9 @@ class RotatedColorMap : public ColorMapSharedPtrWrapper
 public:
   RotatedColorMap(const ColorMapSharedPtr& colorMapPtr,
                   PixelChannelType defaultAlpha,
-                  float tRotatePoint);
+                  float tRotatePoint) noexcept;
 
-  [[nodiscard]] auto GetColor(float t) const -> Pixel override;
+  [[nodiscard]] auto GetColor(float t) const noexcept -> Pixel override;
 
 private:
   static constexpr float MIN_ROTATE_POINT = 0.0F;
@@ -73,9 +73,9 @@ class TintedColorMap : public ColorMapSharedPtrWrapper
 public:
   TintedColorMap(const ColorMapSharedPtr& colorMapPtr,
                  PixelChannelType defaultAlpha,
-                 const ColorMaps::TintProperties& tintProperties);
+                 const ColorMaps::TintProperties& tintProperties) noexcept;
 
-  [[nodiscard]] auto GetColor(float t) const -> Pixel override;
+  [[nodiscard]] auto GetColor(float t) const noexcept -> Pixel override;
 
 private:
   static constexpr float MIN_LIGHTNESS = 0.1F;
@@ -94,11 +94,14 @@ public:
   auto operator=(const PrebuiltColorMap&) -> PrebuiltColorMap& = delete;
   auto operator=(PrebuiltColorMap&&) -> PrebuiltColorMap&      = delete;
 
-  [[nodiscard]] auto GetNumStops() const -> size_t override { return m_vividColorMap.numStops(); }
-  [[nodiscard]] auto GetMapName() const -> ColorMapName override { return m_mapName; }
-  [[nodiscard]] auto GetColor(float t) const -> Pixel override;
+  [[nodiscard]] auto GetNumStops() const noexcept -> size_t override
+  {
+    return m_vividColorMap.numStops();
+  }
+  [[nodiscard]] auto GetMapName() const noexcept -> ColorMapName override { return m_mapName; }
+  [[nodiscard]] auto GetColor(float t) const noexcept -> Pixel override;
 
-  static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) -> Pixel;
+  static auto GetColorMix(const Pixel& col1, const Pixel& col2, float t) noexcept -> Pixel;
 
 private:
   ColorMapName m_mapName;
@@ -108,30 +111,33 @@ private:
 namespace
 {
 
-[[nodiscard]] static auto GetAllColorMapNames() -> const std::vector<ColorMapName>&;
-[[nodiscard]] static auto MakeAllColorMapNames() -> std::vector<ColorMapName>;
+template<class T>
+constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr,
+                      ColorMapGroup idx) noexcept;
+template<class T>
+constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, ColorMapGroup idx) noexcept;
 
-[[nodiscard]] static auto GetPreBuiltColorMaps() -> const std::vector<PrebuiltColorMap>&;
-[[nodiscard]] static auto MakePrebuiltColorMaps() -> std::vector<PrebuiltColorMap>;
+[[nodiscard]] auto GetAllColorMapNames() noexcept -> const std::vector<ColorMapName>&;
+[[nodiscard]] auto MakeAllColorMapNames() noexcept -> std::vector<ColorMapName>;
 
-using ColorGroupNamesArray = std::array<const ColorMaps::ColorMapNames*, NUM<ColorMapGroup>>;
-[[nodiscard]] static auto GetColorGroupNames() -> const ColorGroupNamesArray&;
-[[nodiscard]] static auto MakeColorGroupNames() -> ColorGroupNamesArray;
+[[nodiscard]] auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMap>&;
+[[nodiscard]] auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>;
+
+using ColorGroupNamesArray =
+    std::array<const std::vector<COLOR_DATA::ColorMapName>*, NUM<ColorMapGroup>>;
+[[nodiscard]] auto GetColorGroupNames() noexcept -> const ColorGroupNamesArray&;
+[[nodiscard]] auto MakeColorGroupNames() noexcept -> ColorGroupNamesArray;
 
 } // namespace
 
-auto ColorMaps::GetColorMix(const Pixel& color1, const Pixel& color2, const float t) -> Pixel
+auto ColorMaps::GetColorMix(const Pixel& color1, const Pixel& color2, const float t) noexcept
+    -> Pixel
 {
   return PrebuiltColorMap::GetColorMix(color1, color2, t);
 }
 
 ColorMaps::ColorMaps(const PixelChannelType defaultAlpha) noexcept : m_defaultAlpha{defaultAlpha}
 {
-}
-
-auto ColorMaps::SetDefaultAlpha(const PixelChannelType defaultAlpha) noexcept -> void
-{
-  m_defaultAlpha = defaultAlpha;
 }
 
 auto ColorMaps::GetColorMap(const ColorMapName colorMapName) const noexcept -> ColorMapPtrWrapper
@@ -168,12 +174,13 @@ auto ColorMaps::GetTintedColorMapPtr(const ColorMapSharedPtr& colorMap,
   return std::make_shared<TintedColorMap>(colorMap, m_defaultAlpha, tintProperties);
 }
 
-auto ColorMaps::GetNumColorMapNames() -> uint32_t
+auto ColorMaps::GetNumColorMapNames() noexcept -> uint32_t
 {
   return static_cast<uint32_t>(GetPreBuiltColorMaps().size());
 }
 
-auto ColorMaps::GetColorMapNames(const ColorMapGroup colorMapGroup) -> const ColorMapNames&
+auto ColorMaps::GetColorMapNames(const ColorMapGroup colorMapGroup) noexcept
+    -> const std::vector<COLOR_DATA::ColorMapName>&
 {
   if (colorMapGroup == ColorMapGroup::ALL)
   {
@@ -183,7 +190,7 @@ auto ColorMaps::GetColorMapNames(const ColorMapGroup colorMapGroup) -> const Col
   return *at(GetColorGroupNames(), colorMapGroup);
 }
 
-auto ColorMaps::GetNumGroups() -> uint32_t
+auto ColorMaps::GetNumGroups() noexcept -> uint32_t
 {
   return static_cast<uint32_t>(GetColorGroupNames().size());
 }
@@ -203,14 +210,14 @@ auto ColorMaps::GetColorMapSharedPtr(const ColorMapName colorMapName) noexcept -
 namespace
 {
 
-inline auto GetPreBuiltColorMaps() -> const std::vector<PrebuiltColorMap>&
+inline auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMap>&
 {
   static const auto s_PRE_BUILT_COLOR_MAPS = MakePrebuiltColorMaps();
 
   return s_PRE_BUILT_COLOR_MAPS;
 }
 
-auto MakePrebuiltColorMaps() -> std::vector<PrebuiltColorMap>
+auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>
 {
   static_assert(NUM<ColorMapName> == COLOR_DATA::ALL_MAPS.size(), "Invalid allMaps size.");
 
@@ -225,14 +232,27 @@ auto MakePrebuiltColorMaps() -> std::vector<PrebuiltColorMap>
   return preBuiltColorMaps;
 }
 
-inline auto GetAllColorMapNames() -> const std::vector<ColorMapName>&
+template<class T>
+constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr,
+                      const ColorMapGroup idx) noexcept
+{
+  return arr.at(static_cast<size_t>(idx));
+}
+
+template<class T>
+constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx) noexcept
+{
+  return arr.at(static_cast<size_t>(idx));
+}
+
+inline auto GetAllColorMapNames() noexcept -> const std::vector<ColorMapName>&
 {
   static const auto s_ALL_COLOR_MAP_NAMES = MakeAllColorMapNames();
 
   return s_ALL_COLOR_MAP_NAMES;
 }
 
-auto MakeAllColorMapNames() -> std::vector<ColorMapName>
+auto MakeAllColorMapNames() noexcept -> std::vector<ColorMapName>
 {
   auto allColorMapNames = std::vector<ColorMapName>{};
   allColorMapNames.reserve(COLOR_DATA::ALL_MAPS.size());
@@ -245,14 +265,14 @@ auto MakeAllColorMapNames() -> std::vector<ColorMapName>
   return allColorMapNames;
 }
 
-inline auto GetColorGroupNames() -> const ColorGroupNamesArray&
+inline auto GetColorGroupNames() noexcept -> const ColorGroupNamesArray&
 {
   static const auto s_COLOR_GROUP_NAMES = MakeColorGroupNames();
 
   return s_COLOR_GROUP_NAMES;
 }
 
-auto MakeColorGroupNames() -> ColorGroupNamesArray
+auto MakeColorGroupNames() noexcept -> ColorGroupNamesArray
 {
   auto groups = ColorGroupNamesArray{};
 
@@ -305,17 +325,17 @@ inline ColorMapSharedPtrWrapper::ColorMapSharedPtrWrapper(
 {
 }
 
-inline auto ColorMapSharedPtrWrapper::GetNumStops() const -> size_t
+inline auto ColorMapSharedPtrWrapper::GetNumStops() const noexcept -> size_t
 {
   return m_colorMapPtr->GetNumStops();
 }
 
-inline auto ColorMapSharedPtrWrapper::GetMapName() const -> COLOR_DATA::ColorMapName
+inline auto ColorMapSharedPtrWrapper::GetMapName() const noexcept -> COLOR_DATA::ColorMapName
 {
   return m_colorMapPtr->GetMapName();
 }
 
-inline auto ColorMapSharedPtrWrapper::GetColor(const float t) const -> Pixel
+inline auto ColorMapSharedPtrWrapper::GetColor(const float t) const noexcept -> Pixel
 {
   const auto color = m_colorMapPtr->GetColor(t);
   return Pixel{
@@ -326,14 +346,14 @@ inline auto ColorMapSharedPtrWrapper::GetColor(const float t) const -> Pixel
 RotatedColorMap::RotatedColorMap(const ColorMapSharedPtr& colorMapPtr,
                                  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                                  const PixelChannelType defaultAlpha,
-                                 const float tRotatePoint)
+                                 const float tRotatePoint) noexcept
   : ColorMapSharedPtrWrapper{colorMapPtr, defaultAlpha}, m_tRotatePoint{tRotatePoint}
 {
   Expects(tRotatePoint >= MIN_ROTATE_POINT);
   Expects(tRotatePoint <= MAX_ROTATE_POINT);
 }
 
-inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
+inline auto RotatedColorMap::GetColor(const float t) const noexcept -> Pixel
 {
   auto tNew = m_tRotatePoint + t;
   if (tNew > 1.0F)
@@ -345,7 +365,7 @@ inline auto RotatedColorMap::GetColor(const float t) const -> Pixel
 
 TintedColorMap::TintedColorMap(const ColorMapSharedPtr& colorMapPtr,
                                const PixelChannelType defaultAlpha,
-                               const ColorMaps::TintProperties& tintProperties)
+                               const ColorMaps::TintProperties& tintProperties) noexcept
   : ColorMapSharedPtrWrapper{colorMapPtr, defaultAlpha},
     m_saturation{tintProperties.saturation},
     m_lightness{tintProperties.lightness}
@@ -354,7 +374,7 @@ TintedColorMap::TintedColorMap(const ColorMapSharedPtr& colorMapPtr,
   Expects(tintProperties.lightness <= MAX_LIGHTNESS);
 }
 
-auto TintedColorMap::GetColor(const float t) const -> Pixel
+auto TintedColorMap::GetColor(const float t) const noexcept -> Pixel
 {
   const auto color = GetColorMap().GetColor(t);
   const auto rgb8  = vivid::col8_t{color.R(), color.G(), color.B()};
@@ -378,7 +398,7 @@ inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName,
 {
 }
 
-inline auto PrebuiltColorMap::GetColor(const float t) const -> Pixel
+inline auto PrebuiltColorMap::GetColor(const float t) const noexcept -> Pixel
 {
   const auto rgb8 = vivid::col8_t{vivid::rgb8::fromRgb(m_vividColorMap.at(t))};
   return Pixel{
@@ -386,8 +406,9 @@ inline auto PrebuiltColorMap::GetColor(const float t) const -> Pixel
   };
 }
 
-inline auto PrebuiltColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t)
-    -> Pixel
+inline auto PrebuiltColorMap::GetColorMix(const Pixel& col1,
+                                          const Pixel& col2,
+                                          const float t) noexcept -> Pixel
 {
   // Optimisation: faster to use this lesser quality RGB Lerp than vivid's Lerp.
   return GetRgbColorLerp(col1, col2, t);
