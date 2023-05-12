@@ -2,7 +2,6 @@
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
@@ -41,7 +40,6 @@ public:
   ShapePart(DRAW::IGoomDraw& draw,
             const UTILS::MATH::IGoomRand& goomRand,
             const PluginInfo& goomInfo,
-            COLOR::RandomColorMapsManager& colorMapsManager,
             const Params& params,
             PixelChannelType defaultAlpha) noexcept;
   ShapePart(const ShapePart&) noexcept           = delete;
@@ -94,7 +92,6 @@ private:
   DRAW::IGoomDraw* m_draw;
   const UTILS::MATH::IGoomRand* m_goomRand;
   const PluginInfo* m_goomInfo;
-  COLOR::RandomColorMapsManager* m_colorMapsManager;
   PixelChannelType m_defaultAlpha;
 
   float m_currentTMinMaxLerp;
@@ -124,9 +121,13 @@ private:
     float innerColorMix;
   };
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
-  ColorInfo m_colorInfo{GetInitialColorInfo()};
   auto ChangeAllColorMapsNow() noexcept -> void;
+  ColorInfo m_colorInfo = GetInitialColorInfo();
   float m_chromaFactor = 1.0F;
+  auto UpdateShapesMainColorMaps() noexcept -> void;
+  auto UpdateShapesLowColorMaps() noexcept -> void;
+  auto UpdateShapesInnerColorMaps() noexcept -> void;
+  auto ChangeAllShapesColorMapsNow() noexcept -> void;
 
   bool m_megaColorChangeMode = false;
   auto DoMegaColorChange() noexcept -> void;
@@ -177,7 +178,7 @@ private:
   float m_maxRadiusFraction;
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;
-  [[nodiscard]] auto MakeShapePathColorInfo() noexcept -> ShapePath::ColorInfo;
+  [[nodiscard]] auto GetShapePathColorInfo() const noexcept -> ShapePath::ColorInfo;
   [[nodiscard]] static auto GetCirclePath(float radius,
                                           UTILS::MATH::CircleFunction::Direction direction,
                                           uint32_t numSteps) noexcept -> UTILS::MATH::CirclePath;

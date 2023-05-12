@@ -1,7 +1,7 @@
 #pragma once
 
 #include "color/color_adjustment.h"
-#include "color/random_color_maps_manager.h"
+#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/circle_drawer.h"
 #include "goom_graphic.h"
@@ -19,15 +19,14 @@ class ShapePath
 public:
   struct ColorInfo
   {
-    COLOR::RandomColorMapsManager::ColorMapId mainColorMapId{};
-    COLOR::RandomColorMapsManager::ColorMapId lowColorMapId{};
-    COLOR::RandomColorMapsManager::ColorMapId innerColorMapId{};
+    COLOR::ColorMapSharedPtr mainColorMapPtr{};
+    COLOR::ColorMapSharedPtr lowColorMapPtr{};
+    COLOR::ColorMapSharedPtr innerColorMapPtr{};
     float chromaFactor = 1.0F;
   };
   ShapePath(DRAW::IGoomDraw& draw,
             const std::shared_ptr<UTILS::MATH::IPath>& path,
-            COLOR::RandomColorMapsManager& colorMapsManager,
-            ColorInfo colorInfo) noexcept;
+            const ColorInfo& colorInfo) noexcept;
 
   auto UpdateMainColorInfo(const COLOR::WeightedRandomColorMaps& mainColorMaps) noexcept -> void;
   auto UpdateLowColorInfo(const COLOR::WeightedRandomColorMaps& lowColorMaps) noexcept -> void;
@@ -60,7 +59,6 @@ public:
 private:
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
   std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
-  COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   ColorInfo m_colorInfo;
   [[nodiscard]] static auto GetColorMapTypes() noexcept
@@ -155,22 +153,19 @@ inline auto ShapePath::GetColorMapTypes() noexcept
 inline auto ShapePath::UpdateMainColorInfo(
     const COLOR::WeightedRandomColorMaps& mainColorMaps) noexcept -> void
 {
-  m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.mainColorMapId,
-                                         {mainColorMaps, GetColorMapTypes()});
+  m_colorInfo.mainColorMapPtr = mainColorMaps.GetRandomColorMapSharedPtr(GetColorMapTypes());
 }
 
 inline auto ShapePath::UpdateLowColorInfo(
     const COLOR::WeightedRandomColorMaps& lowColorMaps) noexcept -> void
 {
-  m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.lowColorMapId,
-                                         {lowColorMaps, GetColorMapTypes()});
+  m_colorInfo.lowColorMapPtr = lowColorMaps.GetRandomColorMapSharedPtr(GetColorMapTypes());
 }
 
 inline auto ShapePath::UpdateInnerColorInfo(
     const COLOR::WeightedRandomColorMaps& innerColorMaps) noexcept -> void
 {
-  m_colorMapsManager->UpdateColorMapInfo(m_colorInfo.innerColorMapId,
-                                         {innerColorMaps, GetColorMapTypes()});
+  m_colorInfo.innerColorMapPtr = innerColorMaps.GetRandomColorMapSharedPtr(GetColorMapTypes());
 }
 
 inline auto ShapePath::SetChromaFactor(const float val) noexcept -> void

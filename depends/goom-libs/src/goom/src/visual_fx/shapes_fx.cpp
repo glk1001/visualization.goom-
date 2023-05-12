@@ -2,7 +2,6 @@
 
 #include "shapes_fx.h"
 
-#include "color/random_color_maps_manager.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_logger.h"
@@ -24,7 +23,6 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::RandomColorMapsManager;
 using FX_UTILS::RandomPixelBlender;
 using SHAPES::Shape;
 using UTILS::IncrementedValue;
@@ -52,7 +50,6 @@ private:
   const FxHelper* m_fxHelper;
   Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
-  RandomColorMapsManager m_colorMapsManager{};
 
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
@@ -66,7 +63,7 @@ private:
   static_assert(0 < MIN_NUM_SHAPE_PATH_STEPS);
   static_assert(MIN_NUM_SHAPE_PATH_STEPS < MAX_NUM_SHAPE_PATH_STEPS);
 
-  [[nodiscard]] auto GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>;
+  [[nodiscard]] auto GetShapes() const noexcept -> std::array<Shape, NUM_SHAPES>;
   std::array<Shape, NUM_SHAPES> m_shapes;
   [[nodiscard]] auto GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
       -> std::array<Point2dInt, NUM_SHAPES>;
@@ -145,7 +142,7 @@ ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
   UpdateShapePathMinMaxNumSteps();
 }
 
-auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>
+auto ShapesFx::ShapesFxImpl::GetShapes() const noexcept -> std::array<Shape, NUM_SHAPES>
 {
   const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenCentre);
 
@@ -158,7 +155,6 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
        Shape{*m_fxHelper->draw,
        *m_fxHelper->goomRand,
        *m_fxHelper->goomInfo,
-       m_colorMapsManager,
        {MIN_RADIUS_FRACTION,
        MAX_RADIUS_FRACTION,
        SHAPE0_MIN_DOT_RADIUS,

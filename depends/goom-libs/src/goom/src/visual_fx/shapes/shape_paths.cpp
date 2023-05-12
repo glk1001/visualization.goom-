@@ -9,7 +9,6 @@ namespace GOOM::VISUAL_FX::SHAPES
 {
 
 using COLOR::ColorMaps;
-using COLOR::RandomColorMapsManager;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
@@ -19,12 +18,8 @@ using UTILS::MATH::IPath;
 
 ShapePath::ShapePath(IGoomDraw& draw,
                      const std::shared_ptr<IPath>& path,
-                     RandomColorMapsManager& colorMapsManager,
-                     const ColorInfo colorInfo) noexcept
-  : m_circleDrawer{draw},
-    m_path{path},
-    m_colorMapsManager{&colorMapsManager},
-    m_colorInfo{colorInfo}
+                     const ColorInfo& colorInfo) noexcept
+  : m_circleDrawer{draw}, m_path{path}, m_colorInfo{colorInfo}
 {
 }
 
@@ -33,7 +28,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
   const auto point = GetNextPoint();
 
   const auto shapeColors    = GetCurrentShapeColors();
-  const auto& innerColorMap = m_colorMapsManager->GetColorMap(m_colorInfo.innerColorMapId);
+  const auto& innerColorMap = m_colorInfo.innerColorMapPtr;
 
   auto innerColorT = TValue{
       {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius - 1)}
@@ -53,7 +48,7 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
   {
     const auto brightness = drawParams.brightnessAttenuation *
                             STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
-    const auto innerColor = innerColorMap.GetColor(innerColorT());
+    const auto innerColor = innerColorMap->GetColor(innerColorT());
     const auto colors =
         GetColors(drawParams, radius, brightness, shapeColors, innerColorCutoffRadius, innerColor);
 
@@ -74,8 +69,8 @@ inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexce
 inline auto ShapePath::GetCurrentShapeColors() const noexcept -> MultiplePixels
 {
   return {
-      m_colorMapsManager->GetColorMap(m_colorInfo.mainColorMapId).GetColor(GetCurrentT()),
-      m_colorMapsManager->GetColorMap(m_colorInfo.lowColorMapId).GetColor(GetCurrentT()),
+      m_colorInfo.mainColorMapPtr->GetColor(GetCurrentT()),
+      m_colorInfo.lowColorMapPtr->GetColor(GetCurrentT()),
   };
 }
 
