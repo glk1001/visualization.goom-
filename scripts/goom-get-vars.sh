@@ -76,11 +76,7 @@ if [[ "${COMPILER:-}" == "" ]]; then
   echo
   exit 1
 fi
-if [[ "${COMPILER}" == "gcc" ]]; then
-  declare -r C_COMPILER=gcc
-  declare -r CPP_COMPILER=g++
-  declare -r COMPILER_VERSION=
-elif [[ "${COMPILER}" == "gcc-11" ]]; then
+if [[ "${COMPILER}" == "gcc-11" ]]; then
   declare -r C_COMPILER=gcc-11
   declare -r CPP_COMPILER=g++-11
   declare -r COMPILER_VERSION=11
@@ -88,6 +84,10 @@ elif [[ "${COMPILER}" == "gcc-12" ]]; then
   declare -r C_COMPILER=gcc-12
   declare -r CPP_COMPILER=g++-12
   declare -r COMPILER_VERSION=12
+elif [[ "${COMPILER}" == "gcc-13" ]]; then
+  declare -r C_COMPILER=gcc-13
+  declare -r CPP_COMPILER=g++-13
+  declare -r COMPILER_VERSION=13
 elif [[ "${COMPILER}" == "clang" ]]; then
   declare -r C_COMPILER=clang
   declare -r CPP_COMPILER=clang++
