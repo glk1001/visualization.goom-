@@ -579,8 +579,8 @@ auto TextDrawer::TextDrawerImpl::Prepare() -> void
     // Need an outline for this to work.
     if (m_face->glyph->format != FT_GLYPH_FORMAT_OUTLINE)
     {
-      throw std::logic_error(
-          std_fmt::format("Not a correct font format: {}.", m_face->glyph->format));
+      throw std::logic_error(std_fmt::format("Not a correct font format: {}.",
+                                             static_cast<int32_t>(m_face->glyph->format)));
     }
 
     const auto spans = GetSpans(i);

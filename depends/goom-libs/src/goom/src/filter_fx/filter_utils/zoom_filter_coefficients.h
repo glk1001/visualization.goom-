@@ -44,6 +44,7 @@ using FilterCoeff2dArrayPtrs =
   // TODO(glk) - Can use std::accumulate with C++20.
   // Ensures(std::accumulate(cbegin(coeffs), cend(coeffs), 0U) == channel_limits<uint32_t>::max());
   auto coeffsSum = 0U;
+  USED_FOR_DEBUGGING(coeffsSum);
   for (const auto& coeff : coeffs)
   {
     coeffsSum += coeff;

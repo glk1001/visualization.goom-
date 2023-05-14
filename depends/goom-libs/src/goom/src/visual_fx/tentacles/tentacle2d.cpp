@@ -37,6 +37,7 @@ Tentacle2D::Tentacle2D(const uint32_t numNodes,
 {
 }
 
+// NOLINTNEXTLINE: readability-convert-member-functions-to-static
 inline auto Tentacle2D::ValidateSettings() const -> void
 {
   Expects(m_dimensions.xDimensions.min < m_dimensions.xDimensions.max);

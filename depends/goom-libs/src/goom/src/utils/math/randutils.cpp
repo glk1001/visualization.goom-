@@ -37,7 +37,7 @@ inline auto RandXoshiroFunc(const uint32_t n0, const uint32_t n1) noexcept -> ui
   return n0 + static_cast<uint32_t>(m);
 }
 
-#if 0
+#ifdef USE_ME
 inline auto RandSplitMixFunc(const uint32_t n0, const uint32_t n1) noexcept -> uint32_t
 {
   // thread_local SplitMix32 eng { GetRandSeed() };
