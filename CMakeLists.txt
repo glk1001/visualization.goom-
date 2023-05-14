@@ -112,7 +112,7 @@ if (CORE_SYSTEM_NAME STREQUAL "osx")
 endif ()
 
 
-CPMAddPackage("gh:fmtlib/fmt#9.1.0")
+CPMAddPackage("gh:fmtlib/fmt#10.0.0")
 
 CPMAddPackage(NAME "LSys"
               GITHUB_REPOSITORY "glk1001/LSys"

@@ -1,11 +1,22 @@
 #pragma once
 
+#ifdef __GNUC__
+// Broken with gcc 13.1 and fmt 10.0.0
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
+
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define FMT_HEADER_ONLY 1
 
 // NOLINTBEGIN: third-party code
 #include "fmt/format.h"
 // NOLINTEND: third-party code
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 // NOLINTNEXTLINE(misc-unused-alias-decls): Waiting for C++20
 namespace std_fmt = ::fmt;
