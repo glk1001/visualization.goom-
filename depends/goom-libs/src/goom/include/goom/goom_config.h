@@ -15,6 +15,7 @@ namespace GOOM
 {
 #define Expects(cond) assert(cond)
 #define Ensures(cond) assert(cond)
+#define USED_FOR_DEBUGGING(x) ((void)(x))
 
 [[noreturn]] inline auto FailFast() noexcept -> void
 {
