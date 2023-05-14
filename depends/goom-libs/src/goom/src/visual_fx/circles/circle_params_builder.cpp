@@ -113,6 +113,7 @@ inline auto CircleParamsBuilder::GetCircleRadiusReducer() const noexcept -> floa
 inline auto CircleParamsBuilder::GetFourCornersCircleRadii(
     const float mainCircleRadius) const noexcept -> std::vector<float>
 {
+  USED_FOR_DEBUGGING(FIXED_NUM_CIRCLES);
   Expects(FIXED_NUM_CIRCLES == m_numCircles);
 
   const auto innerCircleRadius = HALF * mainCircleRadius;

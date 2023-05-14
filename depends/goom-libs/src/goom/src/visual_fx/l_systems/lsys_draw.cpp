@@ -59,6 +59,7 @@ inline auto LSysDraw::DrawJoinedVertices(const std::vector<Point3dFlt>& vertices
 {
   const auto numVertices                 = vertices.size();
   static constexpr auto MIN_NUM_VERTICES = 2U;
+  USED_FOR_DEBUGGING(MIN_NUM_VERTICES);
   Expects(numVertices >= MIN_NUM_VERTICES);
 
   const auto points2d = GetPerspectiveProjection(vertices);
