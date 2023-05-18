@@ -33,7 +33,8 @@ public:
   enum class AngleEffect
   {
     ATAN,
-    SQ_DIST
+    SQ_DIST,
+    SQ_DIST_AND_SPIRAL
   };
   enum class WaveEffect
   {
@@ -58,6 +59,7 @@ public:
     float amplitude;
     float periodicFactor;
     float reducerCoeff;
+    float spiralRotateBaseAngle;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
@@ -100,6 +102,11 @@ private:
   [[nodiscard]] auto GetReducerCoeff(WaveEffect xWaveEffect,
                                      WaveEffect yWaveEffect,
                                      float periodicFactor) const noexcept -> float;
+
+  [[nodiscard]] auto GetSqDistEffect() const noexcept -> Wave::AngleEffect;
+  [[nodiscard]] auto GetSqDistSpiralRotateAngle(const float sqDistFromZero,
+                                                const NormalizedCoords& coords) const noexcept
+      -> float;
 };
 
 inline auto Wave::GetZoomInCoefficients(const NormalizedCoords& coords,
@@ -114,16 +121,6 @@ inline auto Wave::GetZoomInCoefficients(const NormalizedCoords& coords,
       GetBaseZoomInCoeffs().y + GetZoomInAdd(m_params.yWaveEffect, angle, reducer);
 
   return {xZoomInCoeff, yZoomInCoeff};
-}
-
-inline auto Wave::GetAngle(const float sqDistFromZero,
-                           const NormalizedCoords& coords) const noexcept -> float
-{
-  if (m_params.angleEffect == AngleEffect::SQ_DIST)
-  {
-    return std::pow(sqDistFromZero, m_params.sqDistPower);
-  }
-  return std::atan2(coords.GetY(), coords.GetX());
 }
 
 inline auto Wave::GetZoomInAdd(const WaveEffect waveEffect,

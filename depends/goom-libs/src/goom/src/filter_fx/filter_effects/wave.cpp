@@ -30,6 +30,11 @@ static constexpr auto DEFAULT_REDUCER_COEFF   = 1.0F;
 static constexpr auto REDUCER_COEFF_RANGE     = IGoomRand::NumberRange<float>{0.95F, 1.5F};
 static constexpr auto TAN_REDUCER_COEFF_RANGE = IGoomRand::NumberRange<float>{4.0F, 10.0F};
 
+static constexpr auto DEFAULT_SPIRAL_ROTATE_BASE_ANGLE = 0.25F * UTILS::MATH::PI;
+static constexpr auto SPIRAL_ROTATE_FACTOR_RANGE       = IGoomRand::NumberRange<float>{0.9F, 1.1F};
+static constexpr auto MIN_SPIRAL_ROTATE_LERP           = 0.5F;
+static constexpr auto MAX_SPIRAL_ROTATE_LERP           = 1.0F;
+
 // These give weird but interesting wave results
 static constexpr auto SMALL_FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.001F, 0.1F};
 static constexpr auto BIG_AMPLITUDE_RANGE       = IGoomRand::NumberRange<float>{1.0F, 50.0F};
@@ -41,6 +46,7 @@ static constexpr auto PROB_ALLOW_STRANGE_WAVE_VALUES          = 0.1F;
 static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL              = 0.75F;
 static constexpr auto PROB_NO_PERIODIC_FACTOR                 = 0.2F;
 static constexpr auto PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
+static constexpr auto PROB_SPIRAL_SQ_DIST_EFFECT              = 0.4F;
 
 static constexpr auto WAVE_SIN_EFFECT_WEIGHT      = 200.0F;
 static constexpr auto WAVE_COS_EFFECT_WEIGHT      = 200.0F;
@@ -52,6 +58,14 @@ static constexpr auto WAVE_COT_EFFECT_WEIGHT      = 001.0F;
 static constexpr auto WAVE_COT_SIN_EFFECT_WEIGHT  = 001.0F;
 static constexpr auto WAVE_COT_COS_EFFECT_WEIGHT  = 001.0F;
 
+inline auto Wave::GetSqDistEffect() const noexcept -> Wave::AngleEffect
+{
+  if (m_goomRand->ProbabilityOf(PROB_SPIRAL_SQ_DIST_EFFECT))
+  {
+    return AngleEffect::SQ_DIST_AND_SPIRAL;
+  }
+  return AngleEffect::SQ_DIST;
+}
 
 Wave::Wave(const Modes mode, const IGoomRand& goomRand)
   : m_mode{mode},
@@ -77,7 +91,8 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
              DEFAULT_FREQ_FACTOR,
              DEFAULT_AMPLITUDE,
              DEFAULT_PERIODIC_FACTOR,
-             DEFAULT_REDUCER_COEFF}
+             DEFAULT_REDUCER_COEFF,
+             DEFAULT_SPIRAL_ROTATE_BASE_ANGLE}
 {
 }
 
@@ -102,7 +117,7 @@ auto Wave::SetRandomParams() noexcept -> void
 
 auto Wave::SetSqDistAngleEffectMode0RandomParams() noexcept -> void
 {
-  SetWaveModeSettings({AngleEffect::SQ_DIST,
+  SetWaveModeSettings({GetSqDistEffect(),
                        FREQ_FACTOR_RANGE,
                        AMPLITUDE_RANGE,
                        PERIODIC_FACTOR_RANGE,
@@ -113,7 +128,7 @@ auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
 {
   if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
   {
-    SetWaveModeSettings({AngleEffect::SQ_DIST,
+    SetWaveModeSettings({GetSqDistEffect(),
                          SMALL_FREQ_FACTOR_RANGE,
                          BIG_AMPLITUDE_RANGE,
                          BIG_PERIODIC_FACTOR_RANGE,
@@ -121,7 +136,7 @@ auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
   }
   else
   {
-    SetWaveModeSettings({AngleEffect::SQ_DIST,
+    SetWaveModeSettings({GetSqDistEffect(),
                          FREQ_FACTOR_RANGE,
                          AMPLITUDE_RANGE,
                          PERIODIC_FACTOR_RANGE,
@@ -167,13 +182,14 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
 
   const auto sqDistPower = m_goomRand->GetRandInRange(SQ_DIST_POWER_RANGE);
 
-  const auto periodicFactor = GetPeriodicFactor(xWaveEffect,
+  const auto periodicFactor        = GetPeriodicFactor(xWaveEffect,
                                                 yWaveEffect,
                                                 waveModeSettings.periodicFactorRange,
                                                 waveModeSettings.sinCosPeriodicFactorRange);
-  const auto freqFactor     = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
-  const auto amplitude      = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
-  const auto reducerCoeff   = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
+  const auto freqFactor            = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
+  const auto amplitude             = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
+  const auto reducerCoeff          = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
+  const auto spiralRotateBaseAngle = m_goomRand->GetRandInRange(0.0F, UTILS::MATH::PI);
 
   SetParams({xWaveEffect,
              yWaveEffect,
@@ -182,7 +198,8 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
              freqFactor,
              amplitude,
              periodicFactor,
-             reducerCoeff});
+             reducerCoeff,
+             spiralRotateBaseAngle});
 
   Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
@@ -269,6 +286,40 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
 auto Wave::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
+}
+
+auto Wave::GetAngle(const float sqDistFromZero, const NormalizedCoords& coords) const noexcept
+    -> float
+{
+  switch (m_params.angleEffect)
+  {
+    case AngleEffect::ATAN:
+      return std::atan2(coords.GetY(), coords.GetX());
+    case AngleEffect::SQ_DIST:
+      return std::pow(sqDistFromZero, m_params.sqDistPower);
+    case AngleEffect::SQ_DIST_AND_SPIRAL:
+      return GetSqDistSpiralRotateAngle(sqDistFromZero, coords);
+#ifdef _MSC_VER
+    default:
+      FailFast();
+#endif
+  }
+}
+
+auto Wave::GetSqDistSpiralRotateAngle(const float sqDistFromZero,
+                                      const NormalizedCoords& coords) const noexcept -> float
+{
+  const auto spiralRotateAngle =
+      m_goomRand->GetRandInRange(SPIRAL_ROTATE_FACTOR_RANGE) * m_params.spiralRotateBaseAngle;
+  const auto sinSpiralRotateAngle = std::sin(spiralRotateAngle);
+  const auto cosSpiralRotateAngle = std::cos(spiralRotateAngle);
+  const auto x = (coords.GetX() * cosSpiralRotateAngle) - (coords.GetY() * sinSpiralRotateAngle);
+  const auto y = (coords.GetY() * cosSpiralRotateAngle) + (coords.GetX() * sinSpiralRotateAngle);
+
+  const auto t     = (UTILS::MATH::PI + std::atan2(y, x)) / UTILS::MATH::TWO_PI;
+  const auto angle = STD20::lerp(MIN_SPIRAL_ROTATE_LERP, MAX_SPIRAL_ROTATE_LERP, t);
+
+  return std::pow(sqDistFromZero, m_params.sqDistPower) * angle;
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

@@ -1073,7 +1073,12 @@ auto FilterSettingsService::SetAfterEffectsVelocityContribution() noexcept -> vo
 
 auto FilterSettingsService::SetRandomZoomMidpoint() -> void
 {
-  if (ALL_AFTER_EFFECTS_TURNED_OFF or IsZoomMidpointInTheMiddle())
+  if constexpr (ALL_AFTER_EFFECTS_TURNED_OFF)
+  {
+    m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenCentre;
+    return;
+  }
+  if (IsZoomMidpointInTheMiddle())
   {
     m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenCentre;
     return;
