@@ -21,6 +21,7 @@
 namespace GOOM::UTILS
 {
 using MATH::SMALL_FLOAT;
+using MATH::UnorderedClamp;
 
 using DefaultParams = ::LSYS::Interpreter::DefaultParams;
 
@@ -60,14 +61,14 @@ inline auto IncrementedValue<DefaultParams>::GetMatchingT(const DefaultParams& v
 
 template<>
 // NOLINTNEXTLINE(readability-identifier-naming)
-inline auto IncrementedValue<DefaultParams>::clamp(const DefaultParams& val,
+inline auto IncrementedValue<DefaultParams>::Clamp(const DefaultParams& val,
                                                    const DefaultParams& val1,
                                                    const DefaultParams& val2) noexcept
     -> DefaultParams
 {
-  return {std::clamp(val.turnAngleInDegrees, val1.turnAngleInDegrees, val2.turnAngleInDegrees),
-          std::clamp(val.width, val1.width, val2.width),
-          std::clamp(val.distance, val1.distance, val2.distance)};
+  return {UnorderedClamp(val.turnAngleInDegrees, val1.turnAngleInDegrees, val2.turnAngleInDegrees),
+          UnorderedClamp(val.width, val1.width, val2.width),
+          UnorderedClamp(val.distance, val1.distance, val2.distance)};
 }
 
 } // namespace GOOM::UTILS

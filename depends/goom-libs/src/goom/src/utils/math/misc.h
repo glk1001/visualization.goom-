@@ -3,6 +3,7 @@
 #include "goom_config.h"
 #include "math20.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <numeric>
@@ -158,9 +159,20 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] auto IsBetween(const T& value, const T& low, const T& high) noexcept -> bool
+[[nodiscard]] constexpr auto IsBetween(const T& value, const T& low, const T& high) noexcept -> bool
 {
   return (low <= value) and (value <= high);
+}
+
+template<typename T>
+[[nodiscard]] constexpr auto UnorderedClamp(const T& val, const T& val1, const T& val2) noexcept
+    -> T
+{
+  if (val1 > val2)
+  {
+    return std::clamp(val, val2, val1);
+  }
+  return std::clamp(val, val1, val2);
 }
 
 template<typename T>

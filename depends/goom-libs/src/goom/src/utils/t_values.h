@@ -152,7 +152,7 @@ private:
   [[nodiscard]] auto GetValue(float t) const noexcept -> T;
   [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T;
   // NOLINTNEXTLINE(readability-identifier-naming)
-  [[nodiscard]] static auto clamp(const T& val, const T& val1, const T& val2) noexcept -> T;
+  [[nodiscard]] static auto Clamp(const T& val, const T& val1, const T& val2) noexcept -> T;
   [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
       -> float;
 };
@@ -374,10 +374,9 @@ inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, float 
 }
 
 template<typename T>
-inline auto IncrementedValue<T>::clamp(const T& val, const T& val1, const T& val2) noexcept -> T
+inline auto IncrementedValue<T>::Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
 {
-  using std::clamp; // Include std for candidate clamps.
-  return clamp(val, val1, val2);
+  return MATH::UnorderedClamp(val, val1, val2);
 }
 
 template<typename T>
@@ -408,7 +407,7 @@ inline auto IncrementedValue<T>::ResetT(const float t) noexcept -> void
 template<typename T>
 auto IncrementedValue<T>::ResetCurrentValue(const T& newValue) noexcept -> void
 {
-  const auto newClampedValue = clamp(newValue, m_value1, m_value2);
+  const auto newClampedValue = Clamp(newValue, m_value1, m_value2);
   ResetT(GetMatchingT(newClampedValue, m_value1, m_value2));
 }
 
