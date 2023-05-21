@@ -94,10 +94,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SCRIPTS_PATH})
 include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
 include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
-include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
-include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Hardening.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Sanitizers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
@@ -118,14 +119,14 @@ CPMAddPackage(NAME "LSys"
               GITHUB_REPOSITORY "glk1001/LSys"
               GIT_TAG "master"
               FORCE True
-              )
+)
 set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 
 CPMAddPackage(NAME "particles"
               GITHUB_REPOSITORY "glk1001/particles"
               GIT_TAG "public_cleaned"
               FORCE True
-              )
+)
 set_target_properties(cpuTest PROPERTIES EXCLUDE_FROM_ALL True)
 
 find_package(Kodi REQUIRED)
@@ -154,12 +155,16 @@ else ()
     MESSAGE(STATUS "Goom: GOOM_DEBUG turned on.")
 endif ()
 
+
+include(ProjectOptions.cmake)
+vis_goom_pp_get_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS vis_goom_pp_PROJECT_WARNINGS)
+
 # Include the Goom libs cmake files here, before the (horrible) global
 # compiler settings (needed for Kodi addon builder).
 add_subdirectory(${GOOM_LIBS_RELDIR})
 
-get_project_warnings(PROJECT_WARNINGS)
-add_compile_options(${PROJECT_WARNINGS})
+
+add_compile_options(${vis_goom_pp_PROJECT_WARNINGS})
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # glm has many 'unsafe-buffer-usage' warnings.
@@ -175,7 +180,7 @@ set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 include_directories(BEFORE
                     ${GOOM_LIBS_DIR}
                     ${GOOM_INCLUDE_DIRS}
-                    )
+)
 include_directories(BEFORE
                     SYSTEM
                     ${GOOM_LIBS_DIR}/lib/span/include
@@ -186,7 +191,7 @@ include_directories(BEFORE
                     ${GLM_INCLUDE_DIR}
                     ${KODI_INCLUDE_DIR}
                     ${KODI_FIXED_INCLUDE_DIR}
-                    )
+)
 
 set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp
     src/build_time.cpp
@@ -216,14 +221,14 @@ add_dependencies(${GOOM_TARGET_NAME} ${GOOM_LIBS_TARGET_NAME} vivid)
 set(GOOM_BUILD_TIME_FILES
     ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
     ${PROJECT_SOURCE_DIR}/src/build_time.cpp
-    )
+)
 add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
 add_custom_command(TARGET goom_build_time
                    PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E touch ${GOOM_BUILD_TIME_FILES}
                    COMMENT "Touching build files."
                    VERBATIM
-                   )
+)
 
 
 include(CPack)
@@ -237,7 +242,7 @@ message(STATUS "Visualization.goom: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPIL
 message(STATUS
         "Visualization.goom: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Visualization.goom: CMAKE_BUILD_TYPE = \"${CMAKE_BUILD_TYPE}\".")
-message(STATUS "Visualization.goom: WARNINGS_AS_ERRORS = \"${WARNINGS_AS_ERRORS}\".")
+message(STATUS "Visualization.goom: WARNINGS_AS_ERRORS = \"${vis_goom_pp_WARNINGS_AS_ERRORS}\".")
 if (WIN32)
     message(STATUS "Visualization.goom: CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION ="
             " \"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\".")
@@ -267,3 +272,8 @@ message(STATUS "Visualization.goom: KODI_ROOT_DIR = \"${KODI_ROOT_DIR}\".")
 message(STATUS "Visualization.goom: KODI_CONFIG_DIR = \"${KODI_CONFIG_DIR}\".")
 message(STATUS "Visualization.goom: KODI_INCLUDE_DIR = \"${KODI_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_FIXED_INCLUDE_DIR = \"${KODI_FIXED_INCLUDE_DIR}\".")
+message(STATUS "Visualization.goom: ENABLE_SANITIZER_ADDRESS   = \"${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}\".")
+message(STATUS "Visualization.goom: ENABLE_SANITIZER_LEAK      = \"${vis_goom_pp_ENABLE_SANITIZER_LEAK}\".")
+message(STATUS "Visualization.goom: ENABLE_SANITIZER_UNDEFINED = \"${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}\".")
+message(STATUS "Visualization.goom: ENABLE_SANITIZER_THREAD    = \"${vis_goom_pp_ENABLE_SANITIZER_THREAD}\".")
+message(STATUS "Visualization.goom: ENABLE_SANITIZER_MEMORY    = \"${vis_goom_pp_ENABLE_SANITIZER_MEMORY}\".")

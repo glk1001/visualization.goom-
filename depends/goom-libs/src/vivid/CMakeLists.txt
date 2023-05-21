@@ -5,7 +5,7 @@ project(vivid
         DESCRIPTION "A simple-to-use cpp color library"
         HOMEPAGE_URL "https://github.com/gurki/vivid"
         LANGUAGES CXX
-        )
+)
 
 #find_package( glm REQUIRED )
 #message(STATUS "glm included")
@@ -35,7 +35,7 @@ add_library(${PROJECT_NAME} STATIC
             src/types.cpp
             src/utility.cpp
             src/xyz.cpp
-            )
+)
 
 add_library(libs::vivid ALIAS vivid)
 
@@ -47,7 +47,7 @@ endif ()
 target_compile_options(vivid
                        PRIVATE
                        ${CMAKE_COMMON_CXX_WARNINGS}
-                       )
+)
 
 target_compile_features(${PROJECT_NAME}
                         PUBLIC
@@ -60,7 +60,7 @@ target_compile_features(${PROJECT_NAME}
                         cxx_trailing_return_types
                         cxx_unicode_literals
                         cxx_inline_namespaces
-                        )
+)
 
 target_include_directories(${PROJECT_NAME}
                            PUBLIC
@@ -69,14 +69,21 @@ target_include_directories(${PROJECT_NAME}
                            PRIVATE
                            ${CMAKE_CURRENT_SOURCE_DIR}/include
                            ${GLM_INCLUDE_DIR}
-                           )
+)
 
-enable_sanitizers(${PROJECT_NAME})
+vis_goom_pp_enable_sanitizers(
+        ${PROJECT_NAME}
+        ${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}
+        ${vis_goom_pp_ENABLE_SANITIZER_LEAK}
+        ${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}
+        ${vis_goom_pp_ENABLE_SANITIZER_THREAD}
+        ${vis_goom_pp_ENABLE_SANITIZER_MEMORY}
+)
 
 set_target_properties(${PROJECT_NAME}
                       PROPERTIES
                       POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
-                      )
+)
 
 # Disable examples and tests for now - Android and Apple builds failing.
 if (OFF)

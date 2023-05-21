@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 project(GoomTests LANGUAGES CXX)
 
@@ -34,14 +34,14 @@ add_executable(${GOOM_LIB_TESTS_NAME}
                src/utils/test_strutils.cpp
                src/utils/test_t_values.cpp
                src/visual_fx/test_filter_fx.cpp
-               )
+)
 
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/include
                            ${GOOM_LIBS_DIR}/src/goom/include/goom
                            ${GOOM_LIBS_DIR}/src/goom/src
-                           )
+)
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            SYSTEM PRIVATE
                            ${GOOM_LIBS_DIR}/lib/vivid/include
@@ -50,7 +50,7 @@ target_include_directories(${GOOM_LIB_TESTS_NAME}
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}
                            ${GLM_INCLUDE_DIR}
-                           )
+)
 
 target_link_libraries(${GOOM_LIB_TESTS_NAME}
                       PRIVATE
@@ -60,12 +60,12 @@ target_link_libraries(${GOOM_LIB_TESTS_NAME}
                       particles::lib
                       Catch2::Catch2
                       ${CMAKE_THREAD_LIBS_INIT}
-                      )
+)
 if (FREETYPE_FOUND)
     target_link_libraries(${GOOM_LIB_TESTS_NAME}
                           PRIVATE
                           Freetype::Freetype
-                          )
+    )
 endif ()
 if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_link_libraries(${GOOM_LIB_TESTS_NAME}
@@ -73,12 +73,18 @@ if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
                           m
                           pthread
                           stdc++
-                          )
+    )
 endif ()
 
-set_project_warnings(${GOOM_LIB_TESTS_NAME})
-enable_sanitizers(${GOOM_LIB_TESTS_NAME})
-configure_linker(${GOOM_LIB_TESTS_NAME})
+vis_goom_pp_set_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS ${GOOM_LIB_TESTS_NAME})
+vis_goom_pp_enable_sanitizers(${GOOM_LIB_TESTS_NAME}
+                              ${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}
+                              ${vis_goom_pp_ENABLE_SANITIZER_LEAK}
+                              ${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}
+                              ${vis_goom_pp_ENABLE_SANITIZER_THREAD}
+                              ${vis_goom_pp_ENABLE_SANITIZER_MEMORY}
+)
+vis_goom_pp_configure_linker(${GOOM_LIB_TESTS_NAME})
 
 include(Catch)
 

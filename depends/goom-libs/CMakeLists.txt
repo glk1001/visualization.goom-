@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 project(visualization.goom-pp.lib)
 
@@ -61,14 +61,16 @@ include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
 include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
-include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Hardening.cmake)
+include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Sanitizers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 set(BUILD_SHARED_LIBS OFF)
+include(../../ProjectOptions.cmake)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 option(ENABLE_FUZZING "Enable Fuzzing Builds" OFF)
 
@@ -98,7 +100,7 @@ if (NOT DEFINED LSys_SOURCE_DIR)
                   GITHUB_REPOSITORY "glk1001/LSys"
                   GIT_TAG "master"
                   FORCE True
-                  )
+    )
     set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 endif ()
 if (NOT DEFINED Particles_SOURCE_DIR)
@@ -106,7 +108,7 @@ if (NOT DEFINED Particles_SOURCE_DIR)
                   GITHUB_REPOSITORY "glk1001/particles"
                   GIT_TAG "public_cleaned"
                   FORCE True
-                  )
+    )
     set_target_properties(cpuTest PROPERTIES EXCLUDE_FROM_ALL True)
 endif ()
 
@@ -148,7 +150,7 @@ endif ()
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_ID = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Goom-libs: CMAKE_BUILD_TYPE = \"${CMAKE_BUILD_TYPE}\".")
-message(STATUS "Goom-libs: WARNINGS_AS_ERRORS = \"${WARNINGS_AS_ERRORS}\".")
+message(STATUS "Goom-libs: WARNINGS_AS_ERRORS = \"${vis_goom_pp_WARNINGS_AS_ERRORS}\".")
 message(STATUS "Goom-libs: CMAKE_MODULE_PATH = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Goom-libs: CMAKE_SCRIPTS_PATH = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Goom-libs: CMAKE_GENERATOR = \"${CMAKE_GENERATOR}\".")
@@ -161,11 +163,15 @@ message(STATUS "Goom-libs: C++ standard required = \"${CMAKE_CXX_STANDARD_REQUIR
 message(STATUS "Goom-libs: C++ extensions = \"${CMAKE_CXX_EXTENSIONS}\".")
 message(STATUS "Goom-libs: BUILD_SHARED_LIBS = \"${BUILD_SHARED_LIBS}\".")
 message(STATUS "Goom-libs: ENABLE_TESTING = \"${ENABLE_TESTING}\".")
-message(STATUS "Goom-libs: GOOM_DEBUG = \"${GOOM_DEBUG}\".")
 message(STATUS "Goom-libs: GOOM_LIBS_DIR = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR = \"${magic_enum_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: fmt_SOURCE_DIR = \"${fmt_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: GLM_INCLUDE_DIR = \"${GLM_INCLUDE_DIR}\".")
+message(STATUS "Goom-libs: ENABLE_SANITIZER_ADDRESS   = \"${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}\".")
+message(STATUS "Goom-libs: ENABLE_SANITIZER_LEAK      = \"${vis_goom_pp_ENABLE_SANITIZER_LEAK}\".")
+message(STATUS "Goom-libs: ENABLE_SANITIZER_UNDEFINED = \"${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}\".")
+message(STATUS "Goom-libs: ENABLE_SANITIZER_THREAD    = \"${vis_goom_pp_ENABLE_SANITIZER_THREAD}\".")
+message(STATUS "Goom-libs: ENABLE_SANITIZER_MEMORY    = \"${vis_goom_pp_ENABLE_SANITIZER_MEMORY}\".")
 
 add_subdirectory(src)

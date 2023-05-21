@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 project(Goom LANGUAGES CXX)
 
@@ -212,7 +212,7 @@ add_library(goom
             src/goom_utils.cpp
             src/goom_version.cpp
             src/sound_info.cpp
-            )
+)
 
 target_include_directories(goom
                            PUBLIC
@@ -221,7 +221,7 @@ target_include_directories(goom
                            PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/include/goom
                            ${GOOM_LIBS_DIR}/src/goom/src
-                           )
+)
 
 target_include_directories(goom
                            SYSTEM PRIVATE
@@ -235,15 +235,21 @@ target_include_directories(goom
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
                            ${GLM_INCLUDE_DIR}
-                           )
+)
 
-set_project_warnings(goom)
-enable_sanitizers(goom)
+vis_goom_pp_set_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS goom)
+vis_goom_pp_enable_sanitizers(
+        goom
+        ${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}
+        ${vis_goom_pp_ENABLE_SANITIZER_LEAK}
+        ${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}
+        ${vis_goom_pp_ENABLE_SANITIZER_THREAD}
+        ${vis_goom_pp_ENABLE_SANITIZER_MEMORY})
 
 set_target_properties(goom
                       PROPERTIES
                       POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE}
-                      )
+)
 
 get_target_property(goom_compile_options goom COMPILE_OPTIONS)
 get_target_property(goom_compile_features goom COMPILE_FEATURES)
