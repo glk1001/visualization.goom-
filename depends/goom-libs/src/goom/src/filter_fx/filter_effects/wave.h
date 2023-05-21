@@ -60,6 +60,8 @@ public:
     float periodicFactor;
     float reducerCoeff;
     float spiralRotateBaseAngle;
+    bool useModifiedATanAngle;
+    float modifiedATanAngleFactor;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
@@ -104,6 +106,7 @@ private:
                                      float periodicFactor) const noexcept -> float;
 
   [[nodiscard]] auto GetSqDistEffect() const noexcept -> Wave::AngleEffect;
+  [[nodiscard]] auto GetATanAngle(const NormalizedCoords& coords) const noexcept -> float;
   [[nodiscard]] auto GetSqDistSpiralRotateAngle(const float sqDistFromZero,
                                                 const NormalizedCoords& coords) const noexcept
       -> float;

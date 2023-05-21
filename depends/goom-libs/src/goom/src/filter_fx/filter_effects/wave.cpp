@@ -35,6 +35,11 @@ static constexpr auto SPIRAL_ROTATE_FACTOR_RANGE       = IGoomRand::NumberRange<
 static constexpr auto MIN_SPIRAL_ROTATE_LERP           = 0.5F;
 static constexpr auto MAX_SPIRAL_ROTATE_LERP           = 1.0F;
 
+static constexpr auto DEFAULT_USE_MODIFIED_ATAN_ANGLE    = false;
+static constexpr auto DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR = 1.0F;
+static constexpr auto MODIFIED_ATAN_ANGLE_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.1F, 10.0F};
+
+
 // These give weird but interesting wave results
 static constexpr auto SMALL_FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.001F, 0.1F};
 static constexpr auto BIG_AMPLITUDE_RANGE       = IGoomRand::NumberRange<float>{1.0F, 50.0F};
@@ -47,6 +52,7 @@ static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL              = 0.75F;
 static constexpr auto PROB_NO_PERIODIC_FACTOR                 = 0.2F;
 static constexpr auto PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
 static constexpr auto PROB_SPIRAL_SQ_DIST_EFFECT              = 0.4F;
+static constexpr auto PROB_USE_MODIFIED_ATAN_ANGLE            = 0.5F;
 
 static constexpr auto WAVE_SIN_EFFECT_WEIGHT      = 200.0F;
 static constexpr auto WAVE_COS_EFFECT_WEIGHT      = 200.0F;
@@ -92,7 +98,9 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
              DEFAULT_AMPLITUDE,
              DEFAULT_PERIODIC_FACTOR,
              DEFAULT_REDUCER_COEFF,
-             DEFAULT_SPIRAL_ROTATE_BASE_ANGLE}
+             DEFAULT_SPIRAL_ROTATE_BASE_ANGLE,
+             DEFAULT_USE_MODIFIED_ATAN_ANGLE,
+             DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR}
 {
 }
 
@@ -182,14 +190,16 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
 
   const auto sqDistPower = m_goomRand->GetRandInRange(SQ_DIST_POWER_RANGE);
 
-  const auto periodicFactor        = GetPeriodicFactor(xWaveEffect,
+  const auto periodicFactor          = GetPeriodicFactor(xWaveEffect,
                                                 yWaveEffect,
                                                 waveModeSettings.periodicFactorRange,
                                                 waveModeSettings.sinCosPeriodicFactorRange);
-  const auto freqFactor            = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
-  const auto amplitude             = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
-  const auto reducerCoeff          = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
-  const auto spiralRotateBaseAngle = m_goomRand->GetRandInRange(0.0F, UTILS::MATH::PI);
+  const auto freqFactor              = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
+  const auto amplitude               = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
+  const auto reducerCoeff            = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
+  const auto spiralRotateBaseAngle   = m_goomRand->GetRandInRange(0.0F, UTILS::MATH::PI);
+  const auto useModifiedATanAngle    = m_goomRand->ProbabilityOf(PROB_USE_MODIFIED_ATAN_ANGLE);
+  const auto modifiedATanAngleFactor = m_goomRand->GetRandInRange(MODIFIED_ATAN_ANGLE_FACTOR_RANGE);
 
   SetParams({xWaveEffect,
              yWaveEffect,
@@ -199,7 +209,9 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
              amplitude,
              periodicFactor,
              reducerCoeff,
-             spiralRotateBaseAngle});
+             spiralRotateBaseAngle,
+             useModifiedATanAngle,
+             modifiedATanAngleFactor});
 
   Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
@@ -294,7 +306,7 @@ auto Wave::GetAngle(const float sqDistFromZero, const NormalizedCoords& coords) 
   switch (m_params.angleEffect)
   {
     case AngleEffect::ATAN:
-      return std::atan2(coords.GetY(), coords.GetX());
+      return GetATanAngle(coords);
     case AngleEffect::SQ_DIST:
       return std::pow(sqDistFromZero, m_params.sqDistPower);
     case AngleEffect::SQ_DIST_AND_SPIRAL:
@@ -304,6 +316,16 @@ auto Wave::GetAngle(const float sqDistFromZero, const NormalizedCoords& coords) 
       FailFast();
 #endif
   }
+}
+
+auto Wave::GetATanAngle(const NormalizedCoords& coords) const noexcept -> float
+{
+  const auto atanAngle = std::atan2(coords.GetY(), coords.GetX());
+  if (m_params.useModifiedATanAngle)
+  {
+    return std::sin(m_params.modifiedATanAngleFactor * atanAngle) * atanAngle;
+  }
+  return atanAngle;
 }
 
 auto Wave::GetSqDistSpiralRotateAngle(const float sqDistFromZero,
