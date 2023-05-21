@@ -67,6 +67,7 @@ jobs:
                                                                   -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
                                                                   -DENABLE_TESTING=1 \
                                                                   -DUSE_MAGIC_ENUM=1 \
+                                                                  -DNO_SAN=1 \
                                                                   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
                                                                   ..
 

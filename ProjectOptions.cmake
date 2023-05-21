@@ -13,8 +13,7 @@ macro(vis_goom_pp_supports_sanitizers)
 endmacro()
 
 vis_goom_pp_supports_sanitizers()
-option(vis_goom_pp_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" OFF)
-# option(vis_goom_pp_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" ${SUPPORTS_ASAN})
+option(vis_goom_pp_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" ${SUPPORTS_ASAN})
 option(vis_goom_pp_ENABLE_SANITIZER_LEAK "Enable leak sanitizer" OFF)
 option(vis_goom_pp_ENABLE_SANITIZER_UNDEFINED "Enable undefined sanitizer" ${SUPPORTS_UBSAN})
 option(vis_goom_pp_ENABLE_SANITIZER_THREAD "Enable thread sanitizer" OFF)
@@ -30,7 +29,6 @@ else ()
     set(ENABLE_UBSAN_MINIMAL_RUNTIME TRUE)
 endif ()
 
-vis_goom_pp_enable_hardening(global ON ${ENABLE_UBSAN_MINIMAL_RUNTIME})
 vis_goom_pp_assure_out_of_source_builds()
 vis_goom_pp_enable_cache()
 

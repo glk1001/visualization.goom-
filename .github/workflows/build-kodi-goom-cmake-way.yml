@@ -183,7 +183,10 @@ jobs:
           cd ${{ env.VIS_GOOM_PATH }}
 
           export CCACHE_DIR=${{ runner.temp }}
-          bash scripts/goom-configure.sh -c ${{ matrix.config.cc }} --build-type ${{ matrix.config.build_type }} --suffix ${{ github.ref_name }}
+          bash scripts/goom-configure.sh -c ${{ matrix.config.cc }} \
+                                         --build-type ${{ matrix.config.build_type }} \
+                                         --suffix ${{ github.ref_name }} \
+                                         --no-san
 
       - name: Build Goom++ for ${{ runner.os }}
         if: ${{ runner.os != 'Windows' }}
