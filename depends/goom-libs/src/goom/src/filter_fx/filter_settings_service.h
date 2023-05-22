@@ -52,6 +52,14 @@ enum class ZoomFilterMode
 class FilterSettingsService
 {
 public:
+  struct ZoomFilterModeInfo
+  {
+    std::string_view name;
+    std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect{};
+    AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
+  };
+  using FilterModeEnumMap =
+      UTILS::RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
   using CreateZoomInCoefficientsEffectFunc =
       std::function<std::shared_ptr<IZoomInCoefficientsEffect>(
           ZoomFilterMode filterMode,
@@ -125,19 +133,7 @@ private:
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
   auto SetRandomSettingsForNewFilterMode() -> void;
 
-  struct ZoomFilterModeInfo
-  {
-    std::string_view name;
-    std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect{};
-    AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
-  };
-  using FilterModeEnumMap = UTILS::RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
   FilterModeEnumMap m_filterModeData;
-  [[nodiscard]] static auto GetFilterModeData(
-      const UTILS::MATH::IGoomRand& goomRand,
-      const std::string& resourcesDirectory,
-      const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect)
-      -> FilterModeEnumMap;
 
   static constexpr auto DEFAULT_ZOOM_MID_X                           = 16U;
   static constexpr auto DEFAULT_ZOOM_MID_Y                           = 1U;
@@ -169,6 +165,15 @@ private:
     TOP_RIGHT_QUARTER_MID_POINT,
     _num // unused, and marks the enum end
   };
+  static constexpr auto BOTTOM_MID_POINT_WEIGHT               = 03.0F;
+  static constexpr auto TOP_MID_POINT_WEIGHT                  = 03.0F;
+  static constexpr auto LEFT_MID_POINT_WEIGHT                 = 02.0F;
+  static constexpr auto RIGHT_MID_POINT_WEIGHT                = 02.0F;
+  static constexpr auto CENTRE_MID_POINT_WEIGHT               = 18.0F;
+  static constexpr auto TOP_LEFT_QUARTER_MID_POINT_WEIGHT     = 10.0F;
+  static constexpr auto TOP_RIGHT_QUARTER_MID_POINT_WEIGHT    = 10.0F;
+  static constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
+  static constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
   UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
   [[nodiscard]] auto IsFilterModeAWaveMode() const -> bool;

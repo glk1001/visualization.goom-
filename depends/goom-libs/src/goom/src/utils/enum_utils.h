@@ -66,6 +66,9 @@ private:
 };
 
 template<typename E, typename T>
+[[nodiscard]] constexpr auto GetFilledEnumMap(const T& value) -> EnumMap<E, T>;
+
+template<typename E, typename T>
 class RuntimeEnumMap
 {
 public:
@@ -89,7 +92,7 @@ private:
 
 template<typename E, typename T>
 constexpr EnumMap<E, T>::EnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexcept
-  : m_keyValues{std::move(GetSortedValuesArray(keyValues))}
+  : m_keyValues{GetSortedValuesArray(std::move(keyValues))}
 {
 }
 
@@ -144,6 +147,19 @@ constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> st
     sortedValuesArray.at(static_cast<uint32_t>(keyValue.key)) = std::move(keyValue.value);
   }
   return sortedValuesArray;
+}
+
+template<typename E, typename T>
+[[nodiscard]] constexpr auto GetFilledEnumMap(const T& value) -> EnumMap<E, T>
+{
+  auto enumMap = EnumMap<E, T>{};
+  for (auto i = 0U; i < NUM<E>; ++i)
+  {
+    enumMap[static_cast<E>(i)] = value;
+  }
+  static_assert(enumMap.size() == NUM<E>);
+
+  return enumMap;
 }
 
 template<typename E, typename T>
