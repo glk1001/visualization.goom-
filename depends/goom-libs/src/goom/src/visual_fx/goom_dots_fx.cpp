@@ -35,6 +35,7 @@ using COLOR::SimpleColors;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using FX_UTILS::RandomPixelBlender;
+using UTILS::IncrementedValue;
 using UTILS::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -77,7 +78,6 @@ private:
   auto SetFlowerBitmap() -> void;
   auto SetNonFlowerBitmap() -> void;
   auto SetNextCurrentBitmapName() -> void;
-  [[nodiscard]] auto ChangeDotColorsEvent() const -> bool;
 
   static constexpr auto MIN_DOT_SIZE = 5U;
   static constexpr auto MAX_DOT_SIZE = 17U;
@@ -93,6 +93,11 @@ private:
   bool m_useMiddleColor               = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] auto GetDotPrimaryColor(size_t dotNum) const noexcept -> Pixel;
+  [[nodiscard]] auto GetMixedColor(float brightness,
+                                   const Point2dInt& bitmapPoint,
+                                   const Pixel& color,
+                                   uint32_t radius,
+                                   const Pixel& bgnd) const -> Pixel;
   [[nodiscard]] static auto IsImagePointCloseToMiddle(const Point2dInt& point, uint32_t radius)
       -> bool;
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
@@ -109,7 +114,7 @@ private:
 
   auto DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius) -> void;
 
-  static constexpr auto GAMMA = 2.2F; // Cancel the shader gamma
+  static constexpr auto GAMMA = 1.3F; // Cancel the shader gamma
   ColorAdjustment m_colorAdjust{
       {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
@@ -236,12 +241,6 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
   };
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::ChangeDotColorsEvent() const -> bool
-{
-  static constexpr auto PROB_CHANGE_DOT_COLORS = 0.33F;
-  return m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_DOT_COLORS);
-}
-
 inline auto GoomDotsFx::GoomDotsFxImpl::Start() -> void
 {
   ChangeColors();
@@ -264,7 +263,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ChangeColors() -> void
 
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
-    static constexpr auto PROB_USE_PRIMARY_COLOR = 0.5F;
+    static constexpr auto PROB_USE_PRIMARY_COLOR = 0.3F;
     usePrimaryColor = m_fxHelper->goomRand->ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
@@ -322,8 +321,9 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ApplyMultiple() -> void
   UpdatePixelBlender();
 
   auto radius = MIN_DOT_SIZE / 2U;
-  if ((0 == m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or
-      ChangeDotColorsEvent())
+  if (static constexpr auto PROB_CHANGE_DOT_COLORS = 0.25F;
+      m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_DOT_COLORS) or
+      (0 == m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom()))
   {
     ChangeColors();
     radius = m_fxHelper->goomRand->GetRandInRange(radius, (U_HALF * MAX_DOT_SIZE) + 1);
@@ -331,26 +331,25 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ApplyMultiple() -> void
   }
 
   const auto speedFactor = 0.35F * m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed();
-  //  const auto largeFactor = GetLargeSoundFactor(m_goomInfo->GetSoundInfo());
   const auto speedVarMult80Plus15 = static_cast<uint32_t>((speedFactor * 80.0F) + 15.0F);
 
   const auto speedVarMult80Plus15Div15 = speedVarMult80Plus15 / 15;
-  static constexpr auto T_MIN          = 0.1F;
-  static constexpr auto T_MAX          = 1.0F;
-  const auto tStep = (T_MAX - T_MIN) / static_cast<float>(speedVarMult80Plus15Div15);
+  static constexpr auto COLOR_T_MIN    = 0.1F;
+  static constexpr auto COLOR_T_MAX    = 1.0F;
+  auto colorT                          = IncrementedValue<float>{
+      COLOR_T_MIN, COLOR_T_MAX, TValue::StepType::SINGLE_CYCLE, speedVarMult80Plus15Div15};
 
-  auto t = T_MIN;
   for (auto i = 1U; i <= speedVarMult80Plus15Div15; ++i)
   {
     for (auto dotNum = 0U; dotNum < NUM_DOT_TYPES; ++dotNum)
     {
-      const auto dotColor    = GetDotColor(dotNum, t);
+      const auto dotColor    = GetDotColor(dotNum, colorT());
       const auto dotPosition = m_dotPaths.at(dotNum)->GetNextPoint();
       m_dotPaths.at(dotNum)->IncrementT();
       DotFilter(dotColor, dotPosition, radius);
     }
 
-    t += tStep;
+    colorT.Increment();
   }
 }
 
@@ -444,26 +443,38 @@ auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     return;
   }
 
-  static constexpr auto BRIGHTNESS = 3.5F;
   const auto getColor1 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
-    if (0 == bgnd.A())
-    {
-      return BLACK_PIXEL;
-    }
-    const auto newColor =
-        m_useMiddleColor and IsImagePointCloseToMiddle(bitmapPoint, radius) ? m_middleColor : color;
-    static constexpr auto COLOR_MIX_T = 0.6F;
-    const auto mixedColor             = COLOR::ColorMaps::GetColorMix(bgnd, newColor, COLOR_MIX_T);
-    return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
+    static constexpr auto MAIN_BRIGHTNESS = 2.5F;
+    return GetMixedColor(MAIN_BRIGHTNESS, bitmapPoint, color, radius, bgnd);
   };
-  const auto getColor2 = [&getColor1](const Point2dInt& bitmapPoint, const Pixel& bgnd)
-  { return getColor1(bitmapPoint, bgnd); };
+  const auto getColor2 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  {
+    static constexpr auto LOW_BRIGHTNESS = 3.0F;
+    return GetMixedColor(LOW_BRIGHTNESS, bitmapPoint, color, radius, bgnd);
+  };
 
   const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
                                    dotPosition.y + static_cast<int32_t>(radius)};
   m_bitmapDrawer.Bitmap(
       midPoint, GetImageBitmap(static_cast<uint32_t>(diameter)), {getColor1, getColor2});
+}
+
+auto GoomDotsFx::GoomDotsFxImpl::GetMixedColor(const float brightness,
+                                               const Point2dInt& bitmapPoint,
+                                               const Pixel& color,
+                                               const uint32_t radius,
+                                               const Pixel& bgnd) const -> Pixel
+{
+  if (0 == bgnd.A())
+  {
+    return BLACK_PIXEL;
+  }
+  const auto newColor =
+      m_useMiddleColor and IsImagePointCloseToMiddle(bitmapPoint, radius) ? m_middleColor : color;
+  static constexpr auto COLOR_MIX_T = 0.75F;
+  const auto mixedColor             = COLOR::ColorMaps::GetColorMix(bgnd, newColor, COLOR_MIX_T);
+  return m_colorAdjust.GetAdjustment(brightness, mixedColor);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const Point2dInt& point,
