@@ -41,7 +41,6 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
       {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)}};
   // clang-format on
 
-  m_colorAdjust.SetChromaFactor(m_colorInfo.chromaFactor);
   const auto innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);
 
   for (auto radius = drawParams.maxRadius; radius > 1; --radius)
@@ -91,7 +90,7 @@ auto ShapePath::GetColors(const DrawParams& drawParams,
              : GetColorsWithInner(brightness, shapeColors, innerColor, drawParams.innerColorMix);
 }
 
-static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR              = 0.5F;
+static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR              = 0.25F;
 static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR               = 0.5F;
 static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
 

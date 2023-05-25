@@ -22,7 +22,6 @@ public:
     COLOR::ColorMapSharedPtr mainColorMapPtr  = nullptr;
     COLOR::ColorMapSharedPtr lowColorMapPtr   = nullptr;
     COLOR::ColorMapSharedPtr innerColorMapPtr = nullptr;
-    float chromaFactor                        = 1.0F;
   };
   ShapePath(DRAW::IGoomDraw& draw,
             const std::shared_ptr<UTILS::MATH::IPath>& path,
@@ -31,7 +30,6 @@ public:
   auto UpdateMainColorInfo(const COLOR::WeightedRandomColorMaps& mainColorMaps) noexcept -> void;
   auto UpdateLowColorInfo(const COLOR::WeightedRandomColorMaps& lowColorMaps) noexcept -> void;
   auto UpdateInnerColorInfo(const COLOR::WeightedRandomColorMaps& innerColorMaps) noexcept -> void;
-  auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetNumSteps(uint32_t val) noexcept -> void;
   auto IncrementT() noexcept -> void;
@@ -166,11 +164,6 @@ inline auto ShapePath::UpdateInnerColorInfo(
     const COLOR::WeightedRandomColorMaps& innerColorMaps) noexcept -> void
 {
   m_colorInfo.innerColorMapPtr = innerColorMaps.GetRandomColorMapSharedPtr(GetColorMapTypes());
-}
-
-inline auto ShapePath::SetChromaFactor(const float val) noexcept -> void
-{
-  m_colorInfo.chromaFactor = val;
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES
