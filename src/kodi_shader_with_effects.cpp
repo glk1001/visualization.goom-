@@ -3,8 +3,8 @@
 #include "kodi_shader_with_effects.h"
 
 #include "Main.h"
-#include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_utils.h"
 
 #include <filesystem>
 #include <format>
@@ -48,35 +48,37 @@ auto KodiShaderWithEffects::DisableShader() -> void
 
 auto KodiShaderWithEffects::CreateGlShaders() -> void
 {
-  const auto vertexShaderFilePath = GetVertexShaderFilepath();
-  if (not std::filesystem::exists(vertexShaderFilePath))
+  const auto vertexShaderFilepath = GetVertexShaderFilepath();
+  if (not std::filesystem::exists(vertexShaderFilepath))
   {
     const auto errorMsg = std_fmt::format("CVisualizationGoom: Could not find shader file '{}'.",
-                                          vertexShaderFilePath);
+                                          vertexShaderFilepath);
     LogError(*m_goomLogger, errorMsg);
     throw std::runtime_error(errorMsg);
   }
 
-  const auto fragmentShaderFilePath = GetFragmentShaderFilepath();
-  if (not std::filesystem::exists(fragmentShaderFilePath))
+  const auto fragmentShaderFilepath = GetFragmentShaderFilepath();
+  if (not std::filesystem::exists(fragmentShaderFilepath))
   {
     const auto errorMsg = std_fmt::format("CVisualizationGoom: Could not find shader file '{}'.",
-                                          fragmentShaderFilePath);
+                                          fragmentShaderFilepath);
     LogError(*m_goomLogger, errorMsg);
     throw std::runtime_error(errorMsg);
   }
 
-  if (not m_cVisualizationGoom->LoadShaderFiles(vertexShaderFilePath, fragmentShaderFilePath))
+  static constexpr auto* SHADER_INCLUDE_DIR = "";
+
+  const auto vertexShaderStr =
+      GetFileContentsWithExpandedIncludes(SHADER_INCLUDE_DIR, vertexShaderFilepath);
+  const auto fragmentShaderStr =
+      GetFileContentsWithExpandedIncludes(SHADER_INCLUDE_DIR, fragmentShaderFilepath);
+
+  if (static constexpr auto* EXTRA_END = ""; not m_cVisualizationGoom->CompileAndLink(
+          vertexShaderStr, EXTRA_END, fragmentShaderStr, EXTRA_END))
   {
-    const auto* const errorMsg = "CVisualizationGoom: Failed to load GL shaders.";
-    LogError(*m_goomLogger, errorMsg);
-    throw std::runtime_error(errorMsg);
-  }
-  if (not m_cVisualizationGoom->CompileAndLink())
-  {
-    const auto* const errorMsg = "CVisualizationGoom: Failed to compile GL shaders.";
-    LogError(*m_goomLogger, errorMsg);
-    throw std::runtime_error(errorMsg);
+    static constexpr auto* ERROR_MSG = "CVisualizationGoom: Failed to compile GL shaders.";
+    LogError(*m_goomLogger, ERROR_MSG);
+    throw std::runtime_error(ERROR_MSG);
   }
 
   m_prog = m_cVisualizationGoom->ProgramHandle();

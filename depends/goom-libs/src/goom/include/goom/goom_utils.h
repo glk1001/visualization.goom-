@@ -31,4 +31,7 @@ template<typename U, typename T>
   }
 }
 
+[[nodiscard]] auto GetFileContentsWithExpandedIncludes(const std::string& includeDir,
+                                                       const std::string& filepath) -> std::string;
+
 } // namespace GOOM
