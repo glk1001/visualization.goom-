@@ -117,7 +117,6 @@ auto Shape::SetShapePathsMinMaxNumSteps(
 auto Shape::Start() noexcept -> void
 {
   SetFixedShapeNumSteps();
-  StartChromaChangeOnOffTimer();
 
   std::for_each(
       begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Start(); });
@@ -166,8 +165,6 @@ auto Shape::Update() noexcept -> void
 {
   std::for_each(
       begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Update(); });
-
-  m_chromaChangeOnOffTimer.Increment();
 }
 
 auto Shape::DoRandomChanges() noexcept -> void
@@ -175,12 +172,6 @@ auto Shape::DoRandomChanges() noexcept -> void
   static constexpr auto PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION = 0.5F;
   const auto useEvenPartNumsForDirection =
       m_goomRand->ProbabilityOf(PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION);
-
-  if (static constexpr auto PROB_CHANGE_CHROMA_STATE = 0.01F;
-      m_goomRand->ProbabilityOf(PROB_CHANGE_CHROMA_STATE))
-  {
-    m_chromaChangeOnOffTimer.TryToChangeState();
-  }
 
   std::for_each(begin(m_shapeParts),
                 end(m_shapeParts),
@@ -227,41 +218,6 @@ auto Shape::GetTotalNumShapePaths() const noexcept -> uint32_t
   }
 
   return total;
-}
-
-inline auto Shape::StartChromaChangeOnOffTimer() noexcept -> void
-{
-  m_chromaChangeOnOffTimer.SetActions({[this]() { return SetIncreasedChromaFactor(); },
-                                       [this]() { return SetDecreasedChromaFactor(); }});
-  m_chromaChangeOnOffTimer.StartOnTimer();
-}
-
-inline auto Shape::SetIncreasedChromaFactor() noexcept -> bool
-{
-  if (static constexpr auto PROB_INCREASE_CHROMA_FACTOR = 0.9F;
-      not m_goomRand->ProbabilityOf(PROB_INCREASE_CHROMA_FACTOR))
-  {
-    return false;
-  }
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [](ShapePart& shapePart)
-                { shapePart.SetChromaFactor(ColorAdjustment::INCREASED_CHROMA_FACTOR); });
-  return true;
-}
-
-inline auto Shape::SetDecreasedChromaFactor() noexcept -> bool
-{
-  if (static constexpr auto PROB_DECREASE_CHROMA_FACTOR = 0.2F;
-      not m_goomRand->ProbabilityOf(PROB_DECREASE_CHROMA_FACTOR))
-  {
-    return false;
-  }
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [](ShapePart& shapePart)
-                { shapePart.SetChromaFactor(ColorAdjustment::DECREASED_CHROMA_FACTOR); });
-  return true;
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

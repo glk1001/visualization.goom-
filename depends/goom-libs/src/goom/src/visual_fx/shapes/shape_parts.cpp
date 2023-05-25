@@ -453,15 +453,6 @@ inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void
   m_useExtremeMaxShapeDotRadius = m_goomRand->ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
 }
 
-auto ShapePart::SetChromaFactor(const float val) noexcept -> void
-{
-  m_chromaFactor = val;
-
-  std::for_each(begin(m_shapePaths),
-                end(m_shapePaths),
-                [&val](ShapePath& shapePath) { shapePath.SetChromaFactor(val); });
-}
-
 auto ShapePart::Update() noexcept -> void
 {
   IncrementTs();

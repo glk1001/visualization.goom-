@@ -90,20 +90,6 @@ private:
   static constexpr float STARTING_FIXED_T_MIN_MAX_LERP = 0.5F;
   float m_fixedTMinMaxLerp                             = STARTING_FIXED_T_MIN_MAX_LERP;
   auto SetRandomShapeNumSteps() noexcept -> void;
-
-  static constexpr uint32_t CHROMA_INCREASED_TIME        = 1000;
-  static constexpr uint32_t CHROMA_INCREASED_FAILED_TIME = 20;
-  static constexpr uint32_t CHROMA_DECREASED_TIME        = 500;
-  static constexpr uint32_t CHROMA_DECREASED_FAILED_TIME = 10;
-  UTILS::OnOffTimer m_chromaChangeOnOffTimer{
-      {
-       CHROMA_INCREASED_TIME, CHROMA_INCREASED_FAILED_TIME,
-       CHROMA_DECREASED_TIME, CHROMA_DECREASED_FAILED_TIME,
-       }
-  };
-  auto StartChromaChangeOnOffTimer() noexcept -> void;
-  [[nodiscard]] auto SetIncreasedChromaFactor() noexcept -> bool;
-  [[nodiscard]] auto SetDecreasedChromaFactor() noexcept -> bool;
 };
 
 inline auto Shape::SetVaryDotRadius(const bool val) -> void

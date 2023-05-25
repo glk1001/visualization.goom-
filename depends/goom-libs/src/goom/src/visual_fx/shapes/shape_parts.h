@@ -53,7 +53,6 @@ public:
   auto SetWeightedLowColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept -> void;
   auto SetWeightedInnerColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
       -> void;
-  auto SetChromaFactor(float val) noexcept -> void;
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
 
@@ -123,7 +122,6 @@ private:
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   auto ChangeAllColorMapsNow() noexcept -> void;
   ColorInfo m_colorInfo = GetInitialColorInfo();
-  float m_chromaFactor  = 1.0F;
   auto UpdateShapesMainColorMaps() noexcept -> void;
   auto UpdateShapesLowColorMaps() noexcept -> void;
   auto UpdateShapesInnerColorMaps() noexcept -> void;
@@ -220,7 +218,6 @@ inline auto ShapePart::UseEvenShapePartNumsForDirection(const bool val) -> void
 inline auto ShapePart::SetRandomizedShapePaths() noexcept -> void
 {
   m_shapePaths = GetRandomizedShapePaths();
-  SetChromaFactor(m_chromaFactor);
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES
