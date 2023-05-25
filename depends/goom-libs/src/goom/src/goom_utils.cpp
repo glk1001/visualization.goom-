@@ -48,9 +48,9 @@ auto GetAbsoluteIncludeDir(const std::string& includeDir, const std::string& inF
 {
   if (not includeDir.empty())
   {
-    return std::filesystem::absolute(includeDir);
+    return std::filesystem::absolute(includeDir).string();
   }
-  return std::filesystem::path(inFilename).parent_path();
+  return std::filesystem::path(inFilename).parent_path().string();
 }
 
 } // namespace
