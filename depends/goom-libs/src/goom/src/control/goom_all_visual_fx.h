@@ -81,8 +81,6 @@ public:
   [[nodiscard]] auto GetCurrentState() const noexcept -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const noexcept -> std::string_view;
 
-  auto SetSingleBufferDots(bool value) noexcept -> void;
-
   auto StartExposureControl() noexcept -> void;
   [[nodiscard]] auto GetCurrentExposure() const noexcept -> float;
   [[nodiscard]] auto GetLastShaderVariables() const noexcept -> const GoomShaderVariables&;
@@ -94,7 +92,6 @@ public:
   auto ChangeAllFxPixelBlenders() noexcept -> void;
   auto RefreshAllFx() noexcept -> void;
 
-  auto ApplyCurrentStateToSingleBuffer() noexcept -> void;
   auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) noexcept -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 

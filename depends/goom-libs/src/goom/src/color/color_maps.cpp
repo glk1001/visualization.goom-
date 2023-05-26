@@ -112,10 +112,9 @@ namespace
 {
 
 template<class T>
-constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr,
-                      ColorMapGroup idx) noexcept;
+const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr, ColorMapGroup idx) noexcept;
 template<class T>
-constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, ColorMapGroup idx) noexcept;
+T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, ColorMapGroup idx) noexcept;
 
 [[nodiscard]] auto GetAllColorMapNames() noexcept -> const std::vector<ColorMapName>&;
 [[nodiscard]] auto MakeAllColorMapNames() noexcept -> std::vector<ColorMapName>;
@@ -233,14 +232,14 @@ auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>
 }
 
 template<class T>
-constexpr const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr,
-                      const ColorMapGroup idx) noexcept
+inline const T& at(const std::array<T, UTILS::NUM<ColorMapGroup>>& arr,
+                   const ColorMapGroup idx) noexcept
 {
   return arr.at(static_cast<size_t>(idx));
 }
 
 template<class T>
-constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx) noexcept
+inline T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGroup idx) noexcept
 {
   return arr.at(static_cast<size_t>(idx));
 }

@@ -56,8 +56,6 @@ public:
   using ResetCurrentDrawBuffSettingsFunc = std::function<void(GoomDrawables fx)>;
   auto SetResetDrawBuffSettingsFunc(const ResetCurrentDrawBuffSettingsFunc& func) -> void;
 
-  auto SetSingleBufferDots(bool val) -> void;
-
   auto Start() -> void;
   auto Finish() -> void;
 
@@ -68,7 +66,6 @@ public:
       const VISUAL_FX::IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
 
-  auto ApplyCurrentStateToSingleBuffer() -> void;
   auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 

@@ -48,7 +48,7 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
-  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  Point2dInt m_screenCentre       = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   RandomPixelBlender m_pixelBlender;

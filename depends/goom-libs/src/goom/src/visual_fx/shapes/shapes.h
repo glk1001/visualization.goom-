@@ -77,7 +77,7 @@ private:
       -> std::vector<ShapePart>;
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 
-  bool m_varyDotRadius = false;
+  bool m_varyDotRadius                                    = false;
   COLOR::ColorMapSharedPtr m_meetingPointMainColorMapPtr  = nullptr;
   COLOR::ColorMapSharedPtr m_meetingPointLowColorMapPtr   = nullptr;
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;

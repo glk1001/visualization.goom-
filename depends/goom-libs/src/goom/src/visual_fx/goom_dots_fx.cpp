@@ -60,9 +60,7 @@ public:
 
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetSingleBufferDots(bool val) noexcept -> void;
 
-  auto ApplySingle() -> void;
   auto ApplyMultiple() -> void;
 
 private:
@@ -91,9 +89,7 @@ private:
   RandomColorMaps m_randomColorMaps{m_defaultAlpha, *m_fxHelper->goomRand};
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
   Pixel m_middleColor{};
-  bool m_useSingleBuffer              = true;
   bool m_currentlyUseSingleBufferOnly = true;
-  bool m_thereIsOneBuffer             = true;
   bool m_useMiddleColor               = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] auto GetDotPrimaryColor(size_t dotNum) const noexcept -> Pixel;
@@ -108,8 +104,6 @@ private:
   std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES> m_dotPaths{GetDotPaths(m_screenCentre)};
   [[nodiscard]] static auto GetDotPaths(const Point2dInt& centre)
       -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>;
-
-  auto Update() -> void;
 
   auto ChangeColors() -> void;
 
@@ -164,16 +158,6 @@ auto GoomDotsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps
 auto GoomDotsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
   return m_pimpl->GetCurrentColorMapsNames();
-}
-
-auto GoomDotsFx::SetSingleBufferDots(const bool val) noexcept -> void
-{
-  m_pimpl->SetSingleBufferDots(val);
-}
-
-auto GoomDotsFx::ApplySingle() noexcept -> void
-{
-  m_pimpl->ApplySingle();
 }
 
 auto GoomDotsFx::ApplyMultiple() noexcept -> void
@@ -333,34 +317,7 @@ auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
       WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::SetSingleBufferDots(const bool val) noexcept -> void
-{
-  m_useSingleBuffer = val;
-}
-
-inline auto GoomDotsFx::GoomDotsFxImpl::ApplySingle() -> void
-{
-  if (not m_useSingleBuffer)
-  {
-    return;
-  }
-
-  m_thereIsOneBuffer = true;
-  Update();
-}
-
 inline auto GoomDotsFx::GoomDotsFxImpl::ApplyMultiple() -> void
-{
-  if (m_useSingleBuffer)
-  {
-    return;
-  }
-
-  m_thereIsOneBuffer = false;
-  Update();
-}
-
-auto GoomDotsFx::GoomDotsFxImpl::Update() -> void
 {
   UpdatePixelBlender();
 
@@ -503,17 +460,10 @@ auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
   const auto getColor2 = [&getColor1](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   { return getColor1(bitmapPoint, bgnd); };
 
-  if (const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
-                                       dotPosition.y + static_cast<int32_t>(radius)};
-      m_thereIsOneBuffer or m_currentlyUseSingleBufferOnly)
-  {
-    m_bitmapDrawer.Bitmap(midPoint, GetImageBitmap(static_cast<uint32_t>(diameter)), getColor1);
-  }
-  else
-  {
-    m_bitmapDrawer.Bitmap(
-        midPoint, GetImageBitmap(static_cast<uint32_t>(diameter)), {getColor1, getColor2});
-  }
+  const auto midPoint = Point2dInt{dotPosition.x + static_cast<int32_t>(radius),
+                                   dotPosition.y + static_cast<int32_t>(radius)};
+  m_bitmapDrawer.Bitmap(
+      midPoint, GetImageBitmap(static_cast<uint32_t>(diameter)), {getColor1, getColor2});
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::IsImagePointCloseToMiddle(const Point2dInt& point,

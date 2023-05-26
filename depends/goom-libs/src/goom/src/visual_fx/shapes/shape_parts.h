@@ -123,7 +123,7 @@ private:
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
   auto ChangeAllColorMapsNow() noexcept -> void;
   ColorInfo m_colorInfo = GetInitialColorInfo();
-  float m_chromaFactor = 1.0F;
+  float m_chromaFactor  = 1.0F;
   auto UpdateShapesMainColorMaps() noexcept -> void;
   auto UpdateShapesLowColorMaps() noexcept -> void;
   auto UpdateShapesInnerColorMaps() noexcept -> void;

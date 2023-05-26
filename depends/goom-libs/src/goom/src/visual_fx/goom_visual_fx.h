@@ -54,7 +54,6 @@ public:
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  virtual auto ApplySingle() noexcept -> void;
   virtual auto ApplyMultiple() noexcept -> void;
 };
 
@@ -101,11 +100,6 @@ inline auto IVisualFx::SetWeightedColorMaps(
 }
 
 inline auto IVisualFx::SetSoundData([[maybe_unused]] const AudioSamples& soundData) noexcept -> void
-{
-  // default does nothing
-}
-
-inline auto IVisualFx::ApplySingle() noexcept -> void
 {
   // default does nothing
 }

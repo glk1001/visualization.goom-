@@ -258,9 +258,6 @@ inline auto GoomMusicSettingsReactor::BigNormalUpdate() -> void
 
   m_maxTimeBetweenZoomEffectsChange = m_goomRand->GetRandInRange(
       MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE, MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE + 1);
-
-  static constexpr auto PROB_SINGLE_BUFFER_DOTS = 1.0F / 20.0F;
-  m_visualFx->SetSingleBufferDots(m_goomRand->ProbabilityOf(PROB_SINGLE_BUFFER_DOTS));
 }
 
 inline auto GoomMusicSettingsReactor::MegaLentUpdate() -> void

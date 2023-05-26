@@ -22,7 +22,7 @@ public:
     COLOR::ColorMapSharedPtr mainColorMapPtr  = nullptr;
     COLOR::ColorMapSharedPtr lowColorMapPtr   = nullptr;
     COLOR::ColorMapSharedPtr innerColorMapPtr = nullptr;
-    float chromaFactor = 1.0F;
+    float chromaFactor                        = 1.0F;
   };
   ShapePath(DRAW::IGoomDraw& draw,
             const std::shared_ptr<UTILS::MATH::IPath>& path,

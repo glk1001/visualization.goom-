@@ -87,11 +87,6 @@ auto AllStandardVisualFx::GetLinesFx() noexcept -> VISUAL_FX::LinesFx&
   return *dynamic_cast<LinesFx*>(m_drawablesMap[GoomDrawables::LINES].get());
 }
 
-auto AllStandardVisualFx::SetSingleBufferDots(const bool val) -> void
-{
-  dynamic_cast<GoomDotsFx*>(m_drawablesMap[GoomDrawables::DOTS].get())->SetSingleBufferDots(val);
-}
-
 auto AllStandardVisualFx::Start() -> void
 {
   std::for_each(begin(m_drawablesMap), end(m_drawablesMap), [](auto& value) { value->Start(); });
@@ -159,19 +154,6 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
    **/
 
   return activeColorMapsNames;
-}
-
-auto AllStandardVisualFx::ApplyCurrentStateToSingleBuffer() -> void
-{
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this](const auto& drawable)
-                {
-                  auto& visualFx = *m_drawablesMap[drawable];
-
-                  ResetDrawBuffSettings(drawable);
-                  visualFx.ApplySingle();
-                });
 }
 
 auto AllStandardVisualFx::ApplyStandardFxToMultipleBuffers(const AudioSamples& soundData) -> void

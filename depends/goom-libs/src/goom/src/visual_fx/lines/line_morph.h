@@ -69,7 +69,7 @@ private:
 
   COLOR::WeightedRandomColorMaps m_colorMaps{};
   COLOR::ColorMapSharedPtr m_currentColorMapPtr = nullptr;
-  float m_currentBrightness = 1.0F;
+  float m_currentBrightness                     = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
   COLOR::ColorAdjustment m_colorAdjust{

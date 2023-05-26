@@ -158,8 +158,7 @@ private:
   auto ResetDrawBuffSettings(const FXBuffSettings& settings) -> void;
 
   auto DrawAndZoom(const AudioSamples& soundData) -> void;
-  auto ApplyStateToSingleBufferPreZoom() -> void;
-  auto ApplyStateToMultipleBuffersPostZoom(const AudioSamples& soundData) -> void;
+  auto ApplyStateToMultipleBuffers(const AudioSamples& soundData) -> void;
   auto ApplyZoomEffects() -> void;
   auto ApplyEndEffectIfNearEnd() -> void;
 
@@ -461,6 +460,8 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffer(const AudioSamples& s
 
   UseMusicToChangeSettings();
 
+  UpdateFilterSettings();
+
   DrawAndZoom(soundData);
 
   UpdateBuffers();
@@ -533,11 +534,9 @@ inline auto GoomControl::GoomControlImpl::UseMusicToChangeSettings() -> void
 
 inline auto GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundData) -> void
 {
-  ApplyStateToSingleBufferPreZoom();
-
   ApplyZoomEffects();
 
-  ApplyStateToMultipleBuffersPostZoom(soundData);
+  ApplyStateToMultipleBuffers(soundData);
 
   ApplyEndEffectIfNearEnd();
 }
@@ -549,13 +548,8 @@ inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& sound
   m_goomSoundEvents.Update();
 }
 
-inline auto GoomControl::GoomControlImpl::ApplyStateToSingleBufferPreZoom() -> void
-{
-  m_visualFx.ApplyCurrentStateToSingleBuffer();
-}
-
-inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffersPostZoom(
-    const AudioSamples& soundData) -> void
+inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffers(const AudioSamples& soundData)
+    -> void
 {
   m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
 }
@@ -575,8 +569,6 @@ inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
   {
     return;
   }
-
-  UpdateFilterSettings();
 
   m_visualFx.ApplyZoom(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
 }

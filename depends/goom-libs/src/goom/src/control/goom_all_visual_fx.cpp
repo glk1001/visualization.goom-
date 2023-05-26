@@ -116,11 +116,6 @@ auto GoomAllVisualFx::GetLastShaderVariables() const noexcept -> const GoomShade
   return m_allStandardVisualFx->GetLastShaderVariables();
 }
 
-auto GoomAllVisualFx::SetSingleBufferDots(const bool value) noexcept -> void
-{
-  m_allStandardVisualFx->SetSingleBufferDots(value);
-}
-
 inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx) noexcept -> void
 {
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
@@ -180,11 +175,6 @@ auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
           .active[AfterEffectsTypes::BLOCK_WAVY]);
 
   m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
-}
-
-auto GoomAllVisualFx::ApplyCurrentStateToSingleBuffer() noexcept -> void
-{
-  m_allStandardVisualFx->ApplyCurrentStateToSingleBuffer();
 }
 
 auto GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) noexcept
