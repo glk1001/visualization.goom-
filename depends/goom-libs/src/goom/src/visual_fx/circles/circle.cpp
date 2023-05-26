@@ -25,7 +25,7 @@ namespace GOOM::VISUAL_FX::CIRCLES
 using COLOR::ColorMapPtrWrapper;
 using COLOR::ColorMapsGrid;
 using COLOR::GetBrighterColor;
-using COLOR::RandomColorMapsGroups;
+using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
@@ -185,8 +185,8 @@ Circle::Circle(const FxHelper& fxHelper,
                                               pathParams,
                                               GetNewNumDots())},
     m_dotDrawer{std::make_unique<DotDrawer>(*fxHelper.draw, *m_goomRand, m_helper)},
-    m_mainColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
-    m_lowColorMaps{RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)},
+    m_mainColorMaps{GetUnweightedRandomColorMaps(*m_goomRand, MAX_ALPHA)},
+    m_lowColorMaps{GetUnweightedRandomColorMaps(*m_goomRand, MAX_ALPHA)},
     m_weightedGridColorRanges{
         *m_goomRand,
         {

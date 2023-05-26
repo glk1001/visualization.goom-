@@ -11,7 +11,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::ColorMaps;
-using COLOR::MakeSharedAllMapsUnweighted;
+using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
