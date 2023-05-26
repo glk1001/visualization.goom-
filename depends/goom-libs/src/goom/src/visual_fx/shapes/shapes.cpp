@@ -4,7 +4,6 @@
 
 #include "color/color_adjustment.h"
 #include "color/random_color_maps.h"
-#include "color/random_color_maps_manager.h"
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
@@ -16,7 +15,6 @@ namespace GOOM::VISUAL_FX::SHAPES
 {
 
 using COLOR::ColorAdjustment;
-using COLOR::RandomColorMapsManager;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
@@ -25,23 +23,16 @@ using UTILS::MATH::IGoomRand;
 Shape::Shape(IGoomDraw& draw,
              const IGoomRand& goomRand,
              const PluginInfo& goomInfo,
-             RandomColorMapsManager& colorMapsManager,
              const Params& params,
              const PixelChannelType defaultAlpha) noexcept
   : m_goomRand{&goomRand},
-    m_colorMapsManager{&colorMapsManager},
-    m_shapeParts{
-        GetInitialShapeParts(draw, goomRand, goomInfo, colorMapsManager, params, defaultAlpha)},
-    m_meetingPointMainColorId{
-        m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
-    m_meetingPointLowColorId{m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)}
+    m_shapeParts{GetInitialShapeParts(draw, goomRand, goomInfo, params, defaultAlpha)}
 {
 }
 
 auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
                                  const IGoomRand& goomRand,
                                  const PluginInfo& goomInfo,
-                                 RandomColorMapsManager& colorMapsManager,
                                  const Params& params,
                                  const PixelChannelType defaultAlpha) noexcept
     -> std::vector<ShapePart>
@@ -64,8 +55,7 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
         params.minNumShapePathSteps,
         params.maxNumShapePathSteps,
     };
-    shapeParts.emplace_back(
-        draw, goomRand, goomInfo, colorMapsManager, shapePartParams, defaultAlpha);
+    shapeParts.emplace_back(draw, goomRand, goomInfo, shapePartParams, defaultAlpha);
   }
 
   return shapeParts;
@@ -73,47 +63,32 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
 
 auto Shape::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
-  Expects(AllColorMapsValid());
+  m_meetingPointMainColorMapPtr =
+      weightedMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
+
   std::for_each(begin(m_shapeParts),
                 end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedMainColorMaps(weightedMaps); });
-  Ensures(AllColorMapsValid());
 }
 
 auto Shape::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
-  Expects(AllColorMapsValid());
+  m_meetingPointLowColorMapPtr =
+      weightedMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
+
   std::for_each(begin(m_shapeParts),
                 end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedLowColorMaps(weightedMaps); });
-  Ensures(AllColorMapsValid());
 }
 
 auto Shape::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
-  Expects(AllColorMapsValid());
   std::for_each(begin(m_shapeParts),
                 end(m_shapeParts),
                 [&weightedMaps](ShapePart& shapePart)
                 { shapePart.SetWeightedInnerColorMaps(weightedMaps); });
-  Ensures(AllColorMapsValid());
-}
-
-auto Shape::AllColorMapsValid() const noexcept -> bool
-{
-  for (const auto& shapePart : m_shapeParts)
-  {
-    const auto numShapePaths = shapePart.GetNumShapePaths();
-    for (auto shapePathNum = 0U; shapePathNum < numShapePaths; ++shapePathNum)
-    {
-      assert(shapePart.GetShapePath(shapePathNum).GetColorInfo().mainColorMapId.IsSet());
-      assert(shapePart.GetShapePath(shapePathNum).GetColorInfo().lowColorMapId.IsSet());
-      assert(shapePart.GetShapePath(shapePathNum).GetColorInfo().innerColorMapId.IsSet());
-    }
-  }
-  return true;
 }
 
 auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -146,8 +121,6 @@ auto Shape::Start() noexcept -> void
 
   std::for_each(
       begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Start(); });
-
-  Ensures(AllColorMapsValid());
 }
 
 auto Shape::Draw() noexcept -> void
@@ -170,10 +143,8 @@ auto Shape::Draw() noexcept -> void
 
 inline auto Shape::GetCurrentMeetingPointColors() const noexcept -> MultiplePixels
 {
-  return {
-      m_colorMapsManager->GetColorMap(m_meetingPointMainColorId).GetColor(m_meetingPointColorsT()),
-      m_colorMapsManager->GetColorMap(m_meetingPointLowColorId).GetColor(m_meetingPointColorsT()),
-  };
+  return {m_meetingPointMainColorMapPtr->GetColor(m_meetingPointColorsT()),
+          m_meetingPointLowColorMapPtr->GetColor(m_meetingPointColorsT())};
 }
 
 inline auto Shape::GetBrightnessAttenuation() const noexcept -> float

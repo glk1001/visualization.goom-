@@ -1,7 +1,6 @@
 #pragma once
 
 #include "color/random_color_maps.h"
-#include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
@@ -33,7 +32,6 @@ public:
   Shape(DRAW::IGoomDraw& draw,
         const UTILS::MATH::IGoomRand& goomRand,
         const PluginInfo& goomInfo,
-        COLOR::RandomColorMapsManager& colorMapsManager,
         const Params& params,
         PixelChannelType defaultAlpha) noexcept;
 
@@ -68,22 +66,20 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
-  COLOR::RandomColorMapsManager* m_colorMapsManager;
 
   static constexpr uint32_t NUM_SHAPE_PARTS = 10;
   std::vector<ShapePart> m_shapeParts;
   [[nodiscard]] static auto GetInitialShapeParts(DRAW::IGoomDraw& draw,
                                                  const UTILS::MATH::IGoomRand& goomRand,
                                                  const PluginInfo& goomInfo,
-                                                 COLOR::RandomColorMapsManager& colorMapsManager,
                                                  const Params& params,
                                                  PixelChannelType defaultAlpha) noexcept
       -> std::vector<ShapePart>;
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 
   bool m_varyDotRadius = false;
-  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointMainColorId;
-  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId;
+  COLOR::ColorMapSharedPtr m_meetingPointMainColorMapPtr  = nullptr;
+  COLOR::ColorMapSharedPtr m_meetingPointLowColorMapPtr   = nullptr;
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;
   UTILS::TValue m_meetingPointColorsT{
       {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}
@@ -108,8 +104,6 @@ private:
   auto StartChromaChangeOnOffTimer() noexcept -> void;
   [[nodiscard]] auto SetIncreasedChromaFactor() noexcept -> bool;
   [[nodiscard]] auto SetDecreasedChromaFactor() noexcept -> bool;
-
-  [[nodiscard]] auto AllColorMapsValid() const noexcept -> bool;
 };
 
 inline auto Shape::SetVaryDotRadius(const bool val) -> void

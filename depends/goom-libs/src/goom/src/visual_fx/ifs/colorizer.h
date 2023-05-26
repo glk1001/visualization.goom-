@@ -4,7 +4,6 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
-#include "color/random_color_maps_manager.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/math/goom_rand_base.h"
@@ -24,6 +23,8 @@ public:
 
   [[nodiscard]] auto GetWeightedColorMaps() const -> const COLOR::WeightedRandomColorMaps&;
   auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
+
+  auto InitColorMaps() -> void;
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
@@ -50,12 +51,13 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 
   COLOR::WeightedRandomColorMaps m_colorMaps;
-  COLOR::RandomColorMapsManager m_colorMapsManager{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id;
-  COLOR::ColorMapSharedPtr m_prevMixerMap1{nullptr};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id;
-  COLOR::ColorMapSharedPtr m_prevMixerMap2{nullptr};
+  COLOR::ColorMapSharedPtr m_mixerColorMapPtr1         = nullptr;
+  COLOR::ColorMapSharedPtr m_previousMixerColorMapPtr1 = nullptr;
+  COLOR::ColorMapSharedPtr m_mixerColorMapPtr2         = nullptr;
+  COLOR::ColorMapSharedPtr m_previousMixerColorMapPtr2 = nullptr;
   auto UpdateMixerMaps() -> void;
+  [[nodiscard]] auto GetNextColorMapTypes() const noexcept
+      -> const std::set<COLOR::WeightedRandomColorMaps::ColorMapTypes>&;
   mutable uint32_t m_countSinceColorMapChange              = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;
   static constexpr uint32_t MAX_COLOR_MAP_CHANGE_COMPLETED = 1000;

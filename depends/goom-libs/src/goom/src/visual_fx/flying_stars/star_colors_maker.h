@@ -52,19 +52,19 @@ inline StarColorsMaker::StarColorsMaker(const UTILS::MATH::IGoomRand& goomRand,
                                         m_goomRand->ProbabilityOf(PROB_SIMILAR_LOW_COLORS)})
     }
 {
-  Expects(colorMapsSet.currentMainColorMap != nullptr);
-  Expects(colorMapsSet.currentLowColorMap != nullptr);
-  Expects(colorMapsSet.dominantMainColormap != nullptr);
-  Expects(colorMapsSet.dominantLowColormap != nullptr);
+  Expects(colorMapsSet.currentMainColorMapPtr != nullptr);
+  Expects(colorMapsSet.currentLowColorMapPtr != nullptr);
+  Expects(colorMapsSet.dominantMainColorMapPtr != nullptr);
+  Expects(colorMapsSet.dominantLowColorMapPtr != nullptr);
 }
 
 inline auto StarColorsMaker::SetColorMapSet(const StarColors::ColorMapsSet& colorMapsSet) noexcept
     -> void
 {
-  Expects(colorMapsSet.currentMainColorMap != nullptr);
-  Expects(colorMapsSet.currentLowColorMap != nullptr);
-  Expects(colorMapsSet.dominantMainColormap != nullptr);
-  Expects(colorMapsSet.dominantLowColormap != nullptr);
+  Expects(colorMapsSet.currentMainColorMapPtr != nullptr);
+  Expects(colorMapsSet.currentLowColorMapPtr != nullptr);
+  Expects(colorMapsSet.dominantMainColorMapPtr != nullptr);
+  Expects(colorMapsSet.dominantLowColorMapPtr != nullptr);
 
   const auto oldColorMode               = m_nextStarColorProperties->colorMode;
   const auto oldReverseWithinClusterMix = m_nextStarColorProperties->reverseWithinClusterMix;

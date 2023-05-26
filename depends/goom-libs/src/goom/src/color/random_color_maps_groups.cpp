@@ -19,7 +19,7 @@ constexpr auto DEFAULT_ALPHA = MAX_ALPHA;
 namespace IMPL
 {
 
-auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllMapsUnweighted";
 
@@ -34,7 +34,7 @@ auto MakeSharedAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> Weighted
   };
 }
 
-auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllStandardMaps";
 
@@ -66,7 +66,7 @@ auto MakeSharedAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRa
   };
 }
 
-auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllSlimMaps";
 
@@ -98,8 +98,7 @@ auto MakeSharedAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandom
   };
 }
 
-auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
-    -> WeightedRandomColorMaps
+auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialStandardMaps";
 
@@ -131,8 +130,7 @@ auto MakeSharedMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept
   };
 }
 
-auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
-    -> WeightedRandomColorMaps
+auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialSlimMaps";
 
@@ -164,8 +162,7 @@ auto MakeSharedMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept
   };
 }
 
-auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
-    -> WeightedRandomColorMaps
+auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingStandardMaps";
 
@@ -197,8 +194,7 @@ auto MakeSharedSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept
   };
 }
 
-auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
-    -> WeightedRandomColorMaps
+auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingSlimMaps";
 
@@ -230,7 +226,7 @@ auto MakeSharedSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept
   };
 }
 
-auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "BlueStandardMaps";
 
@@ -245,7 +241,7 @@ auto MakeSharedBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedR
   };
 }
 
-auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "RedStandardMaps";
 
@@ -260,7 +256,7 @@ auto MakeSharedRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRa
   };
 }
 
-auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetGreenStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "GreenStandardMaps";
 
@@ -275,7 +271,7 @@ auto MakeSharedGreenStandardMaps(const IGoomRand& goomRand) noexcept -> Weighted
   };
 }
 
-auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetYellowStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "YellowStandardMaps";
 
@@ -290,7 +286,7 @@ auto MakeSharedYellowStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "OrangeStandardMaps";
 
@@ -305,7 +301,7 @@ auto MakeSharedOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "PurpleStandardMaps";
 
@@ -320,7 +316,7 @@ auto MakeSharedPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "CitiesStandardMaps";
 
@@ -335,7 +331,7 @@ auto MakeSharedCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SeasonsStandardMaps";
 
@@ -350,7 +346,7 @@ auto MakeSharedSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> Weight
   };
 }
 
-auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "HeatStandardMaps";
 
@@ -365,7 +361,7 @@ auto MakeSharedHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedR
   };
 }
 
-auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "ColdStandardMaps";
 
@@ -380,7 +376,7 @@ auto MakeSharedColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedR
   };
 }
 
-auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetPastelStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "PastelStandardMaps";
 
@@ -395,8 +391,7 @@ auto MakeSharedPastelStandardMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
-    -> WeightedRandomColorMaps
+auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "DivergingBlackStandardMaps";
 
@@ -411,8 +406,7 @@ auto MakeSharedDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept
   };
 }
 
-auto MakeSharedWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> WeightedRandomColorMaps
+auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "WesAndersonMaps";
 
@@ -435,51 +429,51 @@ RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
 {
 }
 
-auto RandomColorMapsGroups::MakeRandomColorMapsGroup(
-    const Groups randomColorMapsGroup) const noexcept -> WeightedRandomColorMaps
+auto RandomColorMapsGroups::GetWeightedRandomColorMapsForGroup(
+    Groups randomColorMapsGroup) const noexcept -> WeightedRandomColorMaps
 {
   switch (randomColorMapsGroup)
   {
     case Groups::ALL_MAPS_UNWEIGHTED:
-      return IMPL::MakeSharedAllMapsUnweighted(*m_goomRand);
+      return IMPL::GetAllMapsUnweighted(*m_goomRand);
     case Groups::ALL_STANDARD_MAPS:
-      return IMPL::MakeSharedAllStandardMaps(*m_goomRand);
+      return IMPL::GetAllStandardMaps(*m_goomRand);
     case Groups::ALL_SLIM_MAPS:
-      return IMPL::MakeSharedAllSlimMaps(*m_goomRand);
+      return IMPL::GetAllSlimMaps(*m_goomRand);
     case Groups::MOSTLY_SEQUENTIAL_STANDARD_MAPS:
-      return IMPL::MakeSharedMostlySequentialStandardMaps(*m_goomRand);
+      return IMPL::GetMostlySequentialStandardMaps(*m_goomRand);
     case Groups::MOSTLY_SEQUENTIAL_SLIM_MAPS:
-      return IMPL::MakeSharedMostlySequentialSlimMaps(*m_goomRand);
+      return IMPL::GetMostlySequentialSlimMaps(*m_goomRand);
     case Groups::SLIGHTLY_DIVERGING_STANDARD_MAPS:
-      return IMPL::MakeSharedSlightlyDivergingStandardMaps(*m_goomRand);
+      return IMPL::GetSlightlyDivergingStandardMaps(*m_goomRand);
     case Groups::SLIGHTLY_DIVERGING_SLIM_MAPS:
-      return IMPL::MakeSharedSlightlyDivergingSlimMaps(*m_goomRand);
+      return IMPL::GetSlightlyDivergingSlimMaps(*m_goomRand);
     case Groups::DIVERGING_BLACK_STANDARD_MAPS:
-      return IMPL::MakeSharedDivergingBlackStandardMaps(*m_goomRand);
+      return IMPL::GetDivergingBlackStandardMaps(*m_goomRand);
     case Groups::RED_STANDARD_MAPS:
-      return IMPL::MakeSharedRedStandardMaps(*m_goomRand);
+      return IMPL::GetRedStandardMaps(*m_goomRand);
     case Groups::GREEN_STANDARD_MAPS:
-      return IMPL::MakeSharedGreenStandardMaps(*m_goomRand);
+      return IMPL::GetGreenStandardMaps(*m_goomRand);
     case Groups::BLUE_STANDARD_MAPS:
-      return IMPL::MakeSharedBlueStandardMaps(*m_goomRand);
+      return IMPL::GetBlueStandardMaps(*m_goomRand);
     case Groups::YELLOW_STANDARD_MAPS:
-      return IMPL::MakeSharedYellowStandardMaps(*m_goomRand);
+      return IMPL::GetYellowStandardMaps(*m_goomRand);
     case Groups::ORANGE_STANDARD_MAPS:
-      return IMPL::MakeSharedOrangeStandardMaps(*m_goomRand);
+      return IMPL::GetOrangeStandardMaps(*m_goomRand);
     case Groups::PURPLE_STANDARD_MAPS:
-      return IMPL::MakeSharedPurpleStandardMaps(*m_goomRand);
+      return IMPL::GetPurpleStandardMaps(*m_goomRand);
     case Groups::CITIES_STANDARD_MAPS:
-      return IMPL::MakeSharedCitiesStandardMaps(*m_goomRand);
+      return IMPL::GetCitiesStandardMaps(*m_goomRand);
     case Groups::SEASONS_STANDARD_MAPS:
-      return IMPL::MakeSharedSeasonsStandardMaps(*m_goomRand);
+      return IMPL::GetSeasonsStandardMaps(*m_goomRand);
     case Groups::HEAT_STANDARD_MAPS:
-      return IMPL::MakeSharedHeatStandardMaps(*m_goomRand);
+      return IMPL::GetHeatStandardMaps(*m_goomRand);
     case Groups::COLD_STANDARD_MAPS:
-      return IMPL::MakeSharedColdStandardMaps(*m_goomRand);
+      return IMPL::GetColdStandardMaps(*m_goomRand);
     case Groups::PASTEL_STANDARD_MAPS:
-      return IMPL::MakeSharedPastelStandardMaps(*m_goomRand);
+      return IMPL::GetPastelStandardMaps(*m_goomRand);
     case Groups::WES_ANDERSON_MAPS:
-      return IMPL::MakeSharedWesAndersonMaps(*m_goomRand);
+      return IMPL::GetWesAndersonMaps(*m_goomRand);
     default:
       FailFast();
   }

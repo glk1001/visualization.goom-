@@ -6,7 +6,6 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
-#include "color/random_color_maps_manager.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer.h"
 #include "goom_config.h"
@@ -69,9 +68,7 @@ private:
   PixelChannelType m_defaultAlpha;
 
   COLOR::WeightedRandomColorMaps m_colorMaps{};
-  COLOR::RandomColorMapsManager m_colorMapsManager{};
-  COLOR::RandomColorMapsManager::ColorMapId m_currentColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, m_defaultAlpha)};
+  COLOR::ColorMapSharedPtr m_currentColorMapPtr = nullptr;
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;

@@ -45,8 +45,8 @@ private:
   Point2dInt m_screenCentre;
 
   COLOR::ColorMaps m_colorMaps;
-  COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
-  COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantMainColorMapPtr = nullptr;
+  COLOR::ColorMapSharedPtr m_dominantLowColorMapPtr  = nullptr;
 
   struct IterationParams
   {
@@ -61,8 +61,8 @@ private:
   struct TentacleAndAttributes
   {
     Tentacle3D tentacle3D;
-    COLOR::ColorMapSharedPtr mainColorMap{nullptr};
-    COLOR::ColorMapSharedPtr lowColorMap{nullptr};
+    COLOR::ColorMapSharedPtr mainColorMapPtr = nullptr;
+    COLOR::ColorMapSharedPtr lowColorMapPtr  = nullptr;
     Pixel currentMainColor;
     Pixel currentLowColor;
   };
@@ -136,8 +136,8 @@ inline auto TentacleDriver::SetDominantColorMaps(
     const COLOR::ColorMapSharedPtr& dominantMainColorMap,
     const COLOR::ColorMapSharedPtr& dominantLowColorMap) -> void
 {
-  m_dominantMainColorMap = dominantMainColorMap;
-  m_dominantLowColorMap  = dominantLowColorMap;
+  m_dominantMainColorMapPtr = dominantMainColorMap;
+  m_dominantLowColorMapPtr  = dominantLowColorMap;
 }
 
 } // namespace GOOM::VISUAL_FX::TENTACLES

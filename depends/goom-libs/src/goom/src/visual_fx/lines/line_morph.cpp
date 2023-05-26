@@ -127,13 +127,12 @@ auto LineMorph::GetCurrentColorMapsNames() const noexcept -> std::vector<std::st
 auto LineMorph::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_colorMaps = weightedMaps;
-  m_colorMapsManager.UpdateColorMapInfo(
-      m_currentColorMapID, {m_colorMaps, WeightedRandomColorMaps::GetAllColorMapsTypes()});
 }
 
 inline auto LineMorph::UpdateColorInfo() noexcept -> void
 {
-  m_colorMapsManager.ChangeAllColorMapsNow();
+  m_currentColorMapPtr =
+      m_colorMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
   static constexpr auto PROB_USE_LINE_COLOR = 0.5F;
   m_useLineColor                            = m_goomRand->ProbabilityOf(PROB_USE_LINE_COLOR);
@@ -375,7 +374,7 @@ inline auto LineMorph::GetMainColor(const Pixel& lineColor, const float t) const
   {
     return lineColor;
   }
-  return m_colorMapsManager.GetColorMap(m_currentColorMapID).GetColor(t);
+  return m_currentColorMapPtr->GetColor(t);
 }
 
 } // namespace GOOM::VISUAL_FX::LINES

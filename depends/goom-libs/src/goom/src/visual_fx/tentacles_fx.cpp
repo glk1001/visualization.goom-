@@ -77,8 +77,8 @@ private:
 
   WeightedRandomColorMaps m_weightedDominantMainColorMaps{};
   WeightedRandomColorMaps m_weightedDominantLowColorMaps{};
-  COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
-  COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantMainColorMapPtr = nullptr;
+  COLOR::ColorMapSharedPtr m_dominantLowColorMapPtr  = nullptr;
   auto ChangeDominantColor() -> void;
 
   RandomPixelBlender m_pixelBlender;
@@ -277,9 +277,9 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     m_weightedDominantMainColorMaps = newWeightedColorMaps.mainColorMaps;
     m_weightedDominantLowColorMaps  = newWeightedColorMaps.lowColorMaps;
 
-    m_dominantMainColorMap = m_weightedDominantMainColorMaps.GetRandomColorMapSharedPtr(
+    m_dominantMainColorMapPtr = m_weightedDominantMainColorMaps.GetRandomColorMapSharedPtr(
         WeightedRandomColorMaps::GetAllColorMapsTypes());
-    m_dominantLowColorMap = m_weightedDominantLowColorMaps.GetRandomColorMapSharedPtr(
+    m_dominantLowColorMapPtr = m_weightedDominantLowColorMaps.GetRandomColorMapSharedPtr(
         WeightedRandomColorMaps::GetAllColorMapsTypes());
   }
   else
@@ -313,7 +313,8 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
 
   m_timeWithThisDominantColor.ResetToZero();
 
-  m_currentTentacleDriver->SetDominantColorMaps(m_dominantMainColorMap, m_dominantLowColorMap);
+  m_currentTentacleDriver->SetDominantColorMaps(m_dominantMainColorMapPtr,
+                                                m_dominantLowColorMapPtr);
 }
 
 inline auto TentaclesFx::TentaclesImpl::ApplyMultiple() -> void

@@ -39,7 +39,6 @@ add_library(goom
             src/color/color_utils.cpp
             src/color/random_color_maps.cpp
             src/color/random_color_maps_groups.cpp
-            src/color/random_color_maps_manager.cpp
             src/control/all_standard_visual_fx.cpp
             src/control/goom_all_visual_fx.cpp
             src/control/goom_effects.h
