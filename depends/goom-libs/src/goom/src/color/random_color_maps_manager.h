@@ -18,7 +18,7 @@ class RandomColorMapsManager
 public:
   struct ColorMapInfo
   {
-    std::shared_ptr<const RandomColorMaps> colorMaps{};
+    WeightedRandomColorMaps colorMaps{};
     std::set<RandomColorMaps::ColorMapTypes> colorMapTypes{};
   };
 
@@ -38,8 +38,7 @@ public:
   RandomColorMapsManager() = default;
 
   [[nodiscard]] auto AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand,
-                                            PixelChannelType defaultAlpha = MAX_ALPHA) noexcept
-      -> ColorMapId;
+                                            PixelChannelType defaultAlpha) noexcept -> ColorMapId;
   [[nodiscard]] auto AddColorMapInfo(const ColorMapInfo& info) noexcept -> ColorMapId;
 
   auto UpdateColorMapInfo(ColorMapId id, const ColorMapInfo& info) noexcept -> void;
@@ -48,12 +47,11 @@ public:
   auto ChangeColorMapNow(ColorMapId id) noexcept -> void;
 
   [[nodiscard]] auto GetColorMap(ColorMapId id) const noexcept -> const IColorMap&;
-  [[nodiscard]] auto GetColorMapPtr(ColorMapId id) const noexcept
-      -> std::shared_ptr<const IColorMap>;
+  [[nodiscard]] auto GetColorMapPtr(ColorMapId id) const noexcept -> const ColorMapSharedPtr&;
 
 private:
   std::vector<ColorMapInfo> m_infoList{};
-  std::vector<std::shared_ptr<const IColorMap>> m_colorMapPtrs{};
+  std::vector<ColorMapSharedPtr> m_colorMapPtrs{};
   auto RandomizeColorMaps(size_t id) noexcept -> void;
 };
 
@@ -80,7 +78,7 @@ inline auto RandomColorMapsManager::GetColorMap(const ColorMapId id) const noexc
 }
 
 inline auto RandomColorMapsManager::GetColorMapPtr(const ColorMapId id) const noexcept
-    -> std::shared_ptr<const IColorMap>
+    -> const ColorMapSharedPtr&
 {
   return m_colorMapPtrs.at(id());
 }

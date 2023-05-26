@@ -1,5 +1,7 @@
 #include "dot_drawer.h"
 
+#include "color/color_maps.h"
+#include "color/color_maps_base.h"
 #include "color/color_utils.h"
 #include "goom_config.h"
 #include "utils/math/misc.h"
@@ -8,6 +10,7 @@
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
+using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
@@ -32,8 +35,7 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
     m_circleDrawer{draw},
     m_bgndMainColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
     m_bgndLowColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
-    m_decorationType{GetRandomDecorationType()},
-    m_differentColor{GetRandomDifferentColor(RandomColorMaps{MAX_ALPHA, *m_goomRand})}
+    m_decorationType{GetRandomDecorationType()}
 {
 }
 
@@ -43,7 +45,7 @@ auto DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexce
   m_bgndLowColorMixT       = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
   m_decorationType         = GetRandomDecorationType();
   m_differentColor         = GetRandomDifferentColor(weightedMaps);
-  m_outerCircleDotColorMap = &weightedMaps.GetRandomColorMap();
+  m_outerCircleDotColorMap = weightedMaps.GetRandomColorMap();
 
   m_doCircleDotShapes      = m_goomRand->ProbabilityOf(PROB_CIRCLES);
   m_outerCircleDotColorMix = m_goomRand->GetRandInRange(MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T,
@@ -56,7 +58,7 @@ auto DotDrawer::DrawDot(const Point2dInt& pos,
 {
   if (m_doCircleDotShapes)
   {
-    DrawCircleDot(pos, diameter, colors, *m_outerCircleDotColorMap);
+    DrawCircleDot(pos, diameter, colors, m_outerCircleDotColorMap);
   }
   else
   {
@@ -115,9 +117,9 @@ inline auto DotDrawer::GetCircleColorsWithInner(const float brightness,
 {
   return {
       GetBrighterColor(brightness,
-                       IColorMap::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
+                       ColorMaps::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
       GetBrighterColor(brightness,
-                       IColorMap::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
+                       ColorMaps::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
   };
 }
 
@@ -151,7 +153,7 @@ inline auto DotDrawer::GetDotMixedColor(const Point2dInt& bitmapPoint,
     return BLACK_PIXEL;
   }
 
-  const auto mixedColor = IColorMap::GetColorMix(bgnd, color, mixT);
+  const auto mixedColor = ColorMaps::GetColorMix(bgnd, color, mixT);
 
   if (not IsSpecialPoint(bitmapPoint, diameter))
   {

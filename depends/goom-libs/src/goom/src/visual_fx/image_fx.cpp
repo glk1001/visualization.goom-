@@ -34,10 +34,11 @@ namespace GOOM::VISUAL_FX
 {
 
 using COLOR::ColorAdjustment;
+using COLOR::ColorMapPtrWrapper;
+using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
@@ -107,7 +108,7 @@ private:
   const FxHelper* m_fxHelper;
   PixelDrawer m_pixelDrawer;
   std::string m_resourcesDirectory;
-  [[maybe_unused]] PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   int32_t m_availableWidth  = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - CHUNK_WIDTH;
   int32_t m_availableHeight = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - CHUNK_HEIGHT;
@@ -116,10 +117,10 @@ private:
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
   float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
 
-  std::shared_ptr<const RandomColorMaps> m_colorMaps{
+  WeightedRandomColorMaps m_colorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_fxHelper->goomRand)};
-  const IColorMap* m_currentColorMap{&GetRandomColorMap()};
-  [[nodiscard]] auto GetRandomColorMap() const -> const IColorMap&;
+  ColorMapPtrWrapper m_currentColorMap{GetRandomColorMap()};
+  [[nodiscard]] auto GetRandomColorMap() const -> ColorMapPtrWrapper;
   bool m_pixelColorIsDominant                    = false;
   static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.2F;
   float m_brightnessBase                         = DEFAULT_BRIGHTNESS_BASE;
@@ -243,10 +244,9 @@ ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
 {
 }
 
-inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> const IColorMap&
+inline auto ImageFx::ImageFxImpl::GetRandomColorMap() const -> ColorMapPtrWrapper
 {
-  Expects(m_colorMaps != nullptr);
-  return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+  return m_colorMaps.GetRandomColorMap(m_colorMaps.GetRandomGroup());
 }
 
 inline auto ImageFx::ImageFxImpl::ChangePixelBlender(
@@ -273,15 +273,13 @@ auto ImageFx::ImageFxImpl::GetAcceptablePixelBlenderParams(
 inline auto ImageFx::ImageFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_colorMaps->GetColorMapsName()};
+  return {m_colorMaps.GetColorMapsName()};
 }
 
 inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-
-  m_colorMaps            = weightedColorMaps.mainColorMaps;
+  m_colorMaps            = WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
   m_pixelColorIsDominant = m_fxHelper->goomRand->ProbabilityOf(0.0F);
   m_randBrightnessFactor = GetNewRandBrightnessFactor();
 }
@@ -476,7 +474,7 @@ inline auto ImageFx::ImageFxImpl::UpdateImageStartPositions() -> void
     ResetStartPositions();
     SetNewFloatingStartPosition();
     m_floatingT.Reset(1.0F);
-    m_currentColorMap = &GetRandomColorMap();
+    m_currentColorMap = GetRandomColorMap();
   }
 }
 
@@ -530,7 +528,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
                                                  const float brightness) const -> MultiplePixels
 {
   const auto mixedColor =
-      IColorMap::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
+      ColorMaps::GetColorMix(GetMappedColor(pixelColor), pixelColor, m_inOutTSq);
   const auto color0 = GetBrighterColor(brightness, mixedColor);
   const auto color1 = GetBrighterColor(0.5F * brightness, pixelColor);
 
@@ -545,7 +543,7 @@ inline auto ImageFx::ImageFxImpl::GetPixelColors(const Pixel& pixelColor,
 inline auto ImageFx::ImageFxImpl::GetMappedColor(const Pixel& pixelColor) const -> Pixel
 {
   const auto t = (pixelColor.RFlt() + pixelColor.GFlt() + pixelColor.BFlt()) / 3.0F;
-  return m_currentColorMap->GetColor(t);
+  return m_currentColorMap.GetColor(t);
 }
 
 ChunkedImage::ChunkedImage(std::shared_ptr<ImageBitmap> image, const PluginInfo& goomInfo) noexcept

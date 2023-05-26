@@ -1,6 +1,6 @@
 #include "bezier_flower.h"
 
-#include "color/color_maps.h"
+#include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
 
 namespace GOOM::VISUAL_FX::SHAPES
@@ -58,16 +58,16 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
 
   const auto randomColorMaps = RandomColorMaps{MAX_ALPHA, *m_goomRand};
 
-  m_lineColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());
-  m_dotColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());
+  m_lineColorMaps.resize(m_numPetals, randomColorMaps.GetRandomColorMap());
+  m_dotColorMaps.resize(m_numPetals, randomColorMaps.GetRandomColorMap());
 
   for (auto i = 0U; i < numPetals; ++i)
   {
     static constexpr auto COLOR_CHANGE_FREQUENCY = 5U;
     if (0 == (i % COLOR_CHANGE_FREQUENCY))
     {
-      m_lineColorMaps[i] = &randomColorMaps.GetRandomColorMap();
-      m_dotColorMaps[i]  = &randomColorMaps.GetRandomColorMap();
+      m_lineColorMaps[i] = randomColorMaps.GetRandomColorMap();
+      m_dotColorMaps[i]  = randomColorMaps.GetRandomColorMap();
     }
   }
 }
@@ -80,12 +80,12 @@ inline void PetalColoring::StartColoringPetal(const uint32_t petalNum)
 
 inline auto PetalColoring::GetCurrentLineColorMap() const -> const IColorMap&
 {
-  return *m_lineColorMaps.at(m_currentPetalNum);
+  return m_lineColorMaps.at(m_currentPetalNum);
 }
 
 inline auto PetalColoring::GetCurrentDotColorMap() const -> const IColorMap&
 {
-  return *m_dotColorMaps.at(m_currentPetalNum);
+  return m_dotColorMaps.at(m_currentPetalNum);
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

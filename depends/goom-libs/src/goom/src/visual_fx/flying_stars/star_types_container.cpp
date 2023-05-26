@@ -14,8 +14,8 @@
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
-using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsGroups;
+using COLOR::WeightedRandomColorMaps;
 using COLOR::COLOR_DATA::ColorMapName;
 using UTILS::NUM;
 using UTILS::MATH::I_HALF;
@@ -57,9 +57,9 @@ private:
   Point2dInt m_zoomMidpoint;
 
   ColorMapMode m_currentColorMapMode{};
-  std::shared_ptr<const RandomColorMaps> m_weightedMainColorMaps{
+  WeightedRandomColorMaps m_weightedMainColorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
-  std::shared_ptr<const RandomColorMaps> m_weightedLowColorMaps{
+  WeightedRandomColorMaps m_weightedLowColorMaps{
       RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   ColorMapName m_fixedMainColorMapName = ColorMapName::_NULL;
   ColorMapName m_fixedLowColorMapName  = ColorMapName::_NULL;
@@ -95,11 +95,10 @@ private:
   auto SetColorMapMode(ColorMapMode colorMapMode) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  [[nodiscard]] auto GetWeightedMainColorMaps() const noexcept -> const RandomColorMaps&;
-  [[nodiscard]] auto GetWeightedLowColorMaps() const noexcept -> const RandomColorMaps&;
-  auto SetWeightedColorMaps(
-      const std::shared_ptr<const RandomColorMaps>& weightedMainColorMaps,
-      const std::shared_ptr<const RandomColorMaps>& weightedLowColorMaps) noexcept -> void;
+  [[nodiscard]] auto GetWeightedMainColorMaps() const noexcept -> const WeightedRandomColorMaps&;
+  [[nodiscard]] auto GetWeightedLowColorMaps() const noexcept -> const WeightedRandomColorMaps&;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainColorMaps,
+                            const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void;
 };
 
 namespace
@@ -180,8 +179,8 @@ auto StarTypesContainer::GetCurrentColorMapsNames() const noexcept -> std::vecto
 
 auto StarTypesContainer::SetWeightedColorMaps(
     const uint32_t starTypeId,
-    const std::shared_ptr<const RandomColorMaps>& weightedMainColorMaps,
-    const std::shared_ptr<const RandomColorMaps>& weightedLowColorMaps) noexcept -> void
+    const WeightedRandomColorMaps& weightedMainColorMaps,
+    const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void
 {
   Expects(starTypeId < NUM<StarTypesContainer::AvailableStarTypes>);
   m_starTypesList.at(starTypeId)->SetWeightedColorMaps(weightedMainColorMaps, weightedLowColorMaps);
@@ -213,7 +212,7 @@ auto StarTypesContainer::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcep
 }
 
 // NOLINTNEXTLINE(cert-err58-cpp)
-static const auto DEFAULT_COLOR_MAP_TYPES = RandomColorMaps::GetAllColorMapsTypes();
+static const auto DEFAULT_COLOR_MAP_TYPES = WeightedRandomColorMaps::GetAllColorMapsTypes();
 
 static constexpr auto MIN_Y_DISTANCE_OUT_OF_SCREEN = 10;
 static constexpr auto MAX_Y_DISTANCE_OUT_OF_SCREEN = 50;
@@ -235,20 +234,18 @@ inline auto StarType::GetStarColorsMaker() const noexcept -> const StarColorsMak
 
 inline auto StarType::UpdateFixedColorMapNames() noexcept -> void
 {
-  m_fixedMainColorMapName = m_weightedMainColorMaps->GetRandomColorMapName();
-  m_fixedLowColorMapName  = m_weightedLowColorMaps->GetRandomColorMapName();
+  m_fixedMainColorMapName = m_weightedMainColorMaps.GetRandomColorMapName();
+  m_fixedLowColorMapName  = m_weightedLowColorMaps.GetRandomColorMapName();
 }
 
-inline auto StarType::GetWeightedMainColorMaps() const noexcept -> const RandomColorMaps&
+inline auto StarType::GetWeightedMainColorMaps() const noexcept -> const WeightedRandomColorMaps&
 {
-  Expects(m_weightedMainColorMaps != nullptr);
-  return *m_weightedMainColorMaps;
+  return m_weightedMainColorMaps;
 }
 
-inline auto StarType::GetWeightedLowColorMaps() const noexcept -> const RandomColorMaps&
+inline auto StarType::GetWeightedLowColorMaps() const noexcept -> const WeightedRandomColorMaps&
 {
-  Expects(m_weightedLowColorMaps != nullptr);
-  return *m_weightedLowColorMaps;
+  return m_weightedLowColorMaps;
 }
 
 inline auto StarType::SetColorMapMode(const ColorMapMode colorMapMode) noexcept -> void
@@ -267,8 +264,8 @@ inline auto StarType::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -
 }
 
 inline auto StarType::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMainColorMaps,
-    const std::shared_ptr<const RandomColorMaps>& weightedLowColorMaps) noexcept -> void
+    const WeightedRandomColorMaps& weightedMainColorMaps,
+    const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void
 {
   m_weightedMainColorMaps = weightedMainColorMaps;
   m_weightedLowColorMaps  = weightedLowColorMaps;
@@ -295,20 +292,22 @@ auto StarType::GetColorMapsSet() const noexcept -> StarColors::ColorMapsSet
       m_goomRand->ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
   {
     return {
-        GetWeightedMainColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedLowColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedMainColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedLowColorMaps().GetRandomColorMapPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
     };
   }
 
   return {
-      GetWeightedMainColorMaps().GetRandomColorMapPtr(GetMainColorMapName(),
-                                                      DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedLowColorMaps().GetRandomColorMapPtr(GetLowColorMapName(), DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedMainColorMaps().GetRandomColorMapPtr(GetMainColorMapName(),
-                                                      DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedLowColorMaps().GetRandomColorMapPtr(GetLowColorMapName(), DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(GetMainColorMapName(),
+                                                            DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(GetLowColorMapName(),
+                                                           DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(GetMainColorMapName(),
+                                                            DEFAULT_COLOR_MAP_TYPES),
+      GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(GetLowColorMapName(),
+                                                           DEFAULT_COLOR_MAP_TYPES),
   };
 }
 

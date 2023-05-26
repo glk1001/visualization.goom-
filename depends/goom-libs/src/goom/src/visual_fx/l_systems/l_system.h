@@ -120,7 +120,7 @@ private:
                                              const ::LSYS::BoundingBox3d& boundingBox3d) noexcept
       -> BoundingBox2d;
 
-  LSysColors m_lSysColors{*m_goomRand, MAX_ALPHA};
+  LSysColors m_lSysColors;
   LSysGeometry m_lSysGeometry;
   LSysDraw m_lSysDraw;
 

@@ -9,7 +9,7 @@
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::RandomColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
@@ -31,8 +31,7 @@ Fractal::Fractal(const Dimensions& dimensions,
   Reset();
 }
 
-auto Fractal::SetWeightedColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedColorMaps)
-    -> void
+auto Fractal::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void
 {
   m_similitudes.SetWeightedColorMaps(weightedColorMaps);
 }

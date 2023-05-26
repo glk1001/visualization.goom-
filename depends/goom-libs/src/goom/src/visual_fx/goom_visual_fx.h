@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/random_color_maps.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <cstdint>
@@ -11,12 +12,7 @@ namespace GOOM
 {
 struct Point2dInt;
 class AudioSamples;
-
-namespace COLOR
-{
-class RandomColorMaps;
 }
-} // namespace GOOM
 
 namespace GOOM::VISUAL_FX
 {
@@ -51,10 +47,10 @@ public:
       -> std::vector<std::string> = 0;
   struct WeightedColorMaps
   {
-    uint32_t id                                                  = 0;
-    std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps  = nullptr;
-    std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps   = nullptr;
-    std::shared_ptr<const COLOR::RandomColorMaps> extraColorMaps = nullptr;
+    uint32_t id = 0;
+    COLOR::WeightedRandomColorMaps mainColorMaps{};
+    COLOR::WeightedRandomColorMaps lowColorMaps{};
+    COLOR::WeightedRandomColorMaps extraColorMaps{};
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
@@ -64,6 +60,18 @@ public:
 
 inline constexpr auto DEFAULT_VISUAL_FX_ALPHA =
     static_cast<PixelChannelType>((3U * static_cast<uint32_t>(MAX_ALPHA)) / 4U);
+
+[[nodiscard]] inline auto GetWeightedColorMapsWithNewAlpha(
+    const IVisualFx::WeightedColorMaps& weightedColorMaps,
+    const PixelChannelType newDefaultAlpha) noexcept -> IVisualFx::WeightedColorMaps
+{
+  return {
+      weightedColorMaps.id,
+      COLOR::WeightedRandomColorMaps{ weightedColorMaps.mainColorMaps, newDefaultAlpha},
+      COLOR::WeightedRandomColorMaps{  weightedColorMaps.lowColorMaps, newDefaultAlpha},
+      COLOR::WeightedRandomColorMaps{weightedColorMaps.extraColorMaps, newDefaultAlpha}
+  };
+}
 
 inline auto IVisualFx::Resume() noexcept -> void
 {

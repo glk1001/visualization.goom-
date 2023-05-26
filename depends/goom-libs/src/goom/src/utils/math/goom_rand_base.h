@@ -58,6 +58,7 @@ public:
   };
   using EventWeightPairs = std::vector<KeyValue>;
 
+  Weights() noexcept = default;
   Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept;
 
   [[nodiscard]] auto GetNumElements() const noexcept -> size_t;
@@ -70,10 +71,12 @@ private:
   template<class F>
   friend class ConditionalWeights;
   [[nodiscard]] auto GetRandomWeighted(const E& given) const noexcept -> E;
-  const IGoomRand* m_goomRand;
-  using WeightArray = std::array<float, NUM<E>>;
-  WeightArray m_weights;
-  float m_sumOfWeights;
+
+  const IGoomRand* m_goomRand = nullptr;
+  using WeightArray           = std::array<float, NUM<E>>;
+  WeightArray m_weights{};
+  float m_sumOfWeights = 0.0F;
+
   [[nodiscard]] static auto GetWeights(const EventWeightPairs& eventWeightPairs) noexcept
       -> WeightArray;
   [[nodiscard]] static auto GetSumOfWeights(const EventWeightPairs& eventWeightPairs) noexcept

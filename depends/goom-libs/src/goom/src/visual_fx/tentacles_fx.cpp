@@ -4,7 +4,6 @@
 
 #include "tentacles_fx.h"
 
-#include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
@@ -26,8 +25,7 @@
 namespace GOOM::VISUAL_FX
 {
 
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using FX_UTILS::RandomPixelBlender;
 using TENTACLES::CirclesTentacleLayout;
@@ -77,10 +75,10 @@ private:
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
-  std::shared_ptr<const RandomColorMaps> m_weightedDominantMainColorMaps{};
-  std::shared_ptr<const RandomColorMaps> m_weightedDominantLowColorMaps{};
-  std::shared_ptr<const IColorMap> m_dominantMainColorMap{};
-  std::shared_ptr<const IColorMap> m_dominantLowColorMap{};
+  WeightedRandomColorMaps m_weightedDominantMainColorMaps{};
+  WeightedRandomColorMaps m_weightedDominantLowColorMaps{};
+  COLOR::ColorMapSharedPtr m_dominantMainColorMap{nullptr};
+  COLOR::ColorMapSharedPtr m_dominantLowColorMap{nullptr};
   auto ChangeDominantColor() -> void;
 
   RandomPixelBlender m_pixelBlender;
@@ -257,32 +255,32 @@ inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 auto TentaclesFx::TentaclesImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_weightedDominantMainColorMaps->GetColorMapsName(),
-          m_weightedDominantLowColorMaps->GetColorMapsName()};
+  return {m_weightedDominantMainColorMaps.GetColorMapsName(),
+          m_weightedDominantLowColorMaps.GetColorMapsName()};
 }
 
 auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
+  const auto newWeightedColorMaps =
+      GetWeightedColorMapsWithNewAlpha(weightedColorMaps, m_defaultAlpha);
 
   if (weightedColorMaps.id == NORMAL_COLOR_TYPE)
   {
     std::for_each(begin(m_tentacleDrivers),
                   end(m_tentacleDrivers),
-                  [&weightedColorMaps](auto& driver)
-                  { driver.SetWeightedColorMaps(weightedColorMaps); });
+                  [&newWeightedColorMaps](auto& driver)
+                  { driver.SetWeightedColorMaps(newWeightedColorMaps); });
   }
-  else if (weightedColorMaps.id == DOMINANT_COLOR_TYPE)
+  else if (newWeightedColorMaps.id == DOMINANT_COLOR_TYPE)
   {
-    m_weightedDominantMainColorMaps = weightedColorMaps.mainColorMaps;
-    m_weightedDominantLowColorMaps  = weightedColorMaps.lowColorMaps;
+    m_weightedDominantMainColorMaps = newWeightedColorMaps.mainColorMaps;
+    m_weightedDominantLowColorMaps  = newWeightedColorMaps.lowColorMaps;
 
-    m_dominantMainColorMap = m_weightedDominantMainColorMaps->GetRandomColorMapPtr(
-        RandomColorMaps::GetAllColorMapsTypes());
-    m_dominantLowColorMap = m_weightedDominantLowColorMaps->GetRandomColorMapPtr(
-        RandomColorMaps::GetAllColorMapsTypes());
+    m_dominantMainColorMap = m_weightedDominantMainColorMaps.GetRandomColorMapSharedPtr(
+        WeightedRandomColorMaps::GetAllColorMapsTypes());
+    m_dominantLowColorMap = m_weightedDominantLowColorMaps.GetRandomColorMapSharedPtr(
+        WeightedRandomColorMaps::GetAllColorMapsTypes());
   }
   else
   {

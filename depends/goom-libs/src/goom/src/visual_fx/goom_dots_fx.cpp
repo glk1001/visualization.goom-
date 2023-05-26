@@ -34,6 +34,7 @@ using COLOR::GetSimpleColor;
 using COLOR::RandomColorMaps;
 using COLOR::RandomColorMapsManager;
 using COLOR::SimpleColors;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using FX_UTILS::RandomPixelBlender;
 using UTILS::TValue;
@@ -86,9 +87,10 @@ private:
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
-  std::array<std::shared_ptr<const RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
+  std::array<WeightedRandomColorMaps, NUM_DOT_TYPES> m_dotColorMapsList{};
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
-  RandomColorMapsManager m_colorMapsManager{};
+  RandomColorMaps m_randomColorMaps{m_defaultAlpha, *m_fxHelper->goomRand};
+  RandomColorMapsManager m_randomColorMapsManager{};
   std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds{
       GetDefaultColorMapIds()};
   [[nodiscard]] auto GetDefaultColorMapIds() noexcept
@@ -215,7 +217,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
 
   for (auto& colorMapsId : colorMapsIds)
   {
-    colorMapsId = m_colorMapsManager.AddDefaultColorMapInfo(*m_fxHelper->goomRand, m_defaultAlpha);
+    colorMapsId =
+        m_randomColorMapsManager.AddDefaultColorMapInfo(*m_fxHelper->goomRand, m_defaultAlpha);
   }
 
   return colorMapsIds;
@@ -289,7 +292,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetImageBitmap(const uint32_t size) cons
 
 inline auto GoomDotsFx::GoomDotsFxImpl::ChangeColors() -> void
 {
-  m_colorMapsManager.ChangeAllColorMapsNow();
+  m_randomColorMapsManager.ChangeAllColorMapsNow();
 
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
@@ -318,10 +321,9 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 
   static constexpr auto MIN_MIX_T = 0.1F;
   static constexpr auto MAX_MIX_T = 1.0F;
-  return RandomColorMaps::GetRandomColor(
-      *m_fxHelper->goomRand,
-      *m_dotColorMapsList[0]->GetRandomColorMapPtr(ColorMapGroup::MISC,
-                                                   RandomColorMaps::GetAllColorMapsTypes()),
+  return m_randomColorMaps.GetRandomColor(
+      *m_dotColorMapsList[0].GetRandomColorMapSharedPtr(ColorMapGroup::MISC,
+                                                        RandomColorMaps::GetAllColorMapsTypes()),
       MIN_MIX_T,
       MAX_MIX_T);
 }
@@ -335,18 +337,18 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ChangePixelBlender(
 inline auto GoomDotsFx::GoomDotsFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_dotColorMapsList.at(0)->GetColorMapsName()};
+  return {m_dotColorMapsList.at(0).GetColorMapsName()};
 }
 
 auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-
   const auto dotNum = weightedColorMaps.id;
 
-  m_dotColorMapsList.at(dotNum) = weightedColorMaps.mainColorMaps;
-  m_colorMapsManager.UpdateColorMapInfo(
+  m_dotColorMapsList.at(dotNum) =
+      WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
+
+  m_randomColorMapsManager.UpdateColorMapInfo(
       m_colorMapIds.at(dotNum),
       {m_dotColorMapsList.at(dotNum), RandomColorMaps::GetAllColorMapsTypes()});
 }
@@ -429,7 +431,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
     return GetDotPrimaryColor(dotNum);
   }
 
-  return m_colorMapsManager.GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
+  return m_randomColorMapsManager.GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) const noexcept
@@ -515,7 +517,7 @@ auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
     const auto newColor =
         m_useMiddleColor and IsImagePointCloseToMiddle(bitmapPoint, radius) ? m_middleColor : color;
     static constexpr auto COLOR_MIX_T = 0.6F;
-    const auto mixedColor             = COLOR::IColorMap::GetColorMix(bgnd, newColor, COLOR_MIX_T);
+    const auto mixedColor             = COLOR::ColorMaps::GetColorMix(bgnd, newColor, COLOR_MIX_T);
     return m_colorAdjust.GetAdjustment(BRIGHTNESS, mixedColor);
   };
   const auto getColor2 = [&getColor1](const Point2dInt& bitmapPoint, const Pixel& bgnd)

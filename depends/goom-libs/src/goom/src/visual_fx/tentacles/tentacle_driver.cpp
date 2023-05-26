@@ -3,7 +3,6 @@
 #include "tentacle_driver.h"
 
 #include "color/color_maps.h"
-#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_logger.h"
@@ -22,7 +21,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using COLOR::ColorMaps;
-using COLOR::IColorMap;
+using COLOR::ColorMapSharedPtr;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
@@ -127,8 +126,11 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
     tentacle.SetStartPos(tentacleLayout.GetStartPoints().at(i));
     tentacle.SetEndPos(tentacleLayout.GetEndPoints().at(i));
 
-    tentacles.emplace_back(
-        TentacleAndAttributes{std::move(tentacle), nullptr, nullptr, BLACK_PIXEL, BLACK_PIXEL});
+    tentacles.emplace_back(TentacleAndAttributes{std::move(tentacle),
+                                                 ColorMapSharedPtr{nullptr},
+                                                 ColorMapSharedPtr{nullptr},
+                                                 BLACK_PIXEL,
+                                                 BLACK_PIXEL});
   }
 
   return tentacles;
@@ -159,8 +161,8 @@ auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
 auto TentacleDriver::SetWeightedColorMaps(
     const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  const auto baseMainColorMapName = weightedColorMaps.mainColorMaps->GetRandomColorMapName();
-  const auto baseLowColorMapName  = weightedColorMaps.lowColorMaps->GetRandomColorMapName();
+  const auto baseMainColorMapName = weightedColorMaps.mainColorMaps.GetRandomColorMapName();
+  const auto baseLowColorMapName  = weightedColorMaps.lowColorMaps.GetRandomColorMapName();
 
   static constexpr auto MIN_SATURATION       = 0.2F;
   static constexpr auto SATURATION_STEP_SIZE = 0.1F;
@@ -174,13 +176,14 @@ auto TentacleDriver::SetWeightedColorMaps(
   std::for_each(
       begin(m_tentacles),
       end(m_tentacles),
-      [&baseMainColorMapName, &baseLowColorMapName, &saturation, &lightness](auto& tentacle)
+      [this, &baseMainColorMapName, &baseLowColorMapName, &saturation, &lightness](auto& tentacle)
       {
         const auto tintProperties = ColorMaps::TintProperties{saturation(), lightness()};
 
         tentacle.mainColorMap =
-            ColorMaps::GetTintedColorMapPtr(baseMainColorMapName, tintProperties);
-        tentacle.lowColorMap = ColorMaps::GetTintedColorMapPtr(baseLowColorMapName, tintProperties);
+            m_colorMaps.GetTintedColorMapPtr(baseMainColorMapName, tintProperties);
+        tentacle.lowColorMap =
+            m_colorMaps.GetTintedColorMapPtr(baseLowColorMapName, tintProperties);
 
         saturation.Increment();
         lightness.Increment();
@@ -373,16 +376,13 @@ auto TentacleDriver::GetMixedColors(const float dominantT,
                                     const TentacleAndAttributes& tentacleAndAttributes,
                                     const float brightness) const -> MultiplePixels
 {
-  auto mixedColors =
-      MultiplePixels{IColorMap::GetColorMix(m_dominantMainColorMap->GetColor(dominantT),
+  const auto mixedColors =
+      MultiplePixels{ColorMaps::GetColorMix(m_dominantMainColorMap->GetColor(dominantT),
                                             tentacleAndAttributes.mainColorMap->GetColor(nodeT),
                                             m_mainColorSegmentMixT),
-                     IColorMap::GetColorMix(m_dominantLowColorMap->GetColor(dominantT),
+                     ColorMaps::GetColorMix(m_dominantLowColorMap->GetColor(dominantT),
                                             tentacleAndAttributes.lowColorMap->GetColor(nodeT),
                                             m_lowColorSegmentMixT)};
-
-  mixedColors.color1.SetA(MAX_ALPHA / 10);
-  mixedColors.color2.SetA(MAX_ALPHA / 10);
 
   return {
       m_colorAdjust.GetAdjustment(MAIN_BRIGHTNESS_FACTOR * brightness, GetMainColor(mixedColors)),

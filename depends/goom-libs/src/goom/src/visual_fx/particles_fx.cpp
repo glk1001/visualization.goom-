@@ -28,8 +28,9 @@
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::ColorMapPtrWrapper;
 using COLOR::GetBrighterColor;
-using COLOR::IColorMap;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::CircleDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
@@ -279,8 +280,8 @@ public:
 private:
   const FxHelper* m_fxHelper;
   //const SmallImageBitmaps* m_smallBitmaps;
-  [[maybe_unused]] PixelChannelType m_defaultAlpha = MAX_ALPHA / 20; //DEFAULT_VISUAL_FX_ALPHA;
-  uint64_t m_updateNum                             = 0U;
+  PixelChannelType m_defaultAlpha = MAX_ALPHA / 20; //DEFAULT_VISUAL_FX_ALPHA;
+  uint64_t m_updateNum            = 0U;
   auto UpdateCounter() noexcept -> void;
 
   static constexpr auto ADD_WEIGHT          = 100.0F;
@@ -313,8 +314,8 @@ private:
   [[nodiscard]] auto GetScreenPositionOffset() const noexcept -> Point2dInt;
   auto GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept -> Point2dInt;
 
-  const IColorMap* m_tintMainColorMap{};
-  const IColorMap* m_tintLowColorMap{};
+  ColorMapPtrWrapper m_tintMainColorMap{nullptr};
+  ColorMapPtrWrapper m_tintLowColorMap{nullptr};
   static constexpr auto TINT_COLORS_NUM_STEPS = 100U;
   TValue m_tintColorT{
       {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS}
@@ -446,11 +447,10 @@ inline auto ParticlesFx::ParticlesFxImpl::GetCurrentColorMapsNames() noexcept
 inline auto ParticlesFx::ParticlesFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-
-  m_tintMainColorMap = &weightedColorMaps.mainColorMaps->GetRandomColorMap();
-  m_tintLowColorMap  = &weightedColorMaps.lowColorMaps->GetRandomColorMap();
+  m_tintMainColorMap =
+      WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha}.GetRandomColorMap();
+  m_tintLowColorMap =
+      WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha}.GetRandomColorMap();
 
   m_renderer.SetDrawCircleFrequency(m_fxHelper->goomRand->GetRandInRange(
       MIN_DRAW_CIRCLE_FREQUENCY, MAX_DRAW_CIRCLE_FREQUENCY + 1));
@@ -525,7 +525,7 @@ inline auto ParticlesFx::ParticlesFxImpl::ApplyMultiple() noexcept -> void
 
 inline auto ParticlesFx::ParticlesFxImpl::UpdateEffect() noexcept -> void
 {
-  m_effectData.effect->SetTintColor(GetColor(m_tintMainColorMap->GetColor(m_tintColorT())));
+  m_effectData.effect->SetTintColor(GetColor(m_tintMainColorMap.GetColor(m_tintColorT())));
   m_effectData.effect->Update(static_cast<double>(m_deltaTime));
 }
 

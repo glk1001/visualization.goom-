@@ -37,12 +37,11 @@ public:
         const Params& params,
         PixelChannelType defaultAlpha) noexcept;
 
-  auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
+  auto SetWeightedMainColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
       -> void;
-  auto SetWeightedLowColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
+  auto SetWeightedLowColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedInnerColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
       -> void;
-  auto SetWeightedInnerColorMaps(
-      std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept -> void;
 
   auto SetVaryDotRadius(bool val) -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
@@ -83,10 +82,8 @@ private:
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 
   bool m_varyDotRadius = false;
-  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointMainColorId{
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
-  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId{
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand)};
+  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointMainColorId;
+  COLOR::RandomColorMapsManager::ColorMapId m_meetingPointLowColorId;
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS = 50;
   UTILS::TValue m_meetingPointColorsT{
       {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}

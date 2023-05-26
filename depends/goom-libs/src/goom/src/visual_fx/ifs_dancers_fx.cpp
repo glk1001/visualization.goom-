@@ -60,6 +60,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::WeightedRandomColorMaps;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
@@ -99,7 +100,7 @@ private:
   const FxHelper* m_fxHelper;
   BitmapDrawer m_bitmapDrawer;
   PixelDrawer m_pixelDrawer;
-  [[maybe_unused]] PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   Colorizer m_colorizer;
 
@@ -225,7 +226,7 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
   : m_fxHelper{&fxHelper},
     m_bitmapDrawer{*fxHelper.draw},
     m_pixelDrawer{*fxHelper.draw},
-    m_colorizer{*fxHelper.goomRand},
+    m_colorizer{*fxHelper.goomRand, m_defaultAlpha},
     m_pixelBlender{*fxHelper.goomRand},
     m_fractal{std::make_unique<Fractal>(fxHelper.draw->GetDimensions(),
                                         *fxHelper.goomRand,
@@ -271,16 +272,17 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangePixelBlender(
 inline auto IfsDancersFx::IfsDancersFxImpl::GetCurrentColorMapsNames() const noexcept
     -> std::vector<std::string>
 {
-  return {m_colorizer.GetWeightedColorMaps()->GetColorMapsName()};
+  return {m_colorizer.GetWeightedColorMaps().GetColorMapsName()};
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
+  const auto newWeightedMainColorMaps =
+      WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
 
-  m_fractal->SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
-  m_colorizer.SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
+  m_fractal->SetWeightedColorMaps(newWeightedMainColorMaps);
+  m_colorizer.SetWeightedColorMaps(newWeightedMainColorMaps);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::Start() noexcept -> void
@@ -486,7 +488,7 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   const auto tX = static_cast<float>(point.x) / m_fxHelper->draw->GetDimensions().GetFltWidth();
   const auto tY = static_cast<float>(point.y) / m_fxHelper->draw->GetDimensions().GetFltHeight();
 
-  if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap()->GetColor(t);
+  if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap().GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
   {
     const auto mixedColor =

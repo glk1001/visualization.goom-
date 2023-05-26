@@ -20,12 +20,10 @@ namespace GOOM::VISUAL_FX::IFS
 class Colorizer
 {
 public:
-  explicit Colorizer(const UTILS::MATH::IGoomRand& goomRand);
+  Colorizer(const UTILS::MATH::IGoomRand& goomRand, PixelChannelType defaultAlpha);
 
-  [[nodiscard]] auto GetWeightedColorMaps() const
-      -> const std::shared_ptr<const COLOR::RandomColorMaps>&;
-  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps)
-      -> void;
+  [[nodiscard]] auto GetWeightedColorMaps() const -> const COLOR::WeightedRandomColorMaps&;
+  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   auto GetColorMaps() const -> const COLOR::RandomColorMaps&;
 
@@ -51,15 +49,12 @@ public:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 
-  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{
-      COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
+  COLOR::WeightedRandomColorMaps m_colorMaps;
   COLOR::RandomColorMapsManager m_colorMapsManager{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
-  std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap1{};
-  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
-  std::shared_ptr<const COLOR::IColorMap> m_prevMixerMap2{};
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap1Id;
+  COLOR::ColorMapSharedPtr m_prevMixerMap1{nullptr};
+  COLOR::RandomColorMapsManager::ColorMapId m_mixerMap2Id;
+  COLOR::ColorMapSharedPtr m_prevMixerMap2{nullptr};
   auto UpdateMixerMaps() -> void;
   mutable uint32_t m_countSinceColorMapChange              = 0;
   static constexpr uint32_t MIN_COLOR_MAP_CHANGE_COMPLETED = 500;
@@ -95,8 +90,7 @@ private:
 
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&
 {
-  Expects(m_colorMaps != nullptr);
-  return *m_colorMaps;
+  return m_colorMaps;
 }
 
 inline auto Colorizer::GetColorMode() const -> VISUAL_FX::IfsDancersFx::ColorMode
@@ -115,8 +109,7 @@ inline auto Colorizer::SetMaxHitCount(const uint32_t val) -> void
   m_logMaxHitCount = std::log(static_cast<float>(m_maxHitCount));
 }
 
-inline auto Colorizer::GetWeightedColorMaps() const
-    -> const std::shared_ptr<const COLOR::RandomColorMaps>&
+inline auto Colorizer::GetWeightedColorMaps() const -> const COLOR::WeightedRandomColorMaps&
 {
   return m_colorMaps;
 }

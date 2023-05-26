@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -10,11 +11,6 @@
 
 namespace GOOM
 {
-
-namespace COLOR
-{
-class RandomColorMaps;
-}
 
 namespace UTILS::MATH
 {
@@ -43,15 +39,15 @@ struct TubeDrawFuncs
 
 struct TubeData
 {
-  uint32_t tubeId;
-  TubeDrawFuncs drawFuncs;
-  uint32_t screenWidth;
-  uint32_t screenHeight;
-  const UTILS::MATH::IGoomRand* goomRand;
-  std::shared_ptr<const COLOR::RandomColorMaps> mainColorMaps;
-  std::shared_ptr<const COLOR::RandomColorMaps> lowColorMaps;
-  float radiusEdgeOffset;
-  float brightnessFactor;
+  uint32_t tubeId{};
+  TubeDrawFuncs drawFuncs{};
+  uint32_t screenWidth{};
+  uint32_t screenHeight{};
+  const UTILS::MATH::IGoomRand* goomRand{};
+  COLOR::WeightedRandomColorMaps mainColorMaps{};
+  COLOR::WeightedRandomColorMaps lowColorMaps{};
+  float radiusEdgeOffset{};
+  float brightnessFactor{};
 };
 
 } // namespace VISUAL_FX::TUBES

@@ -2,14 +2,16 @@
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
+#include "color/random_color_maps_groups.h"
 
 #include <cmath>
 
 namespace GOOM::VISUAL_FX::IFS
 {
 
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
+using COLOR::ColorMaps;
+using COLOR::MakeSharedAllMapsUnweighted;
+using COLOR::WeightedRandomColorMaps;
 using UTILS::MATH::IGoomRand;
 using VISUAL_FX::IfsDancersFx;
 
@@ -22,8 +24,11 @@ static constexpr auto SINGLE_COLORS_WEIGHT         = 05.0F;
 static constexpr auto SINE_MIX_COLORS_WEIGHT       = 05.0F;
 static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 
-Colorizer::Colorizer(const IGoomRand& goomRand)
+Colorizer::Colorizer(const IGoomRand& goomRand, const PixelChannelType defaultAlpha)
   : m_goomRand{&goomRand},
+    m_colorMaps{MakeSharedAllMapsUnweighted(*m_goomRand, defaultAlpha)},
+    m_mixerMap1Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
+    m_mixerMap2Id{m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
     m_colorModeWeights{
         *m_goomRand,
         {
@@ -41,8 +46,7 @@ Colorizer::Colorizer(const IGoomRand& goomRand)
   UpdateMixerMaps();
 }
 
-auto Colorizer::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedColorMaps) -> void
+auto Colorizer::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void
 {
   m_colorMaps = weightedColorMaps;
 
@@ -53,8 +57,8 @@ auto Colorizer::UpdateMixerMaps() -> void
 {
   static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
   const auto& colorMapTypes = m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
-                                  ? RandomColorMaps::GetNoColorMapsTypes()
-                                  : RandomColorMaps::GetAllColorMapsTypes();
+                                  ? WeightedRandomColorMaps::GetNoColorMapsTypes()
+                                  : WeightedRandomColorMaps::GetAllColorMapsTypes();
 
   m_colorMapsManager.UpdateColorMapInfo(m_mixerMap1Id, {m_colorMaps, colorMapTypes});
   m_prevMixerMap1 = m_colorMapsManager.GetColorMapPtr(m_mixerMap1Id);
@@ -140,7 +144,7 @@ auto Colorizer::GetMixedColorInfo(const Pixel& baseColor,
 auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float tY) const -> Pixel
 {
   const auto nextColor =
-      IColorMap::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
+      ColorMaps::GetColorMix(m_colorMapsManager.GetColorMap(m_mixerMap1Id).GetColor(tX),
                              m_colorMapsManager.GetColorMap(m_mixerMap2Id).GetColor(tY),
                              t);
   if (0 == m_countSinceColorMapChange)
@@ -152,8 +156,8 @@ auto Colorizer::GetNextMixerMapColor(const float t, const float tX, const float 
                            static_cast<float>(m_colorMapChangeCompleted);
   --m_countSinceColorMapChange;
   const auto prevNextColor =
-      IColorMap::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
-  return IColorMap::GetColorMix(nextColor, prevNextColor, tTransition);
+      ColorMaps::GetColorMix(m_prevMixerMap1->GetColor(tX), m_prevMixerMap2->GetColor(tY), t);
+  return ColorMaps::GetColorMix(nextColor, prevNextColor, tTransition);
 }
 
 inline auto Colorizer::GetMapColorsTBaseMix() const -> float
@@ -190,10 +194,10 @@ inline auto Colorizer::GetFinalMixedColor(const Pixel& baseColor,
 {
   if (m_colorMode == IfsDancersFx::ColorMode::REVERSE_MIX_COLORS)
   {
-    return IColorMap::GetColorMix(mixColor, baseColor, tBaseMix);
+    return ColorMaps::GetColorMix(mixColor, baseColor, tBaseMix);
   }
 
-  return IColorMap::GetColorMix(baseColor, mixColor, tBaseMix);
+  return ColorMaps::GetColorMix(baseColor, mixColor, tBaseMix);
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

@@ -16,21 +16,22 @@ class ColorMapsGrid
 public:
   using ColorMixingTFunc = std::function<float(float tX, float tY)>;
 
-  ColorMapsGrid(const std::vector<const IColorMap*>& horizontalColorMaps,
+  ColorMapsGrid(const std::vector<COLOR::ColorMapPtrWrapper>& horizontalColorMaps,
                 const UTILS::TValue& verticalT,
-                const std::vector<const IColorMap*>& verticalColorMaps,
+                const std::vector<COLOR::ColorMapPtrWrapper>& verticalColorMaps,
                 const ColorMixingTFunc& colorMixingTFunc) noexcept;
 
   auto SetVerticalT(const UTILS::TValue& val) noexcept -> void;
-  auto SetColorMaps(const std::vector<const IColorMap*>& horizontalColorMaps,
-                    const std::vector<const IColorMap*>& verticalColorMaps) noexcept -> void;
+  auto SetColorMaps(const std::vector<COLOR::ColorMapPtrWrapper>& horizontalColorMaps,
+                    const std::vector<COLOR::ColorMapPtrWrapper>& verticalColorMaps) noexcept
+      -> void;
 
   [[nodiscard]] auto GetCurrentHorizontalLineColors() const -> std::vector<Pixel>;
 
 private:
-  std::vector<const IColorMap*> m_horizontalColorMaps;
+  std::vector<COLOR::ColorMapPtrWrapper> m_horizontalColorMaps;
   float m_maxHorizontalLineIndex = static_cast<float>(m_horizontalColorMaps.size() - 1);
-  std::vector<const IColorMap*> m_verticalColorMaps;
+  std::vector<COLOR::ColorMapPtrWrapper> m_verticalColorMaps;
   uint32_t m_width = static_cast<uint32_t>(m_verticalColorMaps.size());
 
   const UTILS::TValue* m_verticalT;
@@ -45,8 +46,8 @@ inline auto ColorMapsGrid::SetVerticalT(const UTILS::TValue& val) noexcept -> vo
 }
 
 inline auto ColorMapsGrid::SetColorMaps(
-    const std::vector<const IColorMap*>& horizontalColorMaps,
-    const std::vector<const IColorMap*>& verticalColorMaps) noexcept -> void
+    const std::vector<COLOR::ColorMapPtrWrapper>& horizontalColorMaps,
+    const std::vector<COLOR::ColorMapPtrWrapper>& verticalColorMaps) noexcept -> void
 {
   m_horizontalColorMaps    = horizontalColorMaps;
   m_maxHorizontalLineIndex = static_cast<float>(m_horizontalColorMaps.size() - 1);

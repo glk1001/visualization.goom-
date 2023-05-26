@@ -1,5 +1,7 @@
 #pragma once
 
+#include "color/color_maps.h"
+#include "color/random_color_maps.h"
 #include "goom_graphic.h"
 #include "ifs_types.h"
 #include "utils/math/goom_rand_base.h"
@@ -12,12 +14,6 @@
 
 namespace GOOM
 {
-
-namespace COLOR
-{
-class IColorMap;
-class RandomColorMaps;
-}
 
 namespace UTILS::GRAPHICS
 {
@@ -33,7 +29,7 @@ class Similitude
 public:
   [[nodiscard]] auto GetCPoint() const -> FltPoint;
   [[nodiscard]] auto GetColor() const -> Pixel;
-  [[nodiscard]] auto GetColorMap() const -> const COLOR::IColorMap*;
+  [[nodiscard]] auto GetColorMap() const -> const COLOR::ColorMapPtrWrapper&;
   [[nodiscard]] auto GetCurrentPointBitmap() const -> const UTILS::GRAPHICS::ImageBitmap*;
 
 private:
@@ -52,9 +48,9 @@ private:
   Flt m_sinA1                                              = 0;
   Flt m_cosA2                                              = 0;
   Flt m_sinA2                                              = 0;
-  const COLOR::IColorMap* m_colorMap                       = nullptr;
   Pixel m_color                                            = BLACK_PIXEL;
   const UTILS::GRAPHICS::ImageBitmap* m_currentPointBitmap = nullptr;
+  COLOR::ColorMapPtrWrapper m_colorMap{nullptr};
 };
 
 class Similitudes
@@ -65,8 +61,7 @@ public:
 
   auto Init() -> void;
 
-  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps)
-      -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   auto UpdateMainSimis(Dbl uValue) -> void;
   auto IterateSimis() -> void;
@@ -98,7 +93,7 @@ private:
 
   const UTILS::MATH::IGoomRand* m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
-  std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps;
+  COLOR::WeightedRandomColorMaps m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
   IfsFunc m_currentIfsFunc{};
@@ -182,7 +177,7 @@ inline auto Similitude::GetColor() const -> Pixel
   return m_color;
 }
 
-inline auto Similitude::GetColorMap() const -> const COLOR::IColorMap*
+inline auto Similitude::GetColorMap() const -> const COLOR::ColorMapPtrWrapper&
 {
   return m_colorMap;
 }

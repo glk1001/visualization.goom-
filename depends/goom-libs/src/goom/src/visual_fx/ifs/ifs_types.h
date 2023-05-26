@@ -6,15 +6,7 @@
 
 #include <cstdint>
 
-namespace GOOM
-{
-
-namespace COLOR
-{
-class IColorMap;
-}
-
-namespace VISUAL_FX::IFS
+namespace GOOM::VISUAL_FX::IFS
 {
 
 using Dbl = float;
@@ -75,5 +67,4 @@ inline IfsPoint::IfsPoint(const Point2dInt& point, const uint32_t count) noexcep
   Expects(point.y >= 0);
 }
 
-} // namespace VISUAL_FX::IFS
-} // namespace GOOM
+} // namespace GOOM::VISUAL_FX::IFS

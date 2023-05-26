@@ -6,7 +6,7 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
 using COLOR::ColorMaps;
-using COLOR::IColorMap;
+using COLOR::ColorMapSharedPtr;
 using COLOR::SimpleColors;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::MakePixels;
@@ -40,10 +40,10 @@ auto LSysColors::SetNumColors(const uint32_t numColors) noexcept -> void
 {
   Expects(numColors > 0U);
 
-  m_currentMainColorMaps.resize(numColors);
-  m_currentLowColorMaps.resize(numColors);
-  m_currentThickerMainColorMaps.resize(numColors);
-  m_currentThickerLowColorMaps.resize(numColors);
+  m_currentMainColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
+  m_currentLowColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
+  m_currentThickerMainColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
+  m_currentThickerLowColorMapList.resize(numColors, ColorMapSharedPtr{nullptr});
 
   m_simpleColorsList = GetSimpleColorsList(numColors);
 
@@ -153,17 +153,17 @@ auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) co
   if (m_lineWidth <= LINE_WIDTH_CUTOFF)
   {
     const auto mainColor = m_colorAdjust.GetAdjustment(
-        mainBrightness, m_currentMainColorMaps.at(colorNumToUse)->GetColor(colorT));
+        mainBrightness, m_currentMainColorMapList.at(colorNumToUse)->GetColor(colorT));
     const auto lowColor = m_colorAdjust.GetAdjustment(
-        lowBrightness, m_currentLowColorMaps.at(colorNumToUse)->GetColor(colorT));
+        lowBrightness, m_currentLowColorMapList.at(colorNumToUse)->GetColor(colorT));
     return MakePixels(mainColor, lowColor);
   }
 
   const auto thickerColorT = m_currentThickerColorTs.at(colorNumToUse)();
   const auto mainColor     = m_colorAdjust.GetAdjustment(
-      mainBrightness, m_currentThickerMainColorMaps.at(colorNumToUse)->GetColor(thickerColorT));
+      mainBrightness, m_currentThickerMainColorMapList.at(colorNumToUse)->GetColor(thickerColorT));
   const auto lowColor = m_colorAdjust.GetAdjustment(
-      lowBrightness, m_currentThickerLowColorMaps.at(colorNumToUse)->GetColor(thickerColorT));
+      lowBrightness, m_currentThickerLowColorMapList.at(colorNumToUse)->GetColor(thickerColorT));
   return MakePixels(mainColor, lowColor);
 }
 
@@ -188,30 +188,31 @@ auto LSysColors::SetMainColorMaps() noexcept -> void
       TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
                      m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
-  auto& colorMaps = m_currentMainColorMaps;
+  auto& colorMapsList = m_currentMainColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, tintProperties);
+  colorMapsList.at(0) =
+      m_colorMaps.GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, tintProperties);
 
-  if (colorMaps.size() > 1)
+  if (colorMapsList.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BLUES, tintProperties);
+    colorMapsList.at(1) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::BLUES, tintProperties);
   }
-  if (colorMaps.size() > 2)
+  if (colorMapsList.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::GREENS, tintProperties);
+    colorMapsList.at(2) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::GREENS, tintProperties);
   }
-  if (colorMaps.size() > 3)
+  if (colorMapsList.size() > 3)
   {
-    colorMaps.at(3) =
-        ColorMaps::GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, tintProperties);
+    colorMapsList.at(3) =
+        m_colorMaps.GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, tintProperties);
   }
-  if (colorMaps.size() > 4)
+  if (colorMapsList.size() > 4)
   {
-    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::ORANGES, tintProperties);
+    colorMapsList.at(4) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::ORANGES, tintProperties);
   }
 
-  SetNonMainColorMaps(colorMaps);
+  SetNonMainColorMaps(colorMapsList);
 }
 
 auto LSysColors::SetLowColorMaps() noexcept -> void
@@ -220,30 +221,31 @@ auto LSysColors::SetLowColorMaps() noexcept -> void
       TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
                      m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
-  auto& colorMaps = m_currentLowColorMaps;
+  auto& colorMapsList = m_currentLowColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, tintProperties);
+  colorMapsList.at(0) =
+      m_colorMaps.GetTintedColorMapPtr(ColorMapName::RED_BLACK_SKY, tintProperties);
 
-  if (colorMaps.size() > 1)
+  if (colorMapsList.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BLUES, tintProperties);
+    colorMapsList.at(1) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::BLUES, tintProperties);
   }
-  if (colorMaps.size() > 2)
+  if (colorMapsList.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::GREENS, tintProperties);
+    colorMapsList.at(2) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::GREENS, tintProperties);
   }
-  if (colorMaps.size() > 3)
+  if (colorMapsList.size() > 3)
   {
-    colorMaps.at(3) =
-        ColorMaps::GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, tintProperties);
+    colorMapsList.at(3) =
+        m_colorMaps.GetTintedColorMapPtr(ColorMapName::YELLOW_BLACK_BLUE, tintProperties);
   }
-  if (colorMaps.size() > 4)
+  if (colorMapsList.size() > 4)
   {
-    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::ORANGES, tintProperties);
+    colorMapsList.at(4) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::ORANGES, tintProperties);
   }
 
-  SetNonMainColorMaps(colorMaps);
+  SetNonMainColorMaps(colorMapsList);
 }
 
 auto LSysColors::SetThickerMainColorMaps() noexcept -> void
@@ -252,29 +254,30 @@ auto LSysColors::SetThickerMainColorMaps() noexcept -> void
       TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
                      m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
-  auto& colorMaps = m_currentThickerMainColorMaps;
+  auto& colorMapsList = m_currentThickerMainColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, tintProperties);
+  colorMapsList.at(0) =
+      m_colorMaps.GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, tintProperties);
 
-  if (colorMaps.size() > 1)
+  if (colorMapsList.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::CORK_10, tintProperties);
+    colorMapsList.at(1) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::CORK_10, tintProperties);
   }
-  if (colorMaps.size() > 2)
+  if (colorMapsList.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::COPPER, tintProperties);
+    colorMapsList.at(2) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::COPPER, tintProperties);
   }
-  if (colorMaps.size() > 3)
+  if (colorMapsList.size() > 3)
   {
-    colorMaps.at(3) = ColorMaps::GetTintedColorMapPtr(ColorMapName::EARTH_2, tintProperties);
+    colorMapsList.at(3) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::EARTH_2, tintProperties);
   }
-  if (colorMaps.size() > 4)
+  if (colorMapsList.size() > 4)
   {
-    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::TWILIGHT, tintProperties);
+    colorMapsList.at(4) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::TWILIGHT, tintProperties);
   }
 
-  SetNonMainColorMaps(colorMaps);
+  SetNonMainColorMaps(colorMapsList);
 }
 
 auto LSysColors::SetThickerLowColorMaps() noexcept -> void
@@ -283,37 +286,37 @@ auto LSysColors::SetThickerLowColorMaps() noexcept -> void
       TintProperties{m_goomRand->GetRandInRange(MIN_SATURATION, MAX_SATURATION),
                      m_goomRand->GetRandInRange(MIN_LIGHTNESS, MAX_LIGHTNESS)};
 
-  auto& colorMaps = m_currentThickerLowColorMaps;
+  auto& colorMapsList = m_currentThickerLowColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
 
-  colorMaps.at(0) = ColorMaps::GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, tintProperties);
+  colorMapsList.at(0) =
+      m_colorMaps.GetTintedColorMapPtr(ColorMapName::BROWNBLUE12_2, tintProperties);
 
-  if (colorMaps.size() > 1)
+  if (colorMapsList.size() > 1)
   {
-    colorMaps.at(1) = ColorMaps::GetTintedColorMapPtr(ColorMapName::CORK_10, tintProperties);
+    colorMapsList.at(1) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::CORK_10, tintProperties);
   }
-  if (colorMaps.size() > 2)
+  if (colorMapsList.size() > 2)
   {
-    colorMaps.at(2) = ColorMaps::GetTintedColorMapPtr(ColorMapName::COPPER, tintProperties);
+    colorMapsList.at(2) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::COPPER, tintProperties);
   }
-  if (colorMaps.size() > 3)
+  if (colorMapsList.size() > 3)
   {
-    colorMaps.at(3) = ColorMaps::GetTintedColorMapPtr(ColorMapName::EARTH_2, tintProperties);
+    colorMapsList.at(3) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::EARTH_2, tintProperties);
   }
-  if (colorMaps.size() > 4)
+  if (colorMapsList.size() > 4)
   {
-    colorMaps.at(4) = ColorMaps::GetTintedColorMapPtr(ColorMapName::TWILIGHT, tintProperties);
+    colorMapsList.at(4) = m_colorMaps.GetTintedColorMapPtr(ColorMapName::TWILIGHT, tintProperties);
   }
 
-  SetNonMainColorMaps(colorMaps);
+  SetNonMainColorMaps(colorMapsList);
 }
 
-auto LSysColors::SetNonMainColorMaps(
-    std::vector<std::shared_ptr<const IColorMap>>& colorMaps) noexcept -> void
+auto LSysColors::SetNonMainColorMaps(std::vector<ColorMapSharedPtr>& colorMapsList) noexcept -> void
 {
-  for (auto i = NUM_MAIN_COLORS; i < colorMaps.size(); ++i)
+  for (auto i = NUM_MAIN_COLORS; i < colorMapsList.size(); ++i)
   {
-    colorMaps.at(i) = colorMaps.at(i % NUM_MAIN_COLORS);
+    colorMapsList.at(i) = colorMapsList.at(i % NUM_MAIN_COLORS);
   }
 }
 

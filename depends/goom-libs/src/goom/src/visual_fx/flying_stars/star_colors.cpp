@@ -8,8 +8,8 @@
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
+using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
-using COLOR::IColorMap;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::MultiplePixels;
@@ -55,11 +55,11 @@ inline auto StarColors::GetFinalMixedColors(const MixedColorsParams& mixedColors
 
   const auto mixedMainColor = GetColorCorrection(
       mixedColorsParams.brightness,
-      IColorMap::GetColorMix(m_withinClusterMainColor, GetMainColor(colors), tMix));
+      ColorMaps::GetColorMix(m_withinClusterMainColor, GetMainColor(colors), tMix));
 
   static constexpr auto LIGHTEN_POWER = 10.0F;
   const auto mixedLowColor            = GetLightenedColor(
-      IColorMap::GetColorMix(m_withinClusterLowColor, GetLowColor(colors), tMix), LIGHTEN_POWER);
+      ColorMaps::GetColorMix(m_withinClusterLowColor, GetLowColor(colors), tMix), LIGHTEN_POWER);
 
   if (m_colorProperties->similarLowColors)
   {
@@ -69,7 +69,7 @@ inline auto StarColors::GetFinalMixedColors(const MixedColorsParams& mixedColors
   static constexpr auto MAIN_LOW_MIX_T = 0.4F;
   const auto remixedLowColor =
       GetColorCorrection(mixedColorsParams.brightness,
-                         IColorMap::GetColorMix(mixedMainColor, mixedLowColor, MAIN_LOW_MIX_T));
+                         ColorMaps::GetColorMix(mixedMainColor, mixedLowColor, MAIN_LOW_MIX_T));
 
   return {mixedMainColor, remixedLowColor};
 }

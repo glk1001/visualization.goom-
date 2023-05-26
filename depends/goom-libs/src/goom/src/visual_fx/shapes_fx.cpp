@@ -193,14 +193,13 @@ inline auto ShapesFx::ShapesFxImpl::GetCurrentColorMapsNames() noexcept -> std::
 inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-  Expects(weightedColorMaps.extraColorMaps != nullptr);
+  const auto newWeightedColorMaps =
+      GetWeightedColorMapsWithNewAlpha(weightedColorMaps, m_defaultAlpha);
 
-  const auto shapeNum = weightedColorMaps.id;
-  m_shapes.at(shapeNum).SetWeightedMainColorMaps(weightedColorMaps.mainColorMaps);
-  m_shapes.at(shapeNum).SetWeightedLowColorMaps(weightedColorMaps.lowColorMaps);
-  m_shapes.at(shapeNum).SetWeightedInnerColorMaps(weightedColorMaps.extraColorMaps);
+  const auto shapeNum = newWeightedColorMaps.id;
+  m_shapes.at(shapeNum).SetWeightedMainColorMaps(newWeightedColorMaps.mainColorMaps);
+  m_shapes.at(shapeNum).SetWeightedLowColorMaps(newWeightedColorMaps.lowColorMaps);
+  m_shapes.at(shapeNum).SetWeightedInnerColorMaps(newWeightedColorMaps.extraColorMaps);
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void

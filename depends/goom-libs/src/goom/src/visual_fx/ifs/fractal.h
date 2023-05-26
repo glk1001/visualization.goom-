@@ -37,8 +37,7 @@ public:
   auto Init() -> void;
   auto Reset() -> void;
 
-  auto SetWeightedColorMaps(const std::shared_ptr<const COLOR::RandomColorMaps>& weightedColorMaps)
-      -> void;
+  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   [[nodiscard]] auto GetSpeed() const -> uint32_t;
   auto SetSpeed(uint32_t val) -> void;

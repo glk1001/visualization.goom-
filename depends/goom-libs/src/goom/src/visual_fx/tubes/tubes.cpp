@@ -27,9 +27,10 @@ namespace GOOM::VISUAL_FX::TUBES
 {
 
 using COLOR::ColorAdjustment;
+using COLOR::ColorMapPtrWrapper;
+using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using std::experimental::propagate_const;
 using UTILS::Timer;
@@ -145,10 +146,8 @@ public:
   [[nodiscard]] auto GetTubeId() const noexcept -> uint32_t;
   [[nodiscard]] auto IsActive() const noexcept -> bool;
 
-  auto SetWeightedMainColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
   auto RotateShapeColorMaps() noexcept -> void;
@@ -228,14 +227,12 @@ Tube::Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) 
 {
 }
 
-auto Tube::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_pimpl->SetWeightedMainColorMaps(weightedMaps);
 }
 
-auto Tube::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_pimpl->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -320,10 +317,10 @@ class ShapeColorizer
 public:
   struct ShapeColorMaps
   {
-    const IColorMap* mainColorMap{};
-    const IColorMap* lowColorMap{};
-    const IColorMap* innerMainColorMap{};
-    const IColorMap* innerLowColorMap{};
+    ColorMapPtrWrapper mainColorMap{nullptr};
+    ColorMapPtrWrapper lowColorMap{nullptr};
+    ColorMapPtrWrapper innerMainColorMap{nullptr};
+    ColorMapPtrWrapper innerLowColorMap{nullptr};
   };
 
   ShapeColorizer(uint32_t numShapes, const TubeData& data, uint32_t numCircles) noexcept;
@@ -331,10 +328,8 @@ public:
   [[nodiscard]] auto GetBrightnessFactor() const noexcept -> float;
   auto SetBrightnessFactor(float val) noexcept -> void;
 
-  auto SetWeightedMainColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto ResetColorMaps() noexcept -> void;
   auto RotateShapeColorMaps() noexcept -> void;
@@ -365,8 +360,8 @@ private:
       {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP}
   };
 
-  const IColorMap* m_outerCircleMainColorMap;
-  const IColorMap* m_outerCircleLowColorMap;
+  ColorMapPtrWrapper m_outerCircleMainColorMap;
+  ColorMapPtrWrapper m_outerCircleLowColorMap;
   static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
   TValue m_outerCircleT{
       {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS}
@@ -501,14 +496,14 @@ auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,
   return shapes;
 }
 
-auto Tube::TubeImpl::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::TubeImpl::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorizer->SetWeightedMainColorMaps(weightedMaps);
 }
 
-auto Tube::TubeImpl::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto Tube::TubeImpl::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_colorizer->SetWeightedLowColorMaps(weightedMaps);
 }
@@ -814,8 +809,8 @@ ShapeColorizer::ShapeColorizer(const uint32_t numShapes,
     m_oldShapeColors(numShapes),
     m_circleColorMaps(numCircles),
     m_oldCircleColors(numCircles),
-    m_outerCircleMainColorMap{&m_data.mainColorMaps->GetRandomColorMap()},
-    m_outerCircleLowColorMap{&m_data.lowColorMaps->GetRandomColorMap()},
+    m_outerCircleMainColorMap{m_data.mainColorMaps.GetRandomColorMap()},
+    m_outerCircleLowColorMap{m_data.lowColorMaps.GetRandomColorMap()},
     m_colorMapMixModes{
         *m_data.goomRand,
         {
@@ -854,14 +849,14 @@ auto ShapeColorizer::InitColorMaps() noexcept -> void
   }
 }
 
-auto ShapeColorizer::SetWeightedMainColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapeColorizer::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_data.mainColorMaps = weightedMaps;
 }
 
-auto ShapeColorizer::SetWeightedLowColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto ShapeColorizer::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
+    -> void
 {
   m_data.lowColorMaps = weightedMaps;
 }
@@ -893,8 +888,8 @@ auto ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
   const auto numColorMaps = colorMaps->size();
   Expects(numColorMaps == oldColors->size());
 
-  m_outerCircleMainColorMap = &m_data.mainColorMaps->GetRandomColorMap();
-  m_outerCircleLowColorMap  = &m_data.lowColorMaps->GetRandomColorMap();
+  m_outerCircleMainColorMap = m_data.mainColorMaps.GetRandomColorMap();
+  m_outerCircleLowColorMap  = m_data.lowColorMaps.GetRandomColorMap();
 
   for (auto i = 0U; i < numColorMaps; ++i)
   {
@@ -906,22 +901,22 @@ auto ShapeColorizer::ResetColorMapsList(std::vector<ShapeColorMaps>* const color
 
 auto ShapeColorizer::ResetColorMaps(ShapeColorMaps* const colorMaps) const noexcept -> void
 {
-  colorMaps->mainColorMap      = &m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->lowColorMap       = &m_data.mainColorMaps->GetRandomColorMap();
-  colorMaps->innerMainColorMap = &m_data.lowColorMaps->GetRandomColorMap();
-  colorMaps->innerLowColorMap  = &m_data.lowColorMaps->GetRandomColorMap();
+  colorMaps->mainColorMap      = m_data.mainColorMaps.GetRandomColorMap();
+  colorMaps->lowColorMap       = m_data.mainColorMaps.GetRandomColorMap();
+  colorMaps->innerMainColorMap = m_data.lowColorMaps.GetRandomColorMap();
+  colorMaps->innerLowColorMap  = m_data.lowColorMaps.GetRandomColorMap();
 }
 
 auto ShapeColorizer::CopyColors(const ShapeColorMaps& colorMaps,
                                 const TValue& t,
                                 ShapeColors* const oldColors) const noexcept -> void
 {
-  oldColors->mainColor            = colorMaps.mainColorMap->GetColor(t());
-  oldColors->lowColor             = colorMaps.lowColorMap->GetColor(t());
-  oldColors->innerMainColor       = colorMaps.innerMainColorMap->GetColor(t());
-  oldColors->innerLowColor        = colorMaps.innerLowColorMap->GetColor(t());
-  oldColors->outerCircleMainColor = m_outerCircleMainColorMap->GetColor(t());
-  oldColors->outerCircleLowColor  = m_outerCircleLowColorMap->GetColor(t());
+  oldColors->mainColor            = colorMaps.mainColorMap.GetColor(t());
+  oldColors->lowColor             = colorMaps.lowColorMap.GetColor(t());
+  oldColors->innerMainColor       = colorMaps.innerMainColorMap.GetColor(t());
+  oldColors->innerLowColor        = colorMaps.innerLowColorMap.GetColor(t());
+  oldColors->outerCircleMainColor = m_outerCircleMainColorMap.GetColor(t());
+  oldColors->outerCircleLowColor  = m_outerCircleLowColorMap.GetColor(t());
 }
 
 inline auto ShapeColorizer::ResetColorMixMode() noexcept -> void
@@ -1021,13 +1016,13 @@ inline auto ShapeColorizer::GetShapesAndCirclesColors(const LowColorTypes& lowCo
   const auto circleColors = GetCircleColors(circleNum, brightness);
 
   return {
-      IColorMap::GetColorMix(shapeColors.mainColor, circleColors.mainColor, m_mixT()),
+      ColorMaps::GetColorMix(shapeColors.mainColor, circleColors.mainColor, m_mixT()),
       GetLowMixedColor(lowColorType, shapeColors, circleColors, m_mixT()),
-      IColorMap::GetColorMix(shapeColors.innerMainColor, circleColors.innerMainColor, m_mixT()),
+      ColorMaps::GetColorMix(shapeColors.innerMainColor, circleColors.innerMainColor, m_mixT()),
       GetInnerLowMixedColor(lowColorType, shapeColors, circleColors, m_mixT()),
-      IColorMap::GetColorMix(
+      ColorMaps::GetColorMix(
           shapeColors.outerCircleMainColor, circleColors.outerCircleMainColor, m_mixT()),
-      IColorMap::GetColorMix(
+      ColorMaps::GetColorMix(
           shapeColors.outerCircleLowColor, circleColors.outerCircleLowColor, m_mixT()),
   };
 }
@@ -1067,15 +1062,15 @@ inline auto ShapeColorizer::GetLowMixedColor(const LowColorTypes colorType,
 {
   if (colorType == LowColorTypes::LIGHTENED_LOW_COLOR)
   {
-    const auto mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
+    const auto mixedColor = ColorMaps::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
     return GetLightenedColor(mixedColor, LIGHTER_COLOR_POWER);
   }
   if (colorType == LowColorTypes::MAIN_COLOR)
   {
-    const auto mixedColor = IColorMap::GetColorMix(colors1.mainColor, colors2.mainColor, mixT);
+    const auto mixedColor = ColorMaps::GetColorMix(colors1.mainColor, colors2.mainColor, mixT);
     return mixedColor;
   }
-  const auto mixedColor = IColorMap::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
+  const auto mixedColor = ColorMaps::GetColorMix(colors1.lowColor, colors2.lowColor, mixT);
   return mixedColor;
 }
 
@@ -1087,17 +1082,17 @@ inline auto ShapeColorizer::GetInnerLowMixedColor(const LowColorTypes colorType,
   if (colorType == LowColorTypes::LIGHTENED_LOW_COLOR)
   {
     const auto mixedColor =
-        IColorMap::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
+        ColorMaps::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
     return GetLightenedColor(mixedColor, LIGHTER_COLOR_POWER);
   }
   if (colorType == LowColorTypes::MAIN_COLOR)
   {
     const auto mixedColor =
-        IColorMap::GetColorMix(colors1.innerMainColor, colors2.innerMainColor, mixT);
+        ColorMaps::GetColorMix(colors1.innerMainColor, colors2.innerMainColor, mixT);
     return mixedColor;
   }
   const auto mixedColor =
-      IColorMap::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
+      ColorMaps::GetColorMix(colors1.innerLowColor, colors2.innerLowColor, mixT);
   return mixedColor;
 }
 
@@ -1129,17 +1124,17 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
                                const float brightness) const noexcept -> ShapeColors
 {
   const auto mainColor =
-      GetFinalColor(oldShapeColors.mainColor, shapeColorMaps.mainColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.mainColor, shapeColorMaps.mainColorMap.GetColor(t()));
   const auto lowColor =
-      GetFinalColor(oldShapeColors.lowColor, shapeColorMaps.lowColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.lowColor, shapeColorMaps.lowColorMap.GetColor(t()));
   const auto innerMainColor =
-      GetFinalColor(oldShapeColors.innerMainColor, shapeColorMaps.innerMainColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.innerMainColor, shapeColorMaps.innerMainColorMap.GetColor(t()));
   const auto innerLowColor =
-      GetFinalColor(oldShapeColors.innerLowColor, shapeColorMaps.innerLowColorMap->GetColor(t()));
+      GetFinalColor(oldShapeColors.innerLowColor, shapeColorMaps.innerLowColorMap.GetColor(t()));
   const auto outerCircleMainColor = GetFinalColor(
-      oldShapeColors.outerCircleMainColor, m_outerCircleMainColorMap->GetColor(m_outerCircleT()));
+      oldShapeColors.outerCircleMainColor, m_outerCircleMainColorMap.GetColor(m_outerCircleT()));
   const auto outerCircleLowColor = GetFinalColor(
-      oldShapeColors.outerCircleLowColor, m_outerCircleLowColorMap->GetColor(m_outerCircleT()));
+      oldShapeColors.outerCircleLowColor, m_outerCircleLowColorMap.GetColor(m_outerCircleT()));
 
   return {
       m_colorAdjust.GetAdjustment(brightness, mainColor),
@@ -1154,7 +1149,7 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
 inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
     -> Pixel
 {
-  return IColorMap::GetColorMix(oldColor, color, m_oldT());
+  return ColorMaps::GetColorMix(oldColor, color, m_oldT());
 }
 
 BrightnessAttenuation::BrightnessAttenuation(const Properties& properties) noexcept

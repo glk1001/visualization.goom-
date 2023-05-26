@@ -34,7 +34,7 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::GetBrighterColor;
 using COLOR::GetColorAverage;
-using COLOR::RandomColorMaps;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::GoomDrawToContainer;
 using DRAW::GoomDrawToMany;
 using DRAW::MultiplePixels;
@@ -145,7 +145,8 @@ public:
 private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
-  uint64_t m_updateNum = 0;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  uint64_t m_updateNum            = 0;
 
   GoomDrawToContainer m_drawToContainer{m_fxHelper->draw->GetDimensions()};
   GoomDrawToMany m_drawToMany{
@@ -159,8 +160,8 @@ private:
   LineDrawerClippedEndPoints m_lineToManyDrawer{m_drawToMany};
   PixelDrawer m_pixelDrawer{*m_fxHelper->draw};
 
-  std::shared_ptr<const RandomColorMaps> m_mainColorMaps{};
-  std::shared_ptr<const RandomColorMaps> m_lowColorMaps{};
+  WeightedRandomColorMaps m_mainColorMaps{};
+  WeightedRandomColorMaps m_lowColorMaps{};
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath{m_fxHelper->goomRand->ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
   uint32_t m_numCapturedPrevShapesGroups              = 0;
@@ -344,21 +345,19 @@ inline auto TubesFx::TubeFxImpl::GetImageBitmap(const SmallImageBitmaps::ImageNa
 
 auto TubesFx::TubeFxImpl::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return {m_mainColorMaps->GetColorMapsName(), m_lowColorMaps->GetColorMapsName()};
+  return {m_mainColorMaps.GetColorMapsName(), m_lowColorMaps.GetColorMapsName()};
 }
 
 auto TubesFx::TubeFxImpl::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept
     -> void
 {
-  Expects(weightedColorMaps.mainColorMaps != nullptr);
-  m_mainColorMaps = weightedColorMaps.mainColorMaps;
+  m_mainColorMaps = WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
   for (auto& tube : m_tubes)
   {
     tube.SetWeightedMainColorMaps(m_mainColorMaps);
   }
 
-  Expects(weightedColorMaps.lowColorMaps != nullptr);
-  m_lowColorMaps = weightedColorMaps.lowColorMaps;
+  m_lowColorMaps = WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha};
   for (auto& tube : m_tubes)
   {
     tube.SetWeightedLowColorMaps(m_lowColorMaps);
@@ -393,9 +392,6 @@ inline auto TubesFx::TubeFxImpl::GetMiddlePos() const -> Point2dInt
 
 auto TubesFx::TubeFxImpl::InitTubes() -> void
 {
-  Expects(m_mainColorMaps != nullptr);
-  Expects(m_lowColorMaps != nullptr);
-
   const auto drawToOneFuncs = TubeDrawFuncs{
       [this](const Point2dInt& point1,
              const Point2dInt& point2,

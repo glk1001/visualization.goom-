@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
@@ -47,7 +48,7 @@ private:
   Pixel m_differentColor = BLACK_PIXEL;
 
   bool m_doCircleDotShapes = true;
-  const COLOR::IColorMap* m_outerCircleDotColorMap{};
+  COLOR::ColorMapPtrWrapper m_outerCircleDotColorMap{nullptr};
   static constexpr float MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.1F;
   static constexpr float MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.9F;
   float m_outerCircleDotColorMix                          = MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T;

@@ -67,10 +67,10 @@ private:
   static constexpr float MAX_SATURATION = 1.0F;
   static constexpr float MIN_LIGHTNESS  = 0.5F;
   static constexpr float MAX_LIGHTNESS  = 1.0F;
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentMainColorMaps{};
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentLowColorMaps{};
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentThickerMainColorMaps{};
-  std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentThickerLowColorMaps{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentMainColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentLowColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentThickerMainColorMapList{};
+  std::vector<COLOR::ColorMapSharedPtr> m_currentThickerLowColorMapList{};
   float m_probabilityOfSimpleColors                   = 1.0F;
   std::vector<ColorShadesAndTints> m_simpleColorsList = GetSimpleColorsList(NUM_MAIN_COLORS);
   [[nodiscard]] auto GetSimpleColorsList(uint32_t numColors) const noexcept
@@ -79,11 +79,12 @@ private:
   auto SetLowColorMaps() noexcept -> void;
   auto SetThickerMainColorMaps() noexcept -> void;
   auto SetThickerLowColorMaps() noexcept -> void;
-  static auto SetNonMainColorMaps(
-      std::vector<std::shared_ptr<const COLOR::IColorMap>>& colorMaps) noexcept -> void;
+  static auto SetNonMainColorMaps(std::vector<COLOR::ColorMapSharedPtr>& colorMapsList) noexcept
+      -> void;
   bool m_useSimpleColors = true;
   std::function<Pixel(uint32_t colorNum, float t)> m_simpleColorGet{};
   auto SetSimpleColors() noexcept -> void;
+
   static constexpr auto MIN_NUM_COLOR_STEPS = 10U;
   static constexpr auto MAX_NUM_COLOR_STEPS = 100U;
   std::vector<UTILS::TValue> m_currentColorTs{};
@@ -92,6 +93,7 @@ private:
   uint32_t m_currentMaxNumColorSteps                = MAX_NUM_COLOR_STEPS;
   std::vector<UTILS::TValue> m_currentThickerColorTs{};
   auto ResetColorTs() noexcept -> void;
+
   static constexpr auto GAMMA = 1.0F / 2.2F;
   COLOR::ColorAdjustment m_colorAdjust{
       {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}

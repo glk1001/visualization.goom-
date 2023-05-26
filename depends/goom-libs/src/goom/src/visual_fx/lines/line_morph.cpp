@@ -18,17 +18,16 @@
 #include "utils/math/misc.h"
 
 #include <cmath>
-#include <memory>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::LINES
 {
 
+using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
 using COLOR::GetSimpleColor;
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
 using COLOR::SimpleColors;
+using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using FX_UTILS::DotSizes;
@@ -105,10 +104,9 @@ LineMorph::LineMorph(IGoomDraw& draw,
 {
 }
 
-auto LineMorph::GetRandomColorMap() const noexcept -> const IColorMap&
+auto LineMorph::GetRandomColorMap() const noexcept -> COLOR::ColorMapPtrWrapper
 {
-  Expects(m_colorMaps != nullptr);
-  return m_colorMaps->GetRandomColorMap(m_colorMaps->GetRandomGroup());
+  return m_colorMaps.GetRandomColorMap(m_colorMaps.GetRandomGroup());
 }
 
 auto LineMorph::Start() noexcept -> void
@@ -123,15 +121,14 @@ auto LineMorph::Start() noexcept -> void
 
 auto LineMorph::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return {m_colorMaps->GetColorMapsName()};
+  return {m_colorMaps.GetColorMapsName()};
 }
 
-auto LineMorph::SetWeightedColorMaps(
-    const std::shared_ptr<const RandomColorMaps>& weightedMaps) noexcept -> void
+auto LineMorph::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
   m_colorMaps = weightedMaps;
-  m_colorMapsManager.UpdateColorMapInfo(m_currentColorMapID,
-                                        {m_colorMaps, RandomColorMaps::GetAllColorMapsTypes()});
+  m_colorMapsManager.UpdateColorMapInfo(
+      m_currentColorMapID, {m_colorMaps, WeightedRandomColorMaps::GetAllColorMapsTypes()});
 }
 
 inline auto LineMorph::UpdateColorInfo() noexcept -> void
@@ -188,7 +185,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
 
   static constexpr auto COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceLineParams.color =
-      IColorMap::GetColorMix(m_srceLineParams.color, m_destLineParams.color, COLOR_MIX_AMOUNT);
+      ColorMaps::GetColorMix(m_srceLineParams.color, m_destLineParams.color, COLOR_MIX_AMOUNT);
 
   static constexpr auto MIN_POW_INC = 0.03F;
   static constexpr auto MAX_POW_INC = 0.10F;
@@ -239,7 +236,7 @@ auto LineMorph::GetRandomLineColor() const noexcept -> Pixel
     return GetSimpleColor(static_cast<SimpleColors>(m_goomRand->GetNRand(NUM<SimpleColors>)),
                           m_defaultAlpha);
   }
-  return RandomColorMaps::GetRandomColor(*m_goomRand, GetRandomColorMap(), 0.0F, 1.0F);
+  return m_colorMaps.GetRandomColor(GetRandomColorMap(), 0.0F, 1.0F);
 }
 
 inline auto LineMorph::GetFinalLineColor(const Pixel& color) const noexcept -> Pixel
@@ -367,7 +364,7 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
 
   const auto brightness = m_currentBrightness * tData;
   const auto modColor =
-      m_colorAdjust.GetAdjustment(brightness, IColorMap::GetColorMix(mainColor, randColor, tData));
+      m_colorAdjust.GetAdjustment(brightness, ColorMaps::GetColorMix(mainColor, randColor, tData));
 
   return {nextPointData, modColor};
 }
