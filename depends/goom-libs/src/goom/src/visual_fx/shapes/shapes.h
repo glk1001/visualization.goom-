@@ -34,7 +34,8 @@ public:
         const UTILS::MATH::IGoomRand& goomRand,
         const PluginInfo& goomInfo,
         COLOR::RandomColorMapsManager& colorMapsManager,
-        const Params& params) noexcept;
+        const Params& params,
+        PixelChannelType defaultAlpha) noexcept;
 
   auto SetWeightedMainColorMaps(std::shared_ptr<const COLOR::RandomColorMaps> weightedMaps) noexcept
       -> void;
@@ -76,7 +77,8 @@ private:
                                                  const UTILS::MATH::IGoomRand& goomRand,
                                                  const PluginInfo& goomInfo,
                                                  COLOR::RandomColorMapsManager& colorMapsManager,
-                                                 const Params& params) noexcept
+                                                 const Params& params,
+                                                 PixelChannelType defaultAlpha) noexcept
       -> std::vector<ShapePart>;
   [[nodiscard]] auto GetFirstShapePathPositionT() const noexcept -> float;
 

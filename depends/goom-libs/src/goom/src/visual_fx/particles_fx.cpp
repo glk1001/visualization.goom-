@@ -20,6 +20,7 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
+#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <memory>
 #include <vector>
@@ -32,6 +33,7 @@ using COLOR::IColorMap;
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::CircleDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
+using FX_UTILS::RandomPixelBlender;
 using PARTICLES::EFFECTS::AttractorEffect;
 using PARTICLES::EFFECTS::IEffect;
 using UTILS::IncrementedValue;
@@ -65,7 +67,10 @@ struct EffectData
 class Renderer
 {
 public:
-  Renderer(IGoomDraw& draw, float brightness, const Camera& camera) noexcept;
+  Renderer(IGoomDraw& draw,
+           GoomLogger& goomLogger,
+           float brightness,
+           const Camera& camera) noexcept;
 
   auto SetDrawCircleFrequency(uint32_t drawCircleFrequency) noexcept -> void;
 
@@ -82,6 +87,7 @@ public:
 
 private:
   IGoomDraw* m_draw;
+  [[maybe_unused]] GoomLogger* m_goomLogger;
   uint64_t m_numSkippedNegativeParticles = 0U;
   uint64_t m_numSkippedTooBigParticles   = 0U;
   uint32_t m_drawCircleFrequency         = 1U;
@@ -165,8 +171,11 @@ constexpr auto GetPixel(const glm::vec4& color) noexcept -> Pixel
 
 } // namespace
 
-Renderer::Renderer(IGoomDraw& draw, const float brightness, const Camera& camera) noexcept
-  : m_draw{&draw}, m_circleBrightness{brightness}, m_camera{&camera}
+Renderer::Renderer(IGoomDraw& draw,
+                   GoomLogger& goomLogger,
+                   const float brightness,
+                   const Camera& camera) noexcept
+  : m_draw{&draw}, m_goomLogger{&goomLogger}, m_circleBrightness{brightness}, m_camera{&camera}
 {
 }
 
@@ -214,6 +223,8 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
     }
 
     const auto pixelColor = GetPixel(color);
+    //LogInfo(*m_goomLogger,
+    // "pixelColor = {},{},{},{}.", pixelColor.R(), pixelColor.G(), pixelColor.B(), pixelColor.A());
 
     if (0 == (i % m_drawCircleFrequency))
     {
@@ -260,6 +271,7 @@ public:
 
   auto Start() noexcept -> void;
 
+  auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto ApplyMultiple() noexcept -> void;
@@ -267,8 +279,30 @@ public:
 private:
   const FxHelper* m_fxHelper;
   //const SmallImageBitmaps* m_smallBitmaps;
-  uint64_t m_updateNum = 0U;
+  [[maybe_unused]] PixelChannelType m_defaultAlpha = MAX_ALPHA / 20; //DEFAULT_VISUAL_FX_ALPHA;
+  uint64_t m_updateNum                             = 0U;
   auto UpdateCounter() noexcept -> void;
+
+  static constexpr auto ADD_WEIGHT          = 100.0F;
+  static constexpr auto DARKEN_ONLY_WEIGHT  = 0.0F;
+  static constexpr auto LIGHTEN_ONLY_WEIGHT = 5.0F;
+  static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
+  static constexpr auto MULTIPLY_WEIGHT     = 5.0F;
+  static constexpr auto ALPHA_WEIGHT        = 100.0F;
+  // clang-format off
+  RandomPixelBlender m_pixelBlender{
+      *m_fxHelper->goomRand,
+      {
+          {RandomPixelBlender::PixelBlendType::ADD,          ADD_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DARKEN_ONLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::LUMA_MIX,     LUMA_MIX_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::MULTIPLY,     MULTIPLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::ALPHA,        ALPHA_WEIGHT},
+      }
+  };
+  // clang-format on
+  auto UpdatePixelBlender() noexcept -> void;
 
   Point2dInt m_screenPositionOffset{};
   Point2dInt m_previousScreenPositionOffset{};
@@ -332,9 +366,9 @@ auto ParticlesFx::Finish() noexcept -> void
   // nothing to do
 }
 
-auto ParticlesFx::ChangePixelBlender(
-    [[maybe_unused]] const PixelBlenderParams& pixelBlenderParams) noexcept -> void
+auto ParticlesFx::ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
+  m_pimpl->ChangePixelBlender(pixelBlenderParams);
 }
 
 auto ParticlesFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -367,7 +401,7 @@ ParticlesFx::ParticlesFxImpl::ParticlesFxImpl(
     m_deltaTime{
         m_fxHelper->goomRand->GetRandInRange(m_effectData.minDeltaTime, m_effectData.maxDeltaTime)},
     m_camera{m_effectData.cameraProperties, fxHelper.draw->GetDimensions()},
-    m_renderer{*fxHelper.draw, m_effectData.brightness, m_camera}
+    m_renderer{*fxHelper.draw, *fxHelper.goomLogger, m_effectData.brightness, m_camera}
 {
 }
 
@@ -422,6 +456,18 @@ inline auto ParticlesFx::ParticlesFxImpl::SetWeightedColorMaps(
       MIN_DRAW_CIRCLE_FREQUENCY, MAX_DRAW_CIRCLE_FREQUENCY + 1));
 }
 
+inline auto ParticlesFx::ParticlesFxImpl::ChangePixelBlender(
+    const PixelBlenderParams& pixelBlenderParams) noexcept -> void
+{
+  m_pixelBlender.SetPixelBlendType(pixelBlenderParams);
+}
+
+inline auto ParticlesFx::ParticlesFxImpl::UpdatePixelBlender() noexcept -> void
+{
+  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_pixelBlender.Update();
+}
+
 inline auto ParticlesFx::ParticlesFxImpl::SetZoomMidpoint(
     [[maybe_unused]] const Point2dInt& zoomMidpoint) noexcept -> void
 {
@@ -464,6 +510,8 @@ inline auto ParticlesFx::ParticlesFxImpl::Start() noexcept -> void
 
 inline auto ParticlesFx::ParticlesFxImpl::ApplyMultiple() noexcept -> void
 {
+  UpdatePixelBlender();
+
   UpdateEffect();
 
   m_renderer.UpdateFrame(*m_effectData.effect);

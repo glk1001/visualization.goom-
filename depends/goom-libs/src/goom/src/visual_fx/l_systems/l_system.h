@@ -72,7 +72,8 @@ public:
           const PluginInfo& goomInfo,
           const UTILS::MATH::IGoomRand& goomRand,
           const std::string& lSystemDirectory,
-          const LSystemFile& lSystemFile) noexcept;
+          const LSystemFile& lSystemFile,
+          PixelChannelType defaultAlpha) noexcept;
 
   auto ChangeColors() noexcept -> void;
 
@@ -119,7 +120,7 @@ private:
                                              const ::LSYS::BoundingBox3d& boundingBox3d) noexcept
       -> BoundingBox2d;
 
-  LSysColors m_lSysColors{*m_goomRand};
+  LSysColors m_lSysColors{*m_goomRand, MAX_ALPHA};
   LSysGeometry m_lSysGeometry;
   LSysDraw m_lSysDraw;
 

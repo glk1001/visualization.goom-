@@ -16,8 +16,9 @@ namespace GOOM::COLOR
 class RandomColorMaps : public ColorMaps
 {
 public:
-  explicit RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
-                           const std::string& colorMapsName = "") noexcept;
+  RandomColorMaps(PixelChannelType defaultAlpha,
+                  const UTILS::MATH::IGoomRand& goomRand,
+                  const std::string& colorMapsName = "") noexcept;
 
   [[nodiscard]] auto GetColorMapsName() const noexcept -> const std::string&;
 
@@ -126,9 +127,10 @@ private:
   bool m_weightsActive = true;
 };
 
-inline RandomColorMaps::RandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+inline RandomColorMaps::RandomColorMaps(const PixelChannelType defaultAlpha,
+                                        const UTILS::MATH::IGoomRand& goomRand,
                                         const std::string& colorMapsName) noexcept
-  : m_goomRand{&goomRand}, m_colorMapsName{colorMapsName}
+  : ColorMaps{defaultAlpha}, m_goomRand{&goomRand}, m_colorMapsName{colorMapsName}
 {
 }
 
@@ -157,14 +159,14 @@ inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::str
 inline auto RandomColorMaps::GetRandomColorMap(const UTILS::MATH::IGoomRand& goomRand) noexcept
     -> const IColorMap&
 {
-  return RandomColorMaps{goomRand}.GetRandomColorMap();
+  return RandomColorMaps{MAX_ALPHA, goomRand}.GetRandomColorMap();
 }
 
 inline auto RandomColorMaps::GetRandomColorMap(const UTILS::MATH::IGoomRand& goomRand,
                                                const ColorMapGroup colorMapGroup) noexcept
     -> const IColorMap&
 {
-  return RandomColorMaps{goomRand}.GetRandomColorMap(colorMapGroup);
+  return RandomColorMaps{MAX_ALPHA, goomRand}.GetRandomColorMap(colorMapGroup);
 }
 
 inline auto RandomColorMaps::GetRandomColor(const UTILS::MATH::IGoomRand& goomRand,
@@ -172,7 +174,7 @@ inline auto RandomColorMaps::GetRandomColor(const UTILS::MATH::IGoomRand& goomRa
                                             const float t0,
                                             const float t1) noexcept -> Pixel
 {
-  return RandomColorMaps{goomRand}.GetRandomColor(colorMap, t0, t1);
+  return RandomColorMaps{MAX_ALPHA, goomRand}.GetRandomColor(colorMap, t0, t1);
 }
 
 } // namespace GOOM::COLOR

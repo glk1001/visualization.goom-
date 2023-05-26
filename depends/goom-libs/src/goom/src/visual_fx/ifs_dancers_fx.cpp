@@ -99,6 +99,7 @@ private:
   const FxHelper* m_fxHelper;
   BitmapDrawer m_bitmapDrawer;
   PixelDrawer m_pixelDrawer;
+  [[maybe_unused]] PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   Colorizer m_colorizer;
 

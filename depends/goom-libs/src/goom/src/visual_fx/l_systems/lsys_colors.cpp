@@ -17,11 +17,12 @@ using UTILS::MATH::IGoomRand;
 
 using TintProperties = ColorMaps::TintProperties;
 
-LSysColors::LSysColors(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
+LSysColors::LSysColors(const IGoomRand& goomRand, const PixelChannelType defaultAlpha) noexcept
+  : m_goomRand{&goomRand}, m_defaultAlpha{defaultAlpha}
 {
 }
 
-auto LSysColors::GetSimpleColorsList(const uint32_t numColors) noexcept
+auto LSysColors::GetSimpleColorsList(const uint32_t numColors) const noexcept
     -> std::vector<ColorShadesAndTints>
 {
   auto simpleColorsList = std::vector<ColorShadesAndTints>{};
@@ -29,7 +30,7 @@ auto LSysColors::GetSimpleColorsList(const uint32_t numColors) noexcept
   for (auto i = 0U; i < numColors; ++i)
   {
     simpleColorsList.emplace_back(
-        GetSimpleColor(static_cast<SimpleColors>(i % UTILS::NUM<SimpleColors>)));
+        GetSimpleColor(static_cast<SimpleColors>(i % UTILS::NUM<SimpleColors>), m_defaultAlpha));
   }
 
   return simpleColorsList;

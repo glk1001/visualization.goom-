@@ -50,9 +50,9 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
-  RandomColorMapsManager m_colorMapsManager{};
-
   Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  RandomColorMapsManager m_colorMapsManager{};
 
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
@@ -166,7 +166,8 @@ auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPE
        SHAPE0_MAX_NUM_PATHS,
        initialShapeZoomMidpoints.at(0),
        MIN_NUM_SHAPE_PATH_STEPS,
-       MAX_NUM_SHAPE_PATH_STEPS}},
+       MAX_NUM_SHAPE_PATH_STEPS},
+       m_defaultAlpha},
        /**
        Shape{m_goomRand,
        m_goomInfo,

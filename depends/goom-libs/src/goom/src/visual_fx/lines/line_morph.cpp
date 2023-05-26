@@ -60,10 +60,12 @@ LineMorph::LineMorph(IGoomDraw& draw,
                      const PluginInfo& goomInfo,
                      const IGoomRand& goomRand,
                      const SmallImageBitmaps& smallBitmaps,
-                     const SrceDestLineParams& srceDestLineParams) noexcept
+                     const SrceDestLineParams& srceDestLineParams,
+                     const PixelChannelType defaultAlpha) noexcept
   : m_draw{&draw},
     m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
+    m_defaultAlpha{defaultAlpha},
     m_srcePoints(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srcePointsCopy(AudioSamples::AUDIO_SAMPLE_LEN),
     m_srceLineParams{srceDestLineParams.srceLineParams},
@@ -234,7 +236,8 @@ auto LineMorph::GetRandomLineColor() const noexcept -> Pixel
 {
   if (static constexpr auto PROB_LINE_COLOR = 0.02F; m_goomRand->ProbabilityOf(PROB_LINE_COLOR))
   {
-    return GetSimpleColor(static_cast<SimpleColors>(m_goomRand->GetNRand(NUM<SimpleColors>)));
+    return GetSimpleColor(static_cast<SimpleColors>(m_goomRand->GetNRand(NUM<SimpleColors>)),
+                          m_defaultAlpha);
   }
   return RandomColorMaps::GetRandomColor(*m_goomRand, GetRandomColorMap(), 0.0F, 1.0F);
 }

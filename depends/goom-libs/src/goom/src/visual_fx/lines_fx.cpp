@@ -31,10 +31,6 @@ using UTILS::MATH::Weights;
 static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 = 0.4F;
 static constexpr auto INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 = 0.2F;
 
-static constexpr auto RED_LINE_COLOR   = GetSimpleColor(SimpleColors::TANGO);
-static constexpr auto GREEN_LINE_COLOR = GetSimpleColor(SimpleColors::SHAMROCK);
-static constexpr auto BLACK_LINE_COLOR = GetSimpleColor(SimpleColors::BLACK);
-
 static constexpr auto PROB_CHANGE_LINE_CIRCLE_AMPLITUDE = 0.05F;
 static constexpr auto PROB_CHANGE_LINE_CIRCLE_PARAMS    = 0.08F;
 static constexpr auto PROB_CHANGE_H_LINE_PARAMS         = 0.12F;
@@ -72,6 +68,8 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  Pixel m_blackLineColor          = GetSimpleColor(SimpleColors::BLACK, m_defaultAlpha);
 
   static_assert(2 == NUM_LINES);
   static constexpr std::array<uint32_t, NUM_LINES> SOUND_SAMPLE_NUM_TO_USE{0, 1};
@@ -183,17 +181,18 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                 {
                     LineType::H_LINE,
                     fxHelper.goomInfo->GetDimensions().GetFltHeight(),
-                    BLACK_LINE_COLOR,
+                    m_blackLineColor,
                     1.0F
                 },
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
                         fxHelper.goomInfo->GetDimensions().GetFltHeight(),
-                    GREEN_LINE_COLOR,
+                    GetSimpleColor(SimpleColors::SHAMROCK, m_defaultAlpha),
                     1.0F
                 }
-            }
+            },
+            m_defaultAlpha
         },
         LineMorph{
             *fxHelper.draw,
@@ -204,17 +203,18 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                 {
                     LineType::H_LINE,
                     0.0F,
-                    BLACK_LINE_COLOR,
+                    m_blackLineColor,
                     1.0F
                 },
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
                         fxHelper.goomInfo->GetDimensions().GetFltHeight(),
-                    RED_LINE_COLOR,
+                    GetSimpleColor(SimpleColors::TANGO, m_defaultAlpha),
                     1.0F
                 }
-            }
+            },
+            m_defaultAlpha
         }
     },
     m_pixelBlender{*fxHelper.goomRand},
@@ -255,6 +255,7 @@ inline auto LinesFx::LinesImpl::SetWeightedColorMaps(
 {
   const auto lineNum = weightedColorMaps.id;
   Expects(lineNum < NUM_LINES);
+
   m_lineMorphs.at(lineNum).SetWeightedColorMaps(weightedColorMaps.mainColorMaps);
 }
 
@@ -429,8 +430,8 @@ auto LinesFx::LinesImpl::GetGoomLineStopSettings() const noexcept
     -> std::array<LineParams, NUM_LINES>
 {
   auto lineParams        = GetGoomLineResetSettings(1);
-  lineParams.at(0).color = BLACK_LINE_COLOR;
-  lineParams.at(1).color = BLACK_LINE_COLOR;
+  lineParams.at(0).color = m_blackLineColor;
+  lineParams.at(1).color = m_blackLineColor;
   return lineParams;
 }
 
@@ -578,7 +579,7 @@ auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcep
 {
   if ((farVal != 0) and m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
   {
-    return {BLACK_LINE_COLOR, BLACK_LINE_COLOR};
+    return {m_blackLineColor, m_blackLineColor};
   }
 
   return GetRandomLineColors();

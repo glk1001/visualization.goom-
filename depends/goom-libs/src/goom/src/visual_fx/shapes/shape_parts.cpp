@@ -34,11 +34,13 @@ ShapePart::ShapePart(IGoomDraw& draw,
                      const IGoomRand& goomRand,
                      const PluginInfo& goomInfo,
                      RandomColorMapsManager& colorMapsManager,
-                     const Params& params) noexcept
+                     const Params& params,
+                     const PixelChannelType defaultAlpha) noexcept
   : m_draw{&draw},
     m_goomRand{&goomRand},
     m_goomInfo{&goomInfo},
     m_colorMapsManager{&colorMapsManager},
+    m_defaultAlpha{defaultAlpha},
     m_currentTMinMaxLerp{params.tMinMaxLerp},
     m_shapePathsStepSpeed{
         {params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps}, params.tMinMaxLerp},
@@ -215,9 +217,9 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 inline auto ShapePart::MakeShapePathColorInfo() noexcept -> ShapePath::ColorInfo
 {
   return ShapePath::ColorInfo{
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand),
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand),
-      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand),
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, m_defaultAlpha),
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, m_defaultAlpha),
+      m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, m_defaultAlpha),
   };
 }
 

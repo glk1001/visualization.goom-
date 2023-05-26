@@ -35,7 +35,7 @@ private:
 class LSysColors
 {
 public:
-  explicit LSysColors(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  LSysColors(const UTILS::MATH::IGoomRand& goomRand, PixelChannelType defaultAlpha) noexcept;
 
   auto SetNumColors(uint32_t numColors) noexcept -> void;
   auto SetMaxNumColorSteps(uint32_t numSteps) noexcept -> void;
@@ -60,6 +60,8 @@ private:
   float m_globalBrightness = 1.0F;
   uint8_t m_lineWidth      = 1U;
 
+  PixelChannelType m_defaultAlpha;
+  COLOR::ColorMaps m_colorMaps{m_defaultAlpha};
   static constexpr auto NUM_MAIN_COLORS = 5U;
   static constexpr float MIN_SATURATION = 0.5F;
   static constexpr float MAX_SATURATION = 1.0F;
@@ -71,7 +73,7 @@ private:
   std::vector<std::shared_ptr<const COLOR::IColorMap>> m_currentThickerLowColorMaps{};
   float m_probabilityOfSimpleColors                   = 1.0F;
   std::vector<ColorShadesAndTints> m_simpleColorsList = GetSimpleColorsList(NUM_MAIN_COLORS);
-  [[nodiscard]] static auto GetSimpleColorsList(uint32_t numColors) noexcept
+  [[nodiscard]] auto GetSimpleColorsList(uint32_t numColors) const noexcept
       -> std::vector<ColorShadesAndTints>;
   auto SetMainColorMaps() noexcept -> void;
   auto SetLowColorMaps() noexcept -> void;

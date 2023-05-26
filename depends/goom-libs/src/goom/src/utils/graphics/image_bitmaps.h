@@ -71,7 +71,7 @@ inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexce
 {
   const auto& pixel = m_buff.at((y * m_width) + x);
   return Pixel{
-      {pixel.red, pixel.green, pixel.blue, pixel.alpha}
+      {pixel.red, pixel.green, pixel.blue, ToPixelAlpha(pixel.alpha)}
   };
 }
 

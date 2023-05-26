@@ -33,7 +33,7 @@ DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
     m_bgndMainColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
     m_bgndLowColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
     m_decorationType{GetRandomDecorationType()},
-    m_differentColor{GetRandomDifferentColor(RandomColorMaps{*m_goomRand})}
+    m_differentColor{GetRandomDifferentColor(RandomColorMaps{MAX_ALPHA, *m_goomRand})}
 {
 }
 

@@ -52,6 +52,7 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
+  [[maybe_unused]] PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   StarMaker m_starMaker;
   StarDrawer m_starDrawer;
   StarTypesContainer m_starTypesContainer;

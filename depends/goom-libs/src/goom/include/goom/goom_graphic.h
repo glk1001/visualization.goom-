@@ -97,6 +97,13 @@ static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::ma
 
 inline constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
 inline constexpr auto MAX_ALPHA     = std::numeric_limits<PixelChannelType>::max();
+constexpr auto ToPixelAlpha(const uint8_t byteAlpha) -> PixelChannelType
+{
+  constexpr auto MAX_ALPHA_PLUS_1 = static_cast<uint32_t>(MAX_ALPHA) + 1;
+  constexpr auto MAX_BYTE_PLUS_1  = static_cast<uint32_t>(std::numeric_limits<uint8_t>::max()) + 1;
+  const auto byteAlphaPlus1       = static_cast<uint32_t>(byteAlpha) + 1;
+  return static_cast<PixelChannelType>(((MAX_ALPHA_PLUS_1 / MAX_BYTE_PLUS_1) * byteAlphaPlus1) - 1);
+}
 
 // TODO(glk) - maybe should be template: Pixel<uint8_t>, Pixel<uint16_t>
 class Pixel

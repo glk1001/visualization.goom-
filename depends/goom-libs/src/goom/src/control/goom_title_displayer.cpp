@@ -142,7 +142,7 @@ inline void GoomTitleDisplayer::UpdateTextPosition()
 
 inline void GoomTitleDisplayer::SetFinalPhaseColorMaps()
 {
-  const auto randomColorMaps = RandomColorMaps{*m_goomRand};
+  const auto randomColorMaps = RandomColorMaps{MAX_ALPHA, *m_goomRand};
   m_textColorMap        = &randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);
   m_textOutlineColorMap = &randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::HEAT);
   m_charColorMap        = &randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK);

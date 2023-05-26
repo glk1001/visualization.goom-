@@ -56,7 +56,7 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
 {
   m_numPetals = numPetals;
 
-  const auto randomColorMaps = RandomColorMaps{*m_goomRand};
+  const auto randomColorMaps = RandomColorMaps{MAX_ALPHA, *m_goomRand};
 
   m_lineColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());
   m_dotColorMaps.resize(m_numPetals, &randomColorMaps.GetRandomColorMap());

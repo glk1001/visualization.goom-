@@ -174,7 +174,9 @@ auto IColorMap::GetColorMix(const Pixel& col1, const Pixel& col2, const float t)
   return PrebuiltColorMap::GetColorMix(col1, col2, t);
 }
 
-ColorMaps::ColorMaps() noexcept = default;
+ColorMaps::ColorMaps([[maybe_unused]] const PixelChannelType defaultAlpha) noexcept {
+
+};
 
 auto ColorMaps::GetNumColorMapNames() -> uint32_t
 {

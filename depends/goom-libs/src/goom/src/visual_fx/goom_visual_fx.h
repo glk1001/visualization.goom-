@@ -62,6 +62,9 @@ public:
   virtual auto ApplyMultiple() noexcept -> void;
 };
 
+inline constexpr auto DEFAULT_VISUAL_FX_ALPHA =
+    static_cast<PixelChannelType>((3U * static_cast<uint32_t>(MAX_ALPHA)) / 4U);
+
 inline auto IVisualFx::Resume() noexcept -> void
 {
   // default does nothing

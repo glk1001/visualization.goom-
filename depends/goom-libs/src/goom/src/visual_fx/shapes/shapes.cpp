@@ -26,10 +26,15 @@ Shape::Shape(IGoomDraw& draw,
              const IGoomRand& goomRand,
              const PluginInfo& goomInfo,
              RandomColorMapsManager& colorMapsManager,
-             const Params& params) noexcept
+             const Params& params,
+             const PixelChannelType defaultAlpha) noexcept
   : m_goomRand{&goomRand},
     m_colorMapsManager{&colorMapsManager},
-    m_shapeParts{GetInitialShapeParts(draw, goomRand, goomInfo, colorMapsManager, params)}
+    m_shapeParts{
+        GetInitialShapeParts(draw, goomRand, goomInfo, colorMapsManager, params, defaultAlpha)},
+    m_meetingPointMainColorId{
+        m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)},
+    m_meetingPointLowColorId{m_colorMapsManager->AddDefaultColorMapInfo(*m_goomRand, defaultAlpha)}
 {
 }
 
@@ -37,7 +42,9 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
                                  const IGoomRand& goomRand,
                                  const PluginInfo& goomInfo,
                                  RandomColorMapsManager& colorMapsManager,
-                                 const Params& params) noexcept -> std::vector<ShapePart>
+                                 const Params& params,
+                                 const PixelChannelType defaultAlpha) noexcept
+    -> std::vector<ShapePart>
 {
   auto shapeParts = std::vector<ShapePart>{};
 
@@ -57,7 +64,8 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
         params.minNumShapePathSteps,
         params.maxNumShapePathSteps,
     };
-    shapeParts.emplace_back(draw, goomRand, goomInfo, colorMapsManager, shapePartParams);
+    shapeParts.emplace_back(
+        draw, goomRand, goomInfo, colorMapsManager, shapePartParams, defaultAlpha);
   }
 
   return shapeParts;

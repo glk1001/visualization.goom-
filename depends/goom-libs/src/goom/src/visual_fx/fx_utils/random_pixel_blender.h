@@ -76,7 +76,7 @@ private:
   static constexpr auto MAX_LUMA_MIX_T = 1.0F;
   static constexpr auto MIN_LUMA_MIX_T = 0.3F;
   float m_lumaMixT                     = MIN_LUMA_MIX_T;
-  [[nodiscard]] static auto GetSameLumaMixPixelBlendFunc(float bgndColor) -> PixelBlendFunc;
+  [[nodiscard]] static auto GetSameLumaMixPixelBlendFunc(float lumaMixT) -> PixelBlendFunc;
 };
 
 inline auto RandomPixelBlender::Update() noexcept -> void

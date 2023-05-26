@@ -42,7 +42,8 @@ public:
             const PluginInfo& goomInfo,
             const UTILS::MATH::IGoomRand& goomRand,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
-            const SrceDestLineParams& srceDestLineParams) noexcept;
+            const SrceDestLineParams& srceDestLineParams,
+            PixelChannelType defaultAlpha) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(
@@ -66,12 +67,13 @@ private:
   DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{*m_draw};
   const PluginInfo* m_goomInfo;
   const UTILS::MATH::IGoomRand* m_goomRand;
+  PixelChannelType m_defaultAlpha;
 
   std::shared_ptr<const COLOR::RandomColorMaps> m_colorMaps{
       COLOR::RandomColorMapsGroups::MakeSharedAllMapsUnweighted(*m_goomRand)};
   COLOR::RandomColorMapsManager m_colorMapsManager{};
   COLOR::RandomColorMapsManager::ColorMapId m_currentColorMapID{
-      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand)};
+      m_colorMapsManager.AddDefaultColorMapInfo(*m_goomRand, m_defaultAlpha)};
   float m_currentBrightness = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;

@@ -92,10 +92,12 @@ LSystem::LSystem(DRAW::IGoomDraw& draw,
                  const PluginInfo& goomInfo,
                  const IGoomRand& goomRand,
                  const std::string& lSystemDirectory,
-                 const LSystemFile& lSystemFile) noexcept
+                 const LSystemFile& lSystemFile,
+                 const PixelChannelType defaultAlpha) noexcept
   : m_goomRand{&goomRand},
     m_lineDrawerManager{draw, goomRand},
     m_lSysModelSet{GetLSysModelSet(goomInfo, lSystemDirectory, lSystemFile)},
+    m_lSysColors{*m_goomRand, defaultAlpha},
     m_lSysGeometry{goomRand,
                    m_lSysModelSet.lSystemXScale * lSystemFile.overrides.xScale,
                    m_lSysModelSet.lSystemYScale * lSystemFile.overrides.yScale},

@@ -236,7 +236,7 @@ auto RandomColorMaps::SetLightnessLimits(const MinMaxValues<float>& minMaxLightn
 WeightedColorMaps::WeightedColorMaps(const IGoomRand& goomRand,
                                      const Weights<ColorMapGroup>& weights,
                                      const std::string& colorMapsName) noexcept
-  : RandomColorMaps{goomRand, colorMapsName}, m_weights{weights}
+  : RandomColorMaps{MAX_ALPHA, goomRand, colorMapsName}, m_weights{weights}
 {
 }
 

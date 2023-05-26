@@ -87,6 +87,7 @@ private:
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
 
   std::array<std::shared_ptr<const RandomColorMaps>, NUM_DOT_TYPES> m_dotColorMapsList{};
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   RandomColorMapsManager m_colorMapsManager{};
   std::array<RandomColorMapsManager::ColorMapId, NUM_DOT_TYPES> m_colorMapIds{
       GetDefaultColorMapIds()};
@@ -99,7 +100,7 @@ private:
   bool m_thereIsOneBuffer             = true;
   bool m_useMiddleColor               = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
-  [[nodiscard]] static auto GetDotPrimaryColor(size_t dotNum) -> Pixel;
+  [[nodiscard]] auto GetDotPrimaryColor(size_t dotNum) const noexcept -> Pixel;
   [[nodiscard]] static auto IsImagePointCloseToMiddle(const Point2dInt& point, uint32_t radius)
       -> bool;
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
@@ -214,7 +215,7 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDefaultColorMapIds() noexcept
 
   for (auto& colorMapsId : colorMapsIds)
   {
-    colorMapsId = m_colorMapsManager.AddDefaultColorMapInfo(*m_fxHelper->goomRand);
+    colorMapsId = m_colorMapsManager.AddDefaultColorMapInfo(*m_fxHelper->goomRand, m_defaultAlpha);
   }
 
   return colorMapsIds;
@@ -431,16 +432,17 @@ inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const f
   return m_colorMapsManager.GetColorMap(m_colorMapIds.at(dotNum)).GetColor(t);
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) -> Pixel
+inline auto GoomDotsFx::GoomDotsFxImpl::GetDotPrimaryColor(const size_t dotNum) const noexcept
+    -> Pixel
 {
   static constexpr auto S_PRIMARY_COLORS = std::array{
-      GetSimpleColor(SimpleColors::PURE_RED),
-      GetSimpleColor(SimpleColors::PURE_LIME),
-      GetSimpleColor(SimpleColors::PURE_BLUE),
-      GetSimpleColor(SimpleColors::PURE_YELLOW),
-      GetSimpleColor(SimpleColors::PURE_AQUA),
+      SimpleColors::PURE_RED,
+      SimpleColors::PURE_LIME,
+      SimpleColors::PURE_BLUE,
+      SimpleColors::PURE_YELLOW,
+      SimpleColors::PURE_AQUA,
   };
-  return S_PRIMARY_COLORS.at(dotNum);
+  return GetSimpleColor(S_PRIMARY_COLORS.at(dotNum), m_defaultAlpha);
 }
 
 inline auto GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName() -> void

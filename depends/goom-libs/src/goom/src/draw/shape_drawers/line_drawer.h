@@ -182,8 +182,6 @@ inline auto LineDrawer<DrawPixelPolicy>::DrawWuLine(const Point2dInt& point1,
 {
   Expects(1 == m_thickness);
 
-  Expects(colors.color1.A() < MAX_ALPHA / 9);
-  Expects(colors.color2.A() < MAX_ALPHA / 9);
   const auto plot = [this, &colors](const Point2dInt& point, const float brightness)
   { m_drawPixel.DrawPixels(point, brightness, colors); };
 

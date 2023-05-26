@@ -42,7 +42,8 @@ public:
             const UTILS::MATH::IGoomRand& goomRand,
             const PluginInfo& goomInfo,
             COLOR::RandomColorMapsManager& colorMapsManager,
-            const Params& params) noexcept;
+            const Params& params,
+            PixelChannelType defaultAlpha) noexcept;
   ShapePart(const ShapePart&) noexcept           = delete;
   ShapePart(ShapePart&&) noexcept                = default;
   ~ShapePart() noexcept                          = default;
@@ -95,6 +96,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   const PluginInfo* m_goomInfo;
   COLOR::RandomColorMapsManager* m_colorMapsManager;
+  PixelChannelType m_defaultAlpha;
 
   float m_currentTMinMaxLerp;
   UTILS::StepSpeed m_shapePathsStepSpeed;

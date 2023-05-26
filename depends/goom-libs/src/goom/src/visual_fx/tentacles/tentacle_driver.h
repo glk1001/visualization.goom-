@@ -24,7 +24,8 @@ class TentacleDriver
 public:
   TentacleDriver(DRAW::IGoomDraw& draw,
                  const UTILS::MATH::IGoomRand& goomRand,
-                 const CirclesTentacleLayout& tentacleLayout) noexcept;
+                 const CirclesTentacleLayout& tentacleLayout,
+                 PixelChannelType defaultAlpha) noexcept;
 
   auto SetWeightedColorMaps(const IVisualFx::WeightedColorMaps& weightedColorMaps) noexcept -> void;
   auto ChangeTentacleColorMaps() -> void;
@@ -44,6 +45,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Point2dInt m_screenCentre;
 
+  COLOR::ColorMaps m_colorMaps;
   std::shared_ptr<const COLOR::IColorMap> m_dominantMainColorMap{};
   std::shared_ptr<const COLOR::IColorMap> m_dominantLowColorMap{};
 

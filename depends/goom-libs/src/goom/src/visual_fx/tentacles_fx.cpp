@@ -56,6 +56,8 @@ public:
 private:
   const FxHelper* m_fxHelper;
 
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+
   enum class Drivers
   {
     NUM0 = 0,
@@ -70,8 +72,8 @@ private:
   [[nodiscard]] static auto GetTentacleDrivers(
       IGoomDraw& draw,
       const IGoomRand& goomRand,
-      const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts)
-      -> std::vector<TentacleDriver>;
+      const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
+      PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>;
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
@@ -187,7 +189,8 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
            CirclesTentacleLayout{{LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES}},
            CirclesTentacleLayout{{LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_TENTACLES}},
            CirclesTentacleLayout{{LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES}},
-        }}
+        }},
+        m_defaultAlpha
     )},
     // clang-format on
     m_pixelBlender{*fxHelper.goomRand}
@@ -219,13 +222,13 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 auto TentaclesFx::TentaclesImpl::GetTentacleDrivers(
     IGoomDraw& draw,
     const IGoomRand& goomRand,
-    const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts)
-    -> std::vector<TentacleDriver>
+    const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
+    const PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>
 {
   auto tentacleDrivers = std::vector<TentacleDriver>{};
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    tentacleDrivers.emplace_back(draw, goomRand, tentacleLayouts.at(i));
+    tentacleDrivers.emplace_back(draw, goomRand, tentacleLayouts.at(i), defaultAlpha);
   }
 
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)

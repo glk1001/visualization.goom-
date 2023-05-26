@@ -48,6 +48,7 @@ private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
   Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  [[maybe_unused]] PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   static constexpr uint32_t NUM_CIRCLES = 5;
   Weights<CircleParamsBuilder::CircleStartModes> m_weightedCircleStartModes;

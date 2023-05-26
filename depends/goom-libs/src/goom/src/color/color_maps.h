@@ -114,12 +114,12 @@ constexpr T& at(std::array<T, UTILS::NUM<ColorMapGroup>>& arr, const ColorMapGro
 class ColorMaps
 {
 public:
-  ColorMaps() noexcept;
-  ColorMaps(const ColorMaps&) noexcept           = delete;
-  ColorMaps(ColorMaps&&) noexcept                = delete;
+  explicit ColorMaps(PixelChannelType defaultAlpha) noexcept;
+  ColorMaps(const ColorMaps&) noexcept           = default;
+  ColorMaps(ColorMaps&&) noexcept                = default;
   virtual ~ColorMaps() noexcept                  = default;
-  auto operator=(const ColorMaps&) -> ColorMaps& = delete;
-  auto operator=(ColorMaps&&) -> ColorMaps&      = delete;
+  auto operator=(const ColorMaps&) -> ColorMaps& = default;
+  auto operator=(ColorMaps&&) -> ColorMaps&      = default;
 
   [[nodiscard]] static auto GetNumColorMapNames() -> uint32_t;
   using ColorMapNames = std::vector<COLOR_DATA::ColorMapName>;

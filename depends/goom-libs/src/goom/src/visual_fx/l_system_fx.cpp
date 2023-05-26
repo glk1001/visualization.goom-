@@ -50,7 +50,8 @@ public:
 
 private:
   const FxHelper* m_fxHelper;
-  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  Point2dInt m_screenCentre       = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   static constexpr auto MAX_DOT_SIZE = 17U;
   static_assert(MAX_DOT_SIZE <= SmallImageBitmaps::MAX_IMAGE_SIZE, "Max dot size mismatch.");
@@ -68,7 +69,8 @@ private:
   [[nodiscard]] static auto GetLSystems(IGoomDraw& draw,
                                         const PluginInfo& goomInfo,
                                         const IGoomRand& goomRand,
-                                        const std::string& resourcesDirectory) noexcept
+                                        const std::string& resourcesDirectory,
+                                        PixelChannelType defaultAlpha) noexcept
       -> std::vector<std::unique_ptr<LSystem>>;
   static constexpr auto DEFAULT_BOUNDS_EXPAND_FACTOR = 2.0F;
   [[nodiscard]] static auto GetLSystemDirectory(const std::string& resourcesDirectory) noexcept
@@ -150,8 +152,11 @@ LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory)
   : m_fxHelper{&fxHelper},
     m_pixelBlender{*fxHelper.goomRand},
-    m_lSystems{GetLSystems(
-        *fxHelper.draw, *m_fxHelper->goomInfo, *m_fxHelper->goomRand, resourcesDirectory)}
+    m_lSystems{GetLSystems(*fxHelper.draw,
+                           *m_fxHelper->goomInfo,
+                           *m_fxHelper->goomRand,
+                           resourcesDirectory,
+                           m_defaultAlpha)}
 {
 }
 
@@ -282,7 +287,8 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
 auto LSystemFx::LSystemFxImpl::GetLSystems(IGoomDraw& draw,
                                            const PluginInfo& goomInfo,
                                            const IGoomRand& goomRand,
-                                           const std::string& resourcesDirectory) noexcept
+                                           const std::string& resourcesDirectory,
+                                           const PixelChannelType defaultAlpha) noexcept
     -> std::vector<std::unique_ptr<LSystem>>
 {
   auto lSystem = std::vector<std::unique_ptr<LSystem>>{};
@@ -290,7 +296,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystems(IGoomDraw& draw,
   for (const auto& lSysFile : L_SYS_FILE_LIST)
   {
     lSystem.emplace_back(std::make_unique<LSystem>(
-        draw, goomInfo, goomRand, GetLSystemDirectory(resourcesDirectory), lSysFile));
+        draw, goomInfo, goomRand, GetLSystemDirectory(resourcesDirectory), lSysFile, defaultAlpha));
   }
 
   return lSystem;

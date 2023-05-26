@@ -9,8 +9,9 @@
 namespace GOOM::COLOR
 {
 
-auto RandomColorMapsManager::AddDefaultColorMapInfo(const UTILS::MATH::IGoomRand& goomRand) noexcept
-    -> ColorMapId
+auto RandomColorMapsManager::AddDefaultColorMapInfo(
+    const UTILS::MATH::IGoomRand& goomRand,
+    [[maybe_unused]] const PixelChannelType defaultAlpha) noexcept -> ColorMapId
 {
   return AddColorMapInfo({RandomColorMapsGroups::MakeSharedAllMapsUnweighted(goomRand),
                           RandomColorMaps::GetAllColorMapsTypes()});

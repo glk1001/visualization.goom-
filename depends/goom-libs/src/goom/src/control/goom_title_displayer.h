@@ -68,6 +68,8 @@ private:
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
 
+  static constexpr auto DEFAULT_ALPHA = MAX_ALPHA;
+  COLOR::RandomColorMaps m_randomColorMaps{DEFAULT_ALPHA, *m_goomRand};
   const COLOR::IColorMap* m_textColorMap{&COLOR::RandomColorMaps::GetRandomColorMap(*m_goomRand)};
   const COLOR::IColorMap* m_textOutlineColorMap{
       &COLOR::RandomColorMaps::GetRandomColorMap(*m_goomRand)};
