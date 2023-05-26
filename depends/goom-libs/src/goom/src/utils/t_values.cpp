@@ -55,8 +55,6 @@ TValue::TValue(const NumStepsProperties& numStepsProperties,
   ValidateDelayPoints();
 }
 
-TValue::~TValue() noexcept = default;
-
 auto TValue::ValidateDelayPoints() const noexcept -> void
 {
 #ifndef NDEBUG

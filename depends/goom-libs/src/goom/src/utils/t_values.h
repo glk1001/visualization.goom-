@@ -46,11 +46,6 @@ public:
   explicit TValue(const NumStepsProperties& numStepsProperties) noexcept;
   TValue(const NumStepsProperties& numStepsProperties,
          const std::vector<DelayPoint>& delayPoints) noexcept;
-  TValue(const TValue&) noexcept = default;
-  TValue(TValue&&) noexcept      = default;
-  ~TValue() noexcept;
-  auto operator=(const TValue&) noexcept -> TValue& = delete;
-  auto operator=(TValue&&) noexcept -> TValue&      = delete;
 
   [[nodiscard]] auto GetStepType() const noexcept -> StepType;
 
@@ -60,8 +55,6 @@ public:
   [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
   auto SetNumSteps(uint32_t val) noexcept -> void;
 
-  auto operator()() const noexcept -> float;
-
   [[nodiscard]] auto IsInsideBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasJustHitEndBoundary() const noexcept -> bool;
@@ -70,9 +63,10 @@ public:
   [[nodiscard]] auto IsDelayed() const noexcept -> bool;
 
   [[nodiscard]] auto GetCurrentStep() const noexcept -> float;
-  auto Increment() noexcept -> void;
   [[nodiscard]] auto IsStopped() const noexcept -> bool;
   auto Reset(float t = 0.0) noexcept -> void;
+  auto Increment() noexcept -> void;
+  auto operator()() const noexcept -> float;
 
 private:
   StepType m_stepType;
