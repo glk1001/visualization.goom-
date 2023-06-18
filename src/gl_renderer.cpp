@@ -9,6 +9,7 @@
 
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
+#include "goom_shader_with_effects.h"
 
 #include <array>
 #include <cstring>
@@ -35,7 +36,7 @@ class GlRenderer::GLRendererImpl
 public:
   GLRendererImpl(const TextureBufferDimensions& textureBufferDimensions,
                  const WindowDimensions& windowDimensions,
-                 IShaderStrategy* shaderStrategy,
+                 GoomShaderWithEffects& glShader,
                  GoomLogger& goomLogger);
   GLRendererImpl(const GLRendererImpl&)                    = delete;
   GLRendererImpl(GLRendererImpl&&)                         = delete;
@@ -93,7 +94,7 @@ private:
   GLint m_aPositionLoc  = -1;
   GLint m_aTexCoordsLoc = -1;
 
-  IShaderStrategy* m_glShader;
+  GoomShaderWithEffects* m_glShader;
   const PixelChannelType* m_pixelBuffer{};
 
   auto InitGl() -> void;
@@ -122,10 +123,10 @@ private:
 
 GlRenderer::GlRenderer(const TextureBufferDimensions& textureBufferDimensions,
                        const WindowDimensions& windowDimensions,
-                       IShaderStrategy* const shaderStrategy,
+                       GoomShaderWithEffects& glShader,
                        GoomLogger& goomLogger)
   : m_pimpl{spimpl::make_unique_impl<GLRendererImpl>(
-        textureBufferDimensions, windowDimensions, shaderStrategy, goomLogger)}
+        textureBufferDimensions, windowDimensions, glShader, goomLogger)}
 {
 }
 
@@ -165,7 +166,7 @@ static constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
 
 GlRenderer::GLRendererImpl::GLRendererImpl(const TextureBufferDimensions& textureBufferDimensions,
                                            const WindowDimensions& windowDimensions,
-                                           IShaderStrategy* const shaderStrategy,
+                                           GoomShaderWithEffects& glShader,
                                            GoomLogger& goomLogger)
   : m_textureBufferDimensions{textureBufferDimensions},
     m_goomLogger{&goomLogger},
@@ -173,7 +174,7 @@ GlRenderer::GLRendererImpl::GLRendererImpl(const TextureBufferDimensions& textur
     m_windowHeight{windowDimensions.height},
     //TODO(glk) - Is pos (0,0) OK? Used to pass in pos from Kodi.
     m_quadData{GetGlQuadData({m_windowWidth, m_windowHeight, 0, 0})},
-    m_glShader{shaderStrategy}
+    m_glShader{&glShader}
 {
   LogDebug(*m_goomLogger, "Start constructor.");
 }

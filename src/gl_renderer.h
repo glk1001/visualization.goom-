@@ -8,33 +8,14 @@ namespace GOOM
 {
 
 class GoomLogger;
-
-using GLuint = unsigned int;
-
-class IShaderStrategy
-{
-public:
-  IShaderStrategy()                                          = default;
-  IShaderStrategy(const IShaderStrategy&)                    = delete;
-  IShaderStrategy(IShaderStrategy&&)                         = delete;
-  virtual ~IShaderStrategy()                                 = default;
-  auto operator=(const IShaderStrategy&) -> IShaderStrategy& = delete;
-  auto operator=(IShaderStrategy&&) -> IShaderStrategy&      = delete;
-
-  virtual auto CreateGlShaders() -> void                                = 0;
-  [[nodiscard]] virtual auto GetShaderHandle() const noexcept -> GLuint = 0;
-
-  virtual auto EnableShader() -> void  = 0;
-  virtual auto UpdateShader() -> void  = 0;
-  virtual auto DisableShader() -> void = 0;
-};
+class GoomShaderWithEffects;
 
 class GlRenderer
 {
 public:
   GlRenderer(const TextureBufferDimensions& textureBufferDimensions,
              const WindowDimensions& windowDimensions,
-             IShaderStrategy* shaderStrategy,
+             GoomShaderWithEffects& glShader,
              GOOM::GoomLogger& goomLogger);
 
   auto Start() -> void;

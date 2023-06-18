@@ -8,7 +8,10 @@
  *  See LICENSE.md for more information.
  */
 
+#include "gl_renderer.h"
 #include "goom/goom_config.h"
+#include "goom_buffer_producer.h"
+#include "goom_shader_with_effects.h"
 
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
@@ -37,10 +40,7 @@
 
 namespace GOOM
 {
-class GoomBufferProducer;
 class GoomLogger;
-class GlRenderer;
-class KodiShaderWithEffects;
 }
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
@@ -69,7 +69,6 @@ public:
 private:
   bool m_started = false;
   std::unique_ptr<GOOM::GoomLogger> m_goomLogger;
-  std::unique_ptr<GOOM::GoomBufferProducer> m_goomBufferProducer;
 
   auto StartLogging() -> void;
 
@@ -81,8 +80,11 @@ private:
   auto StopWithoutCatch() -> void;
   auto StopVis() -> void;
 
-  std::unique_ptr<GOOM::KodiShaderWithEffects> m_glShader;
-  std::unique_ptr<GOOM::GlRenderer> m_glRenderer;
+  static constexpr const auto* VERTEX_SHADER_FILENAME   = "vertex.glsl";
+  static constexpr const auto* FRAGMENT_SHADER_FILENAME = "fragment.glsl";
+  GOOM::GoomShaderWithEffects m_glShader;
+  GOOM::GlRenderer m_glRenderer;
+  GOOM::GoomBufferProducer m_goomBufferProducer;
   class PixelBufferGetter;
   std::unique_ptr<PixelBufferGetter> m_pixelBufferGetter;
   auto DoRender() noexcept -> void;

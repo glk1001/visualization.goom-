@@ -210,7 +210,7 @@ set(${GOOM_ADDON_PREFIX}_SOURCES
     src/gl_renderer.cpp
     src/goom_buffer_producer.cpp
     src/shader_with_effects.cpp
-    src/kodi_shader_with_effects.cpp)
+    src/goom_shader_with_effects.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
     src/build_time.h
@@ -219,7 +219,7 @@ set(${GOOM_ADDON_PREFIX}_HEADERS
     src/gl_renderer.h
     src/goom_buffer_producer.h
     src/shader_with_effects.h
-    src/kodi_shader_with_effects.h)
+    src/goom_shader_with_effects.h)
 
 list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib particles::lib)
 

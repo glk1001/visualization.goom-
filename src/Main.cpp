@@ -17,7 +17,7 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom_buffer_producer.h"
-#include "kodi_shader_with_effects.h"
+#include "goom_shader_with_effects.h"
 
 #include <array>
 #include <format>
@@ -30,7 +30,7 @@ using GOOM::GoomBufferProducer;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
 using GOOM::GoomShaderVariables;
-using GOOM::KodiShaderWithEffects;
+using GOOM::GoomShaderWithEffects;
 using GOOM::PixelChannelType;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;
@@ -47,9 +47,8 @@ using AddonLogEnum   = ADDON_LOG;
 class CVisualizationGoom::PixelBufferGetter
 {
 public:
-  explicit PixelBufferGetter(GoomBufferProducer& bufferProducer) : m_bufferProducer{&bufferProducer}
-  {
-  }
+  explicit PixelBufferGetter(GoomBufferProducer& bufferProducer);
+
   auto ReserveNextActivePixelBufferData() noexcept;
   auto ReleaseActivePixelBufferData() noexcept -> void;
 
@@ -60,6 +59,11 @@ private:
   GoomBufferProducer* m_bufferProducer;
   PixelBufferData m_pixelBufferData{};
 };
+
+inline CVisualizationGoom::PixelBufferGetter::PixelBufferGetter(GoomBufferProducer& bufferProducer)
+  : m_bufferProducer{&bufferProducer}
+{
+}
 
 inline auto CVisualizationGoom::PixelBufferGetter::ReserveNextActivePixelBufferData() noexcept
 {
@@ -152,24 +156,24 @@ constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 
 CVisualizationGoom::CVisualizationGoom()
   : m_goomLogger{GoomControl::MakeGoomLogger()},
-    m_goomBufferProducer{std::make_unique<GoomBufferProducer>(
+    m_glShader{KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
+               VERTEX_SHADER_FILENAME,
+               FRAGMENT_SHADER_FILENAME,
+               glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height())),
+               *m_goomLogger},
+    m_glRenderer{GetTextureBufferDimensions(),
+                 WindowDimensions{Width(), Height()},
+                 m_glShader,
+                 *m_goomLogger},
+    m_goomBufferProducer{
         GetTextureBufferDimensions(),
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
         static_cast<GoomControl::ShowMusicTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)),
 #ifdef SAVE_AUDIO_BUFFERS
         GetAudioBuffersSaveDir(),
 #endif
-        *m_goomLogger)},
-    m_glShader{std::make_unique<KodiShaderWithEffects>(
-        *this,
-        KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
-        glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height())),
-        *m_goomLogger)},
-    m_glRenderer{std::make_unique<GlRenderer>(GetTextureBufferDimensions(),
-                                              WindowDimensions{Width(), Height()},
-                                              m_glShader.get(),
-                                              *m_goomLogger)},
-    m_pixelBufferGetter{std::make_unique<PixelBufferGetter>(*m_goomBufferProducer)}
+        *m_goomLogger},
+    m_pixelBufferGetter{std::make_unique<PixelBufferGetter>(m_goomBufferProducer)}
 {
   StartLogging();
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
@@ -246,14 +250,14 @@ auto CVisualizationGoom::StartVis(const int numChannels) -> void
 {
   LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
 
-  m_goomBufferProducer->SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
-  m_goomBufferProducer->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
+  m_goomBufferProducer.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
+  m_goomBufferProducer.SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
       std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
 
-  m_goomBufferProducer->SetNumChannels(static_cast<uint32_t>(numChannels));
-  m_goomBufferProducer->Start();
+  m_goomBufferProducer.SetNumChannels(static_cast<uint32_t>(numChannels));
+  m_goomBufferProducer.Start();
 
-  m_glRenderer->Start();
+  m_glRenderer.Start();
 
   m_started = true;
 }
@@ -311,9 +315,9 @@ inline auto CVisualizationGoom::StopVis() -> void
   LogInfo(*m_goomLogger, "CVisualizationGoom: Visualization stopping.");
   m_started = false;
 
-  m_glRenderer->Stop();
+  m_glRenderer.Stop();
 
-  m_goomBufferProducer->Stop();
+  m_goomBufferProducer.Stop();
 
   LogStop(*m_goomLogger);
 }
@@ -324,7 +328,7 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
   const auto currentSongName =
       artist.empty() ? track.GetTitle() : ((artist + " - ") + track.GetTitle());
 
-  m_goomBufferProducer->UpdateTrack(
+  m_goomBufferProducer.UpdateTrack(
       {currentSongName, track.GetGenre(), static_cast<uint32_t>(track.GetDuration())});
 
   return true;
@@ -344,7 +348,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
-  m_goomBufferProducer->ProcessAudioData(audioData, audioDataLength);
+  m_goomBufferProducer.ProcessAudioData(audioData, audioDataLength);
 }
 
 //-- Render -------------------------------------------------------------------
@@ -360,7 +364,7 @@ auto CVisualizationGoom::Render() -> void
   }
 
   if (static constexpr auto MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6U;
-      m_goomBufferProducer->GetAudioBufferNum() < MIN_AUDIO_BUFFERS_BEFORE_STARTING)
+      m_goomBufferProducer.GetAudioBufferNum() < MIN_AUDIO_BUFFERS_BEFORE_STARTING)
   {
     // Skip the first few frames - for some reason Kodi does a 'reload' before
     // starting the full music track.
@@ -383,14 +387,14 @@ inline auto CVisualizationGoom::DoRender() noexcept -> void
 {
   const auto* const pixelBuffer = m_pixelBufferGetter->GetNextPixelBuffer();
 
-  m_glRenderer->SetPixelBuffer(pixelBuffer);
+  m_glRenderer.SetPixelBuffer(pixelBuffer);
 
   if (pixelBuffer != nullptr)
   {
-    m_glShader->SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
+    m_glShader.SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
   }
 
-  m_glRenderer->Render();
+  m_glRenderer.Render();
 }
 
 #ifdef __clang__
