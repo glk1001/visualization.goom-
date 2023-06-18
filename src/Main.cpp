@@ -17,7 +17,6 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom_buffer_producer.h"
-#include "goom_shader_with_effects.h"
 
 #include <array>
 #include <format>
@@ -30,7 +29,6 @@ using GOOM::GoomBufferProducer;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
 using GOOM::GoomShaderVariables;
-using GOOM::GoomShaderWithEffects;
 using GOOM::PixelChannelType;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;
@@ -156,14 +154,9 @@ constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 
 CVisualizationGoom::CVisualizationGoom()
   : m_goomLogger{GoomControl::MakeGoomLogger()},
-    m_glShader{KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
-               VERTEX_SHADER_FILENAME,
-               FRAGMENT_SHADER_FILENAME,
-               glm::ortho(0.0F, static_cast<float>(Width()), 0.0F, static_cast<float>(Height())),
-               *m_goomLogger},
-    m_glRenderer{GetTextureBufferDimensions(),
+    m_glRenderer{KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
+                 GetTextureBufferDimensions(),
                  WindowDimensions{Width(), Height()},
-                 m_glShader,
                  *m_goomLogger},
     m_goomBufferProducer{
         GetTextureBufferDimensions(),
@@ -257,7 +250,7 @@ auto CVisualizationGoom::StartVis(const int numChannels) -> void
   m_goomBufferProducer.SetNumChannels(static_cast<uint32_t>(numChannels));
   m_goomBufferProducer.Start();
 
-  m_glRenderer.Start();
+  m_glRenderer.Init();
 
   m_started = true;
 }
@@ -315,7 +308,7 @@ inline auto CVisualizationGoom::StopVis() -> void
   LogInfo(*m_goomLogger, "CVisualizationGoom: Visualization stopping.");
   m_started = false;
 
-  m_glRenderer.Stop();
+  m_glRenderer.Destroy();
 
   m_goomBufferProducer.Stop();
 
@@ -391,7 +384,7 @@ inline auto CVisualizationGoom::DoRender() noexcept -> void
 
   if (pixelBuffer != nullptr)
   {
-    m_glShader.SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
+    m_glRenderer.SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
   }
 
   m_glRenderer.Render();

@@ -36,7 +36,7 @@ public:
 
   GoomBufferProducer(const TextureBufferDimensions& textureBufferDimensions,
                      const std::string& resourcesDirectory,
-                     GoomControl::ShowMusicTitleType showMusicTitleType,
+                     GoomControl::ShowMusicTitleType showMusicTitle,
 #ifdef SAVE_AUDIO_BUFFERS
                      const std::string& audioBuffersSaveDir,
 #endif

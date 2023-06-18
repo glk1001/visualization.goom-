@@ -4,24 +4,27 @@
 #include "goom/goom_graphic.h"
 #include "goom/spimpl.h"
 
+#include <string>
+
 namespace GOOM
 {
 
 class GoomLogger;
-class GoomShaderWithEffects;
 
 class GlRenderer
 {
 public:
-  GlRenderer(const TextureBufferDimensions& textureBufferDimensions,
+  GlRenderer(const std::string& shaderDir,
+             const TextureBufferDimensions& textureBufferDimensions,
              const WindowDimensions& windowDimensions,
-             GoomShaderWithEffects& glShader,
              GOOM::GoomLogger& goomLogger);
 
-  auto Start() -> void;
-  auto Stop() -> void;
+  auto Init() -> void;
+  auto Destroy() -> void;
 
   auto SetPixelBuffer(const PixelChannelType* pixelBuffer) noexcept -> void;
+  auto SetShaderVariables(const GOOM::GoomShaderVariables& goomShaderVariables) noexcept -> void;
+
   auto Render() -> void;
 
 private:

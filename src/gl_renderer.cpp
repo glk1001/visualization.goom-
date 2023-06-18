@@ -34,20 +34,17 @@ namespace GOOM
 class GlRenderer::GLRendererImpl
 {
 public:
-  GLRendererImpl(const TextureBufferDimensions& textureBufferDimensions,
+  GLRendererImpl(const std::string& shaderDir,
+                 const TextureBufferDimensions& textureBufferDimensions,
                  const WindowDimensions& windowDimensions,
-                 GoomShaderWithEffects& glShader,
                  GoomLogger& goomLogger);
-  GLRendererImpl(const GLRendererImpl&)                    = delete;
-  GLRendererImpl(GLRendererImpl&&)                         = delete;
-  ~GLRendererImpl()                                        = default;
-  auto operator=(const GLRendererImpl&) -> GLRendererImpl& = delete;
-  auto operator=(GLRendererImpl&&) -> GLRendererImpl&      = delete;
 
-  auto Start() -> void;
-  auto Stop() -> void;
+  auto Init() -> void;
+  auto Destroy() -> void;
 
   auto SetPixelBuffer(const PixelChannelType* pixelBuffer) noexcept -> void;
+  auto SetShaderVariables(const GoomShaderVariables& goomShaderVariables) noexcept -> void;
+
   auto Render() -> void;
 
 private:
@@ -94,7 +91,9 @@ private:
   GLint m_aPositionLoc  = -1;
   GLint m_aTexCoordsLoc = -1;
 
-  GoomShaderWithEffects* m_glShader;
+  static constexpr const auto* VERTEX_SHADER_FILENAME   = "vertex.glsl";
+  static constexpr const auto* FRAGMENT_SHADER_FILENAME = "fragment.glsl";
+  GoomShaderWithEffects m_glShader;
   const PixelChannelType* m_pixelBuffer{};
 
   auto InitGl() -> void;
@@ -121,28 +120,33 @@ private:
   auto InitGlShaderVariables() -> void;
 };
 
-GlRenderer::GlRenderer(const TextureBufferDimensions& textureBufferDimensions,
+GlRenderer::GlRenderer(const std::string& shaderDir,
+                       const TextureBufferDimensions& textureBufferDimensions,
                        const WindowDimensions& windowDimensions,
-                       GoomShaderWithEffects& glShader,
                        GoomLogger& goomLogger)
   : m_pimpl{spimpl::make_unique_impl<GLRendererImpl>(
-        textureBufferDimensions, windowDimensions, glShader, goomLogger)}
+        shaderDir, textureBufferDimensions, windowDimensions, goomLogger)}
 {
 }
 
-auto GlRenderer::Start() -> void
+auto GlRenderer::Init() -> void
 {
-  m_pimpl->Start();
+  m_pimpl->Init();
 }
 
-auto GlRenderer::Stop() -> void
+auto GlRenderer::Destroy() -> void
 {
-  m_pimpl->Stop();
+  m_pimpl->Destroy();
 }
 
 auto GlRenderer::SetPixelBuffer(const PixelChannelType* const pixelBuffer) noexcept -> void
 {
   m_pimpl->SetPixelBuffer(pixelBuffer);
+}
+
+auto GlRenderer::SetShaderVariables(const GoomShaderVariables& goomShaderVariables) noexcept -> void
+{
+  m_pimpl->SetShaderVariables(goomShaderVariables);
 }
 
 auto GlRenderer::Render() -> void
@@ -164,9 +168,9 @@ static constexpr GLint TEXTURE_SIZED_INTERNAL_FORMAT = GL_RGBA16;
 #endif
 static constexpr GLenum TEXTURE_DATA_TYPE = GL_UNSIGNED_SHORT;
 
-GlRenderer::GLRendererImpl::GLRendererImpl(const TextureBufferDimensions& textureBufferDimensions,
+GlRenderer::GLRendererImpl::GLRendererImpl(const std::string& shaderDir,
+                                           const TextureBufferDimensions& textureBufferDimensions,
                                            const WindowDimensions& windowDimensions,
-                                           GoomShaderWithEffects& glShader,
                                            GoomLogger& goomLogger)
   : m_textureBufferDimensions{textureBufferDimensions},
     m_goomLogger{&goomLogger},
@@ -174,7 +178,13 @@ GlRenderer::GLRendererImpl::GLRendererImpl(const TextureBufferDimensions& textur
     m_windowHeight{windowDimensions.height},
     //TODO(glk) - Is pos (0,0) OK? Used to pass in pos from Kodi.
     m_quadData{GetGlQuadData({m_windowWidth, m_windowHeight, 0, 0})},
-    m_glShader{&glShader}
+    m_glShader{
+        shaderDir,
+        VERTEX_SHADER_FILENAME,
+        FRAGMENT_SHADER_FILENAME,
+        glm::ortho(
+            0.0F, static_cast<float>(m_windowWidth), 0.0F, static_cast<float>(m_windowHeight)),
+        *m_goomLogger}
 {
   LogDebug(*m_goomLogger, "Start constructor.");
 }
@@ -185,16 +195,22 @@ inline auto GlRenderer::GLRendererImpl::SetPixelBuffer(
   m_pixelBuffer = pixelBuffer;
 }
 
-inline auto GlRenderer::GLRendererImpl::Start() -> void
+inline auto GlRenderer::GLRendererImpl::SetShaderVariables(
+    const GoomShaderVariables& goomShaderVariables) noexcept -> void
 {
-  LogInfo(*m_goomLogger, "Calling Start...");
+  m_glShader.SetShaderVariables(goomShaderVariables);
+}
+
+inline auto GlRenderer::GLRendererImpl::Init() -> void
+{
+  LogInfo(*m_goomLogger, "Calling Init...");
 
   InitGl();
 }
 
-inline auto GlRenderer::GLRendererImpl::Stop() -> void
+inline auto GlRenderer::GLRendererImpl::Destroy() -> void
 {
-  LogInfo(*m_goomLogger, "Calling Stop...");
+  LogInfo(*m_goomLogger, "Calling Destroy...");
 
   DeinitGl();
 }
@@ -542,27 +558,27 @@ inline auto GlRenderer::GLRendererImpl::UpdateNormalGlTextureBuffer() -> void
 
 inline auto GlRenderer::GLRendererImpl::EnableShader() -> void
 {
-  m_glShader->EnableShader();
+  m_glShader.EnableShader();
 }
 
 inline auto GlRenderer::GLRendererImpl::UpdateShader() -> void
 {
-  m_glShader->UpdateShader();
+  m_glShader.UpdateShader();
 }
 
 inline auto GlRenderer::GLRendererImpl::DisableShader() -> void
 {
-  m_glShader->DisableShader();
+  m_glShader.DisableShader();
 }
 
 inline auto GlRenderer::GLRendererImpl::GetShaderHandle() const noexcept -> GLuint
 {
-  return m_glShader->GetShaderHandle();
+  return m_glShader.GetShaderHandle();
 }
 
 inline auto GlRenderer::GLRendererImpl::CompileAndLinkShaders() -> void
 {
-  m_glShader->CreateGlShaders();
+  m_glShader.CreateGlShaders();
 
   InitGlShaderVariables();
 }

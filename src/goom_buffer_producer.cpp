@@ -23,7 +23,7 @@ namespace GOOM
 
 GoomBufferProducer::GoomBufferProducer(const TextureBufferDimensions& textureBufferDimensions,
                                        const std::string& resourcesDirectory,
-                                       const GoomControl::ShowMusicTitleType showMusicTitleType,
+                                       const GoomControl::ShowMusicTitleType showMusicTitle,
 #ifdef SAVE_AUDIO_BUFFERS
                                        const std::string& audioBuffersSaveDir,
 #endif
@@ -40,7 +40,7 @@ GoomBufferProducer::GoomBufferProducer(const TextureBufferDimensions& textureBuf
 #endif
 {
   LogDebug(*m_goomLogger, "Constructed producer.");
-  m_goomControl->SetShowMusicTitle(showMusicTitleType);
+  m_goomControl->SetShowMusicTitle(showMusicTitle);
   Ensures(nullptr != m_goomControl);
 }
 

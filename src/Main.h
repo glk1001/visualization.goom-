@@ -11,7 +11,6 @@
 #include "gl_renderer.h"
 #include "goom/goom_config.h"
 #include "goom_buffer_producer.h"
-#include "goom_shader_with_effects.h"
 
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
@@ -80,9 +79,6 @@ private:
   auto StopWithoutCatch() -> void;
   auto StopVis() -> void;
 
-  static constexpr const auto* VERTEX_SHADER_FILENAME   = "vertex.glsl";
-  static constexpr const auto* FRAGMENT_SHADER_FILENAME = "fragment.glsl";
-  GOOM::GoomShaderWithEffects m_glShader;
   GOOM::GlRenderer m_glRenderer;
   GOOM::GoomBufferProducer m_goomBufferProducer;
   class PixelBufferGetter;
