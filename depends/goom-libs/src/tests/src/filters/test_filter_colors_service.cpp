@@ -47,7 +47,7 @@ TEST_CASE("FilterColorsService")
 {
   auto filterColorsService = FilterColorsService{GOOM_RAND};
 
-  auto pixelBuffer = PixelBuffer{
+  auto pixelBuffer = PixelBufferVector{
       {WIDTH, HEIGHT}
   };
 

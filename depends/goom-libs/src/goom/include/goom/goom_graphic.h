@@ -7,6 +7,7 @@
 #include <array>
 #include <cstdint>
 #include <limits>
+#include <span>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -176,16 +177,18 @@ struct FXBuffSettings
 
 class PixelBuffer
 {
-  using Buffer = std::vector<Pixel>;
+  using Buffer = std_spn::span<Pixel>;
 
 public:
-  PixelBuffer() noexcept = delete;
-  explicit PixelBuffer(const Dimensions& dimensions) noexcept;
+  PixelBuffer() = default;
+  PixelBuffer(const Buffer& buffer, const Dimensions& dimensions) noexcept;
   PixelBuffer(const PixelBuffer&)                    = delete;
   PixelBuffer(PixelBuffer&&)                         = delete;
   ~PixelBuffer() noexcept                            = default;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer&      = delete;
+
+  auto SetPixelBuffer(const Buffer& buffer, const Dimensions& dimensions) noexcept -> void;
 
   [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
   [[nodiscard]] auto GetHeight() const noexcept -> uint32_t;
@@ -215,13 +218,32 @@ public:
   [[nodiscard]] auto Get4RHBNeighbours(int32_t x, int32_t y) const noexcept
       -> std::array<Pixel, NUM_NBRS>;
 
+protected:
+  explicit PixelBuffer(const Dimensions& dimensions) noexcept;
+  auto SetPixelBuffer(const Buffer& buffer) noexcept -> void;
+
 private:
-  uint32_t m_width;
-  uint32_t m_height;
-  uint32_t m_xMax = m_width - 1;
-  uint32_t m_yMax = m_height - 1;
-  Buffer m_buff;
+  uint32_t m_width  = 0U;
+  uint32_t m_height = 0U;
+  uint32_t m_xMax   = 0U;
+  uint32_t m_yMax   = 0U;
+  Buffer m_buff{};
 };
+
+class PixelBufferVector : public PixelBuffer
+{
+public:
+  explicit PixelBufferVector(const Dimensions& dimensions) noexcept;
+
+private:
+  std::vector<Pixel> m_owningBuff;
+};
+
+inline PixelBufferVector::PixelBufferVector(const Dimensions& dimensions) noexcept
+  : PixelBuffer{dimensions}, m_owningBuff(dimensions.GetSize())
+{
+  SetPixelBuffer(std_spn::span<Pixel>{m_owningBuff.data(), m_owningBuff.size()});
+}
 
 constexpr Pixel::Pixel(const RGB& color) noexcept
   : m_color{color.red, color.green, color.blue, color.alpha}
@@ -394,21 +416,19 @@ inline auto PixelBuffer::GetBuffPos(const int32_t x, const int32_t y) const noex
 
 inline auto PixelBuffer::GetPixel(const size_t buffPos) const noexcept -> const Pixel&
 {
-#ifdef GOOM_DEBUG
-  return m_buff.at(buffPos);
-#else
   return m_buff[buffPos];
-#endif
 }
 
 inline auto PixelBuffer::GetPixel(const size_t buffPos) noexcept -> Pixel&
 {
-#ifdef GOOM_DEBUG
-  return m_buff.at(buffPos);
-#else
   return m_buff[buffPos];
-#endif
 }
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
 
 inline auto PixelBuffer::GetRowIter(const size_t y) noexcept
     -> std::tuple<PixelBuffer::iterator, PixelBuffer::iterator>
@@ -417,6 +437,10 @@ inline auto PixelBuffer::GetRowIter(const size_t y) noexcept
   return std::make_tuple(m_buff.begin() + rowPos,
                          m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
 }
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 inline auto PixelBuffer::Get4RHBNeighbours(const int32_t x, const int32_t y) const noexcept
     -> std::array<Pixel, NUM_NBRS>

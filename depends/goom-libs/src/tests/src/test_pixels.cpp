@@ -124,7 +124,7 @@ auto GetPixelCount(const PixelBuffer& buffer, const Pixel& pixel) -> uint32_t
 
 TEST_CASE("PixelBuffer Get4RHBNeighbours")
 {
-  auto buffer = PixelBuffer{
+  auto buffer = PixelBufferVector{
       {WIDTH, HEIGHT}
   };
   static constexpr auto TEST_PIXEL1 = Pixel{
@@ -156,12 +156,18 @@ TEST_CASE("PixelBuffer Get4RHBNeighbours")
   REQUIRE(TEST_PIXEL4 == pixel4RHBNeighbours.at(3));
 }
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+
 TEST_CASE("PixelBuffer RowIter")
 {
   static constexpr auto TEST_PIXEL = Pixel{
       {TEST_R, TEST_G, TEST_B}
   };
-  auto buffer = PixelBuffer{
+  auto buffer = PixelBufferVector{
       {WIDTH, HEIGHT}
   };
   buffer.Fill(WHITE_PIXEL);
@@ -172,8 +178,8 @@ TEST_CASE("PixelBuffer RowIter")
   }
 
   const auto destRowIter  = buffer.GetRowIter(Y);
-  const auto destRowBegin = std::get<0>(destRowIter);
-  const auto destRowEnd   = std::get<1>(destRowIter);
+  const auto* destRowBegin = std::get<0>(destRowIter);
+  const auto* destRowEnd   = std::get<1>(destRowIter);
   auto count              = 0U;
   for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
   {
@@ -185,9 +191,13 @@ TEST_CASE("PixelBuffer RowIter")
   REQUIRE(count == WIDTH);
 }
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
+
 TEST_CASE("PixelBuffer Copy")
 {
-  auto srceBuffer = PixelBuffer{
+  auto srceBuffer = PixelBufferVector{
       {WIDTH, HEIGHT}
   };
   REQUIRE(srceBuffer.GetWidth() == WIDTH);
@@ -197,7 +207,7 @@ TEST_CASE("PixelBuffer Copy")
   };
   srceBuffer.Fill(TEST_PIXEL);
 
-  auto destBuffer = PixelBuffer{
+  auto destBuffer = PixelBufferVector{
       {WIDTH, HEIGHT}
   };
   srceBuffer.CopyTo(destBuffer);

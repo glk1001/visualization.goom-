@@ -283,6 +283,12 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() noexcep
   return m_filterBufferColorInfo;
 }
 
+#if __clang_major__ >= 16
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+
 auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
                                          PixelBuffer& destBuff) noexcept -> void
 {
@@ -312,5 +318,9 @@ auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
 
   m_parallel->ForLoop(m_dimensions.GetHeight(), setDestPixelRow);
 }
+
+#if __clang_major__ >= 16
+#pragma GCC diagnostic pop
+#endif
 
 } // namespace GOOM::FILTER_FX

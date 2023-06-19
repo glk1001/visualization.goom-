@@ -8,23 +8,11 @@
 namespace GOOM::CONTROL
 {
 
-auto GoomImageBuffers::GetBuffs(const Dimensions& dimensions) noexcept
-    -> std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>
-{
-  auto buffs = std::array<std::unique_ptr<PixelBuffer>, MAX_NUM_BUFFS>{};
-  for (auto& buff : buffs)
-  {
-    buff = std::make_unique<PixelBuffer>(dimensions);
-  }
-  return buffs;
-}
-
 GoomImageBuffers::GoomImageBuffers(const Dimensions& dimensions) noexcept
-  : m_buffs{GetBuffs(dimensions)}
+  : m_p1{std::make_unique<PixelBufferVector>(dimensions)},
+    m_p2{std::make_unique<PixelBufferVector>(dimensions)}
 {
 }
-
-GoomImageBuffers::~GoomImageBuffers() noexcept = default;
 
 void GoomImageBuffers::RotateBuffers() noexcept
 {

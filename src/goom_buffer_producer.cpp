@@ -221,7 +221,7 @@ auto GoomBufferProducer::GetNextActivePixelBufferData() -> PixelBufferData
 inline auto GoomBufferProducer::MakePixelBufferData() const -> PixelBufferData
 {
   auto pixelBufferData        = PixelBufferData{};
-  pixelBufferData.pixelBuffer = std::make_shared<PixelBuffer>(
+  pixelBufferData.pixelBuffer = std::make_shared<PixelBufferVector>(
       Dimensions{m_textureBufferDimensions.width, m_textureBufferDimensions.height});
   return pixelBufferData;
 }
