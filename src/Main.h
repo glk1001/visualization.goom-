@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <string>
+#include <thread>
 
 // TODO(glk) Fix this properly!
 #if !defined(ATTRIBUTE_HIDDEN)
@@ -81,8 +82,10 @@ private:
 
   GOOM::GlRenderer m_glRenderer;
   GOOM::GoomBufferProducer m_goomBufferProducer;
+  std::thread m_processBuffersThread{};
   class PixelBufferGetter;
   std::unique_ptr<PixelBufferGetter> m_pixelBufferGetter;
+  [[nodiscard]] auto ReadyToRender() const -> bool;
   auto DoRender() noexcept -> void;
 
 #ifdef GOOM_DEBUG

@@ -240,35 +240,6 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels) -> void
   }
 }
 
-auto CVisualizationGoom::StartVis(const int numChannels) -> void
-{
-  LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
-
-  m_goomBufferProducer.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
-  m_goomBufferProducer.SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
-      std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
-
-  m_goomBufferProducer.SetNumChannels(static_cast<uint32_t>(numChannels));
-  m_goomBufferProducer.Start();
-
-  m_glRenderer.Init();
-
-  m_started = true;
-}
-
-auto CVisualizationGoom::StartLogging() -> void
-{
-  static const auto s_KODI_LOGGER = [](const GoomLogger::LogLevel lvl, const std::string& msg)
-  {
-    const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
-    kodi::Log(kodiLvl, msg.c_str());
-  };
-  AddLogHandler(*m_goomLogger, "kodi-logger", s_KODI_LOGGER);
-  SetShowDateTime(*m_goomLogger, false);
-  LogStart(*m_goomLogger);
-}
-
 //-- Stop ---------------------------------------------------------------------
 // Called when the visualisation is closed by Kodi
 //-----------------------------------------------------------------------------
@@ -304,16 +275,52 @@ auto CVisualizationGoom::StopWithCatch() -> void
   }
 }
 
+auto CVisualizationGoom::StartVis(const int numChannels) -> void
+{
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
+
+  m_goomBufferProducer.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
+  m_goomBufferProducer.SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
+      std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
+
+  m_goomBufferProducer.SetNumChannels(static_cast<uint32_t>(numChannels));
+  m_goomBufferProducer.Start();
+
+  m_glRenderer.Init();
+
+  LogInfo(*m_goomLogger, "Starting process Goom buffers thread.");
+  m_processBuffersThread =
+      std::thread{&GoomBufferProducer::ProcessGoomBuffersThread, &m_goomBufferProducer};
+
+  m_started = true;
+}
+
 inline auto CVisualizationGoom::StopVis() -> void
 {
   LogInfo(*m_goomLogger, "CVisualizationGoom: Visualization stopping.");
   m_started = false;
 
-  m_glRenderer.Destroy();
-
   m_goomBufferProducer.Stop();
 
+  m_glRenderer.Destroy();
+
+  LogInfo(*m_goomLogger, "Stopping process Goom buffers thread.");
+  m_processBuffersThread.join();
+
   LogStop(*m_goomLogger);
+}
+
+auto CVisualizationGoom::StartLogging() -> void
+{
+  static const auto s_KODI_LOGGER = [](const GoomLogger::LogLevel lvl, const std::string& msg)
+  {
+    const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
+    kodi::Log(kodiLvl, msg.c_str());
+  };
+  AddLogHandler(*m_goomLogger, "kodi-logger", s_KODI_LOGGER);
+  SetShowDateTime(*m_goomLogger, false);
+  LogStart(*m_goomLogger);
 }
 
 auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool
@@ -356,39 +363,48 @@ auto CVisualizationGoom::Render() -> void
     LogWarn(*m_goomLogger, "CVisualizationGoom: Goom not started - skipping Render.");
     return;
   }
+  if (not ReadyToRender())
+  {
+    return;
+  }
 
+  DoRender();
+}
+
+inline auto CVisualizationGoom::ReadyToRender() const -> bool
+{
   if (static constexpr auto MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6U;
       m_goomBufferProducer.GetAudioBufferNum() < MIN_AUDIO_BUFFERS_BEFORE_STARTING)
   {
     // Skip the first few frames - for some reason Kodi does a 'reload' before
     // starting the full music track.
-    return;
+    return false;
   }
 
+  return true;
+}
+
+inline auto CVisualizationGoom::DoRender() noexcept -> void
+{
   m_pixelBufferGetter->ReserveNextActivePixelBufferData();
+
   try
   {
-    DoRender();
+    const auto* const pixelBuffer = m_pixelBufferGetter->GetNextPixelBuffer();
+    m_glRenderer.SetPixelBuffer(pixelBuffer);
+    if (pixelBuffer != nullptr)
+    {
+      m_glRenderer.SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
+    }
+
+    m_glRenderer.Render();
   }
   catch (const std::exception& e)
   {
     LogError(*m_goomLogger, "CVisualizationGoom: Goom render failed: {}", e.what());
   }
+
   m_pixelBufferGetter->ReleaseActivePixelBufferData();
-}
-
-inline auto CVisualizationGoom::DoRender() noexcept -> void
-{
-  const auto* const pixelBuffer = m_pixelBufferGetter->GetNextPixelBuffer();
-
-  m_glRenderer.SetPixelBuffer(pixelBuffer);
-
-  if (pixelBuffer != nullptr)
-  {
-    m_glRenderer.SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
-  }
-
-  m_glRenderer.Render();
 }
 
 #ifdef __clang__

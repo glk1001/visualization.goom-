@@ -48,9 +48,9 @@ auto GoomBufferProducer::Start() -> void
 {
   LogInfo(*m_goomLogger, "Starting goom buffer producer.");
 
-  Expects(nullptr != m_goomControl);
-  Expects(not m_started);
-  m_started = true;
+  Expects(m_goomControl != nullptr);
+  Expects(not m_running);
+  m_running = true;
 
   LogInfo(*m_goomLogger, "Goom: Version: {}.", GetGoomLibVersionInfo());
   LogInfo(*m_goomLogger, "Goom: Compiler: {}.", GetCompilerVersion());
@@ -77,13 +77,12 @@ auto GoomBufferProducer::Stop() -> void
 {
   LogDebug(*m_goomLogger, "Stopping goom buffer producer.");
 
-  Expects(m_started);
+  Expects(m_running);
 
   m_goomControl->Finish();
 
-  StopProcessGoomBuffersThread();
-
-  m_audioBufferNum = 0;
+  m_running = false;
+  m_audioBuffer_cv.notify_one();
 
   LogInfo(*m_goomLogger, "Stopped goom buffer producer.");
 }
@@ -92,43 +91,15 @@ auto GoomBufferProducer::SetNumChannels(const uint32_t value) -> void
 {
   m_numChannels    = static_cast<size_t>(value);
   m_audioBufferLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
+  m_rawAudioData.resize(m_audioBufferLen);
   m_audioBufferNum = 0;
-}
-
-auto GoomBufferProducer::StartProcessGoomBuffersThread() -> void
-{
-  LogInfo(*m_goomLogger, "Starting process Goom buffers thread.");
-  m_processBuffersThread = std::thread{&GoomBufferProducer::ProcessGoomBuffersThread, this};
-}
-
-auto GoomBufferProducer::StopProcessGoomBuffersThread() -> void
-{
-  LogInfo(*m_goomLogger, "Stopping process Goom buffers thread.");
-
-  auto lock                          = std::unique_lock<std::mutex>{m_mutex};
-  m_processGoomBuffersThreadFinished = true;
-  m_wait.notify_one();
-  lock.unlock();
-
-  if (m_processBuffersThread.joinable())
-  {
-    m_processBuffersThread.join();
-  }
-
-  LogInfo(*m_goomLogger, "Process Goom buffers thread stopped.");
 }
 
 auto GoomBufferProducer::ProcessAudioData(const std_spn::span<const float>& audioData) -> void
 {
-  Expects(m_started);
+  Expects(m_running);
 
   ++m_audioBufferNum;
-
-  if (1 == m_audioBufferNum)
-  {
-    LogInfo(*m_goomLogger, "Starting audio data processing.");
-    StartProcessGoomBuffersThread();
-  }
 
   const auto lock = std::scoped_lock<std::mutex>{m_mutex};
   if (m_audioBuffer.FreeSpace() < audioData.size())
@@ -139,12 +110,12 @@ auto GoomBufferProducer::ProcessAudioData(const std_spn::span<const float>& audi
   }
 
   m_audioBuffer.Write(audioData);
-  m_wait.notify_one();
+  m_audioBuffer_cv.notify_one();
 }
 
 auto GoomBufferProducer::UpdateTrack(const GoomControl::SongInfo& track) -> void
 {
-  Expects(m_started);
+  Expects(m_running);
 
   LogInfo(*m_goomLogger, "Current Title = '{}'", track.title);
   LogInfo(*m_goomLogger, "Genre = '{}', Duration = {}", track.genre, track.duration);
@@ -158,65 +129,64 @@ auto GoomBufferProducer::UpdateTrack(const GoomControl::SongInfo& track) -> void
 
 auto GoomBufferProducer::ProcessGoomBuffersThread() -> void
 {
-  auto rawAudioData = std::vector<float>(m_audioBufferLen);
-
-  while (true)
+  while (m_running)
   {
-    auto lock = std::unique_lock<std::mutex>{m_mutex};
-    if (m_processGoomBuffersThreadFinished)
-    {
-      break;
-    }
-
-    if (m_audioBuffer.DataAvailable() < m_audioBufferLen)
-    {
-      m_wait.wait(lock);
-    }
-    if (m_processGoomBuffersThreadFinished)
-    {
-      break;
-    }
-    m_audioBuffer.Read(rawAudioData);
-    lock.unlock();
-
-    if (m_processGoomBuffersThreadFinished)
-    {
-      break;
-    }
-
-    lock.lock();
-    if (m_activePixelBufferDataQueue.size() > MAX_ACTIVE_QUEUE_LENGTH)
-    {
-      // Too far behind, skip this audio data.
-      continue;
-    }
-    lock.unlock();
-
-    auto pixelBufferData = PixelBufferData{};
-    lock.lock();
-    if (m_storedPixelBufferDataQueue.empty())
-    {
-      pixelBufferData = MakePixelBufferData();
-    }
-    else
-    {
-      pixelBufferData = m_storedPixelBufferDataQueue.front();
-      m_storedPixelBufferDataQueue.pop();
-    }
-    lock.unlock();
-
-    UpdateGoomBuffer(rawAudioData, pixelBufferData);
-
-    lock.lock();
-    m_activePixelBufferDataQueue.push(pixelBufferData);
-    lock.unlock();
+    ProduceNextBuffer();
   }
 }
 
-inline auto GoomBufferProducer::UpdateGoomBuffer(const std::vector<float>& rawAudioData,
-                                                 PixelBufferData& pixelBufferData) -> void
+auto GoomBufferProducer::ProduceNextBuffer() -> void
 {
-  const auto audioData = AudioSamples{m_numChannels, rawAudioData};
+  auto lock = std::unique_lock<std::mutex>{m_mutex};
+  if (not m_running)
+  {
+    return;
+  }
+
+  if (m_audioBuffer.DataAvailable() < m_audioBufferLen)
+  {
+    m_audioBuffer_cv.wait(
+        lock,
+        [this] { return (not m_running) or (m_audioBuffer.DataAvailable() >= m_audioBufferLen); });
+  }
+  if (not m_running)
+  {
+    return;
+  }
+
+  m_audioBuffer.Read(m_rawAudioData);
+  if (not m_running)
+  {
+    return;
+  }
+
+  if (m_activePixelBufferDataQueue.size() > MAX_ACTIVE_QUEUE_LENGTH)
+  {
+    // Too far behind, skip this audio data.
+    return;
+  }
+
+  auto pixelBufferData = PixelBufferData{};
+  if (m_storedPixelBufferDataQueue.empty())
+  {
+    pixelBufferData = MakePixelBufferData();
+  }
+  else
+  {
+    pixelBufferData = m_storedPixelBufferDataQueue.front();
+    m_storedPixelBufferDataQueue.pop();
+  }
+  lock.unlock();
+
+  UpdateGoomBuffer(pixelBufferData);
+
+  lock.lock();
+  m_activePixelBufferDataQueue.push(pixelBufferData);
+}
+
+inline auto GoomBufferProducer::UpdateGoomBuffer(PixelBufferData& pixelBufferData) -> void
+{
+  const auto audioData = AudioSamples{m_numChannels, m_rawAudioData};
   m_goomControl->SetGoomBuffer(pixelBufferData.pixelBuffer);
   m_goomControl->UpdateGoomBuffers(audioData);
   pixelBufferData.goomShaderVariables = m_goomControl->GetLastShaderVariables();

@@ -50,6 +50,8 @@ public:
   auto Start() -> void;
   auto Stop() -> void;
 
+  auto ProcessGoomBuffersThread() -> void;
+
   [[nodiscard]] auto GetAudioBufferNum() const noexcept -> uint32_t;
 
   auto ProcessAudioData(const std_spn::span<const float>& audioData) -> void;
@@ -61,12 +63,13 @@ public:
 private:
   TextureBufferDimensions m_textureBufferDimensions;
   GoomLogger* m_goomLogger;
-  bool m_started = false;
+  bool m_running = false;
 
   // Audio buffer storage
-  size_t m_numChannels                                       = 0;
-  size_t m_audioBufferLen                                    = 0;
-  uint32_t m_audioBufferNum                                  = 0;
+  size_t m_numChannels      = 0;
+  size_t m_audioBufferLen   = 0;
+  uint32_t m_audioBufferNum = 0;
+  std::vector<float> m_rawAudioData{};
   static constexpr auto NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16U;
   static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
                                                  AudioSamples::NUM_AUDIO_SAMPLES *
@@ -84,17 +87,13 @@ private:
 
   std::thread m_processBuffersThread{};
   std::mutex m_mutex{};
-  std::condition_variable m_wait{};
-  bool m_processGoomBuffersThreadFinished = false;
+  std::condition_variable m_audioBuffer_cv{};
 
-  auto StartProcessGoomBuffersThread() -> void;
-  auto StopProcessGoomBuffersThread() -> void;
-  auto ProcessGoomBuffersThread() -> void;
+  auto ProduceNextBuffer() -> void;
 
   //TODO(glk) Can split goom control out and make it a strategy.
   std::unique_ptr<GOOM::GoomControl> m_goomControl;
-  auto UpdateGoomBuffer(const std::vector<float>& rawAudioData, PixelBufferData& pixelBufferData)
-      -> void;
+  auto UpdateGoomBuffer(PixelBufferData& pixelBufferData) -> void;
 
 #ifdef SAVE_AUDIO_BUFFERS
   const std::string m_audioBuffersSaveDir;
