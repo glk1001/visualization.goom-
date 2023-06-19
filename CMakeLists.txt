@@ -214,7 +214,6 @@ set(${GOOM_ADDON_PREFIX}_SOURCES
 set(${GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
     src/build_time.h
-    src/circular_buffer.h
     src/gl_render_types.h
     src/gl_renderer.h
     src/goom_buffer_producer.h

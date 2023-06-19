@@ -22,6 +22,7 @@
 #include <format>
 #include <kodi/Filesystem.h>
 #include <memory>
+#include <span>
 #include <string>
 
 using GOOM::GlRenderer;
@@ -341,7 +342,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
-  m_goomBufferProducer.ProcessAudioData(audioData, audioDataLength);
+  m_goomBufferProducer.ProcessAudioData(std_spn::span<const float>{audioData, audioDataLength});
 }
 
 //-- Render -------------------------------------------------------------------

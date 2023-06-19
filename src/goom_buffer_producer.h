@@ -2,8 +2,8 @@
 
 // #define SAVE_AUDIO_BUFFERS
 
-#include "circular_buffer.h"
 #include "gl_render_types.h"
+#include "goom/circular_buffer.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
 #include "goom/sound_info.h"
@@ -16,6 +16,7 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <span>
 #include <string>
 #include <thread>
 #include <vector>
@@ -51,7 +52,7 @@ public:
 
   [[nodiscard]] auto GetAudioBufferNum() const noexcept -> uint32_t;
 
-  auto ProcessAudioData(const float* audioData, size_t audioDataLength) -> void;
+  auto ProcessAudioData(const std_spn::span<const float>& audioData) -> void;
   auto UpdateTrack(const GoomControl::SongInfo& track) -> void;
 
   [[nodiscard]] auto GetNextActivePixelBufferData() -> PixelBufferData;
@@ -92,7 +93,7 @@ private:
 
   //TODO(glk) Can split goom control out and make it a strategy.
   std::unique_ptr<GOOM::GoomControl> m_goomControl;
-  auto UpdateGoomBuffer(const std::vector<float>& floatAudioData, PixelBufferData& pixelBufferData)
+  auto UpdateGoomBuffer(const std::vector<float>& rawAudioData, PixelBufferData& pixelBufferData)
       -> void;
 
 #ifdef SAVE_AUDIO_BUFFERS
@@ -101,7 +102,7 @@ private:
   [[nodiscard]] auto GetAudioBufferWriter(const std::string& songName) const
       -> std::unique_ptr<AudioBufferWriter>;
   std::unique_ptr<AudioBufferWriter> m_audioBufferWriter{};
-  auto SaveAudioBuffer(const std::vector<float>& floatAudioData) -> void;
+  auto SaveAudioBuffer(const std::vector<float>& rawAudioData) -> void;
 #endif
 };
 
