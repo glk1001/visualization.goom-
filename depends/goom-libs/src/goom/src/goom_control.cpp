@@ -120,7 +120,7 @@ public:
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
-  auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
+  auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
@@ -137,6 +137,7 @@ private:
 
   bool m_noZooms       = false;
   uint32_t m_updateNum = 0;
+  FrameData* m_frameData = nullptr;
   GoomImageBuffers m_imageBuffers{m_goomInfo.GetDimensions()};
 
   FilterSettingsService m_filterSettingsService;
@@ -245,9 +246,9 @@ auto GoomControl::SetNoZooms(const bool value) -> void
   m_pimpl->SetNoZooms(value);
 }
 
-auto GoomControl::SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void
+auto GoomControl::SetFrameData(FrameData& frameData) -> void
 {
-  m_pimpl->SetGoomBuffer(buffer);
+  m_pimpl->SetFrameData(frameData);
 }
 
 auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
@@ -323,10 +324,10 @@ inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowMusicTitleType 
   m_showTitle = value;
 }
 
-inline auto GoomControl::GoomControlImpl::SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer)
-    -> void
+inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
 {
-  m_imageBuffers.SetOutputBuff(buffer);
+  m_frameData = &frameData;
+  m_imageBuffers.SetOutputBuff(m_frameData->imageArrays.mainImageData);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void

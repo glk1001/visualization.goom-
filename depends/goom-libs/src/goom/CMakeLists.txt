@@ -27,6 +27,7 @@ endif ()
 add_library(goom
             STATIC
             include/goom/circular_buffer.h
+            include/goom/frame_data.h
             include/goom/goom_config.h
             include/goom/goom_types.h
             include/goom/math20.h

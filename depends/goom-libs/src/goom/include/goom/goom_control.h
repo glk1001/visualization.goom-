@@ -1,5 +1,6 @@
 #pragma once
 
+#include "frame_data.h"
 #include "goom_types.h"
 #include "spimpl.h"
 
@@ -48,7 +49,7 @@ public:
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
-  auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
+  auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;

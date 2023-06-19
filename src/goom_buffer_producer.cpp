@@ -187,7 +187,7 @@ auto GoomBufferProducer::ProduceNextBuffer() -> void
 inline auto GoomBufferProducer::UpdateGoomBuffer(PixelBufferData& pixelBufferData) -> void
 {
   const auto audioData = AudioSamples{m_numChannels, m_rawAudioData};
-  m_goomControl->SetGoomBuffer(pixelBufferData.pixelBuffer);
+  m_goomControl->SetFrameData(*pixelBufferData.frameData);
   m_goomControl->UpdateGoomBuffers(audioData);
   pixelBufferData.goomShaderVariables = m_goomControl->GetLastShaderVariables();
 
@@ -200,7 +200,7 @@ auto GoomBufferProducer::StartActivePixelBufferDataQueue() -> void
 {
   // Make one initial frame in black
   const auto initialBufferData = PixelBufferData{MakePixelBufferData()};
-  initialBufferData.pixelBuffer->Fill(GOOM::BLACK_PIXEL);
+  initialBufferData.frameData->imageArrays.mainImageData.Fill(GOOM::BLACK_PIXEL);
   m_activePixelBufferDataQueue.push(initialBufferData);
 }
 
@@ -220,9 +220,13 @@ auto GoomBufferProducer::GetNextActivePixelBufferData() -> PixelBufferData
 
 inline auto GoomBufferProducer::MakePixelBufferData() const -> PixelBufferData
 {
-  auto pixelBufferData        = PixelBufferData{};
-  pixelBufferData.pixelBuffer = std::make_shared<PixelBufferVector>(
-      Dimensions{m_textureBufferDimensions.width, m_textureBufferDimensions.height});
+  const auto dimensions =
+      Dimensions{m_textureBufferDimensions.width, m_textureBufferDimensions.height};
+  auto pixelBufferData = PixelBufferData{std::make_shared<PixelBufferVector>(dimensions),
+                                         std::make_shared<FrameData>(),
+                                         GOOM::GoomShaderVariables{}};
+  pixelBufferData.frameData->imageArrays.mainImageData.SetPixelBuffer(
+      pixelBufferData.mainImageData->GetBuffer(), dimensions);
   return pixelBufferData;
 }
 

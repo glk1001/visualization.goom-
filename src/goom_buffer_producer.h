@@ -4,6 +4,7 @@
 
 #include "gl_render_types.h"
 #include "goom/circular_buffer.h"
+#include "goom/frame_data.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
 #include "goom/sound_info.h"
@@ -31,7 +32,8 @@ class GoomBufferProducer
 public:
   struct PixelBufferData
   {
-    std::shared_ptr<GOOM::PixelBuffer> pixelBuffer;
+    std::shared_ptr<PixelBufferVector> mainImageData;
+    std::shared_ptr<FrameData> frameData;
     GOOM::GoomShaderVariables goomShaderVariables;
   };
 

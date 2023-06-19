@@ -71,7 +71,7 @@ inline auto CVisualizationGoom::PixelBufferGetter::ReserveNextActivePixelBufferD
 
 inline auto CVisualizationGoom::PixelBufferGetter::ReleaseActivePixelBufferData() noexcept -> void
 {
-  if (nullptr == m_pixelBufferData.pixelBuffer)
+  if (nullptr == m_pixelBufferData.mainImageData)
   {
     return;
   }
@@ -81,17 +81,17 @@ inline auto CVisualizationGoom::PixelBufferGetter::ReleaseActivePixelBufferData(
 inline auto CVisualizationGoom::PixelBufferGetter::GetNextPixelBuffer() const noexcept
     -> const PixelChannelType*
 {
-  if (nullptr == m_pixelBufferData.pixelBuffer)
+  if (nullptr == m_pixelBufferData.mainImageData)
   {
     return nullptr;
   }
-  return m_pixelBufferData.pixelBuffer->GetBuffPtr();
+  return m_pixelBufferData.mainImageData->GetBuffPtr();
 }
 
 inline auto CVisualizationGoom::PixelBufferGetter::GetNextGoomShaderVariables() const noexcept
     -> const GoomShaderVariables*
 {
-  if (nullptr == m_pixelBufferData.pixelBuffer)
+  if (nullptr == m_pixelBufferData.mainImageData)
   {
     return nullptr;
   }

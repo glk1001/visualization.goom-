@@ -235,6 +235,8 @@ class PixelBufferVector : public PixelBuffer
 public:
   explicit PixelBufferVector(const Dimensions& dimensions) noexcept;
 
+  [[nodiscard]] auto GetBuffer() noexcept -> std_spn::span<Pixel>;
+
 private:
   std::vector<Pixel> m_owningBuff;
 };
@@ -242,7 +244,12 @@ private:
 inline PixelBufferVector::PixelBufferVector(const Dimensions& dimensions) noexcept
   : PixelBuffer{dimensions}, m_owningBuff(dimensions.GetSize())
 {
-  SetPixelBuffer(std_spn::span<Pixel>{m_owningBuff.data(), m_owningBuff.size()});
+  SetPixelBuffer(GetBuffer());
+}
+
+inline auto PixelBufferVector::GetBuffer() noexcept -> std_spn::span<Pixel>
+{
+  return std_spn::span<Pixel>{m_owningBuff.data(), m_owningBuff.size()};
 }
 
 constexpr Pixel::Pixel(const RGB& color) noexcept
