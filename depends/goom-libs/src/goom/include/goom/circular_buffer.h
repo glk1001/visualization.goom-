@@ -16,6 +16,8 @@ class CircularBuffer
 public:
   explicit CircularBuffer(size_t size) noexcept;
 
+  auto Clear() noexcept -> void;
+
   [[nodiscard]] auto DataAvailable() const noexcept -> size_t;
   [[nodiscard]] auto FreeSpace() const noexcept -> size_t;
 
@@ -33,6 +35,14 @@ private:
 template<typename T>
 inline CircularBuffer<T>::CircularBuffer(const size_t size) noexcept : m_size{size}, m_buffer(size)
 {
+}
+
+template<typename T>
+inline auto CircularBuffer<T>::Clear() noexcept -> void
+{
+  m_readPtr  = 0;
+  m_writePtr = 0;
+  m_used     = 0;
 }
 
 template<typename T>

@@ -35,6 +35,7 @@ add_library(${PROJECT_NAME} STATIC
             src/types.cpp
             src/utility.cpp
             src/xyz.cpp
+            ../../../../src/gl_2d_textures.h
 )
 
 add_library(libs::vivid ALIAS vivid)

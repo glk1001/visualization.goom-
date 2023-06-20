@@ -11,92 +11,40 @@
 #include "Main.h"
 
 #include "build_time.h"
-#include "gl_renderer.h"
+#include "displacement_filter.h"
+#include "goom/compiler_versions.h"
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom_buffer_producer.h"
+#include "slot_producer_consumer.h"
 
+#include <algorithm>
 #include <array>
 #include <format>
 #include <kodi/Filesystem.h>
 #include <memory>
+#include <random>
 #include <span>
+#include <stdexcept>
 #include <string>
 
-using GOOM::GlRenderer;
-using GOOM::GoomBufferProducer;
+using GOOM::AudioSamples;
+using GOOM::Dimensions;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
-using GOOM::GoomShaderVariables;
-using GOOM::PixelChannelType;
+using GOOM::SetRandSeed;
+using GOOM::SlotProducerConsumer;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;
+using GOOM::OPENGL::DisplacementFilter;
 
 #ifndef IS_KODI_BUILD
 static_assert(false, "This is a Kodi file: 'IS_KODI_BUILD' should be defined.");
 #endif
 
-using PixelBufferData = GOOM::GoomBufferProducer::PixelBufferData;
-
 namespace KODI_ADDON = kodi::addon;
 using AddonLogEnum   = ADDON_LOG;
-
-class CVisualizationGoom::PixelBufferGetter
-{
-public:
-  explicit PixelBufferGetter(GoomBufferProducer& bufferProducer);
-
-  auto ReserveNextActivePixelBufferData() noexcept;
-  auto ReleaseActivePixelBufferData() noexcept -> void;
-
-  [[nodiscard]] auto GetNextPixelBuffer() const noexcept -> const PixelChannelType*;
-  [[nodiscard]] auto GetNextGoomShaderVariables() const noexcept -> const GoomShaderVariables*;
-
-private:
-  GoomBufferProducer* m_bufferProducer;
-  PixelBufferData m_pixelBufferData{};
-};
-
-inline CVisualizationGoom::PixelBufferGetter::PixelBufferGetter(GoomBufferProducer& bufferProducer)
-  : m_bufferProducer{&bufferProducer}
-{
-}
-
-inline auto CVisualizationGoom::PixelBufferGetter::ReserveNextActivePixelBufferData() noexcept
-{
-  m_pixelBufferData = m_bufferProducer->GetNextActivePixelBufferData();
-}
-
-inline auto CVisualizationGoom::PixelBufferGetter::ReleaseActivePixelBufferData() noexcept -> void
-{
-  if (nullptr == m_pixelBufferData.mainImageData)
-  {
-    return;
-  }
-  m_bufferProducer->PushUsedPixels(m_pixelBufferData);
-}
-
-inline auto CVisualizationGoom::PixelBufferGetter::GetNextPixelBuffer() const noexcept
-    -> const PixelChannelType*
-{
-  if (nullptr == m_pixelBufferData.mainImageData)
-  {
-    return nullptr;
-  }
-  return m_pixelBufferData.mainImageData->GetBuffPtr();
-}
-
-inline auto CVisualizationGoom::PixelBufferGetter::GetNextGoomShaderVariables() const noexcept
-    -> const GoomShaderVariables*
-{
-  if (nullptr == m_pixelBufferData.mainImageData)
-  {
-    return nullptr;
-  }
-  return &m_pixelBufferData.goomShaderVariables;
-}
 
 namespace
 {
@@ -122,8 +70,8 @@ static_assert(HEIGHTS_BY_QUALITY.size() == WIDTHS_BY_QUALITY.size());
 
 constexpr auto* GOOM_ADDON_DATA_DIR = "special://userdata/addon_data/visualization.goom-pp";
 
-constexpr auto* QUALITY_SETTING         = "quality";
-constexpr auto* SHOW_TITLE_SETTING      = "show_title";
+constexpr auto* QUALITY_SETTING = "quality";
+//TODO - constexpr auto* SHOW_TITLE_SETTING      = "show_title";
 constexpr auto* SHOW_GOOM_STATE_SETTING = "show_goom_state";
 constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 
@@ -151,37 +99,39 @@ constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 }
 #endif
 
+constexpr auto MAX_BUFFER_QUEUE_LEN     = DisplacementFilter::NUM_PBOS;
+constexpr auto MAX_AUDIO_DATA_QUEUE_LEN = 100U;
+
 } // namespace
+
+// NOLINTBEGIN(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
 
 CVisualizationGoom::CVisualizationGoom()
   : m_goomLogger{GoomControl::MakeGoomLogger()},
-    m_glRenderer{KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
-                 GetTextureBufferDimensions(),
-                 WindowDimensions{Width(), Height()},
-                 *m_goomLogger},
-    m_goomBufferProducer{
-        GetTextureBufferDimensions(),
+    m_glScene{KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
+              GetTextureBufferDimensions()},
+    m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN},
+    m_goomControl{std::make_unique<GoomControl>(
+        Dimensions{GetTextureBufferDimensions().width, GetTextureBufferDimensions().height},
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
-        static_cast<GoomControl::ShowMusicTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)),
-#ifdef SAVE_AUDIO_BUFFERS
-        GetAudioBuffersSaveDir(),
-#endif
-        *m_goomLogger},
-    m_pixelBufferGetter{std::make_unique<PixelBufferGetter>(m_goomBufferProducer)}
+        *m_goomLogger)}
 {
+  m_glScene.Resize(WindowDimensions{Width(), Height()});
+
+  m_slotProducerConsumer.SetProduceItem([this](const size_t slot, const AudioSamples& audioSamples)
+                                        { ProduceItem(slot, audioSamples); });
+  m_slotProducerConsumer.SetConsumeItem([this](const size_t slot) { ConsumeItem(slot); });
+
+  auto requestNextDataFrame = [this]() { m_slotProducerConsumer.Consume(); };
+  m_glScene.SetRequestNextFrameDataFunc(requestNextDataFrame);
+
   StartLogging();
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 }
 
-//-- Destroy -------------------------------------------------------------------
-// Do everything before unload of this add-on
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
 // NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall)
 CVisualizationGoom::~CVisualizationGoom()
 {
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Destroyed CVisualizationGoom object.");
   LogStop(*m_goomLogger);
 }
@@ -209,7 +159,6 @@ auto CVisualizationGoom::Start(const int numChannels,
 {
   if (m_started)
   {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     kodi::Log(ADDON_LOG_WARNING,
               "CVisualizationGoom: Already started without a stop - skipping this.");
     return true;
@@ -277,20 +226,40 @@ auto CVisualizationGoom::StopWithCatch() -> void
 
 auto CVisualizationGoom::StartVis(const int numChannels) -> void
 {
-  LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
+  LogInfo(*m_goomLogger, "Starting visualization.");
 
-  m_goomBufferProducer.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
-  m_goomBufferProducer.SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
+  Expects(m_goomControl != nullptr);
+  Expects(not m_started);
+
+  LogInfo(*m_goomLogger, "CVisualizationGoom: Build Time: {}.", GetGoomVisualizationBuildTime());
+  LogInfo(*m_goomLogger, "Goom: Version: {}.", GOOM::GetGoomLibVersionInfo());
+  LogInfo(*m_goomLogger, "Goom: Compiler: {}.", GOOM::GetCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Compiler: {}.", GOOM::GetGoomLibCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Build Time: {}.", GOOM::GetGoomLibBuildTime());
+
+  LogInfo(*m_goomLogger,
+          "Texture width, height = {}, {}.",
+          GetTextureBufferDimensions().width,
+          GetTextureBufferDimensions().height);
+
+  m_goomControl->SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
+  m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
       std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
 
-  m_goomBufferProducer.SetNumChannels(static_cast<uint32_t>(numChannels));
-  m_goomBufferProducer.Start();
+  m_numChannels    = static_cast<size_t>(numChannels);
+  m_audioSampleLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
+  m_rawAudioData.resize(m_audioSampleLen);
+  m_audioBuffer.Clear();
 
-  m_glRenderer.Init();
+  SetRandSeed(std::random_device{}());
+  m_goomControl->Start();
 
-  LogInfo(*m_goomLogger, "Starting process Goom buffers thread.");
-  m_processBuffersThread =
-      std::thread{&GoomBufferProducer::ProcessGoomBuffersThread, &m_goomBufferProducer};
+  m_glScene.InitScene();
+  m_slotProducerConsumer.Start();
+
+  LogInfo(*m_goomLogger, "Starting slot producer consumer thread.");
+  m_slotProducerConsumerThread =
+      std::thread{&SlotProducerConsumer<AudioSamples>::ProducerThread, &m_slotProducerConsumer};
 
   m_started = true;
 }
@@ -300,12 +269,11 @@ inline auto CVisualizationGoom::StopVis() -> void
   LogInfo(*m_goomLogger, "CVisualizationGoom: Visualization stopping.");
   m_started = false;
 
-  m_goomBufferProducer.Stop();
+  m_slotProducerConsumer.Stop();
+  m_glScene.DestroyScene();
 
-  m_glRenderer.Destroy();
-
-  LogInfo(*m_goomLogger, "Stopping process Goom buffers thread.");
-  m_processBuffersThread.join();
+  LogInfo(*m_goomLogger, "Stopping slot producer consumer thread.");
+  m_slotProducerConsumerThread.join();
 
   LogStop(*m_goomLogger);
 }
@@ -315,7 +283,6 @@ auto CVisualizationGoom::StartLogging() -> void
   static const auto s_KODI_LOGGER = [](const GoomLogger::LogLevel lvl, const std::string& msg)
   {
     const auto kodiLvl = static_cast<AddonLogEnum>(static_cast<size_t>(lvl));
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
     kodi::Log(kodiLvl, msg.c_str());
   };
   AddLogHandler(*m_goomLogger, "kodi-logger", s_KODI_LOGGER);
@@ -329,8 +296,15 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
   const auto currentSongName =
       artist.empty() ? track.GetTitle() : ((artist + " - ") + track.GetTitle());
 
-  m_goomBufferProducer.UpdateTrack(
+  LogInfo(*m_goomLogger, "Current Title = '{}'", currentSongName);
+  LogInfo(*m_goomLogger, "Genre = '{}', Duration = {}", track.GetGenre(), track.GetDuration());
+
+  m_goomControl->SetSongInfo(
       {currentSongName, track.GetGenre(), static_cast<uint32_t>(track.GetDuration())});
+
+#ifdef SAVE_AUDIO_BUFFERS
+  m_audioBufferWriter = GetAudioBufferWriter(track.title);
+#endif
 
   return true;
 }
@@ -349,7 +323,60 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
-  m_goomBufferProducer.ProcessAudioData(std_spn::span<const float>{audioData, audioDataLength});
+  LogInfo(*m_goomLogger, "Adding audio data to circular buffer.");
+  AddAudioDataToBuffer(std_spn::span<const float>{audioData, audioDataLength});
+
+  if (m_audioBuffer.DataAvailable() >= m_audioSampleLen)
+  {
+    MoveNextAudioSampleToProducer();
+  }
+}
+
+auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& audioData) noexcept
+    -> void
+{
+  if (m_audioBuffer.FreeSpace() < audioData.size())
+  {
+    // TODO - is this a good idea?
+    // Lose the audio?????
+    return;
+  }
+
+  m_audioBuffer.Write(audioData);
+}
+
+auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
+{
+  LogInfo(*m_goomLogger, "Moving audio sample to producer.");
+  m_audioBuffer.Read(m_rawAudioData);
+  m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, m_rawAudioData});
+  ++m_audioSamplesNum;
+}
+
+auto CVisualizationGoom::ConsumeItem(const size_t slot) noexcept -> void
+{
+  LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
+  m_glScene.UpdateFrameData(slot);
+}
+
+auto CVisualizationGoom::ProduceItem(const size_t slot, const AudioSamples& audioSamples) noexcept
+    -> void
+{
+  LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
+
+  auto& frameData = m_glScene.GetFrameData(slot);
+
+  m_goomControl->SetFrameData(frameData);
+  m_goomControl->UpdateGoomBuffers(audioSamples);
+
+  const auto shaderVariables                       = m_goomControl->GetLastShaderVariables();
+  frameData.miscData.lerpFactor                    = 0.0F;
+  frameData.miscData.brightness                    = shaderVariables.brightness;
+  frameData.imageArrays.mainImageDataNeedsUpdating = true;
+
+#ifdef SAVE_AUDIO_BUFFERS
+  SaveAudioBuffer(audioSamples);
+#endif
 }
 
 //-- Render -------------------------------------------------------------------
@@ -373,8 +400,8 @@ auto CVisualizationGoom::Render() -> void
 
 inline auto CVisualizationGoom::ReadyToRender() const -> bool
 {
-  if (static constexpr auto MIN_AUDIO_BUFFERS_BEFORE_STARTING = 6U;
-      m_goomBufferProducer.GetAudioBufferNum() < MIN_AUDIO_BUFFERS_BEFORE_STARTING)
+  if (static constexpr auto NUM_AUDIO_SAMPLES_BEFORE_STARTING = 6U;
+      m_audioSamplesNum < NUM_AUDIO_SAMPLES_BEFORE_STARTING)
   {
     // Skip the first few frames - for some reason Kodi does a 'reload' before
     // starting the full music track.
@@ -386,26 +413,17 @@ inline auto CVisualizationGoom::ReadyToRender() const -> bool
 
 inline auto CVisualizationGoom::DoRender() noexcept -> void
 {
-  m_pixelBufferGetter->ReserveNextActivePixelBufferData();
-
   try
   {
-    const auto* const pixelBuffer = m_pixelBufferGetter->GetNextPixelBuffer();
-    m_glRenderer.SetPixelBuffer(pixelBuffer);
-    if (pixelBuffer != nullptr)
-    {
-      m_glRenderer.SetShaderVariables(*m_pixelBufferGetter->GetNextGoomShaderVariables());
-    }
-
-    m_glRenderer.Render();
+    m_glScene.Render();
   }
   catch (const std::exception& e)
   {
     LogError(*m_goomLogger, "CVisualizationGoom: Goom render failed: {}", e.what());
   }
-
-  m_pixelBufferGetter->ReleaseActivePixelBufferData();
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-vararg, hicpp-vararg)
 
 #ifdef __clang__
 #pragma GCC diagnostic push

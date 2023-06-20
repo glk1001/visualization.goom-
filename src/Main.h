@@ -8,9 +8,12 @@
  *  See LICENSE.md for more information.
  */
 
-#include "gl_renderer.h"
+#include "displacement_filter.h"
+#include "goom/circular_buffer.h"
 #include "goom/goom_config.h"
-#include "goom_buffer_producer.h"
+#include "goom/goom_control.h"
+#include "goom/sound_info.h"
+#include "slot_producer_consumer.h"
 
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
@@ -30,6 +33,7 @@
 #endif
 
 #include <memory>
+#include <span>
 #include <string>
 #include <thread>
 
@@ -80,11 +84,25 @@ private:
   auto StopWithoutCatch() -> void;
   auto StopVis() -> void;
 
-  GOOM::GlRenderer m_glRenderer;
-  GOOM::GoomBufferProducer m_goomBufferProducer;
-  std::thread m_processBuffersThread{};
-  class PixelBufferGetter;
-  std::unique_ptr<PixelBufferGetter> m_pixelBufferGetter;
+  GOOM::OPENGL::DisplacementFilter m_glScene;
+  GOOM::SlotProducerConsumer<GOOM::AudioSamples> m_slotProducerConsumer;
+  std::thread m_slotProducerConsumerThread{};
+  std::unique_ptr<GOOM::GoomControl> m_goomControl;
+  auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
+  auto ConsumeItem(size_t slot) noexcept -> void;
+
+  size_t m_numChannels    = 0;
+  size_t m_audioSampleLen = 0;
+  std::vector<float> m_rawAudioData{};
+  uint32_t m_audioSamplesNum                                 = 0;
+  static constexpr auto NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16U;
+  static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
+                                                 GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
+                                                 GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
+  GOOM::CircularBuffer<float> m_audioBuffer{CIRCULAR_BUFFER_SIZE};
+  auto AddAudioDataToBuffer(const std_spn::span<const float>& audioData) noexcept -> void;
+  auto MoveNextAudioSampleToProducer() noexcept -> void;
+
   [[nodiscard]] auto ReadyToRender() const -> bool;
   auto DoRender() noexcept -> void;
 

@@ -207,16 +207,18 @@ include_directories(BEFORE
 set(${GOOM_ADDON_PREFIX}_SOURCES
     src/Main.cpp
     src/build_time.cpp
-    src/gl_renderer.cpp
-    src/goom_buffer_producer.cpp
+    src/displacement_filter.cpp
+    src/gl_utils.cpp
+    src/glsl_program.cpp
     src/shader_with_effects.cpp
     src/goom_shader_with_effects.cpp)
 set(${GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
     src/build_time.h
+    src/scene.h
+    src/slot_producer_consumer.h
+    src/gl_2d_textures.h
     src/gl_render_types.h
-    src/gl_renderer.h
-    src/goom_buffer_producer.h
     src/shader_with_effects.h
     src/goom_shader_with_effects.h)
 
