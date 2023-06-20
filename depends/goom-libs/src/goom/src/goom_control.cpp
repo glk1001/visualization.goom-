@@ -15,7 +15,6 @@
 #include "goom_control.h"
 
 #include "control/goom_all_visual_fx.h"
-#include "control/goom_image_buffers.h"
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
 #include "control/goom_random_state_handler.h"
@@ -56,7 +55,6 @@ namespace GOOM
 {
 
 using CONTROL::GoomAllVisualFx;
-using CONTROL::GoomImageBuffers;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
@@ -135,10 +133,14 @@ private:
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   FxHelper m_fxHelper;
 
-  bool m_noZooms       = false;
-  uint32_t m_updateNum = 0;
+  bool m_noZooms         = false;
+  uint32_t m_updateNum   = 0;
   FrameData* m_frameData = nullptr;
-  GoomImageBuffers m_imageBuffers{m_goomInfo.GetDimensions()};
+  std::unique_ptr<PixelBuffer> m_p1{
+      std::make_unique<PixelBufferVector>(m_goomInfo.GetDimensions())};
+  std::unique_ptr<PixelBuffer> m_p2{
+      std::make_unique<PixelBufferVector>(m_goomInfo.GetDimensions())};
+  PixelBuffer* m_outputBuff = nullptr;
 
   FilterSettingsService m_filterSettingsService;
 
@@ -326,8 +328,8 @@ inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowMusicTitleType 
 
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
 {
-  m_frameData = &frameData;
-  m_imageBuffers.SetOutputBuff(m_frameData->imageArrays.mainImageData);
+  m_frameData  = &frameData;
+  m_outputBuff = &m_frameData->imageArrays.mainImageData;
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void
@@ -571,7 +573,7 @@ inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
     return;
   }
 
-  m_visualFx.ApplyZoom(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
+  m_visualFx.ApplyZoom(*m_p1, *m_p2);
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
@@ -590,15 +592,15 @@ inline auto GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSett
 inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
 {
   // affichage et swappage des buffers...
-  m_imageBuffers.GetP1().CopyTo(m_imageBuffers.GetOutputBuff());
+  m_p1->CopyTo(*m_outputBuff);
 
   RotateBuffers();
 }
 
 inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void
 {
-  m_imageBuffers.RotateBuffers();
-  m_multiBufferDraw.SetBuffers(m_imageBuffers.GetP1(), m_imageBuffers.GetP2());
+  std::swap(m_p1, m_p2);
+  m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 }
 
 inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::string& message)
@@ -633,7 +635,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 
   if (m_showTitle == ShowMusicTitleType::ALWAYS)
   {
-    m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
+    m_goomTextOutput.SetBuffer(*m_outputBuff);
     m_goomTitleDisplayer.DrawStaticText(m_songInfo.title);
     return;
   }
@@ -647,11 +649,11 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
   {
     static constexpr auto FINAL_TITLE_BUFF_INTENSITY = 0.2F;
     m_goomTextOutput.SetBuffIntensity(FINAL_TITLE_BUFF_INTENSITY);
-    m_goomTextOutput.SetBuffer(m_imageBuffers.GetP1());
+    m_goomTextOutput.SetBuffer(*m_p1);
   }
   else
   {
-    m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
+    m_goomTextOutput.SetBuffer(*m_outputBuff);
   }
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
 }
@@ -666,7 +668,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
     return;
   }
 
-  m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
+  m_goomTextOutput.SetBuffer(*m_outputBuff);
 
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
 }

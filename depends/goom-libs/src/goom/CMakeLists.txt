@@ -44,7 +44,6 @@ add_library(goom
             src/control/all_standard_visual_fx.cpp
             src/control/goom_all_visual_fx.cpp
             src/control/goom_effects.h
-            src/control/goom_image_buffers.cpp
             src/control/goom_message_displayer.cpp
             src/control/goom_music_settings_reactor.cpp
             src/control/goom_random_state_handler.cpp
