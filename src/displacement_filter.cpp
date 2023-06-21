@@ -89,20 +89,21 @@ auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
   static constexpr auto X1 = +1.0F;
   static constexpr auto Y0 = -1.0F;
   static constexpr auto Y1 = +1.0F;
+  // Note: Larger Y at bottom of quad.
   static constexpr auto VERTICES =
       std::array<GLfloat, static_cast<size_t>(COMPONENTS_PER_VERTEX * NUM_VERTICES)>{
           X0,
-          Y0, // bottom left
+          Y1, // bottom left
           X0,
-          Y1, // top left
+          Y0, // top left
           X1,
-          Y0, // bottom right
+          Y1, // bottom right
           X1,
-          Y0, // bottom right
+          Y1, // bottom right
           X1,
-          Y1, // top right
+          Y0, // top right
           X0,
-          Y1, // top left
+          Y0, // top left
       };
   static constexpr auto TEX_COORDS =
       std::array<GLfloat, static_cast<size_t>(COMPONENTS_PER_VERTEX * NUM_VERTICES)>{
