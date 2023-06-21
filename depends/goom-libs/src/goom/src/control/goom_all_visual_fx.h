@@ -73,6 +73,7 @@ public:
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
 
+  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
   auto SetAllowMultiThreadedStates(bool val) noexcept -> void;
 
   [[nodiscard]] auto GetZoomFilterFx() const noexcept -> const FILTER_FX::ZoomFilterFx&;
@@ -97,6 +98,9 @@ public:
 
   auto UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings) noexcept -> void;
   auto ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
+
+  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>;
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const noexcept -> UTILS::NameValuePairs;
@@ -142,6 +146,12 @@ private:
   };
 };
 
+inline auto GoomAllVisualFx::SetTranBufferDest(
+    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+{
+  m_zoomFilterFx->SetTranBufferDest(tranBufferFlt);
+}
+
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
 {
   m_allowMultiThreadedStates = val;
@@ -171,6 +181,16 @@ inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
   m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
 
   UpdateZoomFilterLuminance();
+}
+
+inline auto GoomAllVisualFx::GetTranLerpFactor() const noexcept -> uint32_t
+{
+  return m_zoomFilterFx->GetTranLerpFactor();
+}
+
+inline auto GoomAllVisualFx::IsFilterPosDataReady() const noexcept -> bool
+{
+  return m_zoomFilterFx->IsFilterPosDataReady();
 }
 
 inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() noexcept -> void

@@ -85,9 +85,13 @@ private:
   auto StopVis() -> void;
 
   GOOM::OPENGL::DisplacementFilter m_glScene;
+  auto InitSceneFrameData() noexcept -> void;
+
+  std::unique_ptr<GOOM::GoomControl> m_goomControl;
+  auto InitGoomControl() noexcept -> void;
+
   GOOM::SlotProducerConsumer<GOOM::AudioSamples> m_slotProducerConsumer;
   std::thread m_slotProducerConsumerThread{};
-  std::unique_ptr<GOOM::GoomControl> m_goomControl;
   auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
   auto ConsumeItem(size_t slot) noexcept -> void;
 
@@ -100,6 +104,7 @@ private:
                                                  GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
                                                  GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
   GOOM::CircularBuffer<float> m_audioBuffer{CIRCULAR_BUFFER_SIZE};
+  auto InitAudioData(int32_t numChannels) noexcept -> void;
   auto AddAudioDataToBuffer(const std_spn::span<const float>& audioData) noexcept -> void;
   auto MoveNextAudioSampleToProducer() noexcept -> void;
 

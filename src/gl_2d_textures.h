@@ -23,6 +23,7 @@ public:
 
   auto Setup(const char* textureShaderName, int32_t textureWidth, int32_t textureHeight) -> void;
 
+  [[nodiscard]] auto GetTextureName() const noexcept -> GLuint;
   [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> CppTextureType*;
 
   auto ZeroTextureData() noexcept -> void;
@@ -140,13 +141,31 @@ template<typename CppTextureType,
          GLenum TextureInternalFormat,
          GLenum TexturePixelType,
          uint32_t NumPbos>
-auto Gl2DTexture<CppTextureType,
-                 TextureImageUint,
-                 TextureLocation,
-                 TextureFormat,
-                 TextureInternalFormat,
-                 TexturePixelType,
-                 NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept -> CppTextureType*
+inline auto Gl2DTexture<CppTextureType,
+                        TextureImageUint,
+                        TextureLocation,
+                        TextureFormat,
+                        TextureInternalFormat,
+                        TexturePixelType,
+                        NumPbos>::GetTextureName() const noexcept -> GLuint
+{
+  return m_textureName;
+}
+
+template<typename CppTextureType,
+         int32_t TextureImageUint,
+         int32_t TextureLocation,
+         GLenum TextureFormat,
+         GLenum TextureInternalFormat,
+         GLenum TexturePixelType,
+         uint32_t NumPbos>
+inline auto Gl2DTexture<CppTextureType,
+                        TextureImageUint,
+                        TextureLocation,
+                        TextureFormat,
+                        TextureInternalFormat,
+                        TexturePixelType,
+                        NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept -> CppTextureType*
 {
   return m_pboBuffers.mappedBuffers.at(pboIndex);
 }
@@ -158,13 +177,13 @@ template<typename CppTextureType,
          GLenum TextureInternalFormat,
          GLenum TexturePixelType,
          uint32_t NumPbos>
-auto Gl2DTexture<CppTextureType,
-                 TextureImageUint,
-                 TextureLocation,
-                 TextureFormat,
-                 TextureInternalFormat,
-                 TexturePixelType,
-                 NumPbos>::ZeroTextureData() noexcept -> void
+inline auto Gl2DTexture<CppTextureType,
+                        TextureImageUint,
+                        TextureLocation,
+                        TextureFormat,
+                        TextureInternalFormat,
+                        TexturePixelType,
+                        NumPbos>::ZeroTextureData() noexcept -> void
 {
   glClearTexImage(m_textureName, 0, TextureFormat, TexturePixelType, nullptr);
 }
@@ -176,13 +195,13 @@ template<typename CppTextureType,
          GLenum TextureInternalFormat,
          GLenum TexturePixelType,
          uint32_t NumPbos>
-auto Gl2DTexture<CppTextureType,
-                 TextureImageUint,
-                 TextureLocation,
-                 TextureFormat,
-                 TextureInternalFormat,
-                 TexturePixelType,
-                 NumPbos>::CopyMappedBufferToTexture(size_t pboIndex) noexcept -> void
+inline auto Gl2DTexture<CppTextureType,
+                        TextureImageUint,
+                        TextureLocation,
+                        TextureFormat,
+                        TextureInternalFormat,
+                        TexturePixelType,
+                        NumPbos>::CopyMappedBufferToTexture(size_t pboIndex) noexcept -> void
 {
   glBindTexture(GL_TEXTURE_2D, m_textureName);
 

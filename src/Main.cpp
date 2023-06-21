@@ -110,11 +110,11 @@ CVisualizationGoom::CVisualizationGoom()
   : m_goomLogger{GoomControl::MakeGoomLogger()},
     m_glScene{KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
               GetTextureBufferDimensions()},
-    m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN},
     m_goomControl{std::make_unique<GoomControl>(
         Dimensions{GetTextureBufferDimensions().width, GetTextureBufferDimensions().height},
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
-        *m_goomLogger)}
+        *m_goomLogger)},
+    m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN}
 {
   m_glScene.Resize(WindowDimensions{Width(), Height()});
 
@@ -241,20 +241,21 @@ auto CVisualizationGoom::StartVis(const int numChannels) -> void
           "Texture width, height = {}, {}.",
           GetTextureBufferDimensions().width,
           GetTextureBufferDimensions().height);
+  LogInfo(*m_goomLogger,
+          "Window width, height, pixel ratio = {}, {}, {}.",
+          Width(),
+          Height(),
+          PixelRatio());
+  LogInfo(*m_goomLogger,
+          "Scene frame width, height = {}, {}.",
+          m_glScene.GetFramebufferWidth(),
+          m_glScene.GetFramebufferHeight());
 
-  m_goomControl->SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
-  m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
-      std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
+  InitAudioData(numChannels);
+  InitSceneFrameData();
+  InitGoomControl();
 
-  m_numChannels    = static_cast<size_t>(numChannels);
-  m_audioSampleLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
-  m_rawAudioData.resize(m_audioSampleLen);
-  m_audioBuffer.Clear();
-
-  SetRandSeed(std::random_device{}());
   m_goomControl->Start();
-
-  m_glScene.InitScene();
   m_slotProducerConsumer.Start();
 
   LogInfo(*m_goomLogger, "Starting slot producer consumer thread.");
@@ -276,6 +277,32 @@ inline auto CVisualizationGoom::StopVis() -> void
   m_slotProducerConsumerThread.join();
 
   LogStop(*m_goomLogger);
+}
+
+auto CVisualizationGoom::InitAudioData(const int32_t numChannels) noexcept -> void
+{
+  m_numChannels    = static_cast<size_t>(numChannels);
+  m_audioSampleLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
+  m_rawAudioData.resize(m_audioSampleLen);
+  m_audioBuffer.Clear();
+}
+
+auto CVisualizationGoom::InitSceneFrameData() noexcept -> void
+{
+  m_glScene.InitScene();
+  m_goomControl->InitFrameData(m_glScene.GetFrameDataArray());
+  m_glScene.InitAllFrameDataToGl();
+}
+
+auto CVisualizationGoom::InitGoomControl() noexcept -> void
+{
+  SetRandSeed(std::random_device{}());
+
+  m_goomControl->SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
+  m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
+      std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
+
+  m_goomControl->SetFrameData(m_glScene.GetFrameData(0));
 }
 
 auto CVisualizationGoom::StartLogging() -> void
@@ -347,7 +374,7 @@ auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& 
 
 auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
 {
-  LogInfo(*m_goomLogger, "Moving audio sample to producer.");
+  //LogInfo(*m_goomLogger, "Moving audio sample to producer.");
   m_audioBuffer.Read(m_rawAudioData);
   m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, m_rawAudioData});
   ++m_audioSamplesNum;
@@ -355,14 +382,14 @@ auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
 
 auto CVisualizationGoom::ConsumeItem(const size_t slot) noexcept -> void
 {
-  LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
+  //LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
   m_glScene.UpdateFrameData(slot);
 }
 
 auto CVisualizationGoom::ProduceItem(const size_t slot, const AudioSamples& audioSamples) noexcept
     -> void
 {
-  LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
+  //LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
 
   auto& frameData = m_glScene.GetFrameData(slot);
 
@@ -372,7 +399,6 @@ auto CVisualizationGoom::ProduceItem(const size_t slot, const AudioSamples& audi
   const auto shaderVariables                       = m_goomControl->GetLastShaderVariables();
   frameData.miscData.lerpFactor                    = 0.0F;
   frameData.miscData.brightness                    = shaderVariables.brightness;
-  frameData.imageArrays.mainImageDataNeedsUpdating = true;
 
 #ifdef SAVE_AUDIO_BUFFERS
   SaveAudioBuffer(audioSamples);
@@ -415,6 +441,8 @@ inline auto CVisualizationGoom::DoRender() noexcept -> void
 {
   try
   {
+    m_glScene.Resize(WindowDimensions{Width(), Height()});
+
     m_glScene.Render();
   }
   catch (const std::exception& e)

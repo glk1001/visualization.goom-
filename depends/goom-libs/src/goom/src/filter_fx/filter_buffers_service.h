@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <span>
 
 namespace GOOM
 {
@@ -32,6 +33,8 @@ public:
                        const NormalizedCoordsConverter& normalizedCoordsConverter,
                        std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
+  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
+
   auto Start() noexcept -> void;
 
   [[nodiscard]] auto GetCurrentFilterEffectsSettings() const noexcept
@@ -45,6 +48,8 @@ public:
   [[nodiscard]] auto GetFilterBuffers() noexcept -> FilterBuffers&;
 
   auto UpdateTranBuffers() noexcept -> void;
+
+  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   struct TranLerpProperties
   {
@@ -72,6 +77,12 @@ private:
   [[nodiscard]] auto AreStartingFreshTranBuffers() const noexcept -> bool;
   auto StartFreshTranBuffers() noexcept -> void;
 };
+
+inline auto FilterBuffersService::SetTranBufferDest(
+    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+{
+  m_filterBuffers.SetTranBufferDest(tranBufferFlt);
+}
 
 inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexcept
     -> const ZoomFilterEffectsSettings&

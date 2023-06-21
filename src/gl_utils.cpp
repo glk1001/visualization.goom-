@@ -92,7 +92,7 @@ auto APIENTRY DebugCallback(const GLenum source,
       sevStr = "UNK";
   }
 
-  std_fmt::print("{}:{}[{}]({}): {}\n", sourceStr, typeStr, sevStr, id, msg);
+  std_fmt::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
 }
 
 auto CheckForOpenGLError(const char* const file, const int line) -> int
@@ -105,7 +105,7 @@ auto CheckForOpenGLError(const char* const file, const int line) -> int
 
   while (glErr != GL_NO_ERROR)
   {
-    const char* message = "";
+    const char* message;
     switch (glErr)
     {
       case GL_INVALID_ENUM:
@@ -127,7 +127,7 @@ auto CheckForOpenGLError(const char* const file, const int line) -> int
         message = "Unknown error";
     }
 
-    std_fmt::print("glError in file '{}' line {}: {}\n", file, line, message);
+    std_fmt::println("glError in file '{}' line {}: {}", file, line, message);
     retCode = 1;
 
     glErr = glGetError();
@@ -153,15 +153,15 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
   auto sampleBuffers = GLint{};
   glGetIntegerv(GL_SAMPLE_BUFFERS, &sampleBuffers);
 
-  std_fmt::print("-------------------------------------------------------------\n");
-  std_fmt::print("GL Vendor    : {}\n", vendor);
-  std_fmt::print("GL Renderer  : {}\n", renderer);
-  std_fmt::print("GL Version   : {}\n", version);
-  std_fmt::print("GL Version   : {}.{}\n", major, minor);
-  std_fmt::print("GLSL Version : {}\n", glslVersion);
-  std_fmt::print("MSAA samples : {}\n", samples);
-  std_fmt::print("MSAA buffers : {}\n", sampleBuffers);
-  std_fmt::print("-------------------------------------------------------------\n");
+  std_fmt::println("-------------------------------------------------------------");
+  std_fmt::println("GL Vendor    : {}", vendor);
+  std_fmt::println("GL Renderer  : {}", renderer);
+  std_fmt::println("GL Version   : {}", version);
+  std_fmt::println("GL Version   : {}.{}", major, minor);
+  std_fmt::println("GLSL Version : {}", glslVersion);
+  std_fmt::println("MSAA samples : {}", samples);
+  std_fmt::println("MSAA buffers : {}", sampleBuffers);
+  std_fmt::println("-------------------------------------------------------------");
 
   if (dumpExtensions)
   {

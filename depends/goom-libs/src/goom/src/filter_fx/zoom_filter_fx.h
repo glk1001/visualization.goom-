@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <span>
 
 namespace GOOM
 {
@@ -36,6 +37,7 @@ public:
                std::unique_ptr<FilterBuffersService> filterBuffersService,
                std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
+  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
 
   auto Start() noexcept -> void;
@@ -51,6 +53,8 @@ public:
   auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+
+  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;

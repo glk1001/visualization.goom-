@@ -49,6 +49,7 @@ public:
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
+  auto InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 

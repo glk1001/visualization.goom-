@@ -97,6 +97,12 @@ auto FilterBuffersService::UpdateTranBuffers() noexcept -> void
   }
 }
 
+auto FilterBuffersService::IsFilterPosDataReady() const noexcept -> bool
+{
+  return m_filterBuffers.GetTranBuffersState() ==
+         FilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS;
+}
+
 inline auto FilterBuffersService::AreStartingFreshTranBuffers() const noexcept -> bool
 {
   return m_filterBuffers.GetTranBuffersState() ==

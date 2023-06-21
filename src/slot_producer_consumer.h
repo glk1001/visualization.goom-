@@ -1,5 +1,3 @@
-//#undef NO_LOGGING
-
 #pragma once
 
 #include "goom/goom_config.h"
@@ -118,7 +116,7 @@ auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noe
 
   if (m_resourceQueue.size() >= m_maxResourceItems)
   {
-    LogWarn(*m_goomLogger, "### Resource queue full - skipping.");
+    //LogWarn(*m_goomLogger, "### Resource queue full - skipping.");
     return;
   }
 
@@ -134,7 +132,7 @@ auto SlotProducerConsumer<TResource>::Consume() noexcept -> void
 
   if (m_inUseSlotsQueue.empty())
   {
-    LogInfo(*m_goomLogger, "*** Consumer is waiting for non-empty in-use queue.");
+    //LogInfo(*m_goomLogger, "*** Consumer is waiting for non-empty in-use queue.");
     m_consumer_cv.wait(lock, [this] { return m_finished or (not m_inUseSlotsQueue.empty()); });
   }
   if (m_finished)
@@ -161,7 +159,7 @@ auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
 
   if (m_resourceQueue.size() >= m_maxResourceItems)
   {
-    LogInfo(*m_goomLogger, "### Producer is waiting for resource queue to decrease.");
+    //LogInfo(*m_goomLogger, "### Producer is waiting for resource queue to decrease.");
     m_resourcer_cv.wait(
         lock, [this] { return m_finished or (m_resourceQueue.size() < m_maxResourceItems); });
   }
@@ -171,7 +169,7 @@ auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
   }
   if (m_resourceQueue.empty())
   {
-    LogInfo(*m_goomLogger, "### Producer is waiting for non-empty resource queue.");
+    //LogInfo(*m_goomLogger, "### Producer is waiting for non-empty resource queue.");
     m_producer_cv.wait(lock, [this] { return m_finished or (not m_resourceQueue.empty()); });
   }
   if (m_finished)
@@ -180,7 +178,7 @@ auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
   }
   if (m_inUseSlotsQueue.size() >= m_maxInUseSlots)
   {
-    LogInfo(*m_goomLogger, "### Producer is waiting for in-use queue to decrease.");
+    //LogInfo(*m_goomLogger, "### Producer is waiting for in-use queue to decrease.");
     m_producer_cv.wait(
         lock, [this] { return m_finished or (m_inUseSlotsQueue.size() < m_maxInUseSlots); });
   }

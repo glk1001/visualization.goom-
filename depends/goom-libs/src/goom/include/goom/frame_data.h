@@ -8,8 +8,6 @@ namespace GOOM
 
 struct FilterPosArrays
 {
-  std_spn::span<Point2dFlt> filterSrcePos{};
-  bool filterSrcePosNeedsUpdating{};
   std_spn::span<Point2dFlt> filterDestPos{};
   bool filterDestPosNeedsUpdating{};
 };

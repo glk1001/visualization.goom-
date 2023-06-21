@@ -5,7 +5,6 @@
 #include <span>
 #include <stdexcept>
 
-using GOOM::FrameData;
 using GOOM::Pixel;
 using std::filesystem::temp_directory_path;
 
@@ -18,15 +17,14 @@ DisplacementFilter::DisplacementFilter(
     const std::string& shaderDir, const TextureBufferDimensions& textureBufferDimensions) noexcept
   : IScene{textureBufferDimensions},
     m_shaderDir{shaderDir},
-    m_buffSize{static_cast<size_t>(GetWidth()) * static_cast<size_t>(GetHeight())}
+    m_buffSize{static_cast<size_t>(GetWidth()) * static_cast<size_t>(GetHeight())},
+    m_frameDataArray(NUM_PBOS)
 {
 }
 
 auto DisplacementFilter::InitScene() -> void
 {
   CompileAndLinkShader();
-
-  SetupRenderParams();
 
   SetupRenderToTextureFBO();
 
@@ -51,12 +49,6 @@ auto DisplacementFilter::DestroyScene() noexcept -> void
 auto DisplacementFilter::Resize(const WindowDimensions& windowDimensions) noexcept -> void
 {
   SetFramebufferDimensions(windowDimensions);
-}
-
-auto DisplacementFilter::SetupRenderParams() noexcept -> void
-{
-  //std_fmt::println("fbw = {}, fbh = {}", GetFramebufferWidth(), GetFramebufferHeight());
-  glViewport(0, 0, GetWidth(), GetHeight());
 }
 
 auto DisplacementFilter::SetupRenderToTextureFBO() noexcept -> void
@@ -194,7 +186,7 @@ auto DisplacementFilter::SetupGlData() -> void
   SetupGlFilterPosData();
   SetupGlImageData();
 
-  InitFrameDataArray(m_frameDataArray);
+  InitFrameDataArrayPointers(m_frameDataArray);
 }
 
 auto DisplacementFilter::SetupGlParams() -> void
@@ -222,6 +214,8 @@ auto DisplacementFilter::Update(const float t) noexcept -> void
 
 auto DisplacementFilter::Render() noexcept -> void
 {
+  glViewport(0, 0, GetWidth(), GetHeight());
+
   m_program.Use();
   m_requestNextFrameData();
   Pass1UpdateFilterBuffers();
@@ -235,7 +229,20 @@ auto DisplacementFilter::Render() noexcept -> void
   m_program.Use();
   Pass2OutputToneMappedImage();
 
+  glViewport(0, 0, GetFramebufferWidth(), GetFramebufferHeight());
   Pass3OutputToScreen();
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+auto DisplacementFilter::InitAllFrameDataToGl() noexcept -> void
+{
+  m_program.Use();
+
+  for (auto i = 0U; i < NUM_PBOS; ++i)
+  {
+    UpdateFrameDataToGl(i);
+  }
 }
 
 auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
@@ -294,8 +301,6 @@ auto DisplacementFilter::Pass2OutputToneMappedImage() noexcept -> void
 
 auto DisplacementFilter::Pass3OutputToScreen() noexcept -> void
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
   glBlitNamedFramebuffer(m_renderToTextureFbo,
                          0, // default framebuffer
                          0, // source rectangle
@@ -403,13 +408,11 @@ auto DisplacementFilter::GetLumAverage() const noexcept -> float
   return lumAverage;
 }
 
-auto DisplacementFilter::InitFrameDataArray(
-    std::array<FrameData, NUM_PBOS>& frameDataArray) noexcept -> void
+auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept
+    -> void
 {
   for (auto i = 0U; i < NUM_PBOS; ++i)
   {
-    frameDataArray.at(i).filterPosArrays.filterSrcePos = std_spn::span<FilterPosDataXY>{
-        m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(i), m_buffSize};
     frameDataArray.at(i).filterPosArrays.filterDestPos = std_spn::span<FilterPosDataXY>{
         m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(i), m_buffSize};
 
@@ -424,17 +427,51 @@ auto DisplacementFilter::InitFrameDataArray(
 
 auto DisplacementFilter::UpdateFrameDataToGl(const size_t pboIndex) noexcept -> void
 {
+  UpdateMiscDataToGl(pboIndex);
+  UpdatePosDataToGl(pboIndex);
+  UpdateImageDataToGl(pboIndex);
+}
+
+auto DisplacementFilter::UpdateMiscDataToGl(const size_t pboIndex) noexcept -> void
+{
   m_program.SetUniform("u_lerpFactor", m_frameDataArray.at(pboIndex).miscData.lerpFactor);
   m_program.SetUniform("u_brightness", m_frameDataArray.at(pboIndex).miscData.brightness);
+}
 
-  if (m_frameDataArray.at(pboIndex).filterPosArrays.filterSrcePosNeedsUpdating)
-  {
-    m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
-  }
+auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> void
+{
   if (m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
   {
+    // TODO - Can a pbo Id swap be made to work?
+    CopyTextureData(m_glFilterPosData.filterDestPosTexture.GetTextureName(),
+                    m_glFilterPosData.filterSrcePosTexture.GetTextureName());
+
     m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
   }
+}
+
+auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,
+                                         const GLuint destTextureName) const noexcept -> void
+{
+  glCopyImageSubData(srceTextureName,
+                     GL_TEXTURE_2D,
+                     0,
+                     0,
+                     0,
+                     0,
+                     destTextureName,
+                     GL_TEXTURE_2D,
+                     0,
+                     0,
+                     0,
+                     0,
+                     GetWidth(),
+                     GetHeight(),
+                     1);
+}
+
+auto DisplacementFilter::UpdateImageDataToGl(const size_t pboIndex) noexcept -> void
+{
   if (m_frameDataArray.at(pboIndex).imageArrays.mainImageDataNeedsUpdating)
   {
     m_glImageData.mainImageTexture.CopyMappedBufferToTexture(pboIndex);

@@ -25,6 +25,7 @@
 #include "utils/parallel_utils.h"
 
 #include <cmath>
+#include <span>
 
 #if __clang_major__ >= 16
 #pragma GCC diagnostic push
@@ -183,6 +184,10 @@ auto FullyUpdateDestBuffer(FilterBuffers& filterBuffers) noexcept -> void
       [&zoomVector](const NormalizedCoords& normalizedCoords,
                     const NormalizedCoords& viewportCoords)
       { return zoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+
+  static auto s_tranBuffDestVec = std::vector<Point2dFlt>(GOOM_INFO.GetDimensions().GetSize());
+  auto tranBuffDest = std_spn::span<Point2dFlt>{s_tranBuffDestVec.data(), s_tranBuffDestVec.size()};
+  filterBufferStriper->SetTranBufferDest(tranBuffDest);
 
   return FilterBuffers{GOOM_INFO, std::move(filterBufferStriper)};
 }

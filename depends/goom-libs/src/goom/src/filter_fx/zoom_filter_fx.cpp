@@ -48,6 +48,7 @@ public:
                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
+  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
 
   auto Start() noexcept -> void;
@@ -62,6 +63,8 @@ public:
   auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+
+  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;
@@ -92,6 +95,12 @@ ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
   : m_pimpl{spimpl::make_unique_impl<ZoomFilterImpl>(
         parallel, goomInfo, std::move(filterBuffersService), std::move(filterColorsService))}
 {
+}
+
+auto ZoomFilterFx::SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept
+    -> void
+{
+  m_pimpl->SetTranBufferDest(tranBufferFlt);
 }
 
 auto ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings) noexcept -> void
@@ -157,6 +166,11 @@ auto ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& d
   m_pimpl->ZoomFilterFastRgb(srceBuff, destBuff);
 }
 
+auto ZoomFilterFx::IsFilterPosDataReady() const noexcept -> bool
+{
+  return m_pimpl->IsFilterPosDataReady();
+}
+
 auto ZoomFilterFx::SetZoomFilterBrightness(const float brightness) noexcept -> void
 {
   m_pimpl->SetZoomFilterBrightness(brightness);
@@ -182,6 +196,12 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)}
 {
+}
+
+inline auto ZoomFilterFx::ZoomFilterImpl::SetTranBufferDest(
+    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+{
+  m_filterBuffersService->SetTranBufferDest(tranBufferFlt);
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& settings) noexcept
@@ -255,14 +275,20 @@ inline auto ZoomFilterFx::ZoomFilterImpl::Start() noexcept -> void
  *  So that is why you have this name, for the nostalgia of the first days of goom
  *  when it was just a tiny program writen in Turbo Pascal on my i486...
  */
-inline auto ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(const PixelBuffer& srceBuff,
-                                                            PixelBuffer& destBuff) noexcept -> void
+inline auto ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(
+    [[maybe_unused]] const PixelBuffer& srceBuff, [[maybe_unused]] PixelBuffer& destBuff) noexcept
+    -> void
 {
   ++m_updateNum;
 
   m_filterBuffersService->UpdateTranBuffers();
 
-  CZoom(srceBuff, destBuff);
+  //  CZoom(srceBuff, destBuff);
+}
+
+auto ZoomFilterFx::ZoomFilterImpl::IsFilterPosDataReady() const noexcept -> bool
+{
+  return m_filterBuffersService->IsFilterPosDataReady();
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float brightness) noexcept

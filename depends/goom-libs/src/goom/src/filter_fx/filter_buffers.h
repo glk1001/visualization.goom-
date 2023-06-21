@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <span>
 #include <vector>
 
 namespace GOOM::FILTER_FX
@@ -45,6 +46,8 @@ public:
 
   ZoomFilterBuffers(const PluginInfo& goomInfo,
                     std::unique_ptr<FilterStriper> filterStriper) noexcept;
+
+  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
@@ -101,6 +104,13 @@ ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
     m_filterStriper{std::move(filterStriper)},
     m_firedec(m_dimensions.GetHeight())
 {
+}
+
+template<class FilterStriper>
+auto ZoomFilterBuffers<FilterStriper>::SetTranBufferDest(
+    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+{
+  m_filterStriper->SetTranBufferDest(tranBufferFlt);
 }
 
 template<class FilterStriper>

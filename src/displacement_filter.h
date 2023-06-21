@@ -32,6 +32,7 @@ class DisplacementFilter : public IScene
   static constexpr auto IMAGE_TEX_PIXEL_TYPE       = FILTER_BUFF_TEX_PIXEL_TYPE;
 
 public:
+  static constexpr auto NUM_PBOS = 3U;
   using FilterPosDataXY = GOOM::Point2dFlt;
 
   DisplacementFilter(const std::string& shaderDir,
@@ -41,12 +42,13 @@ public:
   auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
   auto DestroyScene() noexcept -> void;
 
+  [[nodiscard]] auto GetFrameDataArray() noexcept -> std::vector<FrameData>&;
+  auto InitAllFrameDataToGl() noexcept -> void;
+
   auto Update(float t) noexcept -> void override;
   auto Render() noexcept -> void override;
 
   auto ClearFilterBuffers() noexcept -> void;
-
-  static constexpr auto NUM_PBOS = 3U;
 
   [[nodiscard]] auto GetFrameData(size_t pboIndex) noexcept -> GOOM::FrameData&;
   auto UpdateFrameData(size_t pboIndex) noexcept -> void;
@@ -62,8 +64,9 @@ private:
   size_t m_buffSize;
   GLuint m_renderToTextureFbo{};
   GLsync m_glFenceSync{};
-  std::array<GOOM::FrameData, NUM_PBOS> m_frameDataArray{};
-  auto InitFrameDataArray(std::array<GOOM::FrameData, NUM_PBOS>& frameDataArray) noexcept -> void;
+  std::vector<FrameData> m_frameDataArray;
+  auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
+  auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
@@ -75,7 +78,6 @@ private:
   auto SetupRenderToTextureFBO() noexcept -> void;
   auto SetupScreenBuffers() noexcept -> void;
   auto SetupProgramSubroutines() noexcept -> void;
-  auto SetupRenderParams() noexcept -> void;
   static auto SetupGlParams() -> void;
   auto SetupGlData() -> void;
   auto InitFilterBuffers() noexcept -> void;
@@ -84,6 +86,9 @@ private:
   [[nodiscard]] auto GetLumAverage() const noexcept -> float;
   RequestNextFrameDataFunc m_requestNextFrameData{};
   auto UpdateFrameDataToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateMiscDataToGl(size_t pboIndex) noexcept -> void;
+  auto UpdatePosDataToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateImageDataToGl(size_t pboIndex) noexcept -> void;
 
   GLuint m_pass1Index{};
   static constexpr auto PASS1_NAME = "Pass1UpdateFilterBuffers";
@@ -206,6 +211,11 @@ private:
   auto SetupGlImageData() -> void;
   auto BindGlImageData() noexcept -> void;
 };
+
+inline auto DisplacementFilter::GetFrameDataArray() noexcept -> std::vector<FrameData>&
+{
+  return m_frameDataArray;
+}
 
 inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> GOOM::FrameData&
 {

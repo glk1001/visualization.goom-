@@ -23,6 +23,8 @@ public:
   constexpr explicit NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept;
   constexpr NormalizedCoords(float xAlreadyNormalized, float yAlreadyNormalized) noexcept;
 
+  [[nodiscard]] constexpr auto GetFltCoords() const noexcept -> Point2dFlt;
+
   [[nodiscard]] constexpr auto GetX() const noexcept -> float;
   [[nodiscard]] constexpr auto GetY() const noexcept -> float;
   constexpr auto SetX(float xNormalized) noexcept -> void;
@@ -194,6 +196,11 @@ constexpr NormalizedCoords::NormalizedCoords(const float xAlreadyNormalized,
                                              const float yAlreadyNormalized) noexcept
   : m_fltCoords{xAlreadyNormalized, yAlreadyNormalized}
 {
+}
+
+constexpr auto NormalizedCoords::GetFltCoords() const noexcept -> Point2dFlt
+{
+  return m_fltCoords;
 }
 
 constexpr auto NormalizedCoords::GetX() const noexcept -> float

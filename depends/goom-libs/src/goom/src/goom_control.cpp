@@ -118,6 +118,7 @@ public:
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
+  auto InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
@@ -133,14 +134,15 @@ private:
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   FxHelper m_fxHelper;
 
-  bool m_noZooms         = false;
-  uint32_t m_updateNum   = 0;
-  FrameData* m_frameData = nullptr;
-  std::unique_ptr<PixelBuffer> m_p1{
-      std::make_unique<PixelBufferVector>(m_goomInfo.GetDimensions())};
-  std::unique_ptr<PixelBuffer> m_p2{
-      std::make_unique<PixelBufferVector>(m_goomInfo.GetDimensions())};
-  PixelBuffer* m_outputBuff = nullptr;
+  bool m_noZooms            = false;
+  uint32_t m_updateNum      = 0;
+  FrameData* m_frameData    = nullptr;
+  bool m_filterPosDataReady = false;
+  PixelBuffer* m_p1         = nullptr;
+  PixelBuffer* m_p2         = nullptr;
+  static auto InitMiscData(MiscData& miscData) noexcept -> void;
+  static auto InitImageArrays(ImageArrays& imageArrays) noexcept -> void;
+  auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
 
   FilterSettingsService m_filterSettingsService;
 
@@ -248,6 +250,11 @@ auto GoomControl::SetNoZooms(const bool value) -> void
   m_pimpl->SetNoZooms(value);
 }
 
+auto GoomControl::InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void
+{
+  m_pimpl->InitFrameData(frameDataArray);
+}
+
 auto GoomControl::SetFrameData(FrameData& frameData) -> void
 {
   m_pimpl->SetFrameData(frameData);
@@ -313,7 +320,8 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
     m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
-  RotateBuffers();
+  //RotateBuffers();
+  UTILS::SetGoomLogger(*m_goomLogger);
 }
 
 inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
@@ -326,10 +334,54 @@ inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowMusicTitleType 
   m_showTitle = value;
 }
 
+inline auto GoomControl::GoomControlImpl::InitFrameData(
+    std::vector<FrameData>& frameDataArray) noexcept -> void
+{
+  for (auto& frameData : frameDataArray)
+  {
+    InitMiscData(frameData.miscData);
+    InitImageArrays(frameData.imageArrays);
+    InitFilterPosArrays(frameData.filterPosArrays);
+  }
+}
+
+auto GoomControl::GoomControlImpl::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
+{
+  miscData.lerpFactor = 0.0F;
+  miscData.brightness = 0.5F;
+}
+
+auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
+{
+  imageArrays.mainImageDataNeedsUpdating = false;
+  imageArrays.lowImageDataNeedsUpdating  = false;
+}
+
+auto GoomControl::GoomControlImpl::InitFilterPosArrays(
+    GOOM::FilterPosArrays& filterPosArrays) noexcept -> void
+{
+  FILTER_FX::ZoomFilterBufferStriper::InitTranBufferDest(m_goomInfo.GetDimensions(),
+                                                         filterPosArrays.filterDestPos);
+  filterPosArrays.filterDestPosNeedsUpdating = true;
+}
+
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
 {
-  m_frameData  = &frameData;
-  m_outputBuff = &m_frameData->imageArrays.mainImageData;
+  m_frameData = &frameData;
+  m_p1        = &m_frameData->imageArrays.mainImageData;
+  m_p2        = &m_frameData->imageArrays.lowImageData;
+  m_visualFx.SetTranBufferDest(m_frameData->filterPosArrays.filterDestPos);
+
+  m_p1->Fill(BLACK_PIXEL);
+  m_p2->Fill(BLACK_PIXEL);
+
+  m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
+
+  m_frameData->imageArrays.mainImageDataNeedsUpdating     = true;
+  m_frameData->imageArrays.lowImageDataNeedsUpdating      = true;
+  m_frameData->filterPosArrays.filterDestPosNeedsUpdating = m_filterPosDataReady;
+  m_frameData->miscData.lerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) / 65536.0F;
+  m_frameData->miscData.brightness = 0.5F;
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void
@@ -363,7 +415,7 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderVariables() const
 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
-  UTILS::SetGoomLogger(*m_goomLogger);
+  Expects(m_frameData != nullptr);
 
   m_goomLogger->StartGoomControl(this);
 
@@ -574,6 +626,8 @@ inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
   }
 
   m_visualFx.ApplyZoom(*m_p1, *m_p2);
+
+  m_filterPosDataReady = m_visualFx.IsFilterPosDataReady();
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
@@ -592,14 +646,16 @@ inline auto GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSett
 inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
 {
   // affichage et swappage des buffers...
-  m_p1->CopyTo(*m_outputBuff);
+  //m_p1->CopyTo(*m_outputBuff);
 
   RotateBuffers();
 }
 
 inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void
 {
-  std::swap(m_p1, m_p2);
+  Expects(m_p1 != nullptr);
+  Expects(m_p2 != nullptr);
+  //std::swap(m_p1, m_p2);
   m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 }
 
@@ -635,7 +691,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 
   if (m_showTitle == ShowMusicTitleType::ALWAYS)
   {
-    m_goomTextOutput.SetBuffer(*m_outputBuff);
+    m_goomTextOutput.SetBuffer(*m_p1);
     m_goomTitleDisplayer.DrawStaticText(m_songInfo.title);
     return;
   }
@@ -653,7 +709,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
   }
   else
   {
-    m_goomTextOutput.SetBuffer(*m_outputBuff);
+    m_goomTextOutput.SetBuffer(*m_p1);
   }
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
 }
@@ -668,7 +724,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
     return;
   }
 
-  m_goomTextOutput.SetBuffer(*m_outputBuff);
+  m_goomTextOutput.SetBuffer(*m_p1);
 
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
 }
