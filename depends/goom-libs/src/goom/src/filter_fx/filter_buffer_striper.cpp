@@ -1,23 +1,20 @@
+#undef NO_LOGGING
 #include "filter_buffer_striper.h"
 
-//#include "debugging_logger.h"
+#include "debugging_logger.h"
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "point2d.h"
-#include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
-#include "utils/t_values.h"
 
 #include <cmath>
 
 namespace GOOM::FILTER_FX
 {
 
-using UTILS::IncrementedValue;
 using UTILS::Parallel;
-using UTILS::TValue;
 using UTILS::MATH::FloatsEqual;
 
 ZoomFilterBufferStriper::ZoomFilterBufferStriper(
@@ -50,24 +47,33 @@ auto ZoomFilterBufferStriper::InitTranBufferDest(const Dimensions& dimensions,
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
 
-  IncrementedValue<float> yCoord{NormalizedCoords::MIN_COORD,
-                                 NormalizedCoords::MAX_COORD,
-                                 TValue::StepType::SINGLE_CYCLE,
-                                 dimensions.GetHeight() - 1};
-  auto index = size_t{0U};
+  static constexpr auto MIN_COORD   = -2.0F;
+  static constexpr auto MAX_COORD   = +2.0F;
+  static constexpr auto COORD_WIDTH = MAX_COORD - MIN_COORD;
+  const float xRatioScreenToNormalizedCoord =
+      COORD_WIDTH / static_cast<float>(dimensions.GetWidth());
+  const float yRatioScreenToNormalizedCoord =
+      COORD_WIDTH / static_cast<float>(dimensions.GetHeight());
+
+  const auto getNormalizedCoords = [&xRatioScreenToNormalizedCoord, &yRatioScreenToNormalizedCoord](
+                                       const float x, const float y) noexcept -> Point2dFlt
+  {
+    return {MIN_COORD + (xRatioScreenToNormalizedCoord * x),
+            MIN_COORD + (yRatioScreenToNormalizedCoord * y)};
+  };
+
   for (auto y = 0U; y < dimensions.GetHeight(); ++y)
   {
-    IncrementedValue<float> xCoord{NormalizedCoords::MIN_COORD,
-                                   NormalizedCoords::MAX_COORD,
-                                   TValue::StepType::SINGLE_CYCLE,
-                                   dimensions.GetWidth() - 1};
+    const auto yIndex = static_cast<size_t>(y) * static_cast<size_t>(dimensions.GetWidth());
     for (auto x = 0U; x < dimensions.GetWidth(); ++x)
     {
-      tranBufferFlt[index] = Point2dFlt{xCoord(), yCoord()};
-      xCoord.Increment();
-      ++index;
+      const auto index = yIndex + static_cast<size_t>(x);
+
+      const auto identityXY =
+          getNormalizedCoords(0.5F + static_cast<float>(x), 0.5F + static_cast<float>(y));
+
+      tranBufferFlt[index] = identityXY;
     }
-    yCoord.Increment();
   }
 
   /**
@@ -81,10 +87,10 @@ auto ZoomFilterBufferStriper::InitTranBufferDest(const Dimensions& dimensions,
           NormalizedCoords::MAX_COORD);
 **/
 
-  Ensures(FloatsEqual(tranBufferFlt.front().x, NormalizedCoords::MIN_COORD, 0.0001F));
-  Ensures(FloatsEqual(tranBufferFlt.front().y, NormalizedCoords::MIN_COORD, 0.0001F));
-  Ensures(FloatsEqual(tranBufferFlt.back().x, NormalizedCoords::MAX_COORD, 0.0001F));
-  Ensures(FloatsEqual(tranBufferFlt.back().y, NormalizedCoords::MAX_COORD, 0.0001F));
+  //  Ensures(FloatsEqual(tranBufferFlt.front().x, NormalizedCoords::MIN_COORD, 0.0001F));
+  //  Ensures(FloatsEqual(tranBufferFlt.front().y, NormalizedCoords::MIN_COORD, 0.0001F));
+  //  Ensures(FloatsEqual(tranBufferFlt.back().x, NormalizedCoords::MAX_COORD, 0.0001F));
+  //  Ensures(FloatsEqual(tranBufferFlt.back().y, NormalizedCoords::MAX_COORD, 0.0001F));
 }
 
 /*
@@ -96,7 +102,15 @@ auto ZoomFilterBufferStriper::InitTranBufferDest(const Dimensions& dimensions,
  */
 auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) noexcept -> void
 {
+  LogInfo(GoomLogger(), "Starting next stripe.");
   Expects(m_tranBufferFlt.size() == m_dimensions.GetSize());
+
+
+  //  static constexpr auto X_OFFSET = 0.01F;
+  static auto s_numGetFrameDataRequests = 0U;
+  //  const bool updateOffset        = (s_numGetFrameDataRequests % 2000000000) == 0;
+  ++s_numGetFrameDataRequests;
+
 
   const auto screenWidth                  = m_dimensions.GetWidth();
   const auto screenSpan                   = static_cast<float>(screenWidth - 1);
@@ -118,10 +132,41 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
     for (auto x = 0U; x < screenWidth; ++x)
     {
       const auto zoomCoords = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
-      m_tranBufferFlt[tranBufferPos] = zoomCoords.GetFltCoords();
-
       const auto uncenteredZoomCoords = m_normalizedMidpoint + zoomCoords;
-      m_tranBuffer[tranBufferPos]     = GetTranPoint(uncenteredZoomCoords);
+      //m_tranBufferFlt[tranBufferPos] = zoomCoords.GetFltCoords();
+      m_tranBufferFlt[tranBufferPos] = uncenteredZoomCoords.GetFltCoords();
+
+      // NOT SETTING m_tranBufferFlt AT ALL HAS RIGHT DRIFT
+      //const auto zoomInFactor = 1.0F - 0.001F;
+      //m_tranBufferFlt[tranBufferPos] = (m_normalizedMidpoint + zoomInFactor*centredSourceCoords).GetFltCoords();
+
+      // THIS SORT OF WORKS
+      //      if (updateOffset)
+      //      {
+      //        auto destXY = m_tranBufferFlt[tranBufferPos];
+      //        destXY      = {destXY.x + X_OFFSET, destXY.y};
+      //        if (destXY.x > NormalizedCoords::MAX_COORD)
+      //        {
+      //          destXY.x = NormalizedCoords::MIN_COORD;
+      //        }
+      //        m_tranBufferFlt[tranBufferPos] = destXY;
+      //      }
+
+      m_tranBuffer[tranBufferPos] = GetTranPoint(uncenteredZoomCoords);
+
+      if ((s_numGetFrameDataRequests % 10) == 0)
+      {
+        LogInfo(GoomLogger(),
+                "m_tranBuffer[{}]    = {}, {}",
+                tranBufferPos,
+                m_tranBuffer[tranBufferPos].x,
+                m_tranBuffer[tranBufferPos].y);
+        LogInfo(GoomLogger(),
+                "m_tranBufferFlt[{}] = {}, {}",
+                tranBufferPos,
+                m_tranBufferFlt[tranBufferPos].x,
+                m_tranBufferFlt[tranBufferPos].y);
+      }
 
       centredSourceCoords.IncX(sourceCoordsStepSize);
       centredSourceViewportCoords.IncX(sourceViewportCoordsStepSize);

@@ -402,6 +402,7 @@ auto DisplacementFilter::SetupGlLumComputeData() noexcept -> void
 
 auto DisplacementFilter::GetLumAverage() const noexcept -> float
 {
+  //return 0.5F;
   auto lumAverage = 0.0F;
 
   glBindTexture(GL_TEXTURE_2D, m_lumDataTextureName);

@@ -3,9 +3,11 @@
 #include "filter_utils/zoom_coord_transforms.h"
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "filter_utils/zoom_transform_buffers.h"
+#include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
 #include "point2d.h"
+#include "utils/debugging_logger.h"
 
 #include <cstdint>
 #include <functional>
@@ -252,14 +254,17 @@ inline auto ZoomFilterBuffers<FilterStriper>::UpdateTranBuffers() noexcept -> vo
 {
   if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
   {
+    LogInfo(UTILS::GetGoomLogger(), "Reset tran buffers");
     ResetTranBuffers();
   }
   else if (m_tranBuffersState == TranBuffersState::START_FRESH_TRAN_BUFFERS)
   {
+    LogInfo(UTILS::GetGoomLogger(), "Start fresh tran buffers");
     StartFreshTranBuffers();
   }
   else
   {
+    LogInfo(UTILS::GetGoomLogger(), "Update next tran buffer stripe.");
     UpdateNextTempTranBufferStripe();
   }
 }

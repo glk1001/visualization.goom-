@@ -67,6 +67,7 @@ public:
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
+  bool m_filterPosDataReady = false;
 
   ZoomFilterEffectsSettings m_currentFilterEffectsSettings{};
   ZoomFilterEffectsSettings m_nextFilterEffectsSettings{};
