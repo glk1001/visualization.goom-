@@ -284,7 +284,9 @@ auto DisplacementFilter::Pass1UpdateFilterBuffers() noexcept -> void
 
 auto DisplacementFilter::Pass2OutputToneMappedImage() noexcept -> void
 {
-  m_program.SetUniform("u_averageLuminance", GetLumAverage());
+  //std_fmt::println("Before av lum {}", __LINE__);
+  //m_program.SetUniform("u_averageLuminance", GetLumAverage());
+  //std_fmt::println("After av lum {}", __LINE__);
   //std_fmt::println("LumAverage = {}.", GetLumAverage());
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo);

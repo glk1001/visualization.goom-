@@ -26,7 +26,6 @@ layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16) uniform image2D img_filterBuff3;
 in vec3 position;
 in vec2 texCoord;
 
-uniform float u_averageLuminance;
 uniform float u_brightness;
 
 uniform float u_lerpFactor;
@@ -93,7 +92,9 @@ subroutine (RenderPassType) vec4 Pass2OutputToneMappedImage()
 
   vec3 hdrColor = filtBuff3Val.rgb;
 
-  vec3 toneMappedColor = GetToneMappedColor(hdrColor, u_averageLuminance, 20.0*u_brightness);
+  float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
+
+  vec3 toneMappedColor = GetToneMappedColor(hdrColor, averageLuminance, 3.0*u_brightness);
 //  vec3 toneMappedColor = GetToneMappedColor(hdrColor, 1.0, u_brightness);
 //  vec3 toneMappedColor = hdrColor;
 
