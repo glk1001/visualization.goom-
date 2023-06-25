@@ -219,13 +219,15 @@ float unreal(float x) {
 }
 
 // The tone map in use.
-vec3 GetToneMappedColor(vec3 color, float exposure, float brightness)
+vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
 {
-  const float exposureMultiplier = 2.0;
   float A;
   float gamma;
   vec3 mapped = color;
-  float finalExposure = exposureMultiplier * exposure;
+  //const float exposureMultiplier = 9.6;
+  //float finalExposure = 1.0 / ((exposureMultiplier * averageLuminance) + 0.001);
+  const float linearScale = 0.18; // MAYBE brightness ??
+  float finalExposure = linearScale / (averageLuminance + 0.0001);
 
   #if (toneMapToUse == NO_TONE_MAP)
   {
@@ -240,7 +242,7 @@ vec3 GetToneMappedColor(vec3 color, float exposure, float brightness)
   }
   #elif (toneMapToUse == LOTTES_TONE_MAP)
   {
-    A = 5.0;
+    A = 3.0;
     gamma = 2.2;
     mapped = lottes(finalExposure * mapped);
   }

@@ -283,13 +283,13 @@ inline auto ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(
 
   m_filterBuffersService->UpdateTranBuffers();
 
-  CZoom(srceBuff, destBuff);
+  //  CZoom(srceBuff, destBuff);
 }
 
 auto ZoomFilterFx::ZoomFilterImpl::IsFilterPosDataReady() const noexcept -> bool
 {
   // NOT CHANGING FILTER POS DEST GIVES RIGHT DRIFT FROM INITIAL BUFFERS. WHY?????
-  return false; //m_filterBuffersService->IsFilterPosDataReady();
+  return m_filterBuffersService->IsFilterPosDataReady();
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float brightness) noexcept

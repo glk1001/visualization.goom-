@@ -92,10 +92,10 @@ auto FilterBuffersService::UpdateTranBuffers() noexcept -> void
 {
   LogInfo(UTILS::GetGoomLogger(), "Starting update tran buffers.");
 
-  m_filterBuffers.UpdateTranBuffers();
-
   m_filterPosDataReady =
       m_filterBuffers.GetTranBuffersState() == FilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS;
+
+  m_filterBuffers.UpdateTranBuffers();
 
   if (AreStartingFreshTranBuffers())
   {

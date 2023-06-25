@@ -58,10 +58,10 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
 {
   ivec2 xy = ivec2(gl_FragCoord.xy);
 
-//  vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord);
+  vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord);
 
   vec4 colorMain = texture(tex_mainImage, texCoord);
-//  vec4 colorLow  = texture(tex_lowImage, texCoord);
+  vec4 colorLow  = texture(tex_lowImage, texCoord);
 
 //  vec4 filtBuff2ColorMain = vec4(blend(filtBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
 //  vec4 filtBuff2ColorMain = vec4((1-colorMain.a)*filtBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
@@ -69,12 +69,12 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
 //  vec4 filtBuff2ColorMain = (1-alpha)*filtBuff2Val + alpha*50*colorMain;
 //  vec4 filtBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filtBuff2Val.rgb, colorMain.a), 1.0);
 //  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
+//  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
+  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + colorMain.rgb, 1.0);
+  vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + 10*colorLow.rgb, 1.0);
+//  vec4 filtBuff2ColorLow  = vec4(10*colorLow.rgb, 1.0);
 
-  vec4 filtBuff2ColorMain = colorMain;
-//  vec4 filtBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filtBuff2Val.rgb, colorMain.a), 1.0);
-//  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
-
-//  imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
+  imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
   imageStore(img_filterBuff3, xy, filtBuff2ColorMain);
 
   discard;

@@ -133,7 +133,7 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
     {
       const auto zoomCoords = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
       const auto uncenteredZoomCoords = m_normalizedMidpoint + zoomCoords;
-      //m_tranBufferFlt[tranBufferPos] = zoomCoords.GetFltCoords();
+      //m_tranBufferFlt[tranBufferPos]  = zoomCoords.GetFltCoords();
       m_tranBufferFlt[tranBufferPos] = uncenteredZoomCoords.GetFltCoords();
 
       // NOT SETTING m_tranBufferFlt AT ALL HAS RIGHT DRIFT

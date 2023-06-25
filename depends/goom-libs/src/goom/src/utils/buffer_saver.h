@@ -179,7 +179,8 @@ void BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
   auto file = std::ofstream{filename, std::ios::out | std::ios::binary};
   if (not file.good())
   {
-    throw std::runtime_error(std_fmt::format("Could not open file for writing: '{}'.", filename));
+    throw std::runtime_error(std_fmt::format(
+        "Could not open file '{}' for binary writing. Error: {}.", filename, strerror(errno)));
   }
   WriteBinary(file, tag, header, buffer);
 }
@@ -241,6 +242,11 @@ void BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
                                              const BufferView<T>& buffer)
 {
   auto file = std::ofstream{filename, std::ios::out};
+  if (not file.good())
+  {
+    throw std::runtime_error(std_fmt::format(
+        "Could not open file '{}' for text writing. Error: {}.", filename, strerror(errno)));
+  }
   WriteFormatted(file, tag, header, buffer);
 }
 
@@ -261,7 +267,7 @@ void BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
   for (auto i = 0U; i < buffer.GetBufferLen(); ++i)
   {
     //    file << std20::format("{:#018x}", buffer[i]);
-    file << std_fmt::format("{}", buffer[i]);
+    file << to_string(buffer[i]);
     if (i < (buffer.GetBufferLen() - 1))
     {
       file << ", ";
