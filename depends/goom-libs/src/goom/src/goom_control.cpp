@@ -610,10 +610,17 @@ inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& sound
   m_goomSoundEvents.Update();
 }
 
-inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffers(const AudioSamples& soundData)
-    -> void
+inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffers(
+    [[maybe_unused]] const AudioSamples& soundData) -> void
 {
-  m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
+  //  m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
+  for (auto y = 0; y < m_goomInfo.GetDimensions().GetIntHeight(); ++y)
+  {
+    for (auto x = 0; x < m_goomInfo.GetDimensions().GetIntWidth(); ++x)
+    {
+      (*m_p2)(x, y) = Pixel{static_cast<uint16_t>(x), static_cast<uint16_t>(y), 0, MAX_ALPHA};
+    }
+  }
 }
 
 inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void

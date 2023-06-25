@@ -5,6 +5,13 @@
 #include "utils/math/misc.h"
 #include "zoom_coord_transforms.h"
 
+#include <format>
+[[nodiscard]] inline auto to_string(const GOOM::Point2dInt& point)
+{
+  return std_fmt::format("{:+6d}, {:+6d}", point.x, point.y);
+}
+#include "utils/buffer_saver.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <vector>
@@ -44,6 +51,8 @@ private:
   Point2dInt m_maxTranPointMinus1;
   std::vector<Point2dInt> m_tranSrce;
   std::vector<Point2dInt> m_tranDest;
+  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
+  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in_cpu"};
   uint32_t m_tranLerpFactor = 0U;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;

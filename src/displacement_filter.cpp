@@ -1,5 +1,7 @@
 #include "displacement_filter.h"
 
+#include "gl_utils.h"
+
 #include <filesystem>
 #include <format>
 #include <span>
@@ -233,6 +235,8 @@ auto DisplacementFilter::Render() noexcept -> void
   Pass3OutputToScreen();
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  //  SaveBuffers();
 }
 
 auto DisplacementFilter::InitAllFrameDataToGl() noexcept -> void
@@ -262,6 +266,19 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
   //  {
   //    std_fmt::println("Fence did not finish.");
   //  }
+}
+
+auto DisplacementFilter::SaveBuffers() -> void
+{
+  auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
+  m_glFilterBuffData.filterBuff2Texture.BindTexture(m_program);
+  glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data());
+  GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
+
+  glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
+
+  auto filterBufferView = UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
+  m_filterBufferSave.Write(filterBufferView, false);
 }
 
 auto DisplacementFilter::Pass1UpdateFilterBuffers() noexcept -> void
@@ -441,15 +458,64 @@ auto DisplacementFilter::UpdateMiscDataToGl(const size_t pboIndex) noexcept -> v
   m_program.SetUniform("u_brightness", m_frameDataArray.at(pboIndex).miscData.brightness);
 }
 
+[[nodiscard]] static auto GetTranArray(const Point2dFlt* const buffIn,
+                                       const int width,
+                                       [[maybe_unused]] const int height,
+                                       const size_t buffSize) -> std::vector<Point2dInt>
+{
+  auto buffOut = std::vector<Point2dInt>(buffSize);
+  for (auto i = 0U; i < buffSize; ++i)
+  {
+    buffOut[i] = {
+        16 * static_cast<int32_t>(static_cast<float>(width) * (2.0F + buffIn[i].x) / 4.0F),
+        16 * static_cast<int32_t>(static_cast<float>(width) * (2.0F + buffIn[i].y) / 4.0F)};
+  }
+
+  return buffOut;
+}
+
 auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> void
 {
   if (m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
   {
+    const auto* filterPosDestIn = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+    const auto filterPosDestInInt =
+        GetTranArray(filterPosDestIn, GetWidth(), GetHeight(), m_buffSize);
+    auto filterPosDestInIntBufferView =
+        UTILS::BufferView<Point2dInt>{m_buffSize, filterPosDestInInt.data()};
+    m_filterPosDestInBufferSave.Write(filterPosDestInIntBufferView, false);
+
     // TODO - Can a pbo Id swap be made to work?
     CopyTextureData(m_glFilterPosData.filterDestPosTexture.GetTextureName(),
                     m_glFilterPosData.filterSrcePosTexture.GetTextureName());
 
     m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
+
+    auto filterPosSrce = std::vector<Point2dFlt>(m_buffSize);
+    m_glFilterPosData.filterSrcePosTexture.BindTexture(m_program);
+    glGetTexImage(
+        GL_TEXTURE_2D, 0, FILTER_POS_TEX_FORMAT, FILTER_POS_TEX_PIXEL_TYPE, filterPosSrce.data());
+    GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
+
+    auto filterPosDest = std::vector<Point2dFlt>(m_buffSize);
+    m_glFilterPosData.filterDestPosTexture.BindTexture(m_program);
+    glGetTexImage(
+        GL_TEXTURE_2D, 0, FILTER_POS_TEX_FORMAT, FILTER_POS_TEX_PIXEL_TYPE, filterPosDest.data());
+    GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
+
+    glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
+
+    const auto filterPosSrceInt =
+        GetTranArray(filterPosSrce.data(), GetWidth(), GetHeight(), m_buffSize);
+    auto filterPosSrceBufferView =
+        UTILS::BufferView<Point2dInt>{filterPosSrceInt.size(), filterPosSrceInt.data()};
+    m_filterPosSrceBufferSave.Write(filterPosSrceBufferView, false);
+
+    const auto filterPosDestInt =
+        GetTranArray(filterPosDest.data(), GetWidth(), GetHeight(), m_buffSize);
+    auto filterPosDestBufferView =
+        UTILS::BufferView<Point2dInt>{filterPosDestInt.size(), filterPosDestInt.data()};
+    m_filterPosDestBufferSave.Write(filterPosDestBufferView, false);
   }
 }
 

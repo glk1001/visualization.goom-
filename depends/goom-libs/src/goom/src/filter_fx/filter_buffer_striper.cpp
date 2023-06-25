@@ -131,10 +131,14 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
 
     for (auto x = 0U; x < screenWidth; ++x)
     {
-      const auto zoomCoords = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
+      //const auto zoomCoords = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
+      const auto zoomCoords           = centredSourceCoords;
       const auto uncenteredZoomCoords = m_normalizedMidpoint + zoomCoords;
+
       //m_tranBufferFlt[tranBufferPos]  = zoomCoords.GetFltCoords();
       m_tranBufferFlt[tranBufferPos] = uncenteredZoomCoords.GetFltCoords();
+
+      m_tranBuffer[tranBufferPos] = GetTranPoint(uncenteredZoomCoords);
 
       // NOT SETTING m_tranBufferFlt AT ALL HAS RIGHT DRIFT
       //const auto zoomInFactor = 1.0F - 0.001F;
@@ -151,8 +155,6 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
       //        }
       //        m_tranBufferFlt[tranBufferPos] = destXY;
       //      }
-
-      m_tranBuffer[tranBufferPos] = GetTranPoint(uncenteredZoomCoords);
 
       if ((s_numGetFrameDataRequests % 10) == 0)
       {

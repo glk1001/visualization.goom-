@@ -63,6 +63,39 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
   vec4 colorMain = texture(tex_mainImage, texCoord);
   vec4 colorLow  = texture(tex_lowImage, texCoord);
 
+/**
+  vec2 filtPos = texture(tex_filterDestPositions, texCoord).xy;
+  float filtCoord = filtPos.y;
+  if (filtCoord < -2.001)
+  {
+      colorLow = vec4(1,1,1,1);
+  }
+  else if (filtCoord < -1.9)
+  {
+      colorLow = vec4(1,0,0,1);
+  }
+  else if (filtCoord < -1.0)
+  {
+      colorLow = vec4(0,1,0,1);
+  }
+  else if (filtCoord < 0.0)
+  {
+      colorLow = vec4(0,0,1,1);
+  }
+  else if (filtCoord < 1.0)
+  {
+      colorLow = vec4(1,0,1,1);
+  }
+  else if (filtCoord < 2.0)
+  {
+      colorLow = vec4(0,1,1,1);
+  }
+  else
+  {
+      colorLow = vec4(0.5,0.5,0.5,1);
+  }
+**/
+
 //  vec4 filtBuff2ColorMain = vec4(blend(filtBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
 //  vec4 filtBuff2ColorMain = vec4((1-colorMain.a)*filtBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
 //  float alpha = 1 - 0.5 * colorMain.a;
@@ -72,7 +105,7 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
 //  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
   vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + colorMain.rgb, 1.0);
   vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + 10*colorLow.rgb, 1.0);
-//  vec4 filtBuff2ColorLow  = vec4(10*colorLow.rgb, 1.0);
+//filtBuff2ColorLow  = vec4(10*colorLow.rgb, 1.0);
 
   imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
   imageStore(img_filterBuff3, xy, filtBuff2ColorMain);
@@ -107,10 +140,13 @@ subroutine (RenderPassType) vec4 Pass2OutputToneMappedImage()
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)
 {
-  vec2 srcePos = (texture(tex_filterSrcePositions, uv).xy - u_filterPosMinCoord) / u_filterPosCoordWidth;
-  vec2 destPos = (texture(tex_filterDestPositions, uv).xy - u_filterPosMinCoord) / u_filterPosCoordWidth;
+  vec2 srceNormalizedPos = texture(tex_filterSrcePositions, uv).xy;
+  vec2 destNormalizedPos = texture(tex_filterDestPositions, uv).xy;
 
-  vec2 filtBuff2Pos = mix(srcePos, destPos, u_lerpFactor);
+  vec2 lerpNormalizedPos = mix(srceNormalizedPos, destNormalizedPos, u_lerpFactor);
+
+  vec2 filtBuff2Pos = vec2((lerpNormalizedPos.x - u_filterPosMinCoord) / u_filterPosCoordWidth,
+                           (lerpNormalizedPos.y - u_filterPosMinCoord) / u_filterPosCoordWidth);
 
   return texture(tex_filterBuff2, filtBuff2Pos);
 }

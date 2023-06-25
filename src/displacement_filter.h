@@ -7,6 +7,20 @@
 #include "goom/goom_graphic.h"
 #include "scene.h"
 
+[[nodiscard]] inline auto to_string(const GOOM::Point2dInt& point)
+{
+  return std_fmt::format("{:+6d}, {:+6d}", point.x, point.y);
+}
+[[nodiscard]] inline auto to_string(const GOOM::Point2dFlt& point)
+{
+  return std_fmt::format("{:+.5f}, {:+.5f}", point.x, point.y);
+}
+[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
+{
+  return std_fmt::format("{:5}, {:5}, {:5}, {:5}", pixel.R(), pixel.G(), pixel.B(), pixel.A());
+}
+#include "src/goom/src/utils/buffer_saver.h"
+
 #include <atomic>
 #include <functional>
 #include <span>
@@ -33,7 +47,7 @@ class DisplacementFilter : public IScene
 
 public:
   static constexpr auto NUM_PBOS = 3U;
-  using FilterPosDataXY = GOOM::Point2dFlt;
+  using FilterPosDataXY          = GOOM::Point2dFlt;
 
   DisplacementFilter(const std::string& shaderDir,
                      const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
@@ -67,6 +81,13 @@ private:
   std::vector<FrameData> m_frameDataArray;
   auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
+
+  auto SaveBuffers() -> void;
+  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
+  UTILS::BufferSaver<Point2dInt> m_filterPosSrceBufferSave{saveDir + "filter_pos_srce"};
+  UTILS::BufferSaver<Point2dInt> m_filterPosDestBufferSave{saveDir + "filter_pos_dest"};
+  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in"};
+  UTILS::BufferSaver<GOOM::Pixel> m_filterBufferSave{saveDir + "filter_buff"};
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
