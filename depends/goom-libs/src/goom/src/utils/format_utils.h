@@ -19,7 +19,9 @@ template<typename TPoint>
 
 [[nodiscard]] inline auto Rgba(const char* const fmtStr, const Pixel& pixel)
 {
-  const auto format = std_fmt::format("({}, {}, {}, {})", fmtStr, fmtStr, fmtStr, fmtStr);
+  const auto* const bestFmtStr = std::string(fmtStr) == "{}" ? "{:5d}" : fmtStr;
+  const auto format =
+      std_fmt::format("{}, {}, {}, {}", bestFmtStr, bestFmtStr, bestFmtStr, bestFmtStr);
   return fmt::vformat(format,
                       std_fmt::make_format_args(pixel.R(), pixel.G(), pixel.B(), pixel.A()));
 }
