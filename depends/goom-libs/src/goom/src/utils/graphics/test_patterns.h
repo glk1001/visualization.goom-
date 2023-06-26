@@ -8,6 +8,7 @@
 namespace GOOM::UTILS::GRAPHICS
 {
 
-auto DrawTestPattern(DRAW::IGoomDraw& draw, const Dimensions& dimensions) -> void;
+auto DrawTestPattern(DRAW::IGoomDraw& draw, const Point2dInt& centre, const Dimensions& dimensions)
+    -> void;
 
 } // namespace GOOM::UTILS::GRAPHICS

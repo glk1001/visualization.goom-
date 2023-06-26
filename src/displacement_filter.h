@@ -7,19 +7,19 @@
 #include "goom/goom_graphic.h"
 #include "scene.h"
 
-[[nodiscard]] inline auto to_string(const GOOM::Point2dInt& point)
-{
-  return std_fmt::format("{:+6d}, {:+6d}", point.x, point.y);
-}
-[[nodiscard]] inline auto to_string(const GOOM::Point2dFlt& point)
-{
-  return std_fmt::format("{:+.5f}, {:+.5f}", point.x, point.y);
-}
-[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
-{
-  return std_fmt::format("{:5}, {:5}, {:5}, {:5}", pixel.R(), pixel.G(), pixel.B(), pixel.A());
-}
-#include "src/goom/src/utils/buffer_saver.h"
+//[[nodiscard]] inline auto to_string(const GOOM::Point2dInt& point)
+//{
+//  return std_fmt::format("{:+6d}, {:+6d}", point.x, point.y);
+//}
+//[[nodiscard]] inline auto to_string(const GOOM::Point2dFlt& point)
+//{
+//  return std_fmt::format("{:+.5f}, {:+.5f}", point.x, point.y);
+//}
+//[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
+//{
+//  return std_fmt::format("{:5d}, {:5d}, {:5d}, {:5d}", pixel.R(), pixel.G(), pixel.B(), pixel.A());
+//}
+//#include "src/goom/src/utils/buffer_saver.h"
 
 #include <atomic>
 #include <functional>
@@ -82,12 +82,25 @@ private:
   auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
 
-  auto SaveBuffers() -> void;
-  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
-  UTILS::BufferSaver<Point2dInt> m_filterPosSrceBufferSave{saveDir + "filter_pos_srce"};
-  UTILS::BufferSaver<Point2dInt> m_filterPosDestBufferSave{saveDir + "filter_pos_dest"};
-  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in"};
-  UTILS::BufferSaver<GOOM::Pixel> m_filterBufferSave{saveDir + "filter_buff"};
+  //  auto SaveBuffersBeforePass1() -> void;
+  //  auto SaveBuffersAfterPass1() -> void;
+  //  auto SaveBuffersAfterPass2() -> void;
+  //  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
+  //  UTILS::BufferSaver<Point2dInt> m_filterPosSrceBufferSave{saveDir + "filter_pos_srce"};
+  //  UTILS::BufferSaver<Point2dInt> m_filterPosDestBufferSave{saveDir + "filter_pos_dest"};
+  //  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in"};
+  //  UTILS::BufferSaver<GOOM::Pixel> m_filterBuffer1SaveBeforePass1{saveDir +
+  //                                                                 "filter_buff1_before_pass1"};
+  //  UTILS::BufferSaver<GOOM::Pixel> m_filterBuffer1SaveAfterPass1{saveDir +
+  //                                                                "filter_buff1_after_pass1"};
+  //  UTILS::BufferSaver<GOOM::Pixel> m_filterBuffer1SaveAfterPass2{saveDir +
+  //                                                                "filter_buff1_after_pass2"};
+  //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveBeforePass1{saveDir + "low_image_before_pass1"};
+  //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveAfterPass1{saveDir + "low_image_after_pass1"};
+  //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveAfterPass2{saveDir + "low_image_after_pass2"};
+
+  std::vector<Point2dFlt> m_previousFilterDestPos{};
+  float m_previousLerpFactor = 0.0F;
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;

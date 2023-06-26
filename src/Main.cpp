@@ -396,9 +396,8 @@ auto CVisualizationGoom::ProduceItem(const size_t slot, const AudioSamples& audi
   m_goomControl->SetFrameData(frameData);
   m_goomControl->UpdateGoomBuffers(audioSamples);
 
-  const auto shaderVariables                       = m_goomControl->GetLastShaderVariables();
-  frameData.miscData.lerpFactor                    = 0.0F;
-  frameData.miscData.brightness                    = shaderVariables.brightness;
+  const auto shaderVariables    = m_goomControl->GetLastShaderVariables();
+  frameData.miscData.brightness = shaderVariables.brightness;
 
 #ifdef SAVE_AUDIO_BUFFERS
   SaveAudioBuffer(audioSamples);

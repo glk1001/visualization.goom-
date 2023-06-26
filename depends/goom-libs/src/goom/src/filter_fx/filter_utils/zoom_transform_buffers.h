@@ -3,6 +3,7 @@
 #include "goom_types.h"
 #include "point2d.h"
 #include "utils/math/misc.h"
+#include "utils/strutils.h"
 #include "zoom_coord_transforms.h"
 
 #include <format>
@@ -51,8 +52,8 @@ private:
   Point2dInt m_maxTranPointMinus1;
   std::vector<Point2dInt> m_tranSrce;
   std::vector<Point2dInt> m_tranDest;
-  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
-  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in_cpu"};
+  //  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
+  //  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in_cpu"};
   uint32_t m_tranLerpFactor = 0U;
 
   [[nodiscard]] auto GetSrceDestLerpBufferPoint(size_t buffPos) const noexcept -> Point2dInt;
@@ -80,6 +81,14 @@ inline auto ZoomTransformBuffers::GetTranDest(const size_t buffPos) const noexce
 inline auto ZoomTransformBuffers::SwapDestTran(std::vector<Point2dInt>& otherTran) noexcept -> void
 {
   std::swap(m_tranDest, otherTran);
+
+  //  auto filterPosDestInBufferView =
+  //      UTILS::BufferView<Point2dInt>{m_tranDest.size(), m_tranDest.data()};
+  //  auto getImageBufferIndexString = std::function<std::string(size_t bufferIndex)>{
+  //      [width = m_dimensions.GetIntWidth()](const size_t bufferIndex)
+  //      { return UTILS::ImageBufferIndexToString(width, bufferIndex); }};
+  //  m_filterPosDestInBufferSave.SetBufferIndexFormatter(getImageBufferIndexString);
+  //  m_filterPosDestInBufferSave.Write(filterPosDestInBufferView, false);
 }
 
 inline auto ZoomTransformBuffers::GetTranLerpFactor() const noexcept -> uint32_t

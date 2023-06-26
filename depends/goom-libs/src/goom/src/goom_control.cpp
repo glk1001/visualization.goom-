@@ -14,6 +14,11 @@
 
 #include "goom_control.h"
 
+#include "format_utils.h"
+[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
+{
+  return GOOM::UTILS::FMT::Rgba("{}", pixel);
+}
 #include "control/goom_all_visual_fx.h"
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
@@ -22,7 +27,6 @@
 #include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
-#include "draw/shape_drawers/line_drawer.h"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_colors_service.h"
@@ -35,6 +39,7 @@
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "spimpl.h"
+#include "utils/buffer_saver.h"
 #include "utils/debugging_logger.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/graphics/test_patterns.h"
@@ -137,15 +142,18 @@ private:
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   FxHelper m_fxHelper;
 
-  bool m_noZooms            = false;
-  uint32_t m_updateNum      = 0;
-  FrameData* m_frameData    = nullptr;
-  bool m_filterPosDataReady = false;
-  PixelBuffer* m_p1         = nullptr;
-  PixelBuffer* m_p2         = nullptr;
+  bool m_noZooms         = false;
+  uint32_t m_updateNum   = 0;
+  FrameData* m_frameData = nullptr;
+  PixelBuffer* m_p1      = nullptr;
+  PixelBuffer* m_p2      = nullptr;
   static auto InitMiscData(MiscData& miscData) noexcept -> void;
   static auto InitImageArrays(ImageArrays& imageArrays) noexcept -> void;
-  auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
+  static auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
+
+  //  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk_cpu/"};
+  //  UTILS::BufferSaver<Pixel> m_p1BufferSaver{saveDir + "filter_buff_p1_in_cpu"};
+  //  UTILS::BufferSaver<Pixel> m_p2BufferSaver{saveDir + "filter_buff_p2_in_cpu"};
 
   FilterSettingsService m_filterSettingsService;
 
@@ -363,9 +371,7 @@ auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArray
 auto GoomControl::GoomControlImpl::InitFilterPosArrays(
     GOOM::FilterPosArrays& filterPosArrays) noexcept -> void
 {
-  FILTER_FX::ZoomFilterBufferStriper::InitTranBufferDest(m_goomInfo.GetDimensions(),
-                                                         filterPosArrays.filterDestPos);
-  filterPosArrays.filterDestPosNeedsUpdating = true;
+  filterPosArrays.filterDestPosNeedsUpdating = false;
 }
 
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
@@ -373,18 +379,32 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
   m_frameData = &frameData;
   m_p1        = &m_frameData->imageArrays.mainImageData;
   m_p2        = &m_frameData->imageArrays.lowImageData;
-  m_visualFx.SetTranBufferDest(m_frameData->filterPosArrays.filterDestPos);
 
   m_p1->Fill(BLACK_PIXEL);
   m_p2->Fill(BLACK_PIXEL);
 
   m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 
-  m_frameData->imageArrays.mainImageDataNeedsUpdating     = true;
-  m_frameData->imageArrays.lowImageDataNeedsUpdating      = true;
-  m_frameData->filterPosArrays.filterDestPosNeedsUpdating = m_filterPosDataReady;
+  m_frameData->imageArrays.mainImageDataNeedsUpdating = true;
+  m_frameData->imageArrays.lowImageDataNeedsUpdating  = true;
   m_frameData->miscData.lerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) / 65536.0F;
   m_frameData->miscData.brightness = 0.5F;
+
+  if (not m_visualFx.IsTranBufferFltReady())
+  {
+    m_frameData->filterPosArrays.filterDestPosNeedsUpdating = false;
+  }
+  else
+  {
+    LogInfo(*m_goomLogger, "Filter dest needs saving flag set and passed on.");
+    m_visualFx.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
+    m_frameData->filterPosArrays.filterDestPosNeedsUpdating = true;
+  }
+
+  LogInfo(*m_goomLogger,
+          "FrameData lerpFactor = {} ({}).",
+          m_visualFx.GetTranLerpFactor(),
+          m_frameData->miscData.lerpFactor);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void
@@ -508,10 +528,6 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
                                                             const std::string& message) -> void
 {
   NewCycle();
-  //  if (m_updateNum > 1)
-  //  {
-  //    return;
-  //  }
 
   // Elargissement de l'intervalle d'évolution des points!
   // Calcul du deplacement des petits points ...
@@ -613,14 +629,26 @@ inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& sound
 inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffers(
     [[maybe_unused]] const AudioSamples& soundData) -> void
 {
-  //  m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
-  for (auto y = 0; y < m_goomInfo.GetDimensions().GetIntHeight(); ++y)
-  {
-    for (auto x = 0; x < m_goomInfo.GetDimensions().GetIntWidth(); ++x)
-    {
-      (*m_p2)(x, y) = Pixel{static_cast<uint16_t>(x), static_cast<uint16_t>(y), 0, MAX_ALPHA};
-    }
-  }
+  m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
+
+  //  auto draw = DRAW::GoomDrawToSingleBuffer{m_goomInfo.GetDimensions(), *m_goomLogger};
+  //  draw.SetBuffer(*m_p2);
+  //  DrawTestPattern(
+  //      draw,
+  //      {m_goomInfo.GetDimensions().GetIntWidth() / 2, m_goomInfo.GetDimensions().GetIntHeight() / 2},
+  //      {m_goomInfo.GetDimensions().GetWidth() / 2, m_goomInfo.GetDimensions().GetHeight() / 2});
+
+  //  for (auto y = 0; y < m_goomInfo.GetDimensions().GetIntHeight(); ++y)
+  //  {
+  //    for (auto x = 0; x < m_goomInfo.GetDimensions().GetIntWidth(); ++x)
+  //    {
+  //      (*m_p2)(x, y) =
+  //          Pixel{static_cast<uint16_t>(x),
+  //                static_cast<uint16_t>(m_goomInfo.GetDimensions().GetIntHeight() - 1 - y),
+  //                0,
+  //                MAX_ALPHA};
+  //    }
+  //  }
 }
 
 inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void
@@ -641,7 +669,20 @@ inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
 
   m_visualFx.ApplyZoom(*m_p1, *m_p2);
 
-  m_filterPosDataReady = m_visualFx.IsFilterPosDataReady();
+  //  auto p1BufferView = UTILS::BufferView<Pixel>{m_p1->GetWidth() * m_p1->GetHeight(),
+  //                                               reinterpret_cast<const Pixel*>(m_p1->GetBuffPtr())};
+  //  LogInfo(*m_goomLogger, "Saving p1 buffer of length {}.", p1BufferView.GetBufferLen());
+  //  auto getImageBufferIndexString = std::function<std::string(size_t bufferIndex)>{
+  //      [width = m_goomInfo.GetDimensions().GetIntWidth()](const size_t bufferIndex)
+  //      { return UTILS::ImageBufferIndexToString(width, bufferIndex); }};
+  //  m_p1BufferSaver.SetBufferIndexFormatter(getImageBufferIndexString);
+  //  m_p1BufferSaver.Write(p1BufferView, false);
+  //
+  //  auto p2BufferView = UTILS::BufferView<Pixel>{m_p2->GetWidth() * m_p2->GetHeight(),
+  //                                               reinterpret_cast<const Pixel*>(m_p2->GetBuffPtr())};
+  //  LogInfo(*m_goomLogger, "Saving p2 buffer of length {}.", p2BufferView.GetBufferLen());
+  //  m_p2BufferSaver.SetBufferIndexFormatter(getImageBufferIndexString);
+  //  m_p2BufferSaver.Write(p2BufferView, false);
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
@@ -666,7 +707,10 @@ inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
 
   auto draw = DRAW::GoomDrawToSingleBuffer{m_goomInfo.GetDimensions(), *m_goomLogger};
   draw.SetBuffer(*m_p1);
-  DrawTestPattern(draw, m_goomInfo.GetDimensions());
+  DrawTestPattern(
+      draw,
+      {m_goomInfo.GetDimensions().GetIntWidth() / 2, m_goomInfo.GetDimensions().GetIntHeight() / 2},
+      m_goomInfo.GetDimensions());
 }
 
 inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void

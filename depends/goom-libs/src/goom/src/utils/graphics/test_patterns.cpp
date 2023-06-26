@@ -13,15 +13,16 @@ using GOOM::COLOR::GetBrighterColor;
 using GOOM::DRAW::MultiplePixels;
 using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 
-auto DrawTestPattern(IGoomDraw& draw, const Dimensions& dimensions) -> void
+auto DrawTestPattern(IGoomDraw& draw, const Point2dInt& centre, const Dimensions& dimensions)
+    -> void
 {
   const auto lineThickness = 3;
   const auto width         = dimensions.GetIntWidth();
   const auto height        = dimensions.GetIntHeight();
-  const auto x0            = lineThickness;
-  const auto y0            = lineThickness;
-  const auto x1            = width - 1 - lineThickness;
-  const auto y1            = height - 1 - lineThickness;
+  const auto x0            = lineThickness + (centre.x - (width / 2));
+  const auto y0            = lineThickness + (centre.y - (height / 2));
+  const auto x1            = (centre.x + ((width - 1) / 2)) - lineThickness;
+  const auto y1            = (centre.y + ((height - 1) / 2)) - lineThickness;
   const auto topLeft       = Point2dInt{x0, y0};
   const auto topRight      = Point2dInt{x1, y0};
   const auto bottomLeft    = Point2dInt{x0, y1};

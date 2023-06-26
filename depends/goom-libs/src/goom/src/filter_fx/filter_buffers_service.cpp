@@ -1,4 +1,4 @@
-#undef NO_LOGGING
+//#undef NO_LOGGING
 
 #include "filter_buffers_service.h"
 
@@ -9,7 +9,6 @@
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "utils/debugging_logger.h"
 #include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
 #include "zoom_in_coefficients_effect.h"
@@ -90,22 +89,12 @@ inline auto FilterBuffersService::UpdateZoomVectorFilterEffectsSettings() noexce
 
 auto FilterBuffersService::UpdateTranBuffers() noexcept -> void
 {
-  LogInfo(UTILS::GetGoomLogger(), "Starting update tran buffers.");
-
-  m_filterPosDataReady =
-      m_filterBuffers.GetTranBuffersState() == FilterBuffers::TranBuffersState::RESET_TRAN_BUFFERS;
-
   m_filterBuffers.UpdateTranBuffers();
 
   if (AreStartingFreshTranBuffers())
   {
     StartFreshTranBuffers();
   }
-}
-
-auto FilterBuffersService::IsFilterPosDataReady() const noexcept -> bool
-{
-  return m_filterPosDataReady;
 }
 
 inline auto FilterBuffersService::AreStartingFreshTranBuffers() const noexcept -> bool

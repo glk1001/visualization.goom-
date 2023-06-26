@@ -175,6 +175,13 @@ auto bool_to_string(const bool value) -> std::string
   return value ? "true" : "false";
 }
 
+auto ImageBufferIndexToString(const int32_t imageWidth, const size_t bufferIndex) -> std::string
+{
+  const auto y = bufferIndex / static_cast<size_t>(imageWidth);
+  const auto x = bufferIndex % static_cast<size_t>(imageWidth);
+  return std_fmt::format("{:5d}, {:5d}", x, y);
+}
+
 auto StringJoin(const std::vector<std::string>& strings, const std::string_view& delim)
     -> std::string
 {

@@ -104,8 +104,9 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
 //  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
 //  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
   vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + colorMain.rgb, 1.0);
-  vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + 10*colorLow.rgb, 1.0);
-//filtBuff2ColorLow  = vec4(10*colorLow.rgb, 1.0);
+  vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + colorLow.rgb, 1.0);
+//filtBuff2ColorLow  = vec4(colorLow.rgb, 1.0);
+//filtBuff2ColorLow  = filtBuff2Val;
 
   imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
   imageStore(img_filterBuff3, xy, filtBuff2ColorMain);
@@ -140,6 +141,8 @@ subroutine (RenderPassType) vec4 Pass2OutputToneMappedImage()
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)
 {
+  const float ratio = 900.0/1600.0;
+
   vec2 srceNormalizedPos = texture(tex_filterSrcePositions, uv).xy;
   vec2 destNormalizedPos = texture(tex_filterDestPositions, uv).xy;
 
@@ -148,5 +151,11 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv)
   vec2 filtBuff2Pos = vec2((lerpNormalizedPos.x - u_filterPosMinCoord) / u_filterPosCoordWidth,
                            (lerpNormalizedPos.y - u_filterPosMinCoord) / u_filterPosCoordWidth);
 
-  return texture(tex_filterBuff2, filtBuff2Pos);
+
+//vec4 tex = texture(tex_lowImage, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
+//return vec4(tex.x, tex.y, filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio);
+
+//vec4 tex = texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
+//return vec4(tex.x, tex.y, uv.x, uv.y);
+  return texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
 }

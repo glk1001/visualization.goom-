@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <format>
 #include <fstream>
+#include <functional>
 #include <ios>
 #include <iostream>
 #include <ostream>
@@ -41,31 +42,38 @@ public:
   [[nodiscard]] auto GetEndBufferNum() const -> int64_t;
   [[nodiscard]] auto HaveFinishedBufferRange() const -> bool;
 
-  void Write(const BufferView<T>& buffer, bool binaryFormat);
-  void Write(const HeaderT& header, const BufferView<T>& buffer, bool binaryFormat);
+  using BufferIndexFormatter = std::function<std::string(size_t bufferIndex)>;
+  auto SetBufferIndexFormatter(const BufferIndexFormatter& bufferIndexFormatter) noexcept -> void;
+
+  auto Write(const BufferView<T>& buffer, bool binaryFormat) -> void;
+  auto Write(const HeaderT& header, const BufferView<T>& buffer, bool binaryFormat) -> void;
 
   [[nodiscard]] auto PeekHeader(HeaderT& header, bool binaryFormat) const -> bool;
 
-  static void WriteBinary(const std::string& filename,
+  static auto WriteBinary(const std::string& filename,
                           int64_t tag,
                           const HeaderT& header,
-                          const BufferView<T>& buffer);
-  static void WriteBinary(std::ostream& file,
+                          const BufferView<T>& buffer) -> void;
+  static auto WriteBinary(std::ostream& file,
                           int64_t tag,
                           const HeaderT& header,
-                          const BufferView<T>& buffer);
+                          const BufferView<T>& buffer) -> void;
 
   [[nodiscard]] static auto PeekHeaderBinary(const std::string& filename, HeaderT& header) -> bool;
   [[nodiscard]] static auto PeekHeaderBinary(std::istream& file, HeaderT& header) -> bool;
 
-  static void WriteFormatted(std::ostream& file,
-                             int64_t tag,
-                             const HeaderT& header,
-                             const BufferView<T>& buffer);
-  static void WriteFormatted(const std::string& filename,
-                             int64_t tag,
-                             const HeaderT& header,
-                             const BufferView<T>& buffer);
+  static auto WriteFormatted(
+      std::ostream& file,
+      int64_t tag,
+      const HeaderT& header,
+      const BufferView<T>& buffer,
+      const BufferIndexFormatter& getBufferIndexString = DefaultGetBufferIndexString) -> void;
+  static auto WriteFormatted(
+      const std::string& filename,
+      int64_t tag,
+      const HeaderT& header,
+      const BufferView<T>& buffer,
+      const BufferIndexFormatter& getBufferIndexString = DefaultGetBufferIndexString) -> void;
 
   [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename, HeaderT& header)
       -> bool;
@@ -78,6 +86,8 @@ private:
   int64_t m_startBuffNum;
   int64_t m_endBuffNum;
   int64_t m_currentBuffNum;
+  BufferIndexFormatter m_bufferIndexFormatter = DefaultGetBufferIndexString;
+  [[nodiscard]] static auto DefaultGetBufferIndexString(size_t bufferIndex) -> std::string;
 };
 
 template<class T, class HeaderT>
@@ -127,16 +137,29 @@ inline auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const -> bool
 }
 
 template<class T, class HeaderT>
-void BufferSaver<T, HeaderT>::Write(const BufferView<T>& buffer, const bool binaryFormat)
+inline auto BufferSaver<T, HeaderT>::SetBufferIndexFormatter(
+    const BufferIndexFormatter& bufferIndexFormatter) noexcept -> void
+{
+  m_bufferIndexFormatter = bufferIndexFormatter;
+}
+
+template<class T, class HeaderT>
+auto BufferSaver<T, HeaderT>::DefaultGetBufferIndexString(const size_t bufferIndex) -> std::string
+{
+  return std_fmt::format("{:8d}", bufferIndex);
+}
+
+template<class T, class HeaderT>
+auto BufferSaver<T, HeaderT>::Write(const BufferView<T>& buffer, const bool binaryFormat) -> void
 {
   auto ignore = HeaderT{};
   Write(ignore, buffer, binaryFormat);
 }
 
 template<class T, class HeaderT>
-void BufferSaver<T, HeaderT>::Write(const HeaderT& header,
+auto BufferSaver<T, HeaderT>::Write(const HeaderT& header,
                                     const BufferView<T>& buffer,
-                                    const bool binaryFormat)
+                                    const bool binaryFormat) -> void
 {
   if ((m_currentBuffNum < m_startBuffNum) || (m_currentBuffNum > m_endBuffNum))
   {
@@ -150,7 +173,7 @@ void BufferSaver<T, HeaderT>::Write(const HeaderT& header,
   }
   else
   {
-    WriteFormatted(filename, m_currentBuffNum, header, buffer);
+    WriteFormatted(filename, m_currentBuffNum, header, buffer, m_bufferIndexFormatter);
   }
   ++m_currentBuffNum;
 }
@@ -171,10 +194,10 @@ auto BufferSaver<T, HeaderT>::PeekHeader(HeaderT& header, bool binaryFormat) con
 }
 
 template<class T, class HeaderT>
-void BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
+auto BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
                                           const int64_t tag,
                                           const HeaderT& header,
-                                          const BufferView<T>& buffer)
+                                          const BufferView<T>& buffer) -> void
 {
   auto file = std::ofstream{filename, std::ios::out | std::ios::binary};
   if (not file.good())
@@ -186,10 +209,10 @@ void BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
 }
 
 template<class T, class HeaderT>
-void BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
+auto BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
                                           const int64_t tag,
                                           const HeaderT& header,
-                                          const BufferView<T>& buffer)
+                                          const BufferView<T>& buffer) -> void
 {
   if (typeid(HeaderT) != typeid(EmptyHeaderType))
   {
@@ -236,10 +259,12 @@ auto BufferSaver<T, HeaderT>::PeekHeaderFormatted(const std::string& filename,
 }
 
 template<class T, class HeaderT>
-void BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
+auto BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
                                              const int64_t tag,
                                              const HeaderT& header,
-                                             const BufferView<T>& buffer)
+                                             const BufferView<T>& buffer,
+                                             const BufferIndexFormatter& getBufferIndexString)
+    -> void
 {
   auto file = std::ofstream{filename, std::ios::out};
   if (not file.good())
@@ -247,14 +272,16 @@ void BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
     throw std::runtime_error(std_fmt::format(
         "Could not open file '{}' for text writing. Error: {}.", filename, strerror(errno)));
   }
-  WriteFormatted(file, tag, header, buffer);
+  WriteFormatted(file, tag, header, buffer, getBufferIndexString);
 }
 
 template<class T, class HeaderT>
-void BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
+auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
                                              const int64_t tag,
                                              [[maybe_unused]] const HeaderT& header,
-                                             const BufferView<T>& buffer)
+                                             const BufferView<T>& buffer,
+                                             const BufferIndexFormatter& getBufferIndexString)
+    -> void
 {
   if (typeid(HeaderT) != typeid(EmptyHeaderType))
   {
@@ -267,14 +294,13 @@ void BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
   for (auto i = 0U; i < buffer.GetBufferLen(); ++i)
   {
     //    file << std20::format("{:#018x}", buffer[i]);
-    file << to_string(buffer[i]);
+    file << std_fmt::format("{}: {}", getBufferIndexString(i), to_string(buffer[i]));
     if (i < (buffer.GetBufferLen() - 1))
     {
       file << ", ";
     }
     file << "\n";
   }
-  file << "\n";
 }
 
 } // namespace GOOM::UTILS

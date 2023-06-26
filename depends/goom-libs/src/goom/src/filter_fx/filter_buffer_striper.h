@@ -3,12 +3,12 @@
 #include "filter_utils/zoom_coord_transforms.h"
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "filter_utils/zoom_transform_buffers.h"
-#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_types.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -40,10 +40,6 @@ public:
                           const NormalizedCoordsConverter& normalizedCoordsConverter,
                           const ZoomPointFunc& zoomPointFunc) noexcept;
 
-  static auto InitTranBufferDest(const Dimensions& dimensions,
-                                 std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
-  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
-
   [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
@@ -53,12 +49,14 @@ public:
   auto SetFilterViewport(const Viewport& val) noexcept -> void;
 
   auto ResetStripes() noexcept -> void;
+  auto ResetTranBufferFltIsReady() noexcept -> void;
 
   auto UpdateAllStripes() noexcept -> void;
   auto UpdateNextStripe() noexcept -> void;
 
   [[nodiscard]] auto GetTranBuffer() noexcept -> std::vector<Point2dInt>&;
-  [[nodiscard]] auto GetTranBufferFlt() noexcept -> std_spn::span<Point2dFlt>&;
+  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
+  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
 private:
   Dimensions m_dimensions;
@@ -79,7 +77,8 @@ private:
   uint32_t m_tranBuffYLineStart           = 0;
   uint32_t m_tranBuffStripeHeight         = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
   std::vector<Point2dInt> m_tranBuffer;
-  std_spn::span<Point2dFlt> m_tranBufferFlt{};
+  std::vector<Point2dFlt> m_tranBufferFlt{};
+  bool m_tranBufferFltIsReady = false;
 
   auto DoNextStripe(uint32_t tranBuffStripeHeight) noexcept -> void;
   [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const noexcept -> Point2dInt;
@@ -95,17 +94,16 @@ inline auto ZoomFilterBufferStriper::GetTranBuffer() noexcept -> std::vector<Poi
   return m_tranBuffer;
 }
 
-// TODO(glk) - Use mdspan
-inline auto ZoomFilterBufferStriper::SetTranBufferDest(
-    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+inline auto ZoomFilterBufferStriper::IsTranBufferFltReady() const noexcept -> bool
 {
-  Expects(tranBufferFlt.size() == m_dimensions.GetSize());
-  m_tranBufferFlt = tranBufferFlt;
+  return m_tranBufferFltIsReady;
 }
 
-inline auto ZoomFilterBufferStriper::GetTranBufferFlt() noexcept -> std_spn::span<Point2dFlt>&
+inline auto ZoomFilterBufferStriper::CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept
+    -> void
 {
-  return m_tranBufferFlt;
+  std::copy(m_tranBufferFlt.cbegin(), m_tranBufferFlt.cend(), destBuff.begin());
+  m_tranBufferFltIsReady = false;
 }
 
 inline auto ZoomFilterBufferStriper::GetBuffMidpoint() const noexcept -> Point2dInt

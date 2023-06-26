@@ -73,7 +73,9 @@ public:
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
 
-  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
+  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
+  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+
   auto SetAllowMultiThreadedStates(bool val) noexcept -> void;
 
   [[nodiscard]] auto GetZoomFilterFx() const noexcept -> const FILTER_FX::ZoomFilterFx&;
@@ -99,8 +101,6 @@ public:
   auto UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings) noexcept -> void;
   auto ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
-
-  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>;
   [[nodiscard]] auto GetZoomFilterFxNameValueParams() const noexcept -> UTILS::NameValuePairs;
@@ -146,10 +146,15 @@ private:
   };
 };
 
-inline auto GoomAllVisualFx::SetTranBufferDest(
-    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+
+inline auto GoomAllVisualFx::IsTranBufferFltReady() const noexcept -> bool
 {
-  m_zoomFilterFx->SetTranBufferDest(tranBufferFlt);
+  return m_zoomFilterFx->IsTranBufferFltReady();
+}
+
+inline auto GoomAllVisualFx::CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void
+{
+  m_zoomFilterFx->CopyTranBufferFlt(destBuff);
 }
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
@@ -186,11 +191,6 @@ inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
 inline auto GoomAllVisualFx::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_zoomFilterFx->GetTranLerpFactor();
-}
-
-inline auto GoomAllVisualFx::IsFilterPosDataReady() const noexcept -> bool
-{
-  return m_zoomFilterFx->IsFilterPosDataReady();
 }
 
 inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() noexcept -> void

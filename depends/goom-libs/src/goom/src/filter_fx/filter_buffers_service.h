@@ -33,7 +33,8 @@ public:
                        const NormalizedCoordsConverter& normalizedCoordsConverter,
                        std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
-  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
+  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
+  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -48,8 +49,6 @@ public:
   [[nodiscard]] auto GetFilterBuffers() noexcept -> FilterBuffers&;
 
   auto UpdateTranBuffers() noexcept -> void;
-
-  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   struct TranLerpProperties
   {
@@ -67,7 +66,6 @@ public:
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
-  bool m_filterPosDataReady = false;
 
   ZoomFilterEffectsSettings m_currentFilterEffectsSettings{};
   ZoomFilterEffectsSettings m_nextFilterEffectsSettings{};
@@ -79,10 +77,15 @@ private:
   auto StartFreshTranBuffers() noexcept -> void;
 };
 
-inline auto FilterBuffersService::SetTranBufferDest(
-    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+inline auto FilterBuffersService::IsTranBufferFltReady() const noexcept -> bool
 {
-  m_filterBuffers.SetTranBufferDest(tranBufferFlt);
+  return m_filterBuffers.IsTranBufferFltReady();
+}
+
+inline auto FilterBuffersService::CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept
+    -> void
+{
+  m_filterBuffers.CopyTranBufferFlt(destBuff);
 }
 
 inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexcept

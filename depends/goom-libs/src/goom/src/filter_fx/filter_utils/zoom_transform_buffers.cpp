@@ -33,10 +33,6 @@ auto ZoomTransformBuffers::SetSrceTranToIdentity() noexcept -> void
 
 auto ZoomTransformBuffers::CopyDestTranToSrceTran() noexcept -> void
 {
-  auto filterPosDestInBufferView =
-      UTILS::BufferView<Point2dInt>{m_tranDest.size(), m_tranDest.data()};
-  m_filterPosDestInBufferSave.Write(filterPosDestInBufferView, false);
-
   // sauvegarde de l'etat actuel dans la nouvelle source
   // Save the current overall buffer state to the source buffer.
   if (0 == GetTranLerpFactor())

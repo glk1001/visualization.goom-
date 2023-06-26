@@ -48,8 +48,10 @@ public:
                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
-  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
+
+  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
+  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -63,8 +65,6 @@ public:
   auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
-
-  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;
@@ -97,10 +97,14 @@ ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
 {
 }
 
-auto ZoomFilterFx::SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept
-    -> void
+auto ZoomFilterFx::IsTranBufferFltReady() const noexcept -> bool
 {
-  m_pimpl->SetTranBufferDest(tranBufferFlt);
+  return m_pimpl->IsTranBufferFltReady();
+}
+
+auto ZoomFilterFx::CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void
+{
+  m_pimpl->CopyTranBufferFlt(destBuff);
 }
 
 auto ZoomFilterFx::SetBuffSettings(const FXBuffSettings& settings) noexcept -> void
@@ -166,11 +170,6 @@ auto ZoomFilterFx::ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& d
   m_pimpl->ZoomFilterFastRgb(srceBuff, destBuff);
 }
 
-auto ZoomFilterFx::IsFilterPosDataReady() const noexcept -> bool
-{
-  return m_pimpl->IsFilterPosDataReady();
-}
-
 auto ZoomFilterFx::SetZoomFilterBrightness(const float brightness) noexcept -> void
 {
   m_pimpl->SetZoomFilterBrightness(brightness);
@@ -198,10 +197,16 @@ ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
 {
 }
 
-inline auto ZoomFilterFx::ZoomFilterImpl::SetTranBufferDest(
-    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+
+inline auto ZoomFilterFx::ZoomFilterImpl::IsTranBufferFltReady() const noexcept -> bool
 {
-  m_filterBuffersService->SetTranBufferDest(tranBufferFlt);
+  return m_filterBuffersService->IsTranBufferFltReady();
+}
+
+inline auto ZoomFilterFx::ZoomFilterImpl::CopyTranBufferFlt(
+    std_spn::span<Point2dFlt>& destBuff) noexcept -> void
+{
+  m_filterBuffersService->CopyTranBufferFlt(destBuff);
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::SetBuffSettings(const FXBuffSettings& settings) noexcept
@@ -284,12 +289,6 @@ inline auto ZoomFilterFx::ZoomFilterImpl::ZoomFilterFastRgb(
   m_filterBuffersService->UpdateTranBuffers();
 
   //  CZoom(srceBuff, destBuff);
-}
-
-auto ZoomFilterFx::ZoomFilterImpl::IsFilterPosDataReady() const noexcept -> bool
-{
-  // NOT CHANGING FILTER POS DEST GIVES RIGHT DRIFT FROM INITIAL BUFFERS. WHY?????
-  return m_filterBuffersService->IsFilterPosDataReady();
 }
 
 inline auto ZoomFilterFx::ZoomFilterImpl::SetZoomFilterBrightness(const float brightness) noexcept

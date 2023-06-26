@@ -37,8 +37,10 @@ public:
                std::unique_ptr<FilterBuffersService> filterBuffersService,
                std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
-  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
   auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
+
+  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
+  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
@@ -53,8 +55,6 @@ public:
   auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
-
-  [[nodiscard]] auto IsFilterPosDataReady() const noexcept -> bool;
 
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;

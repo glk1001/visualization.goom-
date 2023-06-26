@@ -3,11 +3,9 @@
 #include "filter_utils/zoom_coord_transforms.h"
 #include "filter_utils/zoom_filter_coefficients.h"
 #include "filter_utils/zoom_transform_buffers.h"
-#include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
 #include "point2d.h"
-#include "utils/debugging_logger.h"
 
 #include <cstdint>
 #include <functional>
@@ -49,7 +47,8 @@ public:
   ZoomFilterBuffers(const PluginInfo& goomInfo,
                     std::unique_ptr<FilterStriper> filterStriper) noexcept;
 
-  auto SetTranBufferDest(const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void;
+  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
+  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
   auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
@@ -109,10 +108,16 @@ ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
 }
 
 template<class FilterStriper>
-auto ZoomFilterBuffers<FilterStriper>::SetTranBufferDest(
-    const std_spn::span<Point2dFlt>& tranBufferFlt) noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::IsTranBufferFltReady() const noexcept -> bool
 {
-  m_filterStriper->SetTranBufferDest(tranBufferFlt);
+  return m_filterStriper->IsTranBufferFltReady();
+}
+
+template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::CopyTranBufferFlt(
+    std_spn::span<Point2dFlt>& destBuff) noexcept -> void
+{
+  m_filterStriper->CopyTranBufferFlt(destBuff);
 }
 
 template<class FilterStriper>
@@ -254,17 +259,14 @@ inline auto ZoomFilterBuffers<FilterStriper>::UpdateTranBuffers() noexcept -> vo
 {
   if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
   {
-    LogInfo(UTILS::GetGoomLogger(), "Reset tran buffers");
     ResetTranBuffers();
   }
   else if (m_tranBuffersState == TranBuffersState::START_FRESH_TRAN_BUFFERS)
   {
-    LogInfo(UTILS::GetGoomLogger(), "Start fresh tran buffers");
     StartFreshTranBuffers();
   }
   else
   {
-    LogInfo(UTILS::GetGoomLogger(), "Update next tran buffer stripe.");
     UpdateNextTempTranBufferStripe();
   }
 }
@@ -279,6 +281,7 @@ inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffers() noexcept -
 
   m_filterSettingsHaveChanged = false;
   m_filterStriper->ResetStripes();
+  m_filterStriper->ResetTranBufferFltIsReady();
   m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 }
 
