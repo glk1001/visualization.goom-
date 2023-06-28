@@ -12,6 +12,7 @@ layout(location = 0) out vec4 fragColor;
 
 //#include "glsl-blend/all.glsl"
 #include "tone-maps.glsl"
+#include "color-space-conversions.glsl"
 
 uniform sampler2D tex_filterBuff2;
 uniform sampler2D tex_filterSrcePositions;
@@ -28,6 +29,7 @@ in vec3 position;
 in vec2 texCoord;
 
 uniform float u_brightness;
+const float u_aspectRatio = 1600.0/900.0;
 
 uniform float u_lerpFactor;
 uniform float u_filterPosMinCoord   = -2.0;
@@ -117,21 +119,32 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
 }
 
 
+vec3 GetChromaticIncrease(vec3 color)
+{
+  // 'Chromatic Increase' - https://github.com/gurki/vivid
+  vec3 lch = rgb_to_lch(color);
+  lch.y = min(lch.y * 2.0F, 140.0);
+  return lch_to_rgb(lch);
+}
+
 subroutine (RenderPassType) vec4 Pass2OutputToneMappedImage()
 {
   ivec2 xy = ivec2(gl_FragCoord.xy);
 
+  // Get the hdr color to work with.
   vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
+  vec3 hdrColor = filtBuff3Val.rgb;
 
   // Copy filter buff1 to filter buff2 ready for next frame.
   vec4 filtBuff1Val = imageLoad(img_filterBuff1, xy);
   imageStore(img_filterBuff2, xy, filtBuff1Val);
 
-  vec3 hdrColor = filtBuff3Val.rgb;
+  // Apply chromatic increase.
+  hdrColor = GetChromaticIncrease(hdrColor);
 
+  // Finish with tone mapping.
   float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
-
-  vec3 toneMappedColor = GetToneMappedColor(hdrColor, averageLuminance, 3.0*u_brightness);
+  vec3 toneMappedColor = GetToneMappedColor(hdrColor, averageLuminance, 5.0*u_brightness);
 //  vec3 toneMappedColor = GetToneMappedColor(hdrColor, 1.0, u_brightness);
 //  vec3 toneMappedColor = hdrColor;
 
@@ -141,8 +154,6 @@ subroutine (RenderPassType) vec4 Pass2OutputToneMappedImage()
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)
 {
-  const float ratio = 900.0/1600.0;
-
   vec2 srceNormalizedPos = texture(tex_filterSrcePositions, uv).xy;
   vec2 destNormalizedPos = texture(tex_filterDestPositions, uv).xy;
 
@@ -152,10 +163,11 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv)
                            (lerpNormalizedPos.y - u_filterPosMinCoord) / u_filterPosCoordWidth);
 
 
-//vec4 tex = texture(tex_lowImage, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
-//return vec4(tex.x, tex.y, filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio);
+  //vec4 tex = texture(tex_lowImage, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
+  //return vec4(tex.x, tex.y, filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y));
 
-//vec4 tex = texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
-//return vec4(tex.x, tex.y, uv.x, uv.y);
-  return texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
+  //vec4 tex = texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y)));
+  //return vec4(tex.x, tex.y, uv.x, uv.y);
+
+  return texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y)));
 }
