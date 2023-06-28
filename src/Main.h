@@ -94,12 +94,15 @@ private:
   std::thread m_slotProducerConsumerThread{};
   auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
   auto ConsumeItem(size_t slot) noexcept -> void;
+  uint32_t m_dropAudioDataNum   = 0U;
+  uint32_t m_dropAudioSampleNum = 0U;
+  auto LogSummary() -> void;
 
   size_t m_numChannels    = 0;
   size_t m_audioSampleLen = 0;
   std::vector<float> m_rawAudioData{};
-  uint32_t m_audioSamplesNum                                 = 0;
-  static constexpr auto NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 16U;
+  uint32_t m_audioSamplesNum                                 = 0U;
+  static constexpr auto NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 128U;
   static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
                                                  GOOM::AudioSamples::NUM_AUDIO_SAMPLES *
                                                  GOOM::AudioSamples::AUDIO_SAMPLE_LEN;

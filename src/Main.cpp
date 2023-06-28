@@ -46,6 +46,9 @@ static_assert(false, "This is a Kodi file: 'IS_KODI_BUILD' should be defined.");
 namespace KODI_ADDON = kodi::addon;
 using AddonLogEnum   = ADDON_LOG;
 
+#define DEBUG_LOGGING 0
+//#define DEBUG_LOGGING 1
+
 namespace
 {
 
@@ -276,7 +279,15 @@ inline auto CVisualizationGoom::StopVis() -> void
   LogInfo(*m_goomLogger, "Stopping slot producer consumer thread.");
   m_slotProducerConsumerThread.join();
 
+  LogSummary();
+
   LogStop(*m_goomLogger);
+}
+
+auto CVisualizationGoom::LogSummary() -> void
+{
+  LogInfo(*m_goomLogger, "Number of dropped audio data: {}.", m_dropAudioDataNum);
+  LogInfo(*m_goomLogger, "Number of dropped audio samples: {}.", m_dropAudioSampleNum);
 }
 
 auto CVisualizationGoom::InitAudioData(const int32_t numChannels) noexcept -> void
@@ -350,7 +361,6 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
-  // LogInfo(*m_goomLogger, "Adding audio data to circular buffer.");
   AddAudioDataToBuffer(std_spn::span<const float>{audioData, audioDataLength});
 
   if (m_audioBuffer.DataAvailable() >= m_audioSampleLen)
@@ -365,31 +375,74 @@ auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& 
   if (m_audioBuffer.FreeSpace() < audioData.size())
   {
     // TODO - is this a good idea?
-    // Lose the audio?????
+    // Lose the audio or somehow start averaging?
+    ++m_dropAudioDataNum;
+#if DEBUG_LOGGING
+    LogWarn(*m_goomLogger, "Not enough free space in audio buffer. Dropping this sample.");
+    LogInfo(*m_goomLogger,
+            "Free space = {}, this sample size = {}.",
+            m_audioBuffer.FreeSpace(),
+            audioData.size());
+#endif
     return;
   }
+
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger, "Adding audio data to buffer.");
+  LogInfo(*m_goomLogger,
+          "Audio buffer length = {}, data available = {}, free space = {}, this sample size = {}.",
+          m_audioBuffer.BufferLength(),
+          m_audioBuffer.DataAvailable(),
+          m_audioBuffer.FreeSpace(),
+          audioData.size());
+#endif
 
   m_audioBuffer.Write(audioData);
 }
 
 auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
 {
-  // LogInfo(*m_goomLogger, "Moving audio sample to producer.");
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger, "Moving audio sample to producer.");
+#endif
   m_audioBuffer.Read(m_rawAudioData);
-  m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, m_rawAudioData});
+
+  if (not m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, m_rawAudioData}))
+  {
+    ++m_dropAudioSampleNum;
+#if DEBUG_LOGGING
+    LogWarn(*m_goomLogger, "### Resource queue full - skipping this audio sample.");
+#endif
+    return;
+  }
+
   ++m_audioSamplesNum;
+
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger,
+          "Audio buffer length = {}, data available = {}, free space = {}, removed size = {}.",
+          m_audioBuffer.BufferLength(),
+          m_audioBuffer.DataAvailable(),
+          m_audioBuffer.FreeSpace(),
+          m_rawAudioData.size());
+#endif
 }
 
 auto CVisualizationGoom::ConsumeItem(const size_t slot) noexcept -> void
 {
-  // LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
+#endif
+
   m_glScene.UpdateFrameData(slot);
 }
 
 auto CVisualizationGoom::ProduceItem(const size_t slot, const AudioSamples& audioSamples) noexcept
     -> void
 {
-  // LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
+#endif
 
   auto& frameData = m_glScene.GetFrameData(slot);
 

@@ -18,6 +18,7 @@ public:
 
   auto Clear() noexcept -> void;
 
+  [[nodiscard]] auto BufferLength() const noexcept -> size_t;
   [[nodiscard]] auto DataAvailable() const noexcept -> size_t;
   [[nodiscard]] auto FreeSpace() const noexcept -> size_t;
 
@@ -46,6 +47,12 @@ inline auto CircularBuffer<T>::Clear() noexcept -> void
 }
 
 template<typename T>
+inline auto CircularBuffer<T>::BufferLength() const noexcept -> size_t
+{
+  return m_size;
+}
+
+template<typename T>
 inline auto CircularBuffer<T>::DataAvailable() const noexcept -> size_t
 {
   return m_used;
@@ -54,6 +61,7 @@ inline auto CircularBuffer<T>::DataAvailable() const noexcept -> size_t
 template<typename T>
 inline auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
 {
+  Expects(m_used <= m_size);
   return m_size - m_used;
 }
 

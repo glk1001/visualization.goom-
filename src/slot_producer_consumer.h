@@ -24,7 +24,7 @@ public:
   auto Start() noexcept -> void;
   auto Stop() noexcept -> void;
 
-  auto AddResource(const TResource& resource) noexcept -> void;
+  [[nodiscard]] auto AddResource(const TResource& resource) noexcept -> bool;
   auto Consume() noexcept -> void;
 
   using ProduceItemFunc = std::function<void(size_t slot, const TResource& resource)>;
@@ -110,19 +110,19 @@ auto SlotProducerConsumer<TResource>::ProducerThread() noexcept -> void
 
 // TODO - MOVE???
 template<typename TResource>
-auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noexcept -> void
+auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noexcept -> bool
 {
   auto lock = std::lock_guard<std::mutex>{m_mutex};
 
   if (m_resourceQueue.size() >= m_maxResourceItems)
   {
-    //LogWarn(*m_goomLogger, "### Resource queue full - skipping.");
-    return;
+    return false;
   }
 
   Expects(m_resourceQueue.size() < m_maxResourceItems);
   m_resourceQueue.push(resource);
   m_producer_cv.notify_all();
+  return true;
 }
 
 template<typename TResource>

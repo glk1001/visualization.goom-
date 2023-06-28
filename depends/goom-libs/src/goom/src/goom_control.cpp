@@ -408,11 +408,11 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
     m_frameData->miscData.lerpFactor                           = 0.0F;
   }
 
-  LogInfo(*m_goomLogger,
-          "FrameData lerpFactor = {} ({}), currentLerpFactor = {}.",
-          m_visualFx.GetTranLerpFactor(),
-          m_frameData->miscData.lerpFactor,
-          currentLerpFactor);
+  //  LogInfo(*m_goomLogger,
+  //          "FrameData lerpFactor = {} ({}), currentLerpFactor = {}.",
+  //          m_visualFx.GetTranLerpFactor(),
+  //          m_frameData->miscData.lerpFactor,
+  //          currentLerpFactor);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void
