@@ -43,8 +43,7 @@ using UTILS::Parallel;
 class ZoomFilterFx::ZoomFilterImpl
 {
 public:
-  ZoomFilterImpl(Parallel& parallel,
-                 const PluginInfo& goomInfo,
+  ZoomFilterImpl(const PluginInfo& goomInfo,
                  std::unique_ptr<FilterBuffersService> filterBuffersService,
                  std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
@@ -74,11 +73,8 @@ public:
 
   [[nodiscard]] auto GetFilterBuffersService() noexcept -> FilterBuffersService&;
 
-  auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
-
 private:
   Dimensions m_dimensions;
-  Parallel* m_parallel;
 
   propagate_const<std::unique_ptr<FilterBuffersService>> m_filterBuffersService;
   propagate_const<std::unique_ptr<FilterColorsService>> m_filterColorsService;
@@ -88,12 +84,11 @@ private:
   FilterBufferColorInfo m_filterBufferColorInfo{m_dimensions};
 };
 
-ZoomFilterFx::ZoomFilterFx(Parallel& parallel,
-                           const PluginInfo& goomInfo,
+ZoomFilterFx::ZoomFilterFx(const PluginInfo& goomInfo,
                            std::unique_ptr<FilterBuffersService> filterBuffersService,
                            std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_pimpl{spimpl::make_unique_impl<ZoomFilterImpl>(
-        parallel, goomInfo, std::move(filterBuffersService), std::move(filterColorsService))}
+        goomInfo, std::move(filterBuffersService), std::move(filterColorsService))}
 {
 }
 
@@ -120,11 +115,6 @@ auto ZoomFilterFx::GetNameValueParams() const noexcept -> NameValuePairs
 auto ZoomFilterFx::GetFilterBuffersService() noexcept -> FilterBuffersService&
 {
   return m_pimpl->GetFilterBuffersService();
-}
-
-auto ZoomFilterFx::CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void
-{
-  m_pimpl->CZoom(srceBuff, destBuff);
 }
 
 auto ZoomFilterFx::Start() noexcept -> void
@@ -186,12 +176,10 @@ auto ZoomFilterFx::GetLastFilterBufferColorInfo() noexcept -> FilterBufferColorI
 }
 
 ZoomFilterFx::ZoomFilterImpl::ZoomFilterImpl(
-    Parallel& parallel,
     const PluginInfo& goomInfo,
     std::unique_ptr<FilterBuffersService> filterBuffersService,
     std::unique_ptr<FilterColorsService> filterColorsService) noexcept
   : m_dimensions{goomInfo.GetDimensions()},
-    m_parallel{&parallel},
     m_filterBuffersService{std::move(filterBuffersService)},
     m_filterColorsService{std::move(filterColorsService)}
 {
@@ -314,36 +302,6 @@ inline auto ZoomFilterFx::ZoomFilterImpl::GetLastFilterBufferColorInfo() noexcep
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
-
-auto ZoomFilterFx::ZoomFilterImpl::CZoom(const PixelBuffer& srceBuff,
-                                         PixelBuffer& destBuff) noexcept -> void
-{
-  const auto setDestPixelRow = [this, &srceBuff, &destBuff](const size_t destY) noexcept
-  {
-    const auto [destRowBegin, destRowEnd] = destBuff.GetRowIter(destY);
-
-    auto& filterBufferRowColorInfo = m_filterBufferColorInfo.GetRow(destY);
-
-    filterBufferRowColorInfo.Reset();
-    auto destPos = m_dimensions.GetWidth() * static_cast<uint32_t>(destY);
-
-    for (auto destRowBuff = destRowBegin; destRowBuff != destRowEnd; ++destRowBuff)
-    {
-      const auto srcePointInfo = m_filterBuffersService->GetSourcePointInfo(destPos);
-      const auto srcePointNeighbours =
-          srceBuff.Get4RHBNeighbours(srcePointInfo.screenPoint.x, srcePointInfo.screenPoint.y);
-      const auto newColor = m_filterColorsService->GetNewColor(srcePointInfo, srcePointNeighbours);
-
-      filterBufferRowColorInfo.UpdateColor(newColor);
-      *destRowBuff = newColor;
-
-      filterBufferRowColorInfo.NextX();
-      ++destPos;
-    }
-  };
-
-  m_parallel->ForLoop(m_dimensions.GetHeight(), setDestPixelRow);
-}
 
 #if __clang_major__ >= 16
 #pragma GCC diagnostic pop

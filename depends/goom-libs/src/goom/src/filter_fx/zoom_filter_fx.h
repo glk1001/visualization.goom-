@@ -10,11 +10,6 @@
 namespace GOOM
 {
 
-namespace UTILS
-{
-class Parallel;
-}
-
 struct FXBuffSettings;
 class PixelBuffer;
 class PluginInfo;
@@ -32,8 +27,7 @@ class ZoomFilterFx
 {
 public:
   ZoomFilterFx() noexcept = delete;
-  ZoomFilterFx(UTILS::Parallel& parallel,
-               const PluginInfo& goomInfo,
+  ZoomFilterFx(const PluginInfo& goomInfo,
                std::unique_ptr<FilterBuffersService> filterBuffersService,
                std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
 
@@ -64,7 +58,6 @@ public:
 
 protected:
   [[nodiscard]] auto GetFilterBuffersService() noexcept -> FilterBuffersService&;
-  auto CZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
 
 private:
   class ZoomFilterImpl;

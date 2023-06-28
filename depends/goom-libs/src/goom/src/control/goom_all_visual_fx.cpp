@@ -47,10 +47,8 @@ GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
     m_goomLogger{fxHelper.goomLogger},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
-    m_zoomFilterFx{std::make_unique<ZoomFilterFx>(parallel,
-                                                  *fxHelper.goomInfo,
-                                                  std::move(filterBuffersService),
-                                                  std::move(filterColorsService))},
+    m_zoomFilterFx{std::make_unique<ZoomFilterFx>(
+        *fxHelper.goomInfo, std::move(filterBuffersService), std::move(filterColorsService))},
     m_goomStateHandler{&goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)

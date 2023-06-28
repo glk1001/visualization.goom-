@@ -63,8 +63,7 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
       MIN_SCREEN_COORD_ABS_VAL
   };
   auto zoomFilterFx =
-      ZoomFilterFx{parallel,
-                   goomInfo,
+      ZoomFilterFx{goomInfo,
                    std::make_unique<FilterBuffersService>(
                        parallel,
                        goomInfo,

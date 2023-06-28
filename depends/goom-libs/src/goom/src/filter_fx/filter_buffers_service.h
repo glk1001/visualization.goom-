@@ -57,9 +57,6 @@ public:
   };
   auto UpdateTranLerpProperties(const TranLerpProperties& tranLerpProperties) noexcept -> void;
 
-  [[nodiscard]] auto GetSourcePointInfo(size_t buffPos) const noexcept
-      -> FILTER_BUFFERS::SourcePointInfo;
-
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
 
@@ -92,12 +89,6 @@ inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexce
     -> const ZoomFilterEffectsSettings&
 {
   return m_currentFilterEffectsSettings;
-}
-
-inline auto FilterBuffersService::GetSourcePointInfo(const size_t buffPos) const noexcept
-    -> FILTER_BUFFERS::SourcePointInfo
-{
-  return m_filterBuffers.GetSourcePointInfo(buffPos);
 }
 
 inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t

@@ -85,9 +85,6 @@ private:
   bool m_filterSettingsHaveChanged    = false;
   TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
 
-  [[nodiscard]] auto GetMaxTranX() const noexcept -> uint32_t;
-  [[nodiscard]] auto GetMaxTranY() const noexcept -> uint32_t;
-
   auto InitAllTranBuffers() noexcept -> void;
   auto StartFreshTranBuffers() noexcept -> void;
   auto ResetTranBuffers() noexcept -> void;
@@ -189,18 +186,6 @@ inline auto ZoomFilterBuffers<FilterStriper>::GetZoomBufferTranPoint(const size_
     -> Point2dInt
 {
   return m_transformBuffers.GetSrceDestLerpBufferPoint(buffPos, isClipped);
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetMaxTranX() const noexcept -> uint32_t
-{
-  return static_cast<uint32_t>(m_maxTranPoint.x);
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetMaxTranY() const noexcept -> uint32_t
-{
-  return static_cast<uint32_t>(m_maxTranPoint.y);
 }
 
 template<class FilterStriper>
