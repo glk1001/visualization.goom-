@@ -11,7 +11,6 @@
 #include <span>
 #include <stdexcept>
 
-using GOOM::Pixel;
 using std::filesystem::temp_directory_path;
 
 // TODO - Need to pass goomLogger
@@ -290,8 +289,7 @@ auto DisplacementFilter::InitAllFrameDataToGl() noexcept -> void
   {
     UpdateFrameDataToGl(i);
 
-    auto filterSrcePos = std_spn::span<Point2dFlt>{
-        m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(i), m_buffSize};
+    auto filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(i);
     InitTranBufferDest({static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())},
                        filterSrcePos);
     m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(i);
@@ -520,14 +518,14 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 
   for (auto i = 0U; i < NUM_PBOS; ++i)
   {
-    frameDataArray.at(i).filterPosArrays.filterDestPos = std_spn::span<FilterPosDataXY>{
-        m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(i), m_buffSize};
+    frameDataArray.at(i).filterPosArrays.filterDestPos =
+        m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(i);
 
     frameDataArray.at(i).imageArrays.mainImageData.SetPixelBuffer(
-        std_spn::span<Pixel>{m_glImageData.mainImageTexture.GetMappedBuffer(i), m_buffSize},
+        m_glImageData.mainImageTexture.GetMappedBuffer(i),
         Dimensions{static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())});
     frameDataArray.at(i).imageArrays.lowImageData.SetPixelBuffer(
-        std_spn::span<Pixel>{m_glImageData.lowImageTexture.GetMappedBuffer(i), m_buffSize},
+        m_glImageData.lowImageTexture.GetMappedBuffer(i),
         Dimensions{static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())});
   }
 }
@@ -579,7 +577,7 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
     //    LogInfo(GOOM::UTILS::GetGoomLogger(),
     //            "Copying lerped srce/dest to srce. Lerpfactor = {}.",
     //            m_previousLerpFactor);
-    auto* const filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
+    auto filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
     const auto destToSrceLerpFactor =
         m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
     for (auto i = 0U; i < m_buffSize; ++i)
@@ -592,8 +590,7 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
     m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
     m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
 
-    const auto* const filterDestPos =
-        m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+    const auto filterDestPos = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
     //    std::copy()
     for (auto i = 0U; i < m_buffSize; ++i)
     {

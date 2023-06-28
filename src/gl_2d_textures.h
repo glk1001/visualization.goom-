@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <format>
+#include <span>
 
 namespace GOOM::OPENGL
 {
@@ -24,7 +25,7 @@ public:
   auto Setup(const char* textureShaderName, int32_t textureWidth, int32_t textureHeight) -> void;
 
   [[nodiscard]] auto GetTextureName() const noexcept -> GLuint;
-  [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> CppTextureType*;
+  [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> std_spn::span<CppTextureType>;
 
   auto ZeroTextureData() noexcept -> void;
   auto CopyMappedBufferToTexture(size_t pboIndex) noexcept -> void;
@@ -165,9 +166,10 @@ inline auto Gl2DTexture<CppTextureType,
                         TextureFormat,
                         TextureInternalFormat,
                         TexturePixelType,
-                        NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept -> CppTextureType*
+                        NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept
+    -> std_spn::span<CppTextureType>
 {
-  return m_pboBuffers.mappedBuffers.at(pboIndex);
+  return std_spn::span<CppTextureType>{m_pboBuffers.mappedBuffers.at(pboIndex), m_buffSize};
 }
 
 template<typename CppTextureType,
