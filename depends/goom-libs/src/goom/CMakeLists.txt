@@ -229,6 +229,7 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/fmt/include
+                           ${GOOM_LIBS_DIR}/lib/span/include
                            ${LSys_SOURCE_DIR}/include
                            ${particles_SOURCE_DIR}/include
                            ${fmt_SOURCE_DIR}/include

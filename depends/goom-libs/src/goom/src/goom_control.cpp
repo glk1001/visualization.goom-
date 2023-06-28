@@ -110,7 +110,7 @@ public:
 
   [[nodiscard]] auto GetUpdateNum() const -> uint32_t;
 
-  auto SetShowTitle(ShowTitleType value) -> void;
+  auto SetShowTitle(ShowMusicTitleType value) -> void;
 
   auto Start() -> void;
   auto Finish() -> void;
@@ -121,7 +121,7 @@ public:
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
   auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
-  auto UpdateGoomBuffer(const AudioSamples& soundData, const std::string& message) -> void;
+  auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
@@ -190,7 +190,7 @@ private:
   [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
 
   SongInfo m_songInfo{};
-  ShowTitleType m_showTitle = ShowTitleType::AT_START;
+  ShowMusicTitleType m_showTitle = ShowMusicTitleType::AT_START;
   GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetDimensions(), *m_goomLogger};
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
@@ -210,7 +210,7 @@ GoomControl::GoomControl(const Dimensions& dimensions,
 {
 }
 
-auto GoomControl::SetShowTitle(const ShowTitleType value) -> void
+auto GoomControl::SetShowMusicTitle(const ShowMusicTitleType value) -> void
 {
   m_pimpl->SetShowTitle(value);
 }
@@ -250,10 +250,10 @@ auto GoomControl::SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> v
   m_pimpl->SetGoomBuffer(buffer);
 }
 
-auto GoomControl::UpdateGoomBuffer(const AudioSamples& audioSamples, const std::string& message)
+auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
     -> void
 {
-  m_pimpl->UpdateGoomBuffer(audioSamples, message);
+  m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }
 
 auto GoomControl::GetLastShaderVariables() const -> const GoomShaderVariables&
@@ -318,7 +318,7 @@ inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
   return m_updateNum;
 }
 
-inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowTitleType value) -> void
+inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowMusicTitleType value) -> void
 {
   m_showTitle = value;
 }
@@ -446,8 +446,8 @@ inline auto GoomControl::GoomControlImpl::GetMessagesFontFile(const std::string&
   return GetFontDirectory(resourcesDirectory) + PATH_SEP + "verdana.ttf";
 }
 
-inline auto GoomControl::GoomControlImpl::UpdateGoomBuffer(const AudioSamples& soundData,
-                                                           const std::string& message) -> void
+inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& soundData,
+                                                            const std::string& message) -> void
 {
   NewCycle();
 
@@ -605,7 +605,7 @@ inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::str
 {
   UpdateMessages(message);
 
-  if (m_showTitle == ShowTitleType::NEVER)
+  if (m_showTitle == ShowMusicTitleType::NEVER)
   {
     return;
   }
@@ -615,8 +615,8 @@ inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::str
 
 inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 {
-  const auto xPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.050F : 0.085F;
-  const auto yPosFraction = m_showTitle == ShowTitleType::ALWAYS ? 0.130F : 0.300F;
+  const auto xPosFraction = m_showTitle == ShowMusicTitleType::ALWAYS ? 0.050F : 0.085F;
+  const auto yPosFraction = m_showTitle == ShowMusicTitleType::ALWAYS ? 0.130F : 0.300F;
   const auto xPos = static_cast<int>(xPosFraction * m_goomInfo.GetDimensions().GetFltWidth());
   const auto yPos = static_cast<int>(yPosFraction * m_goomInfo.GetDimensions().GetFltHeight());
 
@@ -630,7 +630,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
     return;
   }
 
-  if (m_showTitle == ShowTitleType::ALWAYS)
+  if (m_showTitle == ShowMusicTitleType::ALWAYS)
   {
     m_goomTextOutput.SetBuffer(m_imageBuffers.GetOutputBuff());
     m_goomTitleDisplayer.DrawStaticText(m_songInfo.title);

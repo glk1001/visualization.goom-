@@ -9,16 +9,16 @@
 namespace GOOM
 {
 
-AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& floatAudioData)
-  : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(floatAudioData)}
+AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& rawAudioData)
+  : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(rawAudioData)}
 {
   Expects((0 < numSampleChannels) && (numSampleChannels <= NUM_AUDIO_SAMPLES));
 }
 
-auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
+auto AudioSamples::GetSampleArrays(const std::vector<float>& rawAudioData)
     -> std::array<SampleArray, NUM_AUDIO_SAMPLES>
 {
-  Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == floatAudioData.size());
+  Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == rawAudioData.size());
 
   auto sampleArrays = std::array<SampleArray, NUM_AUDIO_SAMPLES>{};
 
@@ -27,7 +27,7 @@ auto AudioSamples::GetSampleArrays(const std::vector<float>& floatAudioData)
   {
     for (auto i = 0U; i < NUM_AUDIO_SAMPLES; ++i)
     {
-      sampleArrays.at(i).at(j) = GetPositiveValue(floatAudioData[fpos]);
+      sampleArrays.at(i).at(j) = GetPositiveValue(rawAudioData[fpos]);
       ++fpos;
     }
   }

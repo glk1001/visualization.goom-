@@ -124,7 +124,7 @@ constexpr auto* SHOW_TITLE_SETTING      = "show_title";
 constexpr auto* SHOW_GOOM_STATE_SETTING = "show_goom_state";
 constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 
-[[nodiscard]] auto GetTextureBufferDimensions() noexcept -> TextureBufferDimensions
+[[nodiscard]] inline auto GetTextureBufferDimensions() noexcept -> TextureBufferDimensions
 {
   return {WIDTHS_BY_QUALITY.at(static_cast<size_t>(
               std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt(QUALITY_SETTING)))),
@@ -132,7 +132,7 @@ constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
               std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt(QUALITY_SETTING))))};
 }
 
-inline auto GetGoomVisualizationBuildTime() -> std::string
+[[nodiscard]] inline auto GetGoomVisualizationBuildTime() -> std::string
 {
   return ::GetBuildTime();
 }
@@ -155,7 +155,7 @@ CVisualizationGoom::CVisualizationGoom()
     m_goomBufferProducer{std::make_unique<GoomBufferProducer>(
         GetTextureBufferDimensions(),
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
-        static_cast<GoomControl::ShowTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)),
+        static_cast<GoomControl::ShowMusicTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)),
 #ifdef SAVE_AUDIO_BUFFERS
         GetAudioBuffersSaveDir(),
 #endif

@@ -46,6 +46,7 @@ target_include_directories(${GOOM_LIB_TESTS_NAME}
                            SYSTEM PRIVATE
                            ${GOOM_LIBS_DIR}/lib/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
+                           ${GOOM_LIBS_DIR}/lib/span/include
                            ${GOOM_LIBS_DIR}/lib/fmt/include
                            ${fmt_SOURCE_DIR}/include
                            ${magic_enum_INCLUDE_DIR}

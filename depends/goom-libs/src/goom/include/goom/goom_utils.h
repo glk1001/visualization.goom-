@@ -31,6 +31,10 @@ template<typename U, typename T>
   }
 }
 
+auto PutFileWithExpandedIncludes(const std::string& includeDir,
+                                 const std::string& inFilepath,
+                                 const std::string& outFilepath) -> void;
+
 [[nodiscard]] auto GetFileContentsWithExpandedIncludes(const std::string& includeDir,
                                                        const std::string& filepath) -> std::string;
 

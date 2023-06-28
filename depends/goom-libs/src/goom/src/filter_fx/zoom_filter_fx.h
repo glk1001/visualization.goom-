@@ -51,6 +51,7 @@ public:
   auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+
   auto SetZoomFilterBrightness(float brightness) noexcept -> void;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;
   [[nodiscard]] auto GetLastFilterBufferColorInfo() noexcept -> FilterBufferColorInfo&;

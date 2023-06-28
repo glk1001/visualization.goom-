@@ -12,6 +12,7 @@ namespace GOOM
 {
 
 using UTILS::GetFileLinesWithExpandedIncludes;
+using UTILS::PutFileLines;
 using UTILS::StringJoin;
 
 auto GetRandSeed() noexcept -> uint64_t
@@ -54,6 +55,15 @@ auto GetAbsoluteIncludeDir(const std::string& includeDir, const std::string& inF
 }
 
 } // namespace
+
+auto PutFileWithExpandedIncludes(const std::string& includeDir,
+                                 const std::string& inFilepath,
+                                 const std::string& outFilepath) -> void
+{
+  const auto absoluteIncludeDir = GetAbsoluteIncludeDir(includeDir, inFilepath);
+
+  PutFileLines(outFilepath, GetFileLinesWithExpandedIncludes(absoluteIncludeDir, inFilepath));
+}
 
 auto GetFileContentsWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
     -> std::string

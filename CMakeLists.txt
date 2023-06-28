@@ -204,13 +204,15 @@ include_directories(BEFORE
                     ${KODI_FIXED_INCLUDE_DIR}
 )
 
-set(${GOOM_ADDON_PREFIX}_SOURCES src/Main.cpp
+set(${GOOM_ADDON_PREFIX}_SOURCES
+    src/Main.cpp
     src/build_time.cpp
     src/gl_renderer.cpp
     src/goom_buffer_producer.cpp
     src/shader_with_effects.cpp
     src/kodi_shader_with_effects.cpp)
-set(${GOOM_ADDON_PREFIX}_HEADERS src/Main.h
+set(${GOOM_ADDON_PREFIX}_HEADERS
+    src/Main.h
     src/build_time.h
     src/circular_buffer.h
     src/gl_render_types.h

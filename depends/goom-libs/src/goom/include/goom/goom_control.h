@@ -25,13 +25,13 @@ public:
               const std::string& resourcesDirectory,
               GoomLogger& goomLogger);
 
-  enum class ShowTitleType
+  enum class ShowMusicTitleType
   {
     AT_START,
     ALWAYS,
     NEVER,
   };
-  auto SetShowTitle(ShowTitleType value) -> void;
+  auto SetShowMusicTitle(ShowMusicTitleType value) -> void;
 
   auto Start() -> void;
   auto Finish() -> void;
@@ -49,7 +49,7 @@ public:
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
   auto SetGoomBuffer(const std::shared_ptr<PixelBuffer>& buffer) -> void;
-  auto UpdateGoomBuffer(const AudioSamples& audioSamples, const std::string& message = "") -> void;
+  auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 

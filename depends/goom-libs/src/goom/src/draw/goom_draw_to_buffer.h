@@ -88,6 +88,9 @@ inline auto GoomDrawToSingleBuffer::DrawPixelsToDevice(const Point2dInt& point,
 inline auto GoomDrawToTwoBuffers::SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept
     -> void
 {
+  Expects(buffer1.GetWidth() == GetDimensions().GetWidth());
+  Expects(buffer2.GetWidth() == GetDimensions().GetWidth());
+
   m_buffer1 = &buffer1;
   m_buffer2 = &buffer2;
 }

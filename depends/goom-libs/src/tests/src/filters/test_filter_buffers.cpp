@@ -22,7 +22,6 @@
 #include "point2d.h"
 #include "sound_info.h"
 #include "utils/math/goom_rand.h"
-#include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
 
 #include <cmath>

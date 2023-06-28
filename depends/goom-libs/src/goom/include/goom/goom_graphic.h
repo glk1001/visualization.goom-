@@ -183,11 +183,9 @@ public:
   explicit PixelBuffer(const Dimensions& dimensions) noexcept;
   PixelBuffer(const PixelBuffer&)                    = delete;
   PixelBuffer(PixelBuffer&&)                         = delete;
+  ~PixelBuffer() noexcept                            = default;
   auto operator=(const PixelBuffer&) -> PixelBuffer& = delete;
   auto operator=(PixelBuffer&&) -> PixelBuffer&      = delete;
-  ~PixelBuffer() noexcept;
-
-  auto Resize(const Dimensions& dimensions) noexcept -> void;
 
   [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
   [[nodiscard]] auto GetHeight() const noexcept -> uint32_t;
@@ -208,11 +206,8 @@ public:
   [[nodiscard]] auto GetPixel(size_t buffPos) const noexcept -> const Pixel&;
   [[nodiscard]] auto GetPixel(size_t buffPos) noexcept -> Pixel&;
 
-  using iterator       = Buffer::iterator; // NOLINT(readability-identifier-naming)
-  using const_iterator = Buffer::const_iterator; // NOLINT(readability-identifier-naming)
+  using iterator = Buffer::iterator; // NOLINT(readability-identifier-naming)
   [[nodiscard]] auto GetRowIter(size_t y) noexcept -> std::tuple<iterator, iterator>;
-  [[nodiscard]] auto GetRowIter(size_t y) const noexcept
-      -> std::tuple<const_iterator, const_iterator>;
 
   static constexpr size_t NUM_NBRS = 4;
   [[nodiscard]] auto Get4RHBNeighbours(size_t x, size_t y) const noexcept
@@ -348,7 +343,7 @@ inline auto PixelBuffer::GetHeight() const noexcept -> uint32_t
 
 inline auto PixelBuffer::Fill(const Pixel& pixel) noexcept -> void
 {
-  std::fill(begin(m_buff), end(m_buff), pixel);
+  std::fill(m_buff.begin(), m_buff.end(), pixel);
 }
 
 inline auto PixelBuffer::GetIntBufferSize(const Dimensions& dimensions) noexcept -> size_t
@@ -364,7 +359,7 @@ inline auto PixelBuffer::GetBuffPtr() const noexcept -> const PixelChannelType*
 // TODO(glk) - AppleClang does not seem to optimize std::copy - ignore it for now.
 inline auto PixelBuffer::CopyTo(PixelBuffer& pixelBuffer) const noexcept -> void
 {
-  std::copy(cbegin(m_buff), cend(m_buff), begin(pixelBuffer.m_buff));
+  std::copy(m_buff.begin(), m_buff.end(), pixelBuffer.m_buff.begin());
 }
 
 inline auto PixelBuffer::operator()(const size_t x, const size_t y) const noexcept -> const Pixel&
@@ -419,16 +414,8 @@ inline auto PixelBuffer::GetRowIter(const size_t y) noexcept
     -> std::tuple<PixelBuffer::iterator, PixelBuffer::iterator>
 {
   const auto rowPos = static_cast<int32_t>(y * m_width);
-  return std::make_tuple(begin(m_buff) + rowPos,
-                         begin(m_buff) + rowPos + static_cast<int32_t>(m_width));
-}
-
-inline auto PixelBuffer::GetRowIter(const size_t y) const noexcept
-    -> std::tuple<PixelBuffer::const_iterator, PixelBuffer::const_iterator>
-{
-  const auto rowPos = static_cast<int32_t>(y * m_width);
-  return std::make_tuple(cbegin(m_buff) + rowPos,
-                         cbegin(m_buff) + rowPos + static_cast<int32_t>(m_width));
+  return std::make_tuple(m_buff.begin() + rowPos,
+                         m_buff.begin() + rowPos + static_cast<int32_t>(m_width));
 }
 
 inline auto PixelBuffer::Get4RHBNeighbours(const int32_t x, const int32_t y) const noexcept

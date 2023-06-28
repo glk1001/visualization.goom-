@@ -31,6 +31,7 @@ displayer
 displayers
 fgnd
 flatline
+framebuffer
 func's
 goom
 goom's
@@ -57,6 +58,7 @@ NBRS
 noisify
 NOLINTBEGIN
 NOLINTEND
+optin
 pbos
 pentaplexity
 ptrs

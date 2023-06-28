@@ -1,5 +1,3 @@
-//#undef NO_LOGGING
-
 #include "filter_buffer_striper.h"
 
 #include "goom_config.h"

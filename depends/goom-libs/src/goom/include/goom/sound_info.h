@@ -19,12 +19,12 @@ public:
   [[nodiscard]] static constexpr auto GetPositiveValue(float audioValue) -> float;
 
   // AudioSample object: numSampleChannels = 1 or 2.
-  //   If numSampleChannels = 1, then the first AUDIO_SAMPLE_LEN values of 'floatAudioData'
+  //   If numSampleChannels = 1, then the first AUDIO_SAMPLE_LEN values of 'rawAudioData'
   //   are used for the two channels.
-  //   If numSampleChannels = 2, then the 'floatAudioData' must interleave the two channels,
-  //   one after the other. So 'floatAudioData[0]' is channel 0, 'floatAudioData[1]' is
-  //   channel 1, 'floatAudioData[2]' is channel 0, 'floatAudioData[3]' is channel 1, etc.
-  AudioSamples(size_t numSampleChannels, const std::vector<float>& floatAudioData);
+  //   If numSampleChannels = 2, then the 'rawAudioData' must interleave the two channels,
+  //   one after the other. So 'rawAudioData[0]' is channel 0, 'rawAudioData[1]' is
+  //   channel 1, 'rawAudioData[2]' is channel 0, 'rawAudioData[3]' is channel 1, etc.
+  AudioSamples(size_t numSampleChannels, const std::vector<float>& rawAudioData);
 
   [[nodiscard]] auto GetNumDistinctChannels() const -> size_t;
 
@@ -47,7 +47,7 @@ private:
   MinMaxValues m_overallMinMaxSampleValues{
       std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
       std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)};
-  [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& floatAudioData)
+  [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& rawAudioData)
       -> std::array<SampleArray, NUM_AUDIO_SAMPLES>;
   [[nodiscard]] static auto GetMinMaxSampleValues(
       const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)

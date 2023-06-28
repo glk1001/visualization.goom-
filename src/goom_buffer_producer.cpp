@@ -23,7 +23,7 @@ namespace GOOM
 
 GoomBufferProducer::GoomBufferProducer(const TextureBufferDimensions& textureBufferDimensions,
                                        const std::string& resourcesDirectory,
-                                       const GoomControl::ShowTitleType showTitle,
+                                       const GoomControl::ShowMusicTitleType showMusicTitleType,
 #ifdef SAVE_AUDIO_BUFFERS
                                        const std::string& audioBuffersSaveDir,
 #endif
@@ -40,7 +40,7 @@ GoomBufferProducer::GoomBufferProducer(const TextureBufferDimensions& textureBuf
 #endif
 {
   LogDebug(*m_goomLogger, "Constructed producer.");
-  m_goomControl->SetShowTitle(showTitle);
+  m_goomControl->SetShowMusicTitle(showMusicTitleType);
   Ensures(nullptr != m_goomControl);
 }
 
@@ -222,7 +222,7 @@ inline auto GoomBufferProducer::UpdateGoomBuffer(const std::vector<float>& float
 {
   const auto audioData = AudioSamples{m_numChannels, floatAudioData};
   m_goomControl->SetGoomBuffer(pixelBufferData.pixelBuffer);
-  m_goomControl->UpdateGoomBuffer(audioData);
+  m_goomControl->UpdateGoomBuffers(audioData);
   pixelBufferData.goomShaderVariables = m_goomControl->GetLastShaderVariables();
 
 #ifdef SAVE_AUDIO_BUFFERS

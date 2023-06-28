@@ -17,8 +17,9 @@ namespace
 {
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-auto GetIncludeFileName(const std::string& includeDir, const std::string& includeLine)
-    -> std::string
+auto GetIncludeFileName(const std::string& includeDir,
+                        const std::string& parentFileDir,
+                        const std::string& includeLine) -> std::string
 {
   const auto words = StringSplit(includeLine, " ");
   if (words.size() <= 1)
@@ -44,7 +45,55 @@ auto GetIncludeFileName(const std::string& includeDir, const std::string& includ
   {
     throw std::runtime_error("#include filename is empty");
   }
-  return includeDir + "/" + filename.substr(1, filename.size() - 2);
+
+  auto theFilename = filename.substr(1, filename.size() - 2);
+  if (not parentFileDir.empty())
+  {
+    theFilename = parentFileDir + "/" + filename.substr(1, filename.size() - 2);
+    if (std::filesystem::exists(theFilename))
+    {
+      return theFilename;
+    }
+  }
+
+  auto inclFilename = std::filesystem::absolute(includeDir + "/" + theFilename).string();
+  if (not std::filesystem::exists(inclFilename))
+  {
+    throw std::runtime_error{
+        std_fmt::format("Could not open file \"{}\" or \"{}\"", theFilename, inclFilename)};
+  }
+  return inclFilename;
+}
+
+auto GetExpandedFileLines(const std::string& includeDir,
+                          const std::string& parentFileDir,
+                          const std::vector<std::string>& inLines) -> std::vector<std::string>
+{
+  if (not std::filesystem::exists(includeDir))
+  {
+    throw std::runtime_error{
+        std_fmt::format("Could not find include directory \"{}\"", includeDir)};
+  }
+
+  auto outLines = std::vector<std::string>{};
+  for (const auto& line : inLines)
+  {
+    const auto trimmedLine = RTrimAndCopy(line);
+
+    if (static constexpr auto INCLUDE = std::string_view{"#include"};
+        trimmedLine.substr(0, INCLUDE.size()) != INCLUDE)
+    {
+      outLines.push_back(line);
+    }
+    else
+    {
+      const auto includeLines = GetFileLinesWithExpandedIncludes(
+          includeDir, GetIncludeFileName(includeDir, parentFileDir, trimmedLine));
+      std::copy(cbegin(includeLines), cend(includeLines), std::back_inserter(outLines));
+    }
+  }
+
+  return outLines;
 }
 
 } // namespace
@@ -98,37 +147,15 @@ auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines
 auto GetFileLinesWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
     -> std::vector<std::string>
 {
-  return GetFileLinesWithExpandedIncludes(includeDir, GetFileLines(filepath));
+  const auto parentFileDir = std::filesystem::path(filepath).parent_path().string();
+  return GetExpandedFileLines(includeDir, parentFileDir, GetFileLines(filepath));
 }
 
 auto GetFileLinesWithExpandedIncludes(const std::string& includeDir,
                                       const std::vector<std::string>& inLines)
     -> std::vector<std::string>
 {
-  if (not std::filesystem::exists(includeDir))
-  {
-    throw std::runtime_error{
-        std_fmt::format("Could not find include directory \"{}\"", includeDir)};
-  }
-
-  auto outLines = std::vector<std::string>{};
-  for (const auto& line : inLines)
-  {
-    const auto trimmedLine = RTrimAndCopy(line);
-
-    if (static constexpr auto INCLUDE = std::string_view{"#include"};
-        trimmedLine.substr(0, INCLUDE.size()) != INCLUDE)
-    {
-      outLines.push_back(line);
-    }
-    else
-    {
-      const auto includeLines = GetFileLines(GetIncludeFileName(includeDir, trimmedLine));
-      std::copy(cbegin(includeLines), cend(includeLines), std::back_inserter(outLines));
-    }
-  }
-
-  return outLines;
+  return GetExpandedFileLines(includeDir, "", inLines);
 }
 
 auto FindAndReplaceAll(std::string& dataStr,
