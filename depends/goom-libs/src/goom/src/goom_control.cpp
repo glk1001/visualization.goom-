@@ -715,10 +715,10 @@ inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
 
   auto draw = DRAW::GoomDrawToSingleBuffer{m_goomInfo.GetDimensions(), *m_goomLogger};
   draw.SetBuffer(*m_p1);
-  DrawTestPattern(
-      draw,
-      {m_goomInfo.GetDimensions().GetIntWidth() / 2, m_goomInfo.GetDimensions().GetIntHeight() / 2},
-      m_goomInfo.GetDimensions());
+  //  DrawTestPattern(
+  //      draw,
+  //      {m_goomInfo.GetDimensions().GetIntWidth() / 2, m_goomInfo.GetDimensions().GetIntHeight() / 2},
+  //      m_goomInfo.GetDimensions());
 }
 
 inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void

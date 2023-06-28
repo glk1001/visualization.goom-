@@ -59,6 +59,7 @@ DisplacementFilter::DisplacementFilter(
   : IScene{textureBufferDimensions},
     m_shaderDir{shaderDir},
     m_buffSize{static_cast<size_t>(GetWidth()) * static_cast<size_t>(GetHeight())},
+    m_aspectRatio{static_cast<float>(GetWidth()) / static_cast<float>(GetHeight())},
     m_frameDataArray(NUM_PBOS),
     m_previousFilterDestPos(m_buffSize)
 {
@@ -223,7 +224,7 @@ auto DisplacementFilter::CompileAndLinkShader() -> void
 
 auto DisplacementFilter::SetupGlData() -> void
 {
-  SetupGlParams();
+  SetupGlSettings();
   SetupGlFilterBuffData();
   SetupGlFilterPosData();
   SetupGlImageData();
@@ -231,14 +232,9 @@ auto DisplacementFilter::SetupGlData() -> void
   InitFrameDataArrayPointers(m_frameDataArray);
 }
 
-auto DisplacementFilter::SetupGlParams() -> void
+auto DisplacementFilter::SetupGlSettings() -> void
 {
   glDisable(GL_BLEND);
-
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 }
 
 auto DisplacementFilter::SetupProgramSubroutines() noexcept -> void
@@ -259,6 +255,7 @@ auto DisplacementFilter::Render() noexcept -> void
   glViewport(0, 0, GetWidth(), GetHeight());
 
   m_program.Use();
+  UpdateGlUniforms();
   //  SaveBuffersBeforePass1();
 
   m_requestNextFrameData();
@@ -279,6 +276,11 @@ auto DisplacementFilter::Render() noexcept -> void
   Pass3OutputToScreen();
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+auto DisplacementFilter::UpdateGlUniforms() -> void
+{
+  m_program.SetUniform("u_aspectRatio", m_aspectRatio);
 }
 
 auto DisplacementFilter::InitAllFrameDataToGl() noexcept -> void
@@ -305,6 +307,7 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
   m_glFenceSync                      = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
   /*const auto result = */ glClientWaitSync(
       m_glFenceSync, GL_SYNC_FLUSH_COMMANDS_BIT, TIMEOUT_NANO);
+
   // if ((result == GL_ALREADY_SIGNALED) or (result == GL_CONDITION_SATISFIED))
   // {
   //   std_fmt::println("Fence finished OK.");

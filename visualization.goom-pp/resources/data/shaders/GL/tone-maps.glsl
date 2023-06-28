@@ -242,7 +242,7 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
   }
   #elif (toneMapToUse == LOTTES_TONE_MAP)
   {
-    A = 3.0;
+    A = 1.0;
     gamma = 2.2;
     mapped = lottes(finalExposure * mapped);
   }

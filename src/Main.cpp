@@ -73,8 +73,8 @@ static_assert(HEIGHTS_BY_QUALITY.size() == WIDTHS_BY_QUALITY.size());
 
 constexpr auto* GOOM_ADDON_DATA_DIR = "special://userdata/addon_data/visualization.goom-pp";
 
-constexpr auto* QUALITY_SETTING = "quality";
-//TODO - constexpr auto* SHOW_TITLE_SETTING      = "show_title";
+constexpr auto* QUALITY_SETTING         = "quality";
+constexpr auto* SHOW_TITLE_SETTING      = "show_title";
 constexpr auto* SHOW_GOOM_STATE_SETTING = "show_goom_state";
 constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 
@@ -312,6 +312,8 @@ auto CVisualizationGoom::InitGoomControl() noexcept -> void
   m_goomControl->SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
   m_goomControl->SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
       std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
+  m_goomControl->SetShowMusicTitle(
+      static_cast<GoomControl::ShowMusicTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)));
 
   m_goomControl->SetFrameData(m_glScene.GetFrameData(0));
 }

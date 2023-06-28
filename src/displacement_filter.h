@@ -77,6 +77,7 @@ private:
   GlslProgram m_lumHistogramComputeProgram;
   GlslProgram m_lumAverageComputeProgram;
   size_t m_buffSize;
+  float m_aspectRatio;
   GLuint m_renderToTextureFbo{};
   GLsync m_glFenceSync{};
   std::vector<FrameData> m_frameDataArray;
@@ -112,13 +113,14 @@ private:
   auto SetupRenderToTextureFBO() noexcept -> void;
   auto SetupScreenBuffers() noexcept -> void;
   auto SetupProgramSubroutines() noexcept -> void;
-  static auto SetupGlParams() -> void;
+  static auto SetupGlSettings() -> void;
   auto SetupGlData() -> void;
   auto InitFilterBuffers() noexcept -> void;
   auto SetupGlLumComputeData() noexcept -> void;
   auto SetupGlLumHistogramBuffer() noexcept -> void;
   [[nodiscard]] auto GetLumAverage() const noexcept -> float;
   RequestNextFrameDataFunc m_requestNextFrameData{};
+  auto UpdateGlUniforms() -> void;
   auto UpdateFrameDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdateMiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePosDataToGl(size_t pboIndex) noexcept -> void;

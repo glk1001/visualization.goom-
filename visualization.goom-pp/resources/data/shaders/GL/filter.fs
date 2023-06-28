@@ -29,9 +29,10 @@ in vec3 position;
 in vec2 texCoord;
 
 uniform float u_brightness;
-const float u_aspectRatio = 1600.0/900.0;
+uniform float u_aspectRatio;
 
 uniform float u_lerpFactor;
+// TODO - Pass these in.
 uniform float u_filterPosMinCoord   = -2.0;
 uniform float u_filterPosCoordWidth = +4.0;
 
@@ -58,58 +59,23 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv);
 
 subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
 {
-  ivec2 xy = ivec2(gl_FragCoord.xy);
-
   vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord);
 
   vec4 colorMain = texture(tex_mainImage, texCoord);
   vec4 colorLow  = texture(tex_lowImage, texCoord);
 
-/**
-  vec2 filtPos = texture(tex_filterDestPositions, texCoord).xy;
-  float filtCoord = filtPos.y;
-  if (filtCoord < -2.001)
-  {
-      colorLow = vec4(1,1,1,1);
-  }
-  else if (filtCoord < -1.9)
-  {
-      colorLow = vec4(1,0,0,1);
-  }
-  else if (filtCoord < -1.0)
-  {
-      colorLow = vec4(0,1,0,1);
-  }
-  else if (filtCoord < 0.0)
-  {
-      colorLow = vec4(0,0,1,1);
-  }
-  else if (filtCoord < 1.0)
-  {
-      colorLow = vec4(1,0,1,1);
-  }
-  else if (filtCoord < 2.0)
-  {
-      colorLow = vec4(0,1,1,1);
-  }
-  else
-  {
-      colorLow = vec4(0.5,0.5,0.5,1);
-  }
-**/
+  //  vec4 filtBuff2ColorMain = vec4(blend(filtBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
+  //  vec4 filtBuff2ColorMain = vec4((1-colorMain.a)*filtBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
+  //  float alpha = 1 - 0.5 * colorMain.a;
+  //  vec4 filtBuff2ColorMain = (1-alpha)*filtBuff2Val + alpha*50*colorMain;
+  //  vec4 filtBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filtBuff2Val.rgb, colorMain.a), 1.0);
+  //  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
+  //  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
 
-//  vec4 filtBuff2ColorMain = vec4(blend(filtBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
-//  vec4 filtBuff2ColorMain = vec4((1-colorMain.a)*filtBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
-//  float alpha = 1 - 0.5 * colorMain.a;
-//  vec4 filtBuff2ColorMain = (1-alpha)*filtBuff2Val + alpha*50*colorMain;
-//  vec4 filtBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filtBuff2Val.rgb, colorMain.a), 1.0);
-//  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
-//  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
   vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + colorMain.rgb, 1.0);
   vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + colorLow.rgb, 1.0);
-//filtBuff2ColorLow  = vec4(colorLow.rgb, 1.0);
-//filtBuff2ColorLow  = filtBuff2Val;
 
+  ivec2 xy = ivec2(gl_FragCoord.xy);
   imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
   imageStore(img_filterBuff3, xy, filtBuff2ColorMain);
 
@@ -135,18 +101,18 @@ subroutine (RenderPassType) vec4 Pass2OutputToneMappedImage()
   vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
   vec3 hdrColor = filtBuff3Val.rgb;
 
-  // Copy filter buff1 to filter buff2 ready for next frame.
+  // Copy filter buff1 to filter buff2 ready for the next frame.
   vec4 filtBuff1Val = imageLoad(img_filterBuff1, xy);
   imageStore(img_filterBuff2, xy, filtBuff1Val);
 
-  // Apply chromatic increase.
+  // Apply the chromatic increase.
   hdrColor = GetChromaticIncrease(hdrColor);
 
   // Finish with tone mapping.
   float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
-  vec3 toneMappedColor = GetToneMappedColor(hdrColor, averageLuminance, 5.0*u_brightness);
-//  vec3 toneMappedColor = GetToneMappedColor(hdrColor, 1.0, u_brightness);
-//  vec3 toneMappedColor = hdrColor;
+  vec3 toneMappedColor = GetToneMappedColor(hdrColor, averageLuminance, u_brightness);
+  //  vec3 toneMappedColor = GetToneMappedColor(hdrColor, 1.0, u_brightness);
+  //  vec3 toneMappedColor = hdrColor;
 
   return vec4(toneMappedColor, 1.0F);
 }
@@ -163,11 +129,11 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv)
                            (lerpNormalizedPos.y - u_filterPosMinCoord) / u_filterPosCoordWidth);
 
 
-  //vec4 tex = texture(tex_lowImage, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
-  //return vec4(tex.x, tex.y, filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y));
+  //  vec4 tex = texture(tex_lowImage, vec2(filtBuff2Pos.x, 1 - filtBuff2Pos.y/ratio));
+  //  return vec4(tex.x, tex.y, filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y));
 
-  //vec4 tex = texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y)));
-  //return vec4(tex.x, tex.y, uv.x, uv.y);
+  //  vec4 tex = texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y)));
+  //  return vec4(tex.x, tex.y, uv.x, uv.y);
 
   return texture(tex_filterBuff2, vec2(filtBuff2Pos.x, 1 - (u_aspectRatio * filtBuff2Pos.y)));
 }
