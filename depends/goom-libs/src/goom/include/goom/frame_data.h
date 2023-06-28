@@ -10,6 +10,7 @@ struct FilterPosArrays
 {
   std_spn::span<Point2dFlt> filterDestPos{};
   bool filterDestPosNeedsUpdating{};
+  float lerpFactorForDestToSrceUpdate = 0.0F;
 };
 struct ImageArrays
 {

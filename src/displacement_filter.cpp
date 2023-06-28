@@ -5,6 +5,7 @@
 #include "gl_utils.h"
 #include "goom/goom_logger.h"
 
+#include <algorithm>
 #include <filesystem>
 #include <format>
 #include <span>
@@ -540,7 +541,6 @@ auto DisplacementFilter::UpdateFrameDataToGl(const size_t pboIndex) noexcept -> 
 
 auto DisplacementFilter::UpdateMiscDataToGl(const size_t pboIndex) noexcept -> void
 {
-  m_previousLerpFactor = m_frameDataArray.at(pboIndex).miscData.lerpFactor;
   //LogInfo(GOOM::UTILS::GetGoomLogger(), "New lerpFactor = {}.", m_previousLerpFactor);
   m_program.SetUniform("u_lerpFactor", m_frameDataArray.at(pboIndex).miscData.lerpFactor);
   m_program.SetUniform("u_brightness", m_frameDataArray.at(pboIndex).miscData.brightness);
@@ -579,10 +579,12 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
     //    LogInfo(GOOM::UTILS::GetGoomLogger(),
     //            "Copying lerped srce/dest to srce. Lerpfactor = {}.",
     //            m_previousLerpFactor);
-    auto* filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
+    auto* const filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
+    const auto destToSrceLerpFactor =
+        m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
     for (auto i = 0U; i < m_buffSize; ++i)
     {
-      filterSrcePos[i] = lerp(filterSrcePos[i], m_previousFilterDestPos[i], m_previousLerpFactor);
+      filterSrcePos[i] = lerp(filterSrcePos[i], m_previousFilterDestPos[i], destToSrceLerpFactor);
     }
     //CopyTextureData(m_glFilterPosData.filterDestPosTexture.GetTextureName(),
     //                m_glFilterPosData.filterSrcePosTexture.GetTextureName());
@@ -590,7 +592,9 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
     m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
     m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
 
-    const auto* filterDestPos = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+    const auto* const filterDestPos =
+        m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+    //    std::copy()
     for (auto i = 0U; i < m_buffSize; ++i)
     {
       m_previousFilterDestPos[i] = filterDestPos[i];

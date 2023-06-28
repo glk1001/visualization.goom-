@@ -350,7 +350,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
-  LogInfo(*m_goomLogger, "Adding audio data to circular buffer.");
+  // LogInfo(*m_goomLogger, "Adding audio data to circular buffer.");
   AddAudioDataToBuffer(std_spn::span<const float>{audioData, audioDataLength});
 
   if (m_audioBuffer.DataAvailable() >= m_audioSampleLen)
@@ -374,7 +374,7 @@ auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& 
 
 auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
 {
-  //LogInfo(*m_goomLogger, "Moving audio sample to producer.");
+  // LogInfo(*m_goomLogger, "Moving audio sample to producer.");
   m_audioBuffer.Read(m_rawAudioData);
   m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, m_rawAudioData});
   ++m_audioSamplesNum;
@@ -382,14 +382,14 @@ auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
 
 auto CVisualizationGoom::ConsumeItem(const size_t slot) noexcept -> void
 {
-  //LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
+  // LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
   m_glScene.UpdateFrameData(slot);
 }
 
 auto CVisualizationGoom::ProduceItem(const size_t slot, const AudioSamples& audioSamples) noexcept
     -> void
 {
-  //LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
+  // LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
 
   auto& frameData = m_glScene.GetFrameData(slot);
 

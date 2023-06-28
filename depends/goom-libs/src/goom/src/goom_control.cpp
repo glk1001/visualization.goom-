@@ -371,7 +371,8 @@ auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArray
 auto GoomControl::GoomControlImpl::InitFilterPosArrays(
     GOOM::FilterPosArrays& filterPosArrays) noexcept -> void
 {
-  filterPosArrays.filterDestPosNeedsUpdating = false;
+  filterPosArrays.filterDestPosNeedsUpdating    = false;
+  filterPosArrays.lerpFactorForDestToSrceUpdate = 0.0F;
 }
 
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
@@ -387,24 +388,31 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   m_frameData->imageArrays.mainImageDataNeedsUpdating = true;
   m_frameData->imageArrays.lowImageDataNeedsUpdating  = true;
-  m_frameData->miscData.lerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) / 65536.0F;
-  m_frameData->miscData.brightness = 0.5F;
+  m_frameData->miscData.brightness                    = 1.0F;
+
+  using FilterBuffers          = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
+  const auto currentLerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) /
+                                 static_cast<float>(FilterBuffers::GetMaxTranLerpFactor());
 
   if (not m_visualFx.IsTranBufferFltReady())
   {
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating = false;
+    m_frameData->miscData.lerpFactor                        = currentLerpFactor;
   }
   else
   {
-    LogInfo(*m_goomLogger, "Filter dest needs saving flag set and passed on.");
+    LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
     m_visualFx.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
-    m_frameData->filterPosArrays.filterDestPosNeedsUpdating = true;
+    m_frameData->filterPosArrays.filterDestPosNeedsUpdating    = true;
+    m_frameData->filterPosArrays.lerpFactorForDestToSrceUpdate = currentLerpFactor;
+    m_frameData->miscData.lerpFactor                           = 0.0F;
   }
 
   LogInfo(*m_goomLogger,
-          "FrameData lerpFactor = {} ({}).",
+          "FrameData lerpFactor = {} ({}), currentLerpFactor = {}.",
           m_visualFx.GetTranLerpFactor(),
-          m_frameData->miscData.lerpFactor);
+          m_frameData->miscData.lerpFactor,
+          currentLerpFactor);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void

@@ -100,7 +100,6 @@ private:
   //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveAfterPass2{saveDir + "low_image_after_pass2"};
 
   std::vector<Point2dFlt> m_previousFilterDestPos{};
-  float m_previousLerpFactor = 0.0F;
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
