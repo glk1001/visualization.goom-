@@ -305,18 +305,18 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
   m_glFenceSync                      = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
   /*const auto result = */ glClientWaitSync(
       m_glFenceSync, GL_SYNC_FLUSH_COMMANDS_BIT, TIMEOUT_NANO);
-  //  if ((result == GL_ALREADY_SIGNALED) or (result == GL_CONDITION_SATISFIED))
-  //  {
-  //    std_fmt::println("Fence finished OK.");
-  //  }
-  //  else
-  //  {
-  //    std_fmt::println("Fence did not finish.");
-  //  }
+  // if ((result == GL_ALREADY_SIGNALED) or (result == GL_CONDITION_SATISFIED))
+  // {
+  //   std_fmt::println("Fence finished OK.");
+  // }
+  // else
+  // {
+  //   std_fmt::println("Fence did not finish.");
+  // }
 }
 
-//auto DisplacementFilter::SaveBuffersBeforePass1() -> void
-//{
+// auto DisplacementFilter::SaveBuffersBeforePass1() -> void
+// {
 //  auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
 //  m_glFilterBuffData.filterBuff1Texture.BindTexture(m_program);
 //  glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data());
@@ -331,7 +331,8 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 //
 //  auto lowImageView = UTILS::BufferView<GOOM::Pixel>{lowImage.size(), lowImage.data()};
 //  m_lowImageSaveBeforePass1.Write(lowImageView, false);
-//  auto filterBufferView = UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
+//  auto filterBufferView =
+//      UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
 //  m_filterBuffer1SaveBeforePass1.Write(filterBufferView, false);
 //}
 //
@@ -344,7 +345,8 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 //
 //  glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
 //
-//  auto filterBufferView = UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
+//  auto filterBufferView =
+//      UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
 //  m_filterBuffer1SaveAfterPass1.Write(filterBufferView, false);
 //}
 //
@@ -357,7 +359,8 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 //
 //  glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
 //
-//  auto filterBufferView = UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
+//  auto filterBufferView =
+//      UTILS::BufferView<GOOM::Pixel>{filterBuffer.size(), filterBuffer.data()};
 //  m_filterBuffer1SaveAfterPass2.Write(filterBufferView, false);
 //}
 
@@ -461,7 +464,7 @@ auto DisplacementFilter::SetLumHistogramParams() noexcept -> void
 {
   static constexpr auto MIN_LOG_LUM = -8.0F;
   static constexpr auto MAX_LOG_LUM = +3.5F;
-  static_assert(MAX_LOG_LUM - MIN_LOG_LUM > 0.0F);
+  static_assert((MAX_LOG_LUM - MIN_LOG_LUM) > 0.0F);
 
   const auto histogramParams = glm::vec4{MIN_LOG_LUM,
                                          1.0F / (MAX_LOG_LUM - MIN_LOG_LUM),
@@ -493,7 +496,8 @@ auto DisplacementFilter::SetupGlLumComputeData() noexcept -> void
   SetLumHistogramParams();
 
   m_lumAverageComputeProgram.Use();
-  SetLumAverageParams(0.0F);
+  static constexpr auto LUM_AVG_TIME_COEFF = 2.0F;
+  SetLumAverageParams(LUM_AVG_TIME_COEFF);
   SetupGlLumAverageData();
 }
 
@@ -562,67 +566,66 @@ auto DisplacementFilter::UpdateMiscDataToGl(const size_t pboIndex) noexcept -> v
 
 auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> void
 {
-  if (m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
+  if (not m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
   {
-    //LogInfo(GOOM::UTILS::GetGoomLogger(), "Filter dest pos needs updating.");
-
-    //    const auto* filterPosDestIn = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
-    //    const auto filterPosDestInInt =
-    //        GetTranArray(filterPosDestIn, GetWidth(), GetHeight(), m_buffSize);
-    //    auto filterPosDestInIntBufferView =
-    //        UTILS::BufferView<Point2dInt>{m_buffSize, filterPosDestInInt.data()};
-    //    m_filterPosDestInBufferSave.Write(filterPosDestInIntBufferView, false);
-
-    // TODO - Can a pbo Id swap be made to work?
-    //    LogInfo(GOOM::UTILS::GetGoomLogger(),
-    //            "Copying lerped srce/dest to srce. Lerpfactor = {}.",
-    //            m_previousLerpFactor);
-    auto filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
-    const auto destToSrceLerpFactor =
-        m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
-    for (auto i = 0U; i < m_buffSize; ++i)
-    {
-      filterSrcePos[i] = lerp(filterSrcePos[i], m_previousFilterDestPos[i], destToSrceLerpFactor);
-    }
-    //CopyTextureData(m_glFilterPosData.filterDestPosTexture.GetTextureName(),
-    //                m_glFilterPosData.filterSrcePosTexture.GetTextureName());
-
-    m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
-    m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
-
-    const auto filterDestPos = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
-    //    std::copy()
-    for (auto i = 0U; i < m_buffSize; ++i)
-    {
-      m_previousFilterDestPos[i] = filterDestPos[i];
-    }
-
-    //    auto filterPosSrce = std::vector<Point2dFlt>(m_buffSize);
-    //    m_glFilterPosData.filterSrcePosTexture.BindTexture(m_program);
-    //    glGetTexImage(
-    //        GL_TEXTURE_2D, 0, FILTER_POS_TEX_FORMAT, FILTER_POS_TEX_PIXEL_TYPE, filterPosSrce.data());
-    //    GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
-    //
-    //    auto filterPosDest = std::vector<Point2dFlt>(m_buffSize);
-    //    m_glFilterPosData.filterDestPosTexture.BindTexture(m_program);
-    //    glGetTexImage(
-    //        GL_TEXTURE_2D, 0, FILTER_POS_TEX_FORMAT, FILTER_POS_TEX_PIXEL_TYPE, filterPosDest.data());
-    //    GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
-    //
-    //    glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
-    //
-    //    const auto filterPosSrceInt =
-    //        GetTranArray(filterPosSrce.data(), GetWidth(), GetHeight(), m_buffSize);
-    //    auto filterPosSrceBufferView =
-    //        UTILS::BufferView<Point2dInt>{filterPosSrceInt.size(), filterPosSrceInt.data()};
-    //    m_filterPosSrceBufferSave.Write(filterPosSrceBufferView, false);
-    //
-    //    const auto filterPosDestInt =
-    //        GetTranArray(filterPosDest.data(), GetWidth(), GetHeight(), m_buffSize);
-    //    auto filterPosDestBufferView =
-    //        UTILS::BufferView<Point2dInt>{filterPosDestInt.size(), filterPosDestInt.data()};
-    //    m_filterPosDestBufferSave.Write(filterPosDestBufferView, false);
+    return;
   }
+
+  // LogInfo(GOOM::UTILS::GetGoomLogger(), "Filter dest pos needs updating.");
+
+  // const auto* filterPosDestIn = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+  // const auto filterPosDestInInt =
+  //    GetTranArray(filterPosDestIn, GetWidth(), GetHeight(), m_buffSize);
+  // auto filterPosDestInIntBufferView =
+  //     UTILS::BufferView<Point2dInt>{m_buffSize, filterPosDestInInt.data()};
+  // m_filterPosDestInBufferSave.Write(filterPosDestInIntBufferView, false);
+
+  // TODO - Can a pbo Id swap be made to work?
+  //    LogInfo(GOOM::UTILS::GetGoomLogger(),
+  //            "Copying lerped srce/dest to srce. Lerpfactor = {}.",
+  //            m_previousLerpFactor);
+  auto filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
+  const auto destToSrceLerpFactor =
+      m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
+  std::transform(m_previousFilterDestPos.cbegin(),
+                 m_previousFilterDestPos.cend(),
+                 filterSrcePos.begin(),
+                 filterSrcePos.begin(),
+                 [&destToSrceLerpFactor](const Point2dFlt& prevDestPos, const Point2dFlt& srcePos)
+                 { return lerp(srcePos, prevDestPos, destToSrceLerpFactor); });
+
+
+  m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
+  m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
+
+  const auto filterDestPos = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+  std::copy(filterDestPos.begin(), filterDestPos.end(), m_previousFilterDestPos.begin());
+
+  //  auto filterPosSrce = std::vector<Point2dFlt>(m_buffSize);
+  //  m_glFilterPosData.filterSrcePosTexture.BindTexture(m_program);
+  //  glGetTexImage(
+  //      GL_TEXTURE_2D, 0, FILTER_POS_TEX_FORMAT, FILTER_POS_TEX_PIXEL_TYPE, filterPosSrce.data());
+  //  GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
+  //
+  //  auto filterPosDest = std::vector<Point2dFlt>(m_buffSize);
+  //  m_glFilterPosData.filterDestPosTexture.BindTexture(m_program);
+  //  glGetTexImage(
+  //      GL_TEXTURE_2D, 0, FILTER_POS_TEX_FORMAT, FILTER_POS_TEX_PIXEL_TYPE, filterPosDest.data());
+  //  GOOM::OPENGL::CheckForOpenGLError(__FILE__, __LINE__);
+  //
+  //  glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
+  //
+  //  const auto filterPosSrceInt =
+  //      GetTranArray(filterPosSrce.data(), GetWidth(), GetHeight(), m_buffSize);
+  //  auto filterPosSrceBufferView =
+  //      UTILS::BufferView<Point2dInt>{filterPosSrceInt.size(), filterPosSrceInt.data()};
+  //  m_filterPosSrceBufferSave.Write(filterPosSrceBufferView, false);
+  //
+  //  const auto filterPosDestInt =
+  //      GetTranArray(filterPosDest.data(), GetWidth(), GetHeight(), m_buffSize);
+  //  auto filterPosDestBufferView =
+  //      UTILS::BufferView<Point2dInt>{filterPosDestInt.size(), filterPosDestInt.data()};
+  //  m_filterPosDestBufferSave.Write(filterPosDestBufferView, false);
 }
 
 auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,

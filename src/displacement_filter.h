@@ -17,7 +17,8 @@
 //}
 //[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
 //{
-//  return std_fmt::format("{:5d}, {:5d}, {:5d}, {:5d}", pixel.R(), pixel.G(), pixel.B(), pixel.A());
+//  return std_fmt::format(
+//      "{:5d}, {:5d}, {:5d}, {:5d}", pixel.R(), pixel.G(), pixel.B(), pixel.A());
 //}
 //#include "src/goom/src/utils/buffer_saver.h"
 
