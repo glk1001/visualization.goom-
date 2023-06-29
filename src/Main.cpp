@@ -103,7 +103,7 @@ constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
 #endif
 
 constexpr auto MAX_BUFFER_QUEUE_LEN     = DisplacementFilter::NUM_PBOS;
-constexpr auto MAX_AUDIO_DATA_QUEUE_LEN = 100U;
+constexpr auto MAX_AUDIO_DATA_QUEUE_LEN = 1000U;
 
 } // namespace
 
@@ -125,7 +125,9 @@ CVisualizationGoom::CVisualizationGoom()
                                         { ProduceItem(slot, audioSamples); });
   m_slotProducerConsumer.SetConsumeItem([this](const size_t slot) { ConsumeItem(slot); });
 
-  auto requestNextDataFrame = [this]() { m_slotProducerConsumer.Consume(); };
+  static constexpr auto CONSUME_WAIT_FOR_MS = 1U;
+  auto requestNextDataFrame                 = [this]()
+  { return m_slotProducerConsumer.Consume(CONSUME_WAIT_FOR_MS); };
   m_glScene.SetRequestNextFrameDataFunc(requestNextDataFrame);
 
   StartLogging();

@@ -3,6 +3,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
+#include <chrono>
 #include <condition_variable>
 #include <format>
 #include <functional>
@@ -25,7 +26,7 @@ public:
   auto Stop() noexcept -> void;
 
   [[nodiscard]] auto AddResource(const TResource& resource) noexcept -> bool;
-  auto Consume() noexcept -> void;
+  [[nodiscard]] auto Consume(uint32_t waitMs) noexcept -> bool;
 
   using ProduceItemFunc = std::function<void(size_t slot, const TResource& resource)>;
   auto SetProduceItem(const ProduceItemFunc& produceItemFunc) noexcept -> void;
@@ -126,18 +127,24 @@ auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noe
 }
 
 template<typename TResource>
-auto SlotProducerConsumer<TResource>::Consume() noexcept -> void
+auto SlotProducerConsumer<TResource>::Consume(const uint32_t waitMs) noexcept -> bool
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
   if (m_inUseSlotsQueue.empty())
   {
-    //LogInfo(*m_goomLogger, "*** Consumer is waiting for non-empty in-use queue.");
-    m_consumer_cv.wait(lock, [this] { return m_finished or (not m_inUseSlotsQueue.empty()); });
+    // LogInfo(*m_goomLogger, "*** Consumer is waiting {}ms for non-empty in-use queue.", waitMs);
+    if (not m_consumer_cv.wait_for(lock,
+                                   std::chrono::milliseconds{waitMs},
+                                   [this]
+                                   { return m_finished or (not m_inUseSlotsQueue.empty()); }))
+    {
+      return false;
+    }
   }
   if (m_finished)
   {
-    return;
+    return false;
   }
 
   Expects((m_inUseSlotsQueue.size() + m_freeSlotsQueue.size()) == m_maxInUseSlots);
@@ -150,6 +157,8 @@ auto SlotProducerConsumer<TResource>::Consume() noexcept -> void
   m_freeSlotsQueue.push(slot);
   m_inUseSlotsQueue.pop();
   m_producer_cv.notify_all();
+
+  return true;
 }
 
 template<typename TResource>
@@ -159,7 +168,7 @@ auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
 
   if (m_resourceQueue.empty())
   {
-    //LogInfo(*m_goomLogger, "### Producer is waiting for non-empty resource queue.");
+    // LogInfo(*m_goomLogger, "### Producer is waiting for non-empty resource queue.");
     m_producer_cv.wait(lock, [this] { return m_finished or (not m_resourceQueue.empty()); });
   }
   if (m_finished)
@@ -168,7 +177,7 @@ auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
   }
   if (m_inUseSlotsQueue.size() >= m_maxInUseSlots)
   {
-    //LogInfo(*m_goomLogger, "### Producer is waiting for in-use queue to decrease.");
+    // LogInfo(*m_goomLogger, "### Producer is waiting for in-use queue to decrease.");
     m_producer_cv.wait(
         lock, [this] { return m_finished or (m_inUseSlotsQueue.size() < m_maxInUseSlots); });
   }

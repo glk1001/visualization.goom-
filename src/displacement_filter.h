@@ -67,7 +67,7 @@ public:
 
   [[nodiscard]] auto GetFrameData(size_t pboIndex) noexcept -> GOOM::FrameData&;
   auto UpdateFrameData(size_t pboIndex) noexcept -> void;
-  using RequestNextFrameDataFunc = std::function<void()>;
+  using RequestNextFrameDataFunc = std::function<bool()>;
   auto SetRequestNextFrameDataFunc(
       const RequestNextFrameDataFunc& requestNextFrameDataFunc) noexcept -> void;
 
