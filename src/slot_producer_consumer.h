@@ -26,7 +26,8 @@ public:
   auto Stop() noexcept -> void;
 
   [[nodiscard]] auto AddResource(const TResource& resource) noexcept -> bool;
-  [[nodiscard]] auto Consume(uint32_t waitMs) noexcept -> bool;
+  [[nodiscard]] auto ConsumeWithoutRelease(uint32_t waitMs) noexcept -> bool;
+  auto Release(size_t slot) noexcept -> void;
 
   using ProduceItemFunc = std::function<void(size_t slot, const TResource& resource)>;
   auto SetProduceItem(const ProduceItemFunc& produceItemFunc) noexcept -> void;
@@ -113,7 +114,7 @@ auto SlotProducerConsumer<TResource>::ProducerThread() noexcept -> void
 template<typename TResource>
 auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noexcept -> bool
 {
-  auto lock = std::lock_guard<std::mutex>{m_mutex};
+  const auto lock = std::lock_guard<std::mutex>{m_mutex};
 
   if (m_resourceQueue.size() >= m_maxResourceItems)
   {
@@ -127,7 +128,7 @@ auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noe
 }
 
 template<typename TResource>
-auto SlotProducerConsumer<TResource>::Consume(const uint32_t waitMs) noexcept -> bool
+auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(uint32_t waitMs) noexcept -> bool
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
@@ -152,13 +153,20 @@ auto SlotProducerConsumer<TResource>::Consume(const uint32_t waitMs) noexcept ->
 
   lock.unlock();
   m_consumeItem(slot);
-  lock.lock();
+
+  return true;
+}
+
+template<typename TResource>
+auto SlotProducerConsumer<TResource>::Release(const size_t slot) noexcept -> void
+{
+  const auto lock = std::lock_guard<std::mutex>{m_mutex};
+
+  Expects(m_inUseSlotsQueue.front() == slot);
 
   m_freeSlotsQueue.push(slot);
   m_inUseSlotsQueue.pop();
   m_producer_cv.notify_all();
-
-  return true;
 }
 
 template<typename TResource>

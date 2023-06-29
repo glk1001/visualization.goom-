@@ -127,8 +127,12 @@ CVisualizationGoom::CVisualizationGoom()
 
   static constexpr auto CONSUME_WAIT_FOR_MS = 1U;
   auto requestNextDataFrame                 = [this]()
-  { return m_slotProducerConsumer.Consume(CONSUME_WAIT_FOR_MS); };
+  { return m_slotProducerConsumer.ConsumeWithoutRelease(CONSUME_WAIT_FOR_MS); };
   m_glScene.SetRequestNextFrameDataFunc(requestNextDataFrame);
+
+  auto releaseCurrentFrameData = [this](const size_t slot)
+  { m_slotProducerConsumer.Release(slot); };
+  m_glScene.SetReleaseCurrentFrameDataFunc(releaseCurrentFrameData);
 
   StartLogging();
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");

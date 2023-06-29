@@ -70,6 +70,9 @@ public:
   using RequestNextFrameDataFunc = std::function<bool()>;
   auto SetRequestNextFrameDataFunc(
       const RequestNextFrameDataFunc& requestNextFrameDataFunc) noexcept -> void;
+  using ReleaseCurrentFrameDataFunc = std::function<void(size_t slot)>;
+  auto SetReleaseCurrentFrameDataFunc(
+      const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void;
 
 private:
   std::string m_shaderDir;
@@ -79,8 +82,8 @@ private:
   size_t m_buffSize;
   float m_aspectRatio;
   GLuint m_renderToTextureFbo{};
-  GLsync m_glFenceSync{};
   std::vector<FrameData> m_frameDataArray;
+  size_t m_currentPboIndex = 0U;
   auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
 
@@ -120,6 +123,7 @@ private:
   auto SetupGlLumHistogramBuffer() noexcept -> void;
   [[nodiscard]] auto GetLumAverage() const noexcept -> float;
   RequestNextFrameDataFunc m_requestNextFrameData{};
+  ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
   auto UpdateGlUniforms() -> void;
   auto UpdateFrameDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdateMiscDataToGl(size_t pboIndex) noexcept -> void;
@@ -262,6 +266,12 @@ inline auto DisplacementFilter::SetRequestNextFrameDataFunc(
     const RequestNextFrameDataFunc& requestNextFrameDataFunc) noexcept -> void
 {
   m_requestNextFrameData = requestNextFrameDataFunc;
+}
+
+inline auto DisplacementFilter::SetReleaseCurrentFrameDataFunc(
+    const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void
+{
+  m_releaseCurrentFrameData = releaseCurrentFrameDataFunc;
 }
 
 } // namespace GOOM::OPENGL

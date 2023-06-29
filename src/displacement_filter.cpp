@@ -258,7 +258,6 @@ auto DisplacementFilter::Render() noexcept -> void
   UpdateGlUniforms();
   //  SaveBuffersBeforePass1();
 
-  m_requestNextFrameData();
   Pass1UpdateFilterBuffers();
   //  SaveBuffersAfterPass1();
 
@@ -303,19 +302,7 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
   UpdateFrameDataToGl(pboIndex);
   CheckZeroFilterBuffers();
 
-  static constexpr auto TIMEOUT_NANO = 100U * 1000U * 1000U;
-  m_glFenceSync                      = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-  /*const auto result = */ glClientWaitSync(
-      m_glFenceSync, GL_SYNC_FLUSH_COMMANDS_BIT, TIMEOUT_NANO);
-
-  // if ((result == GL_ALREADY_SIGNALED) or (result == GL_CONDITION_SATISFIED))
-  // {
-  //   std_fmt::println("Fence finished OK.");
-  // }
-  // else
-  // {
-  //   std_fmt::println("Fence did not finish.");
-  // }
+  m_currentPboIndex = pboIndex;
 }
 
 // auto DisplacementFilter::SaveBuffersBeforePass1() -> void
@@ -369,6 +356,8 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 
 auto DisplacementFilter::Pass1UpdateFilterBuffers() noexcept -> void
 {
+  const auto receivedFrameData = m_requestNextFrameData();
+
   BindGlFilterPosData();
   BindGlFilterBuffData();
   BindGlImageData();
@@ -381,6 +370,11 @@ auto DisplacementFilter::Pass1UpdateFilterBuffers() noexcept -> void
   // Render the full-screen quad
   glBindVertexArray(m_fsQuad);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES);
+
+  if (receivedFrameData)
+  {
+    m_releaseCurrentFrameData(m_currentPboIndex);
+  }
 
   glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
