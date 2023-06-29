@@ -8,8 +8,8 @@
 #define UNREAL_TONE_MAP 8
 
 //#define toneMapToUse EXPOSURE_TONE_MAP
-//#define toneMapToUse UCHIMURA_TONE_MAP
-#define toneMapToUse LOTTES_TONE_MAP
+#define toneMapToUse UCHIMURA_TONE_MAP
+//#define toneMapToUse LOTTES_TONE_MAP
 //#define toneMapToUse ACES_TONE_MAP
 //#define toneMapToUse UNCHARTED2_TONE_MAP
 //#define toneMapToUse REINHARD2_TONE_MAP
@@ -236,7 +236,7 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
   }
   #elif (toneMapToUse == UCHIMURA_TONE_MAP)
   {
-    A = 7.0;
+    A = 2.0;
     gamma = 1.7;
     mapped = uchimura(finalExposure * mapped);
   }

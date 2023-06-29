@@ -30,6 +30,11 @@ in vec2 texCoord;
 
 uniform float u_brightness;
 uniform float u_aspectRatio;
+uniform float u_mainColorMultiplier = 0.7;
+uniform float u_lowColorMultiplier = 1.0;
+// For base multiplier, too close to 1, gives washed
+// out look, too far away things get too dark.
+uniform float u_baseColorMultiplier = 0.96;
 
 uniform float u_lerpFactor;
 // TODO - Pass these in.
@@ -72,8 +77,10 @@ subroutine (RenderPassType) vec4 Pass1UpdateFilterBuffers()
   //  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
   //  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
 
-  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + colorMain.rgb, 1.0);
-  vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + colorLow.rgb, 1.0);
+  filtBuff2Val *= u_baseColorMultiplier;
+
+  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb), 1.0);
+  vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb), 1.0);
 
   ivec2 xy = ivec2(gl_FragCoord.xy);
   imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
