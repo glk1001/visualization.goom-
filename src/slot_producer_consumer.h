@@ -157,16 +157,6 @@ auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
-  if (m_resourceQueue.size() >= m_maxResourceItems)
-  {
-    //LogInfo(*m_goomLogger, "### Producer is waiting for resource queue to decrease.");
-    m_resourcer_cv.wait(
-        lock, [this] { return m_finished or (m_resourceQueue.size() < m_maxResourceItems); });
-  }
-  if (m_finished)
-  {
-    return;
-  }
   if (m_resourceQueue.empty())
   {
     //LogInfo(*m_goomLogger, "### Producer is waiting for non-empty resource queue.");
