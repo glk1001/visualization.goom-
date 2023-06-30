@@ -123,9 +123,11 @@ public:
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
+  [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;
 
 private:
-  Parallel m_parallel{-1}; // max cores - 1
+  Parallel m_parallel{GetNumAvailablePoolThreads()};
+  [[nodiscard]] static auto GetNumAvailablePoolThreads() noexcept -> int32_t;
   SoundInfo m_soundInfo{};
   GoomSoundEvents m_goomSoundEvents{m_soundInfo};
   PluginInfo m_goomInfo;
@@ -267,6 +269,11 @@ auto GoomControl::GetLastShaderVariables() const -> const GoomShaderVariables&
   return m_pimpl->GetLastShaderVariables();
 }
 
+auto GoomControl::GetNumPoolThreads() const noexcept -> size_t
+{
+  return m_pimpl->GetNumPoolThreads();
+}
+
 auto GoomControlLogger::StartGoomControl(
     const GoomControl::GoomControlImpl* const goomControl) noexcept -> void
 {
@@ -317,6 +324,22 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
   UTILS::SetGoomLogger(*m_goomLogger);
+}
+
+auto GoomControl::GoomControlImpl::GetNumAvailablePoolThreads() noexcept -> int32_t
+{
+  static constexpr auto DESIRED_NUM_THREADS = 4;
+  static constexpr auto MIN_NUM_THREADS     = 2;
+  static constexpr auto NUM_FREE_THREADS    = 2;
+
+  const auto numHardwareThreads = static_cast<int32_t>(std::thread::hardware_concurrency());
+
+  if (DESIRED_NUM_THREADS <= (numHardwareThreads - NUM_FREE_THREADS))
+  {
+    return DESIRED_NUM_THREADS;
+  }
+
+  return std::max(MIN_NUM_THREADS, numHardwareThreads - NUM_FREE_THREADS);
 }
 
 inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
@@ -427,6 +450,11 @@ inline auto GoomControl::GoomControlImpl::GetLastShaderVariables() const
     -> const GoomShaderVariables&
 {
   return m_visualFx.GetLastShaderVariables();
+}
+
+inline auto GoomControl::GoomControlImpl::GetNumPoolThreads() const noexcept -> size_t
+{
+  return m_parallel.GetNumThreadsUsed();
 }
 
 inline auto GoomControl::GoomControlImpl::Start() -> void

@@ -73,7 +73,7 @@ private:
   // all of the tran buffer, is filled. We use stripes to spread the buffer update load
   // over a number of updates. Too few and performance suffers periodically for a
   // number of updates; too many, and performance suffers overall.
-  static constexpr auto NUM_STRIPE_GROUPS = 16U;
+  static constexpr auto NUM_STRIPE_GROUPS = 20U;
   uint32_t m_tranBuffYLineStart           = 0;
   uint32_t m_tranBuffStripeHeight         = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
   std::vector<Point2dInt> m_tranBuffer;
