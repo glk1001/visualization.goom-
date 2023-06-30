@@ -362,17 +362,18 @@ auto GoomControl::GoomControlImpl::InitFilterPosArrays(
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
 {
   m_frameData = &frameData;
-  m_p1        = &m_frameData->imageArrays.mainImageData;
-  m_p2        = &m_frameData->imageArrays.lowImageData;
 
+  const auto shaderVariables    = GetLastShaderVariables();
+  frameData.miscData.brightness = shaderVariables.brightness;
+
+  m_p1 = &m_frameData->imageArrays.mainImageData;
+  m_p2 = &m_frameData->imageArrays.lowImageData;
   m_p1->Fill(BLACK_PIXEL);
   m_p2->Fill(BLACK_PIXEL);
-
   m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 
   m_frameData->imageArrays.mainImageDataNeedsUpdating = true;
   m_frameData->imageArrays.lowImageDataNeedsUpdating  = true;
-  m_frameData->miscData.brightness                    = 1.0F;
 
   using FilterBuffers          = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
   const auto currentLerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) /

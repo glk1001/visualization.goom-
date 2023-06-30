@@ -250,9 +250,6 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
   m_goomControl->SetFrameData(frameData);
   m_goomControl->UpdateGoomBuffers(audioSamples);
 
-  const auto shaderVariables    = m_goomControl->GetLastShaderVariables();
-  frameData.miscData.brightness = shaderVariables.brightness;
-
 #if DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Producer produced slot {}.", slot));
 #endif
