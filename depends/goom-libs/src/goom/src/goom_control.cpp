@@ -14,11 +14,6 @@
 
 #include "goom_control.h"
 
-#include "format_utils.h"
-[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
-{
-  return GOOM::UTILS::FMT::Rgba("{}", pixel);
-}
 #include "control/goom_all_visual_fx.h"
 #include "control/goom_message_displayer.h"
 #include "control/goom_music_settings_reactor.h"
@@ -39,10 +34,8 @@
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "spimpl.h"
-#include "utils/buffer_saver.h"
 #include "utils/debugging_logger.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/graphics/test_patterns.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 #include "utils/stopwatch.h"
@@ -85,7 +78,6 @@ using std::experimental::propagate_const;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
-using UTILS::GRAPHICS::DrawTestPattern;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::IsBetween;
@@ -151,10 +143,6 @@ private:
   static auto InitImageArrays(ImageArrays& imageArrays) noexcept -> void;
   static auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
 
-  //  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk_cpu/"};
-  //  UTILS::BufferSaver<Pixel> m_p1BufferSaver{saveDir + "filter_buff_p1_in_cpu"};
-  //  UTILS::BufferSaver<Pixel> m_p2BufferSaver{saveDir + "filter_buff_p2_in_cpu"};
-
   FilterSettingsService m_filterSettingsService;
 
   SmallImageBitmaps m_smallBitmaps;
@@ -179,9 +167,6 @@ private:
   auto ApplyEndEffectIfNearEnd() -> void;
 
   auto UpdateFilterSettings() -> void;
-
-  auto UpdateBuffers() -> void;
-  auto RotateBuffers() -> void;
 
   Stopwatch m_runningTimeStopwatch{};
   static constexpr auto DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS = 8U;
@@ -331,7 +316,6 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
     m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
-  //RotateBuffers();
   UTILS::SetGoomLogger(*m_goomLogger);
 }
 
@@ -359,7 +343,7 @@ inline auto GoomControl::GoomControlImpl::InitFrameData(
 auto GoomControl::GoomControlImpl::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
 {
   miscData.lerpFactor = 0.0F;
-  miscData.brightness = 0.5F;
+  miscData.brightness = 1.0F;
 }
 
 auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
@@ -550,8 +534,6 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
 
   DrawAndZoom(soundData);
 
-  UpdateBuffers();
-
   DisplayGoomState();
   DisplayTitleAndMessages(message);
 
@@ -634,29 +616,10 @@ inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& sound
   m_goomSoundEvents.Update();
 }
 
-inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffers(
-    [[maybe_unused]] const AudioSamples& soundData) -> void
+inline auto GoomControl::GoomControlImpl::ApplyStateToMultipleBuffers(const AudioSamples& soundData)
+    -> void
 {
   m_visualFx.ApplyCurrentStateToMultipleBuffers(soundData);
-
-  //  auto draw = DRAW::GoomDrawToSingleBuffer{m_goomInfo.GetDimensions(), *m_goomLogger};
-  //  draw.SetBuffer(*m_p2);
-  //  DrawTestPattern(
-  //      draw,
-  //      {m_goomInfo.GetDimensions().GetIntWidth() / 2, m_goomInfo.GetDimensions().GetIntHeight() / 2},
-  //      {m_goomInfo.GetDimensions().GetWidth() / 2, m_goomInfo.GetDimensions().GetHeight() / 2});
-
-  //  for (auto y = 0; y < m_goomInfo.GetDimensions().GetIntHeight(); ++y)
-  //  {
-  //    for (auto x = 0; x < m_goomInfo.GetDimensions().GetIntWidth(); ++x)
-  //    {
-  //      (*m_p2)(x, y) =
-  //          Pixel{static_cast<uint16_t>(x),
-  //                static_cast<uint16_t>(m_goomInfo.GetDimensions().GetIntHeight() - 1 - y),
-  //                0,
-  //                MAX_ALPHA};
-  //    }
-  //  }
 }
 
 inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void
@@ -676,21 +639,6 @@ inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
   }
 
   m_visualFx.ApplyZoom(*m_p1, *m_p2);
-
-  //  auto p1BufferView = UTILS::BufferView<Pixel>{m_p1->GetWidth() * m_p1->GetHeight(),
-  //                                               reinterpret_cast<const Pixel*>(m_p1->GetBuffPtr())};
-  //  LogInfo(*m_goomLogger, "Saving p1 buffer of length {}.", p1BufferView.GetBufferLen());
-  //  auto getImageBufferIndexString = std::function<std::string(size_t bufferIndex)>{
-  //      [width = m_goomInfo.GetDimensions().GetIntWidth()](const size_t bufferIndex)
-  //      { return UTILS::ImageBufferIndexToString(width, bufferIndex); }};
-  //  m_p1BufferSaver.SetBufferIndexFormatter(getImageBufferIndexString);
-  //  m_p1BufferSaver.Write(p1BufferView, false);
-  //
-  //  auto p2BufferView = UTILS::BufferView<Pixel>{m_p2->GetWidth() * m_p2->GetHeight(),
-  //                                               reinterpret_cast<const Pixel*>(m_p2->GetBuffPtr())};
-  //  LogInfo(*m_goomLogger, "Saving p2 buffer of length {}.", p2BufferView.GetBufferLen());
-  //  m_p2BufferSaver.SetBufferIndexFormatter(getImageBufferIndexString);
-  //  m_p2BufferSaver.Write(p2BufferView, false);
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
@@ -704,29 +652,6 @@ inline auto GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSett
     -> void
 {
   m_multiBufferDraw.SetBuffIntensity(settings.buffIntensity);
-}
-
-inline auto GoomControl::GoomControlImpl::UpdateBuffers() -> void
-{
-  // affichage et swappage des buffers...
-  //m_p1->CopyTo(*m_outputBuff);
-
-  RotateBuffers();
-
-  auto draw = DRAW::GoomDrawToSingleBuffer{m_goomInfo.GetDimensions(), *m_goomLogger};
-  draw.SetBuffer(*m_p1);
-  //  DrawTestPattern(
-  //      draw,
-  //      {m_goomInfo.GetDimensions().GetIntWidth() / 2, m_goomInfo.GetDimensions().GetIntHeight() / 2},
-  //      m_goomInfo.GetDimensions());
-}
-
-inline auto GoomControl::GoomControlImpl::RotateBuffers() -> void
-{
-  Expects(m_p1 != nullptr);
-  Expects(m_p2 != nullptr);
-  //std::swap(m_p1, m_p2);
-  m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 }
 
 inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::string& message)
@@ -771,15 +696,21 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
     return;
   }
 
-  if (m_goomTitleDisplayer.IsFinalPhase())
+  if (not m_goomTitleDisplayer.IsFinalPhase())
   {
-    static constexpr auto FINAL_TITLE_BUFF_INTENSITY = 0.2F;
-    m_goomTextOutput.SetBuffIntensity(FINAL_TITLE_BUFF_INTENSITY);
+    m_goomTextOutput.SetBuffer(*m_p1);
+  }
+  else if (not m_goomTitleDisplayer.IsFinalMoments())
+  {
+    static constexpr auto FINAL_PHASE_BUFF_INTENSITY = 0.2F;
+    m_goomTextOutput.SetBuffIntensity(FINAL_PHASE_BUFF_INTENSITY);
     m_goomTextOutput.SetBuffer(*m_p1);
   }
   else
   {
-    m_goomTextOutput.SetBuffer(*m_p1);
+    static constexpr auto FINAL_MOMENTS_BUFF_INTENSITY = 0.1F;
+    m_goomTextOutput.SetBuffIntensity(FINAL_MOMENTS_BUFF_INTENSITY);
+    m_goomTextOutput.SetBuffer(*m_p2);
   }
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
 }

@@ -41,6 +41,7 @@ public:
   [[nodiscard]] auto IsInitialPhase() const -> bool;
   [[nodiscard]] auto IsMiddlePhase() const -> bool;
   [[nodiscard]] auto IsFinalPhase() const -> bool;
+  [[nodiscard]] auto IsFinalMoments() const -> bool;
   [[nodiscard]] auto IsFinished() const -> bool;
 
   void DrawMovingText(const std::string& title);
@@ -48,12 +49,14 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
-  static constexpr int32_t MAX_TEXT_DISPLAY_TIME      = 200;
-  static constexpr int32_t TIME_TO_START_MIDDLE_PHASE = 100;
-  static constexpr int32_t TIME_TO_START_FINAL_PHASE  = 50;
-  float m_xPos                                        = 0.0F;
-  float m_yPos                                        = 0.0F;
-  int32_t m_timeLeftOfTitleDisplay                    = MAX_TEXT_DISPLAY_TIME;
+  static constexpr auto MAX_TEXT_DISPLAY_TIME       = 200;
+  static constexpr auto TIME_TO_START_MIDDLE_PHASE  = 100;
+  static constexpr auto TIME_TO_START_FINAL_PHASE   = 50;
+  static constexpr auto TIME_TO_START_FINAL_MOMENTS = -5;
+  static constexpr auto LINGER_AFTER_END_TIME       = 10;
+  float m_xPos                                      = 0.0F;
+  float m_yPos                                      = 0.0F;
+  int32_t m_timeLeftOfTitleDisplay                  = MAX_TEXT_DISPLAY_TIME;
   std::experimental::propagate_const<std::unique_ptr<DRAW::SHAPE_DRAWERS::TextDrawer>> m_textDrawer;
   int32_t m_screenWidth;
   int32_t m_screenHeight;
@@ -153,10 +156,14 @@ inline auto GoomTitleDisplayer::IsFinalPhase() const -> bool
   return m_timeLeftOfTitleDisplay <= TIME_TO_START_FINAL_PHASE;
 }
 
+inline auto GoomTitleDisplayer::IsFinalMoments() const -> bool
+{
+  return m_timeLeftOfTitleDisplay <= TIME_TO_START_FINAL_MOMENTS;
+}
+
 inline auto GoomTitleDisplayer::IsFinished() const -> bool
 {
-  static constexpr auto LINGER_TIME = 10;
-  return m_timeLeftOfTitleDisplay <= -LINGER_TIME;
+  return m_timeLeftOfTitleDisplay <= -LINGER_AFTER_END_TIME;
 }
 
 } // namespace CONTROL
