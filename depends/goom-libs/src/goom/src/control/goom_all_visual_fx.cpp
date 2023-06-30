@@ -4,11 +4,9 @@
 
 #include "all_standard_visual_fx.h"
 #include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_colors_service.h"
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "sound_info.h"
-#include "utils/math/goom_rand_base.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/fx_helper.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
@@ -24,7 +22,6 @@ namespace GOOM::CONTROL
 
 using CONTROL::GoomDrawables;
 using FILTER_FX::FilterBuffersService;
-using FILTER_FX::FilterColorsService;
 using FILTER_FX::ZoomFilterFx;
 using FILTER_FX::ZoomFilterSettings;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
@@ -36,19 +33,19 @@ using VISUAL_FX::FxHelper;
 using VISUAL_FX::IVisualFx;
 using VISUAL_FX::FX_UTILS::RandomPixelBlender;
 
-GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
-                                 const FxHelper& fxHelper,
-                                 const SmallImageBitmaps& smallBitmaps,
-                                 const std::string& resourcesDirectory,
-                                 IGoomStateHandler& goomStateHandler,
-                                 std::unique_ptr<FilterBuffersService> filterBuffersService,
-                                 std::unique_ptr<FilterColorsService> filterColorsService) noexcept
+GoomAllVisualFx::GoomAllVisualFx(
+    Parallel& parallel,
+    const FxHelper& fxHelper,
+    const SmallImageBitmaps& smallBitmaps,
+    const std::string& resourcesDirectory,
+    IGoomStateHandler& goomStateHandler,
+    std::unique_ptr<FilterBuffersService> filterBuffersService) noexcept
   : m_goomRand{fxHelper.goomRand},
     m_goomLogger{fxHelper.goomLogger},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
-    m_zoomFilterFx{std::make_unique<ZoomFilterFx>(
-        *fxHelper.goomInfo, std::move(filterBuffersService), std::move(filterColorsService))},
+    m_zoomFilterFx{
+        std::make_unique<ZoomFilterFx>(*fxHelper.goomInfo, std::move(filterBuffersService))},
     m_goomStateHandler{&goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
@@ -60,7 +57,6 @@ auto GoomAllVisualFx::Start() noexcept -> void
   ChangeAllFxPixelBlenders();
 
   m_allStandardVisualFx->Start();
-  m_adaptiveExposure.Start();
   m_zoomFilterFx->Start();
 }
 
@@ -102,11 +98,6 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   m_allStandardVisualFx->GetLinesFx().ResetLineModes();
 
   m_allStandardVisualFx->ResumeFx();
-}
-
-auto GoomAllVisualFx::StartExposureControl() noexcept -> void
-{
-  m_doExposureControl = true;
 }
 
 auto GoomAllVisualFx::GetLastShaderVariables() const noexcept -> const GoomShaderVariables&

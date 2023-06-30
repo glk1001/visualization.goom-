@@ -73,7 +73,6 @@ auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameV
   static constexpr auto* PARAM_GROUP = "Shader";
   const auto& lastShaderVariables    = m_visualFx->GetLastShaderVariables();
   return {
-      GetPair(PARAM_GROUP, "Exposure", m_visualFx->GetCurrentExposure()),
       GetPair(PARAM_GROUP, "Contrast", lastShaderVariables.contrast),
       GetPair(PARAM_GROUP, "MinChan", lastShaderVariables.contrastMinChannelValue),
       GetPair(PARAM_GROUP, "Brightness", lastShaderVariables.brightness),

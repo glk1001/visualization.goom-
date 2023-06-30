@@ -99,14 +99,11 @@ add_library(goom
             src/filter_fx/filter_utils/image_displacement.cpp
             src/filter_fx/filter_utils/image_displacement_list.cpp
             src/filter_fx/filter_utils/zoom_coord_transforms.h
-            src/filter_fx/filter_utils/zoom_filter_coefficients.h
-            src/filter_fx/filter_utils/zoom_transform_buffers.cpp
+            src/filter_fx/filter_utils/zoom_transform_buffers.h
             src/filter_fx/filter_consts.h
-            src/filter_fx/filter_buffer_color_info.cpp
             src/filter_fx/filter_buffer_striper.cpp
             src/filter_fx/filter_buffers.h
             src/filter_fx/filter_buffers_service.cpp
-            src/filter_fx/filter_colors_service.cpp
             src/filter_fx/filter_settings_service.cpp
             src/filter_fx/filter_speed.h
             src/filter_fx/filter_zoom_vector.cpp
@@ -131,7 +128,6 @@ add_library(goom
             src/utils/math/randutils.cpp
             src/utils/math/transform2d.h
             src/utils/text/drawable_text.cpp
-            src/utils/adaptive_exposure.cpp
             src/utils/array_utils.h
             src/utils/build_time.cpp
             src/utils/buffer_saver.h

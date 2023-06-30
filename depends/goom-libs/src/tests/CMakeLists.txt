@@ -21,7 +21,6 @@ add_executable(${GOOM_LIB_TESTS_NAME}
                src/color/test_color_utils.cpp
                src/draw/test_draw.cpp
                src/filters/test_filter_buffers.cpp
-               src/filters/test_filter_colors_service.cpp
                src/filters/test_filter_zoom_vector.cpp
                src/filters/test_normalized_coords.cpp
                src/sound/test_sound_info.cpp

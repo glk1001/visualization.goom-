@@ -24,7 +24,6 @@
 #include "draw/goom_draw_to_buffer.h"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_colors_service.h"
 #include "filter_fx/filter_effects/zoom_in_coefficients_effect_factory.h"
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
@@ -67,7 +66,6 @@ using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToSingleBuffer;
 using DRAW::GoomDrawToTwoBuffers;
 using FILTER_FX::FilterBuffersService;
-using FILTER_FX::FilterColorsService;
 using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
@@ -264,11 +262,6 @@ auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std:
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }
 
-auto GoomControl::GetLastShaderVariables() const -> const GoomShaderVariables&
-{
-  return m_pimpl->GetLastShaderVariables();
-}
-
 auto GoomControl::GetNumPoolThreads() const noexcept -> size_t
 {
   return m_pimpl->GetNumPoolThreads();
@@ -318,8 +311,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                    std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
                                                       resourcesDirectory,
                                                       m_goomRand,
-                                                      m_normalizedCoordsConverter)),
-               std::make_unique<FilterColorsService>(m_goomRand)},
+                                                      m_normalizedCoordsConverter))},
     m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
@@ -474,8 +466,6 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
   m_visualFx.Start();
 
   m_musicSettingsReactor.Start();
-
-  m_visualFx.StartExposureControl();
 
 #ifdef DO_GOOM_STATE_DUMP
   StartGoomStateDump();

@@ -6,7 +6,6 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/propagate_const.h"
-#include "zoom_in_coefficients_effect.h"
 
 #include <functional>
 #include <memory>
@@ -85,7 +84,6 @@ public:
 
   [[nodiscard]] auto GetCurrentFilterMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetCurrentFilterModeName() const -> const std::string_view&;
-  [[nodiscard]] auto GetPreviousFilterMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string_view&;
 
   [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
@@ -195,11 +193,6 @@ inline auto FilterSettingsService::GetCurrentFilterMode() const -> ZoomFilterMod
 inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std::string_view&
 {
   return m_filterModeData[m_filterMode].name;
-}
-
-inline auto FilterSettingsService::GetPreviousFilterMode() const -> ZoomFilterMode
-{
-  return m_previousFilterMode;
 }
 
 inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string_view&

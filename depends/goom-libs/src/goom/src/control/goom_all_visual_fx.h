@@ -1,14 +1,12 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "filter_fx/filter_buffer_color_info.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/zoom_filter_fx.h"
 #include "goom_config.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "spimpl.h"
-#include "utils/adaptive_exposure.h"
 #include "utils/math/misc.h"
 #include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
@@ -49,7 +47,6 @@ struct FxHelper;
 namespace FILTER_FX
 {
 class FilterBuffersService;
-class FilterColorsService;
 struct ZoomFilterSettings;
 }
 
@@ -67,8 +64,7 @@ public:
                   const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                   const std::string& resourcesDirectory,
                   IGoomStateHandler& goomStateHandler,
-                  std::unique_ptr<FILTER_FX::FilterBuffersService> filterBuffersService,
-                  std::unique_ptr<FILTER_FX::FilterColorsService> filterColorsService) noexcept;
+                  std::unique_ptr<FILTER_FX::FilterBuffersService> filterBuffersService) noexcept;
 
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
@@ -84,8 +80,6 @@ public:
   [[nodiscard]] auto GetCurrentState() const noexcept -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const noexcept -> std::string_view;
 
-  auto StartExposureControl() noexcept -> void;
-  [[nodiscard]] auto GetCurrentExposure() const noexcept -> float;
   [[nodiscard]] auto GetLastShaderVariables() const noexcept -> const GoomShaderVariables&;
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
@@ -121,10 +115,6 @@ private:
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const noexcept -> FXBuffSettings;
 
   VisualFxColorMaps m_visualFxColorMaps{*m_goomRand};
-  UTILS::AdaptiveExposure m_adaptiveExposure{};
-  bool m_doExposureControl = false;
-  auto UpdateZoomFilterLuminance() noexcept -> void;
-  [[nodiscard]] auto GetCurrentBufferAverageLuminance() noexcept -> float;
 
   [[nodiscard]] auto GetNextPixelBlenderParams() const noexcept
       -> VISUAL_FX::IVisualFx::PixelBlenderParams;
@@ -184,55 +174,11 @@ inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer&
     -> void
 {
   m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
-
-  UpdateZoomFilterLuminance();
 }
 
 inline auto GoomAllVisualFx::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_zoomFilterFx->GetTranLerpFactor();
-}
-
-inline auto GoomAllVisualFx::UpdateZoomFilterLuminance() noexcept -> void
-{
-  const auto averageLuminanceToUse = GetCurrentBufferAverageLuminance();
-  if (averageLuminanceToUse < UTILS::MATH::SMALL_FLOAT)
-  {
-    // No point trying to handle zero luminance.
-    return;
-  }
-
-  m_adaptiveExposure.UpdateAverageLuminance(averageLuminanceToUse);
-
-  if (m_doExposureControl)
-  {
-    m_zoomFilterFx->SetZoomFilterBrightness(m_adaptiveExposure.GetCurrentExposure());
-  }
-}
-
-inline auto GoomAllVisualFx::GetCurrentBufferAverageLuminance() noexcept -> float
-{
-  m_zoomFilterFx->GetLastFilterBufferColorInfo().CalculateLuminances();
-
-  const auto& filterBufferColorInfo = m_zoomFilterFx->GetLastFilterBufferColorInfo();
-
-  const auto maxRegionAverageLuminance = filterBufferColorInfo.GetMaxRegionAverageLuminance();
-  if (maxRegionAverageLuminance < UTILS::MATH::SMALL_FLOAT)
-  {
-    return 0.0F;
-  }
-
-  const auto zoomPointRegionAverageLuminance =
-      filterBufferColorInfo.GetRegionAverageLuminanceAtPoint(
-          m_zoomFilterFx->GetFilterEffectsSettings().zoomMidpoint);
-  static constexpr auto LUMINANCE_MIX = 0.5F;
-
-  return STD20::lerp(zoomPointRegionAverageLuminance, maxRegionAverageLuminance, LUMINANCE_MIX);
-}
-
-inline auto GoomAllVisualFx::GetCurrentExposure() const noexcept -> float
-{
-  return m_adaptiveExposure.GetCurrentExposure();
 }
 
 inline auto GoomAllVisualFx::GetCurrentState() const noexcept -> GoomStates

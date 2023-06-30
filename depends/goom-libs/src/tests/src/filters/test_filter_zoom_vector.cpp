@@ -13,7 +13,6 @@
 #endif
 
 #include "filter_fx/after_effects/after_effects_types.h"
-#include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_effects/uniform_zoom_in_coefficients_effect.h"
 #include "filter_fx/filter_effects/zoom_vector_effects.h"
 #include "filter_fx/filter_zoom_vector.h"

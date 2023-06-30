@@ -1,6 +1,5 @@
 #include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_colors_service.h"
 #include "filter_fx/filter_effects/zoom_in_coefficients_effect_factory.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/filter_settings_service.h"
@@ -29,7 +28,6 @@ namespace GOOM::UNIT_TESTS
 
 using CONTROL::GoomSoundEvents;
 using FILTER_FX::FilterBuffersService;
-using FILTER_FX::FilterColorsService;
 using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
@@ -69,8 +67,7 @@ TEST_CASE("ZoomFilterFx", "[ZoomFilterFx]")
                        goomInfo,
                        normalizedCoordsConverter,
                        std::make_unique<FilterZoomVector>(
-                           WIDTH, RESOURCES_DIRECTORY, goomRand, normalizedCoordsConverter)),
-                   std::make_unique<FilterColorsService>(goomRand)};
+                           WIDTH, RESOURCES_DIRECTORY, goomRand, normalizedCoordsConverter))};
 
   SECTION("Correct initial lerp factor")
   {

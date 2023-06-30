@@ -11,7 +11,6 @@
 #include "normalized_coords.h"
 #include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
-#include "zoom_in_coefficients_effect.h"
 #include "zoom_vector.h"
 
 namespace GOOM::FILTER_FX
@@ -106,7 +105,7 @@ inline auto FilterBuffersService::AreStartingFreshTranBuffers() const noexcept -
 auto FilterBuffersService::StartFreshTranBuffers() noexcept -> void
 {
   // Don't start making new stripes until filter settings change.
-  if (!m_pendingFilterEffectsSettings)
+  if (not m_pendingFilterEffectsSettings)
   {
     return;
   }

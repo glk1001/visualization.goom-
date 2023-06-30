@@ -17,9 +17,7 @@ class PluginInfo;
 namespace FILTER_FX
 {
 
-class FilterBufferColorInfo;
 class FilterBuffersService;
-class FilterColorsService;
 struct ZoomFilterBufferSettings;
 struct ZoomFilterEffectsSettings;
 
@@ -28,10 +26,7 @@ class ZoomFilterFx
 public:
   ZoomFilterFx() noexcept = delete;
   ZoomFilterFx(const PluginInfo& goomInfo,
-               std::unique_ptr<FilterBuffersService> filterBuffersService,
-               std::unique_ptr<FilterColorsService> filterColorsService) noexcept;
-
-  auto SetBuffSettings(const FXBuffSettings& settings) noexcept -> void;
+               std::unique_ptr<FilterBuffersService> filterBuffersService) noexcept;
 
   [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
   auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
@@ -41,7 +36,6 @@ public:
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
 
-  [[nodiscard]] auto GetFilterEffectsSettings() const noexcept -> const ZoomFilterEffectsSettings&;
   auto UpdateFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
       -> void;
   auto UpdateFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
@@ -49,10 +43,6 @@ public:
   auto UpdateFilterColorSettings(bool blockyWavy) noexcept -> void;
 
   auto ZoomFilterFastRgb(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
-
-  auto SetZoomFilterBrightness(float brightness) noexcept -> void;
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() const noexcept -> const FilterBufferColorInfo&;
-  [[nodiscard]] auto GetLastFilterBufferColorInfo() noexcept -> FilterBufferColorInfo&;
 
   [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs;
 

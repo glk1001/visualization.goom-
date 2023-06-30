@@ -1,7 +1,6 @@
 #pragma once
 
 #include "filter_utils/zoom_coord_transforms.h"
-#include "filter_utils/zoom_filter_coefficients.h"
 #include "filter_utils/zoom_transform_buffers.h"
 #include "goom_graphic.h"
 #include "goom_types.h"
@@ -9,7 +8,6 @@
 #include "point2d.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <span>
@@ -54,7 +52,6 @@ public:
   auto UpdateAllStripes() noexcept -> void;
   auto UpdateNextStripe() noexcept -> void;
 
-  [[nodiscard]] auto GetTranBuffer() noexcept -> std::vector<Point2dInt>&;
   [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
   auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
@@ -87,11 +84,6 @@ private:
 inline auto ZoomFilterBufferStriper::GetTranBuffYLineStart() const noexcept -> uint32_t
 {
   return m_tranBuffYLineStart;
-}
-
-inline auto ZoomFilterBufferStriper::GetTranBuffer() noexcept -> std::vector<Point2dInt>&
-{
-  return m_tranBuffer;
 }
 
 inline auto ZoomFilterBufferStriper::IsTranBufferFltReady() const noexcept -> bool

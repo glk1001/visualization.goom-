@@ -46,7 +46,6 @@ public:
       -> void;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
-  [[nodiscard]] auto GetFilterBuffers() noexcept -> FilterBuffers&;
 
   auto UpdateTranBuffers() noexcept -> void;
 
@@ -94,11 +93,6 @@ inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexce
 inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_filterBuffers.GetTranLerpFactor();
-}
-
-inline auto FilterBuffersService::GetFilterBuffers() noexcept -> FilterBuffers&
-{
-  return m_filterBuffers;
 }
 
 } // namespace FILTER_FX

@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace GOOM
 {
@@ -47,7 +48,6 @@ public:
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;
 
-  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
   [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;
 
 private:
