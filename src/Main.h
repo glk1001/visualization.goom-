@@ -8,12 +8,10 @@
  *  See LICENSE.md for more information.
  */
 
-#include "displacement_filter.h"
 #include "goom/circular_buffer.h"
 #include "goom/goom_config.h"
-#include "goom/goom_control.h"
 #include "goom/sound_info.h"
-#include "slot_producer_consumer.h"
+#include "goom_visualization.h"
 
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
@@ -37,7 +35,6 @@
 #include <string>
 #include <thread>
 
-// TODO(glk) Fix this properly!
 #if !defined(ATTRIBUTE_HIDDEN)
 #define ATTRIBUTE_HIDDEN
 #endif
@@ -73,6 +70,7 @@ public:
 private:
   bool m_started = false;
   std::unique_ptr<GOOM::GoomLogger> m_goomLogger;
+  GOOM::VIS::GoomVisualization m_goomVisualization;
 
   auto StartLogging() -> void;
 
@@ -84,24 +82,11 @@ private:
   auto StopWithoutCatch() -> void;
   auto StopVis() -> void;
 
-  GOOM::OPENGL::DisplacementFilter m_glScene;
-  auto InitSceneFrameData() noexcept -> void;
+  auto PassSettings() noexcept -> void;
 
-  std::unique_ptr<GOOM::GoomControl> m_goomControl;
-  auto InitGoomControl() noexcept -> void;
-
-  GOOM::SlotProducerConsumer<GOOM::AudioSamples> m_slotProducerConsumer;
-  std::thread m_slotProducerConsumerThread{};
-  auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
-  auto ConsumeItem(size_t slot) noexcept -> void;
-  uint32_t m_dropAudioDataNum   = 0U;
-  uint32_t m_dropAudioSampleNum = 0U;
-  auto LogSummary() -> void;
-
-  size_t m_numChannels    = 0;
-  size_t m_audioSampleLen = 0;
+  size_t m_audioSampleLen     = 0U;
+  uint32_t m_dropAudioDataNum = 0U;
   std::vector<float> m_rawAudioData{};
-  uint32_t m_audioSamplesNum                                 = 0U;
   static constexpr auto NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER = 128U;
   static constexpr size_t CIRCULAR_BUFFER_SIZE = NUM_AUDIO_BUFFERS_IN_CIRCULAR_BUFFER *
                                                  GOOM::AudioSamples::NUM_AUDIO_SAMPLES *

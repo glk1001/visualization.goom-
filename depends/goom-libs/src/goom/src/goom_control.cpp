@@ -116,7 +116,7 @@ public:
 
   [[nodiscard]] auto GetUpdateNum() const -> uint32_t;
 
-  auto SetShowTitle(ShowMusicTitleType value) -> void;
+  auto SetShowSongTitle(ShowSongTitleType value) -> void;
 
   auto Start() -> void;
   auto Finish() -> void;
@@ -206,7 +206,7 @@ private:
   [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
 
   SongInfo m_songInfo{};
-  ShowMusicTitleType m_showTitle = ShowMusicTitleType::AT_START;
+  ShowSongTitleType m_showTitle = ShowSongTitleType::AT_START;
   GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetDimensions(), *m_goomLogger};
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
@@ -226,9 +226,9 @@ GoomControl::GoomControl(const Dimensions& dimensions,
 {
 }
 
-auto GoomControl::SetShowMusicTitle(const ShowMusicTitleType value) -> void
+auto GoomControl::SetShowSongTitle(const ShowSongTitleType value) -> void
 {
-  m_pimpl->SetShowTitle(value);
+  m_pimpl->SetShowSongTitle(value);
 }
 
 auto GoomControl::SetShowGoomState(const bool value) -> void
@@ -340,7 +340,7 @@ inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
   return m_updateNum;
 }
 
-inline auto GoomControl::GoomControlImpl::SetShowTitle(const ShowMusicTitleType value) -> void
+inline auto GoomControl::GoomControlImpl::SetShowSongTitle(const ShowSongTitleType value) -> void
 {
   m_showTitle = value;
 }
@@ -734,7 +734,7 @@ inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::str
 {
   UpdateMessages(message);
 
-  if (m_showTitle == ShowMusicTitleType::NEVER)
+  if (m_showTitle == ShowSongTitleType::NEVER)
   {
     return;
   }
@@ -744,8 +744,8 @@ inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::str
 
 inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 {
-  const auto xPosFraction = m_showTitle == ShowMusicTitleType::ALWAYS ? 0.050F : 0.085F;
-  const auto yPosFraction = m_showTitle == ShowMusicTitleType::ALWAYS ? 0.130F : 0.300F;
+  const auto xPosFraction = m_showTitle == ShowSongTitleType::ALWAYS ? 0.050F : 0.085F;
+  const auto yPosFraction = m_showTitle == ShowSongTitleType::ALWAYS ? 0.130F : 0.300F;
   const auto xPos = static_cast<int>(xPosFraction * m_goomInfo.GetDimensions().GetFltWidth());
   const auto yPos = static_cast<int>(yPosFraction * m_goomInfo.GetDimensions().GetFltHeight());
 
@@ -759,7 +759,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
     return;
   }
 
-  if (m_showTitle == ShowMusicTitleType::ALWAYS)
+  if (m_showTitle == ShowSongTitleType::ALWAYS)
   {
     m_goomTextOutput.SetBuffer(*m_p1);
     m_goomTitleDisplayer.DrawStaticText(m_songInfo.title);

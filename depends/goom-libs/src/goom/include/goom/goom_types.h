@@ -8,6 +8,13 @@
 namespace GOOM
 {
 
+enum class ShowSongTitleType
+{
+  AT_START,
+  ALWAYS,
+  NEVER,
+};
+
 template<typename T>
 struct MinMaxValues
 {

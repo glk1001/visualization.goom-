@@ -26,13 +26,7 @@ public:
               const std::string& resourcesDirectory,
               GoomLogger& goomLogger);
 
-  enum class ShowMusicTitleType
-  {
-    AT_START,
-    ALWAYS,
-    NEVER,
-  };
-  auto SetShowMusicTitle(ShowMusicTitleType value) -> void;
+  auto SetShowSongTitle(ShowSongTitleType value) -> void;
 
   auto Start() -> void;
   auto Finish() -> void;
