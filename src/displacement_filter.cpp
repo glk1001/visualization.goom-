@@ -84,6 +84,17 @@ auto DisplacementFilter::InitScene() -> void
 
 auto DisplacementFilter::DestroyScene() noexcept -> void
 {
+  glDeleteTextures(1, &m_renderTextureName);
+  glDeleteFramebuffers(1, &m_renderToTextureFbo);
+
+  m_glFilterPosData.filterSrcePosTexture.DeleteBuffers();
+  m_glFilterPosData.filterDestPosTexture.DeleteBuffers();
+  m_glImageData.mainImageTexture.DeleteBuffers();
+  m_glImageData.lowImageTexture.DeleteBuffers();
+  m_glFilterBuffData.filterBuff1Texture.DeleteBuffers();
+  m_glFilterBuffData.filterBuff2Texture.DeleteBuffers();
+  m_glFilterBuffData.filterBuff3Texture.DeleteBuffers();
+
   m_program.DeleteProgram();
   m_lumHistogramComputeProgram.DeleteProgram();
   m_lumAverageComputeProgram.DeleteProgram();
@@ -101,13 +112,13 @@ auto DisplacementFilter::SetupRenderToTextureFBO() noexcept -> void
   glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo);
 
   // Create the texture object.
-  GLuint renderTextureName{};
-  glGenTextures(1, &renderTextureName);
-  glBindTexture(GL_TEXTURE_2D, renderTextureName);
+  glGenTextures(1, &m_renderTextureName);
+  glBindTexture(GL_TEXTURE_2D, m_renderTextureName);
   glTexStorage2D(GL_TEXTURE_2D, 1, FILTER_BUFF_TEX_INTERNAL_FORMAT, GetWidth(), GetHeight());
 
   // Bind the texture to the FBO.
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureName, 0);
+  glFramebufferTexture2D(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_renderTextureName, 0);
 
   // Set the targets for the fragment output variables.
   const auto drawBuffers = std::array<GLenum, 1>{GL_COLOR_ATTACHMENT0};

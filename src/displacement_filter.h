@@ -82,6 +82,7 @@ private:
   size_t m_buffSize;
   float m_aspectRatio;
   GLuint m_renderToTextureFbo{};
+  GLuint m_renderTextureName{};
   std::vector<FrameData> m_frameDataArray;
   size_t m_currentPboIndex = 0U;
   auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;

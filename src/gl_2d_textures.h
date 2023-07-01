@@ -24,6 +24,8 @@ public:
 
   auto Setup(const char* textureShaderName, int32_t textureWidth, int32_t textureHeight) -> void;
 
+  auto DeleteBuffers() -> void;
+
   [[nodiscard]] auto GetTextureName() const noexcept -> GLuint;
   [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> std_spn::span<CppTextureType>;
 
@@ -48,6 +50,7 @@ private:
   };
   PboBuffers m_pboBuffers{};
   auto AllocatePboBuffers() -> void;
+  auto DeletePboBuffers() -> void;
   auto CopyPboBufferToTexture(size_t pboIndex) noexcept -> void;
 };
 
@@ -112,6 +115,29 @@ auto Gl2DTexture<CppTextureType,
   }
 
   AllocatePboBuffers();
+}
+
+template<typename CppTextureType,
+         int32_t TextureImageUint,
+         int32_t TextureLocation,
+         GLenum TextureFormat,
+         GLenum TextureInternalFormat,
+         GLenum TexturePixelType,
+         uint32_t NumPbos>
+auto Gl2DTexture<CppTextureType,
+                 TextureImageUint,
+                 TextureLocation,
+                 TextureFormat,
+                 TextureInternalFormat,
+                 TexturePixelType,
+                 NumPbos>::DeleteBuffers() -> void
+{
+  if constexpr (0 == NumPbos)
+  {
+    return;
+  }
+
+  DeletePboBuffers();
 }
 
 template<typename CppTextureType,
@@ -264,6 +290,31 @@ auto Gl2DTexture<CppTextureType,
 
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   }
+}
+
+template<typename CppTextureType,
+         int32_t TextureImageUint,
+         int32_t TextureLocation,
+         GLenum TextureFormat,
+         GLenum TextureInternalFormat,
+         GLenum TexturePixelType,
+         uint32_t NumPbos>
+auto Gl2DTexture<CppTextureType,
+                 TextureImageUint,
+                 TextureLocation,
+                 TextureFormat,
+                 TextureInternalFormat,
+                 TexturePixelType,
+                 NumPbos>::DeletePboBuffers() -> void
+{
+  for (auto i = 0U; i < NumPbos; ++i)
+  {
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboBuffers.ids.at(i));
+    glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+  }
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+  glDeleteTextures(1, &m_textureName);
 }
 
 template<typename CppTextureType,
