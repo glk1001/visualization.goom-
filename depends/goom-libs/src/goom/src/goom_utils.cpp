@@ -65,12 +65,12 @@ auto PutFileWithExpandedIncludes(const std::string& includeDir,
   PutFileLines(outFilepath, GetFileLinesWithExpandedIncludes(absoluteIncludeDir, inFilepath));
 }
 
-auto GetFileContentsWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
-    -> std::string
+auto GetFileWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
+    -> std::vector<std::string>
 {
   const auto absoluteIncludeDir = GetAbsoluteIncludeDir(includeDir, filepath);
 
-  return StringJoin(GetFileLinesWithExpandedIncludes(absoluteIncludeDir, filepath), "\n");
+  return GetFileLinesWithExpandedIncludes(absoluteIncludeDir, filepath);
 }
 
 } // namespace GOOM

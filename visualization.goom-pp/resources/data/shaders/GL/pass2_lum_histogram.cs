@@ -1,11 +1,8 @@
 #version 430
 
-#define FILTER_BUFF1_IMAGE_UNIT    0
-#define FILTER_BUFF2_IMAGE_UNIT    1
-#define FILTER_BUFF3_IMAGE_UNIT    2
-#define LUM_AVG_IMAGE_UNIT         3
+// Adapted from "https://bruop.github.io/exposure/"
 
-#define LUM_HISTOGRAM_BUFFER_INDEX 3
+#include "pass2_lum_histogram_consts.h"
 
 #define GROUP_SIZE 256
 #define THREADS_X 16
@@ -15,7 +12,6 @@
 // Taken from RTR vol 4 pg. 278
 #define RGB_TO_LUM vec3(0.2125, 0.7154, 0.0721)
 
-// Uniforms:
 uniform vec4 u_params;
 #define MIN_LOG_LUM           u_params.x
 #define INVERSE_LOG_LUM_RANGE u_params.y

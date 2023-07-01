@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace GOOM
 {
@@ -35,7 +36,8 @@ auto PutFileWithExpandedIncludes(const std::string& includeDir,
                                  const std::string& inFilepath,
                                  const std::string& outFilepath) -> void;
 
-[[nodiscard]] auto GetFileContentsWithExpandedIncludes(const std::string& includeDir,
-                                                       const std::string& filepath) -> std::string;
+[[nodiscard]] auto GetFileWithExpandedIncludes(const std::string& includeDir,
+                                               const std::string& filepath)
+    -> std::vector<std::string>;
 
 } // namespace GOOM

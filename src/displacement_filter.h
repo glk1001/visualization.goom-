@@ -60,7 +60,6 @@ public:
   [[nodiscard]] auto GetFrameDataArray() noexcept -> std::vector<FrameData>&;
   auto InitAllFrameDataToGl() noexcept -> void;
 
-  auto Update(float t) noexcept -> void override;
   auto Render() noexcept -> void override;
 
   auto ClearFilterBuffers() noexcept -> void;
@@ -76,9 +75,6 @@ public:
 
 private:
   std::string m_shaderDir;
-  GlslProgram m_program;
-  GlslProgram m_lumHistogramComputeProgram;
-  GlslProgram m_lumAverageComputeProgram;
   size_t m_buffSize;
   float m_aspectRatio;
   GLuint m_renderToTextureFbo{};
@@ -113,33 +109,46 @@ private:
   static constexpr int32_t NUM_TRIANGLES            = 2;
   static constexpr int32_t NUM_VERTICES             = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
 
-  auto CompileAndLinkShader() -> void;
+  auto CompileAndLinkShaders() -> void;
+  using ShaderMacros = std::map<std::string, std::string>;
+  static auto CompileShaderFile(GlslProgram& program,
+                                const std::string& filepath,
+                                const ShaderMacros& shaderMacros) -> void;
+  [[nodiscard]] auto GetShaderFilepath(const std::string& filename) const noexcept -> std::string;
   auto SetupRenderToTextureFBO() noexcept -> void;
   auto SetupScreenBuffers() noexcept -> void;
-  auto SetupProgramSubroutines() noexcept -> void;
   static auto SetupGlSettings() -> void;
   auto SetupGlData() -> void;
   auto InitFilterBuffers() noexcept -> void;
   auto SetupGlLumComputeData() noexcept -> void;
-  auto SetupGlLumHistogramBuffer() noexcept -> void;
   [[nodiscard]] auto GetLumAverage() const noexcept -> float;
   RequestNextFrameDataFunc m_requestNextFrameData{};
   ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
-  auto UpdateGlUniforms() -> void;
   auto UpdateFrameDataToGl(size_t pboIndex) noexcept -> void;
-  auto UpdateMiscDataToGl(size_t pboIndex) noexcept -> void;
+  auto UpdatePass1MiscDataToGl(size_t pboIndex) noexcept -> void;
+  auto UpdatePass4MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePosDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdateImageDataToGl(size_t pboIndex) noexcept -> void;
 
-  GLuint m_pass1Index{};
-  static constexpr auto PASS1_NAME = "Pass1UpdateFilterBuffers";
-  auto Pass1UpdateFilterBuffers() noexcept -> void;
-  GLuint m_pass2Index{};
-  static constexpr auto PASS2_NAME = "Pass2OutputToneMappedImage";
-  auto Pass2OutputToneMappedImage() noexcept -> void;
-  auto LumHistogramComputePass() noexcept -> void;
-  static auto LumAverageComputePass() noexcept -> void;
-  auto Pass3OutputToScreen() noexcept -> void;
+  GlslProgram m_programPass1UpdateFilterBuff1AndBuff3;
+  static constexpr auto PASS1_VERTEX_SHADER   = "filter.vs";
+  static constexpr auto PASS1_FRAGMENT_SHADER = "pass1_update_filter_buff1_and_buff3.fs";
+  auto Pass1UpdateFilterBuff1AndBuff3() noexcept -> void;
+
+  GlslProgram m_programPass2FilterBuff1LuminanceHistogram;
+  static constexpr auto PASS2_SHADER = "pass2_lum_histogram.cs";
+  auto Pass2FilterBuff3LuminanceHistogram() noexcept -> void;
+
+  GlslProgram m_programPass3FilterBuff1LuminanceAverage;
+  static constexpr auto PASS3_SHADER = "pass3_lum_avg.cs";
+  auto Pass3FilterBuff3LuminanceAverage() noexcept -> void;
+
+  GlslProgram m_programPass4ResetFilterBuff2AndOutputBuff3;
+  static constexpr auto PASS4_VERTEX_SHADER   = "filter.vs";
+  static constexpr auto PASS4_FRAGMENT_SHADER = "pass4_reset_filter_buff2_and_output_buff3.fs";
+  auto Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void;
+
+  auto Pass5OutputToScreen() noexcept -> void;
 
   static constexpr auto FILTER_BUFF1_TEX_LOCATION    = 0;
   static constexpr auto FILTER_BUFF2_TEX_LOCATION    = 1;
@@ -163,15 +172,16 @@ private:
   static constexpr auto FILTER_BUFF3_IMAGE_UNIT = 2;
   static constexpr auto LUM_AVG_IMAGE_UNIT      = 3;
 
-  auto SetLumHistogramParams() noexcept -> void;
-  auto SetLumAverageParams(float frameTime) noexcept -> void;
-  GLuint m_lumDataTextureName{};
-  auto SetupGlLumAverageData() noexcept -> void;
   GLuint m_histogramBufferName{};
   static constexpr auto HISTOGRAM_BUFFER_LENGTH    = 256;
   static constexpr auto LUM_AVG_GROUP_SIZE         = 256;
   static constexpr auto LUM_HISTOGRAM_BUFFER_INDEX = 3;
   static constexpr auto LUM_AVG_TEX_UNIT           = GL_TEXTURE0 + LUM_AVG_TEX_LOCATION;
+  auto SetLumHistogramParams() noexcept -> void;
+  auto SetupGlLumHistogramBuffer() noexcept -> void;
+  GLuint m_lumAverageDataTextureName{};
+  auto SetLumAverageParams(float frameTime) noexcept -> void;
+  auto SetupGlLumAverageData() noexcept -> void;
 
   struct GlFilterPosData
   {
@@ -226,7 +236,7 @@ private:
   GlFilterBuffData m_glFilterBuffData{};
   std::atomic_bool m_filterBuffersNeedClearing = false;
   auto SetupGlFilterBuffData() -> void;
-  auto BindGlFilterBuffData() noexcept -> void;
+  auto BindGlFilterBuff2Data() noexcept -> void;
   auto CheckZeroFilterBuffers() noexcept -> void;
 
   struct GlImageData

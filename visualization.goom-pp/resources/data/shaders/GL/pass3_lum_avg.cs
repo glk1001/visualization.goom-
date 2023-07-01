@@ -1,17 +1,13 @@
 #version 430
 
-#define FILTER_BUFF1_IMAGE_UNIT    0
-#define FILTER_BUFF2_IMAGE_UNIT    1
-#define FILTER_BUFF3_IMAGE_UNIT    2
-#define LUM_AVG_IMAGE_UNIT         3
+// Adapted from "https://bruop.github.io/exposure/"
 
-#define LUM_HISTOGRAM_BUFFER_INDEX 3
+#include "pass3_lum_avg_consts.h"
 
 #define GROUP_SIZE 256
 #define THREADS_X  256
 #define THREADS_Y  1
 
-// Uniforms:
 uniform vec4 u_params;
 #define MIN_LOG_LUM   u_params.x
 #define LOG_LUM_RANGE u_params.y
@@ -63,12 +59,6 @@ void main()
     // to prevent sudden shifts in the exposure.
     float lumLastFrame = imageLoad(img_target, ivec2(0, 0)).x;
     float adaptedLum   = lumLastFrame + (TIME_COEFF * (weightedAvgLum - lumLastFrame));
-
-    //adaptedLum = count0;
-    //adaptedLum = histogramShared[gl_LocalInvocationIndex];
-    //adaptedLum = weightedAvgLum;
-    //adaptedLum = lumLastFrame;
-    //adaptedLum = 10.1;
 
     imageStore(img_target, ivec2(0, 0), vec4(adaptedLum, 0.0, 0.0, 0.0));
   }

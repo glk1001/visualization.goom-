@@ -305,11 +305,18 @@ auto GlslProgram::FindUniformLocations() -> void
 
 auto GlslProgram::Use() const -> void
 {
-  if (m_handle <= 0 || (!m_linked))
+  if ((m_handle <= 0) or (not m_linked))
   {
-    throw GlslProgramException("Shader has not been linked");
+    throw GlslProgramException("Shader has not been linked.");
   }
   glUseProgram(m_handle);
+}
+
+auto GlslProgram::IsInUse() const noexcept -> bool
+{
+  GLint currentProgram{};
+  glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+  return m_handle == static_cast<GLuint>(currentProgram);
 }
 
 auto GlslProgram::IsLinked() const noexcept -> bool

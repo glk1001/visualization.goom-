@@ -16,7 +16,11 @@ set(GOOM_LIBS_TARGET_NAME "goom")
 set(GOOM_LIBS_RELDIR depends/goom-libs)
 set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
 set(GOOM_BUILD_ARTIFACTS_DIR ${CMAKE_BINARY_DIR}/goom-libs-artifacts)
-set(GOOM_INCLUDE_DIRS "${GOOM_LIBS_DIR}/src/goom/include")
+set(GOOM_INCLUDE_DIRS
+    "${GOOM_LIBS_DIR}/src/goom/include"
+    "${GOOM_LIBS_DIR}/src/goom/src"
+    "${GOOM_LIBS_DIR}/src/goom/include/goom"
+)
 
 if (NOT WIN32)
     set(GOOM_BIN_LIBS
@@ -211,8 +215,8 @@ set(${GOOM_ADDON_PREFIX}_SOURCES
     src/goom_visualization.cpp
     src/gl_utils.cpp
     src/glsl_program.cpp
-    src/shader_with_effects.cpp
-    src/goom_shader_with_effects.cpp)
+    src/glsl_shader_file.cpp
+)
 set(${GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
     src/build_time.h
@@ -222,10 +226,10 @@ set(${GOOM_ADDON_PREFIX}_HEADERS
     src/gl_render_types.h
     src/gl_utils.h
     src/glsl_program.h
+    src/glsl_shader_file.h
     src/scene.h
     src/slot_producer_consumer.h
-    src/shader_with_effects.h
-    src/goom_shader_with_effects.h)
+)
 
 list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib particles::lib)
 

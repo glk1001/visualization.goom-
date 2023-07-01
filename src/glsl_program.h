@@ -42,6 +42,7 @@ public:
   auto ValidateShader() const -> void;
 
   auto Use() const -> void;
+  [[nodiscard]] auto IsInUse() const noexcept -> bool;
 
   [[nodiscard]] auto GetSubroutineIndex(GLenum shaderType,
                                         const std::string_view& name) const noexcept -> GLuint;

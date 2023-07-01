@@ -27,9 +27,6 @@ public:
   // Load textures, initialize shaders, etc.
   virtual auto InitScene() -> void = 0;
 
-  // This is called prior to every frame.
-  virtual auto Update(float t) -> void = 0;
-
   // Draw your scene.
   virtual auto Render() -> void = 0;
 
