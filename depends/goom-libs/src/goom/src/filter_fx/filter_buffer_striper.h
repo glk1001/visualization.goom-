@@ -1,7 +1,5 @@
 #pragma once
 
-#include "filter_utils/zoom_coord_transforms.h"
-#include "filter_utils/zoom_transform_buffers.h"
 #include "goom_graphic.h"
 #include "goom_types.h"
 #include "normalized_coords.h"
@@ -58,7 +56,6 @@ public:
 private:
   Dimensions m_dimensions;
   const NormalizedCoordsConverter* m_normalizedCoordsConverter;
-  FILTER_UTILS::ZoomCoordTransforms m_coordTransforms{m_dimensions};
 
   UTILS::Parallel* m_parallel;
   ZoomPointFunc m_getZoomPoint;
@@ -73,12 +70,10 @@ private:
   static constexpr auto NUM_STRIPE_GROUPS = 20U;
   uint32_t m_tranBuffYLineStart           = 0;
   uint32_t m_tranBuffStripeHeight         = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
-  std::vector<Point2dInt> m_tranBuffer;
   std::vector<Point2dFlt> m_tranBufferFlt{};
   bool m_tranBufferFltIsReady = false;
 
   auto DoNextStripe(uint32_t tranBuffStripeHeight) noexcept -> void;
-  [[nodiscard]] auto GetTranPoint(const NormalizedCoords& normalized) const noexcept -> Point2dInt;
 };
 
 inline auto ZoomFilterBufferStriper::GetTranBuffYLineStart() const noexcept -> uint32_t

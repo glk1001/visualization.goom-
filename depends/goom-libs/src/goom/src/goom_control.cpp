@@ -116,7 +116,7 @@ public:
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
-  auto InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void;
+  static auto InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
@@ -392,7 +392,7 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   using FilterBuffers          = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
   const auto currentLerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) /
-                                 static_cast<float>(FilterBuffers::GetMaxTranLerpFactor());
+                                 static_cast<float>(FilterBuffers::MAX_TRAN_LERP_VALUE);
 
   if (not m_visualFx.IsTranBufferFltReady())
   {

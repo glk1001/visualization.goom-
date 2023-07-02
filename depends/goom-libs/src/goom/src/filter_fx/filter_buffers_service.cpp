@@ -125,12 +125,12 @@ inline auto FilterBuffersService::UpdateTranLerpProperties(
   if (tranLerpProperties.tranLerpIncrement != 0U)
   {
     tranLerpFactor = std::min(tranLerpFactor + tranLerpProperties.tranLerpIncrement,
-                              FilterBuffers::GetMaxTranLerpFactor());
+                              FilterBuffers::MAX_TRAN_LERP_VALUE);
   }
 
   if (not FloatsEqual(tranLerpProperties.tranLerpToMaxSwitchMult, 1.0F))
   {
-    tranLerpFactor = STD20::lerp(FilterBuffers::GetMaxTranLerpFactor(),
+    tranLerpFactor = STD20::lerp(FilterBuffers::MAX_TRAN_LERP_VALUE,
                                  tranLerpFactor,
                                  tranLerpProperties.tranLerpToMaxSwitchMult);
   }

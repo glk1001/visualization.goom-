@@ -23,7 +23,6 @@ ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     m_normalizedCoordsConverter{&normalizedCoordsConverter},
     m_parallel{&parallel},
     m_getZoomPoint{zoomPointFunc},
-    m_tranBuffer(m_dimensions.GetSize()),
     m_tranBufferFlt(m_dimensions.GetSize())
 {
 }
@@ -36,12 +35,6 @@ auto ZoomFilterBufferStriper::ResetStripes() noexcept -> void
 auto ZoomFilterBufferStriper::ResetTranBufferFltIsReady() noexcept -> void
 {
   m_tranBufferFltIsReady = false;
-}
-
-inline auto ZoomFilterBufferStriper::GetTranPoint(const NormalizedCoords& normalized) const noexcept
-    -> Point2dInt
-{
-  return m_coordTransforms.NormalizedToTranPoint(normalized);
 }
 
 /*
@@ -79,7 +72,6 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
       const auto uncenteredZoomCoords = m_normalizedMidpoint + zoomCoords;
 
       m_tranBufferFlt[tranBufferPos] = uncenteredZoomCoords.GetFltCoords();
-      m_tranBuffer[tranBufferPos]    = GetTranPoint(uncenteredZoomCoords);
 
       centredSourceCoords.IncX(sourceCoordsStepSize);
       centredSourceViewportCoords.IncX(sourceViewportCoordsStepSize);

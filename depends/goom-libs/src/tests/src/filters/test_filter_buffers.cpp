@@ -24,8 +24,6 @@
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 
-#include <cmath>
-
 #if __clang_major__ >= 16
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
@@ -47,7 +45,6 @@ using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterBufferStriper;
 using FILTER_FX::ZoomFilterEffectsSettings;
 using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
-using FILTER_FX::FILTER_UTILS::ZoomCoordTransforms;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
 
@@ -55,6 +52,53 @@ using FilterBuffers = ZoomFilterBuffers<ZoomFilterBufferStriper>;
 
 namespace
 {
+
+// TODO - Get rid of this!
+class ZoomCoordTransforms
+{
+public:
+  explicit ZoomCoordTransforms(const Dimensions& screenDimensions) noexcept;
+
+  [[nodiscard]] auto NormalizedToTranPoint(const NormalizedCoords& normalizedPoint) const noexcept
+      -> Point2dInt;
+
+  [[nodiscard]] static auto TranToScreenPoint(const Point2dInt& tranPoint) noexcept -> Point2dInt;
+  [[nodiscard]] static auto ScreenToTranPoint(const Point2dInt& screenPoint) noexcept -> Point2dInt;
+
+private:
+  NormalizedCoordsConverter m_normalizedCoordsConverter;
+  static constexpr auto DIM_FILTER_COEFFS_EXP = 4U;
+  static constexpr auto DIM_FILTER_COEFFS     = UTILS::MATH::PowerOf2(DIM_FILTER_COEFFS_EXP);
+};
+
+inline ZoomCoordTransforms::ZoomCoordTransforms(const Dimensions& screenDimensions) noexcept
+  : m_normalizedCoordsConverter{
+        {screenDimensions.GetWidth() << DIM_FILTER_COEFFS_EXP,
+         screenDimensions.GetWidth() << DIM_FILTER_COEFFS_EXP},
+        1.0F / static_cast<float>(DIM_FILTER_COEFFS)
+}
+{
+}
+
+inline auto ZoomCoordTransforms::TranToScreenPoint(const Point2dInt& tranPoint) noexcept
+    -> Point2dInt
+{
+  // Note: Truncation here but seems OK. Trying to round adds about 2ms.
+  return {tranPoint.x >> DIM_FILTER_COEFFS_EXP, tranPoint.y >> DIM_FILTER_COEFFS_EXP};
+}
+
+inline auto ZoomCoordTransforms::ScreenToTranPoint(const Point2dInt& screenPoint) noexcept
+    -> Point2dInt
+{
+  return {screenPoint.x << DIM_FILTER_COEFFS_EXP, screenPoint.y << DIM_FILTER_COEFFS_EXP};
+}
+
+inline auto ZoomCoordTransforms::NormalizedToTranPoint(
+    const NormalizedCoords& normalizedPoint) const noexcept -> Point2dInt
+{
+  return ToPoint2dInt(m_normalizedCoordsConverter.NormalizedToOtherCoordsFlt(normalizedPoint));
+}
+
 //#define LARGE_SCREEN_TEST
 constexpr auto LARGE_WIDTH  = 3840U;
 constexpr auto LARGE_HEIGHT = 2160U;
@@ -237,8 +281,8 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
   REQUIRE(MID_PT == filterBuffers.GetBuffMidpoint());
 
   // Lerp to the dest buffer only
-  filterBuffers.SetTranLerpFactor(FilterBuffers::GetMaxTranLerpFactor());
-  REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
+  filterBuffers.SetTranLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
+  REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTranLerpFactor());
 
   // tranPoint comes solely from the dest Zoom buffer which because we are using a
   // const ZoomVectorFunc, returns a const normalized value
@@ -365,14 +409,14 @@ TEST_CASE("ZoomFilterBuffers Stripes")
 
   TestCorrectStripesBasicValues(filterBuffers);
 
-  filterBuffers.SetTranLerpFactor(FilterBuffers::GetMaxTranLerpFactor());
-  REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
+  filterBuffers.SetTranLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
+  REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTranLerpFactor());
   constantZoomVector.SetConstCoords(CONST_ZOOM_VECTOR_COORDS_2);
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_2 == constantZoomVector.GetConstCoords());
   TestCorrectStripesFullyUpdate(filterBuffers, constantZoomVector);
 
-  filterBuffers.SetTranLerpFactor(FilterBuffers::GetMaxTranLerpFactor());
-  REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
+  filterBuffers.SetTranLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
+  REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTranLerpFactor());
   const auto expectedDestPoint =
       TestCorrectStripesGetExpectedDestPoint(filterBuffers, constantZoomVector);
   for (auto buffPos = 0U; buffPos < (WIDTH * HEIGHT); ++buffPos)
@@ -397,8 +441,8 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
   SECTION("Correct Zoomed In Dest ZoomBufferTranPoint")
   {
     // Lerp to the dest buffer only (by using max lerp).
-    filterBuffers.SetTranLerpFactor(FilterBuffers::GetMaxTranLerpFactor());
-    REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
+    filterBuffers.SetTranLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
+    REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTranLerpFactor());
 
     REQUIRE(TEST_SRCE_NML_COORDS.Equals(
         zoomVector.GetZoomInPoint(TEST_SRCE_NML_COORDS, TEST_SRCE_NML_COORDS)));
@@ -416,8 +460,8 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
     FullyUpdateDestBuffer(filterBuffers);
     REQUIRE(FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS ==
             filterBuffers.GetTranBuffersState());
-    filterBuffers.SetTranLerpFactor(FilterBuffers::GetMaxTranLerpFactor());
-    REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
+    filterBuffers.SetTranLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
+    REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTranLerpFactor());
 
     //    const auto expectedTranPoint         = ZoomCoordTransforms::ScreenToTranPoint(TEST_SRCE_POINT);
     //    const auto expectedZoomedInTranPoint = Point2dInt{
@@ -457,8 +501,8 @@ TEST_CASE("ZoomFilterBuffers Clipping")
     REQUIRE(Point2dInt{0, 0} == filterBuffers.GetBuffMidpoint());
 
     // Lerp to the dest buffer only
-    filterBuffers.SetTranLerpFactor(FilterBuffers::GetMaxTranLerpFactor());
-    REQUIRE(filterBuffers.GetMaxTranLerpFactor() == filterBuffers.GetTranLerpFactor());
+    filterBuffers.SetTranLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
+    REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTranLerpFactor());
 
     // tranPoint comes solely from the dest Zoom buffer which because we are using a
     // const ZoomVectorFunc, returns a const normalized value

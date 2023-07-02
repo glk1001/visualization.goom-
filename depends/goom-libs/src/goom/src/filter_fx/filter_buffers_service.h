@@ -9,10 +9,10 @@
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <string>
 
 namespace GOOM
 {
-
 class PluginInfo;
 
 namespace UTILS
@@ -33,10 +33,10 @@ public:
                        const NormalizedCoordsConverter& normalizedCoordsConverter,
                        std::unique_ptr<IZoomVector> zoomVector) noexcept;
 
+  auto Start() noexcept -> void;
+
   [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
   auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
-
-  auto Start() noexcept -> void;
 
   [[nodiscard]] auto GetCurrentFilterEffectsSettings() const noexcept
       -> const ZoomFilterEffectsSettings&;
@@ -45,10 +45,9 @@ public:
   auto SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
       -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
-
   auto UpdateTranBuffers() noexcept -> void;
 
+  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
   struct TranLerpProperties
   {
     uint32_t tranLerpIncrement;
