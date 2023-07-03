@@ -401,18 +401,13 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
   }
   else
   {
+    //LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
     m_filterBuffersService.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
-    LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
+    m_musicSettingsReactor.ResetTranLerpSettings();
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating    = true;
     m_frameData->filterPosArrays.lerpFactorForDestToSrceUpdate = currentLerpFactor;
     m_frameData->miscData.lerpFactor                           = 0.0F;
   }
-
-  //  LogInfo(*m_goomLogger,
-  //          "FrameData lerpFactor = {} ({}), currentLerpFactor = {}.",
-  //          m_filterBuffersService.GetTranLerpFactor(),
-  //          m_frameData->miscData.lerpFactor,
-  //          currentLerpFactor);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void

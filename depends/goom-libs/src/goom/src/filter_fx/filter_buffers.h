@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom_plugin_info.h"
 #include "goom_types.h"
 #include "normalized_coords.h"
 #include "point2d.h"
@@ -30,8 +29,7 @@ public:
     TRAN_BUFFERS_READY,
   };
 
-  ZoomFilterBuffers(const PluginInfo& goomInfo,
-                    std::unique_ptr<FilterStriper> filterStriper) noexcept;
+  explicit ZoomFilterBuffers(std::unique_ptr<FilterStriper> filterStriper) noexcept;
 
   auto Start() noexcept -> void;
 
@@ -57,7 +55,6 @@ public:
   [[nodiscard]] auto GetTranBuffersState() const noexcept -> TranBuffersState;
 
 private:
-  Dimensions m_dimensions;
   std::unique_ptr<FilterStriper> m_filterStriper;
   uint32_t m_tranLerpFactor = 0U;
 
@@ -73,8 +70,8 @@ private:
 
 template<class FilterStriper>
 ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
-    const PluginInfo& goomInfo, std::unique_ptr<FilterStriper> filterStriper) noexcept
-  : m_dimensions{goomInfo.GetDimensions()}, m_filterStriper{std::move(filterStriper)}
+    std::unique_ptr<FilterStriper> filterStriper) noexcept
+  : m_filterStriper{std::move(filterStriper)}
 {
 }
 

@@ -222,7 +222,7 @@ auto FullyUpdateDestBuffer(FilterBuffers& filterBuffers) noexcept -> void
                     const NormalizedCoords& viewportCoords)
       { return zoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
 
-  return FilterBuffers{GOOM_INFO, std::move(filterBufferStriper)};
+  return FilterBuffers{std::move(filterBufferStriper)};
 }
 
 constexpr auto TEST_X          = 10;

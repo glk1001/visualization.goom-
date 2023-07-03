@@ -26,16 +26,13 @@ FilterBuffersService::FilterBuffersService(
     const NormalizedCoordsConverter& normalizedCoordsConverter,
     std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{goomInfo,
-                    std::make_unique<ZoomFilterBufferStriper>(
-                        parallel,
-                        goomInfo,
-                        normalizedCoordsConverter,
-                        [this](const NormalizedCoords& normalizedCoords,
-                               const NormalizedCoords& normalizedFilterViewportCoords) {
-                          return m_zoomVector->GetZoomInPoint(normalizedCoords,
-                                                              normalizedFilterViewportCoords);
-                        })}
+    m_filterBuffers{std::make_unique<ZoomFilterBufferStriper>(
+        parallel,
+        goomInfo,
+        normalizedCoordsConverter,
+        [this](const NormalizedCoords& normalizedCoords,
+               const NormalizedCoords& normalizedFilterViewportCoords)
+        { return m_zoomVector->GetZoomInPoint(normalizedCoords, normalizedFilterViewportCoords); })}
 {
 }
 

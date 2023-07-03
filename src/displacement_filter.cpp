@@ -623,22 +623,22 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
   //    LogInfo(GOOM::UTILS::GetGoomLogger(),
   //            "Copying lerped srce/dest to srce. Lerpfactor = {}.",
   //            m_previousLerpFactor);
-  auto filterSrcePos = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
+  auto filterSrcePosBuffer = m_glFilterPosData.filterSrcePosTexture.GetMappedBuffer(pboIndex);
   const auto destToSrceLerpFactor =
       m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
   std::transform(m_previousFilterDestPos.cbegin(),
                  m_previousFilterDestPos.cend(),
-                 filterSrcePos.begin(),
-                 filterSrcePos.begin(),
+                 filterSrcePosBuffer.begin(),
+                 filterSrcePosBuffer.begin(),
                  [&destToSrceLerpFactor](const Point2dFlt& prevDestPos, const Point2dFlt& srcePos)
                  { return lerp(srcePos, prevDestPos, destToSrceLerpFactor); });
-
 
   m_glFilterPosData.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
   m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
 
-  const auto filterDestPos = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
-  std::copy(filterDestPos.begin(), filterDestPos.end(), m_previousFilterDestPos.begin());
+  const auto filterDestPosBuffer = m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(pboIndex);
+  std::copy(
+      filterDestPosBuffer.begin(), filterDestPosBuffer.end(), m_previousFilterDestPos.begin());
 
   //  auto filterPosSrce = std::vector<Point2dFlt>(m_buffSize);
   //  m_glFilterPosData.filterSrcePosTexture.BindTexture(m_program);

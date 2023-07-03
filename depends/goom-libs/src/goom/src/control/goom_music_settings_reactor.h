@@ -29,6 +29,8 @@ public:
   auto Start() -> void;
   auto NewCycle() -> void;
 
+  auto ResetTranLerpSettings() -> void;
+
   auto ChangeZoomEffects() -> void;
   auto ChangeFilterModeIfMusicChanges() -> void;
 
@@ -62,8 +64,8 @@ private:
 
   uint32_t m_updateNum = 0;
 
-  static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 200;
-  static constexpr auto MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 400;
+  static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 300;
+  static constexpr auto MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 500;
   int32_t m_maxTimeBetweenZoomEffectsChange   = MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE;
   int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
   uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::STOP_SPEED;
@@ -84,7 +86,6 @@ private:
   auto ChangeFilterExtraSettings() -> void;
   auto UpdateSettings() -> void;
   auto UpdateTranLerpSettings() -> void;
-  auto ResetTranLerpSettings() -> void;
   auto SetNewTranLerpSettingsBasedOnSpeed() -> void;
   auto ChangeRotation() -> void;
   auto ChangeTranBufferSwitchValues() -> void;
