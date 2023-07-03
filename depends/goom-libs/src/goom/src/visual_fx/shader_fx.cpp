@@ -5,6 +5,7 @@
 #include "color/color_utils.h"
 #include "fx_helper.h"
 #include "goom_logger.h"
+#include "shaders/color_multiplier_lerper.h"
 #include "shaders/high_contrast.h"
 #include "shaders/hue_shift_lerper.h"
 #include "spimpl.h"
@@ -17,6 +18,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using SHADERS::ColorMultiplierLerper;
 using SHADERS::HighContrast;
 using SHADERS::HueShiftLerper;
 using UTILS::Stopwatch;
@@ -38,6 +40,10 @@ private:
 
   HighContrast m_highContrast;
   HueShiftLerper m_hueShiftLerper;
+
+  static constexpr auto MIN_BASE_COLOR_MULTIPLIER = 0.950F;
+  static constexpr auto MAX_BASE_COLOR_MULTIPLIER = 0.999F;
+  ColorMultiplierLerper m_baseColorMultiplierLerper;
 
   auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;
 };
@@ -90,7 +96,11 @@ auto ShaderFx::GetLastShaderVariables() const -> const GoomShaderVariables&
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
   : m_highContrast{*fxHelper.goomInfo, *fxHelper.goomRand},
-    m_hueShiftLerper{*fxHelper.goomInfo, *fxHelper.goomRand}
+    m_hueShiftLerper{*fxHelper.goomInfo, *fxHelper.goomRand},
+    m_baseColorMultiplierLerper{*fxHelper.goomInfo,
+                                *fxHelper.goomRand,
+                                MIN_BASE_COLOR_MULTIPLIER,
+                                MAX_BASE_COLOR_MULTIPLIER}
 {
 }
 
@@ -98,22 +108,23 @@ inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 {
   m_highContrast.ChangeHighContrast();
   m_hueShiftLerper.ChangeHue();
+  m_baseColorMultiplierLerper.ChangeMultipliers();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
   m_hueShiftLerper.Update();
+  m_baseColorMultiplierLerper.Update();
 
-  static constexpr auto DEFAULT_EXPOSURE = 1.5F;
-  m_goomShaderVariables.exposure         = DEFAULT_EXPOSURE;
-  m_goomShaderVariables.contrast         = m_highContrast.GetCurrentContrast();
+  m_goomShaderVariables.contrast = m_highContrast.GetCurrentContrast();
   m_goomShaderVariables.contrastMinChannelValue =
       m_highContrast.GetCurrentContrastMinChannelValue();
-  m_goomShaderVariables.brightness    = m_highContrast.GetCurrentBrightness();
-  m_goomShaderVariables.hueShiftLerpT = m_hueShiftLerper.GetLerpT();
-  m_goomShaderVariables.srceHueShift  = m_hueShiftLerper.GetSrceHueShift();
-  m_goomShaderVariables.destHueShift  = m_hueShiftLerper.GetDestHueShift();
+  m_goomShaderVariables.brightness          = m_highContrast.GetCurrentBrightness();
+  m_goomShaderVariables.hueShiftLerpT       = m_hueShiftLerper.GetLerpT();
+  m_goomShaderVariables.srceHueShift        = m_hueShiftLerper.GetSrceHueShift();
+  m_goomShaderVariables.destHueShift        = m_hueShiftLerper.GetDestHueShift();
+  m_goomShaderVariables.baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void

@@ -516,7 +516,7 @@ auto DisplacementFilter::SetLumHistogramParams() noexcept -> void
                                          static_cast<float>(GetWidth()),
                                          static_cast<float>(GetHeight())};
 
-  m_programPass2FilterBuff1LuminanceHistogram.SetUniform("u_params", histogramParams);
+  m_programPass2FilterBuff1LuminanceHistogram.SetUniform(UNIFORM_LUMINANCE_PARAMS, histogramParams);
 }
 
 auto DisplacementFilter::SetLumAverageParams(const float frameTime) noexcept -> void
@@ -530,7 +530,7 @@ auto DisplacementFilter::SetLumAverageParams(const float frameTime) noexcept -> 
   const auto lumAverageParams =
       glm::vec4{MIN_LOG_LUM, MAX_LOG_LUM - MIN_LOG_LUM, timeCoeff, static_cast<float>(m_buffSize)};
 
-  m_programPass3FilterBuff1LuminanceAverage.SetUniform("u_params", lumAverageParams);
+  m_programPass3FilterBuff1LuminanceAverage.SetUniform(UNIFORM_LUMINANCE_PARAMS, lumAverageParams);
 }
 
 auto DisplacementFilter::GetLumAverage() const noexcept -> float
@@ -576,13 +576,15 @@ auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept
 {
   //LogInfo(GOOM::UTILS::GetGoomLogger(), "New lerpFactor = {}.", m_previousLerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
-      "u_lerpFactor", m_frameDataArray.at(pboIndex).miscData.lerpFactor);
+      UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.lerpFactor);
+  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
+      UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
 }
 
 auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept -> void
 {
   m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
-      "u_brightness", m_frameDataArray.at(pboIndex).miscData.brightness);
+      UNIFORM_BRIGHTNESS, m_frameDataArray.at(pboIndex).miscData.brightness);
 }
 
 //[[nodiscard]] static auto GetTranArray(const Point2dFlt* const buffIn,

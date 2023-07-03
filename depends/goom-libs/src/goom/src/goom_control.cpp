@@ -355,8 +355,9 @@ inline auto GoomControl::GoomControlImpl::InitFrameData(
 
 auto GoomControl::GoomControlImpl::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
 {
-  miscData.lerpFactor = 0.0F;
-  miscData.brightness = 1.0F;
+  miscData.lerpFactor          = 0.0F;
+  miscData.brightness          = 1.0F;
+  miscData.baseColorMultiplier = 1.0F;
 }
 
 auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
@@ -376,8 +377,9 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 {
   m_frameData = &frameData;
 
-  const auto shaderVariables    = GetLastShaderVariables();
-  frameData.miscData.brightness = shaderVariables.brightness;
+  const auto shaderVariables             = GetLastShaderVariables();
+  frameData.miscData.brightness          = shaderVariables.brightness;
+  frameData.miscData.baseColorMultiplier = shaderVariables.baseColorMultiplier;
 
   m_p1 = &m_frameData->imageArrays.mainImageData;
   m_p2 = &m_frameData->imageArrays.lowImageData;
@@ -400,9 +402,6 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
   else
   {
     m_filterBuffersService.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
-    if (not m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
-    {
-    }
     LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating    = true;
     m_frameData->filterPosArrays.lerpFactorForDestToSrceUpdate = currentLerpFactor;

@@ -17,11 +17,12 @@ in vec3 position;
 in vec2 texCoord;
 
 uniform float u_lerpFactor;
-uniform float u_mainColorMultiplier = 0.7;
-uniform float u_lowColorMultiplier = 1.0;
+
 // For base multiplier, too close to 1, gives washed
 // out look, too far away things get too dark.
-uniform float u_baseColorMultiplier = 0.96;
+uniform float u_baseColorMultiplier;
+uniform float u_mainColorMultiplier = 0.7;
+uniform float u_lowColorMultiplier  = 1.0;
 
 /**
 vec3 blend(vec3 base, vec3 blend, float opacity)

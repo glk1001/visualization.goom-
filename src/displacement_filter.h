@@ -33,6 +33,11 @@ namespace GOOM::OPENGL
 
 class DisplacementFilter : public IScene
 {
+  static constexpr auto* UNIFORM_LERP_FACTOR           = "u_lerpFactor";
+  static constexpr auto* UNIFORM_BRIGHTNESS            = "u_brightness";
+  static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
+  static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
+
   static constexpr auto FILTER_BUFF_TEX_INTERNAL_FORMAT = GL_RGBA16;
   static constexpr auto FILTER_POS_TEX_INTERNAL_FORMAT  = GL_RG32F;
   static constexpr auto IMAGE_TEX_INTERNAL_FORMAT       = FILTER_BUFF_TEX_INTERNAL_FORMAT;
