@@ -44,8 +44,9 @@ public:
       -> void;
   auto SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
       -> void;
+  [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
-  auto UpdateTranBuffers() noexcept -> void;
+  auto UpdateZoomBuffers() noexcept -> void;
 
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
   struct TranLerpProperties
@@ -92,6 +93,11 @@ inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexce
 inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t
 {
   return m_filterBuffers.GetTranLerpFactor();
+}
+
+inline auto FilterBuffersService::HaveFilterSettingsChanged() const noexcept -> bool
+{
+  return m_filterBuffers.HaveFilterSettingsChanged();
 }
 
 } // namespace FILTER_FX

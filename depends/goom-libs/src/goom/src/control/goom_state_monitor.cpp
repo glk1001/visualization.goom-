@@ -9,16 +9,19 @@
 namespace GOOM::CONTROL
 {
 
+using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterSettingsService;
 using UTILS::GetNameValuesString;
 using UTILS::GetPair;
 
 GoomStateMonitor::GoomStateMonitor(const GoomAllVisualFx& visualFx,
                                    const GoomMusicSettingsReactor& musicSettingsReactor,
-                                   const FilterSettingsService& filterSettingsService) noexcept
+                                   const FilterSettingsService& filterSettingsService,
+                                   const FilterBuffersService& filterBuffersService) noexcept
   : m_visualFx{&visualFx},
     m_musicSettingsReactor{&musicSettingsReactor},
-    m_filterSettingsService{&filterSettingsService}
+    m_filterSettingsService{&filterSettingsService},
+    m_filterBuffersService{&filterBuffersService}
 {
 }
 
@@ -114,7 +117,8 @@ inline auto GoomStateMonitor::GetMusicSettingsNameValueParams() const -> UTILS::
 
 inline auto GoomStateMonitor::GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs
 {
-  return m_visualFx->GetZoomFilterFxNameValueParams();
+  static constexpr auto* PARAM_GROUP = "ZoomFilterFx";
+  return m_filterBuffersService->GetNameValueParams(PARAM_GROUP);
 }
 
 } // namespace GOOM::CONTROL

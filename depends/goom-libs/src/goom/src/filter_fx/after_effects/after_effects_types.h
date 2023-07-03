@@ -5,7 +5,6 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 
 enum class AfterEffectsTypes
 {
-  BLOCK_WAVY,
   HYPERCOS,
   IMAGE_VELOCITY,
   NOISE,

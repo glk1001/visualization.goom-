@@ -50,7 +50,7 @@ public:
   struct AfterEffectsProbabilities
   {
     UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
-    AfterEffectsProbabilityMap probabilities;
+    AfterEffectsProbabilityMap probabilities{};
   };
   auto ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
   auto ResetStandardStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
@@ -68,7 +68,6 @@ private:
   class EffectState;
 
   HypercosOverlay m_hypercosOverlay = HypercosOverlay::NONE;
-  std::unique_ptr<EffectState> m_blockyWavyEffect;
   std::unique_ptr<EffectState> m_hypercosOverlayEffect;
   std::unique_ptr<EffectState> m_imageVelocityEffect;
   std::unique_ptr<EffectState> m_noiseEffect;

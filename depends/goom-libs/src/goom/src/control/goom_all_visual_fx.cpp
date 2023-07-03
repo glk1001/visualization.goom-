@@ -22,7 +22,6 @@ namespace GOOM::CONTROL
 
 using CONTROL::GoomDrawables;
 using FILTER_FX::FilterBuffersService;
-using FILTER_FX::ZoomFilterFx;
 using FILTER_FX::ZoomFilterSettings;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using UTILS::NameValuePairs;
@@ -44,8 +43,7 @@ GoomAllVisualFx::GoomAllVisualFx(
     m_goomLogger{fxHelper.goomLogger},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
-    m_zoomFilterFx{
-        std::make_unique<ZoomFilterFx>(*fxHelper.goomInfo, std::move(filterBuffersService))},
+    m_filterBuffersService{std::move(filterBuffersService)},
     m_goomStateHandler{&goomStateHandler}
 {
   m_allStandardVisualFx->SetResetDrawBuffSettingsFunc([this](const GoomDrawables fx)
@@ -57,14 +55,12 @@ auto GoomAllVisualFx::Start() noexcept -> void
   ChangeAllFxPixelBlenders();
 
   m_allStandardVisualFx->Start();
-  m_zoomFilterFx->Start();
+  m_filterBuffersService->Start();
 }
 
 auto GoomAllVisualFx::Finish() noexcept -> void
 {
   m_allStandardVisualFx->Finish();
-
-  m_zoomFilterFx->Finish();
 }
 
 auto GoomAllVisualFx::ChangeState() noexcept -> void
@@ -155,13 +151,10 @@ auto GoomAllVisualFx::UpdateFilterSettings(const ZoomFilterSettings& filterSetti
 {
   if (filterSettings.filterEffectsSettingsHaveChanged)
   {
-    m_zoomFilterFx->UpdateFilterEffectsSettings(filterSettings.filterEffectsSettings);
+    m_filterBuffersService->SetFilterEffectsSettings(filterSettings.filterEffectsSettings);
   }
 
-  m_zoomFilterFx->UpdateFilterBufferSettings(filterSettings.filterBufferSettings);
-  m_zoomFilterFx->UpdateFilterColorSettings(
-      filterSettings.filterEffectsSettings.afterEffectsSettings
-          .active[AfterEffectsTypes::BLOCK_WAVY]);
+  m_filterBuffersService->SetFilterBufferSettings(filterSettings.filterBufferSettings);
 
   m_allStandardVisualFx->SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
 }
@@ -185,7 +178,8 @@ auto GoomAllVisualFx::GetCurrentColorMapsNames() const noexcept -> std::unordere
 
 auto GoomAllVisualFx::GetZoomFilterFxNameValueParams() const noexcept -> NameValuePairs
 {
-  return m_zoomFilterFx->GetNameValueParams();
+  static constexpr auto* PARAM_GROUP = "ZoomFilterFx";
+  return m_filterBuffersService->GetNameValueParams(PARAM_GROUP);
 }
 
 } // namespace GOOM::CONTROL

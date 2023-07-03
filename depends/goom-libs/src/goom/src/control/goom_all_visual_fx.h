@@ -1,14 +1,13 @@
 #pragma once
 
 #include "draw/goom_draw.h"
+#include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_settings.h"
-#include "filter_fx/zoom_filter_fx.h"
 #include "goom_config.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "spimpl.h"
 #include "utils/math/misc.h"
-#include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "utils/t_values.h"
 #include "visual_fx/goom_visual_fx.h"
@@ -74,8 +73,6 @@ public:
 
   auto SetAllowMultiThreadedStates(bool val) noexcept -> void;
 
-  [[nodiscard]] auto GetZoomFilterFx() const noexcept -> const FILTER_FX::ZoomFilterFx&;
-
   auto SetNextState() noexcept -> void;
   [[nodiscard]] auto GetCurrentState() const noexcept -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const noexcept -> std::string_view;
@@ -93,7 +90,7 @@ public:
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 
   auto UpdateFilterSettings(const FILTER_FX::ZoomFilterSettings& filterSettings) noexcept -> void;
-  auto ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept -> void;
+  auto UpdateZoomBuffers() noexcept -> void;
   [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>;
@@ -103,7 +100,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   [[maybe_unused]] GoomLogger* m_goomLogger;
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
-  std::experimental::propagate_const<std::unique_ptr<FILTER_FX::ZoomFilterFx>> m_zoomFilterFx;
+  std::unique_ptr<FILTER_FX::FilterBuffersService> m_filterBuffersService;
 
   IGoomStateHandler* m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
@@ -139,22 +136,17 @@ private:
 
 inline auto GoomAllVisualFx::IsTranBufferFltReady() const noexcept -> bool
 {
-  return m_zoomFilterFx->IsTranBufferFltReady();
+  return m_filterBuffersService->IsTranBufferFltReady();
 }
 
 inline auto GoomAllVisualFx::CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void
 {
-  m_zoomFilterFx->CopyTranBufferFlt(destBuff);
+  m_filterBuffersService->CopyTranBufferFlt(destBuff);
 }
 
 inline auto GoomAllVisualFx::SetAllowMultiThreadedStates(const bool val) noexcept -> void
 {
   m_allowMultiThreadedStates = val;
-}
-
-inline auto GoomAllVisualFx::GetZoomFilterFx() const noexcept -> const FILTER_FX::ZoomFilterFx&
-{
-  return *m_zoomFilterFx;
 }
 
 inline auto GoomAllVisualFx::SetNextState() noexcept -> void
@@ -170,15 +162,14 @@ inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(
   m_resetDrawBuffSettings = func;
 }
 
-inline auto GoomAllVisualFx::ApplyZoom(const PixelBuffer& srceBuff, PixelBuffer& destBuff) noexcept
-    -> void
+inline auto GoomAllVisualFx::UpdateZoomBuffers() noexcept -> void
 {
-  m_zoomFilterFx->ZoomFilterFastRgb(srceBuff, destBuff);
+  m_filterBuffersService->UpdateZoomBuffers();
 }
 
 inline auto GoomAllVisualFx::GetTranLerpFactor() const noexcept -> uint32_t
 {
-  return m_zoomFilterFx->GetTranLerpFactor();
+  return m_filterBuffersService->GetTranLerpFactor();
 }
 
 inline auto GoomAllVisualFx::GetCurrentState() const noexcept -> GoomStates

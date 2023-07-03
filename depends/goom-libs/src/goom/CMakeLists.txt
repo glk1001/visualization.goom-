@@ -107,7 +107,6 @@ add_library(goom
             src/filter_fx/filter_zoom_vector.cpp
             src/filter_fx/normalized_coords.h
             src/filter_fx/zoom_in_coefficients_effect.h
-            src/filter_fx/zoom_filter_fx.cpp
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp

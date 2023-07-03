@@ -61,7 +61,6 @@ constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
 
-//constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::BLOCK_WAVY;
 //constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
 //constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::IMAGE_VELOCITY;
 //constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::NOISE;
@@ -114,7 +113,6 @@ using AfterEffectsProbs = EnumMap<AfterEffectsTypes, float>;
 constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, AfterEffectsProbs>
 {
   constexpr auto DEFAULT_AFTER_EFFECTS_PROBS = AfterEffectsProbs{{{
-      {AfterEffectsTypes::BLOCK_WAVY, 0.3F},
       {AfterEffectsTypes::HYPERCOS, 0.9F},
       {AfterEffectsTypes::IMAGE_VELOCITY, 0.1F},
       {AfterEffectsTypes::NOISE, 0.1F},
@@ -181,7 +179,6 @@ constexpr auto DEFAULT_AFTER_EFFECTS_STATES    = GetFilledEnumMap<AfterEffectsTy
 constexpr auto DEFAULT_AFTER_EFFECTS_PROBS     = GetFilledEnumMap<AfterEffectsTypes, float>(0.0F);
 constexpr auto ZERO_REPEAT_AFTER_EFFECTS_PROBS = GetFilledEnumMap<AfterEffectsTypes, float>(0.0F);
 constexpr auto DEFAULT_REPEAT_AFTER_EFFECTS_PROBS = EnumMap<AfterEffectsTypes, float>{{{
-    {AfterEffectsTypes::BLOCK_WAVY, 0.9F},
     {AfterEffectsTypes::HYPERCOS, 0.5F},
     {AfterEffectsTypes::IMAGE_VELOCITY, 0.8F},
     {AfterEffectsTypes::NOISE, 0.0F},
@@ -191,7 +188,6 @@ constexpr auto DEFAULT_REPEAT_AFTER_EFFECTS_PROBS = EnumMap<AfterEffectsTypes, f
     {AfterEffectsTypes::XY_LERP_EFFECT, 0.1F},
 }}};
 constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, uint32_t>{{{
-    {AfterEffectsTypes::BLOCK_WAVY, 100U},
     {AfterEffectsTypes::HYPERCOS, 100U},
     {AfterEffectsTypes::IMAGE_VELOCITY, 100U},
     {AfterEffectsTypes::NOISE, 100U},

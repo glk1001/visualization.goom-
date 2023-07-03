@@ -38,7 +38,6 @@ public:
   void AddCurrentGoomState(GoomStates goomState);
   void AddCurrentFilterMode(ZoomFilterMode filterMode);
   void AddCurrentHypercosOverlay(HypercosOverlay hypercosOverlay);
-  void AddCurrentBlockyWavyEffect(bool value);
   void AddCurrentImageVelocityEffect(bool value);
   void AddCurrentNoiseEffect(bool value);
   void AddCurrentPlaneEffect(bool value);
@@ -59,7 +58,6 @@ public:
   [[nodiscard]] auto GetGoomStates() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetFilterModes() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetHypercosOverlays() const -> const std::vector<uint8_t>&;
-  [[nodiscard]] auto GetBlockyWavyEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetImageVelocityEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetNoiseEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetPlaneEffects() const -> const std::vector<uint8_t>&;
@@ -85,7 +83,6 @@ private:
   std::vector<uint8_t> m_goomStates{};
   std::vector<uint8_t> m_filterModes{};
   std::vector<uint8_t> m_hypercosOverlays{};
-  std::vector<uint8_t> m_blockyWavyEffects{};
   std::vector<uint8_t> m_imageVelocityEffects{};
   std::vector<uint8_t> m_noiseEffects{};
   std::vector<uint8_t> m_planeEffects{};
@@ -141,8 +138,6 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   const auto filterSettings        = m_filterSettingsService->GetFilterSettings();
   using AfterEffects               = FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
   const auto& afterEffectsSettings = filterSettings.filterEffectsSettings.afterEffectsSettings;
-  m_cumulativeState->AddCurrentBlockyWavyEffect(
-      afterEffectsSettings.active[AfterEffects::BLOCK_WAVY]);
   m_cumulativeState->AddCurrentHypercosOverlay(afterEffectsSettings.hypercosOverlay);
   m_cumulativeState->AddCurrentImageVelocityEffect(
       afterEffectsSettings.active[AfterEffects::IMAGE_VELOCITY]);
@@ -188,7 +183,6 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
   DumpDataArray("goom_states", m_cumulativeState->GetGoomStates());
   DumpDataArray("filter_modes", m_cumulativeState->GetFilterModes());
   DumpDataArray("hypercos_overlays", m_cumulativeState->GetHypercosOverlays());
-  DumpDataArray("blocky_wavy_effects", m_cumulativeState->GetBlockyWavyEffects());
   DumpDataArray("image_velocity_effects", m_cumulativeState->GetImageVelocityEffects());
   DumpDataArray("noise_effects", m_cumulativeState->GetNoiseEffects());
   DumpDataArray("plane_effects", m_cumulativeState->GetPlaneEffects());
@@ -272,7 +266,6 @@ void GoomStateDump::CumulativeState::Reserve()
   m_filterModes.reserve(m_numUpdatesEstimate);
   m_bufferLerps.reserve(m_numUpdatesEstimate);
   m_hypercosOverlays.reserve(m_numUpdatesEstimate);
-  m_blockyWavyEffects.reserve(m_numUpdatesEstimate);
   m_imageVelocityEffects.reserve(m_numUpdatesEstimate);
   m_noiseEffects.reserve(m_numUpdatesEstimate);
   m_planeEffects.reserve(m_numUpdatesEstimate);
@@ -311,11 +304,6 @@ inline void GoomStateDump::CumulativeState::AddCurrentHypercosOverlay(
     const HypercosOverlay hypercosOverlay)
 {
   m_hypercosOverlays.push_back(static_cast<uint8_t>(hypercosOverlay));
-}
-
-inline void GoomStateDump::CumulativeState::AddCurrentBlockyWavyEffect(const bool value)
-{
-  m_blockyWavyEffects.push_back(static_cast<uint8_t>(value));
 }
 
 inline void GoomStateDump::CumulativeState::AddCurrentImageVelocityEffect(const bool value)
@@ -403,12 +391,6 @@ inline auto GoomStateDump::CumulativeState::GetHypercosOverlays() const
     -> const std::vector<uint8_t>&
 {
   return m_hypercosOverlays;
-}
-
-inline auto GoomStateDump::CumulativeState::GetBlockyWavyEffects() const
-    -> const std::vector<uint8_t>&
-{
-  return m_blockyWavyEffects;
 }
 
 inline auto GoomStateDump::CumulativeState::GetImageVelocityEffects() const

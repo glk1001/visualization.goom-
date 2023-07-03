@@ -12,7 +12,6 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 using UTILS::Timer;
 using UTILS::MATH::IGoomRand;
 
-static constexpr auto DEFAULT_BLOCKY_WAVY_EFFECT      = false;
 static constexpr auto DEFAULT_HYPERCOS_OVERLAY_EFFECT = false;
 static constexpr auto DEFAULT_IMAGE_VELOCITY_EFFECT   = false;
 static constexpr auto DEFAULT_NOISE_EFFECT            = false;
@@ -52,12 +51,7 @@ private:
 AfterEffectsStates::AfterEffectsStates(const IGoomRand& goomRand,
                                        const AfterEffectsProbabilityMap& repeatProbabilities,
                                        const AfterEffectsOffTimeMap& offTimes) noexcept
-  : m_blockyWavyEffect{std::make_unique<EffectState>(
-        goomRand,
-        DEFAULT_BLOCKY_WAVY_EFFECT,
-        EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::BLOCK_WAVY],
-                                      offTimes[AfterEffectsTypes::BLOCK_WAVY]})},
-    m_hypercosOverlayEffect{std::make_unique<EffectState>(
+  : m_hypercosOverlayEffect{std::make_unique<EffectState>(
         goomRand,
         DEFAULT_HYPERCOS_OVERLAY_EFFECT,
         EffectState::EffectProperties{repeatProbabilities[AfterEffectsTypes::HYPERCOS],
@@ -102,7 +96,6 @@ auto AfterEffectsStates::UpdateFilterSettingsFromStates(
 {
   afterEffectsSettings.hypercosOverlay = m_hypercosOverlay;
 
-  afterEffectsSettings.active[AfterEffectsTypes::BLOCK_WAVY] = m_blockyWavyEffect->IsTurnedOn();
   afterEffectsSettings.active[AfterEffectsTypes::HYPERCOS] = m_hypercosOverlayEffect->IsTurnedOn();
   afterEffectsSettings.active[AfterEffectsTypes::IMAGE_VELOCITY] =
       m_imageVelocityEffect->IsTurnedOn();
@@ -135,7 +128,6 @@ auto AfterEffectsStates::UpdateTimers() -> void
     return;
   }
 
-  m_blockyWavyEffect->UpdateTimer();
   m_hypercosOverlayEffect->UpdateTimer();
   m_imageVelocityEffect->UpdateTimer();
   m_noiseEffect->UpdateTimer();
@@ -166,8 +158,6 @@ auto AfterEffectsStates::ResetStandardStates(const AfterEffectsProbabilities& ef
     return;
   }
 
-  m_blockyWavyEffect->UpdateState(
-      effectsProbabilities.probabilities[AfterEffectsTypes::BLOCK_WAVY]);
   m_hypercosOverlayEffect->UpdateState(
       effectsProbabilities.probabilities[AfterEffectsTypes::HYPERCOS]);
   m_imageVelocityEffect->UpdateState(
@@ -197,7 +187,6 @@ auto AfterEffectsStates::CheckForPendingOffTimers() -> void
     return;
   }
 
-  m_blockyWavyEffect->CheckPendingOffTimerReset();
   m_hypercosOverlayEffect->CheckPendingOffTimerReset();
   m_imageVelocityEffect->CheckPendingOffTimerReset();
   m_noiseEffect->CheckPendingOffTimerReset();

@@ -161,9 +161,8 @@ private:
   auto UseMusicToChangeSettings() -> void;
   auto ResetDrawBuffSettings(const FXBuffSettings& settings) -> void;
 
-  auto DrawAndZoom(const AudioSamples& soundData) -> void;
   auto ApplyStateToMultipleBuffers(const AudioSamples& soundData) -> void;
-  auto ApplyZoomEffects() -> void;
+  auto UpdateZoomBuffers() -> void;
   auto ApplyEndEffectIfNearEnd() -> void;
 
   auto UpdateFilterSettings() -> void;
@@ -185,7 +184,7 @@ private:
   auto UpdateGoomStateDump() -> void;
   auto FinishGoomStateDump() -> void;
 #endif
-  GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
+  //GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
   bool m_showGoomState = false;
   auto DisplayGoomState() -> void;
   [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
@@ -401,8 +400,11 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
   }
   else
   {
-    LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
     m_visualFx.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
+    if (not m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
+    {
+    }
+    LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating    = true;
     m_frameData->filterPosArrays.lerpFactorForDestToSrceUpdate = currentLerpFactor;
     m_frameData->miscData.lerpFactor                           = 0.0F;
@@ -540,18 +542,14 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
 {
   NewCycle();
 
-  // Elargissement de l'intervalle d'évolution des points!
-  // Calcul du deplacement des petits points ...
-  // Widening of the interval of evolution of the points!
-  // Calculation of the displacement of small points ...
-
   ProcessAudio(soundData);
 
   UseMusicToChangeSettings();
-
   UpdateFilterSettings();
 
-  DrawAndZoom(soundData);
+  UpdateZoomBuffers();
+  ApplyStateToMultipleBuffers(soundData);
+  ApplyEndEffectIfNearEnd();
 
   DisplayGoomState();
   DisplayTitleAndMessages(message);
@@ -619,15 +617,6 @@ inline auto GoomControl::GoomControlImpl::UseMusicToChangeSettings() -> void
   m_musicSettingsReactor.ChangeZoomEffects();
 }
 
-inline auto GoomControl::GoomControlImpl::DrawAndZoom(const AudioSamples& soundData) -> void
-{
-  ApplyZoomEffects();
-
-  ApplyStateToMultipleBuffers(soundData);
-
-  ApplyEndEffectIfNearEnd();
-}
-
 inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) -> void
 {
   /* ! etude du signal ... */
@@ -650,14 +639,14 @@ inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void
   m_visualFx.ApplyEndEffectIfNearEnd(m_runningTimeStopwatch.GetTimeValues());
 }
 
-inline auto GoomControl::GoomControlImpl::ApplyZoomEffects() -> void
+inline auto GoomControl::GoomControlImpl::UpdateZoomBuffers() -> void
 {
   if (m_noZooms)
   {
     return;
   }
 
-  m_visualFx.ApplyZoom(*m_p1, *m_p2);
+  m_visualFx.UpdateZoomBuffers();
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
@@ -756,9 +745,9 @@ auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
     return;
   }
 
-  const std::string message = GetGoomTimeInfo() + "\n" + m_goomStateMonitor.GetCurrentState();
+  //  const std::string message = GetGoomTimeInfo() + "\n" + m_goomStateMonitor.GetCurrentState();
 
-  UpdateMessages(message);
+  //  UpdateMessages(message);
 }
 
 inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string

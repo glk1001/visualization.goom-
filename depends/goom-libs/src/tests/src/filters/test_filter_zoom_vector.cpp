@@ -88,7 +88,6 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION = 0.5F;
 
   static constexpr auto ALL_OFF_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
-      {AfterEffectsTypes::BLOCK_WAVY, false},
       {AfterEffectsTypes::HYPERCOS, false},
       {AfterEffectsTypes::IMAGE_VELOCITY, false},
       {AfterEffectsTypes::NOISE, false},
