@@ -144,6 +144,8 @@ private:
   static auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
 
   FilterSettingsService m_filterSettingsService;
+  FilterBuffersService m_filterBuffersService;
+  auto StartFilterServices() noexcept -> void;
 
   SmallImageBitmaps m_smallBitmaps;
   GoomRandomStateHandler m_stateHandler{m_goomRand};
@@ -152,6 +154,7 @@ private:
       FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL
   };
   GoomAllVisualFx m_visualFx;
+  auto StartVisualFx() noexcept -> void;
 
   GoomMusicSettingsReactor m_musicSettingsReactor{
       m_goomInfo, m_goomRand, m_visualFx, m_filterSettingsService};
@@ -184,7 +187,8 @@ private:
   auto UpdateGoomStateDump() -> void;
   auto FinishGoomStateDump() -> void;
 #endif
-  //GoomStateMonitor m_goomStateMonitor{m_visualFx, m_musicSettingsReactor, m_filterSettingsService};
+  GoomStateMonitor m_goomStateMonitor{
+      m_visualFx, m_musicSettingsReactor, m_filterSettingsService, m_filterBuffersService};
   bool m_showGoomState = false;
   auto DisplayGoomState() -> void;
   [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
@@ -297,20 +301,15 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
     m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
     m_filterSettingsService{
         m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomInCoefficientsEffect},
+    m_filterBuffersService{m_parallel,
+                           m_goomInfo,
+                           m_normalizedCoordsConverter,
+                           std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
+                                                              resourcesDirectory,
+                                                              m_goomRand,
+                                                              m_normalizedCoordsConverter)},
     m_smallBitmaps{resourcesDirectory},
-    m_visualFx{m_parallel,
-               m_fxHelper,
-               m_smallBitmaps,
-               resourcesDirectory,
-               m_stateHandler,
-               std::make_unique<FilterBuffersService>(
-                   m_parallel,
-                   m_goomInfo,
-                   m_normalizedCoordsConverter,
-                   std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
-                                                      resourcesDirectory,
-                                                      m_goomRand,
-                                                      m_normalizedCoordsConverter))},
+    m_visualFx{m_parallel, m_fxHelper, m_smallBitmaps, resourcesDirectory, m_stateHandler},
     m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
@@ -390,17 +389,17 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
   m_frameData->imageArrays.lowImageDataNeedsUpdating  = true;
 
   using FilterBuffers          = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
-  const auto currentLerpFactor = static_cast<float>(m_visualFx.GetTranLerpFactor()) /
+  const auto currentLerpFactor = static_cast<float>(m_filterBuffersService.GetTranLerpFactor()) /
                                  static_cast<float>(FilterBuffers::MAX_TRAN_LERP_VALUE);
 
-  if (not m_visualFx.IsTranBufferFltReady())
+  if (not m_filterBuffersService.IsTranBufferFltReady())
   {
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating = false;
     m_frameData->miscData.lerpFactor                        = currentLerpFactor;
   }
   else
   {
-    m_visualFx.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
+    m_filterBuffersService.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
     if (not m_filterSettingsService.HasFilterModeChangedSinceLastUpdate())
     {
     }
@@ -412,7 +411,7 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   //  LogInfo(*m_goomLogger,
   //          "FrameData lerpFactor = {} ({}), currentLerpFactor = {}.",
-  //          m_visualFx.GetTranLerpFactor(),
+  //          m_filterBuffersService.GetTranLerpFactor(),
   //          m_frameData->miscData.lerpFactor,
   //          currentLerpFactor);
 }
@@ -457,15 +456,9 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
 
   m_goomLogger->StartGoomControl(this);
 
-  m_filterSettingsService.Start();
+  StartFilterServices();
 
-  m_visualFx.SetAllowMultiThreadedStates(false);
-  m_visualFx.SetResetDrawBuffSettingsFunc([this](const FXBuffSettings& settings)
-                                          { ResetDrawBuffSettings(settings); });
-  m_visualFx.ChangeAllFxColorMaps();
-
-  UpdateFilterSettings();
-  m_visualFx.Start();
+  StartVisualFx();
 
   m_musicSettingsReactor.Start();
 
@@ -497,6 +490,29 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
   m_visualFx.Finish();
 
   m_goomLogger->StopGoomControl();
+}
+
+auto GoomControl::GoomControlImpl::StartFilterServices() noexcept -> void
+{
+  m_filterSettingsService.Start();
+  m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
+
+  const auto& filterSettings = std::as_const(m_filterSettingsService).GetFilterSettings();
+  m_filterBuffersService.SetFilterEffectsSettings(filterSettings.filterEffectsSettings);
+  m_filterBuffersService.Start();
+}
+
+auto GoomControl::GoomControlImpl::StartVisualFx() noexcept -> void
+{
+  m_visualFx.SetAllowMultiThreadedStates(false);
+  m_visualFx.SetResetDrawBuffSettingsFunc([this](const FXBuffSettings& settings)
+                                          { ResetDrawBuffSettings(settings); });
+  m_visualFx.ChangeAllFxColorMaps();
+
+  const auto& filterSettings = std::as_const(m_filterSettingsService).GetFilterSettings();
+  m_visualFx.SetZoomMidpoint(filterSettings.filterEffectsSettings.zoomMidpoint);
+
+  m_visualFx.Start();
 }
 
 #ifdef DO_GOOM_STATE_DUMP
@@ -646,14 +662,22 @@ inline auto GoomControl::GoomControlImpl::UpdateZoomBuffers() -> void
     return;
   }
 
-  m_visualFx.UpdateZoomBuffers();
+  m_filterBuffersService.UpdateZoomBuffers();
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
 {
   const auto& newFilterSettings = std::as_const(m_filterSettingsService).GetFilterSettings();
-  m_visualFx.UpdateFilterSettings(newFilterSettings);
-  m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
+
+  m_visualFx.SetZoomMidpoint(newFilterSettings.filterEffectsSettings.zoomMidpoint);
+
+  m_filterBuffersService.SetFilterBufferSettings(newFilterSettings.filterBufferSettings);
+
+  if (newFilterSettings.filterEffectsSettingsHaveChanged)
+  {
+    m_filterBuffersService.SetFilterEffectsSettings(newFilterSettings.filterEffectsSettings);
+    m_filterSettingsService.NotifyUpdatedFilterEffectsSettings();
+  }
 }
 
 inline auto GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSettings& settings)
@@ -745,9 +769,8 @@ auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
     return;
   }
 
-  //  const std::string message = GetGoomTimeInfo() + "\n" + m_goomStateMonitor.GetCurrentState();
-
-  //  UpdateMessages(message);
+  const std::string message = GetGoomTimeInfo() + "\n" + m_goomStateMonitor.GetCurrentState();
+  UpdateMessages(message);
 }
 
 inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string

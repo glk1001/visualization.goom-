@@ -172,7 +172,7 @@ inline auto GoomMusicSettingsReactor::CheckIfUpdateFilterSettingsNow() -> void
   }
 
   const auto& newFilterSettings = std::as_const(*m_filterSettingsService).GetFilterSettings();
-  m_visualFx->UpdateFilterSettings(newFilterSettings);
+  m_visualFx->SetZoomMidpoint(newFilterSettings.filterEffectsSettings.zoomMidpoint);
   m_filterSettingsService->NotifyUpdatedFilterEffectsSettings();
 }
 
