@@ -383,8 +383,8 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   m_p1 = &m_frameData->imageArrays.mainImagePixelBuffer;
   m_p2 = &m_frameData->imageArrays.lowImagePixelBuffer;
-  m_p1->Fill(BLACK_PIXEL);
-  m_p2->Fill(BLACK_PIXEL);
+  m_p1->Fill(ZERO_PIXEL);
+  m_p2->Fill(ZERO_PIXEL);
   m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 
   m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;

@@ -41,8 +41,8 @@ private:
   HighContrast m_highContrast;
   HueShiftLerper m_hueShiftLerper;
 
-  static constexpr auto MIN_BASE_COLOR_MULTIPLIER = 0.950F;
-  static constexpr auto MAX_BASE_COLOR_MULTIPLIER = 0.999F;
+  static constexpr auto MIN_BASE_COLOR_MULTIPLIER = 0.96F;
+  static constexpr auto MAX_BASE_COLOR_MULTIPLIER = 1.00F;
   ColorMultiplierLerper m_baseColorMultiplierLerper;
 
   auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;

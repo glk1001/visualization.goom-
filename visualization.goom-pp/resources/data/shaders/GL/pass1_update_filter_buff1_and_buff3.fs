@@ -17,12 +17,13 @@ in vec3 position;
 in vec2 texCoord;
 
 uniform float u_lerpFactor;
+uniform float u_buff2Buff3Mix = 0.1;
 
 // For base multiplier, too close to 1, gives washed
 // out look, too far away things get too dark.
 uniform float u_baseColorMultiplier;
-uniform float u_mainColorMultiplier = 0.7;
-uniform float u_lowColorMultiplier  = 1.0;
+uniform float u_mainColorMultiplier = 1.0;
+uniform float u_lowColorMultiplier  = 0.7;
 
 /**
 vec3 blend(vec3 base, vec3 blend, float opacity)
@@ -39,6 +40,9 @@ void main()
 {
   vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord);
 
+  ivec2 xy = ivec2(gl_FragCoord.xy);
+  vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
+
   vec4 colorMain = texture(tex_mainImage, texCoord);
   vec4 colorLow  = texture(tex_lowImage, texCoord);
 
@@ -47,17 +51,18 @@ void main()
   //  float alpha = 1 - 0.5 * colorMain.a;
   //  vec4 filtBuff2ColorMain = (1-alpha)*filtBuff2Val + alpha*50*colorMain;
   //  vec4 filtBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filtBuff2Val.rgb, colorMain.a), 1.0);
-  //  vec4 filtBuff2ColorLow  = vec4(blend(filtBuff2Val.rgb, colorLow.rgb, 1.0), 1.0);
   //  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
 
-  filtBuff2Val *= u_baseColorMultiplier;
+  filtBuff2Val.rgb = mix(filtBuff2Val.rgb, filtBuff3Val.rgb, u_buff2Buff3Mix);
 
-  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb), 1.0);
-  vec4 filtBuff2ColorLow  = vec4(filtBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb), 1.0);
+//  filtBuff2Val.rgb *= 1.00;
+  filtBuff2Val.rgb *= u_baseColorMultiplier;
 
-  ivec2 xy = ivec2(gl_FragCoord.xy);
-  imageStore(img_filterBuff1, xy, filtBuff2ColorLow);
-  imageStore(img_filterBuff3, xy, filtBuff2ColorMain);
+  vec3 filtBuff2ColorMain = filtBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
+  vec3 filtBuff2ColorLow  = filtBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
+
+  imageStore(img_filterBuff1, xy, vec4(filtBuff2ColorLow, 1.0));
+  imageStore(img_filterBuff3, xy, vec4(filtBuff2ColorMain, 1.0));
 
   discard;
 }

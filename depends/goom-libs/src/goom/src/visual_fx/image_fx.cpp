@@ -51,8 +51,8 @@ using UTILS::MATH::Sq;
 using UTILS::MATH::SqDistance;
 using UTILS::MATH::TWO_PI;
 
-static constexpr auto CHUNK_WIDTH  = 4;
-static constexpr auto CHUNK_HEIGHT = 4;
+static constexpr auto CHUNK_WIDTH  = 2;
+static constexpr auto CHUNK_HEIGHT = 2;
 
 using ChunkPixels = std::array<std::array<Pixel, CHUNK_WIDTH>, CHUNK_HEIGHT>;
 
@@ -135,12 +135,13 @@ private:
   RandomPixelBlender m_pixelBlender{
       *m_fxHelper->goomRand,
       {
-          {RandomPixelBlender::PixelBlendType::ADD,          ADD_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DARKEN_ONLY_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::LUMA_MIX,     LUMA_MIX_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::MULTIPLY,     MULTIPLY_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::ALPHA,        ALPHA_WEIGHT}
+          {RandomPixelBlender::PixelBlendType::ADD,           ADD_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,   DARKEN_ONLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY,  LIGHTEN_ONLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::LUMA_MIX,      LUMA_MIX_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::MULTIPLY,      MULTIPLY_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::ALPHA,         ALPHA_WEIGHT},
+          {RandomPixelBlender::PixelBlendType::ALPHA_AND_ADD, ALPHA_AND_ADD_WEIGHT},
       }
   };
   // clang-format on

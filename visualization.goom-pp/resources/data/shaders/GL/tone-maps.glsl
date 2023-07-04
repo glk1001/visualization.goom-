@@ -226,7 +226,7 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
   vec3 mapped = color;
   //const float exposureMultiplier = 9.6;
   //float finalExposure = 1.0 / ((exposureMultiplier * averageLuminance) + 0.001);
-  const float linearScale = 0.18; // MAYBE brightness ??
+  const float linearScale = 0.18 + 0.02; // MAYBE brightness ??
   float finalExposure = linearScale / (averageLuminance + 0.0001);
 
   #if (toneMapToUse == NO_TONE_MAP)

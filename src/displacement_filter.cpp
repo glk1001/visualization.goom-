@@ -510,7 +510,7 @@ auto DisplacementFilter::SetupGlLumComputeData() noexcept -> void
 
 auto DisplacementFilter::SetLumHistogramParams() noexcept -> void
 {
-  static constexpr auto MIN_LOG_LUM = -8.0F;
+  static constexpr auto MIN_LOG_LUM = -9.0F;
   static constexpr auto MAX_LOG_LUM = +3.5F;
   static_assert((MAX_LOG_LUM - MIN_LOG_LUM) > 0.0F);
 
