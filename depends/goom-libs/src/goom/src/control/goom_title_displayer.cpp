@@ -30,7 +30,7 @@ using UTILS::TEXT::GetLeftAlignedPenForCentringStringAt;
 using UTILS::TEXT::GetLinesOfWords;
 
 static constexpr auto INITIAL_PHASE_T_MIX   = 0.1F;
-static constexpr auto BASE_BRIGHTNESS       = 9.0F;
+static constexpr auto BASE_BRIGHTNESS       = 10.0F;
 static constexpr auto MAX_BRIGHTNESS_FACTOR = 2.0F;
 
 static constexpr auto MAX_LINE_LENGTH                     = 40U;
@@ -38,9 +38,6 @@ static constexpr auto FONT_SIZE_FRACTION_OF_SCREEN_HEIGHT = 0.05F;
 static constexpr auto MAX_FONT_SIZE_MULTIPLIER            = 10.0F;
 static constexpr auto SPACE_FACTOR                        = 0.056F;
 static constexpr auto OUTLINE_FONT_WIDTH                  = 4;
-static constexpr auto TIME_TO_START_FINAL_SOLID_COLOR     = 10;
-static constexpr auto FINAL_PHASE_MIX_FACTOR              = 0.2F;
-static constexpr auto FINAL_PHASE_INTERIOR_COLOR          = Pixel{210U, 210U, 210U, MAX_ALPHA};
 
 // To normalize: turn on logging in TextDraw, get width of prepared text for a
 // sample text for each font, then normalize with 'verdana' as 1.0.
@@ -283,19 +280,7 @@ inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(const Point2dInt& poi
   const auto charColor  = ColorMaps::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
   const auto finalColor = ColorMaps::GetColorMix(fontColor, charColor, fontCharColorMixT);
 
-  if (m_timeLeftOfTitleDisplay > TIME_TO_START_FINAL_SOLID_COLOR)
-  {
-    return finalColor;
-  }
-
-  const auto tLeft = m_timeLeftOfTitleDisplay <= 0
-                         ? 0.0F
-                         : (static_cast<float>(m_timeLeftOfTitleDisplay) /
-                            static_cast<float>(TIME_TO_START_FINAL_SOLID_COLOR));
-
-  const auto tMix = FINAL_PHASE_MIX_FACTOR + (tLeft * (1.0F - FINAL_PHASE_MIX_FACTOR));
-
-  return ColorMaps::GetColorMix(FINAL_PHASE_INTERIOR_COLOR, finalColor, tMix);
+  return finalColor;
 }
 
 inline auto GoomTitleDisplayer::GetOutlineColor(const int32_t x,
