@@ -556,10 +556,10 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
     frameDataArray.at(i).filterPosArrays.filterDestPos =
         m_glFilterPosData.filterDestPosTexture.GetMappedBuffer(i);
 
-    frameDataArray.at(i).imageArrays.mainImageData.SetPixelBuffer(
+    frameDataArray.at(i).imageArrays.mainImagePixelBuffer.SetPixelBuffer(
         m_glImageData.mainImageTexture.GetMappedBuffer(i),
         Dimensions{static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())});
-    frameDataArray.at(i).imageArrays.lowImageData.SetPixelBuffer(
+    frameDataArray.at(i).imageArrays.lowImagePixelBuffer.SetPixelBuffer(
         m_glImageData.lowImageTexture.GetMappedBuffer(i),
         Dimensions{static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())});
   }
@@ -689,11 +689,11 @@ auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,
 
 auto DisplacementFilter::UpdateImageDataToGl(const size_t pboIndex) noexcept -> void
 {
-  if (m_frameDataArray.at(pboIndex).imageArrays.mainImageDataNeedsUpdating)
+  if (m_frameDataArray.at(pboIndex).imageArrays.mainImagePixelBufferNeedsUpdating)
   {
     m_glImageData.mainImageTexture.CopyMappedBufferToTexture(pboIndex);
   }
-  if (m_frameDataArray.at(pboIndex).imageArrays.lowImageDataNeedsUpdating)
+  if (m_frameDataArray.at(pboIndex).imageArrays.lowImagePixelBufferNeedsUpdating)
   {
     m_glImageData.lowImageTexture.CopyMappedBufferToTexture(pboIndex);
   }

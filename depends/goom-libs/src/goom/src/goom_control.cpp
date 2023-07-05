@@ -362,8 +362,8 @@ auto GoomControl::GoomControlImpl::InitMiscData(GOOM::MiscData& miscData) noexce
 
 auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
 {
-  imageArrays.mainImageDataNeedsUpdating = false;
-  imageArrays.lowImageDataNeedsUpdating  = false;
+  imageArrays.mainImagePixelBufferNeedsUpdating = false;
+  imageArrays.lowImagePixelBufferNeedsUpdating  = false;
 }
 
 auto GoomControl::GoomControlImpl::InitFilterPosArrays(
@@ -381,14 +381,14 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
   frameData.miscData.brightness          = shaderVariables.brightness;
   frameData.miscData.baseColorMultiplier = shaderVariables.baseColorMultiplier;
 
-  m_p1 = &m_frameData->imageArrays.mainImageData;
-  m_p2 = &m_frameData->imageArrays.lowImageData;
+  m_p1 = &m_frameData->imageArrays.mainImagePixelBuffer;
+  m_p2 = &m_frameData->imageArrays.lowImagePixelBuffer;
   m_p1->Fill(BLACK_PIXEL);
   m_p2->Fill(BLACK_PIXEL);
   m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
 
-  m_frameData->imageArrays.mainImageDataNeedsUpdating = true;
-  m_frameData->imageArrays.lowImageDataNeedsUpdating  = true;
+  m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
+  m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 
   using FilterBuffers          = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
   const auto currentLerpFactor = static_cast<float>(m_filterBuffersService.GetTranLerpFactor()) /

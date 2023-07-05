@@ -14,10 +14,10 @@ struct FilterPosArrays
 };
 struct ImageArrays
 {
-  GOOM::PixelBuffer mainImageData{};
-  bool mainImageDataNeedsUpdating{};
-  GOOM::PixelBuffer lowImageData{};
-  bool lowImageDataNeedsUpdating{};
+  GOOM::PixelBuffer mainImagePixelBuffer{};
+  bool mainImagePixelBufferNeedsUpdating{};
+  GOOM::PixelBuffer lowImagePixelBuffer{};
+  bool lowImagePixelBufferNeedsUpdating{};
 };
 struct MiscData
 {
