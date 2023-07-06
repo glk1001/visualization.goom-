@@ -126,7 +126,7 @@ auto GoomAllVisualFx::GetNextPixelBlenderParams() const noexcept -> IVisualFx::P
   switch (m_globalBlendTypeWeight.GetRandomWeighted())
   {
     case GlobalBlendType::NONRANDOM:
-      return {false, RandomPixelBlender::PixelBlendType::ADD};
+      return {false, RandomPixelBlender::PixelBlendType::ALPHA};
     case GlobalBlendType::ASYNC_RANDOM:
       return {true};
     case GlobalBlendType::SYNC_RANDOM:

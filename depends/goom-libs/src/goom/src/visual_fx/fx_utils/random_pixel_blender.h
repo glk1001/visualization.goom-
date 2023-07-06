@@ -21,12 +21,12 @@ public:
     ALPHA,
     _num // unused, and marks the enum end
   };
-  static constexpr auto DEFAULT_ADD_WEIGHT          = 50.0F;
-  static constexpr auto DEFAULT_DARKEN_ONLY_WEIGHT  = 10.0F;
-  static constexpr auto DEFAULT_LIGHTEN_ONLY_WEIGHT = 10.0F;
+  static constexpr auto DEFAULT_ADD_WEIGHT          = 0.0F;
+  static constexpr auto DEFAULT_DARKEN_ONLY_WEIGHT  = 0.0F;
+  static constexpr auto DEFAULT_LIGHTEN_ONLY_WEIGHT = 0.0F;
   static constexpr auto DEFAULT_LUMA_MIX_WEIGHT     = 5.0F;
-  static constexpr auto DEFAULT_MULTIPLY_WEIGHT     = 5.0F;
-  static constexpr auto DEFAULT_ALPHA_WEIGHT        = 10.0F;
+  static constexpr auto DEFAULT_MULTIPLY_WEIGHT     = 0.0F;
+  static constexpr auto DEFAULT_ALPHA_WEIGHT        = 20.0F;
 
   explicit RandomPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept;
   RandomPixelBlender(

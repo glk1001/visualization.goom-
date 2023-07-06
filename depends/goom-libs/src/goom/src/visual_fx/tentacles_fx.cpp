@@ -54,7 +54,7 @@ public:
 private:
   const FxHelper* m_fxHelper;
 
-  PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
+  PixelChannelType m_defaultAlpha = MAX_ALPHA;
 
   enum class Drivers
   {
