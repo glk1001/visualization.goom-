@@ -95,45 +95,57 @@ auto APIENTRY DebugCallback(const GLenum source,
   std_fmt::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
 }
 
-auto CheckForOpenGLError(const char* const file, const int line) -> int
+auto GlClearError() -> void
 {
-  //
-  // Returns 1 if an OpenGL error occurred, 0 otherwise.
-  //
-  auto retCode = 0;
-  auto glErr   = glGetError();
-
-  while (glErr != GL_NO_ERROR)
+  while (glGetError() != GL_NO_ERROR)
   {
-    const char* message;
-    switch (glErr)
+  }
+}
+
+auto CheckForOpenGLError(const char* const file, const int line) -> bool
+{
+  auto result  = true;
+  auto glError = glGetError();
+
+  while (glError != GL_NO_ERROR)
+  {
+    std::string message{};
+    switch (glError)
     {
       case GL_INVALID_ENUM:
-        message = "Invalid enum";
+        message = "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument";
         break;
       case GL_INVALID_VALUE:
-        message = "Invalid value";
+        message = "GL_INVALID_VALUE: A numeric argument is out of range";
         break;
       case GL_INVALID_OPERATION:
-        message = "Invalid operation";
+        message = "GL_INVALID_OPERATION: A numeric argument is out of range";
         break;
       case GL_INVALID_FRAMEBUFFER_OPERATION:
-        message = "Invalid framebuffer operation";
+        message = "GL_INVALID_FRAMEBUFFER_OPERATION: The framebuffer object is not complete";
         break;
       case GL_OUT_OF_MEMORY:
-        message = "Out of memory";
+        message = "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command";
+        break;
+      case GL_STACK_UNDERFLOW:
+        message = "GL_STACK_UNDERFLOW: An attempt has been made to perform an operation that would"
+                  " cause an internal stack to underflow";
+        break;
+      case GL_STACK_OVERFLOW:
+        message = "GL_STACK_OVERFLOW: An attempt has been made to perform an operation that would"
+                  " cause an internal stack to overflow";
         break;
       default:
-        message = "Unknown error";
+        message = std_fmt::format("Unknown error: {}", glError);
     }
 
-    std_fmt::println("glError in file '{}' line {}: {}", file, line, message);
-    retCode = 1;
+    std_fmt::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
+    result = false;
 
-    glErr = glGetError();
+    glError = glGetError();
   }
 
-  return retCode;
+  return result;
 }
 
 auto DumpGLInfo(const bool dumpExtensions) -> void

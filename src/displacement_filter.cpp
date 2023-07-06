@@ -86,8 +86,8 @@ auto DisplacementFilter::InitScene() -> void
 
 auto DisplacementFilter::DestroyScene() noexcept -> void
 {
-  glDeleteTextures(1, &m_renderTextureName);
-  glDeleteFramebuffers(1, &m_renderToTextureFbo);
+  GlCall(glDeleteTextures(1, &m_renderTextureName));
+  GlCall(glDeleteFramebuffers(1, &m_renderToTextureFbo));
 
   m_glFilterPosData.filterSrcePosTexture.DeleteBuffers();
   m_glFilterPosData.filterDestPosTexture.DeleteBuffers();
@@ -111,24 +111,25 @@ auto DisplacementFilter::Resize(const WindowDimensions& windowDimensions) noexce
 auto DisplacementFilter::SetupRenderToTextureFBO() noexcept -> void
 {
   // Generate and bind the FBO.
-  glGenFramebuffers(1, &m_renderToTextureFbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo);
+  GlCall(glGenFramebuffers(1, &m_renderToTextureFbo));
+  GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
 
   // Create the texture object.
-  glGenTextures(1, &m_renderTextureName);
-  glBindTexture(GL_TEXTURE_2D, m_renderTextureName);
-  glTexStorage2D(GL_TEXTURE_2D, 1, FILTER_BUFF_TEX_INTERNAL_FORMAT, GetWidth(), GetHeight());
+  GlCall(glGenTextures(1, &m_renderTextureName));
+  GlCall(glBindTexture(GL_TEXTURE_2D, m_renderTextureName));
+  GlCall(
+      glTexStorage2D(GL_TEXTURE_2D, 1, FILTER_BUFF_TEX_INTERNAL_FORMAT, GetWidth(), GetHeight()));
 
   // Bind the texture to the FBO.
-  glFramebufferTexture2D(
-      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_renderTextureName, 0);
+  GlCall(glFramebufferTexture2D(
+      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_renderTextureName, 0));
 
   // Set the targets for the fragment output variables.
   const auto drawBuffers = std::array<GLenum, 1>{GL_COLOR_ATTACHMENT0};
-  glDrawBuffers(1, drawBuffers.data());
+  GlCall(glDrawBuffers(1, drawBuffers.data()));
 
   // Unbind the FBO, and revert to default framebuffer.
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  GlCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
@@ -173,34 +174,34 @@ auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
   // Setup the vertex and texture array buffers.
   static constexpr auto NUM_ARRAY_BUFFERS = 2U;
   std::array<uint32_t, NUM_ARRAY_BUFFERS> handle{};
-  glGenBuffers(NUM_ARRAY_BUFFERS, handle.data());
+  GlCall(glGenBuffers(NUM_ARRAY_BUFFERS, handle.data()));
 
-  glBindBuffer(GL_ARRAY_BUFFER, handle[0]);
-  glBufferData(GL_ARRAY_BUFFER,
-               static_cast<size_t>(COMPONENTS_PER_VERTEX * NUM_VERTICES) * sizeof(float),
-               VERTICES.data(),
-               GL_STATIC_DRAW);
+  GlCall(glBindBuffer(GL_ARRAY_BUFFER, handle[0]));
+  GlCall(glBufferData(GL_ARRAY_BUFFER,
+                      static_cast<size_t>(COMPONENTS_PER_VERTEX * NUM_VERTICES) * sizeof(float),
+                      VERTICES.data(),
+                      GL_STATIC_DRAW));
 
-  glBindBuffer(GL_ARRAY_BUFFER, handle[1]);
-  glBufferData(GL_ARRAY_BUFFER,
-               static_cast<size_t>(COMPONENTS_PER_VERTEX * NUM_VERTICES) * sizeof(float),
-               TEX_COORDS.data(),
-               GL_STATIC_DRAW);
+  GlCall(glBindBuffer(GL_ARRAY_BUFFER, handle[1]));
+  GlCall(glBufferData(GL_ARRAY_BUFFER,
+                      static_cast<size_t>(COMPONENTS_PER_VERTEX * NUM_VERTICES) * sizeof(float),
+                      TEX_COORDS.data(),
+                      GL_STATIC_DRAW));
 
   // TODO - Use 4.4 OpenGL - see cookbook
   // Setup the vertex and texture array objects.
-  glGenVertexArrays(1, &m_fsQuad);
-  glBindVertexArray(m_fsQuad);
+  GlCall(glGenVertexArrays(1, &m_fsQuad));
+  GlCall(glBindVertexArray(m_fsQuad));
 
-  glBindBuffer(GL_ARRAY_BUFFER, handle[0]);
-  glVertexAttribPointer(0, COMPONENTS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(0); // Vertex position
+  GlCall(glBindBuffer(GL_ARRAY_BUFFER, handle[0]));
+  GlCall(glVertexAttribPointer(0, COMPONENTS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, nullptr));
+  GlCall(glEnableVertexAttribArray(0)); // Vertex position
 
-  glBindBuffer(GL_ARRAY_BUFFER, handle[1]);
-  glVertexAttribPointer(1, COMPONENTS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glEnableVertexAttribArray(1); // Texture coordinates
+  GlCall(glBindBuffer(GL_ARRAY_BUFFER, handle[1]));
+  GlCall(glVertexAttribPointer(1, COMPONENTS_PER_VERTEX, GL_FLOAT, GL_FALSE, 0, nullptr));
+  GlCall(glEnableVertexAttribArray(1)); // Texture coordinates
 
-  glBindVertexArray(0);
+  GlCall(glBindVertexArray(0));
 }
 
 auto DisplacementFilter::CompileAndLinkShaders() -> void
@@ -291,7 +292,7 @@ auto DisplacementFilter::SetupGlSettings() -> void
 
 auto DisplacementFilter::Render() noexcept -> void
 {
-  glViewport(0, 0, GetWidth(), GetHeight());
+  GlCall(glViewport(0, 0, GetWidth(), GetHeight()));
 
   Pass1UpdateFilterBuff1AndBuff3();
   //  SaveBuffersAfterPass1();
@@ -305,7 +306,7 @@ auto DisplacementFilter::Render() noexcept -> void
 
   Pass5OutputToScreen();
 
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  GlCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 auto DisplacementFilter::InitAllFrameDataToGl() noexcept -> void
@@ -392,19 +393,19 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
   BindGlFilterBuff2Data();
   BindGlImageData();
 
-  glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
+  GlCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
   // Render the full-screen quad
-  glBindVertexArray(m_fsQuad);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES);
+  GlCall(glBindVertexArray(m_fsQuad));
+  GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
   if (receivedFrameData)
   {
     m_releaseCurrentFrameData(m_currentPboIndex);
   }
 
-  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+  GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 }
 
 auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
@@ -418,43 +419,45 @@ auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
 
   UpdatePass4MiscDataToGl(m_currentPboIndex);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
+  GlCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
   // Render the full-screen quad
-  glBindVertexArray(m_fsQuad);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES);
+  GlCall(glBindVertexArray(m_fsQuad));
+  GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
-  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+  GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 }
 
 auto DisplacementFilter::Pass5OutputToScreen() noexcept -> void
 {
-  glViewport(0, 0, GetFramebufferWidth(), GetFramebufferHeight());
+  GlCall(glViewport(0, 0, GetFramebufferWidth(), GetFramebufferHeight()));
 
-  glBlitNamedFramebuffer(m_renderToTextureFbo,
-                         0, // default framebuffer
-                         0, // source rectangle
-                         0,
-                         GetWidth(),
-                         GetHeight(),
-                         0, // destination rectangle
-                         0,
-                         GetFramebufferWidth(),
-                         GetFramebufferHeight(),
-                         GL_COLOR_BUFFER_BIT,
-                         GL_LINEAR);
+  GlCall(glBlitNamedFramebuffer(m_renderToTextureFbo,
+                                0, // default framebuffer
+                                0, // source rectangle
+                                0,
+                                GetWidth(),
+                                GetHeight(),
+                                0, // destination rectangle
+                                0,
+                                GetFramebufferWidth(),
+                                GetFramebufferHeight(),
+                                GL_COLOR_BUFFER_BIT,
+                                GL_LINEAR));
 }
 
 auto DisplacementFilter::Pass2FilterBuff3LuminanceHistogram() noexcept -> void
 {
   m_programPass2FilterBuff1LuminanceHistogram.Use();
 
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_histogramBufferName);
-  glClearBufferData(GL_SHADER_STORAGE_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, nullptr);
+  GlCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_histogramBufferName));
+  GlCall(glClearBufferData(
+      GL_SHADER_STORAGE_BUFFER, GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT, nullptr));
 
-  glDispatchCompute(static_cast<GLuint>(GetWidth() / 16), static_cast<GLuint>(GetHeight() / 16), 1);
-  glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+  GlCall(glDispatchCompute(
+      static_cast<GLuint>(GetWidth() / 16), static_cast<GLuint>(GetHeight() / 16), 1));
+  GlCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
 
   /**
   glBindBuffer(GL_ARRAY_BUFFER, m_bufferName);
@@ -475,8 +478,8 @@ auto DisplacementFilter::Pass3FilterBuff3LuminanceAverage() noexcept -> void
 {
   m_programPass3FilterBuff1LuminanceAverage.Use();
 
-  glDispatchCompute(LUM_AVG_GROUP_SIZE, 1, 1);
-  glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_TEXTURE_UPDATE_BARRIER_BIT);
+  GlCall(glDispatchCompute(LUM_AVG_GROUP_SIZE, 1, 1));
+  GlCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_TEXTURE_UPDATE_BARRIER_BIT));
 
   /**
   glBindBuffer(GL_ARRAY_BUFFER, m_bufferName);
@@ -535,10 +538,10 @@ auto DisplacementFilter::SetLumAverageParams(const float frameTime) noexcept -> 
 
 auto DisplacementFilter::GetLumAverage() const noexcept -> float
 {
-  glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName);
+  GlCall(glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName));
 
   auto lumAverage = 0.0F;
-  glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, &lumAverage);
+  GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, &lumAverage));
 
   return lumAverage;
 }
@@ -670,21 +673,21 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
 auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,
                                          const GLuint destTextureName) const noexcept -> void
 {
-  glCopyImageSubData(srceTextureName,
-                     GL_TEXTURE_2D,
-                     0,
-                     0,
-                     0,
-                     0,
-                     destTextureName,
-                     GL_TEXTURE_2D,
-                     0,
-                     0,
-                     0,
-                     0,
-                     GetWidth(),
-                     GetHeight(),
-                     1);
+  GlCall(glCopyImageSubData(srceTextureName,
+                            GL_TEXTURE_2D,
+                            0,
+                            0,
+                            0,
+                            0,
+                            destTextureName,
+                            GL_TEXTURE_2D,
+                            0,
+                            0,
+                            0,
+                            0,
+                            GetWidth(),
+                            GetHeight(),
+                            1));
 }
 
 auto DisplacementFilter::UpdateImageDataToGl(const size_t pboIndex) noexcept -> void
@@ -742,28 +745,29 @@ auto DisplacementFilter::SetupGlImageData() -> void
 
 auto DisplacementFilter::SetupGlLumHistogramBuffer() noexcept -> void
 {
-  glGenBuffers(1, &m_histogramBufferName);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_histogramBufferName);
-  glBufferData(GL_SHADER_STORAGE_BUFFER,
-               HISTOGRAM_BUFFER_LENGTH * sizeof(uint32_t),
-               nullptr,
-               GL_DYNAMIC_COPY);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, LUM_HISTOGRAM_BUFFER_INDEX, m_histogramBufferName);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+  GlCall(glGenBuffers(1, &m_histogramBufferName));
+  GlCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_histogramBufferName));
+  GlCall(glBufferData(GL_SHADER_STORAGE_BUFFER,
+                      HISTOGRAM_BUFFER_LENGTH * sizeof(uint32_t),
+                      nullptr,
+                      GL_DYNAMIC_COPY));
+  GlCall(glBindBufferBase(
+      GL_SHADER_STORAGE_BUFFER, LUM_HISTOGRAM_BUFFER_INDEX, m_histogramBufferName));
+  GlCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
 }
 
 auto DisplacementFilter::SetupGlLumAverageData() noexcept -> void
 {
-  glGenTextures(1, &m_lumAverageDataTextureName);
-  glActiveTexture(LUM_AVG_TEX_UNIT);
-  glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_R16F, 1, 1);
-  glBindImageTexture(
-      LUM_AVG_IMAGE_UNIT, m_lumAverageDataTextureName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16F);
+  GlCall(glGenTextures(1, &m_lumAverageDataTextureName));
+  GlCall(glActiveTexture(LUM_AVG_TEX_UNIT));
+  GlCall(glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName));
+  GlCall(glTexStorage2D(GL_TEXTURE_2D, 1, GL_R16F, 1, 1));
+  GlCall(glBindImageTexture(
+      LUM_AVG_IMAGE_UNIT, m_lumAverageDataTextureName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16F));
 
   const auto initialData = 0.5F;
-  glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialData);
+  GlCall(glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName));
+  GlCall(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialData));
 }
 
 auto DisplacementFilter::InitFilterBuffers() noexcept -> void

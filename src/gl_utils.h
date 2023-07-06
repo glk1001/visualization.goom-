@@ -9,7 +9,7 @@
 namespace GOOM::OPENGL
 {
 
-auto CheckForOpenGLError(const char* file, int line) -> int;
+auto CheckForOpenGLError(const char* file, int line) -> bool;
 
 auto DumpGLInfo(bool dumpExtensions = false) -> void;
 
@@ -20,5 +20,16 @@ auto APIENTRY DebugCallback(GLenum source,
                             GLsizei length,
                             const GLchar* msg,
                             const void* param) -> void;
+
+auto GlClearError() -> void;
+
+#define ASSERT(x) \
+  if (!(x)) \
+  assert(false)
+
+#define GlCall(x) \
+  GlClearError(); \
+  x; \
+  ASSERT(CheckForOpenGLError(__FILE__, __LINE__))
 
 } // namespace GOOM::OPENGL
