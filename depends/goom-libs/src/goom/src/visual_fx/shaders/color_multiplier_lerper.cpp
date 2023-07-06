@@ -33,7 +33,7 @@ auto ColorMultiplierLerper::Update() noexcept -> void
   m_lerpT.Increment();
 }
 
-auto ColorMultiplierLerper::ChangeMultipliers() noexcept -> void
+auto ColorMultiplierLerper::ChangeMultiplierRange() noexcept -> void
 {
   m_srceColorMultiplier = m_currentColorMultiplier;
   m_destColorMultiplier = GetDestColorMultiplier();

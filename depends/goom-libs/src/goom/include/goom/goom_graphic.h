@@ -23,6 +23,7 @@ struct GoomShaderVariables
   float hueShiftLerpT           = 0.0F;
   float srceHueShift            = 0.0F;
   float destHueShift            = 0.0F;
+  float chromaFactor            = 1.0F;
   float baseColorMultiplier     = 1.0F;
 };
 

@@ -357,6 +357,7 @@ auto GoomControl::GoomControlImpl::InitMiscData(GOOM::MiscData& miscData) noexce
 {
   miscData.lerpFactor          = 0.0F;
   miscData.brightness          = 1.0F;
+  miscData.chromaFactor        = 1.0F;
   miscData.baseColorMultiplier = 1.0F;
 }
 
@@ -379,6 +380,7 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   const auto shaderVariables             = GetLastShaderVariables();
   frameData.miscData.brightness          = shaderVariables.brightness;
+  frameData.miscData.chromaFactor        = shaderVariables.chromaFactor;
   frameData.miscData.baseColorMultiplier = shaderVariables.baseColorMultiplier;
 
   m_p1 = &m_frameData->imageArrays.mainImagePixelBuffer;

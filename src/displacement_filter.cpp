@@ -206,7 +206,7 @@ auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
 
 auto DisplacementFilter::CompileAndLinkShaders() -> void
 {
-  const auto shaderMacros = std::map<std::string, std::string>{
+  const auto shaderMacros = std::unordered_map<std::string, std::string>{
       {   "FILTER_BUFF1_IMAGE_UNIT",       std::to_string(FILTER_BUFF1_IMAGE_UNIT)},
       {   "FILTER_BUFF2_IMAGE_UNIT",       std::to_string(FILTER_BUFF2_IMAGE_UNIT)},
       {   "FILTER_BUFF3_IMAGE_UNIT",       std::to_string(FILTER_BUFF3_IMAGE_UNIT)},
@@ -588,6 +588,8 @@ auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept
 {
   m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
       UNIFORM_BRIGHTNESS, m_frameDataArray.at(pboIndex).miscData.brightness);
+  m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
+      UNIFORM_CHROMA_FACTOR, m_frameDataArray.at(pboIndex).miscData.chromaFactor);
 }
 
 //[[nodiscard]] static auto GetTranArray(const Point2dFlt* const buffIn,

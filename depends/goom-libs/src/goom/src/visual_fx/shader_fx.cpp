@@ -5,6 +5,7 @@
 #include "color/color_utils.h"
 #include "fx_helper.h"
 #include "goom_logger.h"
+#include "shaders/chroma_factor_lerper.h"
 #include "shaders/color_multiplier_lerper.h"
 #include "shaders/high_contrast.h"
 #include "shaders/hue_shift_lerper.h"
@@ -18,6 +19,7 @@
 namespace GOOM::VISUAL_FX
 {
 
+using SHADERS::ChromaFactorLerper;
 using SHADERS::ColorMultiplierLerper;
 using SHADERS::HighContrast;
 using SHADERS::HueShiftLerper;
@@ -40,6 +42,10 @@ private:
 
   HighContrast m_highContrast;
   HueShiftLerper m_hueShiftLerper;
+
+  static constexpr auto MIN_CHROMA_FACTOR = 0.5F;
+  static constexpr auto MAX_CHROMA_FACTOR = 5.0F;
+  ChromaFactorLerper m_chromaFactorLerper;
 
   static constexpr auto MIN_BASE_COLOR_MULTIPLIER = 0.96F;
   static constexpr auto MAX_BASE_COLOR_MULTIPLIER = 1.00F;
@@ -97,6 +103,8 @@ auto ShaderFx::GetLastShaderVariables() const -> const GoomShaderVariables&
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
   : m_highContrast{*fxHelper.goomInfo, *fxHelper.goomRand},
     m_hueShiftLerper{*fxHelper.goomInfo, *fxHelper.goomRand},
+    m_chromaFactorLerper{
+        *fxHelper.goomInfo, *fxHelper.goomRand, MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR},
     m_baseColorMultiplierLerper{*fxHelper.goomInfo,
                                 *fxHelper.goomRand,
                                 MIN_BASE_COLOR_MULTIPLIER,
@@ -108,13 +116,15 @@ inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 {
   m_highContrast.ChangeHighContrast();
   m_hueShiftLerper.ChangeHue();
-  m_baseColorMultiplierLerper.ChangeMultipliers();
+  m_chromaFactorLerper.ChangeChromaFactorRange();
+  m_baseColorMultiplierLerper.ChangeMultiplierRange();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
 {
   m_highContrast.UpdateHighContrast();
   m_hueShiftLerper.Update();
+  m_chromaFactorLerper.Update();
   m_baseColorMultiplierLerper.Update();
 
   m_goomShaderVariables.contrast = m_highContrast.GetCurrentContrast();
@@ -124,6 +134,7 @@ inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
   m_goomShaderVariables.hueShiftLerpT       = m_hueShiftLerper.GetLerpT();
   m_goomShaderVariables.srceHueShift        = m_hueShiftLerper.GetSrceHueShift();
   m_goomShaderVariables.destHueShift        = m_hueShiftLerper.GetDestHueShift();
+  m_goomShaderVariables.chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
   m_goomShaderVariables.baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
 }
 

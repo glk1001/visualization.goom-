@@ -14,7 +14,7 @@ namespace GOOM::OPENGL
 namespace
 {
 
-const std::map<std::string, int32_t> EXTENSIONS = {
+const std::unordered_map<std::string, int32_t> EXTENSIONS = {
     {       ".vs",          GL_VERTEX_SHADER},
     {     ".vert",          GL_VERTEX_SHADER},
     {"_vert.glsl",          GL_VERTEX_SHADER},

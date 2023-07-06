@@ -173,6 +173,7 @@ add_library(goom
             src/visual_fx/l_systems/lsys_geom.cpp
             src/visual_fx/l_systems/lsys_paths.cpp
             src/visual_fx/l_systems/line_drawer_manager.cpp
+            src/visual_fx/shaders/chroma_factor_lerper.cpp
             src/visual_fx/shaders/color_multiplier_lerper.cpp
             src/visual_fx/shaders/high_contrast.cpp
             src/visual_fx/shaders/hue_shift_lerper.cpp

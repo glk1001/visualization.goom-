@@ -13,6 +13,7 @@ layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16) uniform readonly image2D img_fil
 layout(binding=LUM_AVG_IMAGE_UNIT,        r16f) uniform readonly image2D img_lumAvg;
 
 uniform float u_brightness;
+uniform float u_chromaFactor;
 
 vec3 GetChromaticIncrease(vec3 color);
 
@@ -44,6 +45,6 @@ vec3 GetChromaticIncrease(vec3 color)
 {
   // 'Chromatic Increase' - https://github.com/gurki/vivid
   vec3 lch = rgb_to_lch(color);
-  lch.y = min(lch.y * 2.0F, 140.0);
+  lch.y = min(u_chromaFactor * lch.y, 140.0);
   return lch_to_rgb(lch);
 }

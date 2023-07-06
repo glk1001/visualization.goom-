@@ -1,7 +1,7 @@
 #pragma once
 
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace GOOM::OPENGL
@@ -10,7 +10,7 @@ namespace GOOM::OPENGL
 class GlslShaderFile
 {
 public:
-  using ShaderMacros = std::map<std::string, std::string>;
+  using ShaderMacros = std::unordered_map<std::string, std::string>;
 
   GlslShaderFile(const std::string& shaderFilepath,
                  const ShaderMacros& shaderMacros,

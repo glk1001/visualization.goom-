@@ -114,6 +114,7 @@ auto GoomAllVisualFx::RefreshAllFx() noexcept -> void
 auto GoomAllVisualFx::ChangeAllFxColorMaps() noexcept -> void
 {
   m_allStandardVisualFx->ChangeColorMaps();
+  m_allStandardVisualFx->ChangeShaderVariables();
 }
 
 auto GoomAllVisualFx::ChangeAllFxPixelBlenders() noexcept -> void

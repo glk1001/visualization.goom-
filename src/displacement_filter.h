@@ -35,6 +35,7 @@ class DisplacementFilter : public IScene
 {
   static constexpr auto* UNIFORM_LERP_FACTOR           = "u_lerpFactor";
   static constexpr auto* UNIFORM_BRIGHTNESS            = "u_brightness";
+  static constexpr auto* UNIFORM_CHROMA_FACTOR         = "u_chromaFactor";
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
 
@@ -115,7 +116,7 @@ private:
   static constexpr int32_t NUM_VERTICES             = NUM_TRIANGLES * NUM_VERTICES_IN_TRIANGLE;
 
   auto CompileAndLinkShaders() -> void;
-  using ShaderMacros = std::map<std::string, std::string>;
+  using ShaderMacros = std::unordered_map<std::string, std::string>;
   static auto CompileShaderFile(GlslProgram& program,
                                 const std::string& filepath,
                                 const ShaderMacros& shaderMacros) -> void;

@@ -11,10 +11,10 @@
 #endif
 
 #include <glm/glm.hpp>
-#include <map>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 namespace GOOM::OPENGL
 {
@@ -62,7 +62,7 @@ private:
   GLuint m_handle;
   bool m_linked;
 
-  std::map<std::string, int> m_uniformLocations;
+  std::unordered_map<std::string, int> m_uniformLocations;
   auto FindUniformLocations() -> void;
   [[nodiscard]] auto GetUniformLocation(const std::string_view& name) -> GLint;
 

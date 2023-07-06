@@ -19,7 +19,7 @@ public:
                         float maxColorMultiplier) noexcept;
 
   auto Update() noexcept -> void;
-  auto ChangeMultipliers() noexcept -> void;
+  auto ChangeMultiplierRange() noexcept -> void;
 
   [[nodiscard]] auto GetColorMultiplier() const noexcept -> float;
 
