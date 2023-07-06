@@ -17,12 +17,17 @@
 #include "goom/goom_types.h"
 #include "goom_visualization.h"
 
+#include <chrono>
 #include <format>
+#include <fstream>
+#include <ios>
+#include <iostream>
 #include <kodi/Filesystem.h>
 #include <random>
 #include <span>
 #include <stdexcept>
 #include <string>
+#include <unistd.h>
 
 using GOOM::AudioSamples;
 using GOOM::GoomControl;
@@ -44,6 +49,54 @@ using AddonLogEnum   = ADDON_LOG;
 
 namespace
 {
+
+struct Memory
+{
+  double vmUsage{};
+  double residentSet{};
+};
+
+[[nodiscard]] auto GetMemUsage() -> Memory
+{
+  // Get info from proc directory.
+  std::ifstream statStream{"/proc/self/stat", std::ios_base::in};
+
+  auto pid         = std::string{};
+  auto comm        = std::string{};
+  auto state       = std::string{};
+  auto pPid        = std::string{};
+  auto pGrp        = std::string{};
+  auto session     = std::string{};
+  auto ttyNr       = std::string{};
+  auto tpGid       = std::string{};
+  auto flags       = std::string{};
+  auto minFlt      = std::string{};
+  auto cminFlt     = std::string{};
+  auto majFlt      = std::string{};
+  auto cmajFlt     = std::string{};
+  auto uTime       = std::string{};
+  auto sTime       = std::string{};
+  auto cuTime      = std::string{};
+  auto csTime      = std::string{};
+  auto priorityVal = std::string{};
+  auto niceVal     = std::string{};
+  auto oVal        = std::string{};
+  auto itRealValue = std::string{};
+  auto startTime   = std::string{};
+
+  auto vSize = uint64_t{};
+  auto rss   = int64_t{};
+
+  statStream >> pid >> comm >> state >> pPid >> pGrp >> session >> ttyNr >> tpGid >> flags >>
+      minFlt >> cminFlt >> majFlt >> cmajFlt >> uTime >> sTime >> cuTime >> csTime >> priorityVal >>
+      niceVal >> oVal >> itRealValue >> startTime >> vSize >> rss; // don't care about the rest
+  statStream.close();
+
+  // For x86-64 is configured to use 2MB pages.
+  auto pageSizeKb = static_cast<double>(sysconf(_SC_PAGE_SIZE)) / 1024.0;
+
+  return Memory{static_cast<double>(vSize) / 1024.0, static_cast<double>(rss) * pageSizeKb};
+}
 
 constexpr auto MAX_QUALITY = 4;
 constexpr std::array WIDTHS_BY_QUALITY{
@@ -204,6 +257,12 @@ auto CVisualizationGoom::StopWithCatch() -> void
 
 auto CVisualizationGoom::StartVis(const int numChannels) -> void
 {
+  auto memUsage = GetMemUsage();
+  LogInfo(*m_goomLogger,
+          "Start: vmUsage = {}, residentSet = {}.",
+          memUsage.vmUsage,
+          memUsage.residentSet);
+
   PassSettings();
 
   InitAudioData(numChannels);
@@ -211,14 +270,28 @@ auto CVisualizationGoom::StartVis(const int numChannels) -> void
   m_goomVisualization.Start(numChannels);
   m_goomVisualization.StartThread();
 
+  m_totalRenderTimeInMs = 0.0;
+  m_numRenders          = 0U;
+
   m_started = true;
 }
 
 inline auto CVisualizationGoom::StopVis() -> void
 {
+  LogInfo(*m_goomLogger, "Number of renders = {}.", m_numRenders);
+  LogInfo(*m_goomLogger,
+          "Average render time = {:.1f}ms.",
+          m_totalRenderTimeInMs / static_cast<double>(m_numRenders));
+
   m_started = false;
 
   m_goomVisualization.Stop();
+
+  auto memUsage = GetMemUsage();
+  LogInfo(*m_goomLogger,
+          "Stop: vmUsage = {}, residentSet = {}.",
+          memUsage.vmUsage,
+          memUsage.residentSet);
 
   LogStop(*m_goomLogger);
 }
@@ -353,9 +426,16 @@ inline auto CVisualizationGoom::DoRender() noexcept -> void
 {
   try
   {
+    ++m_numRenders;
+    const auto startTime = std::chrono::system_clock::now();
+
     m_goomVisualization.GetScene().Resize(WindowDimensions{Width(), Height()});
 
     m_goomVisualization.GetScene().Render();
+
+    const auto duration = std::chrono::system_clock::now() - startTime;
+    m_totalRenderTimeInMs += static_cast<double>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
   }
   catch (const std::exception& e)
   {

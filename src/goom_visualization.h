@@ -72,6 +72,8 @@ private:
   auto ConsumeItem(size_t slot) noexcept -> void;
   uint32_t m_numberOfDroppedAudioSamples = 0U;
   auto LogProducerConsumerSummary() -> void;
+  double m_totalProductionTimeInMs = 0.0;
+  uint64_t m_numItemsProduced      = 0U;
 
   size_t m_numChannels       = 0;
   size_t m_audioSampleLen    = 0;

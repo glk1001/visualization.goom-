@@ -98,6 +98,8 @@ private:
 
   [[nodiscard]] auto ReadyToRender() const -> bool;
   auto DoRender() noexcept -> void;
+  double m_totalRenderTimeInMs = 0.0;
+  uint64_t m_numRenders        = 0U;
 
 #ifdef GOOM_DEBUG
   [[noreturn]]

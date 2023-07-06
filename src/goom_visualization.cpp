@@ -8,6 +8,7 @@
 #include "goom/goom_control.h"
 #include "slot_producer_consumer.h"
 
+#include <chrono>
 #include <thread>
 
 namespace GOOM::VIS
@@ -139,6 +140,9 @@ auto GoomVisualization::Start(const int numChannels) -> void
   m_goomControl->Start();
   m_slotProducerConsumer.Start();
 
+  m_totalProductionTimeInMs = 0.0;
+  m_numItemsProduced        = 0U;
+
   m_started = true;
 }
 
@@ -170,6 +174,10 @@ auto GoomVisualization::Stop() -> void
 
 auto GoomVisualization::LogProducerConsumerSummary() -> void
 {
+  LogInfo(*m_goomLogger, "Number of items produced: {}.", m_numItemsProduced);
+  LogInfo(*m_goomLogger,
+          "Average produce item time = {:.1f}ms.",
+          m_totalProductionTimeInMs / static_cast<double>(m_numItemsProduced));
   LogInfo(*m_goomLogger, "Number of dropped audio samples: {}.", m_numberOfDroppedAudioSamples);
 }
 
@@ -246,10 +254,17 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
   LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
 #endif
 
+  ++m_numItemsProduced;
+  const auto startTime = std::chrono::system_clock::now();
+
   auto& frameData = m_glScene.GetFrameData(slot);
 
   m_goomControl->SetFrameData(frameData);
   m_goomControl->UpdateGoomBuffers(audioSamples);
+
+  const auto duration = std::chrono::system_clock::now() - startTime;
+  m_totalProductionTimeInMs +=
+      static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
 #if DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Producer produced slot {}.", slot));
