@@ -116,7 +116,6 @@ public:
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
 
-  static auto InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
@@ -139,9 +138,6 @@ private:
   FrameData* m_frameData = nullptr;
   PixelBuffer* m_p1      = nullptr;
   PixelBuffer* m_p2      = nullptr;
-  static auto InitMiscData(MiscData& miscData) noexcept -> void;
-  static auto InitImageArrays(ImageArrays& imageArrays) noexcept -> void;
-  static auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
 
   FilterSettingsService m_filterSettingsService;
   FilterBuffersService m_filterBuffersService;
@@ -249,11 +245,6 @@ auto GoomControl::SetNoZooms(const bool value) -> void
   m_pimpl->SetNoZooms(value);
 }
 
-auto GoomControl::InitFrameData(std::vector<FrameData>& frameDataArray) noexcept -> void
-{
-  m_pimpl->InitFrameData(frameDataArray);
-}
-
 auto GoomControl::SetFrameData(FrameData& frameData) -> void
 {
   m_pimpl->SetFrameData(frameData);
@@ -342,37 +333,6 @@ inline auto GoomControl::GoomControlImpl::SetShowSongTitle(const ShowSongTitleTy
   m_showTitle = value;
 }
 
-inline auto GoomControl::GoomControlImpl::InitFrameData(
-    std::vector<FrameData>& frameDataArray) noexcept -> void
-{
-  for (auto& frameData : frameDataArray)
-  {
-    InitMiscData(frameData.miscData);
-    InitImageArrays(frameData.imageArrays);
-    InitFilterPosArrays(frameData.filterPosArrays);
-  }
-}
-
-auto GoomControl::GoomControlImpl::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
-{
-  miscData.lerpFactor          = 0.0F;
-  miscData.brightness          = 1.0F;
-  miscData.chromaFactor        = 1.0F;
-  miscData.baseColorMultiplier = 1.0F;
-}
-
-auto GoomControl::GoomControlImpl::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
-{
-  imageArrays.mainImagePixelBufferNeedsUpdating = false;
-  imageArrays.lowImagePixelBufferNeedsUpdating  = false;
-}
-
-auto GoomControl::GoomControlImpl::InitFilterPosArrays(
-    GOOM::FilterPosArrays& filterPosArrays) noexcept -> void
-{
-  filterPosArrays.filterDestPosNeedsUpdating    = false;
-  filterPosArrays.lerpFactorForDestToSrceUpdate = 0.0F;
-}
 
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
 {

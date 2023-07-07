@@ -23,13 +23,9 @@ auto APIENTRY DebugCallback(GLenum source,
 
 auto GlClearError() -> void;
 
-#define ASSERT(x) \
-  if (!(x)) \
-  assert(false)
-
 #define GlCall(x) \
   GlClearError(); \
   x; \
-  ASSERT(CheckForOpenGLError(__FILE__, __LINE__))
+  assert(CheckForOpenGLError(__FILE__, __LINE__))
 
 } // namespace GOOM::OPENGL

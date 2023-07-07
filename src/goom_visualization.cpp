@@ -190,8 +190,6 @@ auto GoomVisualization::InitAudioValues(int32_t numChannels) noexcept -> void
 auto GoomVisualization::InitSceneFrameData() noexcept -> void
 {
   m_glScene.InitScene();
-  m_goomControl->InitFrameData(m_glScene.GetFrameDataArray());
-  m_glScene.InitAllFrameDataToGl();
 }
 
 auto GoomVisualization::InitGoomControl() noexcept -> void

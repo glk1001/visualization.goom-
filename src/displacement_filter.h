@@ -7,21 +7,6 @@
 #include "goom/goom_graphic.h"
 #include "scene.h"
 
-//[[nodiscard]] inline auto to_string(const GOOM::Point2dInt& point)
-//{
-//  return std_fmt::format("{:+6d}, {:+6d}", point.x, point.y);
-//}
-//[[nodiscard]] inline auto to_string(const GOOM::Point2dFlt& point)
-//{
-//  return std_fmt::format("{:+.5f}, {:+.5f}", point.x, point.y);
-//}
-//[[nodiscard]] inline auto to_string(const GOOM::Pixel& pixel)
-//{
-//  return std_fmt::format(
-//      "{:5d}, {:5d}, {:5d}, {:5d}", pixel.R(), pixel.G(), pixel.B(), pixel.A());
-//}
-//#include "src/goom/src/utils/buffer_saver.h"
-
 #include <atomic>
 #include <functional>
 #include <span>
@@ -54,7 +39,7 @@ class DisplacementFilter : public IScene
 
 public:
   static constexpr auto NUM_PBOS = 3U;
-  using FilterPosDataXY          = GOOM::Point2dFlt;
+  using FilterPosBuffersXY       = GOOM::Point2dFlt;
 
   DisplacementFilter(const std::string& shaderDir,
                      const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
@@ -62,9 +47,6 @@ public:
   auto InitScene() -> void override;
   auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
   auto DestroyScene() noexcept -> void;
-
-  [[nodiscard]] auto GetFrameDataArray() noexcept -> std::vector<FrameData>&;
-  auto InitAllFrameDataToGl() noexcept -> void;
 
   auto Render() noexcept -> void override;
 
@@ -85,29 +67,18 @@ private:
   float m_aspectRatio;
   GLuint m_renderToTextureFbo{};
   GLuint m_renderTextureName{};
-  std::vector<FrameData> m_frameDataArray;
+
   size_t m_currentPboIndex = 0U;
-  auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
-  auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
-
-  //  auto SaveBuffersBeforePass1() -> void;
-  //  auto SaveBuffersAfterPass1() -> void;
-  //  auto SaveBuffersAfterPass2() -> void;
-  //  static inline const auto saveDir = std::string{"/home/greg/.kodi/junk/"};
-  //  UTILS::BufferSaver<Point2dInt> m_filterPosSrceBufferSave{saveDir + "filter_pos_srce"};
-  //  UTILS::BufferSaver<Point2dInt> m_filterPosDestBufferSave{saveDir + "filter_pos_dest"};
-  //  UTILS::BufferSaver<Point2dInt> m_filterPosDestInBufferSave{saveDir + "filter_pos_dest_in"};
-  //  UTILS::BufferSaver<GOOM::Pixel> m_filterBuffer1SaveBeforePass1{saveDir +
-  //                                                                 "filter_buff1_before_pass1"};
-  //  UTILS::BufferSaver<GOOM::Pixel> m_filterBuffer1SaveAfterPass1{saveDir +
-  //                                                                "filter_buff1_after_pass1"};
-  //  UTILS::BufferSaver<GOOM::Pixel> m_filterBuffer1SaveAfterPass2{saveDir +
-  //                                                                "filter_buff1_after_pass2"};
-  //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveBeforePass1{saveDir + "low_image_before_pass1"};
-  //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveAfterPass1{saveDir + "low_image_after_pass1"};
-  //  UTILS::BufferSaver<GOOM::Pixel> m_lowImageSaveAfterPass2{saveDir + "low_image_after_pass2"};
-
   std::vector<Point2dFlt> m_previousFilterDestPos{};
+  std::vector<FrameData> m_frameDataArray;
+  auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
+  auto InitFrameDataArray() noexcept -> void;
+  auto InitFrameDataArrayToGl() noexcept -> void;
+  static auto InitMiscData(MiscData& miscData) noexcept -> void;
+  static auto InitImageArrays(ImageArrays& imageArrays) noexcept -> void;
+  auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
+
+  auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
@@ -130,11 +101,11 @@ private:
   [[nodiscard]] auto GetLumAverage() const noexcept -> float;
   RequestNextFrameDataFunc m_requestNextFrameData{};
   ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
-  auto UpdateFrameDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePass1MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePass4MiscDataToGl(size_t pboIndex) noexcept -> void;
-  auto UpdatePosDataToGl(size_t pboIndex) noexcept -> void;
-  auto UpdateImageDataToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateSrceFilterPosBufferToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateDestFilterPosBufferToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateImageBuffersToGl(size_t pboIndex) noexcept -> void;
 
   GlslProgram m_programPass1UpdateFilterBuff1AndBuff3;
   static constexpr auto PASS1_VERTEX_SHADER   = "filter.vs";
@@ -156,9 +127,11 @@ private:
 
   auto Pass5OutputToScreen() noexcept -> void;
 
+  static constexpr auto USE_COMPUTE_SHADER_TO_UPDATE_FILTER_SRCE_POS = false;
   GlslProgram m_programUpdateSrcePosFilter;
   static constexpr auto UPDATE_SRCE_POS_FILTER_SHADER = "update_srce_pos_filter.cs";
-  auto UpdateSrcePosFilter(size_t pboIndex) noexcept -> void;
+  auto UpdateSrcePosFilterUsingComputeShader(size_t pboIndex) noexcept -> void;
+  auto UpdateSrcePosFilterUsingCPU(size_t pboIndex) noexcept -> void;
 
   static constexpr auto FILTER_BUFF1_TEX_LOCATION    = 0;
   static constexpr auto FILTER_BUFF2_TEX_LOCATION    = 1;
@@ -195,9 +168,9 @@ private:
   auto SetLumAverageParams(float frameTime) noexcept -> void;
   auto SetupGlLumAverageData() noexcept -> void;
 
-  struct GlFilterPosData
+  struct GlFilterPosBuffers
   {
-    Gl2DTexture<FilterPosDataXY,
+    Gl2DTexture<FilterPosBuffersXY,
                 FILTER_SRCE_POS_IMAGE_UNIT,
                 FILTER_SRCE_POS_TEX_LOCATION,
                 FILTER_POS_TEX_FORMAT,
@@ -205,7 +178,7 @@ private:
                 FILTER_POS_TEX_PIXEL_TYPE,
                 NUM_PBOS>
         filterSrcePosTexture{};
-    Gl2DTexture<FilterPosDataXY,
+    Gl2DTexture<FilterPosBuffersXY,
                 FILTER_DEST_POS_IMAGE_UNIT,
                 FILTER_DEST_POS_TEX_LOCATION,
                 FILTER_POS_TEX_FORMAT,
@@ -214,11 +187,11 @@ private:
                 NUM_PBOS>
         filterDestPosTexture{};
   };
-  GlFilterPosData m_glFilterPosData{};
-  auto SetupGlFilterPosData() -> void;
-  auto BindGlFilterPosData() noexcept -> void;
+  GlFilterPosBuffers m_glFilterPosBuffers{};
+  auto SetupGlFilterPosBuffers() -> void;
+  auto BindGlFilterPosBuffers() noexcept -> void;
 
-  struct GlFilterBuffData
+  struct GlFilterBuffers
   {
     Gl2DTexture<GOOM::PixelIntType,
                 FILTER_BUFF1_IMAGE_UNIT,
@@ -245,13 +218,13 @@ private:
                 0>
         filterBuff3Texture{};
   };
-  GlFilterBuffData m_glFilterBuffData{};
+  GlFilterBuffers m_glFilterBuffers{};
   std::atomic_bool m_filterBuffersNeedClearing = false;
-  auto SetupGlFilterBuffData() -> void;
-  auto BindGlFilterBuff2Data() noexcept -> void;
+  auto SetupGlFilterBuffers() -> void;
+  auto BindGlFilterBuffer2() noexcept -> void;
   auto CheckZeroFilterBuffers() noexcept -> void;
 
-  struct GlImageData
+  struct GlImageBuffers
   {
     Gl2DTexture<GOOM::Pixel,
                 -1,
@@ -270,15 +243,10 @@ private:
                 NUM_PBOS>
         lowImageTexture{};
   };
-  GlImageData m_glImageData{};
-  auto SetupGlImageData() -> void;
-  auto BindGlImageData() noexcept -> void;
+  GlImageBuffers m_glImageBuffers{};
+  auto SetupGlImageBuffers() -> void;
+  auto BindGlImageBuffers() noexcept -> void;
 };
-
-inline auto DisplacementFilter::GetFrameDataArray() noexcept -> std::vector<FrameData>&
-{
-  return m_frameDataArray;
-}
 
 inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> GOOM::FrameData&
 {
