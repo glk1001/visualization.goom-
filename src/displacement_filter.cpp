@@ -101,6 +101,7 @@ auto DisplacementFilter::DestroyScene() noexcept -> void
   m_programPass2FilterBuff1LuminanceHistogram.DeleteProgram();
   m_programPass3FilterBuff1LuminanceAverage.DeleteProgram();
   m_programPass4ResetFilterBuff2AndOutputBuff3.DeleteProgram();
+  m_programUpdateSrcePosFilter.DeleteProgram();
 }
 
 auto DisplacementFilter::Resize(const WindowDimensions& windowDimensions) noexcept -> void
@@ -210,6 +211,8 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
       {   "FILTER_BUFF1_IMAGE_UNIT",       std::to_string(FILTER_BUFF1_IMAGE_UNIT)},
       {   "FILTER_BUFF2_IMAGE_UNIT",       std::to_string(FILTER_BUFF2_IMAGE_UNIT)},
       {   "FILTER_BUFF3_IMAGE_UNIT",       std::to_string(FILTER_BUFF3_IMAGE_UNIT)},
+      {"FILTER_SRCE_POS_IMAGE_UNIT",    std::to_string(FILTER_SRCE_POS_IMAGE_UNIT)},
+      {"FILTER_DEST_POS_IMAGE_UNIT",    std::to_string(FILTER_DEST_POS_IMAGE_UNIT)},
       {        "LUM_AVG_IMAGE_UNIT",            std::to_string(LUM_AVG_IMAGE_UNIT)},
       {"LUM_HISTOGRAM_BUFFER_INDEX",    std::to_string(LUM_HISTOGRAM_BUFFER_INDEX)},
       {              "ASPECT_RATIO",                 std::to_string(m_aspectRatio)},
@@ -242,6 +245,11 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
                       GetShaderFilepath(PASS4_FRAGMENT_SHADER),
                       shaderMacros);
     m_programPass4ResetFilterBuff2AndOutputBuff3.LinkShader();
+
+    CompileShaderFile(m_programUpdateSrcePosFilter,
+                      GetShaderFilepath(UPDATE_SRCE_POS_FILTER_SHADER),
+                      shaderMacros);
+    m_programUpdateSrcePosFilter.LinkShader();
   }
   catch (GlslProgramException& e)
   {
@@ -326,8 +334,6 @@ auto DisplacementFilter::InitAllFrameDataToGl() noexcept -> void
 
 auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 {
-  Expects(m_programPass1UpdateFilterBuff1AndBuff3.IsInUse());
-
   UpdateFrameDataToGl(pboIndex);
   CheckZeroFilterBuffers();
 
@@ -385,9 +391,11 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 
 auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
 {
+  const auto receivedFrameData = m_requestNextFrameData();
+
   m_programPass1UpdateFilterBuff1AndBuff3.Use();
 
-  const auto receivedFrameData = m_requestNextFrameData();
+  UpdatePass1MiscDataToGl(m_currentPboIndex);
 
   BindGlFilterPosData();
   BindGlFilterBuff2Data();
@@ -479,7 +487,7 @@ auto DisplacementFilter::Pass3FilterBuff3LuminanceAverage() noexcept -> void
   m_programPass3FilterBuff1LuminanceAverage.Use();
 
   GlCall(glDispatchCompute(LUM_AVG_GROUP_SIZE, 1, 1));
-  GlCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_TEXTURE_UPDATE_BARRIER_BIT));
+  GlCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 
   /**
   glBindBuffer(GL_ARRAY_BUFFER, m_bufferName);
@@ -570,7 +578,6 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 
 auto DisplacementFilter::UpdateFrameDataToGl(const size_t pboIndex) noexcept -> void
 {
-  UpdatePass1MiscDataToGl(pboIndex);
   UpdatePosDataToGl(pboIndex);
   UpdateImageDataToGl(pboIndex);
 }
@@ -614,6 +621,10 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
   {
     return;
   }
+
+  UpdateSrcePosFilter(pboIndex);
+  m_glFilterPosData.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
+  return;
 
   // LogInfo(GOOM::UTILS::GetGoomLogger(), "Filter dest pos needs updating.");
 
@@ -670,6 +681,18 @@ auto DisplacementFilter::UpdatePosDataToGl(const size_t pboIndex) noexcept -> vo
   //  auto filterPosDestBufferView =
   //      UTILS::BufferView<Point2dInt>{filterPosDestInt.size(), filterPosDestInt.data()};
   //  m_filterPosDestBufferSave.Write(filterPosDestBufferView, false);
+}
+
+auto DisplacementFilter::UpdateSrcePosFilter(const size_t pboIndex) noexcept -> void
+{
+  m_programUpdateSrcePosFilter.Use();
+
+  const auto destToSrceLerpFactor =
+      m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
+  m_programUpdateSrcePosFilter.SetUniform(UNIFORM_LERP_FACTOR, destToSrceLerpFactor);
+
+  GlCall(glDispatchCompute(static_cast<GLuint>(GetWidth()), static_cast<GLuint>(GetHeight()), 1));
+  GlCall(glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT));
 }
 
 auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,

@@ -156,6 +156,10 @@ private:
 
   auto Pass5OutputToScreen() noexcept -> void;
 
+  GlslProgram m_programUpdateSrcePosFilter;
+  static constexpr auto UPDATE_SRCE_POS_FILTER_SHADER = "update_srce_pos_filter.cs";
+  auto UpdateSrcePosFilter(size_t pboIndex) noexcept -> void;
+
   static constexpr auto FILTER_BUFF1_TEX_LOCATION    = 0;
   static constexpr auto FILTER_BUFF2_TEX_LOCATION    = 1;
   static constexpr auto FILTER_BUFF3_TEX_LOCATION    = 2;
@@ -173,10 +177,12 @@ private:
   static constexpr auto MAIN_IMAGE_TEX_SHADER_NAME      = "tex_mainImage";
   static constexpr auto LOW_IMAGE_TEX_SHADER_NAME       = "tex_lowImage";
 
-  static constexpr auto FILTER_BUFF1_IMAGE_UNIT = 0;
-  static constexpr auto FILTER_BUFF2_IMAGE_UNIT = 1;
-  static constexpr auto FILTER_BUFF3_IMAGE_UNIT = 2;
-  static constexpr auto LUM_AVG_IMAGE_UNIT      = 3;
+  static constexpr auto FILTER_BUFF1_IMAGE_UNIT    = 0;
+  static constexpr auto FILTER_BUFF2_IMAGE_UNIT    = 1;
+  static constexpr auto FILTER_BUFF3_IMAGE_UNIT    = 2;
+  static constexpr auto FILTER_SRCE_POS_IMAGE_UNIT = 3;
+  static constexpr auto FILTER_DEST_POS_IMAGE_UNIT = 4;
+  static constexpr auto LUM_AVG_IMAGE_UNIT         = 5;
 
   GLuint m_histogramBufferName{};
   static constexpr auto HISTOGRAM_BUFFER_LENGTH    = 256;
@@ -192,7 +198,7 @@ private:
   struct GlFilterPosData
   {
     Gl2DTexture<FilterPosDataXY,
-                -1,
+                FILTER_SRCE_POS_IMAGE_UNIT,
                 FILTER_SRCE_POS_TEX_LOCATION,
                 FILTER_POS_TEX_FORMAT,
                 FILTER_POS_TEX_INTERNAL_FORMAT,
@@ -200,7 +206,7 @@ private:
                 NUM_PBOS>
         filterSrcePosTexture{};
     Gl2DTexture<FilterPosDataXY,
-                -1,
+                FILTER_DEST_POS_IMAGE_UNIT,
                 FILTER_DEST_POS_TEX_LOCATION,
                 FILTER_POS_TEX_FORMAT,
                 FILTER_POS_TEX_INTERNAL_FORMAT,
