@@ -79,9 +79,9 @@ auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameV
       GetPair(PARAM_GROUP, "Contrast", lastShaderVariables.contrast),
       GetPair(PARAM_GROUP, "MinChan", lastShaderVariables.contrastMinChannelValue),
       GetPair(PARAM_GROUP, "Brightness", lastShaderVariables.brightness),
-      GetPair(PARAM_GROUP, "hueShiftLerpT", lastShaderVariables.hueShiftLerpT),
-      GetPair(PARAM_GROUP, "srceHueShift", lastShaderVariables.srceHueShift),
-      GetPair(PARAM_GROUP, "destHueShift", lastShaderVariables.destHueShift),
+      GetPair(PARAM_GROUP, "HueShift", lastShaderVariables.hueShift),
+      GetPair(PARAM_GROUP, "ChromaFactor", lastShaderVariables.chromaFactor),
+      GetPair(PARAM_GROUP, "BaseColorMultiplier", lastShaderVariables.baseColorMultiplier),
   };
 }
 

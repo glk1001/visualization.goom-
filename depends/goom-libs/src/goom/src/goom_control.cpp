@@ -340,6 +340,7 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   const auto shaderVariables             = GetLastShaderVariables();
   frameData.miscData.brightness          = shaderVariables.brightness;
+  frameData.miscData.hueShift            = shaderVariables.hueShift;
   frameData.miscData.chromaFactor        = shaderVariables.chromaFactor;
   frameData.miscData.baseColorMultiplier = shaderVariables.baseColorMultiplier;
 

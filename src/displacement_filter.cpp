@@ -564,6 +564,8 @@ auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept
   m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
       UNIFORM_BRIGHTNESS, m_frameDataArray.at(pboIndex).miscData.brightness);
   m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
+      UNIFORM_HUE_SHIFT, m_frameDataArray.at(pboIndex).miscData.hueShift);
+  m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
       UNIFORM_CHROMA_FACTOR, m_frameDataArray.at(pboIndex).miscData.chromaFactor);
 }
 

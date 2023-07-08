@@ -41,8 +41,12 @@ private:
       1.0F, HighContrast::DEFAULT_BRIGHTNESS, HighContrast::DEFAULT_CONTRAST, 0.0F};
 
   HighContrast m_highContrast;
-  HueShiftLerper m_hueShiftLerper;
 
+  static constexpr uint32_t HUE_MIN_NUM_LERP_ON_STEPS = 25U;
+  static constexpr uint32_t HUE_MAX_NUM_LERP_ON_STEPS = 100U;
+  static constexpr uint32_t HUE_MIN_LERP_OFF_TIME     = 500U;
+  static constexpr uint32_t HUE_MAX_LERP_OFF_TIME     = 5000U;
+  HueShiftLerper m_hueShiftLerper;
   static constexpr auto MIN_CHROMA_FACTOR = 0.5F;
   static constexpr auto MAX_CHROMA_FACTOR = 5.0F;
   ChromaFactorLerper m_chromaFactorLerper;
@@ -102,7 +106,14 @@ auto ShaderFx::GetLastShaderVariables() const -> const GoomShaderVariables&
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
   : m_highContrast{*fxHelper.goomInfo, *fxHelper.goomRand},
-    m_hueShiftLerper{*fxHelper.goomInfo, *fxHelper.goomRand},
+    m_hueShiftLerper{*fxHelper.goomInfo,
+                     *fxHelper.goomRand,
+                     {
+                         HUE_MIN_NUM_LERP_ON_STEPS,
+                         HUE_MAX_NUM_LERP_ON_STEPS,
+                         HUE_MIN_LERP_OFF_TIME,
+                         HUE_MAX_LERP_OFF_TIME
+                     }},
     m_chromaFactorLerper{
         *fxHelper.goomInfo, *fxHelper.goomRand, MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR},
     m_baseColorMultiplierLerper{*fxHelper.goomInfo,
@@ -131,9 +142,7 @@ inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
   m_goomShaderVariables.contrastMinChannelValue =
       m_highContrast.GetCurrentContrastMinChannelValue();
   m_goomShaderVariables.brightness          = m_highContrast.GetCurrentBrightness();
-  m_goomShaderVariables.hueShiftLerpT       = m_hueShiftLerper.GetLerpT();
-  m_goomShaderVariables.srceHueShift        = m_hueShiftLerper.GetSrceHueShift();
-  m_goomShaderVariables.destHueShift        = m_hueShiftLerper.GetDestHueShift();
+  m_goomShaderVariables.hueShift            = m_hueShiftLerper.GetHueShift();
   m_goomShaderVariables.chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
   m_goomShaderVariables.baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
 }

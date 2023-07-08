@@ -13,8 +13,10 @@ layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16) uniform readonly image2D img_fil
 layout(binding=LUM_AVG_IMAGE_UNIT,        r16f) uniform readonly image2D img_lumAvg;
 
 uniform float u_brightness;
+uniform float u_hueShift;
 uniform float u_chromaFactor;
 
+vec3 GetHueShift(vec3 color);
 vec3 GetChromaticIncrease(vec3 color);
 
 void main()
@@ -23,18 +25,21 @@ void main()
 
   // Get the hdr color to work with.
   vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
-  vec3 hdrColor = filtBuff3Val.rgb;
+  vec4 hdrColor = filtBuff3Val;
 
   // Copy filter buff1 to filter buff2 ready for the next frame.
   vec4 filtBuff1Val = imageLoad(img_filterBuff1, xy);
   imageStore(img_filterBuff2, xy, filtBuff1Val);
 
-  // Apply the chromatic increase.
-  hdrColor = GetChromaticIncrease(hdrColor);
+  // Apply the hue shift.
+  hdrColor.rgb = GetHueShift(hdrColor.rgb);
 
+  // Apply the chromatic increase.
+  hdrColor.rgb = GetChromaticIncrease(hdrColor.rgb);
+  
   // Finish with the tone mapping.
   float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
-  vec3 toneMappedColor = GetToneMappedColor(hdrColor, averageLuminance, u_brightness);
+  vec3 toneMappedColor = GetToneMappedColor(hdrColor.rgb, averageLuminance, u_brightness);
   //  vec3 toneMappedColor = GetToneMappedColor(hdrColor, 1.0, u_brightness);
   //  vec3 toneMappedColor = hdrColor;
 
@@ -47,4 +52,15 @@ vec3 GetChromaticIncrease(vec3 color)
   vec3 lch = rgb_to_lch(color);
   lch.y = min(u_chromaFactor * lch.y, 140.0);
   return lch_to_rgb(lch);
+}
+
+vec3 GetHueShift(vec3 color)
+{
+  const vec3 k = vec3(0.57735, 0.57735, 0.57735);
+  float cosAngle = cos(u_hueShift);
+  float sinAngle = sin(u_hueShift);
+  return vec3((color * cosAngle) +
+              (sinAngle * cross(k, color)) +
+              ((1.0 - cosAngle) * dot(k, color) * k)
+             );
 }

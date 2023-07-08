@@ -20,6 +20,7 @@ class DisplacementFilter : public IScene
 {
   static constexpr auto* UNIFORM_LERP_FACTOR           = "u_lerpFactor";
   static constexpr auto* UNIFORM_BRIGHTNESS            = "u_brightness";
+  static constexpr auto* UNIFORM_HUE_SHIFT             = "u_hueShift";
   static constexpr auto* UNIFORM_CHROMA_FACTOR         = "u_chromaFactor";
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
