@@ -314,6 +314,7 @@ auto Gl2DTexture<CppTextureType,
   {
     GlCall(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboBuffers.ids.at(i)));
     GlCall(glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER));
+    GlCall(glDeleteBuffers(1, &m_pboBuffers.ids.at(i)));
   }
   GlCall(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));
 }
