@@ -23,7 +23,8 @@ ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     m_normalizedCoordsConverter{&normalizedCoordsConverter},
     m_parallel{&parallel},
     m_getZoomPoint{zoomPointFunc},
-    m_transformBuffer(m_dimensions.GetSize())
+    m_transformBuffer(m_dimensions.GetSize()),
+    m_previousTransformBuffer(m_dimensions.GetSize())
 {
 }
 

@@ -359,7 +359,6 @@ auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
   frameData.imageArrays.mainImagePixelBufferNeedsUpdating = true;
   frameData.imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 
-  using FilterBuffers = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
   const auto currentLerpFactor =
       static_cast<float>(m_filterBuffersService.GetTransformBufferLerpFactor()) /
       static_cast<float>(FilterBuffersService::MAX_TRAN_LERP_VALUE);
@@ -373,9 +372,8 @@ auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
   else
   {
     //LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
-    FilterBuffers::UpdateSrcePosFilterBuffer(currentLerpFactor,
-                                             frameData.filterPosArrays.filterDestPos,
-                                             frameData.filterPosArrays.filterSrcePos);
+    m_filterBuffersService.UpdateSrcePosFilterBuffer(currentLerpFactor,
+                                                     frameData.filterPosArrays.filterSrcePos);
     m_filterBuffersService.CopyTransformBuffer(frameData.filterPosArrays.filterDestPos);
     frameData.filterPosArrays.filterSrcePosNeedsUpdating = true;
     frameData.filterPosArrays.filterDestPosNeedsUpdating = true;

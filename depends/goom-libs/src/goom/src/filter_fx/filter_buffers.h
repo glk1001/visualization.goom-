@@ -45,15 +45,13 @@ public:
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
+  auto UpdateSrcePosFilterBuffer(float transformBufferLerpFactor,
+                                 std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept
+      -> void;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto GetTransformBufferState() const noexcept -> TransformBufferState;
-
-  static auto UpdateSrcePosFilterBuffer(const float transformBufferLerpFactor,
-                                        const std_spn::span<Point2dFlt>& destFilterPosBuffer,
-                                        std_spn::span<Point2dFlt> srceFilterPosBuffer) noexcept
-      -> void;
 
 private:
   std::unique_ptr<FilterStriper> m_filterStriper;
@@ -65,7 +63,6 @@ private:
   auto StartFreshTranBuffer() noexcept -> void;
   auto ResetTransformBuffer() noexcept -> void;
   auto UpdateNextTransformBufferStripe() noexcept -> void;
-  auto FillTransformBuffer() noexcept -> void;
 };
 
 template<class FilterStriper>
@@ -153,7 +150,10 @@ inline auto ZoomFilterBuffers<FilterStriper>::InitTransformBuffer() noexcept -> 
   m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
   m_filterStriper->ResetStripes();
 
-  FillTransformBuffer();
+  m_filterStriper->UpdateAllStripes();
+  m_filterStriper->SwapToPreviousTransformBuffer();
+  m_filterStriper->ResetTransformBufferIsReadyFlag();
+  m_filterStriper->UpdateAllStripes();
 
   m_filterStriper->ResetStripes();
   m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
@@ -208,17 +208,12 @@ inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTransformBufferStripe() 
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::FillTransformBuffer() noexcept -> void
-{
-  m_filterStriper->UpdateAllStripes();
-}
-
-template<class FilterStriper>
 auto ZoomFilterBuffers<FilterStriper>::UpdateSrcePosFilterBuffer(
     const float transformBufferLerpFactor,
-    const std_spn::span<Point2dFlt>& destFilterPosBuffer,
-    std_spn::span<Point2dFlt> srceFilterPosBuffer) noexcept -> void
+    std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept -> void
 {
+  const auto& destFilterPosBuffer = m_filterStriper->GetPreviousTransformBuffer();
+
   std::transform(destFilterPosBuffer.begin(),
                  destFilterPosBuffer.end(),
                  srceFilterPosBuffer.begin(),

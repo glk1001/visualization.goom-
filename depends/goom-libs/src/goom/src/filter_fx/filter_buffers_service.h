@@ -45,6 +45,9 @@ public:
 
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
+  auto UpdateSrcePosFilterBuffer(float transformBufferLerpFactor,
+                                 std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept
+      -> void;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   auto UpdateTransformBufferLerpData(
@@ -74,6 +77,13 @@ private:
 inline auto FilterBuffersService::IsTransformBufferReady() const noexcept -> bool
 {
   return m_filterBuffers.IsTransformBufferReady();
+}
+
+inline auto FilterBuffersService::UpdateSrcePosFilterBuffer(
+    const float transformBufferLerpFactor,
+    std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept -> void
+{
+  m_filterBuffers.UpdateSrcePosFilterBuffer(transformBufferLerpFactor, srceFilterPosBuffer);
 }
 
 inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept

@@ -25,20 +25,15 @@ using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
 {
-auto CopyBuffer(const std::vector<Point2dFlt>& srce, const std_spn::span<Point2dFlt> dest) noexcept
-    -> void
-{
-  std::copy(srce.cbegin(), srce.cend(), dest.begin());
-}
-
-auto CopyBuffer(const std_spn::span<Point2dFlt>& srce, std::vector<Point2dFlt>& dest) noexcept
+auto CopyBuffer(const std_spn::span<Point2dFlt>& srce, std_spn::span<Point2dFlt> dest) noexcept
     -> void
 {
   std::copy(srce.begin(), srce.end(), dest.begin());
 }
 
+// TODO - Move this into goom filters?
 auto InitFilterPosBuffer(const Dimensions& dimensions,
-                         std::vector<Point2dFlt>& tranBufferFlt) noexcept -> void
+                         std_spn::span<Point2dFlt> tranBufferFlt) noexcept -> void
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
 
@@ -80,7 +75,6 @@ DisplacementFilter::DisplacementFilter(
     m_shaderDir{shaderDir},
     m_buffSize{static_cast<size_t>(GetWidth()) * static_cast<size_t>(GetHeight())},
     m_aspectRatio{static_cast<float>(GetWidth()) / static_cast<float>(GetHeight())},
-    m_previousFilterDestPos(m_buffSize),
     m_frameDataArray(NUM_PBOS)
 {
 }
@@ -121,7 +115,6 @@ auto DisplacementFilter::DestroyScene() noexcept -> void
   m_programPass2FilterBuff1LuminanceHistogram.DeleteProgram();
   m_programPass3FilterBuff1LuminanceAverage.DeleteProgram();
   m_programPass4ResetFilterBuff2AndOutputBuff3.DeleteProgram();
-  m_programUpdateSrcePosFilter.DeleteProgram();
 }
 
 auto DisplacementFilter::InitFrameDataArray() noexcept -> void
@@ -151,17 +144,20 @@ auto DisplacementFilter::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcep
 auto DisplacementFilter::InitFilterPosArrays(GOOM::FilterPosArrays& filterPosArrays) noexcept
     -> void
 {
-  filterPosArrays.filterDestPosNeedsUpdating    = false;
-  filterPosArrays.lerpFactorForDestToSrceUpdate = 0.0F;
+  filterPosArrays.filterSrcePosNeedsUpdating = false;
+  filterPosArrays.filterDestPosNeedsUpdating = false;
 
   InitFilterPosBuffer({static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())},
-                      m_previousFilterDestPos);
+                      m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(0));
 
+  for (auto i = 1U; i < NUM_PBOS; ++i)
+  {
+    CopyBuffer(m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(0),
+               m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(i));
+  }
   for (auto i = 0U; i < NUM_PBOS; ++i)
   {
-    CopyBuffer(m_previousFilterDestPos,
-               m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(i));
-    CopyBuffer(m_previousFilterDestPos,
+    CopyBuffer(m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(0),
                m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(i));
   }
 }
@@ -282,8 +278,6 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
       {   "FILTER_BUFF1_IMAGE_UNIT",       std::to_string(FILTER_BUFF1_IMAGE_UNIT)},
       {   "FILTER_BUFF2_IMAGE_UNIT",       std::to_string(FILTER_BUFF2_IMAGE_UNIT)},
       {   "FILTER_BUFF3_IMAGE_UNIT",       std::to_string(FILTER_BUFF3_IMAGE_UNIT)},
-      {"FILTER_SRCE_POS_IMAGE_UNIT",    std::to_string(FILTER_SRCE_POS_IMAGE_UNIT)},
-      {"FILTER_DEST_POS_IMAGE_UNIT",    std::to_string(FILTER_DEST_POS_IMAGE_UNIT)},
       {        "LUM_AVG_IMAGE_UNIT",            std::to_string(LUM_AVG_IMAGE_UNIT)},
       {"LUM_HISTOGRAM_BUFFER_INDEX",    std::to_string(LUM_HISTOGRAM_BUFFER_INDEX)},
       {              "ASPECT_RATIO",                 std::to_string(m_aspectRatio)},
@@ -316,11 +310,6 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
                       GetShaderFilepath(PASS4_FRAGMENT_SHADER),
                       shaderMacros);
     m_programPass4ResetFilterBuff2AndOutputBuff3.LinkShader();
-
-    CompileShaderFile(m_programUpdateSrcePosFilter,
-                      GetShaderFilepath(UPDATE_SRCE_POS_FILTER_SHADER),
-                      shaderMacros);
-    m_programUpdateSrcePosFilter.LinkShader();
   }
   catch (GlslProgramException& e)
   {
@@ -536,6 +525,8 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 {
   for (auto i = 0U; i < NUM_PBOS; ++i)
   {
+    frameDataArray.at(i).filterPosArrays.filterSrcePos =
+        m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(i);
     frameDataArray.at(i).filterPosArrays.filterDestPos =
         m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(i);
 
@@ -550,7 +541,6 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 
 auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept -> void
 {
-  //LogInfo(GOOM::UTILS::GetGoomLogger(), "New lerpFactor = {}.", m_previousLerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.lerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
@@ -569,19 +559,12 @@ auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept
 
 auto DisplacementFilter::UpdateSrceFilterPosBufferToGl(const size_t pboIndex) noexcept -> void
 {
-  if (not m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
+  if (not m_frameDataArray.at(pboIndex).filterPosArrays.filterSrcePosNeedsUpdating)
   {
     return;
   }
 
-  if constexpr (USE_COMPUTE_SHADER_TO_UPDATE_FILTER_SRCE_POS)
-  {
-    UpdateSrcePosFilterUsingComputeShader(pboIndex);
-  }
-  else
-  {
-    UpdateSrcePosFilterUsingCPU(pboIndex);
-  }
+  m_glFilterPosBuffers.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
 }
 
 auto DisplacementFilter::UpdateDestFilterPosBufferToGl(const size_t pboIndex) noexcept -> void
@@ -592,40 +575,6 @@ auto DisplacementFilter::UpdateDestFilterPosBufferToGl(const size_t pboIndex) no
   }
 
   m_glFilterPosBuffers.filterDestPosTexture.CopyMappedBufferToTexture(pboIndex);
-
-  if constexpr (not USE_COMPUTE_SHADER_TO_UPDATE_FILTER_SRCE_POS)
-  {
-    CopyBuffer(m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(pboIndex),
-               m_previousFilterDestPos);
-  }
-}
-
-auto DisplacementFilter::UpdateSrcePosFilterUsingComputeShader(const size_t pboIndex) noexcept
-    -> void
-{
-  m_programUpdateSrcePosFilter.Use();
-
-  const auto destToSrceLerpFactor =
-      m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
-  m_programUpdateSrcePosFilter.SetUniform(UNIFORM_LERP_FACTOR, destToSrceLerpFactor);
-
-  GlCall(glDispatchCompute(static_cast<GLuint>(GetWidth()), static_cast<GLuint>(GetHeight()), 1));
-  GlCall(glMemoryBarrier(GL_TEXTURE_FETCH_BARRIER_BIT));
-}
-
-auto DisplacementFilter::UpdateSrcePosFilterUsingCPU(const size_t pboIndex) noexcept -> void
-{
-  auto filterSrcePosBuffer = m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(pboIndex);
-  const auto destToSrceLerpFactor =
-      m_frameDataArray.at(pboIndex).filterPosArrays.lerpFactorForDestToSrceUpdate;
-  std::transform(m_previousFilterDestPos.cbegin(),
-                 m_previousFilterDestPos.cend(),
-                 filterSrcePosBuffer.begin(),
-                 filterSrcePosBuffer.begin(),
-                 [&destToSrceLerpFactor](const Point2dFlt& prevDestPos, const Point2dFlt& srcePos)
-                 { return lerp(srcePos, prevDestPos, destToSrceLerpFactor); });
-
-  m_glFilterPosBuffers.filterSrcePosTexture.CopyMappedBufferToTexture(pboIndex);
 }
 
 auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,

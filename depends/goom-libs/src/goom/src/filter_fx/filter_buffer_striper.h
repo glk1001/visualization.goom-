@@ -50,6 +50,8 @@ public:
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
+  auto SwapToPreviousTransformBuffer() noexcept -> void;
 
   [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
 
@@ -70,7 +72,8 @@ private:
   static constexpr auto NUM_STRIPE_GROUPS = 20U;
   uint32_t m_transformBufferYLineStart    = 0;
   uint32_t m_transformBufferStripeHeight  = m_dimensions.GetHeight() / NUM_STRIPE_GROUPS;
-  std::vector<Point2dFlt> m_transformBuffer{};
+  std::vector<Point2dFlt> m_transformBuffer;
+  std::vector<Point2dFlt> m_previousTransformBuffer;
   bool m_transformBufferIsReady = false;
 
   auto DoNextStripe(uint32_t transformBufferStripeHeight) noexcept -> void;
@@ -90,6 +93,8 @@ inline auto ZoomFilterBufferStriper::CopyTransformBuffer(
     std_spn::span<Point2dFlt>& destBuff) noexcept -> void
 {
   std::copy(m_transformBuffer.cbegin(), m_transformBuffer.cend(), destBuff.begin());
+  // TODO - Should these two be a separate call?
+  SwapToPreviousTransformBuffer();
   m_transformBufferIsReady = false;
 }
 
@@ -123,6 +128,17 @@ inline auto ZoomFilterBufferStriper::UpdateAllStripes() noexcept -> void
 inline auto ZoomFilterBufferStriper::UpdateNextStripe() noexcept -> void
 {
   DoNextStripe(m_transformBufferStripeHeight);
+}
+
+inline auto ZoomFilterBufferStriper::GetPreviousTransformBuffer() const noexcept
+    -> const std::vector<Point2dFlt>&
+{
+  return m_previousTransformBuffer;
+}
+
+inline auto ZoomFilterBufferStriper::SwapToPreviousTransformBuffer() noexcept -> void
+{
+  std::swap(m_previousTransformBuffer, m_transformBuffer);
 }
 
 } // namespace GOOM::FILTER_FX

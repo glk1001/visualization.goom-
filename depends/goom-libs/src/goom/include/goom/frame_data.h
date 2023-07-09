@@ -8,16 +8,17 @@ namespace GOOM
 
 struct FilterPosArrays
 {
+  std_spn::span<Point2dFlt> filterSrcePos{};
+  bool filterSrcePosNeedsUpdating = false;
   std_spn::span<Point2dFlt> filterDestPos{};
-  bool filterDestPosNeedsUpdating{};
-  float lerpFactorForDestToSrceUpdate = 0.0F;
+  bool filterDestPosNeedsUpdating = false;
 };
 struct ImageArrays
 {
   GOOM::PixelBuffer mainImagePixelBuffer{};
-  bool mainImagePixelBufferNeedsUpdating{};
+  bool mainImagePixelBufferNeedsUpdating = false;
   GOOM::PixelBuffer lowImagePixelBuffer{};
-  bool lowImagePixelBufferNeedsUpdating{};
+  bool lowImagePixelBufferNeedsUpdating = false;
 };
 struct MiscData
 {
