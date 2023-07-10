@@ -36,17 +36,17 @@ FilterBuffersService::FilterBuffersService(
 {
 }
 
-auto FilterBuffersService::SetFilterBufferSettings(
-    const ZoomFilterBufferSettings& filterBufferSettings) noexcept -> void
+auto FilterBuffersService::SetFilterTransformBufferSettings(
+    const FilterTransformBufferSettings& filterTransformBufferSettings) noexcept -> void
 {
-  m_filterBuffers.SetFilterViewport(filterBufferSettings.filterEffectViewport);
+  m_filterBuffers.SetFilterViewport(filterTransformBufferSettings.viewport);
 
-  UpdateTranLerpProperties(
-      {filterBufferSettings.tranLerpIncrement, filterBufferSettings.tranLerpToMaxSwitchMult});
+  UpdateTransformBufferLerpData({filterTransformBufferSettings.lerpData.lerpIncrement,
+                                 filterTransformBufferSettings.lerpData.lerpToMaxLerp});
 }
 
 auto FilterBuffersService::SetFilterEffectsSettings(
-    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
+    const FilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_nextFilterEffectsSettings    = filterEffectsSettings;
   m_pendingFilterEffectsSettings = true;
@@ -72,34 +72,34 @@ inline auto FilterBuffersService::UpdateFilterEffectsSettings() noexcept -> void
 {
   UpdateZoomVectorFilterEffectsSettings();
 
-  m_filterBuffers.SetBuffMidpoint(m_currentFilterEffectsSettings.zoomMidpoint);
+  m_filterBuffers.SetTransformBufferMidpoint(m_currentFilterEffectsSettings.zoomMidpoint);
   m_filterBuffers.NotifyFilterSettingsHaveChanged();
 }
 
 inline auto FilterBuffersService::UpdateZoomVectorFilterEffectsSettings() noexcept -> void
 {
-  m_zoomVector->SetFilterSettings(m_currentFilterEffectsSettings);
+  m_zoomVector->SetFilterEffectsSettings(m_currentFilterEffectsSettings);
 
   m_currentFilterEffectsSettings.afterEffectsSettings.rotationAdjustments.Reset();
 }
 
-auto FilterBuffersService::UpdateZoomBuffers() noexcept -> void
+auto FilterBuffersService::UpdateTransformBuffer() noexcept -> void
 {
-  m_filterBuffers.UpdateTranBuffers();
+  m_filterBuffers.UpdateTransformBuffer();
 
-  if (AreStartingFreshTranBuffers())
+  if (IsStartingFreshTransformBuffer())
   {
-    StartFreshTranBuffers();
+    StartFreshTransformBuffer();
   }
 }
 
-inline auto FilterBuffersService::AreStartingFreshTranBuffers() const noexcept -> bool
+inline auto FilterBuffersService::IsStartingFreshTransformBuffer() const noexcept -> bool
 {
-  return m_filterBuffers.GetTranBuffersState() ==
-         FilterBuffers::TranBuffersState::START_FRESH_TRAN_BUFFERS;
+  return m_filterBuffers.GetTransformBufferState() ==
+         FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
 }
 
-auto FilterBuffersService::StartFreshTranBuffers() noexcept -> void
+auto FilterBuffersService::StartFreshTransformBuffer() noexcept -> void
 {
   // Don't start making new stripes until filter settings change.
   if (not m_pendingFilterEffectsSettings)
@@ -114,25 +114,24 @@ auto FilterBuffersService::StartFreshTranBuffers() noexcept -> void
   m_pendingFilterEffectsSettings = false;
 }
 
-inline auto FilterBuffersService::UpdateTranLerpProperties(
-    const TranLerpProperties& tranLerpProperties) noexcept -> void
+inline auto FilterBuffersService::UpdateTransformBufferLerpData(
+    const TransformBufferLerpData& transformBufferLerpData) noexcept -> void
 {
-  auto tranLerpFactor = m_filterBuffers.GetTranLerpFactor();
+  auto tranLerpFactor = m_filterBuffers.GetTransformBufferLerpFactor();
 
-  if (tranLerpProperties.tranLerpIncrement != 0U)
+  if (transformBufferLerpData.lerpIncrement != 0U)
   {
-    tranLerpFactor = std::min(tranLerpFactor + tranLerpProperties.tranLerpIncrement,
+    tranLerpFactor = std::min(tranLerpFactor + transformBufferLerpData.lerpIncrement,
                               FilterBuffers::MAX_TRAN_LERP_VALUE);
   }
 
-  if (not FloatsEqual(tranLerpProperties.tranLerpToMaxSwitchMult, 1.0F))
+  if (not FloatsEqual(transformBufferLerpData.lerpToMaxLerp, 1.0F))
   {
-    tranLerpFactor = STD20::lerp(FilterBuffers::MAX_TRAN_LERP_VALUE,
-                                 tranLerpFactor,
-                                 tranLerpProperties.tranLerpToMaxSwitchMult);
+    tranLerpFactor = STD20::lerp(
+        FilterBuffers::MAX_TRAN_LERP_VALUE, tranLerpFactor, transformBufferLerpData.lerpToMaxLerp);
   }
 
-  m_filterBuffers.SetTranLerpFactor(tranLerpFactor);
+  m_filterBuffers.SetTransformBufferLerpFactor(tranLerpFactor);
 }
 
 } // namespace GOOM::FILTER_FX

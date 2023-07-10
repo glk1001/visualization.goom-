@@ -22,50 +22,55 @@ template<class FilterStriper>
 class ZoomFilterBuffers
 {
 public:
-  enum class TranBuffersState
+  enum class TransformBufferState
   {
-    START_FRESH_TRAN_BUFFERS,
-    RESET_TRAN_BUFFERS,
-    TRAN_BUFFERS_READY,
+    START_FRESH_TRANSFORM_BUFFER,
+    RESET_TRANSFORM_BUFFER,
+    TRANSFORM_BUFFER_READY,
   };
 
   explicit ZoomFilterBuffers(std::unique_ptr<FilterStriper> filterStriper) noexcept;
 
   auto Start() noexcept -> void;
 
-  [[nodiscard]] auto GetBuffMidpoint() const noexcept -> Point2dInt;
-  auto SetBuffMidpoint(const Point2dInt& val) noexcept -> void;
+  [[nodiscard]] auto GetTransformBufferBuffMidpoint() const noexcept -> Point2dInt;
+  auto SetTransformBufferMidpoint(const Point2dInt& val) noexcept -> void;
 
   [[nodiscard]] auto GetFilterViewport() const noexcept -> Viewport;
   auto SetFilterViewport(const Viewport& val) noexcept -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
-  auto SetTranLerpFactor(uint32_t val) noexcept -> void;
+  [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> uint32_t;
+  auto SetTransformBufferLerpFactor(uint32_t val) noexcept -> void;
   static constexpr auto MAX_TRAN_LERP_VALUE = 65536U;
 
-  [[nodiscard]] auto GetTranBuffYLineStart() const noexcept -> uint32_t;
+  [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
 
   auto NotifyFilterSettingsHaveChanged() noexcept -> void;
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
-  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
-  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
+  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
-  auto UpdateTranBuffers() noexcept -> void;
-  [[nodiscard]] auto GetTranBuffersState() const noexcept -> TranBuffersState;
+  auto UpdateTransformBuffer() noexcept -> void;
+  [[nodiscard]] auto GetTransformBufferState() const noexcept -> TransformBufferState;
+
+  static auto UpdateSrcePosFilterBuffer(const float transformBufferLerpFactor,
+                                        const std_spn::span<Point2dFlt>& destFilterPosBuffer,
+                                        std_spn::span<Point2dFlt> srceFilterPosBuffer) noexcept
+      -> void;
 
 private:
   std::unique_ptr<FilterStriper> m_filterStriper;
-  uint32_t m_tranLerpFactor = 0U;
+  uint32_t m_transformBufferLerpFactor = 0U;
 
-  bool m_filterSettingsHaveChanged    = false;
-  TranBuffersState m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+  bool m_filterSettingsHaveChanged            = false;
+  TransformBufferState m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
 
-  auto InitAllTranBuffers() noexcept -> void;
-  auto StartFreshTranBuffers() noexcept -> void;
-  auto ResetTranBuffers() noexcept -> void;
-  auto UpdateNextTranBufferStripe() noexcept -> void;
-  auto FillNextTranBuffer() noexcept -> void;
+  auto InitTransformBuffer() noexcept -> void;
+  auto StartFreshTranBuffer() noexcept -> void;
+  auto ResetTransformBuffer() noexcept -> void;
+  auto UpdateNextTransformBufferStripe() noexcept -> void;
+  auto FillTransformBuffer() noexcept -> void;
 };
 
 template<class FilterStriper>
@@ -76,29 +81,30 @@ ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::IsTranBufferFltReady() const noexcept -> bool
+inline auto ZoomFilterBuffers<FilterStriper>::IsTransformBufferReady() const noexcept -> bool
 {
-  return m_filterStriper->IsTranBufferFltReady();
+  return m_filterStriper->IsTransformBufferReady();
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::CopyTranBufferFlt(
+inline auto ZoomFilterBuffers<FilterStriper>::CopyTransformBuffer(
     std_spn::span<Point2dFlt>& destBuff) noexcept -> void
 {
-  m_filterStriper->CopyTranBufferFlt(destBuff);
+  m_filterStriper->CopyTransformBuffer(destBuff);
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetBuffMidpoint() const noexcept -> Point2dInt
+inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferBuffMidpoint() const noexcept
+    -> Point2dInt
 {
-  return m_filterStriper->GetBuffMidpoint();
+  return m_filterStriper->GetTransformBufferMidpoint();
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::SetBuffMidpoint(const Point2dInt& val) noexcept
-    -> void
+inline auto ZoomFilterBuffers<FilterStriper>::SetTransformBufferMidpoint(
+    const Point2dInt& val) noexcept -> void
 {
-  m_filterStriper->SetBuffMidpoint(val);
+  m_filterStriper->SetTransformBufferMidpoint(val);
 }
 
 template<class FilterStriper>
@@ -115,22 +121,24 @@ inline auto ZoomFilterBuffers<FilterStriper>::SetFilterViewport(const Viewport& 
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTranBuffersState() const noexcept
-    -> TranBuffersState
+inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferState() const noexcept
+    -> TransformBufferState
 {
-  return m_tranBuffersState;
+  return m_transformBufferState;
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTranLerpFactor() const noexcept -> uint32_t
+inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferLerpFactor() const noexcept
+    -> uint32_t
 {
-  return m_tranLerpFactor;
+  return m_transformBufferLerpFactor;
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::SetTranLerpFactor(const uint32_t val) noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::SetTransformBufferLerpFactor(
+    const uint32_t val) noexcept -> void
 {
-  m_tranLerpFactor = val;
+  m_transformBufferLerpFactor = val;
 }
 
 template<class FilterStriper>
@@ -146,48 +154,49 @@ inline auto ZoomFilterBuffers<FilterStriper>::NotifyFilterSettingsHaveChanged() 
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTranBuffYLineStart() const noexcept -> uint32_t
+inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferYLineStart() const noexcept
+    -> uint32_t
 {
-  return m_filterStriper->GetTranBuffYLineStart();
+  return m_filterStriper->GetTransformBufferYLineStart();
 }
 
 template<class FilterStriper>
 inline auto ZoomFilterBuffers<FilterStriper>::Start() noexcept -> void
 {
-  InitAllTranBuffers();
+  InitTransformBuffer();
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::InitAllTranBuffers() noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::InitTransformBuffer() noexcept -> void
 {
-  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+  m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
   m_filterStriper->ResetStripes();
 
-  FillNextTranBuffer();
+  FillTransformBuffer();
 
   m_filterStriper->ResetStripes();
-  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+  m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::UpdateTranBuffers() noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::UpdateTransformBuffer() noexcept -> void
 {
-  if (m_tranBuffersState == TranBuffersState::RESET_TRAN_BUFFERS)
+  if (m_transformBufferState == TransformBufferState::RESET_TRANSFORM_BUFFER)
   {
-    ResetTranBuffers();
+    ResetTransformBuffer();
   }
-  else if (m_tranBuffersState == TranBuffersState::START_FRESH_TRAN_BUFFERS)
+  else if (m_transformBufferState == TransformBufferState::START_FRESH_TRANSFORM_BUFFER)
   {
-    StartFreshTranBuffers();
+    StartFreshTranBuffer();
   }
   else
   {
-    UpdateNextTranBufferStripe();
+    UpdateNextTransformBufferStripe();
   }
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffers() noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffer() noexcept -> void
 {
   if (not m_filterSettingsHaveChanged)
   {
@@ -196,32 +205,46 @@ inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffers() noexcept -
 
   m_filterSettingsHaveChanged = false;
   m_filterStriper->ResetStripes();
-  m_filterStriper->ResetTranBufferFltIsReady();
-  m_tranBuffersState = TranBuffersState::TRAN_BUFFERS_READY;
+  m_filterStriper->ResetTransformBufferIsReadyFlag();
+  m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::ResetTranBuffers() noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::ResetTransformBuffer() noexcept -> void
 {
-  m_tranLerpFactor = 0;
+  m_transformBufferLerpFactor = 0;
   m_filterStriper->ResetStripes();
-  m_tranBuffersState = TranBuffersState::START_FRESH_TRAN_BUFFERS;
+  m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTranBufferStripe() noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTransformBufferStripe() noexcept -> void
 {
   m_filterStriper->UpdateNextStripe();
-  if (0 == m_filterStriper->GetTranBuffYLineStart())
+  if (0 == m_filterStriper->GetTransformBufferYLineStart())
   {
-    m_tranBuffersState = TranBuffersState::RESET_TRAN_BUFFERS;
+    m_transformBufferState = TransformBufferState::RESET_TRANSFORM_BUFFER;
   }
 }
 
 template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::FillNextTranBuffer() noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::FillTransformBuffer() noexcept -> void
 {
   m_filterStriper->UpdateAllStripes();
+}
+
+template<class FilterStriper>
+auto ZoomFilterBuffers<FilterStriper>::UpdateSrcePosFilterBuffer(
+    const float transformBufferLerpFactor,
+    const std_spn::span<Point2dFlt>& destFilterPosBuffer,
+    std_spn::span<Point2dFlt> srceFilterPosBuffer) noexcept -> void
+{
+  std::transform(destFilterPosBuffer.begin(),
+                 destFilterPosBuffer.end(),
+                 srceFilterPosBuffer.begin(),
+                 srceFilterPosBuffer.begin(),
+                 [&transformBufferLerpFactor](const Point2dFlt& destPos, const Point2dFlt& srcePos)
+                 { return lerp(srcePos, destPos, transformBufferLerpFactor); });
 }
 
 } // namespace GOOM::FILTER_FX

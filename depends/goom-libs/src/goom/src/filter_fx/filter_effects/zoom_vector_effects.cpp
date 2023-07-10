@@ -33,7 +33,7 @@ auto ZoomVectorEffects::GetStandardAfterEffects(const IGoomRand& goomRand,
 }
 
 auto ZoomVectorEffects::SetFilterSettings(
-    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
+    const FilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_filterEffectsSettings = &filterEffectsSettings;
 

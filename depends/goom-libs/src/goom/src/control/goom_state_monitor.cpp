@@ -88,11 +88,11 @@ auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameV
 inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "Filter Buffer";
-  const auto& filterBufferSettings =
-      m_filterSettingsService->GetFilterSettings().filterBufferSettings;
+  const auto& filterTransformBufferSettings =
+      m_filterSettingsService->GetFilterSettings().filterTransformBufferSettings;
   return {
-      GetPair(PARAM_GROUP, "TranLerpIncrement", filterBufferSettings.tranLerpIncrement),
-      GetPair(PARAM_GROUP, "TranLerpToMaxSwitchMult", filterBufferSettings.tranLerpToMaxSwitchMult),
+      GetPair(PARAM_GROUP, "LerpIncrement", filterTransformBufferSettings.lerpData.lerpIncrement),
+      GetPair(PARAM_GROUP, "LerpToMaxLerp", filterTransformBufferSettings.lerpData.lerpToMaxLerp),
   };
 }
 

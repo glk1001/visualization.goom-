@@ -39,7 +39,7 @@ public:
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
-  auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void;
+  auto SetFilterSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept -> void;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
                                            float sqDistFromZero) const noexcept -> Point2dFlt;
@@ -56,7 +56,7 @@ public:
 
 private:
   const NormalizedCoordsConverter* m_normalizedCoordsConverter;
-  const ZoomFilterEffectsSettings* m_filterEffectsSettings{};
+  const FilterEffectsSettings* m_filterEffectsSettings{};
   AFTER_EFFECTS::ZoomVectorAfterEffects m_zoomVectorAfterEffects;
   float m_baseZoomInCoeffFactor = RAW_BASE_ZOOM_IN_COEFF_FACTOR;
   auto SetBaseZoomInCoeffFactor(float multiplier) noexcept -> void;

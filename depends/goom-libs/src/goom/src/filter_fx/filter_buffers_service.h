@@ -35,26 +35,21 @@ public:
 
   auto Start() noexcept -> void;
 
-  [[nodiscard]] auto IsTranBufferFltReady() const noexcept -> bool;
-  auto CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
-
   [[nodiscard]] auto GetCurrentFilterEffectsSettings() const noexcept
-      -> const ZoomFilterEffectsSettings&;
-  auto SetFilterEffectsSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
+      -> const FilterEffectsSettings&;
+  auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void;
-  auto SetFilterBufferSettings(const ZoomFilterBufferSettings& filterBufferSettings) noexcept
-      -> void;
+  auto SetFilterTransformBufferSettings(
+      const FilterTransformBufferSettings& filterTransformBufferSettings) noexcept -> void;
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
-  auto UpdateZoomBuffers() noexcept -> void;
+  auto UpdateTransformBuffer() noexcept -> void;
+  [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
+  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
-  [[nodiscard]] auto GetTranLerpFactor() const noexcept -> uint32_t;
-  struct TranLerpProperties
-  {
-    uint32_t tranLerpIncrement;
-    float tranLerpToMaxSwitchMult;
-  };
-  auto UpdateTranLerpProperties(const TranLerpProperties& tranLerpProperties) noexcept -> void;
+  auto UpdateTransformBufferLerpData(
+      const TransformBufferLerpData& transformBufferLerpData) noexcept -> void;
+  [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> uint32_t;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
@@ -63,36 +58,36 @@ private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
 
-  ZoomFilterEffectsSettings m_currentFilterEffectsSettings{};
-  ZoomFilterEffectsSettings m_nextFilterEffectsSettings{};
+  FilterEffectsSettings m_currentFilterEffectsSettings{};
+  FilterEffectsSettings m_nextFilterEffectsSettings{};
   bool m_pendingFilterEffectsSettings = false;
 
   auto UpdateFilterEffectsSettings() noexcept -> void;
   auto UpdateZoomVectorFilterEffectsSettings() noexcept -> void;
-  [[nodiscard]] auto AreStartingFreshTranBuffers() const noexcept -> bool;
-  auto StartFreshTranBuffers() noexcept -> void;
+  [[nodiscard]] auto IsStartingFreshTransformBuffer() const noexcept -> bool;
+  auto StartFreshTransformBuffer() noexcept -> void;
 };
 
-inline auto FilterBuffersService::IsTranBufferFltReady() const noexcept -> bool
+inline auto FilterBuffersService::IsTransformBufferReady() const noexcept -> bool
 {
-  return m_filterBuffers.IsTranBufferFltReady();
+  return m_filterBuffers.IsTransformBufferReady();
 }
 
-inline auto FilterBuffersService::CopyTranBufferFlt(std_spn::span<Point2dFlt>& destBuff) noexcept
+inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept
     -> void
 {
-  m_filterBuffers.CopyTranBufferFlt(destBuff);
+  m_filterBuffers.CopyTransformBuffer(destBuff);
 }
 
 inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexcept
-    -> const ZoomFilterEffectsSettings&
+    -> const FilterEffectsSettings&
 {
   return m_currentFilterEffectsSettings;
 }
 
-inline auto FilterBuffersService::GetTranLerpFactor() const noexcept -> uint32_t
+inline auto FilterBuffersService::GetTransformBufferLerpFactor() const noexcept -> uint32_t
 {
-  return m_filterBuffers.GetTranLerpFactor();
+  return m_filterBuffers.GetTransformBufferLerpFactor();
 }
 
 inline auto FilterBuffersService::HaveFilterSettingsChanged() const noexcept -> bool

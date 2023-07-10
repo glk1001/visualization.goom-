@@ -118,6 +118,7 @@ public:
 
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
+  auto UpdateFrameData(FrameData& frameData) -> void;
 
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
   [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;
@@ -133,11 +134,10 @@ private:
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   FxHelper m_fxHelper;
 
-  bool m_noZooms         = false;
-  uint32_t m_updateNum   = 0;
-  FrameData* m_frameData = nullptr;
-  PixelBuffer* m_p1      = nullptr;
-  PixelBuffer* m_p2      = nullptr;
+  bool m_noZooms       = false;
+  uint32_t m_updateNum = 0;
+  PixelBuffer* m_p1    = nullptr;
+  PixelBuffer* m_p2    = nullptr;
 
   FilterSettingsService m_filterSettingsService;
   FilterBuffersService m_filterBuffersService;
@@ -161,7 +161,7 @@ private:
   auto ResetDrawBuffSettings(const FXBuffSettings& settings) -> void;
 
   auto ApplyStateToMultipleBuffers(const AudioSamples& soundData) -> void;
-  auto UpdateZoomBuffers() -> void;
+  auto UpdateTransformBuffer() -> void;
   auto ApplyEndEffectIfNearEnd() -> void;
 
   auto UpdateFilterSettings() -> void;
@@ -256,6 +256,11 @@ auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std:
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }
 
+auto GoomControl::UpdateFrameData(FrameData& frameData) -> void
+{
+  m_pimpl->UpdateFrameData(frameData);
+}
+
 auto GoomControl::GetNumPoolThreads() const noexcept -> size_t
 {
   return m_pimpl->GetNumPoolThreads();
@@ -336,40 +341,47 @@ inline auto GoomControl::GoomControlImpl::SetShowSongTitle(const ShowSongTitleTy
 
 inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> void
 {
-  m_frameData = &frameData;
+  m_p1 = &frameData.imageArrays.mainImagePixelBuffer;
+  m_p2 = &frameData.imageArrays.lowImagePixelBuffer;
+  m_p1->Fill(ZERO_PIXEL);
+  m_p2->Fill(ZERO_PIXEL);
+  m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
+}
 
+auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
+{
   const auto shaderVariables             = GetLastShaderVariables();
   frameData.miscData.brightness          = shaderVariables.brightness;
   frameData.miscData.hueShift            = shaderVariables.hueShift;
   frameData.miscData.chromaFactor        = shaderVariables.chromaFactor;
   frameData.miscData.baseColorMultiplier = shaderVariables.baseColorMultiplier;
 
-  m_p1 = &m_frameData->imageArrays.mainImagePixelBuffer;
-  m_p2 = &m_frameData->imageArrays.lowImagePixelBuffer;
-  m_p1->Fill(ZERO_PIXEL);
-  m_p2->Fill(ZERO_PIXEL);
-  m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
+  frameData.imageArrays.mainImagePixelBufferNeedsUpdating = true;
+  frameData.imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 
-  m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
-  m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating  = true;
+  using FilterBuffers = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
+  const auto currentLerpFactor =
+      static_cast<float>(m_filterBuffersService.GetTransformBufferLerpFactor()) /
+      static_cast<float>(FilterBuffers::MAX_TRAN_LERP_VALUE);
 
-  using FilterBuffers          = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
-  const auto currentLerpFactor = static_cast<float>(m_filterBuffersService.GetTranLerpFactor()) /
-                                 static_cast<float>(FilterBuffers::MAX_TRAN_LERP_VALUE);
-
-  if (not m_filterBuffersService.IsTranBufferFltReady())
+  if (not m_filterBuffersService.IsTransformBufferReady())
   {
-    m_frameData->filterPosArrays.filterDestPosNeedsUpdating = false;
-    m_frameData->miscData.lerpFactor                        = currentLerpFactor;
+    frameData.filterPosArrays.filterSrcePosNeedsUpdating = false;
+    frameData.filterPosArrays.filterDestPosNeedsUpdating = false;
+    frameData.miscData.lerpFactor                        = currentLerpFactor;
   }
   else
   {
     //LogInfo(*m_goomLogger, "Filter dest needs updating. Data passed on.");
-    m_filterBuffersService.CopyTranBufferFlt(m_frameData->filterPosArrays.filterDestPos);
-    m_musicSettingsReactor.ResetTranLerpSettings();
-    m_frameData->filterPosArrays.filterDestPosNeedsUpdating    = true;
-    m_frameData->filterPosArrays.lerpFactorForDestToSrceUpdate = currentLerpFactor;
-    m_frameData->miscData.lerpFactor                           = 0.0F;
+    FilterBuffers::UpdateSrcePosFilterBuffer(currentLerpFactor,
+                                             frameData.filterPosArrays.filterDestPos,
+                                             frameData.filterPosArrays.filterSrcePos);
+    m_filterBuffersService.CopyTransformBuffer(frameData.filterPosArrays.filterDestPos);
+    frameData.filterPosArrays.filterSrcePosNeedsUpdating = true;
+    frameData.filterPosArrays.filterDestPosNeedsUpdating = true;
+    frameData.miscData.lerpFactor                        = 0.0F;
+
+    m_musicSettingsReactor.ResetTransformBufferLerpData();
   }
 }
 
@@ -409,7 +421,8 @@ inline auto GoomControl::GoomControlImpl::GetNumPoolThreads() const noexcept -> 
 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
-  Expects(m_frameData != nullptr);
+  Expects(m_p1 != nullptr);
+  Expects(m_p2 != nullptr);
 
   m_goomLogger->StartGoomControl(this);
 
@@ -520,7 +533,7 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
   UseMusicToChangeSettings();
   UpdateFilterSettings();
 
-  UpdateZoomBuffers();
+  UpdateTransformBuffer();
   ApplyStateToMultipleBuffers(soundData);
   ApplyEndEffectIfNearEnd();
 
@@ -587,7 +600,7 @@ inline auto GoomControl::GoomControlImpl::UseMusicToChangeSettings() -> void
 
   m_musicSettingsReactor.RegularlyLowerTheSpeed();
 
-  m_musicSettingsReactor.ChangeZoomEffects();
+  m_musicSettingsReactor.ChangeFilterSettings();
 }
 
 inline auto GoomControl::GoomControlImpl::ProcessAudio(const AudioSamples& soundData) -> void
@@ -612,14 +625,14 @@ inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void
   m_visualFx.ApplyEndEffectIfNearEnd(m_runningTimeStopwatch.GetTimeValues());
 }
 
-inline auto GoomControl::GoomControlImpl::UpdateZoomBuffers() -> void
+inline auto GoomControl::GoomControlImpl::UpdateTransformBuffer() -> void
 {
   if (m_noZooms)
   {
     return;
   }
 
-  m_filterBuffersService.UpdateZoomBuffers();
+  m_filterBuffersService.UpdateTransformBuffer();
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
@@ -628,7 +641,8 @@ inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void
 
   m_visualFx.SetZoomMidpoint(newFilterSettings.filterEffectsSettings.zoomMidpoint);
 
-  m_filterBuffersService.SetFilterBufferSettings(newFilterSettings.filterBufferSettings);
+  m_filterBuffersService.SetFilterTransformBufferSettings(
+      newFilterSettings.filterTransformBufferSettings);
 
   if (newFilterSettings.filterEffectsSettingsHaveChanged)
   {

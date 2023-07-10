@@ -23,18 +23,18 @@ ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     m_normalizedCoordsConverter{&normalizedCoordsConverter},
     m_parallel{&parallel},
     m_getZoomPoint{zoomPointFunc},
-    m_tranBufferFlt(m_dimensions.GetSize())
+    m_transformBuffer(m_dimensions.GetSize())
 {
 }
 
 auto ZoomFilterBufferStriper::ResetStripes() noexcept -> void
 {
-  m_tranBuffYLineStart = 0;
+  m_transformBufferYLineStart = 0;
 }
 
-auto ZoomFilterBufferStriper::ResetTranBufferFltIsReady() noexcept -> void
+auto ZoomFilterBufferStriper::ResetTransformBufferIsReadyFlag() noexcept -> void
 {
-  m_tranBufferFltIsReady = false;
+  m_transformBufferIsReady = false;
 }
 
 /*
@@ -44,10 +44,11 @@ auto ZoomFilterBufferStriper::ResetTranBufferFltIsReady() noexcept -> void
  * Translation (-data->middleX, -data->middleY)
  * Homothetie (Center : 0,0   Coeff : 2/data->screenWidth)
  */
-auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) noexcept -> void
+auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t transformBufferStripeHeight) noexcept
+    -> void
 {
-  Expects(m_tranBufferFlt.size() == m_dimensions.GetSize());
-  Expects(not m_tranBufferFltIsReady);
+  Expects(m_transformBuffer.size() == m_dimensions.GetSize());
+  Expects(not m_transformBufferIsReady);
 
   const auto screenWidth                  = m_dimensions.GetWidth();
   const auto screenSpan                   = static_cast<float>(screenWidth - 1);
@@ -58,7 +59,7 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
       [this, &screenWidth, &sourceCoordsStepSize, &sourceViewportCoordsStepSize](const size_t y)
   {
     // Y-position of the first stripe pixel to compute in screen coordinates.
-    const auto yScreenCoord = static_cast<uint32_t>(y) + m_tranBuffYLineStart;
+    const auto yScreenCoord = static_cast<uint32_t>(y) + m_transformBufferYLineStart;
     auto tranBufferPos      = yScreenCoord * screenWidth;
 
     auto centredSourceCoords =
@@ -71,7 +72,7 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
       const auto zoomCoords = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
       const auto uncenteredZoomCoords = m_normalizedMidpoint + zoomCoords;
 
-      m_tranBufferFlt[tranBufferPos] = uncenteredZoomCoords.GetFltCoords();
+      m_transformBuffer[tranBufferPos] = uncenteredZoomCoords.GetFltCoords();
 
       centredSourceCoords.IncX(sourceCoordsStepSize);
       centredSourceViewportCoords.IncX(sourceViewportCoordsStepSize);
@@ -81,16 +82,16 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t tranBuffStripeHeight) 
 
   // Where (vertically) to stop generating the buffer stripe.
   const auto tranBuffYLineEnd =
-      std::min(m_dimensions.GetHeight(), m_tranBuffYLineStart + tranBuffStripeHeight);
-  const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_tranBuffYLineStart);
+      std::min(m_dimensions.GetHeight(), m_transformBufferYLineStart + transformBufferStripeHeight);
+  const auto numStripes = static_cast<size_t>(tranBuffYLineEnd - m_transformBufferYLineStart);
 
   m_parallel->ForLoop(numStripes, doStripeLine);
 
-  m_tranBuffYLineStart += tranBuffStripeHeight;
+  m_transformBufferYLineStart += transformBufferStripeHeight;
   if (tranBuffYLineEnd >= m_dimensions.GetHeight())
   {
-    m_tranBuffYLineStart   = 0;
-    m_tranBufferFltIsReady = true;
+    m_transformBufferYLineStart = 0;
+    m_transformBufferIsReady    = true;
   }
 }
 

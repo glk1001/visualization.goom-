@@ -13,14 +13,18 @@ namespace GOOM::FILTER_FX
 
 class IZoomInCoefficientsEffect;
 
-struct ZoomFilterBufferSettings
+struct TransformBufferLerpData
 {
-  uint32_t tranLerpIncrement{};
-  float tranLerpToMaxSwitchMult{};
-  Viewport filterEffectViewport;
+  uint32_t lerpIncrement{};
+  float lerpToMaxLerp{};
+};
+struct FilterTransformBufferSettings
+{
+  TransformBufferLerpData lerpData{};
+  Viewport viewport;
 };
 
-struct ZoomFilterEffectsSettings
+struct FilterEffectsSettings
 {
   Vitesse vitesse;
 
@@ -34,11 +38,11 @@ struct ZoomFilterEffectsSettings
   AFTER_EFFECTS::AfterEffectsStates::AfterEffectsSettings afterEffectsSettings;
 };
 
-struct ZoomFilterSettings
+struct FilterSettings
 {
   bool filterEffectsSettingsHaveChanged = false;
-  ZoomFilterEffectsSettings filterEffectsSettings{};
-  ZoomFilterBufferSettings filterBufferSettings{};
+  FilterEffectsSettings filterEffectsSettings{};
+  FilterTransformBufferSettings filterTransformBufferSettings{};
 };
 
 } // namespace GOOM::FILTER_FX

@@ -29,8 +29,8 @@ FilterZoomVector::FilterZoomVector(
 {
 }
 
-auto FilterZoomVector::SetFilterSettings(
-    const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept -> void
+auto FilterZoomVector::SetFilterEffectsSettings(
+    const FilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
   m_zoomVectorEffects.SetFilterSettings(filterEffectsSettings);
 }

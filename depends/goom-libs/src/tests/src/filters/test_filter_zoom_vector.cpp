@@ -39,11 +39,11 @@ namespace GOOM::UNIT_TESTS
 {
 
 using Catch::Approx;
+using FILTER_FX::FilterEffectsSettings;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::Vitesse;
-using FILTER_FX::ZoomFilterEffectsSettings;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlay;
 using FILTER_FX::AFTER_EFFECTS::RotationAdjustments;
@@ -79,7 +79,7 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
   return BASE_ZOOM_IN_COEFF_FACTOR * (1.0F + relativeSpeed);
 }
 
-[[nodiscard]] auto GetZoomFilterEffectsSettings() -> ZoomFilterEffectsSettings
+[[nodiscard]] auto GetZoomFilterEffectsSettings() -> FilterEffectsSettings
 {
   static constexpr auto DEFAULT_ZOOM_MID_X                          = 16;
   static constexpr auto DEFAULT_ZOOM_MID_Y                          = 1;
@@ -97,7 +97,7 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
       {AfterEffectsTypes::XY_LERP_EFFECT, false},
   }}};
 
-  return ZoomFilterEffectsSettings{
+  return FilterEffectsSettings{
       Vitesse{},
       DEFAULT_MAX_ZOOM_IN_COEFF,
       UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
@@ -112,7 +112,7 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
 }
 
 auto TestZoomInPoint(FilterZoomVector& filterZoomVector,
-                     ZoomFilterEffectsSettings& filterSettings,
+                     FilterEffectsSettings& filterSettings,
                      const bool reverseSpeed,
                      const uint32_t speedInc)
 {
@@ -134,7 +134,7 @@ auto TestZoomInPoint(FilterZoomVector& filterZoomVector,
   UNSCOPED_INFO("baseZoomInCoeff = " << baseZoomInCoeff);
   UNSCOPED_INFO("zoomInFactor = " << zoomInFactor);
 
-  filterZoomVector.SetFilterSettings(filterSettings);
+  filterZoomVector.SetFilterEffectsSettings(filterSettings);
   const auto zoomInPoint = filterZoomVector.GetZoomInPoint(COORDS, COORDS);
   REQUIRE(zoomInPoint.GetX() == Approx(expectedZoomInPoint.GetX()));
   REQUIRE(zoomInPoint.GetY() == Approx(expectedZoomInPoint.GetY()));
@@ -159,7 +159,7 @@ TEST_CASE("FilterZoomVector")
     const auto zoomInFactor        = 1.0F - baseZoomInCoeff;
     const auto expectedZoomInPoint = zoomInFactor * coords;
 
-    filterZoomVector.SetFilterSettings(filterSettings);
+    filterZoomVector.SetFilterEffectsSettings(filterSettings);
     REQUIRE(filterZoomVector.GetZoomInPoint(coords, coords).GetX() ==
             Approx(expectedZoomInPoint.GetX()));
     REQUIRE(filterZoomVector.GetZoomInPoint(coords, coords).GetY() ==

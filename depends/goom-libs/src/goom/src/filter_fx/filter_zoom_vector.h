@@ -26,7 +26,7 @@ public:
                    const FILTER_EFFECTS::ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects =
                        FILTER_EFFECTS::ZoomVectorEffects::GetStandardAfterEffects) noexcept;
 
-  auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
+  auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void override;
 
   [[nodiscard]] auto GetZoomInPoint(const NormalizedCoords& coords,

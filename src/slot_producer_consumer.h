@@ -140,6 +140,7 @@ auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(uint32_t waitMs) noe
                                    [this]
                                    { return m_finished or (not m_inUseSlotsQueue.empty()); }))
     {
+      // LogInfo(*m_goomLogger, "*** Consumer gave up waiting for non-empty in-use queue.");
       return false;
     }
   }

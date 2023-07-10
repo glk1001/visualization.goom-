@@ -374,14 +374,12 @@ auto DisplacementFilter::Render() noexcept -> void
   GlCall(glViewport(0, 0, GetWidth(), GetHeight()));
 
   Pass1UpdateFilterBuff1AndBuff3();
-  //  SaveBuffersAfterPass1();
 
   Pass2FilterBuff3LuminanceHistogram();
 
   Pass3FilterBuff3LuminanceAverage();
 
   Pass4UpdateFilterBuff2AndOutputBuff3();
-  //  SaveBuffersAfterPass4();
 
   Pass5OutputToScreen();
 

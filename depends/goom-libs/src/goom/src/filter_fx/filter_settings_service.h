@@ -86,37 +86,36 @@ public:
   [[nodiscard]] auto GetCurrentFilterModeName() const -> const std::string_view&;
   [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string_view&;
 
-  [[nodiscard]] auto GetFilterSettings() const -> const ZoomFilterSettings&;
+  [[nodiscard]] auto GetFilterSettings() const -> const FilterSettings&;
   [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   auto SetNewRandomFilter() -> void;
-
+  auto ResetRandomAfterEffects() -> void;
   auto ChangeMilieu() -> void;
-  auto ResetRandomExtraEffects() -> void;
   auto TurnOffRotation() -> void;
   auto MultiplyRotation(float factor) -> void;
   auto ToggleRotationDirection() -> void;
 
-  auto SetTranLerpIncrement(uint32_t value) -> void;
-  auto SetDefaultTranLerpIncrement() -> void;
-  auto MultiplyTranLerpIncrement(uint32_t factor) -> void;
-  auto SetTranLerpToMaxSwitchMult(float value) -> void;
-  auto SetTranLerpToMaxDefaultSwitchMult() -> void;
+  auto SetTransformBufferLerpIncrement(uint32_t value) -> void;
+  auto SetDefaultTransformBufferLerpIncrement() -> void;
+  auto MultiplyTransformBufferLerpIncrement(uint32_t factor) -> void;
+  auto SetTransformBufferLerpToMaxLerp(float value) -> void;
+  auto SetDefaultTransformBufferLerpToMaxLerp() -> void;
 
 protected:
   void SetFilterMode(ZoomFilterMode filterMode);
-  [[nodiscard]] auto GetFilterSettings() -> ZoomFilterSettings&;
+  [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeRandomViewport() -> void;
   virtual auto SetFilterModeRandomEffects() -> void;
-  virtual auto SetFilterModeExtraEffects() -> void;
-  virtual auto SetRandomizedExtraEffects() -> void;
-  virtual auto SetWaveModeExtraEffects() -> void;
-  virtual auto UpdateFilterSettingsFromExtraEffects() -> void;
+  virtual auto SetFilterModeAfterEffects() -> void;
+  virtual auto SetRandomizedAfterEffects() -> void;
+  virtual auto SetWaveModeAfterEffects() -> void;
+  virtual auto UpdateFilterSettingsFromAfterEffects() -> void;
 
 private:
   const PluginInfo* m_goomInfo;
@@ -142,7 +141,7 @@ private:
   static constexpr auto DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION  = 0.5F;
   static constexpr auto MAX_MAX_ZOOM_IN_COEFF                        = 4.01F;
-  ZoomFilterSettings m_filterSettings;
+  FilterSettings m_filterSettings;
   UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
@@ -180,7 +179,7 @@ private:
   [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) -> bool;
 };
 
-inline auto FilterSettingsService::GetFilterSettings() const -> const ZoomFilterSettings&
+inline auto FilterSettingsService::GetFilterSettings() const -> const FilterSettings&
 {
   return m_filterSettings;
 }
@@ -200,7 +199,7 @@ inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const st
   return m_filterModeData[m_previousFilterMode].name;
 }
 
-inline auto FilterSettingsService::GetFilterSettings() -> ZoomFilterSettings&
+inline auto FilterSettingsService::GetFilterSettings() -> FilterSettings&
 {
   return m_filterSettings;
 }
@@ -274,8 +273,8 @@ inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
   SetRandomZoomMidpoint();
   SetFilterModeRandomEffects();
   SetFilterModeRandomViewport();
-  SetFilterModeExtraEffects();
-  UpdateFilterSettingsFromExtraEffects();
+  SetFilterModeAfterEffects();
+  UpdateFilterSettingsFromAfterEffects();
 }
 
 inline auto FilterSettingsService::TurnOffRotation() -> void
@@ -315,29 +314,30 @@ inline auto FilterSettingsService::ToggleRotationDirection() -> void
       AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
-inline auto FilterSettingsService::SetTranLerpIncrement(const uint32_t value) -> void
+inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const uint32_t value) -> void
 {
-  m_filterSettings.filterBufferSettings.tranLerpIncrement = value;
+  m_filterSettings.filterTransformBufferSettings.lerpData.lerpIncrement = value;
 }
 
-inline auto FilterSettingsService::SetDefaultTranLerpIncrement() -> void
+inline auto FilterSettingsService::SetDefaultTransformBufferLerpIncrement() -> void
 {
-  SetTranLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
+  SetTransformBufferLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
 }
 
-inline auto FilterSettingsService::MultiplyTranLerpIncrement(const uint32_t factor) -> void
+inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const uint32_t factor)
+    -> void
 {
-  m_filterSettings.filterBufferSettings.tranLerpIncrement *= factor;
+  m_filterSettings.filterTransformBufferSettings.lerpData.lerpIncrement *= factor;
 }
 
-inline auto FilterSettingsService::SetTranLerpToMaxSwitchMult(const float value) -> void
+inline auto FilterSettingsService::SetTransformBufferLerpToMaxLerp(const float value) -> void
 {
-  m_filterSettings.filterBufferSettings.tranLerpToMaxSwitchMult = value;
+  m_filterSettings.filterTransformBufferSettings.lerpData.lerpToMaxLerp = value;
 }
 
-inline auto FilterSettingsService::SetTranLerpToMaxDefaultSwitchMult() -> void
+inline auto FilterSettingsService::SetDefaultTransformBufferLerpToMaxLerp() -> void
 {
-  SetTranLerpToMaxSwitchMult(DEFAULT_SWITCH_MULT);
+  SetTransformBufferLerpToMaxLerp(DEFAULT_SWITCH_MULT);
 }
 
 } // namespace GOOM::FILTER_FX

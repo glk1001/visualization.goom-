@@ -203,13 +203,13 @@ auto GoomVisualization::AddAudioSample(const std::vector<float>& audioSample) ->
   Expects(m_audioSampleLen == audioSample.size());
 
 #if DEBUG_LOGGING
-  //LogInfo(*m_goomLogger, "Moving audio sample to producer.");
+  // LogInfo(*m_goomLogger, "Moving audio sample to producer.");
 #endif
   if (not m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, audioSample}))
   {
     ++m_numberOfDroppedAudioSamples;
 #if DEBUG_LOGGING
-    //  LogWarn(*m_goomLogger, "### Resource queue full - skipping this audio sample.");
+    // LogWarn(*m_goomLogger, "### Resource queue full - skipping this audio sample.");
 #endif
     return;
   }
@@ -259,6 +259,7 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
 
   m_goomControl->SetFrameData(frameData);
   m_goomControl->UpdateGoomBuffers(audioSamples);
+  m_goomControl->UpdateFrameData(frameData);
 
   const auto duration = std::chrono::system_clock::now() - startTime;
   m_totalProductionTimeInMs +=

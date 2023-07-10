@@ -617,7 +617,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                RotationAdjustments{},
             }
         },
-        {DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT, DEFAULT_FILTER_VIEWPORT},
+        {{DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT}, DEFAULT_FILTER_VIEWPORT},
     },
     m_weightedFilterEvents{GetWeightedFilterEvents(goomRand)},
     m_zoomMidpointWeights{
@@ -678,7 +678,7 @@ auto FilterSettingsService::SetDefaultSettings() -> void
 {
   m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect = GetZoomInCoefficientsEffect();
   m_filterSettings.filterEffectsSettings.zoomMidpoint             = m_screenCentre;
-  m_filterSettings.filterBufferSettings.filterEffectViewport      = Viewport{};
+  m_filterSettings.filterTransformBufferSettings.viewport         = Viewport{};
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_randomizedAfterEffects->SetDefaults();
@@ -686,7 +686,7 @@ auto FilterSettingsService::SetDefaultSettings() -> void
 
 auto FilterSettingsService::SetFilterModeRandomViewport() -> void
 {
-  m_filterSettings.filterBufferSettings.filterEffectViewport =
+  m_filterSettings.filterTransformBufferSettings.viewport =
       m_filterModeData[m_filterMode].zoomInCoefficientsEffect->GetZoomInCoefficientsViewport();
 }
 
@@ -695,20 +695,20 @@ auto FilterSettingsService::SetFilterModeRandomEffects() -> void
   m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect->SetRandomParams();
 }
 
-auto FilterSettingsService::SetFilterModeExtraEffects() -> void
+auto FilterSettingsService::SetFilterModeAfterEffects() -> void
 {
-  SetRandomizedExtraEffects();
-  SetWaveModeExtraEffects();
+  SetRandomizedAfterEffects();
+  SetWaveModeAfterEffects();
 }
 
-auto FilterSettingsService::ResetRandomExtraEffects() -> void
+auto FilterSettingsService::ResetRandomAfterEffects() -> void
 {
   const auto& modeInfo = m_filterModeData[m_filterMode];
   m_randomizedAfterEffects->ResetStandardStates(modeInfo.afterEffectsProbabilities);
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
 }
 
-auto FilterSettingsService::SetRandomizedExtraEffects() -> void
+auto FilterSettingsService::SetRandomizedAfterEffects() -> void
 {
   const auto& modeInfo = m_filterModeData[m_filterMode];
 
@@ -719,7 +719,7 @@ auto FilterSettingsService::SetRandomizedExtraEffects() -> void
       RotationAdjustments::AdjustmentType::AFTER_RANDOM);
 }
 
-auto FilterSettingsService::SetWaveModeExtraEffects() -> void
+auto FilterSettingsService::SetWaveModeAfterEffects() -> void
 {
   if ((m_filterMode != ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) and
       (m_filterMode != ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) and
@@ -740,7 +740,7 @@ auto FilterSettingsService::SetWaveModeExtraEffects() -> void
   }
 }
 
-auto FilterSettingsService::UpdateFilterSettingsFromExtraEffects() -> void
+auto FilterSettingsService::UpdateFilterSettingsFromAfterEffects() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   m_randomizedAfterEffects->UpdateFilterSettingsFromStates(

@@ -29,9 +29,9 @@ public:
   auto Start() -> void;
   auto NewCycle() -> void;
 
-  auto ResetTranLerpSettings() -> void;
+  auto ResetTransformBufferLerpData() -> void;
 
-  auto ChangeZoomEffects() -> void;
+  auto ChangeFilterSettings() -> void;
   auto ChangeFilterModeIfMusicChanges() -> void;
 
   // gros frein si la musique est calme
@@ -66,9 +66,9 @@ private:
 
   static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 300;
   static constexpr auto MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 500;
-  int32_t m_maxTimeBetweenZoomEffectsChange   = MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE;
-  int32_t m_updatesSinceLastZoomEffectsChange = 0; // nombre de Cycle Depuis Dernier Changement
-  uint32_t m_previousZoomSpeed                = FILTER_FX::Vitesse::STOP_SPEED;
+  int32_t m_maxTimeBetweenFilterSettingsChange      = MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE;
+  int32_t m_numUpdatesSinceLastFilterSettingsChange = 0;
+  uint32_t m_previousZoomSpeed                      = FILTER_FX::Vitesse::STOP_SPEED;
 
   static constexpr auto MAX_NUM_STATE_SELECTIONS_BLOCKED = 3U;
   uint32_t m_stateSelectionBlocker                       = MAX_NUM_STATE_SELECTIONS_BLOCKED;
@@ -84,11 +84,11 @@ private:
   auto ChangeFilterMode() -> void;
   auto CheckIfUpdateFilterSettingsNow() -> void;
   auto ChangeFilterExtraSettings() -> void;
-  auto UpdateSettings() -> void;
-  auto UpdateTranLerpSettings() -> void;
-  auto SetNewTranLerpSettingsBasedOnSpeed() -> void;
+  auto UpdateFilterSettings() -> void;
+  auto UpdateTransformBufferLerpData() -> void;
+  auto SetNewTransformBufferLerpDataBasedOnSpeed() -> void;
+  auto ChangeTransformBufferLerpToMaxLerp() -> void;
   auto ChangeRotation() -> void;
-  auto ChangeTranBufferSwitchValues() -> void;
   auto ChangeSpeedReverse() -> void;
   auto ChangeVitesse() -> void;
   auto ChangeStopSpeeds() -> void;
@@ -147,7 +147,7 @@ inline auto GoomMusicSettingsReactor::BigBreak() -> void
 
 inline auto GoomMusicSettingsReactor::ChangeFilterModeIfMusicChanges() -> void
 {
-  if ((m_updatesSinceLastZoomEffectsChange <= m_maxTimeBetweenZoomEffectsChange) and
+  if ((m_numUpdatesSinceLastFilterSettingsChange <= m_maxTimeBetweenFilterSettingsChange) and
       ((m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() > 0) or
        (not m_goomRand->ProbabilityOf(PROB_CHANGE_FILTER_MODE))))
   {
@@ -180,7 +180,7 @@ inline auto GoomMusicSettingsReactor::CheckIfUpdateFilterSettingsNow() -> void
 inline auto GoomMusicSettingsReactor::ChangeFilterExtraSettings() -> void
 {
   m_filterSettingsService->ChangeMilieu();
-  m_filterSettingsService->ResetRandomExtraEffects();
+  m_filterSettingsService->ResetRandomAfterEffects();
 }
 
 inline auto GoomMusicSettingsReactor::ChangeRotation() -> void
@@ -254,10 +254,10 @@ inline auto GoomMusicSettingsReactor::BigNormalUpdate() -> void
   ChangeRotation();
   ChangeFilterExtraSettings();
   ChangeVitesse();
-  ChangeTranBufferSwitchValues();
+  ChangeTransformBufferLerpToMaxLerp();
   m_visualFx->ChangeAllFxColorMaps();
 
-  m_maxTimeBetweenZoomEffectsChange = m_goomRand->GetRandInRange(
+  m_maxTimeBetweenFilterSettingsChange = m_goomRand->GetRandInRange(
       MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE, MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE + 1);
 }
 
@@ -267,8 +267,8 @@ inline auto GoomMusicSettingsReactor::MegaLentUpdate() -> void
 
   m_visualFx->ChangeAllFxColorMaps();
   m_filterSettingsService->GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOWEST_SPEED);
-  m_filterSettingsService->SetDefaultTranLerpIncrement();
-  m_filterSettingsService->SetTranLerpToMaxSwitchMult(1.0F);
+  m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
+  m_filterSettingsService->SetTransformBufferLerpToMaxLerp(1.0F);
 }
 
 inline auto GoomMusicSettingsReactor::ChangeSpeedReverse() -> void
@@ -304,12 +304,12 @@ inline auto GoomMusicSettingsReactor::ChangeStopSpeeds() -> void
   }
 }
 
-inline auto GoomMusicSettingsReactor::ChangeTranBufferSwitchValues() -> void
+inline auto GoomMusicSettingsReactor::ChangeTransformBufferLerpToMaxLerp() -> void
 {
   if (m_lock.GetLockTime() > CHANGE_SWITCH_VALUES_LOCK_TIME)
   {
-    m_filterSettingsService->SetDefaultTranLerpIncrement();
-    m_filterSettingsService->SetTranLerpToMaxSwitchMult(1.0F);
+    m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
+    m_filterSettingsService->SetTransformBufferLerpToMaxLerp(1.0F);
   }
 }
 

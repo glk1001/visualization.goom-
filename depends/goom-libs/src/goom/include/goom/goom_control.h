@@ -46,6 +46,7 @@ public:
 
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;
+  auto UpdateFrameData(FrameData& frameData) -> void;
 
   [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;
 

@@ -28,10 +28,10 @@ namespace GOOM::UNIT_TESTS
 using CONTROL::GoomSoundEvents;
 using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterSettingsService;
+using FILTER_FX::FilterTransformBufferSettings;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::Viewport;
-using FILTER_FX::ZoomFilterBufferSettings;
 using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
 using UTILS::Parallel;
@@ -67,14 +67,17 @@ TEST_CASE("FilterBuffersService")
 
   SECTION("Correct initial lerp factor")
   {
-    REQUIRE(0 == filterBuffersService.GetTranLerpFactor());
+    REQUIRE(0 == filterBuffersService.GetTransformBufferLerpFactor());
   }
   SECTION("Correct lerp factor after an increment")
   {
     static constexpr auto DEFAULT_VIEWPORT = Viewport{};
-    const auto filterBufferSettings        = ZoomFilterBufferSettings{127, 1.0F, DEFAULT_VIEWPORT};
-    filterBuffersService.SetFilterBufferSettings(filterBufferSettings);
-    REQUIRE(127 == filterBuffersService.GetTranLerpFactor());
+    const auto filterBufferSettings        = FilterTransformBufferSettings{
+               {127, 1.0F},
+               DEFAULT_VIEWPORT
+    };
+    filterBuffersService.SetFilterTransformBufferSettings(filterBufferSettings);
+    REQUIRE(127 == filterBuffersService.GetTransformBufferLerpFactor());
   }
 }
 

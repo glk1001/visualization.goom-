@@ -8,7 +8,7 @@ namespace GOOM::FILTER_FX
 {
 
 class NormalizedCoords;
-struct ZoomFilterEffectsSettings;
+struct FilterEffectsSettings;
 
 class IZoomVector
 {
@@ -20,7 +20,7 @@ public:
   auto operator=(const IZoomVector&) -> IZoomVector& = delete;
   auto operator=(IZoomVector&&) -> IZoomVector&      = delete;
 
-  virtual auto SetFilterSettings(const ZoomFilterEffectsSettings& filterEffectsSettings) noexcept
+  virtual auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void = 0;
 
   virtual auto GetZoomInPoint(const NormalizedCoords& coords,
