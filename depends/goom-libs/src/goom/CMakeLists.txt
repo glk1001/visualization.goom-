@@ -134,7 +134,6 @@ add_library(goom
             src/utils/enum_utils.h
             src/utils/format_utils.h
             src/utils/name_value_pairs.cpp
-            src/utils/propagate_const.h
             src/utils/step_speed.h
             src/utils/stopwatch.h
             src/utils/strutils.cpp

@@ -15,7 +15,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
-#include "utils/propagate_const.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -32,7 +31,6 @@ using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
-using std::experimental::propagate_const;
 using UTILS::Timer;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
@@ -134,7 +132,7 @@ auto TubeParametricPath::GetNextPoint() const noexcept -> Point2dInt
 struct Shape
 {
   uint32_t shapeNum{};
-  propagate_const<std::unique_ptr<OscillatingPath>> path{};
+  std::unique_ptr<OscillatingPath> path{};
   uint8_t lineThickness{1};
 };
 
@@ -179,14 +177,14 @@ public:
 
 private:
   TubeData m_data;
-  propagate_const<std::unique_ptr<ShapeColorizer>> m_colorizer{
+  std::unique_ptr<ShapeColorizer> m_colorizer{
       std::make_unique<ShapeColorizer>(NUM_SHAPES_PER_TUBE, m_data, MAX_NUM_CIRCLES_IN_GROUP)};
   bool m_active                                = true;
   static constexpr float PATH_STEP             = NML_CIRCLE_SPEED;
   static constexpr uint32_t SHAPE_T_DELAY_TIME = 10;
   static constexpr float T_AT_CENTRE           = 0.5F;
   int32_t m_maxJitterOffset                    = 0;
-  propagate_const<std::unique_ptr<TubeParametricPath>> m_centrePath{
+  std::unique_ptr<TubeParametricPath> m_centrePath{
       std::make_unique<TubeParametricPath>(std::make_unique<TValue>(
           TValue::StepSizeProperties{PATH_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}))};
   TransformCentreFunc m_getTransformedCentre{};

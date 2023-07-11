@@ -7,7 +7,6 @@
 #include "goom_types.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/propagate_const.h"
 
 #include <cstdint>
 #include <memory>
@@ -57,7 +56,7 @@ private:
   float m_xPos                                      = 0.0F;
   float m_yPos                                      = 0.0F;
   int32_t m_timeLeftOfTitleDisplay                  = MAX_TEXT_DISPLAY_TIME;
-  std::experimental::propagate_const<std::unique_ptr<DRAW::SHAPE_DRAWERS::TextDrawer>> m_textDrawer;
+  std::unique_ptr<DRAW::SHAPE_DRAWERS::TextDrawer> m_textDrawer;
   int32_t m_screenWidth;
   int32_t m_screenHeight;
   std::string m_fontDirectory;

@@ -65,9 +65,9 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
                                           const FxHelper& fxHelper,
                                           const SmallImageBitmaps& smallBitmaps,
                                           const std::string& resourcesDirectory)
-    -> UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr>
+    -> UTILS::EnumMap<GoomDrawables, std::unique_ptr<IVisualFx>>
 {
-  return UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr>{{{
+  return UTILS::EnumMap<GoomDrawables, std::unique_ptr<IVisualFx>>{{{
       {GoomDrawables::CIRCLES, std::make_unique<CirclesFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::DOTS, std::make_unique<GoomDotsFx>(fxHelper, smallBitmaps)},
       {GoomDrawables::IFS, std::make_unique<IfsDancersFx>(fxHelper, smallBitmaps)},

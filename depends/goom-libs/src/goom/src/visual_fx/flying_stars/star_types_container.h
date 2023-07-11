@@ -4,7 +4,6 @@
 #include "point2d.h"
 #include "star_types_base.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/propagate_const.h"
 
 #include <cstdint>
 #include <memory>
@@ -59,8 +58,7 @@ private:
     _num // unused, and marks the enum end
   };
   static_assert(NUM_STAR_TYPES == UTILS::NUM<AvailableStarTypes>);
-  std::array<std::experimental::propagate_const<std::unique_ptr<StarType>>, NUM_STAR_TYPES>
-      m_starTypesList;
+  std::array<std::unique_ptr<StarType>, NUM_STAR_TYPES> m_starTypesList;
   static constexpr float STAR_TYPES_FIREWORKS_WEIGHT = 10.0F;
   static constexpr float STAR_TYPES_FOUNTAIN_WEIGHT  = 07.0F;
   static constexpr float STAR_TYPES_RAIN_WEIGHT      = 07.0F;

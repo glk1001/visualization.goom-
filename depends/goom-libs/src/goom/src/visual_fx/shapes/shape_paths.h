@@ -7,7 +7,6 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "utils/math/paths.h"
-#include "utils/propagate_const.h"
 
 #include <memory>
 
@@ -56,7 +55,7 @@ public:
 
 private:
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
-  std::experimental::propagate_const<std::shared_ptr<UTILS::MATH::IPath>> m_path;
+  std::shared_ptr<UTILS::MATH::IPath> m_path;
 
   ColorInfo m_colorInfo;
   [[nodiscard]] static auto GetColorMapTypes() noexcept

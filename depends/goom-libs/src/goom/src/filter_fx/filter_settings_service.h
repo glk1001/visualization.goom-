@@ -5,7 +5,6 @@
 #include "filter_settings.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/propagate_const.h"
 
 #include <functional>
 #include <memory>
@@ -122,8 +121,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Point2dInt m_screenCentre;
   std::string m_resourcesDirectory;
-  std::experimental::propagate_const<std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates>>
-      m_randomizedAfterEffects;
+  std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates> m_randomizedAfterEffects;
 
   ZoomFilterMode m_filterMode             = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_previousFilterMode     = ZoomFilterMode::NORMAL_MODE;

@@ -17,7 +17,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/math/paths.h"
-#include "utils/propagate_const.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
@@ -106,7 +105,7 @@ private:
 
   bool m_alternateMainLowDotColors = false;
   bool m_showLine                  = false;
-  std::experimental::propagate_const<std::unique_ptr<DotDrawer>> m_dotDrawer;
+  std::unique_ptr<DotDrawer> m_dotDrawer;
   auto DrawLine(const Point2dInt& position1,
                 const Point2dInt& position2,
                 float lineBrightness,

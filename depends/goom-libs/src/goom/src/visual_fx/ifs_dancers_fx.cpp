@@ -48,7 +48,6 @@
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/propagate_const.h"
 #include "utils/t_values.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
@@ -69,7 +68,6 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
-using std::experimental::propagate_const;
 using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Weights;
@@ -107,7 +105,7 @@ private:
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
-  propagate_const<std::unique_ptr<Fractal>> m_fractal{};
+  std::unique_ptr<Fractal> m_fractal{};
 
   auto InitFractal() noexcept -> void;
 

@@ -7,7 +7,6 @@
 #include "filter_fx/after_effects/rotation.h"
 #include "filter_fx/after_effects/tan_effect.h"
 #include "filter_fx/after_effects/xy_lerp_effect.h"
-#include "utils/propagate_const.h"
 
 #include <memory>
 
@@ -47,13 +46,13 @@ public:
   [[nodiscard]] auto GetXYLerpEffect() noexcept -> XYLerpEffect&;
 
 private:
-  std::experimental::propagate_const<std::unique_ptr<Hypercos>> m_hypercos;
-  std::experimental::propagate_const<std::unique_ptr<ImageVelocity>> m_imageVelocity;
-  std::experimental::propagate_const<std::unique_ptr<Noise>> m_noise;
-  std::experimental::propagate_const<std::unique_ptr<Planes>> m_planes;
-  std::experimental::propagate_const<std::unique_ptr<Rotation>> m_rotation;
-  std::experimental::propagate_const<std::unique_ptr<TanEffect>> m_tanEffect;
-  std::experimental::propagate_const<std::unique_ptr<XYLerpEffect>> m_xyLerpEffect;
+  std::unique_ptr<Hypercos> m_hypercos;
+  std::unique_ptr<ImageVelocity> m_imageVelocity;
+  std::unique_ptr<Noise> m_noise;
+  std::unique_ptr<Planes> m_planes;
+  std::unique_ptr<Rotation> m_rotation;
+  std::unique_ptr<TanEffect> m_tanEffect;
+  std::unique_ptr<XYLerpEffect> m_xyLerpEffect;
 };
 
 [[nodiscard]] auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,

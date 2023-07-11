@@ -5,7 +5,6 @@
 #include "goom_states.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
-#include "utils/propagate_const.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/shader_fx.h"
 #include "visual_fx_color_maps.h"
@@ -75,15 +74,13 @@ public:
   [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
 private:
-  std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::ShaderFx>> m_shaderFx;
-  using PropagateConstUniquePtr =
-      std::experimental::propagate_const<std::unique_ptr<VISUAL_FX::IVisualFx>>;
-  UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr> m_drawablesMap;
+  std::unique_ptr<VISUAL_FX::ShaderFx> m_shaderFx;
+  UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
   [[nodiscard]] static auto GetDrawablesMap(UTILS::Parallel& parallel,
                                             const VISUAL_FX::FxHelper& fxHelper,
                                             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                                             const std::string& resourcesDirectory)
-      -> UTILS::EnumMap<GoomDrawables, PropagateConstUniquePtr>;
+      -> UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>>;
   VisualFxColorMaps m_visualFxColorMaps;
   auto ChangeDotsColorMaps() noexcept -> void;
   auto ChangeLinesColorMaps() noexcept -> void;
