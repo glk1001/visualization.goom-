@@ -92,6 +92,7 @@ inline auto ZoomFilterBufferStriper::IsTransformBufferReady() const noexcept -> 
 inline auto ZoomFilterBufferStriper::CopyTransformBuffer(
     std_spn::span<Point2dFlt>& destBuff) noexcept -> void
 {
+  Expects(m_transformBufferIsReady);
   std::copy(m_transformBuffer.cbegin(), m_transformBuffer.cend(), destBuff.begin());
   // TODO - Should these two be a separate call?
   SwapToPreviousTransformBuffer();
@@ -106,6 +107,7 @@ inline auto ZoomFilterBufferStriper::GetTransformBufferMidpoint() const noexcept
 inline auto ZoomFilterBufferStriper::SetTransformBufferMidpoint(const Point2dInt& midpoint) noexcept
     -> void
 {
+  Expects(m_transformBufferYLineStart == 0U);
   m_midpoint           = midpoint;
   m_normalizedMidpoint = m_normalizedCoordsConverter->OtherToNormalizedCoords(m_midpoint);
 }
@@ -117,6 +119,7 @@ inline auto ZoomFilterBufferStriper::GetFilterViewport() const noexcept -> Viewp
 
 inline auto ZoomFilterBufferStriper::SetFilterViewport(const Viewport& val) noexcept -> void
 {
+  Expects(m_transformBufferYLineStart == 0U);
   m_filterViewport = val;
 }
 

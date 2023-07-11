@@ -63,6 +63,8 @@ private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
   uint32_t m_transformBufferLerpFactor = 0U;
+  Viewport m_nextFilterViewport{};
+  bool m_pendingFilterViewport = false;
 
   FilterEffectsSettings m_currentFilterEffectsSettings{};
   FilterEffectsSettings m_nextFilterEffectsSettings{};

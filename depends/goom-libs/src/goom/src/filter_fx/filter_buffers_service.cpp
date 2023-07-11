@@ -39,7 +39,8 @@ FilterBuffersService::FilterBuffersService(
 auto FilterBuffersService::SetFilterTransformBufferSettings(
     const FilterTransformBufferSettings& filterTransformBufferSettings) noexcept -> void
 {
-  m_filterBuffers.SetFilterViewport(filterTransformBufferSettings.viewport);
+  m_nextFilterViewport    = filterTransformBufferSettings.viewport;
+  m_pendingFilterViewport = true;
 
   UpdateTransformBufferLerpData({filterTransformBufferSettings.lerpData.lerpIncrement,
                                  filterTransformBufferSettings.lerpData.lerpToMaxLerp});
@@ -63,6 +64,9 @@ auto FilterBuffersService::Start() noexcept -> void
   m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
   Expects(m_currentFilterEffectsSettings.zoomInCoefficientsEffect != nullptr);
 
+  m_nextFilterViewport    = Viewport{};
+  m_pendingFilterViewport = true;
+
   UpdateFilterEffectsSettings();
 
   m_filterBuffers.Start();
@@ -71,6 +75,12 @@ auto FilterBuffersService::Start() noexcept -> void
 inline auto FilterBuffersService::UpdateFilterEffectsSettings() noexcept -> void
 {
   UpdateZoomVectorFilterEffectsSettings();
+
+  if (m_pendingFilterViewport)
+  {
+    m_filterBuffers.SetFilterViewport(m_nextFilterViewport);
+    m_pendingFilterViewport = false;
+  }
 
   m_filterBuffers.SetTransformBufferMidpoint(m_currentFilterEffectsSettings.zoomMidpoint);
   m_filterBuffers.NotifyFilterSettingsHaveChanged();
