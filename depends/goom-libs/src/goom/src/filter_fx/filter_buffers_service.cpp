@@ -117,21 +117,17 @@ auto FilterBuffersService::StartFreshTransformBuffer() noexcept -> void
 inline auto FilterBuffersService::UpdateTransformBufferLerpData(
     const TransformBufferLerpData& transformBufferLerpData) noexcept -> void
 {
-  auto tranLerpFactor = m_filterBuffers.GetTransformBufferLerpFactor();
-
   if (transformBufferLerpData.lerpIncrement != 0U)
   {
-    tranLerpFactor = std::min(tranLerpFactor + transformBufferLerpData.lerpIncrement,
-                              FilterBuffers::MAX_TRAN_LERP_VALUE);
+    m_transformBufferLerpFactor = std::min(
+        m_transformBufferLerpFactor + transformBufferLerpData.lerpIncrement, MAX_TRAN_LERP_VALUE);
   }
 
   if (not FloatsEqual(transformBufferLerpData.lerpToMaxLerp, 1.0F))
   {
-    tranLerpFactor = STD20::lerp(
-        FilterBuffers::MAX_TRAN_LERP_VALUE, tranLerpFactor, transformBufferLerpData.lerpToMaxLerp);
+    m_transformBufferLerpFactor = STD20::lerp(
+        MAX_TRAN_LERP_VALUE, m_transformBufferLerpFactor, transformBufferLerpData.lerpToMaxLerp);
   }
-
-  m_filterBuffers.SetTransformBufferLerpFactor(tranLerpFactor);
 }
 
 } // namespace GOOM::FILTER_FX

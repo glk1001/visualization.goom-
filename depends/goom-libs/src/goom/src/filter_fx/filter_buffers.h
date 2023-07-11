@@ -39,10 +39,6 @@ public:
   [[nodiscard]] auto GetFilterViewport() const noexcept -> Viewport;
   auto SetFilterViewport(const Viewport& val) noexcept -> void;
 
-  [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> uint32_t;
-  auto SetTransformBufferLerpFactor(uint32_t val) noexcept -> void;
-  static constexpr auto MAX_TRAN_LERP_VALUE = 65536U;
-
   [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
 
   auto NotifyFilterSettingsHaveChanged() noexcept -> void;
@@ -61,7 +57,6 @@ public:
 
 private:
   std::unique_ptr<FilterStriper> m_filterStriper;
-  uint32_t m_transformBufferLerpFactor = 0U;
 
   bool m_filterSettingsHaveChanged            = false;
   TransformBufferState m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
@@ -125,20 +120,6 @@ inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferState() const no
     -> TransformBufferState
 {
   return m_transformBufferState;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferLerpFactor() const noexcept
-    -> uint32_t
-{
-  return m_transformBufferLerpFactor;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::SetTransformBufferLerpFactor(
-    const uint32_t val) noexcept -> void
-{
-  m_transformBufferLerpFactor = val;
 }
 
 template<class FilterStriper>
@@ -212,7 +193,6 @@ inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffer() noexcept ->
 template<class FilterStriper>
 inline auto ZoomFilterBuffers<FilterStriper>::ResetTransformBuffer() noexcept -> void
 {
-  m_transformBufferLerpFactor = 0;
   m_filterStriper->ResetStripes();
   m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
 }

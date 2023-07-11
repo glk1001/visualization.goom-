@@ -362,7 +362,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
   using FilterBuffers = FILTER_FX::ZoomFilterBuffers<FILTER_FX::ZoomFilterBufferStriper>;
   const auto currentLerpFactor =
       static_cast<float>(m_filterBuffersService.GetTransformBufferLerpFactor()) /
-      static_cast<float>(FilterBuffers::MAX_TRAN_LERP_VALUE);
+      static_cast<float>(FilterBuffersService::MAX_TRAN_LERP_VALUE);
 
   if (not m_filterBuffersService.IsTransformBufferReady())
   {
@@ -381,6 +381,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
     frameData.filterPosArrays.filterDestPosNeedsUpdating = true;
     frameData.miscData.lerpFactor                        = 0.0F;
 
+    m_filterBuffersService.SetTransformBufferLerpFactor(0U);
     m_musicSettingsReactor.ResetTransformBufferLerpData();
   }
 }

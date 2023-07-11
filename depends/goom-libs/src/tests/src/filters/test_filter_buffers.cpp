@@ -261,10 +261,6 @@ TEST_CASE("ZoomFilterBuffers Basic")
   {
     REQUIRE(!filterBuffers.HaveFilterSettingsChanged());
   }
-  SECTION("Correct Starting TranLerpFactor")
-  {
-    REQUIRE(0 == filterBuffers.GetTransformBufferLerpFactor());
-  }
 }
 
 TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
@@ -279,10 +275,6 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
 
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == CONSTANT_ZOOM_VECTOR.GetConstCoords());
   REQUIRE(MID_PT == filterBuffers.GetTransformBufferBuffMidpoint());
-
-  // Lerp to the dest buffer only
-  filterBuffers.SetTransformBufferLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
-  REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTransformBufferLerpFactor());
 
   // tranPoint comes solely from the dest Zoom buffer which because we are using a
   // const ZoomVectorFunc, returns a const normalized value
@@ -344,7 +336,6 @@ auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
   FullyUpdateDestBuffer(filterBuffers);
   REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
           filterBuffers.GetTransformBufferState());
-  REQUIRE(0 == filterBuffers.GetTransformBufferLerpFactor());
   REQUIRE(0 == filterBuffers.GetTransformBufferYLineStart());
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_2 == constantZoomVector.GetConstCoords());
   REQUIRE(MID_PT == filterBuffers.GetTransformBufferBuffMidpoint());
@@ -411,14 +402,10 @@ TEST_CASE("ZoomFilterBuffers Stripes")
 
   TestCorrectStripesBasicValues(filterBuffers);
 
-  filterBuffers.SetTransformBufferLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
-  REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTransformBufferLerpFactor());
   constantZoomVector.SetConstCoords(CONST_ZOOM_VECTOR_COORDS_2);
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_2 == constantZoomVector.GetConstCoords());
   TestCorrectStripesFullyUpdate(filterBuffers, constantZoomVector);
 
-  filterBuffers.SetTransformBufferLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
-  REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTransformBufferLerpFactor());
   const auto expectedDestPoint =
       TestCorrectStripesGetExpectedDestPoint(filterBuffers, constantZoomVector);
   for (auto buffPos = 0U; buffPos < (WIDTH * HEIGHT); ++buffPos)
@@ -442,10 +429,6 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
 
   SECTION("Correct Zoomed In Dest ZoomBufferTranPoint")
   {
-    // Lerp to the dest buffer only (by using max lerp).
-    filterBuffers.SetTransformBufferLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
-    REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTransformBufferLerpFactor());
-
     REQUIRE(TEST_SRCE_NML_COORDS.Equals(
         zoomVector.GetZoomInPoint(TEST_SRCE_NML_COORDS, TEST_SRCE_NML_COORDS)));
 
@@ -462,8 +445,6 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
     FullyUpdateDestBuffer(filterBuffers);
     REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
             filterBuffers.GetTransformBufferState());
-    filterBuffers.SetTransformBufferLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
-    REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTransformBufferLerpFactor());
 
     //    const auto expectedTranPoint         = ZoomCoordTransforms::ScreenToTranPoint(TEST_SRCE_POINT);
     //    const auto expectedZoomedInTranPoint = Point2dInt{
@@ -501,10 +482,6 @@ TEST_CASE("ZoomFilterBuffers Clipping")
   SECTION("Clipped ZoomBufferTranPoint")
   {
     REQUIRE(Point2dInt{0, 0} == filterBuffers.GetTransformBufferBuffMidpoint());
-
-    // Lerp to the dest buffer only
-    filterBuffers.SetTransformBufferLerpFactor(FilterBuffers::MAX_TRAN_LERP_VALUE);
-    REQUIRE(FilterBuffers::MAX_TRAN_LERP_VALUE == filterBuffers.GetTransformBufferLerpFactor());
 
     // tranPoint comes solely from the dest Zoom buffer which because we are using a
     // const ZoomVectorFunc, returns a const normalized value
