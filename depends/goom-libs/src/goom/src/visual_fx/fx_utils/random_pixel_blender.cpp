@@ -2,15 +2,18 @@
 
 #include "goom_config.h"
 #include "utils/graphics/pixel_blend.h"
+#include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {
 using UTILS::GRAPHICS::GetColorAddPixelBlend;
+using UTILS::GRAPHICS::GetColorAlphaAndAddBlend;
 using UTILS::GRAPHICS::GetColorAlphaBlend;
 using UTILS::GRAPHICS::GetColorMultiplyPixelBlend;
 using UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
 using UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
+using UTILS::GRAPHICS::GetPixelWithNewAlpha;
 using UTILS::GRAPHICS::GetSameLumaMixPixelBlend;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
@@ -18,12 +21,13 @@ using UTILS::MATH::Weights;
 const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
     // NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
     RandomPixelBlender::DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS{
-        {         RandomPixelBlender::PixelBlendType::ADD,          DEFAULT_ADD_WEIGHT},
-        { RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DEFAULT_DARKEN_ONLY_WEIGHT},
-        {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, DEFAULT_LIGHTEN_ONLY_WEIGHT},
-        {    RandomPixelBlender::PixelBlendType::LUMA_MIX,     DEFAULT_LUMA_MIX_WEIGHT},
-        {    RandomPixelBlender::PixelBlendType::MULTIPLY,     DEFAULT_MULTIPLY_WEIGHT},
-        {       RandomPixelBlender::PixelBlendType::ALPHA,        DEFAULT_ALPHA_WEIGHT}
+        {          RandomPixelBlender::PixelBlendType::ADD,           DEFAULT_ADD_WEIGHT},
+        {  RandomPixelBlender::PixelBlendType::DARKEN_ONLY,   DEFAULT_DARKEN_ONLY_WEIGHT},
+        { RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY,  DEFAULT_LIGHTEN_ONLY_WEIGHT},
+        {     RandomPixelBlender::PixelBlendType::LUMA_MIX,      DEFAULT_LUMA_MIX_WEIGHT},
+        {     RandomPixelBlender::PixelBlendType::MULTIPLY,      DEFAULT_MULTIPLY_WEIGHT},
+        {        RandomPixelBlender::PixelBlendType::ALPHA,         DEFAULT_ALPHA_WEIGHT},
+        {RandomPixelBlender::PixelBlendType::ALPHA_AND_ADD, DEFAULT_ALPHA_AND_ADD_WEIGHT},
 };
 
 auto RandomPixelBlender::GetRandomPixelBlendType(const IGoomRand& goomRand) noexcept
@@ -104,6 +108,8 @@ auto RandomPixelBlender::GetNextPixelBlendFunc() const noexcept -> PixelBlendFun
       return GetColorMultiplyPixelBlendFunc();
     case PixelBlendType::ALPHA:
       return GetAlphaPixelBlendFunc();
+    case PixelBlendType::ALPHA_AND_ADD:
+      return GetAlphaAndAddPixelBlendFunc();
     default:
       FailFast();
   }
@@ -129,7 +135,13 @@ auto RandomPixelBlender::GetColorAddPixelBlendFunc() -> PixelBlendFunc
             const uint32_t intBuffIntensity,
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
-  { return GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
+  };
 }
 
 auto RandomPixelBlender::GetDarkenOnlyPixelBlendFunc() -> PixelBlendFunc
@@ -138,7 +150,13 @@ auto RandomPixelBlender::GetDarkenOnlyPixelBlendFunc() -> PixelBlendFunc
             const uint32_t intBuffIntensity,
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
-  { return GetDarkenOnlyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetDarkenOnlyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
+  };
 }
 
 auto RandomPixelBlender::GetLightenOnlyPixelBlendFunc() -> PixelBlendFunc
@@ -147,7 +165,13 @@ auto RandomPixelBlender::GetLightenOnlyPixelBlendFunc() -> PixelBlendFunc
             const uint32_t intBuffIntensity,
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
-  { return GetLightenOnlyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetLightenOnlyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
+  };
 }
 
 auto RandomPixelBlender::GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc
@@ -156,16 +180,43 @@ auto RandomPixelBlender::GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc
             const uint32_t intBuffIntensity,
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
-  { return GetColorMultiplyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetColorMultiplyPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
+  };
 }
 
 auto RandomPixelBlender::GetAlphaPixelBlendFunc() -> PixelBlendFunc
 {
   return [](const Pixel& bgndColor,
+            [[maybe_unused]] const uint32_t intBuffIntensity,
+            const Pixel& fgndColor,
+            const PixelChannelType newAlpha)
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetColorAlphaBlend(bgndColor, fgndColor, newAlpha);
+  };
+}
+
+auto RandomPixelBlender::GetAlphaAndAddPixelBlendFunc() -> PixelBlendFunc
+{
+  return [](const Pixel& bgndColor,
             const uint32_t intBuffIntensity,
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
-  { return GetColorAlphaBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetColorAlphaAndAddBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
+  };
 }
 
 auto RandomPixelBlender::GetSameLumaMixPixelBlendFunc(const float lumaMixT) -> PixelBlendFunc
@@ -174,7 +225,13 @@ auto RandomPixelBlender::GetSameLumaMixPixelBlendFunc(const float lumaMixT) -> P
                     const uint32_t intBuffIntensity,
                     const Pixel& fgndColor,
                     const PixelChannelType newAlpha)
-  { return GetSameLumaMixPixelBlend(lumaMixT, bgndColor, intBuffIntensity, fgndColor, newAlpha); };
+  {
+    if (bgndColor.A() == 0)
+    {
+      return GetPixelWithNewAlpha(fgndColor, newAlpha);
+    }
+    return GetSameLumaMixPixelBlend(lumaMixT, bgndColor, intBuffIntensity, fgndColor, newAlpha);
+  };
 }
 
 } // namespace GOOM::VISUAL_FX::FX_UTILS

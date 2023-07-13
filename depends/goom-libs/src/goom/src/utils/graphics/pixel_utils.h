@@ -15,6 +15,9 @@ namespace GOOM::UTILS::GRAPHICS
 [[nodiscard]] constexpr auto MakePixel(float red, float green, float blue, float alpha) noexcept
     -> Pixel;
 
+[[nodiscard]] constexpr auto GetPixelWithNewAlpha(const Pixel& pixel, PixelChannelType newAlpha)
+    -> Pixel;
+
 [[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1,
                                          const Pixel& color2,
                                          PixelChannelType newAlpha) -> Pixel;
@@ -74,6 +77,11 @@ constexpr auto MakePixel(const float red,
                    static_cast<uint32_t>(green * MAX_CHANNEL_VALUE),
                    static_cast<uint32_t>(blue * MAX_CHANNEL_VALUE),
                    static_cast<uint32_t>(alpha * MAX_ALPHA));
+}
+
+constexpr auto GetPixelWithNewAlpha(const Pixel& pixel, const PixelChannelType newAlpha) -> Pixel
+{
+  return Pixel{pixel.R(), pixel.G(), pixel.B(), newAlpha};
 }
 
 constexpr auto GetColorAdd(const Pixel& color1,

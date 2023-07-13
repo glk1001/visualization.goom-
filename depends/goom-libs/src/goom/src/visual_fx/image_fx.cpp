@@ -125,12 +125,13 @@ private:
   static constexpr float DEFAULT_BRIGHTNESS_BASE = 0.2F;
   float m_brightnessBase                         = DEFAULT_BRIGHTNESS_BASE;
 
-  static constexpr auto ADD_WEIGHT          = 0.0F;
-  static constexpr auto DARKEN_ONLY_WEIGHT  = 0.0F;
-  static constexpr auto LIGHTEN_ONLY_WEIGHT = 0.0F;
-  static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
-  static constexpr auto MULTIPLY_WEIGHT     = 0.0F;
-  static constexpr auto ALPHA_WEIGHT        = 20.0F;
+  static constexpr auto ADD_WEIGHT           = 20.0F;
+  static constexpr auto DARKEN_ONLY_WEIGHT   = 0.0F;
+  static constexpr auto LIGHTEN_ONLY_WEIGHT  = 0.0F;
+  static constexpr auto LUMA_MIX_WEIGHT      = 5.0F;
+  static constexpr auto MULTIPLY_WEIGHT      = 0.0F;
+  static constexpr auto ALPHA_WEIGHT         = 20.0F;
+  static constexpr auto ALPHA_AND_ADD_WEIGHT = 20.0F;
   // clang-format off
   RandomPixelBlender m_pixelBlender{
       *m_fxHelper->goomRand,

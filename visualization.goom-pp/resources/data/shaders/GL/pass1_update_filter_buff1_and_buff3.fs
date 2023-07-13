@@ -61,8 +61,8 @@ void main()
   vec3 filtBuff2ColorMain = filtBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
   vec3 filtBuff2ColorLow  = filtBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
 
-  imageStore(img_filterBuff1, xy, vec4(filtBuff2ColorLow, 1.0));
-  imageStore(img_filterBuff3, xy, vec4(filtBuff2ColorMain, 1.0));
+  imageStore(img_filterBuff1, xy, vec4(filtBuff2ColorLow, colorLow.a));
+  imageStore(img_filterBuff3, xy, vec4(filtBuff2ColorMain, colorLow.a));
 
   discard;
 }

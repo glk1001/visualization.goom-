@@ -19,14 +19,17 @@ public:
     LUMA_MIX,
     MULTIPLY,
     ALPHA,
+    ALPHA_AND_ADD,
     _num // unused, and marks the enum end
   };
-  static constexpr auto DEFAULT_ADD_WEIGHT          = 0.0F;
-  static constexpr auto DEFAULT_DARKEN_ONLY_WEIGHT  = 0.0F;
-  static constexpr auto DEFAULT_LIGHTEN_ONLY_WEIGHT = 0.0F;
-  static constexpr auto DEFAULT_LUMA_MIX_WEIGHT     = 5.0F;
-  static constexpr auto DEFAULT_MULTIPLY_WEIGHT     = 0.0F;
-  static constexpr auto DEFAULT_ALPHA_WEIGHT        = 20.0F;
+  static constexpr auto DEFAULT_ADD_WEIGHT           = 0.0F;
+  static constexpr auto DEFAULT_DARKEN_ONLY_WEIGHT   = 0.0F;
+  static constexpr auto DEFAULT_LIGHTEN_ONLY_WEIGHT  = 0.0F;
+  static constexpr auto DEFAULT_LUMA_MIX_WEIGHT      = 5.0F;
+  static constexpr auto DEFAULT_MULTIPLY_WEIGHT      = 0.0F;
+  static constexpr auto DEFAULT_ALPHA_WEIGHT         = 20.0F;
+  static constexpr auto DEFAULT_ALPHA_AND_ADD_WEIGHT = 20.0F;
+  static constexpr auto DEFAULT_PIXEL_BLEND_TYPE     = PixelBlendType::ALPHA;
 
   explicit RandomPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept;
   RandomPixelBlender(
@@ -51,12 +54,12 @@ public:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights;
-  PixelBlendType m_nextPixelBlendType                      = PixelBlendType::ADD;
-  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetColorAddPixelBlendFunc();
+  PixelBlendType m_nextPixelBlendType                      = DEFAULT_PIXEL_BLEND_TYPE;
+  DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetNextPixelBlendFunc();
   DRAW::IGoomDraw::PixelBlendFunc m_nextPixelBlendFunc     = m_previousPixelBlendFunc;
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
-  static constexpr auto MAX_LERP_STEPS                     = 500U;
   static constexpr auto MIN_LERP_STEPS                     = 50U;
+  static constexpr auto MAX_LERP_STEPS                     = 500U;
   UTILS::TValue m_lerpT{
       {UTILS::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
   };
@@ -73,6 +76,7 @@ private:
   [[nodiscard]] static auto GetLightenOnlyPixelBlendFunc() -> PixelBlendFunc;
   [[nodiscard]] static auto GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc;
   [[nodiscard]] static auto GetAlphaPixelBlendFunc() -> PixelBlendFunc;
+  [[nodiscard]] static auto GetAlphaAndAddPixelBlendFunc() -> PixelBlendFunc;
   static constexpr auto MAX_LUMA_MIX_T = 1.0F;
   static constexpr auto MIN_LUMA_MIX_T = 0.3F;
   float m_lumaMixT                     = MIN_LUMA_MIX_T;
