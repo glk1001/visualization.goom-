@@ -536,8 +536,8 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
   ApplyStateToMultipleBuffers(soundData);
   ApplyEndEffectIfNearEnd();
 
-  DisplayGoomState();
   DisplayTitleAndMessages(message);
+  DisplayGoomState();
 
 #ifdef DO_GOOM_STATE_DUMP
   UpdateGoomStateDump();
@@ -686,6 +686,9 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
     return;
   }
 
+  Expects(m_p1 != nullptr);
+  Expects(m_p2 != nullptr);
+
   if (m_showTitle == ShowSongTitleType::ALWAYS)
   {
     m_goomTextOutput.SetBuffer(*m_p1);
@@ -727,6 +730,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
     return;
   }
 
+  Expects(m_p1 != nullptr);
   m_goomTextOutput.SetBuffer(*m_p1);
 
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
@@ -734,7 +738,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
 
 auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
 {
-  if (!m_showGoomState)
+  if (not m_showGoomState)
   {
     return;
   }

@@ -16,6 +16,8 @@
 namespace GOOM::FILTER_FX
 {
 
+using UTILS::GetPair;
+using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::MATH::FloatsEqual;
@@ -56,7 +58,12 @@ auto FilterBuffersService::SetFilterEffectsSettings(
 auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const noexcept
     -> NameValuePairs
 {
-  return m_zoomVector->GetNameValueParams(paramGroup);
+  auto nameValuePairs = NameValuePairs{};
+
+  nameValuePairs.emplace_back(GetPair(paramGroup, "lerpFactor", m_transformBufferLerpFactor));
+  MoveNameValuePairs(m_zoomVector->GetNameValueParams(paramGroup), nameValuePairs);
+
+  return nameValuePairs;
 }
 
 auto FilterBuffersService::Start() noexcept -> void
