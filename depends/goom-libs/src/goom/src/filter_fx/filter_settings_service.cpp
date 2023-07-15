@@ -664,13 +664,13 @@ inline auto FilterSettingsService::GetZoomInCoefficientsEffect()
 auto FilterSettingsService::NewCycle() -> void
 {
   m_randomizedAfterEffects->UpdateTimers();
+  m_filterModeAtLastUpdate = m_filterMode;
 }
 
 auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = false;
 
-  m_filterModeAtLastUpdate = m_filterMode;
   m_randomizedAfterEffects->CheckForPendingOffTimers();
 }
 

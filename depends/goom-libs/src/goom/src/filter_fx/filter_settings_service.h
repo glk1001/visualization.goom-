@@ -86,6 +86,7 @@ public:
   [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string_view&;
 
   [[nodiscard]] auto GetFilterSettings() const -> const FilterSettings&;
+  [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
   [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
@@ -96,6 +97,7 @@ public:
   auto MultiplyRotation(float factor) -> void;
   auto ToggleRotationDirection() -> void;
 
+  auto SetTransformBufferLerpFactor(uint32_t value) -> void;
   auto SetTransformBufferLerpIncrement(uint32_t value) -> void;
   auto SetDefaultTransformBufferLerpIncrement() -> void;
   auto MultiplyTransformBufferLerpIncrement(uint32_t factor) -> void;
@@ -104,7 +106,6 @@ public:
 
 protected:
   void SetFilterMode(ZoomFilterMode filterMode);
-  [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
@@ -182,6 +183,11 @@ inline auto FilterSettingsService::GetFilterSettings() const -> const FilterSett
   return m_filterSettings;
 }
 
+inline auto FilterSettingsService::GetFilterSettings() -> FilterSettings&
+{
+  return m_filterSettings;
+}
+
 inline auto FilterSettingsService::GetCurrentFilterMode() const -> ZoomFilterMode
 {
   return m_filterMode;
@@ -195,11 +201,6 @@ inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std
 inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string_view&
 {
   return m_filterModeData[m_previousFilterMode].name;
-}
-
-inline auto FilterSettingsService::GetFilterSettings() -> FilterSettings&
-{
-  return m_filterSettings;
 }
 
 inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
