@@ -23,6 +23,22 @@ else ()
     MESSAGE(STATUS "Goom: Logging turned off.")
 endif ()
 
+if (NO_SAN)
+    set(vis_goom_pp_ENABLE_SANITIZER_ADDRESS OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_LEAK OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_UNDEFINED OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_THREAD OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_MEMORY OFF)
+    set(ENABLE_UBSAN_MINIMAL_RUNTIME FALSE)
+else()
+    set(vis_goom_pp_ENABLE_SANITIZER_ADDRESS OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_LEAK OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_UNDEFINED OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_THREAD OFF)
+    set(vis_goom_pp_ENABLE_SANITIZER_MEMORY OFF)
+    set(ENABLE_UBSAN_MINIMAL_RUNTIME FALSE)
+endif ()
+
 
 add_library(goom
             STATIC

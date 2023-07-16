@@ -10,7 +10,7 @@ set(GOOM_ADDON_PREFIX "GOOM")
 
 option(ENABLE_TESTING "Enable unit testing" OFF)
 option(USE_MAGIC_ENUM "Use magic enum" OFF)
-option(NO_SAN "Don't use sanitizers" OFF)
+option(NO_SAN "Don't use sanitizers" ON)
 
 set(GOOM_LIBS_TARGET_NAME "goom")
 set(GOOM_LIBS_RELDIR depends/goom-libs)
@@ -78,7 +78,7 @@ if (IS_THIS_MAIN_CMAKE_SCRIPT)
                         -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
                         -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
                         -D PACKAGE_ZIP=1
-                        -D NO_SAN=1
+                        -D NO_SAN=ON
                         ${KODI_ROOT_DIR}/kodi/cmake/addons
                         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                         RESULT_VARIABLE CMAKE_RESULT)
