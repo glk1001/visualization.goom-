@@ -439,7 +439,7 @@ inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
   m_parallel->ForLoop(m_currentImage->GetNumChunks(), drawChunk);
 
   /*** 3 times slower
-  for (size_t i = 0; i < m_currentImage->GetNumChunks(); ++i)
+  for (auto i = 0U; i < m_currentImage->GetNumChunks(); ++i)
   {
     drawChunk(i);
   }
