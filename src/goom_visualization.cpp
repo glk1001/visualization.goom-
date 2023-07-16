@@ -163,11 +163,11 @@ auto GoomVisualization::Stop() -> void
 
   LogInfo(*m_goomLogger, "Goom visualization stopping.");
 
-  m_slotProducerConsumer.Stop();
-  m_glScene.DestroyScene();
-
   LogInfo(*m_goomLogger, "Slot producer consumer thread stopping.");
+  m_slotProducerConsumer.Stop();
   m_slotProducerConsumerThread.join();
+
+  m_glScene.DestroyScene();
 
   LogProducerConsumerSummary();
 }

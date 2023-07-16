@@ -98,7 +98,11 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
     m_updateMessagesDisplayers.at(i).Draw({X_POS, yPos});
   };
 
-  m_parallel.ForLoop(numberOfLinesInMessage, displayMessage);
+  //m_parallel.ForLoop(numberOfLinesInMessage, displayMessage);
+  for (auto i = 0U; i < numberOfLinesInMessage; ++i)
+  {
+    displayMessage(i);
+  }
 }
 
 } // namespace GOOM::CONTROL

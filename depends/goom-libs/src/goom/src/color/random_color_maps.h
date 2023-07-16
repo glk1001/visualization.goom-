@@ -3,6 +3,7 @@
 #include "color_data/color_map_enums.h"
 #include "color_maps.h"
 #include "color_maps_base.h"
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_types.h"
 #include "utils/math/goom_rand_base.h"
@@ -26,6 +27,8 @@ public:
   virtual ~RandomColorMaps()                                 = default;
   auto operator=(const RandomColorMaps&) -> RandomColorMaps& = default;
   auto operator=(RandomColorMaps&&) -> RandomColorMaps&      = default;
+
+  [[nodiscard]] auto IsActive() const noexcept -> bool;
 
   [[nodiscard]] auto GetColorMapsName() const noexcept -> const std::string&;
   [[nodiscard]] virtual auto GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName;
@@ -118,6 +121,11 @@ private:
   bool m_weightsActive = true;
 };
 
+inline auto RandomColorMaps::IsActive() const noexcept -> bool
+{
+  return m_goomRand != nullptr;
+}
+
 inline RandomColorMaps::RandomColorMaps(const PixelChannelType defaultAlpha,
                                         const UTILS::MATH::IGoomRand& goomRand,
                                         const std::string& colorMapsName) noexcept
@@ -128,7 +136,6 @@ inline RandomColorMaps::RandomColorMaps(const PixelChannelType defaultAlpha,
 inline auto RandomColorMaps::GetNoColorMapsTypes() noexcept -> const std::set<ColorMapTypes>&
 {
   static const auto s_NO_COLOR_MAP_TYPES = std::set<ColorMapTypes>{};
-
   return s_NO_COLOR_MAP_TYPES;
 }
 
@@ -144,11 +151,15 @@ inline auto RandomColorMaps::GetAllColorMapsTypes() noexcept -> const std::set<C
 
 inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::string&
 {
+  Expects(IsActive());
+
   return m_colorMapsName;
 }
 
 inline auto RandomColorMaps::GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&
 {
+  Expects(m_goomRand != nullptr);
+
   return *m_goomRand;
 }
 

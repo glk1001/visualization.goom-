@@ -70,9 +70,7 @@ inline auto GoomDrawToSingleBuffer::DrawPixelsUnblended(const Point2dInt& point,
                                                         const MultiplePixels& colors) noexcept
     -> void
 {
-  const auto buffPos = m_buffer->GetBuffPos(point.x, point.y);
-
-  m_buffer->GetPixel(buffPos) = colors.color1;
+  (*m_buffer)(point.x, point.y) = colors.color1;
 }
 
 inline auto GoomDrawToSingleBuffer::DrawPixelsToDevice(const Point2dInt& point,

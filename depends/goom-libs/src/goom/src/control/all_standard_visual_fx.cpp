@@ -58,6 +58,7 @@ AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
     m_drawablesMap{GetDrawablesMap(parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_visualFxColorMaps{*fxHelper.goomRand}
 {
+  Expects(fxHelper.goomRand != nullptr);
   Expects(NUM<GoomDrawables> == m_drawablesMap.size());
 }
 

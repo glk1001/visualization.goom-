@@ -66,9 +66,15 @@ inline constexpr auto DEFAULT_VISUAL_FX_ALPHA =
 {
   return {
       weightedColorMaps.id,
-      COLOR::WeightedRandomColorMaps{ weightedColorMaps.mainColorMaps, newDefaultAlpha},
-      COLOR::WeightedRandomColorMaps{  weightedColorMaps.lowColorMaps, newDefaultAlpha},
-      COLOR::WeightedRandomColorMaps{weightedColorMaps.extraColorMaps, newDefaultAlpha}
+      not weightedColorMaps.mainColorMaps.IsActive()
+          ? weightedColorMaps.mainColorMaps
+          : COLOR::WeightedRandomColorMaps{ weightedColorMaps.mainColorMaps, newDefaultAlpha},
+      not weightedColorMaps.lowColorMaps.IsActive()
+          ? weightedColorMaps.lowColorMaps
+          : COLOR::WeightedRandomColorMaps{  weightedColorMaps.lowColorMaps, newDefaultAlpha},
+      not weightedColorMaps.extraColorMaps.IsActive()
+          ? weightedColorMaps.extraColorMaps
+          : COLOR::WeightedRandomColorMaps{weightedColorMaps.extraColorMaps, newDefaultAlpha}
   };
 }
 
