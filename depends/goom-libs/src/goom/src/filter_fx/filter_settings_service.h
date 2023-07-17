@@ -98,6 +98,7 @@ public:
   auto ToggleRotationDirection() -> void;
 
   static constexpr auto DEFAULT_TRAN_LERP_INCREMENT = 127.0F / 65536.0F;
+  static constexpr auto DEFAULT_SWITCH_MULT         = 1.0F - (29.0F / 30.0F);
   auto SetTransformBufferLerpIncrement(float value) -> void;
   auto SetDefaultTransformBufferLerpIncrement() -> void;
   auto MultiplyTransformBufferLerpIncrement(float factor) -> void;
@@ -134,7 +135,6 @@ private:
   static constexpr auto DEFAULT_ZOOM_MID_X                           = 16U;
   static constexpr auto DEFAULT_ZOOM_MID_Y                           = 1U;
   static constexpr auto DEFAULT_FILTER_VIEWPORT                      = Viewport{};
-  static constexpr auto DEFAULT_SWITCH_MULT                          = 29.0F / 30.0F;
   static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
   static constexpr auto DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION  = 0.5F;

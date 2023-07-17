@@ -73,7 +73,7 @@ TEST_CASE("FilterBuffersService")
   {
     static constexpr auto DEFAULT_VIEWPORT = Viewport{};
     const auto filterBufferSettings        = FilterTransformBufferSettings{
-               {FilterSettingsService::DEFAULT_TRAN_LERP_INCREMENT, 1.0F},
+               {FilterSettingsService::DEFAULT_TRAN_LERP_INCREMENT, 0.0F},
                DEFAULT_VIEWPORT
     };
     filterBuffersService.SetFilterTransformBufferSettings(filterBufferSettings);

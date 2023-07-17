@@ -114,7 +114,7 @@ inline auto GoomMusicSettingsReactor::SetNewTransformBufferLerpDataBasedOnSpeed(
   //          m_filterSettingsService->GetFilterSettings()
   //              .filterTransformBufferSettings.lerpData.lerpIncrement);
 
-  m_filterSettingsService->SetTransformBufferLerpToMaxLerp(1.0F);
+  m_filterSettingsService->SetTransformBufferLerpToMaxLerp(0.0F);
 }
 
 auto GoomMusicSettingsReactor::ChangeVitesse() -> void

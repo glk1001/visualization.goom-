@@ -140,10 +140,10 @@ inline auto FilterBuffersService::UpdateTransformBufferLerpData(
         std::min(m_transformBufferLerpFactor + transformBufferLerpData.lerpIncrement, 1.0F);
   }
 
-  if (not FloatsEqual(transformBufferLerpData.lerpToMaxLerp, 1.0F))
+  if (transformBufferLerpData.lerpToMaxLerp > 0.0F)
   {
     m_transformBufferLerpFactor =
-        STD20::lerp(1.0F, m_transformBufferLerpFactor, transformBufferLerpData.lerpToMaxLerp);
+        STD20::lerp(m_transformBufferLerpFactor, 1.0F, transformBufferLerpData.lerpToMaxLerp);
   }
 }
 
