@@ -56,7 +56,7 @@ GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
                                      const std::string& shaderDir,
                                      const TextureBufferDimensions& textureBufferDimensions)
   : m_goomLogger{&goomLogger},
-    m_glScene{shaderDir, textureBufferDimensions},
+    m_glScene{*m_goomLogger, shaderDir, textureBufferDimensions},
     m_goomControl{std::make_unique<GoomControl>(
         Dimensions{textureBufferDimensions.width, textureBufferDimensions.height},
         resourcesDir,

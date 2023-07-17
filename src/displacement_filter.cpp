@@ -21,6 +21,7 @@ namespace fs = std::filesystem;
 namespace GOOM::OPENGL
 {
 
+using GOOM::GoomLogger;
 using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
@@ -70,8 +71,11 @@ auto InitFilterPosBuffer(const Dimensions& dimensions,
 } // namespace
 
 DisplacementFilter::DisplacementFilter(
-    const std::string& shaderDir, const TextureBufferDimensions& textureBufferDimensions) noexcept
+    GoomLogger& goomLogger,
+    const std::string& shaderDir,
+    const TextureBufferDimensions& textureBufferDimensions) noexcept
   : IScene{textureBufferDimensions},
+    m_goomLogger{&goomLogger},
     m_shaderDir{shaderDir},
     m_buffSize{static_cast<size_t>(GetWidth()) * static_cast<size_t>(GetHeight())},
     m_aspectRatio{static_cast<float>(GetWidth()) / static_cast<float>(GetHeight())},
@@ -372,6 +376,8 @@ auto DisplacementFilter::Render() noexcept -> void
 
   Pass5OutputToScreen();
 
+  WaitForRenderSync();
+
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
@@ -382,7 +388,11 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
 
 auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
 {
-  const auto receivedFrameData = m_requestNextFrameData();
+  m_receivedFrameData = m_requestNextFrameData();
+  if (m_receivedFrameData)
+  {
+    m_renderSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+  }
 
   UpdateSrceFilterPosBufferToGl(m_currentPboIndex);
   UpdateImageBuffersToGl(m_currentPboIndex);
@@ -404,12 +414,30 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
   GlCall(glBindVertexArray(m_fsQuad));
   GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
-  if (receivedFrameData)
+  GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+}
+
+auto DisplacementFilter::WaitForRenderSync() noexcept -> void
+{
+  if (not m_receivedFrameData)
   {
-    m_releaseCurrentFrameData(m_currentPboIndex);
+    return;
   }
 
-  GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+  static constexpr auto TIMEOUT_NANOSECONDS = 50 * 1000 * 1000;
+  const auto result =
+      glClientWaitSync(m_renderSync, GL_SYNC_FLUSH_COMMANDS_BIT, TIMEOUT_NANOSECONDS);
+
+  if (result == GL_TIMEOUT_EXPIRED)
+  {
+    LogError(*m_goomLogger, "GL fence did not finish before timeout.");
+  }
+  else if (result == GL_WAIT_FAILED)
+  {
+    LogError(*m_goomLogger, "A GL fence error occurred.");
+  }
+
+  m_releaseCurrentFrameData(m_currentPboIndex);
 }
 
 auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void

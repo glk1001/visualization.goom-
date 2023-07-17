@@ -13,6 +13,11 @@
 #include <string>
 #include <vector>
 
+namespace GOOM
+{
+class GoomLogger;
+}
+
 namespace GOOM::OPENGL
 {
 
@@ -42,7 +47,8 @@ public:
   static constexpr auto NUM_PBOS = 3U;
   using FilterPosBuffersXY       = GOOM::Point2dFlt;
 
-  DisplacementFilter(const std::string& shaderDir,
+  DisplacementFilter(GOOM::GoomLogger& goomLogger,
+                     const std::string& shaderDir,
                      const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
 
   auto InitScene() -> void override;
@@ -63,11 +69,15 @@ public:
       const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void;
 
 private:
+  GOOM::GoomLogger* m_goomLogger;
   std::string m_shaderDir;
   size_t m_buffSize;
   float m_aspectRatio;
   GLuint m_renderToTextureFbo{};
   GLuint m_renderTextureName{};
+  bool m_receivedFrameData = false;
+  GLsync m_renderSync{};
+  auto WaitForRenderSync() noexcept -> void;
 
   size_t m_currentPboIndex = 0U;
   std::vector<FrameData> m_frameDataArray;
