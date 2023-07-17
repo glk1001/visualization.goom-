@@ -177,6 +177,16 @@ auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const noexcept 
               "magnify/rotate",
               Point2dFlt{m_params.magnifyAndRotate.real(), m_params.magnifyAndRotate.imag()}),
       GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
+      GetPair(PARAM_GROUP,
+              "viewport0",
+              m_params.viewport
+                  .GetViewportCoords({NormalizedCoords::MIN_COORD, NormalizedCoords::MIN_COORD})
+                  .GetFltCoords()),
+      GetPair(PARAM_GROUP,
+              "viewport1",
+              m_params.viewport
+                  .GetViewportCoords({NormalizedCoords::MAX_COORD, NormalizedCoords::MAX_COORD})
+                  .GetFltCoords()),
   };
 }
 
