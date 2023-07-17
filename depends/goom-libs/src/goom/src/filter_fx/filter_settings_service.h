@@ -97,10 +97,10 @@ public:
   auto MultiplyRotation(float factor) -> void;
   auto ToggleRotationDirection() -> void;
 
-  auto SetTransformBufferLerpFactor(uint32_t value) -> void;
-  auto SetTransformBufferLerpIncrement(uint32_t value) -> void;
+  static constexpr auto DEFAULT_TRAN_LERP_INCREMENT = 127.0F / 65536.0F;
+  auto SetTransformBufferLerpIncrement(float value) -> void;
   auto SetDefaultTransformBufferLerpIncrement() -> void;
-  auto MultiplyTransformBufferLerpIncrement(uint32_t factor) -> void;
+  auto MultiplyTransformBufferLerpIncrement(float factor) -> void;
   auto SetTransformBufferLerpToMaxLerp(float value) -> void;
   auto SetDefaultTransformBufferLerpToMaxLerp() -> void;
 
@@ -134,7 +134,6 @@ private:
   static constexpr auto DEFAULT_ZOOM_MID_X                           = 16U;
   static constexpr auto DEFAULT_ZOOM_MID_Y                           = 1U;
   static constexpr auto DEFAULT_FILTER_VIEWPORT                      = Viewport{};
-  static constexpr auto DEFAULT_TRAN_LERP_INCREMENT                  = 0x7fU;
   static constexpr auto DEFAULT_SWITCH_MULT                          = 29.0F / 30.0F;
   static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
   static constexpr auto DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
@@ -313,8 +312,9 @@ inline auto FilterSettingsService::ToggleRotationDirection() -> void
       AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
-inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const uint32_t value) -> void
+inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const float value) -> void
 {
+  Expects(value >= 0.0F);
   m_filterSettings.filterTransformBufferSettings.lerpData.lerpIncrement = value;
 }
 
@@ -323,14 +323,15 @@ inline auto FilterSettingsService::SetDefaultTransformBufferLerpIncrement() -> v
   SetTransformBufferLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
 }
 
-inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const uint32_t factor)
-    -> void
+inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const float factor) -> void
 {
   m_filterSettings.filterTransformBufferSettings.lerpData.lerpIncrement *= factor;
 }
 
 inline auto FilterSettingsService::SetTransformBufferLerpToMaxLerp(const float value) -> void
 {
+  Expects(value >= 0.0F);
+  Expects(value <= 1.0F);
   m_filterSettings.filterTransformBufferSettings.lerpData.lerpToMaxLerp = value;
 }
 

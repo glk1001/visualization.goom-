@@ -67,17 +67,18 @@ TEST_CASE("FilterBuffersService")
 
   SECTION("Correct initial lerp factor")
   {
-    REQUIRE(0 == filterBuffersService.GetTransformBufferLerpFactor());
+    REQUIRE(0.0F == filterBuffersService.GetTransformBufferLerpFactor());
   }
   SECTION("Correct lerp factor after an increment")
   {
     static constexpr auto DEFAULT_VIEWPORT = Viewport{};
     const auto filterBufferSettings        = FilterTransformBufferSettings{
-               {127, 1.0F},
+               {FilterSettingsService::DEFAULT_TRAN_LERP_INCREMENT, 1.0F},
                DEFAULT_VIEWPORT
     };
     filterBuffersService.SetFilterTransformBufferSettings(filterBufferSettings);
-    REQUIRE(127 == filterBuffersService.GetTransformBufferLerpFactor());
+    REQUIRE(FilterSettingsService::DEFAULT_TRAN_LERP_INCREMENT ==
+            filterBuffersService.GetTransformBufferLerpFactor());
   }
 }
 

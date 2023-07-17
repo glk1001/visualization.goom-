@@ -134,16 +134,16 @@ auto FilterBuffersService::StartFreshTransformBuffer() noexcept -> void
 inline auto FilterBuffersService::UpdateTransformBufferLerpData(
     const TransformBufferLerpData& transformBufferLerpData) noexcept -> void
 {
-  if (transformBufferLerpData.lerpIncrement != 0U)
+  if (transformBufferLerpData.lerpIncrement > 0.0F)
   {
-    m_transformBufferLerpFactor = std::min(
-        m_transformBufferLerpFactor + transformBufferLerpData.lerpIncrement, MAX_TRAN_LERP_VALUE);
+    m_transformBufferLerpFactor =
+        std::min(m_transformBufferLerpFactor + transformBufferLerpData.lerpIncrement, 1.0F);
   }
 
   if (not FloatsEqual(transformBufferLerpData.lerpToMaxLerp, 1.0F))
   {
-    m_transformBufferLerpFactor = STD20::lerp(
-        MAX_TRAN_LERP_VALUE, m_transformBufferLerpFactor, transformBufferLerpData.lerpToMaxLerp);
+    m_transformBufferLerpFactor =
+        STD20::lerp(1.0F, m_transformBufferLerpFactor, transformBufferLerpData.lerpToMaxLerp);
   }
 }
 

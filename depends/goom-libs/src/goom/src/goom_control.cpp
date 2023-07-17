@@ -359,9 +359,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
   frameData.imageArrays.mainImagePixelBufferNeedsUpdating = true;
   frameData.imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 
-  const auto currentLerpFactor =
-      static_cast<float>(m_filterBuffersService.GetTransformBufferLerpFactor()) /
-      static_cast<float>(FilterBuffersService::MAX_TRAN_LERP_VALUE);
+  const auto currentLerpFactor = m_filterBuffersService.GetTransformBufferLerpFactor();
 
   if (not m_filterBuffersService.IsTransformBufferReady())
   {
@@ -379,7 +377,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameData(FrameData& frameData) -> void
     frameData.filterPosArrays.filterDestPosNeedsUpdating = true;
     frameData.miscData.lerpFactor                        = 0.0F;
 
-    m_filterBuffersService.SetTransformBufferLerpFactor(0U);
+    m_filterBuffersService.SetTransformBufferLerpFactor(0.0F);
     m_musicSettingsReactor.ResetTransformBufferLerpData();
   }
 }

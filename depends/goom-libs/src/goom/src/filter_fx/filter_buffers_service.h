@@ -52,9 +52,8 @@ public:
 
   auto UpdateTransformBufferLerpData(
       const TransformBufferLerpData& transformBufferLerpData) noexcept -> void;
-  [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> uint32_t;
-  auto SetTransformBufferLerpFactor(uint32_t value) -> void;
-  static constexpr auto MAX_TRAN_LERP_VALUE = 65536U;
+  [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> float;
+  auto SetTransformBufferLerpFactor(float value) -> void;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
@@ -62,7 +61,7 @@ public:
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
-  uint32_t m_transformBufferLerpFactor = 0U;
+  float m_transformBufferLerpFactor = 0.0F;
   Viewport m_nextFilterViewport{};
   bool m_pendingFilterViewport = false;
 
@@ -100,13 +99,15 @@ inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexce
   return m_currentFilterEffectsSettings;
 }
 
-inline auto FilterBuffersService::GetTransformBufferLerpFactor() const noexcept -> uint32_t
+inline auto FilterBuffersService::GetTransformBufferLerpFactor() const noexcept -> float
 {
   return m_transformBufferLerpFactor;
 }
 
-inline auto FilterBuffersService::SetTransformBufferLerpFactor(const uint32_t value) -> void
+inline auto FilterBuffersService::SetTransformBufferLerpFactor(const float value) -> void
 {
+  Expects(value >= 0.0F);
+  Expects(value <= 1.0F);
   m_transformBufferLerpFactor = value;
 }
 

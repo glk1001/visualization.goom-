@@ -86,7 +86,7 @@ inline auto GoomMusicSettingsReactor::UpdateTransformBufferLerpData() -> void
 
 auto GoomMusicSettingsReactor::ResetTransformBufferLerpData() -> void
 {
-  m_filterSettingsService->SetTransformBufferLerpIncrement(0);
+  m_filterSettingsService->SetTransformBufferLerpIncrement(0.0F);
   m_filterSettingsService->SetDefaultTransformBufferLerpToMaxLerp();
 }
 
@@ -98,17 +98,16 @@ inline auto GoomMusicSettingsReactor::SetNewTransformBufferLerpDataBasedOnSpeed(
   //          m_filterSettingsService->GetFilterSettings()
   //              .filterTransformBufferSettings.lerpData.lerpIncrement);
 
-  auto diff = static_cast<int32_t>(m_filterSettingsService->GetROVitesse().GetVitesse()) -
-              static_cast<int32_t>(m_previousZoomSpeed);
-  if (diff < 0)
+  auto diff = static_cast<float>(m_filterSettingsService->GetROVitesse().GetVitesse()) -
+              static_cast<float>(m_previousZoomSpeed);
+  if (diff < 0.0F)
   {
     diff = -diff;
   }
   //  LogInfo(UTILS::GetGoomLogger(), "diff = {}.", diff);
-  if (static constexpr auto DIFF_CUT = 2; diff > DIFF_CUT)
+  if (static constexpr auto DIFF_CUT = 2.0F; diff > DIFF_CUT)
   {
-    m_filterSettingsService->MultiplyTransformBufferLerpIncrement(
-        static_cast<uint32_t>((diff + DIFF_CUT) / DIFF_CUT));
+    m_filterSettingsService->MultiplyTransformBufferLerpIncrement((diff + DIFF_CUT) / DIFF_CUT);
   }
   //  LogInfo(UTILS::GetGoomLogger(),
   //          "Final Lerp Inc = {}.",

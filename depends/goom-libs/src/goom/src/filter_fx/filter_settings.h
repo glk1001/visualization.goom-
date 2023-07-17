@@ -15,8 +15,8 @@ class IZoomInCoefficientsEffect;
 
 struct TransformBufferLerpData
 {
-  uint32_t lerpIncrement{};
-  float lerpToMaxLerp{};
+  float lerpIncrement = 0.0F;
+  float lerpToMaxLerp = 0.0F;
 };
 struct FilterTransformBufferSettings
 {
