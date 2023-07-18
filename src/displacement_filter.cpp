@@ -457,6 +457,25 @@ auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
   GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
   GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+
+  SaveFilterBuffer3AfterPass4();
+}
+
+auto DisplacementFilter::SaveFilterBuffer3AfterPass4() -> void
+{
+  if (m_saveFilterBuffer3Func == nullptr)
+  {
+    return;
+  }
+
+  auto filterBuffer3 = std::vector<GOOM::Pixel>(m_buffSize);
+
+  m_glFilterBuffers.filterBuff3Texture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
+  GlCall(
+      glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer3.data()));
+  glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT);
+
+  m_saveFilterBuffer3Func(m_frameDataArray.at(m_currentPboIndex), filterBuffer3);
 }
 
 auto DisplacementFilter::Pass5OutputToScreen() noexcept -> void
@@ -704,6 +723,8 @@ auto DisplacementFilter::SetupGlLumAverageData() noexcept -> void
 
 auto DisplacementFilter::InitFilterBuffers() noexcept -> void
 {
+  m_saveFilterBuffer3Func = nullptr;
+
   ClearFilterBuffers();
 }
 

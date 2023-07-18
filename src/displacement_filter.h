@@ -68,6 +68,11 @@ public:
   auto SetReleaseCurrentFrameDataFunc(
       const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void;
 
+  using FilterBuffer = std::vector<GOOM::Pixel>;
+  using SaveFilterBufferFunc =
+      std::function<void(const FrameData& frameData, const FilterBuffer& filterBuffer)>;
+  auto SetSaveFilterBuffer3Func(const SaveFilterBufferFunc& saveFilterBufferFunc) noexcept -> void;
+
 private:
   GOOM::GoomLogger* m_goomLogger;
   std::string m_shaderDir;
@@ -89,6 +94,9 @@ private:
   auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
 
   auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
+
+  SaveFilterBufferFunc m_saveFilterBuffer3Func = nullptr;
+  auto SaveFilterBuffer3AfterPass4() -> void;
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
@@ -265,6 +273,12 @@ inline auto DisplacementFilter::SetReleaseCurrentFrameDataFunc(
     const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void
 {
   m_releaseCurrentFrameData = releaseCurrentFrameDataFunc;
+}
+
+inline auto DisplacementFilter::SetSaveFilterBuffer3Func(
+    const SaveFilterBufferFunc& saveFilterBufferFunc) noexcept -> void
+{
+  m_saveFilterBuffer3Func = saveFilterBufferFunc;
 }
 
 } // namespace GOOM::OPENGL
