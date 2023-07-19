@@ -23,6 +23,32 @@ namespace GOOM::OPENGL
 
 class DisplacementFilter : public IScene
 {
+public:
+  static constexpr auto NUM_PBOS = 3U;
+  using FilterPosBuffersXY       = GOOM::Point2dFlt;
+
+  DisplacementFilter(GOOM::GoomLogger& goomLogger,
+                     const std::string& shaderDir,
+                     const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
+
+  auto InitScene() -> void override;
+  auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
+  auto DestroyScene() noexcept -> void;
+
+  auto Render() -> void override;
+
+  auto ClearFilterBuffers() noexcept -> void;
+
+  [[nodiscard]] auto GetFrameData(size_t pboIndex) noexcept -> GOOM::FrameData&;
+  auto UpdateFrameData(size_t pboIndex) noexcept -> void;
+  using RequestNextFrameDataFunc = std::function<bool()>;
+  auto SetRequestNextFrameDataFunc(
+      const RequestNextFrameDataFunc& requestNextFrameDataFunc) noexcept -> void;
+  using ReleaseCurrentFrameDataFunc = std::function<void(size_t slot)>;
+  auto SetReleaseCurrentFrameDataFunc(
+      const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void;
+
+protected:
   static constexpr auto* UNIFORM_LERP_FACTOR           = "u_lerpFactor";
   static constexpr auto* UNIFORM_BRIGHTNESS            = "u_brightness";
   static constexpr auto* UNIFORM_HUE_SHIFT             = "u_hueShift";
@@ -43,35 +69,10 @@ class DisplacementFilter : public IScene
   static constexpr auto FILTER_POS_TEX_PIXEL_TYPE  = GL_FLOAT;
   static constexpr auto IMAGE_TEX_PIXEL_TYPE       = FILTER_BUFF_TEX_PIXEL_TYPE;
 
-public:
-  static constexpr auto NUM_PBOS = 3U;
-  using FilterPosBuffersXY       = GOOM::Point2dFlt;
-
-  DisplacementFilter(GOOM::GoomLogger& goomLogger,
-                     const std::string& shaderDir,
-                     const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
-
-  auto InitScene() -> void override;
-  auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
-  auto DestroyScene() noexcept -> void;
-
-  auto Render() noexcept -> void override;
-
-  auto ClearFilterBuffers() noexcept -> void;
-
-  [[nodiscard]] auto GetFrameData(size_t pboIndex) noexcept -> GOOM::FrameData&;
-  auto UpdateFrameData(size_t pboIndex) noexcept -> void;
-  using RequestNextFrameDataFunc = std::function<bool()>;
-  auto SetRequestNextFrameDataFunc(
-      const RequestNextFrameDataFunc& requestNextFrameDataFunc) noexcept -> void;
-  using ReleaseCurrentFrameDataFunc = std::function<void(size_t slot)>;
-  auto SetReleaseCurrentFrameDataFunc(
-      const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void;
-
-  using FilterBuffer = std::vector<GOOM::Pixel>;
-  using SaveFilterBufferFunc =
-      std::function<void(const FrameData& frameData, const FilterBuffer& filterBuffer)>;
-  auto SetSaveFilterBuffer3Func(const SaveFilterBufferFunc& saveFilterBufferFunc) noexcept -> void;
+  [[nodiscard]] auto GetBuffSize() const noexcept -> size_t;
+  [[nodiscard]] auto GetCurrentFrameData() const noexcept -> const GOOM::FrameData&;
+  auto BindFilterBuff3Texture() noexcept -> void;
+  [[nodiscard]] auto GetLumAverage() const noexcept -> float;
 
 private:
   GOOM::GoomLogger* m_goomLogger;
@@ -95,9 +96,6 @@ private:
 
   auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
 
-  SaveFilterBufferFunc m_saveFilterBuffer3Func = nullptr;
-  auto SaveFilterBuffer3AfterPass4() -> void;
-
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
   static constexpr int32_t NUM_VERTICES_IN_TRIANGLE = 3;
@@ -116,7 +114,6 @@ private:
   auto SetupGlData() -> void;
   auto InitFilterBuffers() noexcept -> void;
   auto SetupGlLumComputeData() noexcept -> void;
-  [[nodiscard]] auto GetLumAverage() const noexcept -> float;
   RequestNextFrameDataFunc m_requestNextFrameData{};
   ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
   auto UpdatePass1MiscDataToGl(size_t pboIndex) noexcept -> void;
@@ -275,10 +272,19 @@ inline auto DisplacementFilter::SetReleaseCurrentFrameDataFunc(
   m_releaseCurrentFrameData = releaseCurrentFrameDataFunc;
 }
 
-inline auto DisplacementFilter::SetSaveFilterBuffer3Func(
-    const SaveFilterBufferFunc& saveFilterBufferFunc) noexcept -> void
+inline auto DisplacementFilter::GetBuffSize() const noexcept -> size_t
 {
-  m_saveFilterBuffer3Func = saveFilterBufferFunc;
+  return m_buffSize;
+}
+
+inline auto DisplacementFilter::GetCurrentFrameData() const noexcept -> const GOOM::FrameData&
+{
+  return m_frameDataArray.at(m_currentPboIndex);
+}
+
+inline auto DisplacementFilter::BindFilterBuff3Texture() noexcept -> void
+{
+  m_glFilterBuffers.filterBuff3Texture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
 }
 
 } // namespace GOOM::OPENGL

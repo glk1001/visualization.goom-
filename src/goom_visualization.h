@@ -6,6 +6,7 @@
 #include "slot_producer_consumer.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <thread>
 
@@ -25,6 +26,10 @@ public:
                     const std::string& resourcesDir,
                     const std::string& shaderDir,
                     const TextureBufferDimensions& textureBufferDimensions);
+  GoomVisualization(GOOM::GoomLogger& goomLogger,
+                    const std::string& resourcesDir,
+                    const TextureBufferDimensions& textureBufferDimensions,
+                    std::unique_ptr<GOOM::OPENGL::DisplacementFilter>&& glScene);
   GoomVisualization(const GoomVisualization&) noexcept = delete;
   GoomVisualization(GoomVisualization&&) noexcept      = delete;
   ~GoomVisualization() noexcept;
@@ -59,8 +64,9 @@ public:
 private:
   bool m_started = false;
   GOOM::GoomLogger* m_goomLogger;
+  auto InitConstructor() noexcept -> void;
 
-  GOOM::OPENGL::DisplacementFilter m_glScene;
+  std::unique_ptr<GOOM::OPENGL::DisplacementFilter> m_glScene;
   auto InitSceneFrameData() noexcept -> void;
 
   std::unique_ptr<GOOM::GoomControl> m_goomControl;
@@ -83,7 +89,7 @@ private:
 
 inline auto GoomVisualization::GetScene() noexcept -> GOOM::OPENGL::DisplacementFilter&
 {
-  return m_glScene;
+  return *m_glScene;
 }
 
 inline auto GoomVisualization::GetNumAudioSamples() const noexcept -> uint32_t

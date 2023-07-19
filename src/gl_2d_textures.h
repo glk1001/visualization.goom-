@@ -216,6 +216,19 @@ inline auto Gl2DTexture<CppTextureType,
                         TexturePixelType,
                         NumPbos>::ZeroTextureData() noexcept -> void
 {
+  //  const auto zero = int64_t{0xFF000000};
+  //  GlCall(glClearTexImage(m_textureName, 0, TextureFormat, TexturePixelType, &zero));
+  //  GlCall(glClearTexSubImage(m_textureName,
+  //                            0,
+  //                            0,
+  //                            0,
+  //                            0,
+  //                            m_textureWidth,
+  //                            m_textureHeight,
+  //                            TextureFormat,
+  //                            TexturePixelType,
+  //                            0,
+  //                            nullptr));
   GlCall(glClearTexImage(m_textureName, 0, TextureFormat, TexturePixelType, nullptr));
 }
 

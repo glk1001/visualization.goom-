@@ -3,6 +3,7 @@
 #include "gl_render_types.h"
 
 #include <cstdint>
+#include <string>
 
 namespace GOOM::OPENGL
 {
@@ -17,6 +18,8 @@ public:
   auto operator=(const IScene&) -> IScene& = delete;
   auto operator=(IScene&&) -> IScene&      = delete;
 
+  [[nodiscard]] virtual auto StopNow() noexcept -> bool { return false; };
+
   auto GetWidth() const noexcept -> int32_t;
   auto GetHeight() const noexcept -> int32_t;
 
@@ -29,6 +32,7 @@ public:
 
   // Draw your scene.
   virtual auto Render() -> void = 0;
+  [[nodiscard]] virtual auto GetFrameTitle() noexcept -> std::string { return ""; };
 
   // Called when screen is resized.
   virtual auto Resize(const GOOM::WindowDimensions& windowDimensions) -> void = 0;

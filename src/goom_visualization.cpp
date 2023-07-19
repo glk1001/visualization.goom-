@@ -56,12 +56,33 @@ GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
                                      const std::string& shaderDir,
                                      const TextureBufferDimensions& textureBufferDimensions)
   : m_goomLogger{&goomLogger},
-    m_glScene{*m_goomLogger, shaderDir, textureBufferDimensions},
+    m_glScene{
+        std::make_unique<DisplacementFilter>(*m_goomLogger, shaderDir, textureBufferDimensions)},
     m_goomControl{std::make_unique<GoomControl>(
         Dimensions{textureBufferDimensions.width, textureBufferDimensions.height},
         resourcesDir,
         *m_goomLogger)},
     m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN}
+{
+  InitConstructor();
+}
+
+GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
+                                     const std::string& resourcesDir,
+                                     const TextureBufferDimensions& textureBufferDimensions,
+                                     std::unique_ptr<GOOM::OPENGL::DisplacementFilter>&& glScene)
+  : m_goomLogger{&goomLogger},
+    m_glScene{std::move(glScene)},
+    m_goomControl{std::make_unique<GoomControl>(
+        Dimensions{textureBufferDimensions.width, textureBufferDimensions.height},
+        resourcesDir,
+        *m_goomLogger)},
+    m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN}
+{
+  InitConstructor();
+}
+
+auto GoomVisualization::InitConstructor() noexcept -> void
 {
   m_slotProducerConsumer.SetProduceItem([this](const size_t slot, const AudioSamples& audioSamples)
                                         { ProduceItem(slot, audioSamples); });
@@ -70,11 +91,11 @@ GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
   static constexpr auto CONSUME_WAIT_FOR_MS = 1U;
   auto requestNextDataFrame                 = [this]()
   { return m_slotProducerConsumer.ConsumeWithoutRelease(CONSUME_WAIT_FOR_MS); };
-  m_glScene.SetRequestNextFrameDataFunc(requestNextDataFrame);
+  m_glScene->SetRequestNextFrameDataFunc(requestNextDataFrame);
 
   auto releaseCurrentFrameData = [this](const size_t slot)
   { m_slotProducerConsumer.Release(slot); };
-  m_glScene.SetReleaseCurrentFrameDataFunc(releaseCurrentFrameData);
+  m_glScene->SetReleaseCurrentFrameDataFunc(releaseCurrentFrameData);
 
   LogDebug(*m_goomLogger, "Created Goom visualizationGoom object.");
 }
@@ -89,7 +110,7 @@ auto GoomVisualization::SetRandomSeed(const uint64_t seed) noexcept -> void
 auto GoomVisualization::SetWindowDimensions(const WindowDimensions& windowDimensions) noexcept
     -> void
 {
-  m_glScene.Resize(windowDimensions);
+  m_glScene->Resize(windowDimensions);
 }
 
 auto GoomVisualization::SetShowSongTitle(ShowSongTitleType showMusicTitleType) -> void
@@ -126,12 +147,12 @@ auto GoomVisualization::Start(const int numChannels) -> void
 
   LogInfo(*m_goomLogger,
           "Texture width, height = {}, {}.",
-          m_glScene.GetWidth(),
-          m_glScene.GetHeight());
+          m_glScene->GetWidth(),
+          m_glScene->GetHeight());
   LogInfo(*m_goomLogger,
           "Scene frame width, height = {}, {}.",
-          m_glScene.GetFramebufferWidth(),
-          m_glScene.GetFramebufferHeight());
+          m_glScene->GetFramebufferWidth(),
+          m_glScene->GetFramebufferHeight());
 
   InitAudioValues(numChannels);
   InitSceneFrameData();
@@ -167,7 +188,7 @@ auto GoomVisualization::Stop() -> void
   m_slotProducerConsumer.Stop();
   m_slotProducerConsumerThread.join();
 
-  m_glScene.DestroyScene();
+  m_glScene->DestroyScene();
 
   LogProducerConsumerSummary();
 }
@@ -189,12 +210,12 @@ auto GoomVisualization::InitAudioValues(int32_t numChannels) noexcept -> void
 
 auto GoomVisualization::InitSceneFrameData() noexcept -> void
 {
-  m_glScene.InitScene();
+  m_glScene->InitScene();
 }
 
 auto GoomVisualization::InitGoomControl() noexcept -> void
 {
-  m_goomControl->SetFrameData(m_glScene.GetFrameData(0));
+  m_goomControl->SetFrameData(m_glScene->GetFrameData(0));
 }
 
 auto GoomVisualization::AddAudioSample(const std::vector<float>& audioSample) -> void
@@ -238,7 +259,7 @@ auto GoomVisualization::ConsumeItem(const size_t slot) noexcept -> void
   LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
 #endif
 
-  m_glScene.UpdateFrameData(slot);
+  m_glScene->UpdateFrameData(slot);
 
 #if DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Consumer consumed slot {}.", slot));
@@ -255,7 +276,7 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
   ++m_numItemsProduced;
   const auto startTime = std::chrono::system_clock::now();
 
-  auto& frameData = m_glScene.GetFrameData(slot);
+  auto& frameData = m_glScene->GetFrameData(slot);
 
   m_goomControl->SetFrameData(frameData);
   m_goomControl->UpdateGoomBuffers(audioSamples);
