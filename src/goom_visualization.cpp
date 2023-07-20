@@ -1,11 +1,15 @@
 #undef NO_LOGGING
 
+#define DEBUG_LOGGING 0
+//#define DEBUG_LOGGING 1
+
 #include "goom_visualization.h"
 
 #include "build_time.h"
 #include "displacement_filter.h"
 #include "goom/compiler_versions.h"
 #include "goom/goom_control.h"
+#include "goom/goom_logger.h"
 #include "slot_producer_consumer.h"
 
 #include <chrono>
@@ -17,15 +21,13 @@ namespace GOOM::VIS
 using GOOM::AudioSamples;
 using GOOM::Dimensions;
 using GOOM::GoomControl;
+using GOOM::GoomLogger;
 using GOOM::SetRandSeed;
 using GOOM::ShowSongTitleType;
 using GOOM::SlotProducerConsumer;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;
 using GOOM::OPENGL::DisplacementFilter;
-
-#define DEBUG_LOGGING 0
-//#define DEBUG_LOGGING 1
 
 namespace
 {
@@ -46,8 +48,9 @@ namespace
 }
 #endif
 
-constexpr auto MAX_BUFFER_QUEUE_LEN     = DisplacementFilter::NUM_PBOS;
-constexpr auto MAX_AUDIO_DATA_QUEUE_LEN = 100U;
+constexpr auto GOOM_BUFFER_PRODUCER_CONSUMER = "Goom";
+constexpr auto MAX_BUFFER_QUEUE_LEN          = DisplacementFilter::NUM_PBOS;
+constexpr auto MAX_AUDIO_DATA_QUEUE_LEN      = 100U;
 
 } // namespace
 
@@ -62,7 +65,11 @@ GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
         Dimensions{textureBufferDimensions.width, textureBufferDimensions.height},
         resourcesDir,
         *m_goomLogger)},
-    m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN}
+    m_slotProducerConsumer{*m_goomLogger,
+                           MAX_BUFFER_QUEUE_LEN,
+                           GOOM_BUFFER_PRODUCER_CONSUMER,
+                           MAX_AUDIO_DATA_QUEUE_LEN},
+    m_slotProducerIsDriving{m_slotProducerConsumer}
 {
   InitConstructor();
 }
@@ -77,16 +84,21 @@ GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
         Dimensions{textureBufferDimensions.width, textureBufferDimensions.height},
         resourcesDir,
         *m_goomLogger)},
-    m_slotProducerConsumer{*m_goomLogger, MAX_BUFFER_QUEUE_LEN, MAX_AUDIO_DATA_QUEUE_LEN}
+    m_slotProducerConsumer{*m_goomLogger,
+                           MAX_BUFFER_QUEUE_LEN,
+                           GOOM_BUFFER_PRODUCER_CONSUMER,
+                           MAX_AUDIO_DATA_QUEUE_LEN},
+    m_slotProducerIsDriving{m_slotProducerConsumer}
 {
   InitConstructor();
 }
 
 auto GoomVisualization::InitConstructor() noexcept -> void
 {
-  m_slotProducerConsumer.SetProduceItem([this](const size_t slot, const AudioSamples& audioSamples)
-                                        { ProduceItem(slot, audioSamples); });
-  m_slotProducerConsumer.SetConsumeItem([this](const size_t slot) { ConsumeItem(slot); });
+  m_slotProducerConsumer.SetProduceItemFunc(
+      [this](const size_t slot, const AudioSamples& audioSamples)
+      { ProduceItem(slot, audioSamples); });
+  m_slotProducerConsumer.SetConsumeItemFunc([this](const size_t slot) { ConsumeItem(slot); });
 
   static constexpr auto CONSUME_WAIT_FOR_MS = 1U;
   auto requestNextDataFrame                 = [this]()
@@ -94,7 +106,7 @@ auto GoomVisualization::InitConstructor() noexcept -> void
   m_glScene->SetRequestNextFrameDataFunc(requestNextDataFrame);
 
   auto releaseCurrentFrameData = [this](const size_t slot)
-  { m_slotProducerConsumer.Release(slot); };
+  { m_slotProducerConsumer.ReleaseAfterConsume(slot); };
   m_glScene->SetReleaseCurrentFrameDataFunc(releaseCurrentFrameData);
 
   LogDebug(*m_goomLogger, "Created Goom visualizationGoom object.");
@@ -173,7 +185,7 @@ auto GoomVisualization::StartThread() -> void
 
   LogInfo(*m_goomLogger, "Slot producer consumer thread starting.");
   m_slotProducerConsumerThread =
-      std::thread{&SlotProducerConsumer<AudioSamples>::ProducerThread, &m_slotProducerConsumer};
+      std::thread{&SlotProducerIsDriving<AudioSamples>::ProducerThread, &m_slotProducerIsDriving};
 }
 
 auto GoomVisualization::Stop() -> void

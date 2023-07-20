@@ -29,10 +29,10 @@ public:
 
   // Load textures, initialize shaders, etc.
   virtual auto InitScene() -> void = 0;
+  virtual auto DestroyScene() noexcept -> void = 0;
 
   // Draw your scene.
   virtual auto Render() -> void = 0;
-  [[nodiscard]] virtual auto GetFrameTitle() const -> std::string { return ""; }
 
   // Called when screen is resized.
   virtual auto Resize(const GOOM::WindowDimensions& windowDimensions) -> void = 0;

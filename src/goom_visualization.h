@@ -73,6 +73,7 @@ private:
   auto InitGoomControl() noexcept -> void;
 
   GOOM::SlotProducerConsumer<GOOM::AudioSamples> m_slotProducerConsumer;
+  GOOM::SlotProducerIsDriving<GOOM::AudioSamples> m_slotProducerIsDriving;
   std::thread m_slotProducerConsumerThread{};
   auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
   auto ConsumeItem(size_t slot) noexcept -> void;

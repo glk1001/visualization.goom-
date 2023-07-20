@@ -1,7 +1,9 @@
 #pragma once
 
 #include "goom/goom_config.h"
+#if DEBUG_LOGGING
 #include "goom/goom_logger.h"
+#endif
 
 #include <chrono>
 #include <condition_variable>
@@ -9,9 +11,12 @@
 #include <functional>
 #include <mutex>
 #include <queue>
+#include <string>
 
 namespace GOOM
 {
+
+class GoomLogger;
 
 template<typename TResource>
 class SlotProducerConsumer
@@ -19,24 +24,39 @@ class SlotProducerConsumer
 public:
   SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
                        size_t maxInUseSlots,
+                       const std::string& name) noexcept;
+  SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
+                       size_t maxInUseSlots,
+                       const std::string& name,
                        size_t maxResourceItems) noexcept;
 
-  auto ProducerThread() noexcept -> void;
   auto Start() noexcept -> void;
   auto Stop() noexcept -> void;
 
+  [[nodiscard]] auto HasFinished() const noexcept -> bool;
+
   [[nodiscard]] auto AddResource(const TResource& resource) noexcept -> bool;
+  [[nodiscard]] auto ProduceWithoutRelease() noexcept -> bool;
+  auto ReleaseAfterProduce(size_t slot) noexcept -> void;
+  auto Produce() noexcept -> void;
+
   [[nodiscard]] auto ConsumeWithoutRelease(uint32_t waitMs) noexcept -> bool;
-  auto Release(size_t slot) noexcept -> void;
+  auto ReleaseAfterConsume(size_t slot) noexcept -> void;
+  auto Consume(uint32_t waitMs) noexcept -> void;
 
   using ProduceItemFunc = std::function<void(size_t slot, const TResource& resource)>;
-  auto SetProduceItem(const ProduceItemFunc& produceItemFunc) noexcept -> void;
+  auto SetProduceItemFunc(const ProduceItemFunc& produceItemFunc) noexcept -> void;
+
+  using ProduceItemWithoutResourceFunc = std::function<void(size_t slot)>;
+  auto SetProduceItemWithoutResourceFunc(
+      const ProduceItemWithoutResourceFunc& produceItemWithoutResourceFunc) noexcept -> void;
 
   using ConsumeItemFunc = std::function<void(size_t slot)>;
-  auto SetConsumeItem(const ConsumeItemFunc& consumeItemFunc) noexcept -> void;
+  auto SetConsumeItemFunc(const ConsumeItemFunc& consumeItemFunc) noexcept -> void;
 
 private:
   GOOM::GoomLogger* m_goomLogger;
+  std::string m_name;
   bool m_finished = false;
   std::mutex m_mutex{};
   std::condition_variable m_producer_cv{};
@@ -44,23 +64,69 @@ private:
   std::condition_variable m_resourcer_cv{};
 
   size_t m_maxInUseSlots;
-  size_t m_maxResourceItems;
+  size_t m_maxResourceItems = 0U;
   std::queue<size_t> m_inUseSlotsQueue{};
-  std::queue<size_t> m_freeSlotsQueue;
+  std::queue<size_t> m_freeSlotsQueue{};
   std::queue<TResource> m_resourceQueue{};
 
   ProduceItemFunc m_produceItem{};
+  ProduceItemWithoutResourceFunc m_produceItemWithoutResource{};
   ConsumeItemFunc m_consumeItem{};
-
-  auto Produce() noexcept -> void;
 };
+
+using SlotProducerConsumerWithoutResources = SlotProducerConsumer<std::nullptr_t>;
+
+template<typename TResource>
+class SlotProducerIsDriving
+{
+public:
+  SlotProducerIsDriving(SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept;
+
+  auto ProducerThread() noexcept -> void;
+
+private:
+  SlotProducerConsumer<TResource>* m_slotProducerConsumer;
+};
+
+using SlotProducerIsDrivingWithoutResources = SlotProducerIsDriving<std::nullptr_t>;
+
+template<typename TResource>
+class SlotConsumerIsDriving
+{
+public:
+  SlotConsumerIsDriving(SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept;
+
+  auto ConsumerThread() noexcept -> void;
+
+private:
+  SlotProducerConsumer<TResource>* m_slotProducerConsumer;
+};
+
+using SlotConsumerIsDrivingWithoutResources = SlotConsumerIsDriving<std::nullptr_t>;
 
 template<typename TResource>
 SlotProducerConsumer<TResource>::SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
                                                       const size_t maxInUseSlots,
-                                                      const size_t maxResourceItems) noexcept
-  : m_goomLogger{&goomLogger}, m_maxInUseSlots{maxInUseSlots}, m_maxResourceItems{maxResourceItems}
+                                                      const std::string& name) noexcept
+  : m_goomLogger{&goomLogger}, m_name{name}, m_maxInUseSlots{maxInUseSlots}
 {
+  static_assert(std::is_same_v<TResource, std::nullptr_t>);
+  Expects(maxInUseSlots > 0);
+}
+
+template<typename TResource>
+SlotProducerConsumer<TResource>::SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
+                                                      const size_t maxInUseSlots,
+                                                      const std::string& name,
+                                                      const size_t maxResourceItems) noexcept
+  : m_goomLogger{&goomLogger},
+    m_name{name},
+    m_maxInUseSlots{maxInUseSlots},
+    m_maxResourceItems{maxResourceItems}
+{
+  static_assert(not std::is_same_v<TResource, std::nullptr_t>);
+  Expects(maxInUseSlots > 0);
+  Expects(maxResourceItems > 0U);
 }
 
 template<typename TResource>
@@ -70,12 +136,17 @@ auto SlotProducerConsumer<TResource>::Start() noexcept -> void
 
   m_inUseSlotsQueue = std::queue<size_t>{};
   m_freeSlotsQueue  = std::queue<size_t>{};
-  m_resourceQueue   = std::queue<TResource>{};
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    m_resourceQueue = std::queue<TResource>{};
+  }
 
   for (auto slot = 0U; slot < m_maxInUseSlots; ++slot)
   {
     m_freeSlotsQueue.push(slot);
   }
+
+  Ensures((m_inUseSlotsQueue.size() + m_freeSlotsQueue.size()) == m_maxInUseSlots);
 }
 
 template<typename TResource>
@@ -84,36 +155,52 @@ auto SlotProducerConsumer<TResource>::Stop() noexcept -> void
   m_finished = true;
   m_producer_cv.notify_all();
   m_consumer_cv.notify_all();
-  m_resourcer_cv.notify_all();
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    m_resourcer_cv.notify_all();
+  }
 }
 
 template<typename TResource>
-inline auto SlotProducerConsumer<TResource>::SetProduceItem(
+inline auto SlotProducerConsumer<TResource>::HasFinished() const noexcept -> bool
+{
+  return m_finished;
+}
+
+template<typename TResource>
+inline auto SlotProducerConsumer<TResource>::SetProduceItemFunc(
     const ProduceItemFunc& produceItemFunc) noexcept -> void
 {
+  static_assert(not std::is_same_v<TResource, std::nullptr_t>);
+
+  Expects(produceItemFunc != nullptr);
   m_produceItem = produceItemFunc;
 }
 
 template<typename TResource>
-inline auto SlotProducerConsumer<TResource>::SetConsumeItem(
+inline auto SlotProducerConsumer<TResource>::SetProduceItemWithoutResourceFunc(
+    const ProduceItemWithoutResourceFunc& produceItemWithoutResourceFunc) noexcept -> void
+{
+  static_assert(std::is_same_v<TResource, std::nullptr_t>);
+
+  Expects(produceItemWithoutResourceFunc != nullptr);
+  m_produceItemWithoutResource = produceItemWithoutResourceFunc;
+}
+
+template<typename TResource>
+inline auto SlotProducerConsumer<TResource>::SetConsumeItemFunc(
     const ConsumeItemFunc& consumeItemFunc) noexcept -> void
 {
+  Expects(consumeItemFunc != nullptr);
   m_consumeItem = consumeItemFunc;
 }
 
-template<typename TResource>
-auto SlotProducerConsumer<TResource>::ProducerThread() noexcept -> void
-{
-  while (not m_finished)
-  {
-    Produce();
-  }
-}
-
-// TODO - MOVE???
+// TODO - USE MOVE???
 template<typename TResource>
 auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noexcept -> bool
 {
+  static_assert(not std::is_same_v<TResource, std::nullptr_t>);
+
   const auto lock = std::lock_guard<std::mutex>{m_mutex};
 
   if (m_resourceQueue.size() >= m_maxResourceItems)
@@ -124,23 +211,46 @@ auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noe
   Expects(m_resourceQueue.size() < m_maxResourceItems);
   m_resourceQueue.push(resource);
   m_producer_cv.notify_all();
+
   return true;
 }
 
 template<typename TResource>
-auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(uint32_t waitMs) noexcept -> bool
+auto SlotProducerConsumer<TResource>::Consume(const uint32_t waitMs) noexcept -> void
+{
+  if (not ConsumeWithoutRelease(waitMs))
+  {
+    return;
+  }
+  ReleaseAfterConsume(m_inUseSlotsQueue.front());
+}
+
+template<typename TResource>
+auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(const uint32_t waitMs) noexcept -> bool
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger, "### Consumer '{}' consuming item.", m_name);
+#endif
+
   if (m_inUseSlotsQueue.empty())
   {
-    // LogInfo(*m_goomLogger, "*** Consumer is waiting {}ms for non-empty in-use queue.", waitMs);
+#if DEBUG_LOGGING
+    LogInfo(*m_goomLogger,
+            "*** Consumer '{}' is waiting {}ms for non-empty in-use queue.",
+            m_name,
+            waitMs);
+#endif
     if (not m_consumer_cv.wait_for(lock,
                                    std::chrono::milliseconds{waitMs},
                                    [this]
                                    { return m_finished or (not m_inUseSlotsQueue.empty()); }))
     {
-      // LogInfo(*m_goomLogger, "*** Consumer gave up waiting for non-empty in-use queue.");
+#if DEBUG_LOGGING
+      LogInfo(
+          *m_goomLogger, "*** Consumer '{}' gave up waiting for non-empty in-use queue.", m_name);
+#endif
       return false;
     }
   }
@@ -153,13 +263,14 @@ auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(uint32_t waitMs) noe
   const auto slot = m_inUseSlotsQueue.front();
 
   lock.unlock();
+  Expects(m_consumeItem != nullptr);
   m_consumeItem(slot);
 
   return true;
 }
 
 template<typename TResource>
-auto SlotProducerConsumer<TResource>::Release(const size_t slot) noexcept -> void
+auto SlotProducerConsumer<TResource>::ReleaseAfterConsume(const size_t slot) noexcept -> void
 {
   const auto lock = std::lock_guard<std::mutex>{m_mutex};
 
@@ -167,47 +278,137 @@ auto SlotProducerConsumer<TResource>::Release(const size_t slot) noexcept -> voi
 
   m_freeSlotsQueue.push(slot);
   m_inUseSlotsQueue.pop();
+
+  Ensures((m_inUseSlotsQueue.size() + m_freeSlotsQueue.size()) == m_maxInUseSlots);
+
   m_producer_cv.notify_all();
 }
 
 template<typename TResource>
 auto SlotProducerConsumer<TResource>::Produce() noexcept -> void
 {
-  auto lock = std::unique_lock<std::mutex>{m_mutex};
-
-  if (m_resourceQueue.empty())
-  {
-    // LogInfo(*m_goomLogger, "### Producer is waiting for non-empty resource queue.");
-    m_producer_cv.wait(lock, [this] { return m_finished or (not m_resourceQueue.empty()); });
-  }
-  if (m_finished)
+  if (not ProduceWithoutRelease())
   {
     return;
   }
+
+  Expects(not m_freeSlotsQueue.empty());
+  ReleaseAfterProduce(m_freeSlotsQueue.front());
+}
+
+template<typename TResource>
+auto SlotProducerConsumer<TResource>::ProduceWithoutRelease() noexcept -> bool
+{
+  auto lock = std::unique_lock<std::mutex>{m_mutex};
+
+#if DEBUG_LOGGING
+  LogInfo(*m_goomLogger, "### Producer '{}' producing item.", m_name);
+#endif
+
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    if (m_resourceQueue.empty())
+    {
+#if DEBUG_LOGGING
+      LogInfo(*m_goomLogger, "### Producer '{}' is waiting for non-empty resource queue.", m_name);
+#endif
+      m_producer_cv.wait(lock, [this] { return m_finished or (not m_resourceQueue.empty()); });
+    }
+    if (m_finished)
+    {
+      return false;
+    }
+  }
   if (m_inUseSlotsQueue.size() >= m_maxInUseSlots)
   {
-    // LogInfo(*m_goomLogger, "### Producer is waiting for in-use queue to decrease.");
+#if DEBUG_LOGGING
+    LogInfo(*m_goomLogger, "### Producer '{}' is waiting for in-use queue to decrease.", m_name);
+#endif
     m_producer_cv.wait(
         lock, [this] { return m_finished or (m_inUseSlotsQueue.size() < m_maxInUseSlots); });
   }
   if (m_finished)
   {
-    return;
+    return false;
   }
 
   Expects((m_inUseSlotsQueue.size() + m_freeSlotsQueue.size()) == m_maxInUseSlots);
-  Expects(not m_resourceQueue.empty());
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    Expects(not m_resourceQueue.empty());
+  }
+  Expects(not m_freeSlotsQueue.empty());
   const auto nextSlot = m_freeSlotsQueue.front();
 
   lock.unlock();
-  m_produceItem(nextSlot, m_resourceQueue.front());
-  lock.lock();
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    Expects(m_produceItem != nullptr);
+    m_produceItem(nextSlot, m_resourceQueue.front());
+  }
+  else
+  {
+    Expects(m_produceItemWithoutResource != nullptr);
+    m_produceItemWithoutResource(nextSlot);
+  }
+  Ensures(not m_freeSlotsQueue.empty());
 
-  m_resourceQueue.pop();
-  m_inUseSlotsQueue.push(nextSlot);
+  return true;
+}
+
+template<typename TResource>
+auto SlotProducerConsumer<TResource>::ReleaseAfterProduce(const size_t slot) noexcept -> void
+{
+  const auto lock = std::unique_lock<std::mutex>{m_mutex};
+
+  Expects(m_freeSlotsQueue.front() == slot);
+
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    m_resourceQueue.pop();
+  }
+  m_inUseSlotsQueue.push(slot);
   m_freeSlotsQueue.pop();
+
   m_consumer_cv.notify_all();
-  m_resourcer_cv.notify_all();
+  if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
+  {
+    m_resourcer_cv.notify_all();
+  }
+}
+
+template<typename TResource>
+SlotProducerIsDriving<TResource>::SlotProducerIsDriving(
+    SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept
+  : m_slotProducerConsumer{&slotProducerConsumer}
+{
+}
+
+template<typename TResource>
+auto SlotProducerIsDriving<TResource>::ProducerThread() noexcept -> void
+{
+  while (not m_slotProducerConsumer->HasFinished())
+  {
+    m_slotProducerConsumer->Produce();
+  }
+}
+
+template<typename TResource>
+SlotConsumerIsDriving<TResource>::SlotConsumerIsDriving(
+    SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept
+  : m_slotProducerConsumer{&slotProducerConsumer}
+{
+}
+
+template<typename TResource>
+auto SlotConsumerIsDriving<TResource>::ConsumerThread() noexcept -> void
+{
+  static constexpr auto CONSUME_WAIT_FOR_MS = 1U;
+
+  while (not m_slotProducerConsumer->HasFinished())
+  {
+    m_slotProducerConsumer->Consume(CONSUME_WAIT_FOR_MS);
+  }
 }
 
 } // namespace GOOM

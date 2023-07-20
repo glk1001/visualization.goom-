@@ -32,7 +32,7 @@ public:
 
   auto InitScene() -> void override;
   auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
-  auto DestroyScene() noexcept -> void;
+  auto DestroyScene() noexcept -> void override;
 
   auto Render() -> void override;
 
