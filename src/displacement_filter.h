@@ -7,7 +7,6 @@
 #include "goom/goom_graphic.h"
 #include "scene.h"
 
-#include <atomic>
 #include <functional>
 #include <span>
 #include <string>
@@ -36,8 +35,6 @@ public:
   auto DestroyScene() noexcept -> void;
 
   auto Render() -> void override;
-
-  auto ClearFilterBuffers() noexcept -> void;
 
   [[nodiscard]] auto GetFrameData(size_t pboIndex) noexcept -> GOOM::FrameData&;
   auto UpdateFrameData(size_t pboIndex) noexcept -> void;
@@ -112,7 +109,7 @@ private:
   auto SetupScreenBuffers() noexcept -> void;
   static auto SetupGlSettings() -> void;
   auto SetupGlData() -> void;
-  auto InitFilterBuffers() noexcept -> void;
+  auto InitTextureBuffers() noexcept -> void;
   auto SetupGlLumComputeData() noexcept -> void;
   RequestNextFrameDataFunc m_requestNextFrameData{};
   ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
@@ -226,10 +223,8 @@ private:
         filterBuff3Texture{};
   };
   GlFilterBuffers m_glFilterBuffers{};
-  std::atomic_bool m_filterBuffersNeedClearing = false;
   auto SetupGlFilterBuffers() -> void;
   auto BindGlFilterBuffer2() noexcept -> void;
-  auto CheckZeroFilterBuffers() noexcept -> void;
 
   struct GlImageBuffers
   {

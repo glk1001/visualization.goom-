@@ -95,7 +95,7 @@ auto DisplacementFilter::InitScene() -> void
 
   SetupGlLumComputeData();
 
-  InitFilterBuffers();
+  InitTextureBuffers();
 
   InitFrameDataArray();
 
@@ -396,7 +396,6 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
 
   UpdateSrceFilterPosBufferToGl(m_currentPboIndex);
   UpdateImageBuffersToGl(m_currentPboIndex);
-  CheckZeroFilterBuffers();
 
   m_programPass1UpdateFilterBuff1AndBuff3.Use();
 
@@ -702,30 +701,16 @@ auto DisplacementFilter::SetupGlLumAverageData() noexcept -> void
   GlCall(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialData));
 }
 
-auto DisplacementFilter::InitFilterBuffers() noexcept -> void
+auto DisplacementFilter::InitTextureBuffers() noexcept -> void
 {
-  ClearFilterBuffers();
-  CheckZeroFilterBuffers();
-}
-
-auto DisplacementFilter::ClearFilterBuffers() noexcept -> void
-{
-  m_filterBuffersNeedClearing = true;
-}
-
-auto DisplacementFilter::CheckZeroFilterBuffers() noexcept -> void
-{
-  if (not m_filterBuffersNeedClearing)
-  {
-    return;
-  }
-
   m_glFilterBuffers.filterBuff1Texture.ZeroTextureData();
   m_glFilterBuffers.filterBuff2Texture.ZeroTextureData();
   m_glFilterBuffers.filterBuff3Texture.ZeroTextureData();
-  GlCall(glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT));
 
-  m_filterBuffersNeedClearing = false;
+  m_glImageBuffers.mainImageTexture.ZeroTextureData();
+  m_glImageBuffers.lowImageTexture.ZeroTextureData();
+
+  GlCall(glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT));
 }
 
 } // namespace GOOM::OPENGL

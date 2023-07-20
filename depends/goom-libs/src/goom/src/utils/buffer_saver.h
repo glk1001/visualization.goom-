@@ -34,13 +34,13 @@ public:
 
   static constexpr auto LARGE_END_BUFF_NUM = 1000000L;
   explicit BufferSaver(const std::string& filenamePrefix,
-                       const BufferLimits& bufferLimits = {0, LARGE_END_BUFF_NUM});
+                       const BufferLimits& bufferLimits = {0, LARGE_END_BUFF_NUM}) noexcept;
 
   [[nodiscard]] auto GetCurrentFilename() const -> std::string;
-  [[nodiscard]] auto GetCurrentBufferNum() const -> int64_t;
-  [[nodiscard]] auto GetStartBufferNum() const -> int64_t;
-  [[nodiscard]] auto GetEndBufferNum() const -> int64_t;
-  [[nodiscard]] auto HaveFinishedBufferRange() const -> bool;
+  [[nodiscard]] auto GetCurrentBufferNum() const noexcept -> int64_t;
+  [[nodiscard]] auto GetStartBufferNum() const noexcept -> int64_t;
+  [[nodiscard]] auto GetEndBufferNum() const noexcept -> int64_t;
+  [[nodiscard]] auto HaveFinishedBufferRange() const noexcept -> bool;
 
   using BufferIndexFormatter = std::function<std::string(size_t bufferIndex)>;
   auto SetBufferIndexFormatter(const BufferIndexFormatter& bufferIndexFormatter) noexcept -> void;
@@ -92,7 +92,7 @@ private:
 
 template<class T, class HeaderT>
 inline BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
-                                            const BufferLimits& bufferLimits)
+                                            const BufferLimits& bufferLimits) noexcept
   : m_filenamePrefix{filenamePrefix},
     m_startBuffNum{bufferLimits.startBuffNum},
     m_endBuffNum{bufferLimits.endBuffNum},
@@ -107,7 +107,7 @@ auto BufferSaver<T, HeaderT>::GetCurrentFilename() const -> std::string
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::GetCurrentBufferNum() const -> int64_t
+inline auto BufferSaver<T, HeaderT>::GetCurrentBufferNum() const noexcept -> int64_t
 {
   return m_currentBuffNum;
 }
@@ -119,19 +119,19 @@ inline auto BufferSaver<T, HeaderT>::IncCurrentBufferNum() noexcept -> void
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::GetStartBufferNum() const -> int64_t
+inline auto BufferSaver<T, HeaderT>::GetStartBufferNum() const noexcept -> int64_t
 {
   return m_startBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::GetEndBufferNum() const -> int64_t
+inline auto BufferSaver<T, HeaderT>::GetEndBufferNum() const noexcept -> int64_t
 {
   return m_endBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const -> bool
+inline auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const noexcept -> bool
 {
   return m_currentBuffNum > m_endBuffNum;
 }
