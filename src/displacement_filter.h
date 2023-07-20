@@ -71,6 +71,10 @@ protected:
   auto BindFilterBuff3Texture() noexcept -> void;
   [[nodiscard]] auto GetLumAverage() const noexcept -> float;
 
+  static constexpr auto PASS1_VERTEX_SHADER   = "filter.vs";
+  static constexpr auto PASS1_FRAGMENT_SHADER = "pass1_update_filter_buff1_and_buff3.fs";
+  virtual auto Pass1UpdateFilterBuff1AndBuff3() noexcept -> void;
+
 private:
   GOOM::GoomLogger* m_goomLogger;
   std::string m_shaderDir;
@@ -120,9 +124,6 @@ private:
   auto UpdateImageBuffersToGl(size_t pboIndex) noexcept -> void;
 
   GlslProgram m_programPass1UpdateFilterBuff1AndBuff3;
-  static constexpr auto PASS1_VERTEX_SHADER   = "filter.vs";
-  static constexpr auto PASS1_FRAGMENT_SHADER = "pass1_update_filter_buff1_and_buff3.fs";
-  auto Pass1UpdateFilterBuff1AndBuff3() noexcept -> void;
 
   GlslProgram m_programPass2FilterBuff1LuminanceHistogram;
   static constexpr auto PASS2_SHADER = "pass2_lum_histogram.cs";
