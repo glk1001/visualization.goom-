@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color/random_color_maps.h"
+#include "goom/frame_data.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <cstdint>
@@ -54,7 +55,9 @@ public:
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  virtual auto ApplyMultiple() noexcept -> void;
+  virtual auto SetFrameMiscData(MiscData& miscData) noexcept -> void;
+
+  virtual auto ApplyToImageBuffers() noexcept -> void;
 };
 
 inline constexpr auto DEFAULT_VISUAL_FX_ALPHA =
@@ -110,7 +113,12 @@ inline auto IVisualFx::SetSoundData([[maybe_unused]] const AudioSamples& soundDa
   // default does nothing
 }
 
-inline auto IVisualFx::ApplyMultiple() noexcept -> void
+inline auto IVisualFx::SetFrameMiscData([[maybe_unused]] MiscData& miscData) noexcept -> void
+{
+  // default does nothing
+}
+
+inline auto IVisualFx::ApplyToImageBuffers() noexcept -> void
 {
   // default does nothing
 }

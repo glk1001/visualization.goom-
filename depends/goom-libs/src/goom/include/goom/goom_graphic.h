@@ -15,16 +15,6 @@
 namespace GOOM
 {
 
-struct GoomShaderVariables
-{
-  float brightness              = 0.0F;
-  float contrast                = 0.0F;
-  float contrastMinChannelValue = 0.0F; // negative gives interesting effects
-  float hueShift                = 0.0F;
-  float chromaFactor            = 1.0F;
-  float baseColorMultiplier     = 1.0F;
-};
-
 template<class T>
 struct channel_limits // NOLINT(readability-identifier-naming)
 {

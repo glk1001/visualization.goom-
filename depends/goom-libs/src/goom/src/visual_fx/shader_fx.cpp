@@ -2,7 +2,6 @@
 
 #include "shader_fx.h"
 
-#include "color/color_utils.h"
 #include "fx_helper.h"
 #include "goom_logger.h"
 #include "shaders/chroma_factor_lerper.h"
@@ -31,14 +30,15 @@ class ShaderFx::ShaderFxImpl
 public:
   explicit ShaderFxImpl(const FxHelper& fxHelper) noexcept;
 
+  auto Start() noexcept -> void;
+
   auto ChangeEffects() -> void;
-  auto ApplyMultiple() -> void;
+  auto SetFrameMiscData(MiscData& miscData) noexcept -> void;
+  auto ApplyToImageBuffers() -> void;
   auto ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void;
-  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
 private:
-  GoomShaderVariables m_goomShaderVariables{
-      1.0F, HighContrast::DEFAULT_BRIGHTNESS, HighContrast::DEFAULT_CONTRAST, 0.0F};
+  MiscData* m_frameMiscData = nullptr;
 
   HighContrast m_highContrast;
 
@@ -47,6 +47,7 @@ private:
   static constexpr uint32_t HUE_MIN_LERP_OFF_TIME     = 500U;
   static constexpr uint32_t HUE_MAX_LERP_OFF_TIME     = 5000U;
   HueShiftLerper m_hueShiftLerper;
+
   static constexpr auto MIN_CHROMA_FACTOR = 0.5F;
   static constexpr auto MAX_CHROMA_FACTOR = 5.0F;
   ChromaFactorLerper m_chromaFactorLerper;
@@ -70,7 +71,7 @@ auto ShaderFx::GetFxName() const noexcept -> std::string
 
 auto ShaderFx::Start() noexcept -> void
 {
-  // nothing to do
+  m_pimpl->Start();
 }
 
 auto ShaderFx::Finish() noexcept -> void
@@ -89,19 +90,19 @@ auto ShaderFx::ChangeEffects() noexcept -> void
   m_pimpl->ChangeEffects();
 }
 
-auto ShaderFx::ApplyMultiple() noexcept -> void
+auto ShaderFx::SetFrameMiscData(MiscData& miscData) noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->SetFrameMiscData(miscData);
+}
+
+auto ShaderFx::ApplyToImageBuffers() noexcept -> void
+{
+  m_pimpl->ApplyToImageBuffers();
 }
 
 auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) noexcept -> void
 {
   m_pimpl->ApplyEndEffect(timeValues);
-}
-
-auto ShaderFx::GetLastShaderVariables() const -> const GoomShaderVariables&
-{
-  return m_pimpl->GetLastShaderVariables();
 }
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
@@ -123,6 +124,11 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
 {
 }
 
+inline auto ShaderFx::ShaderFxImpl::Start() noexcept -> void
+{
+  m_frameMiscData = nullptr;
+}
+
 inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 {
   m_highContrast.ChangeHighContrast();
@@ -131,20 +137,28 @@ inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
   m_baseColorMultiplierLerper.ChangeMultiplierRange();
 }
 
-inline auto ShaderFx::ShaderFxImpl::ApplyMultiple() -> void
+inline auto ShaderFx::ShaderFxImpl::SetFrameMiscData(MiscData& miscData) noexcept -> void
 {
+  m_frameMiscData = &miscData;
+}
+
+inline auto ShaderFx::ShaderFxImpl::ApplyToImageBuffers() -> void
+{
+  Expects(m_frameMiscData != nullptr);
+
   m_highContrast.UpdateHighContrast();
   m_hueShiftLerper.Update();
   m_chromaFactorLerper.Update();
   m_baseColorMultiplierLerper.Update();
 
-  m_goomShaderVariables.contrast = m_highContrast.GetCurrentContrast();
-  m_goomShaderVariables.contrastMinChannelValue =
-      m_highContrast.GetCurrentContrastMinChannelValue();
-  m_goomShaderVariables.brightness          = m_highContrast.GetCurrentBrightness();
-  m_goomShaderVariables.hueShift            = m_hueShiftLerper.GetHueShift();
-  m_goomShaderVariables.chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
-  m_goomShaderVariables.baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
+  //m_goomShaderVariables.contrast = m_highContrast.GetCurrentContrast();
+  //m_goomShaderVariables.contrastMinChannelValue =
+  //    m_highContrast.GetCurrentContrastMinChannelValue();
+
+  m_frameMiscData->brightness          = m_highContrast.GetCurrentBrightness();
+  m_frameMiscData->hueShift            = m_hueShiftLerper.GetHueShift();
+  m_frameMiscData->chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
+  m_frameMiscData->baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void
@@ -152,13 +166,10 @@ inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& 
   FadeToBlack(timeValues);
 }
 
-inline auto ShaderFx::ShaderFxImpl::GetLastShaderVariables() const -> const GoomShaderVariables&
-{
-  return m_goomShaderVariables;
-}
-
 inline auto ShaderFx::ShaderFxImpl::FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void
 {
+  Expects(m_frameMiscData != nullptr);
+
   static constexpr auto TIME_REMAINING_CUTOFF_IN_MS = 20000.0F;
 
   if (timeValues.timeRemainingInMs > TIME_REMAINING_CUTOFF_IN_MS)
@@ -171,7 +182,7 @@ inline auto ShaderFx::ShaderFxImpl::FadeToBlack(const Stopwatch::TimeValues& tim
       std::max(0.0F, timeValues.timeRemainingInMs - BRING_FINAL_BLACK_FORWARD_MS) /
       TIME_REMAINING_CUTOFF_IN_MS;
 
-  m_goomShaderVariables.brightness = Sq(timeLeftAsFraction);
+  m_frameMiscData->brightness = Sq(timeLeftAsFraction);
 }
 
 } // namespace GOOM::VISUAL_FX

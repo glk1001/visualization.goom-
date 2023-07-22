@@ -46,7 +46,7 @@ public:
 
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() -> void;
+  auto ApplyToImageBuffers() -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -143,9 +143,9 @@ auto LSystemFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::st
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto LSystemFx::ApplyMultiple() noexcept -> void
+auto LSystemFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
@@ -364,7 +364,7 @@ inline auto LSystemFx::LSystemFxImpl::Resume() -> void
   InitNextActiveLSystems();
 }
 
-inline auto LSystemFx::LSystemFxImpl::ApplyMultiple() -> void
+inline auto LSystemFx::LSystemFxImpl::ApplyToImageBuffers() -> void
 {
   Update();
   DrawLSystem();

@@ -86,11 +86,6 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   m_allStandardVisualFx->ResumeFx();
 }
 
-auto GoomAllVisualFx::GetLastShaderVariables() const noexcept -> const GoomShaderVariables&
-{
-  return m_allStandardVisualFx->GetLastShaderVariables();
-}
-
 inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx) noexcept -> void
 {
   m_resetDrawBuffSettings(GetCurrentBuffSettings(fx));
@@ -142,10 +137,20 @@ auto GoomAllVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -
   m_allStandardVisualFx->SetZoomMidpoint(zoomMidpoint);
 }
 
-auto GoomAllVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) noexcept
+auto GoomAllVisualFx::GetFrameMiscData() const noexcept -> const MiscData&
+{
+  return m_allStandardVisualFx->GetFrameMiscData();
+}
+
+auto GoomAllVisualFx::SetFrameMiscData(MiscData& miscData) noexcept -> void
+{
+  m_allStandardVisualFx->SetFrameMiscData(miscData);
+}
+
+auto GoomAllVisualFx::ApplyCurrentStateToImageBuffers(const AudioSamples& soundData) noexcept
     -> void
 {
-  m_allStandardVisualFx->ApplyCurrentStateToMultipleBuffers(soundData);
+  m_allStandardVisualFx->ApplyCurrentStateToImageBuffers(soundData);
 }
 
 auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) noexcept

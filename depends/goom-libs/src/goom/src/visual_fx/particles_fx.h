@@ -36,7 +36,7 @@ public:
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
 
-  auto ApplyMultiple() noexcept -> void override;
+  auto ApplyToImageBuffers() noexcept -> void override;
 
 private:
   class ParticlesFxImpl;

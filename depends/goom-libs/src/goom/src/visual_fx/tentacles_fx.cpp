@@ -49,7 +49,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() -> void;
+  auto ApplyToImageBuffers() -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -143,9 +143,9 @@ auto TentaclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto TentaclesFx::ApplyMultiple() noexcept -> void
+auto TentaclesFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 static constexpr auto LAYOUT0_START_RADIUS = 380.0F;
@@ -317,7 +317,7 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
                                                 m_dominantLowColorMapPtr);
 }
 
-inline auto TentaclesFx::TentaclesImpl::ApplyMultiple() -> void
+inline auto TentaclesFx::TentaclesImpl::ApplyToImageBuffers() -> void
 {
   UpdatePixelBlender();
   UpdateTimers();

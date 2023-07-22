@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
@@ -65,13 +66,14 @@ public:
       const VISUAL_FX::IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
 
-  auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) -> void;
+  [[nodiscard]] auto GetFrameMiscData() const noexcept -> const MiscData&;
+  auto SetFrameMiscData(MiscData& miscData) noexcept -> void;
+  auto ApplyCurrentStateToImageBuffers(const AudioSamples& soundData) -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
 
   [[nodiscard]] auto GetLinesFx() noexcept -> VISUAL_FX::LinesFx&;
 
   auto ChangeShaderVariables() -> void;
-  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
 private:
   std::unique_ptr<VISUAL_FX::ShaderFx> m_shaderFx;
@@ -82,6 +84,7 @@ private:
                                             const std::string& resourcesDirectory)
       -> UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>>;
   VisualFxColorMaps m_visualFxColorMaps;
+  MiscData* m_frameMiscData = nullptr;
   auto ChangeDotsColorMaps() noexcept -> void;
   auto ChangeLinesColorMaps() noexcept -> void;
   auto ChangeShapesColorMaps() noexcept -> void;
@@ -92,8 +95,11 @@ private:
   ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc{};
   auto ResetDrawBuffSettings(GoomDrawables fx) -> void;
 
-  auto ApplyStandardFxToMultipleBuffers(const AudioSamples& soundData) -> void;
-  auto ApplyShaderToBothBuffersIfRequired() -> void;
+  auto SetFrameMiscDataToStandardFx() -> void;
+  auto SetFrameMiscDataToShaderFx() -> void;
+
+  auto ApplyStandardFxToImageBuffers(const AudioSamples& soundData) -> void;
+  auto ApplyShaderFxToImageBuffers() -> void;
 };
 
 inline auto AllStandardVisualFx::GetCurrentGoomDrawables() const
@@ -119,11 +125,31 @@ inline void AllStandardVisualFx::ResetDrawBuffSettings(const GoomDrawables fx)
   m_resetCurrentDrawBuffSettingsFunc(fx);
 }
 
-inline auto AllStandardVisualFx::ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData)
+inline auto AllStandardVisualFx::GetFrameMiscData() const noexcept -> const MiscData&
+{
+  Expects(m_frameMiscData != nullptr);
+
+  return *m_frameMiscData;
+}
+
+inline auto AllStandardVisualFx::SetFrameMiscData(MiscData& miscData) noexcept -> void
+{
+  m_frameMiscData = &miscData;
+
+  SetFrameMiscDataToStandardFx();
+  SetFrameMiscDataToShaderFx();
+}
+
+inline auto AllStandardVisualFx::SetFrameMiscDataToShaderFx() -> void
+{
+  m_shaderFx->SetFrameMiscData(*m_frameMiscData);
+}
+
+inline auto AllStandardVisualFx::ApplyCurrentStateToImageBuffers(const AudioSamples& soundData)
     -> void
 {
-  ApplyStandardFxToMultipleBuffers(soundData);
-  ApplyShaderToBothBuffersIfRequired();
+  ApplyStandardFxToImageBuffers(soundData);
+  ApplyShaderFxToImageBuffers();
 }
 
 } // namespace CONTROL

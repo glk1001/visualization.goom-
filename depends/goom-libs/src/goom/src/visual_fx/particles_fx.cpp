@@ -275,7 +275,7 @@ public:
   auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyToImageBuffers() noexcept -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -387,9 +387,9 @@ auto ParticlesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto ParticlesFx::ApplyMultiple() noexcept -> void
+auto ParticlesFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 ParticlesFx::ParticlesFxImpl::ParticlesFxImpl(
@@ -508,7 +508,7 @@ inline auto ParticlesFx::ParticlesFxImpl::Start() noexcept -> void
   ResetEffect();
 }
 
-inline auto ParticlesFx::ParticlesFxImpl::ApplyMultiple() noexcept -> void
+inline auto ParticlesFx::ParticlesFxImpl::ApplyToImageBuffers() noexcept -> void
 {
   UpdatePixelBlender();
 

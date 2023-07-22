@@ -87,7 +87,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyToImageBuffers() noexcept -> void;
   auto UpdateLowDensityThreshold() noexcept -> void;
 
 private:
@@ -115,7 +115,6 @@ private:
   int32_t m_recayIfs = 0; // dedisparition de l'ifs
   auto UpdateIncr() noexcept -> void;
   auto UpdateCycle() noexcept -> void;
-  auto UpdateDecay() noexcept -> void;
   auto UpdateDecayAndRecay() noexcept -> void;
   auto Renew() noexcept -> void;
 
@@ -203,9 +202,9 @@ auto IfsDancersFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std:
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto IfsDancersFx::ApplyMultiple() noexcept -> void
+auto IfsDancersFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 auto IfsDancersFx::Refresh() noexcept -> void
@@ -348,7 +347,7 @@ auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() noexcept -> void
   }
 }
 
-auto IfsDancersFx::IfsDancersFxImpl::ApplyMultiple() noexcept -> void
+auto IfsDancersFx::IfsDancersFxImpl::ApplyToImageBuffers() noexcept -> void
 {
   UpdatePixelBlender();
 
@@ -403,15 +402,6 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateIncr() noexcept -> void
     static constexpr auto NEW_IFS_INCR  = 11;
     m_ifsIncr                           = NEW_IFS_INCR;
     Renew();
-  }
-}
-
-inline auto IfsDancersFx::IfsDancersFxImpl::UpdateDecay() noexcept -> void
-{
-  if ((m_ifsIncr > 0) && (m_decayIfs <= 0))
-  {
-    static constexpr auto NEW_DECAY_IFS = 100;
-    m_decayIfs                          = NEW_DECAY_IFS;
   }
 }
 

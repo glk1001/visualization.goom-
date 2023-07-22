@@ -64,8 +64,6 @@ public:
   [[nodiscard]] auto GetCurrentState() const noexcept -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const noexcept -> std::string_view;
 
-  [[nodiscard]] auto GetLastShaderVariables() const noexcept -> const GoomShaderVariables&;
-
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
   auto SetResetDrawBuffSettingsFunc(const ResetDrawBuffSettingsFunc& func) noexcept -> void;
 
@@ -73,7 +71,9 @@ public:
   auto ChangeAllFxPixelBlenders() noexcept -> void;
   auto RefreshAllFx() noexcept -> void;
 
-  auto ApplyCurrentStateToMultipleBuffers(const AudioSamples& soundData) noexcept -> void;
+  [[nodiscard]] auto GetFrameMiscData() const noexcept -> const MiscData&;
+  auto SetFrameMiscData(MiscData& miscData) noexcept -> void;
+  auto ApplyCurrentStateToImageBuffers(const AudioSamples& soundData) noexcept -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>;

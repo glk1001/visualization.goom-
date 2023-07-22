@@ -4,11 +4,6 @@
 #include "spimpl.h"
 #include "utils/stopwatch.h"
 
-namespace GOOM
-{
-struct GoomShaderVariables;
-}
-
 namespace GOOM::VISUAL_FX
 {
 struct FxHelper;
@@ -26,10 +21,9 @@ public:
   auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void override;
   auto ChangeEffects() noexcept -> void;
 
-  auto ApplyMultiple() noexcept -> void override;
+  auto SetFrameMiscData(MiscData& miscData) noexcept -> void override;
+  auto ApplyToImageBuffers() noexcept -> void override;
   auto ApplyEndEffect(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
-
-  [[nodiscard]] auto GetLastShaderVariables() const -> const GoomShaderVariables&;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override
   {

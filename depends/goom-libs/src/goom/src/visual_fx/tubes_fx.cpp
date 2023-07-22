@@ -26,7 +26,10 @@
 #include "utils/timer.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
-#include <memory>
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX
@@ -140,7 +143,7 @@ public:
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  auto ApplyMultiple() -> void;
+  auto ApplyToImageBuffers() -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -306,9 +309,9 @@ auto TubesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::stri
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto TubesFx::ApplyMultiple() noexcept -> void
+auto TubesFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
@@ -551,7 +554,7 @@ auto TubesFx::TubeFxImpl::ResetTubes() -> void
   }
 }
 
-auto TubesFx::TubeFxImpl::ApplyMultiple() -> void
+auto TubesFx::TubeFxImpl::ApplyToImageBuffers() -> void
 {
   DoUpdates();
 

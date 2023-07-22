@@ -62,7 +62,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() -> void;
+  auto ApplyToImageBuffers() -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -89,8 +89,7 @@ private:
   RandomColorMaps m_randomColorMaps{m_defaultAlpha, *m_fxHelper->goomRand};
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
   Pixel m_middleColor{};
-  bool m_currentlyUseSingleBufferOnly = true;
-  bool m_useMiddleColor               = true;
+  bool m_useMiddleColor = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] auto GetDotPrimaryColor(size_t dotNum) const noexcept -> Pixel;
   [[nodiscard]] auto GetMixedColor(float brightness,
@@ -165,9 +164,9 @@ auto GoomDotsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::s
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto GoomDotsFx::ApplyMultiple() noexcept -> void
+auto GoomDotsFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 static constexpr auto IMAGE_NAMES_ORANGE_FLOWER_WEIGHT = 10.0F;
@@ -267,9 +266,6 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ChangeColors() -> void
     usePrimaryColor = m_fxHelper->goomRand->ProbabilityOf(PROB_USE_PRIMARY_COLOR);
   }
 
-  static constexpr auto PROB_USE_SINGLE_BUFFER_ONLY = 0.0F / 2.0F;
-  m_currentlyUseSingleBufferOnly = m_fxHelper->goomRand->ProbabilityOf(PROB_USE_SINGLE_BUFFER_ONLY);
-
   static constexpr auto PROB_USE_MIDDLE_COLOR = 0.05F;
   m_useMiddleColor = m_fxHelper->goomRand->ProbabilityOf(PROB_USE_MIDDLE_COLOR);
   if (m_useMiddleColor)
@@ -316,7 +312,7 @@ auto GoomDotsFx::GoomDotsFxImpl::SetWeightedColorMaps(
       WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::ApplyMultiple() -> void
+inline auto GoomDotsFx::GoomDotsFxImpl::ApplyToImageBuffers() -> void
 {
   UpdatePixelBlender();
 

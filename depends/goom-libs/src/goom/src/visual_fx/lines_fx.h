@@ -48,7 +48,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void override;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string> override;
 
-  auto ApplyMultiple() noexcept -> void override;
+  auto ApplyToImageBuffers() noexcept -> void override;
 
 private:
   class LinesImpl;

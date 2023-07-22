@@ -1,8 +1,5 @@
 #undef NO_LOGGING
 
-#define DEBUG_LOGGING 0
-//#define DEBUG_LOGGING 1
-
 #include "goom_visualization.h"
 
 #include "build_time.h"
@@ -292,7 +289,6 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
 
   m_goomControl->SetFrameData(frameData);
   m_goomControl->UpdateGoomBuffers(audioSamples);
-  m_goomControl->UpdateFrameData(frameData);
 
   const auto duration = std::chrono::system_clock::now() - startTime;
   m_totalProductionTimeInMs +=

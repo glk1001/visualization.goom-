@@ -44,7 +44,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyToImageBuffers() noexcept -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -131,9 +131,9 @@ auto ShapesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::str
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto ShapesFx::ApplyMultiple() noexcept -> void
+auto ShapesFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
@@ -328,7 +328,7 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
                 });
 }
 
-inline auto ShapesFx::ShapesFxImpl::ApplyMultiple() noexcept -> void
+inline auto ShapesFx::ShapesFxImpl::ApplyToImageBuffers() noexcept -> void
 {
   UpdatePixelBlender();
   UpdateShapeSpeeds();

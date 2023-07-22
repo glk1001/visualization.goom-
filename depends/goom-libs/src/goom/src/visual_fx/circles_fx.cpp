@@ -6,7 +6,6 @@
 #include "goom_logger.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/misc.h"
 #include "utils/math/paths.h"
 #include "utils/timer.h"
 #include "visual_fx/circles/circle_params_builder.h"
@@ -42,7 +41,7 @@ public:
   auto ChangePixelBlender(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyToImageBuffers() noexcept -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -128,9 +127,9 @@ auto CirclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::st
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto CirclesFx::ApplyMultiple() noexcept -> void
+auto CirclesFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 using CircleStartModes  = CircleParamsBuilder::CircleStartModes;
@@ -264,7 +263,7 @@ inline auto CirclesFx::CirclesFxImpl::Start() noexcept -> void
   m_circles->Start();
 }
 
-inline auto CirclesFx::CirclesFxImpl::ApplyMultiple() noexcept -> void
+inline auto CirclesFx::CirclesFxImpl::ApplyToImageBuffers() noexcept -> void
 {
   UpdatePixelBlender();
   UpdateStates();

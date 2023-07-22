@@ -74,14 +74,14 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
 auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "Shader";
-  const auto& lastShaderVariables    = m_visualFx->GetLastShaderVariables();
+  const auto& lastFrameMiscData      = m_visualFx->GetFrameMiscData();
   return {
-      GetPair(PARAM_GROUP, "Contrast", lastShaderVariables.contrast),
-      GetPair(PARAM_GROUP, "MinChan", lastShaderVariables.contrastMinChannelValue),
-      GetPair(PARAM_GROUP, "Brightness", lastShaderVariables.brightness),
-      GetPair(PARAM_GROUP, "HueShift", lastShaderVariables.hueShift),
-      GetPair(PARAM_GROUP, "ChromaFactor", lastShaderVariables.chromaFactor),
-      GetPair(PARAM_GROUP, "BaseColorMultiplier", lastShaderVariables.baseColorMultiplier),
+      //GetPair(PARAM_GROUP, "Contrast", lastFrameMiscData.contrast),
+      //GetPair(PARAM_GROUP, "MinChan", lastFrameMiscData.contrastMinChannelValue),
+      GetPair(PARAM_GROUP, "Brightness", lastFrameMiscData.brightness),
+      GetPair(PARAM_GROUP, "HueShift", lastFrameMiscData.hueShift),
+      GetPair(PARAM_GROUP, "ChromaFactor", lastFrameMiscData.chromaFactor),
+      GetPair(PARAM_GROUP, "BaseColorMultiplier", lastFrameMiscData.baseColorMultiplier),
   };
 }
 

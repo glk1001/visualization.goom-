@@ -1,5 +1,8 @@
 #pragma once
 
+#define DEBUG_LOGGING 0
+//#define DEBUG_LOGGING 1
+
 #include "displacement_filter.h"
 #include "gl_render_types.h"
 #include "goom/sound_info.h"

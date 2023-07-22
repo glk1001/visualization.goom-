@@ -63,7 +63,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyToImageBuffers() noexcept -> void;
 
   [[nodiscard]] auto GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>;
 
@@ -164,9 +164,9 @@ auto LinesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::stri
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto LinesFx::ApplyMultiple() noexcept -> void
+auto LinesFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
@@ -314,7 +314,7 @@ inline auto LinesFx::LinesImpl::SetSoundData(const AudioSamples& soundData) noex
   m_soundData = &soundData;
 }
 
-inline auto LinesFx::LinesImpl::ApplyMultiple() noexcept -> void
+inline auto LinesFx::LinesImpl::ApplyToImageBuffers() noexcept -> void
 {
   ++m_updateNum;
 

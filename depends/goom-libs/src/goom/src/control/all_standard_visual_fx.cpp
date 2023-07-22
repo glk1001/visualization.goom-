@@ -157,7 +157,18 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
   return activeColorMapsNames;
 }
 
-auto AllStandardVisualFx::ApplyStandardFxToMultipleBuffers(const AudioSamples& soundData) -> void
+auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
+{
+  std::for_each(begin(m_currentGoomDrawables),
+                end(m_currentGoomDrawables),
+                [this](const auto& drawable)
+                {
+                  auto& visualFx = *m_drawablesMap[drawable];
+                  visualFx.SetFrameMiscData(*m_frameMiscData);
+                });
+}
+
+auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soundData) -> void
 {
   std::for_each(begin(m_currentGoomDrawables),
                 end(m_currentGoomDrawables),
@@ -168,13 +179,13 @@ auto AllStandardVisualFx::ApplyStandardFxToMultipleBuffers(const AudioSamples& s
                   visualFx.SetSoundData(soundData);
 
                   ResetDrawBuffSettings(drawable);
-                  visualFx.ApplyMultiple();
+                  visualFx.ApplyToImageBuffers();
                 });
 }
 
-auto AllStandardVisualFx::ApplyShaderToBothBuffersIfRequired() -> void
+auto AllStandardVisualFx::ApplyShaderFxToImageBuffers() -> void
 {
-  m_shaderFx->ApplyMultiple();
+  m_shaderFx->ApplyToImageBuffers();
 }
 
 auto AllStandardVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void
@@ -185,11 +196,6 @@ auto AllStandardVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& t
 auto AllStandardVisualFx::ChangeShaderVariables() -> void
 {
   m_shaderFx->ChangeEffects();
-}
-
-auto AllStandardVisualFx::GetLastShaderVariables() const -> const GoomShaderVariables&
-{
-  return m_shaderFx->GetLastShaderVariables();
 }
 
 auto AllStandardVisualFx::ChangeColorMaps() -> void

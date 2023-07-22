@@ -101,7 +101,7 @@ public:
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
-  auto ApplyMultiple() -> void;
+  auto ApplyToImageBuffers() -> void;
 
 private:
   Parallel* m_parallel;
@@ -231,9 +231,9 @@ auto ImageFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::stri
   return m_pimpl->GetCurrentColorMapsNames();
 }
 
-auto ImageFx::ApplyMultiple() noexcept -> void
+auto ImageFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
@@ -402,7 +402,7 @@ inline auto ImageFx::ImageFxImpl::SetNewFloatingStartPosition() -> void
                m_fxHelper->goomRand->GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
 }
 
-inline auto ImageFx::ImageFxImpl::ApplyMultiple() -> void
+inline auto ImageFx::ImageFxImpl::ApplyToImageBuffers() -> void
 {
   UpdatePixelBlender();
 

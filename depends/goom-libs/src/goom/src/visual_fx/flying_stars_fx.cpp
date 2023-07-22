@@ -48,7 +48,7 @@ public:
   [[nodiscard]] auto GetCurrentStarTypeColorMapsNames() const noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 
-  auto ApplyMultiple() noexcept -> void;
+  auto ApplyToImageBuffers() noexcept -> void;
 
 private:
   const FxHelper* m_fxHelper;
@@ -145,9 +145,9 @@ auto FlyingStarsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std
   return m_pimpl->GetCurrentStarTypeColorMapsNames();
 }
 
-auto FlyingStarsFx::ApplyMultiple() noexcept -> void
+auto FlyingStarsFx::ApplyToImageBuffers() noexcept -> void
 {
-  m_pimpl->ApplyMultiple();
+  m_pimpl->ApplyToImageBuffers();
 }
 
 FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(const FxHelper& fxHelper,
@@ -221,7 +221,7 @@ inline auto FlyingStarsFx::FlyingStarsImpl::SoundEventOccurred() noexcept -> voi
   AddStarClusters();
 }
 
-inline auto FlyingStarsFx::FlyingStarsImpl::ApplyMultiple() noexcept -> void
+inline auto FlyingStarsFx::FlyingStarsImpl::ApplyToImageBuffers() noexcept -> void
 {
   ++m_counter;
 
