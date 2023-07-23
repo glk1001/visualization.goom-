@@ -44,9 +44,6 @@ static_assert(false, "This is a Kodi file: 'IS_KODI_BUILD' should be defined.");
 namespace KODI_ADDON = kodi::addon;
 using AddonLogEnum   = ADDON_LOG;
 
-#define DEBUG_LOGGING 0
-//#define DEBUG_LOGGING 1
-
 namespace
 {
 
@@ -357,7 +354,7 @@ auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& 
     // TODO - is this a good idea?
     // Lose the audio or somehow start averaging?
     ++m_dropAudioDataNum;
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
     LogWarn(*m_goomLogger, "Not enough free space in audio buffer. Dropping this sample.");
     LogInfo(*m_goomLogger,
             "Free space = {}, this sample size = {}.",
@@ -367,7 +364,7 @@ auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& 
     return;
   }
 
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, "Adding audio data to buffer.");
   LogInfo(*m_goomLogger,
           "Audio buffer length = {}, data available = {}, free space = {}, this sample size = {}.",
@@ -382,7 +379,7 @@ auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& 
 
 auto CVisualizationGoom::MoveNextAudioSampleToProducer() noexcept -> void
 {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, "Moving audio sample to producer.");
 #endif
   m_audioBuffer.Read(m_rawAudioData);

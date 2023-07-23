@@ -232,13 +232,13 @@ auto GoomVisualization::AddAudioSample(const std::vector<float>& audioSample) ->
   Expects(m_started);
   Expects(m_audioSampleLen == audioSample.size());
 
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   // LogInfo(*m_goomLogger, "Moving audio sample to producer.");
 #endif
   if (not m_slotProducerConsumer.AddResource(AudioSamples{m_numChannels, audioSample}))
   {
     ++m_numberOfDroppedAudioSamples;
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
     // LogWarn(*m_goomLogger, "### Resource queue full - skipping this audio sample.");
 #endif
     return;
@@ -264,13 +264,13 @@ auto GoomVisualization::UpdateTrack(const TrackInfo& track) -> void
 
 auto GoomVisualization::ConsumeItem(const size_t slot) noexcept -> void
 {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
 #endif
 
   m_glScene->UpdateFrameData(slot);
 
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Consumer consumed slot {}.", slot));
 #endif
 }
@@ -278,7 +278,7 @@ auto GoomVisualization::ConsumeItem(const size_t slot) noexcept -> void
 auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audioSamples) noexcept
     -> void
 {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
 #endif
 
@@ -294,7 +294,7 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
   m_totalProductionTimeInMs +=
       static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, std_fmt::format("Producer produced slot {}.", slot));
 #endif
 }

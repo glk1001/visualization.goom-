@@ -1,7 +1,7 @@
 #pragma once
 
 #include "goom/goom_config.h"
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
 #include "goom/goom_logger.h"
 #endif
 
@@ -230,13 +230,13 @@ auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(const uint32_t waitM
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, "### Consumer '{}' consuming item.", m_name);
 #endif
 
   if (m_inUseSlotsQueue.empty())
   {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
     LogInfo(*m_goomLogger,
             "*** Consumer '{}' is waiting {}ms for non-empty in-use queue.",
             m_name,
@@ -247,7 +247,7 @@ auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(const uint32_t waitM
                                    [this]
                                    { return m_finished or (not m_inUseSlotsQueue.empty()); }))
     {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
       LogInfo(
           *m_goomLogger, "*** Consumer '{}' gave up waiting for non-empty in-use queue.", m_name);
 #endif
@@ -301,7 +301,7 @@ auto SlotProducerConsumer<TResource>::ProduceWithoutRelease() noexcept -> bool
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, "### Producer '{}' producing item.", m_name);
 #endif
 
@@ -309,7 +309,7 @@ auto SlotProducerConsumer<TResource>::ProduceWithoutRelease() noexcept -> bool
   {
     if (m_resourceQueue.empty())
     {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
       LogInfo(*m_goomLogger, "### Producer '{}' is waiting for non-empty resource queue.", m_name);
 #endif
       m_producer_cv.wait(lock, [this] { return m_finished or (not m_resourceQueue.empty()); });
@@ -321,7 +321,7 @@ auto SlotProducerConsumer<TResource>::ProduceWithoutRelease() noexcept -> bool
   }
   if (m_inUseSlotsQueue.size() >= m_maxInUseSlots)
   {
-#if DEBUG_LOGGING
+#ifdef DEBUG_LOGGING
     LogInfo(*m_goomLogger, "### Producer '{}' is waiting for in-use queue to decrease.", m_name);
 #endif
     m_producer_cv.wait(
