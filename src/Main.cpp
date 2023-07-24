@@ -137,6 +137,7 @@ CVisualizationGoom::CVisualizationGoom()
     m_goomVisualization{
         *m_goomLogger,
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
+        CONSUME_WAIT_FOR_PRODUCER_MS,
         KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
         GetTextureBufferDimensions()}
 {

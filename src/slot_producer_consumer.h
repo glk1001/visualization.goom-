@@ -44,6 +44,8 @@ public:
   auto ReleaseAfterConsume(size_t slot) noexcept -> void;
   auto Consume(uint32_t waitMs) noexcept -> void;
 
+  [[nodiscard]] auto GetNumTimesConsumerGaveUpWaiting() const noexcept -> uint64_t;
+
   using ProduceItemFunc = std::function<void(size_t slot, const TResource& resource)>;
   auto SetProduceItemFunc(const ProduceItemFunc& produceItemFunc) noexcept -> void;
 
@@ -72,6 +74,7 @@ private:
   ProduceItemFunc m_produceItem{};
   ProduceItemWithoutResourceFunc m_produceItemWithoutResource{};
   ConsumeItemFunc m_consumeItem{};
+  uint64_t m_numTimesConsumerGaveUpWaiting = 0U;
 };
 
 using SlotProducerConsumerWithoutResources = SlotProducerConsumer<std::nullptr_t>;
@@ -80,7 +83,7 @@ template<typename TResource>
 class SlotProducerIsDriving
 {
 public:
-  SlotProducerIsDriving(SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept;
+  explicit SlotProducerIsDriving(SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept;
 
   auto ProducerThread() noexcept -> void;
 
@@ -94,7 +97,7 @@ template<typename TResource>
 class SlotConsumerIsDriving
 {
 public:
-  SlotConsumerIsDriving(SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept;
+  explicit SlotConsumerIsDriving(SlotProducerConsumer<TResource>& slotProducerConsumer) noexcept;
 
   auto ConsumerThread() noexcept -> void;
 
@@ -145,6 +148,8 @@ auto SlotProducerConsumer<TResource>::Start() noexcept -> void
   {
     m_freeSlotsQueue.push(slot);
   }
+
+  m_numTimesConsumerGaveUpWaiting = 0U;
 
   Ensures((m_inUseSlotsQueue.size() + m_freeSlotsQueue.size()) == m_maxInUseSlots);
 }
@@ -226,6 +231,12 @@ auto SlotProducerConsumer<TResource>::Consume(const uint32_t waitMs) noexcept ->
 }
 
 template<typename TResource>
+auto SlotProducerConsumer<TResource>::GetNumTimesConsumerGaveUpWaiting() const noexcept -> uint64_t
+{
+  return m_numTimesConsumerGaveUpWaiting;
+}
+
+template<typename TResource>
 auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(const uint32_t waitMs) noexcept -> bool
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
@@ -247,6 +258,7 @@ auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(const uint32_t waitM
                                    [this]
                                    { return m_finished or (not m_inUseSlotsQueue.empty()); }))
     {
+      ++m_numTimesConsumerGaveUpWaiting;
 #ifdef DEBUG_LOGGING
       LogInfo(
           *m_goomLogger, "*** Consumer '{}' gave up waiting for non-empty in-use queue.", m_name);
@@ -361,11 +373,18 @@ auto SlotProducerConsumer<TResource>::ReleaseAfterProduce(const size_t slot) noe
 {
   const auto lock = std::unique_lock<std::mutex>{m_mutex};
 
+#ifdef DEBUG_LOGGING
+  LogInfo(*m_goomLogger, "### Producer '{}' releasing slot {}.", m_name, slot);
+#endif
+
   Expects(m_freeSlotsQueue.front() == slot);
 
   if constexpr (not std::is_same_v<TResource, std::nullptr_t>)
   {
     m_resourceQueue.pop();
+#ifdef DEBUG_LOGGING
+    LogInfo(*m_goomLogger, "### '{}' resource queue length = {}.", m_name, m_resourceQueue.size());
+#endif
   }
   m_inUseSlotsQueue.push(slot);
   m_freeSlotsQueue.pop();

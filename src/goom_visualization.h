@@ -24,10 +24,12 @@ class GoomVisualization
 public:
   GoomVisualization(GOOM::GoomLogger& goomLogger,
                     const std::string& resourcesDir,
+                    uint32_t consumeWaitForProducerMs,
                     const std::string& shaderDir,
                     const TextureBufferDimensions& textureBufferDimensions);
   GoomVisualization(GOOM::GoomLogger& goomLogger,
                     const std::string& resourcesDir,
+                    uint32_t consumeWaitForProducerMs,
                     const TextureBufferDimensions& textureBufferDimensions,
                     std::unique_ptr<GOOM::OPENGL::DisplacementFilter>&& glScene);
   GoomVisualization(const GoomVisualization&) noexcept = delete;
@@ -46,7 +48,7 @@ public:
   auto StartThread() -> void;
   auto Stop() -> void;
 
-  auto AddAudioSample(const std::vector<float>& audioSample) -> void;
+  auto AddAudioSample(const std::vector<float>& audioSample) -> bool;
 
   struct TrackInfo
   {
@@ -64,6 +66,7 @@ public:
 private:
   bool m_started = false;
   GOOM::GoomLogger* m_goomLogger;
+  uint32_t m_consumeWaitForProducerMs;
   auto InitConstructor() noexcept -> void;
 
   std::unique_ptr<GOOM::OPENGL::DisplacementFilter> m_glScene;

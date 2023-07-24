@@ -70,6 +70,7 @@ public:
 private:
   bool m_started = false;
   std::unique_ptr<GOOM::GoomLogger> m_goomLogger;
+  static constexpr auto CONSUME_WAIT_FOR_PRODUCER_MS = 20U;
   GOOM::VIS::GoomVisualization m_goomVisualization;
 
   auto StartLogging() -> void;
