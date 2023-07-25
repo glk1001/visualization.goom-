@@ -19,7 +19,7 @@ using UTILS::MATH::PI;
 // Hypercos:
 // applique une surcouche de hypercos effect
 // applies an overlay of hypercos effect
-static constexpr auto DEFAULT_OVERLAY = HypercosOverlay::NONE;
+static constexpr auto DEFAULT_OVERLAY = HypercosOverlayMode::NONE;
 static constexpr auto DEFAULT_EFFECT  = Hypercos::HypercosEffect::NONE;
 static constexpr auto DEFAULT_REVERSE = false;
 
@@ -97,7 +97,7 @@ auto Hypercos::SetMode0RandomParams() -> void
       STD20::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.15F);
 
   SetHypercosEffect(
-      HypercosOverlay::MODE0, {FREQUENCY_FACTOR_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
+      HypercosOverlayMode::MODE0, {FREQUENCY_FACTOR_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
 }
 
 auto Hypercos::SetMode1RandomParams() -> void
@@ -106,7 +106,7 @@ auto Hypercos::SetMode1RandomParams() -> void
       STD20::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.20F);
 
   SetHypercosEffect(
-      HypercosOverlay::MODE1, {hypercosMin, FREQUENCY_FACTOR_RANGE.max}, AMPLITUDE_RANGE);
+      HypercosOverlayMode::MODE1, {hypercosMin, FREQUENCY_FACTOR_RANGE.max}, AMPLITUDE_RANGE);
 }
 
 auto Hypercos::SetMode2RandomParams() -> void
@@ -118,15 +118,15 @@ auto Hypercos::SetMode2RandomParams() -> void
       STD20::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.50F);
 
   SetHypercosEffect(
-      HypercosOverlay::MODE2, {hypercosMin, BIG_FREQUENCY_FACTOR_RANGE.max}, amplitudeRange);
+      HypercosOverlayMode::MODE2, {hypercosMin, BIG_FREQUENCY_FACTOR_RANGE.max}, amplitudeRange);
 }
 
 auto Hypercos::SetMode3RandomParams() -> void
 {
-  SetHypercosEffect(HypercosOverlay::MODE3, VERY_BIG_FREQUENCY_FACTOR_RANGE, AMPLITUDE_RANGE);
+  SetHypercosEffect(HypercosOverlayMode::MODE3, VERY_BIG_FREQUENCY_FACTOR_RANGE, AMPLITUDE_RANGE);
 }
 
-auto Hypercos::SetHypercosEffect(const HypercosOverlay overlay,
+auto Hypercos::SetHypercosEffect(const HypercosOverlayMode overlay,
                                  const IGoomRand::NumberRange<float>& freqRange,
                                  const IGoomRand::NumberRange<float>& amplitudeRange) -> void
 {
@@ -234,7 +234,7 @@ auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameVa
 {
   const auto fullParamGroup = GetFullParamGroup({paramGroup, "hypercos"});
 
-  if (m_params.overlay == HypercosOverlay::NONE)
+  if (m_params.overlay == HypercosOverlayMode::NONE)
   {
     return {GetPair(fullParamGroup, "overlay", std::string{"None"})};
   }

@@ -19,7 +19,7 @@ namespace GOOM::FILTER_FX
 
 using AFTER_EFFECTS::AfterEffectsStates;
 using AFTER_EFFECTS::AfterEffectsTypes;
-using AFTER_EFFECTS::HypercosOverlay;
+using AFTER_EFFECTS::HypercosOverlayMode;
 using AFTER_EFFECTS::RotationAdjustments;
 using FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
@@ -383,13 +383,13 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
 // TODO(glk) - Can make this 'constexpr' with C++20.
 
 [[nodiscard]] auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
-    -> std::vector<Weights<HypercosOverlay>::KeyValue>
+    -> std::vector<Weights<HypercosOverlayMode>::KeyValue>
 {
   constexpr auto FORCED_HYPERCOS =
       USE_FORCED_AFTER_EFFECT and (FORCED_AFTER_EFFECTS_TYPE == AfterEffectsTypes::HYPERCOS);
 
-  using Hyp         = HypercosOverlay;
-  using ModeWeights = std::array<Weights<HypercosOverlay>::KeyValue, NUM<HypercosOverlay>>;
+  using Hyp         = HypercosOverlayMode;
+  using ModeWeights = std::array<Weights<HypercosOverlayMode>::KeyValue, NUM<HypercosOverlayMode>>;
 
   constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 20.0F},
@@ -552,8 +552,8 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
   }}};
   static_assert(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
-  return std::vector<Weights<HypercosOverlay>::KeyValue>{cbegin(HYPERCOS_WEIGHTS[filterMode]),
-                                                         cend(HYPERCOS_WEIGHTS[filterMode])};
+  return std::vector<Weights<HypercosOverlayMode>::KeyValue>{cbegin(HYPERCOS_WEIGHTS[filterMode]),
+                                                             cend(HYPERCOS_WEIGHTS[filterMode])};
 }
 
 [[nodiscard]] auto GetFilterModeData(
@@ -576,7 +576,7 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
         FilterSettingsService::ZoomFilterModeInfo{
             FILTER_MODE_NAMES[filterMode],
             createZoomInCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
-            {Weights<HypercosOverlay>{goomRand, GetHypercosWeights(filterMode)},
+            {Weights<HypercosOverlayMode>{goomRand, GetHypercosWeights(filterMode)},
                                                         GetAfterEffectsProbability(filterMode)},
     });
   }
@@ -612,7 +612,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
            {
-               HypercosOverlay::NONE,
+               HypercosOverlayMode::NONE,
                DEFAULT_AFTER_EFFECTS_STATES,
                RotationAdjustments{},
             }
@@ -743,7 +743,7 @@ auto FilterSettingsService::SetWaveModeAfterEffects() -> void
 auto FilterSettingsService::UpdateFilterSettingsFromAfterEffects() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
-  m_randomizedAfterEffects->UpdateFilterSettingsFromStates(
+  m_randomizedAfterEffects->UpdateAfterEffectsSettingsFromStates(
       m_filterSettings.filterEffectsSettings.afterEffectsSettings);
 }
 

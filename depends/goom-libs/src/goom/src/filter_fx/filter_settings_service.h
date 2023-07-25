@@ -278,19 +278,19 @@ inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
 inline auto FilterSettingsService::TurnOffRotation() -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
-              .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
+              .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   m_filterSettings.filterEffectsSettings.afterEffectsSettings
-      .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION] = false;
+      .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION] = false;
 }
 
 inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
-              .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
+              .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }
@@ -302,7 +302,7 @@ inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
 inline auto FilterSettingsService::ToggleRotationDirection() -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
-              .active[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
+              .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
   {
     return;
   }

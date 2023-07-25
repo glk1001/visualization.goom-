@@ -16,7 +16,7 @@ class IGoomRand;
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
-enum class HypercosOverlay
+enum class HypercosOverlayMode
 {
   NONE,
   MODE0,
@@ -41,15 +41,13 @@ public:
   auto operator=(const AfterEffectsStates&) -> AfterEffectsStates& = delete;
   auto operator=(AfterEffectsStates&&) -> AfterEffectsStates&      = delete;
 
-  auto TurnPlaneEffectOn() -> void;
-
   auto SetDefaults() -> void;
   auto UpdateTimers() -> void;
   auto CheckForPendingOffTimers() -> void;
 
   struct AfterEffectsProbabilities
   {
-    UTILS::MATH::Weights<HypercosOverlay> hypercosWeights;
+    UTILS::MATH::Weights<HypercosOverlayMode> hypercosModeWeights;
     AfterEffectsProbabilityMap probabilities{};
   };
   auto ResetAllStates(const AfterEffectsProbabilities& effectsProbabilities) -> void;
@@ -58,23 +56,26 @@ public:
   using AfterEffectsActiveMap = UTILS::EnumMap<AfterEffectsTypes, bool>;
   struct AfterEffectsSettings
   {
-    HypercosOverlay hypercosOverlay{};
-    AfterEffectsActiveMap active{};
+    HypercosOverlayMode hypercosOverlayMode{};
+    AfterEffectsActiveMap isActive{};
     RotationAdjustments rotationAdjustments;
   };
-  auto UpdateFilterSettingsFromStates(AfterEffectsSettings& afterEffectsSettings) const -> void;
+  auto UpdateAfterEffectsSettingsFromStates(AfterEffectsSettings& afterEffectsSettings) const
+      -> void;
+
+  auto TurnPlaneEffectOn() -> void;
 
 private:
-  class EffectState;
+  class AfterEffectState;
 
-  HypercosOverlay m_hypercosOverlay = HypercosOverlay::NONE;
-  std::unique_ptr<EffectState> m_hypercosOverlayEffect;
-  std::unique_ptr<EffectState> m_imageVelocityEffect;
-  std::unique_ptr<EffectState> m_noiseEffect;
-  std::unique_ptr<EffectState> m_planeEffect;
-  std::unique_ptr<EffectState> m_rotationEffect;
-  std::unique_ptr<EffectState> m_tanEffect;
-  std::unique_ptr<EffectState> m_xyLerpEffect;
+  HypercosOverlayMode m_hypercosOverlayMode = HypercosOverlayMode::NONE;
+  std::unique_ptr<AfterEffectState> m_hypercosOverlayEffect;
+  std::unique_ptr<AfterEffectState> m_imageVelocityEffect;
+  std::unique_ptr<AfterEffectState> m_noiseEffect;
+  std::unique_ptr<AfterEffectState> m_planeEffect;
+  std::unique_ptr<AfterEffectState> m_rotationEffect;
+  std::unique_ptr<AfterEffectState> m_tanEffect;
+  std::unique_ptr<AfterEffectState> m_xyLerpEffect;
 };
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

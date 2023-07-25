@@ -21,7 +21,7 @@ struct TransformBufferLerpData
 struct FilterTransformBufferSettings
 {
   TransformBufferLerpData lerpData{};
-  Viewport viewport;
+  Viewport viewport{};
 };
 
 struct FilterEffectsSettings

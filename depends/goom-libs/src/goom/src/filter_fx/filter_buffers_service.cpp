@@ -20,7 +20,6 @@ using UTILS::GetPair;
 using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
-using UTILS::MATH::FloatsEqual;
 
 FilterBuffersService::FilterBuffersService(
     Parallel& parallel,
@@ -38,16 +37,6 @@ FilterBuffersService::FilterBuffersService(
 {
 }
 
-auto FilterBuffersService::SetFilterTransformBufferSettings(
-    const FilterTransformBufferSettings& filterTransformBufferSettings) noexcept -> void
-{
-  m_nextFilterViewport    = filterTransformBufferSettings.viewport;
-  m_pendingFilterViewport = true;
-
-  UpdateTransformBufferLerpData({filterTransformBufferSettings.lerpData.lerpIncrement,
-                                 filterTransformBufferSettings.lerpData.lerpToMaxLerp});
-}
-
 auto FilterBuffersService::SetFilterEffectsSettings(
     const FilterEffectsSettings& filterEffectsSettings) noexcept -> void
 {
@@ -55,80 +44,68 @@ auto FilterBuffersService::SetFilterEffectsSettings(
   m_pendingFilterEffectsSettings = true;
 }
 
-auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const noexcept
-    -> NameValuePairs
+auto FilterBuffersService::SetFilterTransformBufferSettings(
+    const FilterTransformBufferSettings& filterTransformBufferSettings) noexcept -> void
 {
-  auto nameValuePairs = NameValuePairs{};
+  UpdateTransformBufferViewport(filterTransformBufferSettings.viewport);
 
-  nameValuePairs.emplace_back(GetPair(paramGroup, "lerpFactor", m_transformBufferLerpFactor));
-  MoveNameValuePairs(m_zoomVector->GetNameValueParams(paramGroup), nameValuePairs);
-
-  return nameValuePairs;
+  UpdateTransformBufferLerpData({filterTransformBufferSettings.lerpData.lerpIncrement,
+                                 filterTransformBufferSettings.lerpData.lerpToMaxLerp});
 }
 
 auto FilterBuffersService::Start() noexcept -> void
 {
-  m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
-  Expects(m_currentFilterEffectsSettings.zoomInCoefficientsEffect != nullptr);
+  Expects(m_pendingFilterViewport);
+  Expects(m_pendingFilterEffectsSettings);
+  Expects(m_nextFilterEffectsSettings.zoomInCoefficientsEffect != nullptr);
 
-  m_nextFilterViewport    = Viewport{};
-  m_pendingFilterViewport = true;
-
-  UpdateFilterEffectsSettings();
+  StartFreshTransformBuffer();
 
   m_filterBuffers.Start();
 }
 
-inline auto FilterBuffersService::UpdateFilterEffectsSettings() noexcept -> void
+auto FilterBuffersService::StartFreshTransformBuffer() noexcept -> void
 {
-  UpdateZoomVectorFilterEffectsSettings();
+  if (m_pendingFilterEffectsSettings)
+  {
+    m_nextFilterEffectsSettings.afterEffectsSettings.rotationAdjustments.Reset();
+    m_zoomVector->SetFilterEffectsSettings(m_nextFilterEffectsSettings);
+    m_filterBuffers.SetTransformBufferMidpoint(m_nextFilterEffectsSettings.zoomMidpoint);
+    m_pendingFilterEffectsSettings = false;
+    // Notify buffer maker of settings change - now we'll get a fresh buffer.
+    m_filterBuffers.NotifyFilterSettingsHaveChanged();
+  }
 
   if (m_pendingFilterViewport)
   {
     m_filterBuffers.SetFilterViewport(m_nextFilterViewport);
     m_pendingFilterViewport = false;
+    // Notify buffer maker of settings change - now we'll get a fresh buffer.
+    m_filterBuffers.NotifyFilterSettingsHaveChanged();
   }
-
-  m_filterBuffers.SetTransformBufferMidpoint(m_currentFilterEffectsSettings.zoomMidpoint);
-  m_filterBuffers.NotifyFilterSettingsHaveChanged();
-}
-
-inline auto FilterBuffersService::UpdateZoomVectorFilterEffectsSettings() noexcept -> void
-{
-  m_zoomVector->SetFilterEffectsSettings(m_currentFilterEffectsSettings);
-
-  m_currentFilterEffectsSettings.afterEffectsSettings.rotationAdjustments.Reset();
 }
 
 auto FilterBuffersService::UpdateTransformBuffer() noexcept -> void
 {
   m_filterBuffers.UpdateTransformBuffer();
 
-  if (IsStartingFreshTransformBuffer())
+  if (m_filterBuffers.GetTransformBufferState() ==
+      FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER)
   {
     StartFreshTransformBuffer();
   }
 }
 
-inline auto FilterBuffersService::IsStartingFreshTransformBuffer() const noexcept -> bool
+inline auto FilterBuffersService::UpdateTransformBufferViewport(const Viewport& viewport) noexcept
+    -> void
 {
-  return m_filterBuffers.GetTransformBufferState() ==
-         FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
-}
-
-auto FilterBuffersService::StartFreshTransformBuffer() noexcept -> void
-{
-  // Don't start making new stripes until filter settings change.
-  if (not m_pendingFilterEffectsSettings)
+  if (m_nextFilterViewport == viewport)
   {
     return;
   }
 
-  m_currentFilterEffectsSettings = m_nextFilterEffectsSettings;
-
-  UpdateFilterEffectsSettings();
-
-  m_pendingFilterEffectsSettings = false;
+  m_nextFilterViewport    = viewport;
+  m_pendingFilterViewport = true;
 }
 
 inline auto FilterBuffersService::UpdateTransformBufferLerpData(
@@ -145,6 +122,17 @@ inline auto FilterBuffersService::UpdateTransformBufferLerpData(
     m_transformBufferLerpFactor =
         STD20::lerp(m_transformBufferLerpFactor, 1.0F, transformBufferLerpData.lerpToMaxLerp);
   }
+}
+
+auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const noexcept
+    -> NameValuePairs
+{
+  auto nameValuePairs = NameValuePairs{};
+
+  nameValuePairs.emplace_back(GetPair(paramGroup, "lerpFactor", m_transformBufferLerpFactor));
+  MoveNameValuePairs(m_zoomVector->GetNameValueParams(paramGroup), nameValuePairs);
+
+  return nameValuePairs;
 }
 
 } // namespace GOOM::FILTER_FX

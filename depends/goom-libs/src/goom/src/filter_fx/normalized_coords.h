@@ -116,6 +116,7 @@ private:
   float m_xScale;
   float m_yScale;
   float m_viewportWidth;
+  friend auto operator==(const Viewport& viewport1, const Viewport& viewport2) noexcept -> bool;
 };
 
 constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& otherDimensions,
@@ -326,6 +327,21 @@ constexpr auto Viewport::GetViewportCoords(const NormalizedCoords& coords) const
 constexpr auto Viewport::GetViewportWidth() const noexcept -> float
 {
   return m_viewportWidth;
+}
+
+[[nodiscard]] inline auto operator==(const Viewport& viewport1, const Viewport& viewport2) noexcept
+    -> bool
+{
+  return UTILS::MATH::FloatsEqual(viewport1.m_xScale, viewport2.m_xScale) and
+         UTILS::MATH::FloatsEqual(viewport1.m_yScale, viewport2.m_yScale) and
+         UTILS::MATH::FloatsEqual(viewport1.m_xOffset, viewport2.m_xOffset) and
+         UTILS::MATH::FloatsEqual(viewport1.m_yOffset, viewport2.m_yOffset);
+}
+
+[[nodiscard]] inline auto operator!=(const Viewport& viewport1, const Viewport& viewport2) noexcept
+    -> bool
+{
+  return not(viewport1 == viewport2);
 }
 
 } // namespace GOOM::FILTER_FX

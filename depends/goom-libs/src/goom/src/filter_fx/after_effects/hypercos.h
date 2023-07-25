@@ -51,7 +51,7 @@ public:
 
   struct Params
   {
-    HypercosOverlay overlay;
+    HypercosOverlayMode overlay;
     HypercosEffect effect;
     bool reverse;
     FrequencyFactor frequencyFactor;
@@ -66,7 +66,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   UTILS::MATH::Weights<HypercosEffect> m_hypercosOverlayWeights;
-  auto SetHypercosEffect(HypercosOverlay overlay,
+  auto SetHypercosEffect(HypercosOverlayMode overlay,
                          const UTILS::MATH::IGoomRand::NumberRange<float>& freqRange,
                          const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange) -> void;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,

@@ -35,8 +35,6 @@ public:
 
   auto Start() noexcept -> void;
 
-  [[nodiscard]] auto GetCurrentFilterEffectsSettings() const noexcept
-      -> const FilterEffectsSettings&;
   auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void;
   auto SetFilterTransformBufferSettings(
@@ -50,8 +48,6 @@ public:
       -> void;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
-  auto UpdateTransformBufferLerpData(
-      const TransformBufferLerpData& transformBufferLerpData) noexcept -> void;
   [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> float;
   auto SetTransformBufferLerpFactor(float value) -> void;
 
@@ -62,16 +58,16 @@ private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
   float m_transformBufferLerpFactor = 0.0F;
-  Viewport m_nextFilterViewport{};
-  bool m_pendingFilterViewport = false;
 
-  FilterEffectsSettings m_currentFilterEffectsSettings{};
+  Viewport m_nextFilterViewport{};
+  bool m_pendingFilterViewport = true;
   FilterEffectsSettings m_nextFilterEffectsSettings{};
   bool m_pendingFilterEffectsSettings = false;
 
-  auto UpdateFilterEffectsSettings() noexcept -> void;
-  auto UpdateZoomVectorFilterEffectsSettings() noexcept -> void;
-  [[nodiscard]] auto IsStartingFreshTransformBuffer() const noexcept -> bool;
+  auto UpdateTransformBufferViewport(const Viewport& viewport) noexcept -> void;
+  auto UpdateTransformBufferLerpData(
+      const TransformBufferLerpData& transformBufferLerpData) noexcept -> void;
+
   auto StartFreshTransformBuffer() noexcept -> void;
 };
 
@@ -91,12 +87,6 @@ inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>&
     -> void
 {
   m_filterBuffers.CopyTransformBuffer(destBuff);
-}
-
-inline auto FilterBuffersService::GetCurrentFilterEffectsSettings() const noexcept
-    -> const FilterEffectsSettings&
-{
-  return m_currentFilterEffectsSettings;
 }
 
 inline auto FilterBuffersService::GetTransformBufferLerpFactor() const noexcept -> float

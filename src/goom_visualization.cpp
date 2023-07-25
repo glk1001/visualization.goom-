@@ -156,13 +156,12 @@ auto GoomVisualization::Start(const int numChannels) -> void
   LogInfo(*m_goomLogger, "Goom Library: Build Time : {}.", GOOM::GetGoomLibBuildTime());
   LogInfo(*m_goomLogger, "Random seed              : {}.", GetRandSeed());
   LogInfo(*m_goomLogger, "Num pool threads         : {}.", m_goomControl->GetNumPoolThreads());
-
   LogInfo(*m_goomLogger,
-          "Texture width, height = {}, {}.",
+          "Texture width, height    : {}, {}.",
           m_glScene->GetWidth(),
           m_glScene->GetHeight());
   LogInfo(*m_goomLogger,
-          "Scene frame width, height = {}, {}.",
+          "Frame width, height      : {}, {}.",
           m_glScene->GetFramebufferWidth(),
           m_glScene->GetFramebufferHeight());
 

@@ -49,9 +49,9 @@ public:
   auto UpdateNextStripe() noexcept -> void;
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
-  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
   auto SwapToPreviousTransformBuffer() noexcept -> void;
+  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
 
   [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
 

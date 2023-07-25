@@ -453,6 +453,8 @@ auto GoomControl::GoomControlImpl::StartFilterServices() noexcept -> void
 
   const auto& filterSettings = std::as_const(m_filterSettingsService).GetFilterSettings();
   m_filterBuffersService.SetFilterEffectsSettings(filterSettings.filterEffectsSettings);
+  m_filterBuffersService.SetFilterTransformBufferSettings(
+      filterSettings.filterTransformBufferSettings);
   m_filterBuffersService.Start();
 }
 
