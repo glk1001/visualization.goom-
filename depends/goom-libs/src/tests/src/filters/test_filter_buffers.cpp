@@ -48,7 +48,27 @@ using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
 
-using FilterBuffers = ZoomFilterBuffers<ZoomFilterBufferStriper>;
+class FilterBuffers : public ZoomFilterBuffers<ZoomFilterBufferStriper>
+{
+public:
+  explicit FilterBuffers(std::unique_ptr<ZoomFilterBufferStriper> filterStriper) noexcept
+    : ZoomFilterBuffers<ZoomFilterBufferStriper>(std::move(filterStriper))
+  {
+  }
+
+  [[nodiscard]] auto GetBufferBuffMidpoint() const noexcept -> Point2dInt
+  {
+    return ZoomFilterBuffers<ZoomFilterBufferStriper>::GetTransformBufferBuffMidpoint();
+  }
+  [[nodiscard]] auto GetBufferYLineStart() const noexcept -> uint32_t
+  {
+    return ZoomFilterBuffers<ZoomFilterBufferStriper>::GetTransformBufferYLineStart();
+  }
+  [[nodiscard]] auto HaveSettingsChanged() const noexcept -> bool
+  {
+    return ZoomFilterBuffers<ZoomFilterBufferStriper>::HaveFilterSettingsChanged();
+  }
+};
 
 namespace
 {
@@ -200,7 +220,7 @@ auto FullyUpdateDestBuffer(FilterBuffers& filterBuffers) noexcept -> void
   while (true)
   {
     filterBuffers.UpdateTransformBuffer();
-    if (0 == filterBuffers.GetTransformBufferYLineStart())
+    if (0 == filterBuffers.GetBufferYLineStart())
     {
       break;
     }
@@ -251,15 +271,15 @@ TEST_CASE("ZoomFilterBuffers Basic")
   }
   SECTION("Correct Starting BuffYLineStart")
   {
-    REQUIRE(0 == filterBuffers.GetTransformBufferYLineStart());
+    REQUIRE(0 == filterBuffers.GetBufferYLineStart());
   }
   SECTION("Correct Starting BuffMidpoint()")
   {
-    REQUIRE(MID_PT == filterBuffers.GetTransformBufferBuffMidpoint());
+    REQUIRE(MID_PT == filterBuffers.GetBufferBuffMidpoint());
   }
   SECTION("Correct Starting HaveFilterSettingsChanged")
   {
-    REQUIRE(!filterBuffers.HaveFilterSettingsChanged());
+    REQUIRE(!filterBuffers.HaveSettingsChanged());
   }
 }
 
@@ -274,7 +294,7 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
 
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == CONSTANT_ZOOM_VECTOR.GetConstCoords());
-  REQUIRE(MID_PT == filterBuffers.GetTransformBufferBuffMidpoint());
+  REQUIRE(MID_PT == filterBuffers.GetBufferBuffMidpoint());
 
   // tranPoint comes solely from the dest Zoom buffer which because we are using a
   // const ZoomVectorFunc, returns a const normalized value
@@ -286,8 +306,8 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
                 << CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetY());
   REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(
       CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
-  const auto normalizedMidPt = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
-      filterBuffers.GetTransformBufferBuffMidpoint());
+  const auto normalizedMidPt =
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBufferBuffMidpoint());
   const auto expectedNmlCoord1 = NormalizedCoords{
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1)};
   const auto expectedUnclippedTranPoint =
@@ -295,9 +315,9 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
   // NOLINTNEXTLINE(readability-suspicious-call-argument)
   const auto expectedTranPoint = clamp(expectedUnclippedTranPoint, {0, 0}, MAX_TRAN_POINT);
   UNSCOPED_INFO("filterBuffers.GetTransformBufferBuffMidpoint().x = "
-                << filterBuffers.GetTransformBufferBuffMidpoint().x);
+                << filterBuffers.GetBufferBuffMidpoint().x);
   UNSCOPED_INFO("filterBuffers.GetTransformBufferBuffMidpoint().y = "
-                << filterBuffers.GetTransformBufferBuffMidpoint().y);
+                << filterBuffers.GetBufferBuffMidpoint().y);
   UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
   UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
   UNSCOPED_INFO("expectedNmlCoord1.x = " << expectedNmlCoord1.GetX());
@@ -317,13 +337,13 @@ auto TestCorrectStripesBasicValues(const FilterBuffers& filterBuffers) -> void
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1);
 
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == CONSTANT_ZOOM_VECTOR.GetConstCoords());
-  REQUIRE(MID_PT == filterBuffers.GetTransformBufferBuffMidpoint());
+  REQUIRE(MID_PT == filterBuffers.GetBufferBuffMidpoint());
   REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS1.Equals(
       CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
 
   REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
           filterBuffers.GetTransformBufferState());
-  REQUIRE(not filterBuffers.HaveFilterSettingsChanged());
+  REQUIRE(not filterBuffers.HaveSettingsChanged());
 }
 
 auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
@@ -331,14 +351,14 @@ auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
 {
   // Make sure dest buffer is completely copied to srce buffer at end of update.
   filterBuffers.NotifyFilterSettingsHaveChanged();
-  REQUIRE(filterBuffers.HaveFilterSettingsChanged());
+  REQUIRE(filterBuffers.HaveSettingsChanged());
 
   FullyUpdateDestBuffer(filterBuffers);
   REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
           filterBuffers.GetTransformBufferState());
-  REQUIRE(0 == filterBuffers.GetTransformBufferYLineStart());
+  REQUIRE(0 == filterBuffers.GetBufferYLineStart());
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_2 == constantZoomVector.GetConstCoords());
-  REQUIRE(MID_PT == filterBuffers.GetTransformBufferBuffMidpoint());
+  REQUIRE(MID_PT == filterBuffers.GetBufferBuffMidpoint());
 }
 
 [[nodiscard]] auto TestCorrectStripesGetExpectedDestPoint(const FilterBuffers& filterBuffers,
@@ -347,8 +367,8 @@ auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
 {
   // Get dest buffer points - should be all CONST_ZOOM_VECTOR_COORDS_2
 
-  const auto normalizedMidPt = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
-      filterBuffers.GetTransformBufferBuffMidpoint());
+  const auto normalizedMidPt =
+      NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBufferBuffMidpoint());
 
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS2 =
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_2);
@@ -441,7 +461,7 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
     // GetSourcePoint uses tranPoint which comes solely from the dest Zoom buffer.
     // Because we are using a zoomed in ZoomVectorFunc, tranPoint should be zoomed in.
     filterBuffers.NotifyFilterSettingsHaveChanged();
-    REQUIRE(filterBuffers.HaveFilterSettingsChanged());
+    REQUIRE(filterBuffers.HaveSettingsChanged());
     FullyUpdateDestBuffer(filterBuffers);
     REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
             filterBuffers.GetTransformBufferState());
@@ -481,7 +501,7 @@ TEST_CASE("ZoomFilterBuffers Clipping")
 
   SECTION("Clipped ZoomBufferTranPoint")
   {
-    REQUIRE(Point2dInt{0, 0} == filterBuffers.GetTransformBufferBuffMidpoint());
+    REQUIRE(Point2dInt{0, 0} == filterBuffers.GetBufferBuffMidpoint());
 
     // tranPoint comes solely from the dest Zoom buffer which because we are using a
     // const ZoomVectorFunc, returns a const normalized value
@@ -495,8 +515,8 @@ TEST_CASE("ZoomFilterBuffers Clipping")
         << CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetY());
     REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS1.Equals(
         CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
-    const auto normalizedMidPt = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
-        filterBuffers.GetTransformBufferBuffMidpoint());
+    const auto normalizedMidPt =
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBufferBuffMidpoint());
     const auto expectedTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(
         normalizedMidPt +
         NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_1));
@@ -505,9 +525,9 @@ TEST_CASE("ZoomFilterBuffers Clipping")
     REQUIRE(expectedTranPoint.y < 0);
 
     UNSCOPED_INFO("filterBuffers.GetTransformBufferBuffMidpoint().x = "
-                  << filterBuffers.GetTransformBufferBuffMidpoint().x);
+                  << filterBuffers.GetBufferBuffMidpoint().x);
     UNSCOPED_INFO("filterBuffers.GetTransformBufferBuffMidpoint().y = "
-                  << filterBuffers.GetTransformBufferBuffMidpoint().y);
+                  << filterBuffers.GetBufferBuffMidpoint().y);
     UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
     UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());
     UNSCOPED_INFO("expectedTranPoint.x = " << expectedTranPoint.x);

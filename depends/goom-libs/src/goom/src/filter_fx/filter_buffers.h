@@ -33,17 +33,10 @@ public:
 
   auto Start() noexcept -> void;
 
-  // TODO - for test only
-  [[nodiscard]] auto GetTransformBufferBuffMidpoint() const noexcept -> Point2dInt;
   auto SetTransformBufferMidpoint(const Point2dInt& val) noexcept -> void;
-
   auto SetFilterViewport(const Viewport& val) noexcept -> void;
 
-  // TODO - for test only
-  [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
-
   auto NotifyFilterSettingsHaveChanged() noexcept -> void;
-  [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
@@ -52,6 +45,12 @@ public:
 
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto GetTransformBufferState() const noexcept -> TransformBufferState;
+
+protected:
+  // For testing only.
+  [[nodiscard]] auto GetTransformBufferBuffMidpoint() const noexcept -> Point2dInt;
+  [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
+  [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
 private:
   std::unique_ptr<FilterStriper> m_filterStriper;

@@ -38,8 +38,6 @@ public:
 
   auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void;
-  // TODO - In tests only
-  [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
@@ -80,11 +78,6 @@ inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>&
 inline auto FilterBuffersService::RestartTransformBuffer() noexcept -> void
 {
   m_filterBuffers.RestartTransformBuffer();
-}
-
-inline auto FilterBuffersService::HaveFilterSettingsChanged() const noexcept -> bool
-{
-  return m_filterBuffers.HaveFilterSettingsChanged();
 }
 
 } // namespace GOOM::FILTER_FX
