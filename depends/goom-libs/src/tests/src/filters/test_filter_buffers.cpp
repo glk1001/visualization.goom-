@@ -44,7 +44,6 @@ using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
 using FILTER_FX::ZoomFilterBufferStriper;
-using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using UTILS::Parallel;
 using UTILS::MATH::GoomRand;
 
@@ -88,14 +87,12 @@ public:
 private:
   NormalizedCoordsConverter m_normalizedCoordsConverter;
   static constexpr auto DIM_FILTER_COEFFS_EXP = 4U;
-  static constexpr auto DIM_FILTER_COEFFS     = UTILS::MATH::PowerOf2(DIM_FILTER_COEFFS_EXP);
 };
 
 inline ZoomCoordTransforms::ZoomCoordTransforms(const Dimensions& screenDimensions) noexcept
   : m_normalizedCoordsConverter{
         {screenDimensions.GetWidth() << DIM_FILTER_COEFFS_EXP,
-         screenDimensions.GetWidth() << DIM_FILTER_COEFFS_EXP},
-        1.0F / static_cast<float>(DIM_FILTER_COEFFS)
+         screenDimensions.GetWidth() << DIM_FILTER_COEFFS_EXP}
 }
 {
 }
@@ -139,8 +136,7 @@ const auto GOOM_INFO    = PluginInfo{
        SOUND_EVENTS
 };
 constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
-    {WIDTH, HEIGHT},
-    MIN_SCREEN_COORD_ABS_VAL
+    {WIDTH, HEIGHT}
 };
 
 constexpr auto MID_PT                     = MidpointFromOrigin({WIDTH, HEIGHT});
@@ -160,8 +156,7 @@ class TestZoomVector : public FilterZoomVector
 {
 public:
   explicit TestZoomVector(const bool returnConst) noexcept
-    : FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, GOOM_RAND, NORMALIZED_COORDS_CONVERTER},
-      m_returnConst{returnConst}
+    : FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, GOOM_RAND}, m_returnConst{returnConst}
   {
   }
 

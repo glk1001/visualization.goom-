@@ -22,7 +22,6 @@
 #include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
-#include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_effects/zoom_in_coefficients_effect_factory.h"
 #include "filter_fx/filter_settings_service.h"
@@ -47,7 +46,6 @@
 
 #ifdef DO_GOOM_STATE_DUMP
 #include "control/goom_state_dump.h"
-#include "utils/propagate_const.h"
 #endif
 
 namespace GOOM
@@ -151,8 +149,7 @@ private:
   SmallImageBitmaps m_smallBitmaps;
   GoomRandomStateHandler m_stateHandler{m_goomRand};
   NormalizedCoordsConverter m_normalizedCoordsConverter{
-      {m_goomInfo.GetDimensions().GetWidth(), m_goomInfo.GetDimensions().GetHeight()},
-      FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL
+      {m_goomInfo.GetDimensions().GetWidth(), m_goomInfo.GetDimensions().GetHeight()}
   };
   GoomAllVisualFx m_visualFx;
   auto StartVisualFx() noexcept -> void;
@@ -190,7 +187,7 @@ private:
   auto UpdateMessages(const std::string& messages) -> void;
 
 #ifdef DO_GOOM_STATE_DUMP
-  propagate_const<std::unique_ptr<GoomStateDump>> m_goomStateDump{};
+  std::unique_ptr<GoomStateDump> m_goomStateDump{};
   std::string m_dumpDirectory{};
   auto StartGoomStateDump() -> void;
   auto UpdateGoomStateDump() -> void;
@@ -297,8 +294,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                            m_normalizedCoordsConverter,
                            std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
                                                               resourcesDirectory,
-                                                              m_goomRand,
-                                                              m_normalizedCoordsConverter)},
+                                                              m_goomRand)},
     m_smallBitmaps{resourcesDirectory},
     m_visualFx{m_parallel, m_fxHelper, m_smallBitmaps, resourcesDirectory, m_stateHandler},
     m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},

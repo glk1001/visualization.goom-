@@ -65,24 +65,19 @@ struct CoordsAndVelocity
 class NormalizedCoordsConverter
 {
 public:
-  constexpr NormalizedCoordsConverter(const Dimensions& otherDimensions,
-                                      float minOtherCoordVal,
-                                      bool doNotScale = true) noexcept;
+  explicit constexpr NormalizedCoordsConverter(const Dimensions& otherDimensions,
+                                               bool doNotScale = true) noexcept;
 
   [[nodiscard]] constexpr auto OtherToNormalizedCoords(const Point2dInt& otherCoords) const noexcept
       -> NormalizedCoords;
   [[nodiscard]] constexpr auto NormalizedToOtherCoordsFlt(
       const NormalizedCoords& normalizedCoords) const noexcept -> Point2dFlt;
-  [[nodiscard]] constexpr auto GetXMinNormalizedCoordVal() const noexcept -> float;
-  [[nodiscard]] constexpr auto GetYMinNormalizedCoordVal() const noexcept -> float;
 
 private:
   float m_xRatioOtherToNormalizedCoord;
   float m_yRatioOtherToNormalizedCoord;
   float m_xRatioNormalizedToOtherCoord;
   float m_yRatioNormalizedToOtherCoord;
-  float m_xMinNormalizedCoordVal;
-  float m_yMinNormalizedCoordVal;
   [[nodiscard]] constexpr auto OtherToNormalizedXCoord(int32_t otherCoord) const noexcept -> float;
   [[nodiscard]] constexpr auto OtherToNormalizedYCoord(int32_t otherCoord) const noexcept -> float;
   [[nodiscard]] constexpr auto NormalizedToOtherXCoordFlt(float normalizedCoord) const noexcept
@@ -120,7 +115,6 @@ private:
 };
 
 constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& otherDimensions,
-                                                               const float minOtherCoordVal,
                                                                const bool doNotScale) noexcept
   : m_xRatioOtherToNormalizedCoord{NormalizedCoords::COORD_WIDTH /
                                    (doNotScale
@@ -133,20 +127,8 @@ constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions&
                                        : (NormalizedCoords::COORD_WIDTH /
                                           static_cast<float>(otherDimensions.GetHeight() - 1))},
     m_xRatioNormalizedToOtherCoord{1.0F / m_xRatioOtherToNormalizedCoord},
-    m_yRatioNormalizedToOtherCoord{1.0F / m_yRatioOtherToNormalizedCoord},
-    m_xMinNormalizedCoordVal{minOtherCoordVal * m_xRatioOtherToNormalizedCoord},
-    m_yMinNormalizedCoordVal{minOtherCoordVal * m_yRatioOtherToNormalizedCoord}
+    m_yRatioNormalizedToOtherCoord{1.0F / m_yRatioOtherToNormalizedCoord}
 {
-}
-
-constexpr auto NormalizedCoordsConverter::GetXMinNormalizedCoordVal() const noexcept -> float
-{
-  return m_xMinNormalizedCoordVal;
-}
-
-constexpr auto NormalizedCoordsConverter::GetYMinNormalizedCoordVal() const noexcept -> float
-{
-  return m_yMinNormalizedCoordVal;
 }
 
 constexpr auto NormalizedCoordsConverter::OtherToNormalizedCoords(

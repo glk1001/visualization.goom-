@@ -42,13 +42,11 @@ using Catch::Approx;
 using FILTER_FX::FilterEffectsSettings;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
-using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::Viewport;
 using FILTER_FX::Vitesse;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlayMode;
 using FILTER_FX::AFTER_EFFECTS::RotationAdjustments;
-using FILTER_FX::FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL;
 using FILTER_FX::FILTER_EFFECTS::UniformZoomInCoefficientsEffect;
 using FILTER_FX::FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
@@ -57,14 +55,9 @@ using UTILS::MATH::GoomRand;
 namespace
 {
 
-constexpr auto WIDTH                       = 120;
-constexpr auto HEIGHT                      = 70;
-constexpr auto* RESOURCES_DIRECTORY        = "";
-const auto GOOM_RAND                       = GoomRand{};
-constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
-    {WIDTH, HEIGHT},
-    MIN_SCREEN_COORD_ABS_VAL
-};
+constexpr auto WIDTH                = 120;
+constexpr auto* RESOURCES_DIRECTORY = "";
+const auto GOOM_RAND                = GoomRand{};
 
 [[nodiscard]] constexpr auto GetRelativeSpeed(const uint32_t intSpeed, const bool reverseSpeed)
     -> float
@@ -146,8 +139,7 @@ auto TestZoomInPoint(FilterZoomVector& filterZoomVector,
 
 TEST_CASE("FilterZoomVector")
 {
-  auto filterZoomVector =
-      FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, GOOM_RAND, NORMALIZED_COORDS_CONVERTER};
+  auto filterZoomVector = FilterZoomVector{WIDTH, RESOURCES_DIRECTORY, GOOM_RAND};
 
   auto filterSettings = GetZoomFilterEffectsSettings();
 

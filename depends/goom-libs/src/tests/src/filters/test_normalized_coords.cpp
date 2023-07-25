@@ -25,12 +25,10 @@ using UTILS::MATH::HALF;
 namespace
 {
 
-constexpr auto WIDTH         = 1280U;
-constexpr auto HEIGHT        = 720U;
-constexpr auto MIN_COORD_VAL = (NormalizedCoords::COORD_WIDTH) / static_cast<float>(WIDTH - 1);
+constexpr auto WIDTH                       = 1280U;
+constexpr auto HEIGHT                      = 720U;
 constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
-    {WIDTH, HEIGHT},
-    MIN_COORD_VAL
+    {WIDTH, HEIGHT}
 };
 
 } // namespace
@@ -63,10 +61,11 @@ TEST_CASE("Normalized Coords Values")
     REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MAX_COORD));
     static constexpr auto MAX_Y =
         NormalizedCoords::MIN_COORD +
-        (NormalizedCoords::COORD_WIDTH) * (static_cast<float>(HEIGHT) / static_cast<float>(WIDTH));
+        (NormalizedCoords::COORD_WIDTH) *
+            (static_cast<float>(HEIGHT - 1) / static_cast<float>(WIDTH - 1));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
     UNSCOPED_INFO("maxY = " << MAX_Y);
-    REQUIRE(FloatsEqual(COORDS.GetY(), MAX_Y, MIN_COORD_VAL));
+    REQUIRE(FloatsEqual(COORDS.GetY(), MAX_Y));
 
     const auto screenCoords =
         ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));
@@ -78,12 +77,13 @@ TEST_CASE("Normalized Coords Values")
 
   SECTION("Zero coords (middle)")
   {
+    static constexpr auto EPSILON = 0.002F;
     static constexpr auto COORDS =
         NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{WIDTH / 2, WIDTH / 2});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
-    REQUIRE(FloatsEqual(COORDS.GetX(), 0.0F, MIN_COORD_VAL));
+    REQUIRE(FloatsEqual(COORDS.GetX(), 0.0F, EPSILON));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
-    REQUIRE(FloatsEqual(COORDS.GetY(), 0.0F, MIN_COORD_VAL));
+    REQUIRE(FloatsEqual(COORDS.GetY(), 0.0F, EPSILON));
 
     const auto screenCoords =
         ToPoint2dInt(NORMALIZED_COORDS_CONVERTER.NormalizedToOtherCoordsFlt(COORDS));

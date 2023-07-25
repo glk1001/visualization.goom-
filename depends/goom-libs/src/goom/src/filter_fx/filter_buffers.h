@@ -12,12 +12,6 @@
 namespace GOOM::FILTER_FX
 {
 
-namespace FILTER_BUFFERS
-{
-// TODO - Is this necessary?
-inline constexpr float MIN_SCREEN_COORD_ABS_VAL = 1.0F / 16.0F;
-} // namespace FILTER_BUFFERS
-
 template<class FilterStriper>
 class ZoomFilterBuffers
 {

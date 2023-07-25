@@ -36,15 +36,12 @@ public:
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
                     const UTILS::MATH::IGoomRand& goomRand,
-                    const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
   auto SetFilterSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept -> void;
 
   [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
                                            float sqDistFromZero) const noexcept -> Point2dFlt;
-  [[nodiscard]] auto GetCleanedCoords(const NormalizedCoords& coords) const noexcept
-      -> NormalizedCoords;
 
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
                                              float sqDistFromZero,
@@ -55,7 +52,6 @@ public:
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
-  const NormalizedCoordsConverter* m_normalizedCoordsConverter;
   const FilterEffectsSettings* m_filterEffectsSettings{};
   AFTER_EFFECTS::ZoomVectorAfterEffects m_zoomVectorAfterEffects;
   float m_baseZoomInCoeffFactor = RAW_BASE_ZOOM_IN_COEFF_FACTOR;
@@ -65,8 +61,6 @@ private:
   [[nodiscard]] auto GetClampedZoomInCoeffs(const Point2dFlt& zoomCoeffs) const noexcept
       -> Point2dFlt;
   [[nodiscard]] auto GetClampedZoomInCoeff(float zoomCoeff) const noexcept -> float;
-  [[nodiscard]] static auto GetMinCoordVal(float coordVal, float minNormalizedCoordVal) noexcept
-      -> float;
 
   [[nodiscard]] auto GetZoomInCoeffsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 };

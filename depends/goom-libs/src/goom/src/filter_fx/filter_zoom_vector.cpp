@@ -22,10 +22,8 @@ FilterZoomVector::FilterZoomVector(
     const uint32_t screenWidth,
     const std::string& resourcesDirectory,
     const IGoomRand& goomRand,
-    const NormalizedCoordsConverter& normalizedCoordsConverter,
     const ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects) noexcept
-  : m_zoomVectorEffects{
-        screenWidth, resourcesDirectory, goomRand, normalizedCoordsConverter, getAfterEffects}
+  : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand, getAfterEffects}
 {
 }
 
@@ -48,11 +46,11 @@ auto FilterZoomVector::GetZoomInPoint(const NormalizedCoords& coords,
   const auto filterEffectsZoomInPoint = GetFilterEffectsZoomInPoint(coords, filterViewportCoords);
   const auto afterEffectsVelocity     = GetAfterEffectsVelocity(coords, filterEffectsZoomInPoint);
 
-  const auto finalZoomInPoint =
+  auto finalZoomInPoint =
       filterEffectsZoomInPoint -
       (m_zoomVectorEffects.GetAfterEffectsVelocityContribution() * afterEffectsVelocity);
 
-  return m_zoomVectorEffects.GetCleanedCoords(finalZoomInPoint);
+  return finalZoomInPoint;
 }
 
 inline auto FilterZoomVector::GetFilterEffectsZoomInPoint(

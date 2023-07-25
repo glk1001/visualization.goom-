@@ -1,6 +1,5 @@
 #pragma once
 
-#include "filter_fx/filter_buffers.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "point2d.h"
@@ -38,7 +37,6 @@ private:
   int32_t m_yMax = static_cast<int32_t>(m_imageBuffer->GetHeight() - 1);
   NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight()},
-      FILTER_BUFFERS::MIN_SCREEN_COORD_ABS_VAL,
       false
   };
   float m_zoomFactor                    = 1.0F;
