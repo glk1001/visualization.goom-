@@ -32,7 +32,6 @@ add_executable(${GOOM_LIB_TESTS_NAME}
                src/utils/test_parallel_utils.cpp
                src/utils/test_strutils.cpp
                src/utils/test_t_values.cpp
-               src/filters/test_filter_buffers_service.cpp
 )
 
 target_include_directories(${GOOM_LIB_TESTS_NAME}

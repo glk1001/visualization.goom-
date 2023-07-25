@@ -18,11 +18,6 @@ struct TransformBufferLerpData
   float lerpIncrement = 0.0F;
   float lerpToMaxLerp = 0.0F;
 };
-struct FilterTransformBufferSettings
-{
-  TransformBufferLerpData lerpData{};
-  Viewport viewport{};
-};
 
 struct FilterEffectsSettings
 {
@@ -33,7 +28,8 @@ struct FilterEffectsSettings
   float afterEffectsVelocityContribution;
   std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect;
 
-  Point2dInt zoomMidpoint; // milieu de l'effet
+  Point2dInt zoomMidpoint;
+  Viewport filterViewport{};
 
   AFTER_EFFECTS::AfterEffectsStates::AfterEffectsSettings afterEffectsSettings;
 };
@@ -42,7 +38,7 @@ struct FilterSettings
 {
   bool filterEffectsSettingsHaveChanged = false;
   FilterEffectsSettings filterEffectsSettings{};
-  FilterTransformBufferSettings filterTransformBufferSettings{};
+  TransformBufferLerpData transformBufferLerpData{};
 };
 
 } // namespace GOOM::FILTER_FX

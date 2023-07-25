@@ -3,11 +3,11 @@
 #include "goom_types.h"
 #include "normalized_coords.h"
 #include "point2d.h"
-#include "utils/math/misc.h"
 
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <vector>
 
 namespace GOOM::FILTER_FX
 {
@@ -33,22 +33,22 @@ public:
 
   auto Start() noexcept -> void;
 
+  // TODO - for test only
   [[nodiscard]] auto GetTransformBufferBuffMidpoint() const noexcept -> Point2dInt;
   auto SetTransformBufferMidpoint(const Point2dInt& val) noexcept -> void;
 
-  [[nodiscard]] auto GetFilterViewport() const noexcept -> Viewport;
   auto SetFilterViewport(const Viewport& val) noexcept -> void;
 
+  // TODO - for test only
   [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
 
   auto NotifyFilterSettingsHaveChanged() noexcept -> void;
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
-  auto UpdateSrcePosFilterBuffer(float transformBufferLerpFactor,
-                                 std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept
-      -> void;
+  [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  auto RestartTransformBuffer() noexcept -> void;
 
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto GetTransformBufferState() const noexcept -> TransformBufferState;
@@ -86,6 +86,12 @@ inline auto ZoomFilterBuffers<FilterStriper>::CopyTransformBuffer(
 }
 
 template<class FilterStriper>
+inline auto ZoomFilterBuffers<FilterStriper>::RestartTransformBuffer() noexcept -> void
+{
+  m_filterStriper->RestartTransformBuffer();
+}
+
+template<class FilterStriper>
 inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferBuffMidpoint() const noexcept
     -> Point2dInt
 {
@@ -97,12 +103,6 @@ inline auto ZoomFilterBuffers<FilterStriper>::SetTransformBufferMidpoint(
     const Point2dInt& val) noexcept -> void
 {
   m_filterStriper->SetTransformBufferMidpoint(val);
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetFilterViewport() const noexcept -> Viewport
-{
-  return m_filterStriper->GetFilterViewport();
 }
 
 template<class FilterStriper>
@@ -147,14 +147,7 @@ inline auto ZoomFilterBuffers<FilterStriper>::Start() noexcept -> void
 template<class FilterStriper>
 inline auto ZoomFilterBuffers<FilterStriper>::InitTransformBuffer() noexcept -> void
 {
-  m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
-  m_filterStriper->ResetStripes();
-
-  m_filterStriper->UpdateAllStripes();
-  m_filterStriper->SwapToPreviousTransformBuffer();
-  m_filterStriper->ResetTransformBufferIsReadyFlag();
-  m_filterStriper->UpdateAllStripes();
-
+  m_filterStriper->FillTransformBuffer();
   m_filterStriper->ResetStripes();
   m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
 }
@@ -208,18 +201,10 @@ inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTransformBufferStripe() 
 }
 
 template<class FilterStriper>
-auto ZoomFilterBuffers<FilterStriper>::UpdateSrcePosFilterBuffer(
-    const float transformBufferLerpFactor,
-    std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept -> void
+inline auto ZoomFilterBuffers<FilterStriper>::GetPreviousTransformBuffer() const noexcept
+    -> const std::vector<Point2dFlt>&
 {
-  const auto& destFilterPosBuffer = m_filterStriper->GetPreviousTransformBuffer();
-
-  std::transform(destFilterPosBuffer.begin(),
-                 destFilterPosBuffer.end(),
-                 srceFilterPosBuffer.begin(),
-                 srceFilterPosBuffer.begin(),
-                 [&transformBufferLerpFactor](const Point2dFlt& destPos, const Point2dFlt& srcePos)
-                 { return lerp(srcePos, destPos, transformBufferLerpFactor); });
+  return m_filterStriper->GetPreviousTransformBuffer();
 }
 
 } // namespace GOOM::FILTER_FX

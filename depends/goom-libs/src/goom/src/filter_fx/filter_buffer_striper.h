@@ -39,19 +39,18 @@ public:
   [[nodiscard]] auto GetTransformBufferMidpoint() const noexcept -> Point2dInt;
   auto SetTransformBufferMidpoint(const Point2dInt& midpoint) noexcept -> void;
 
-  [[nodiscard]] auto GetFilterViewport() const noexcept -> Viewport;
-  auto SetFilterViewport(const Viewport& val) noexcept -> void;
+  auto SetFilterViewport(const Viewport& viewport) noexcept -> void;
 
   auto ResetStripes() noexcept -> void;
   auto ResetTransformBufferIsReadyFlag() noexcept -> void;
 
-  auto UpdateAllStripes() noexcept -> void;
+  auto FillTransformBuffer() noexcept -> void;
   auto UpdateNextStripe() noexcept -> void;
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
-  auto SwapToPreviousTransformBuffer() noexcept -> void;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  auto RestartTransformBuffer() noexcept -> void;
 
   [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
 
@@ -76,7 +75,9 @@ private:
   std::vector<Point2dFlt> m_previousTransformBuffer;
   bool m_transformBufferIsReady = false;
 
+  auto UpdateAllStripes() noexcept -> void;
   auto DoNextStripe(uint32_t transformBufferStripeHeight) noexcept -> void;
+  auto SwapToPreviousTransformBuffer() noexcept -> void;
 };
 
 inline auto ZoomFilterBufferStriper::GetTransformBufferYLineStart() const noexcept -> uint32_t
@@ -94,7 +95,11 @@ inline auto ZoomFilterBufferStriper::CopyTransformBuffer(
 {
   Expects(m_transformBufferIsReady);
   std::copy(m_transformBuffer.cbegin(), m_transformBuffer.cend(), destBuff.begin());
-  // TODO - Should these two be a separate call?
+}
+
+inline auto ZoomFilterBufferStriper::RestartTransformBuffer() noexcept -> void
+{
+  Expects(m_transformBufferIsReady);
   SwapToPreviousTransformBuffer();
   m_transformBufferIsReady = false;
 }
@@ -112,15 +117,19 @@ inline auto ZoomFilterBufferStriper::SetTransformBufferMidpoint(const Point2dInt
   m_normalizedMidpoint = m_normalizedCoordsConverter->OtherToNormalizedCoords(m_midpoint);
 }
 
-inline auto ZoomFilterBufferStriper::GetFilterViewport() const noexcept -> Viewport
-{
-  return m_filterViewport;
-}
-
-inline auto ZoomFilterBufferStriper::SetFilterViewport(const Viewport& val) noexcept -> void
+inline auto ZoomFilterBufferStriper::SetFilterViewport(const Viewport& viewport) noexcept -> void
 {
   Expects(m_transformBufferYLineStart == 0U);
-  m_filterViewport = val;
+  m_filterViewport = viewport;
+}
+
+inline auto ZoomFilterBufferStriper::FillTransformBuffer() noexcept -> void
+{
+  ResetStripes();
+  UpdateAllStripes();
+  SwapToPreviousTransformBuffer();
+  ResetTransformBufferIsReadyFlag();
+  UpdateAllStripes();
 }
 
 inline auto ZoomFilterBufferStriper::UpdateAllStripes() noexcept -> void

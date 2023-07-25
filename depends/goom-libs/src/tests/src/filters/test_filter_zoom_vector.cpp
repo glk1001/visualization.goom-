@@ -43,6 +43,7 @@ using FILTER_FX::FilterEffectsSettings;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
+using FILTER_FX::Viewport;
 using FILTER_FX::Vitesse;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlayMode;
@@ -104,6 +105,7 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
       DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
       std::make_shared<UniformZoomInCoefficientsEffect>(),
       {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
+      Viewport{},
       {
               HypercosOverlayMode::NONE,
               ALL_OFF_AFTER_EFFECTS_STATES, RotationAdjustments{},

@@ -19,8 +19,9 @@ namespace UTILS
 {
 class Parallel;
 }
+} // namespace GOOM
 
-namespace FILTER_FX
+namespace GOOM::FILTER_FX
 {
 
 class FilterBuffersService
@@ -37,19 +38,14 @@ public:
 
   auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void;
-  auto SetFilterTransformBufferSettings(
-      const FilterTransformBufferSettings& filterTransformBufferSettings) noexcept -> void;
+  // TODO - In tests only
   [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
 
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
-  auto UpdateSrcePosFilterBuffer(float transformBufferLerpFactor,
-                                 std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept
-      -> void;
+  [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
   auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
-
-  [[nodiscard]] auto GetTransformBufferLerpFactor() const noexcept -> float;
-  auto SetTransformBufferLerpFactor(float value) -> void;
+  auto RestartTransformBuffer() noexcept -> void;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
       -> UTILS::NameValuePairs;
@@ -57,16 +53,9 @@ public:
 private:
   std::unique_ptr<IZoomVector> m_zoomVector;
   FilterBuffers m_filterBuffers;
-  float m_transformBufferLerpFactor = 0.0F;
 
-  Viewport m_nextFilterViewport{};
-  bool m_pendingFilterViewport = true;
   FilterEffectsSettings m_nextFilterEffectsSettings{};
   bool m_pendingFilterEffectsSettings = false;
-
-  auto UpdateTransformBufferViewport(const Viewport& viewport) noexcept -> void;
-  auto UpdateTransformBufferLerpData(
-      const TransformBufferLerpData& transformBufferLerpData) noexcept -> void;
 
   auto StartFreshTransformBuffer() noexcept -> void;
 };
@@ -76,11 +65,10 @@ inline auto FilterBuffersService::IsTransformBufferReady() const noexcept -> boo
   return m_filterBuffers.IsTransformBufferReady();
 }
 
-inline auto FilterBuffersService::UpdateSrcePosFilterBuffer(
-    const float transformBufferLerpFactor,
-    std_spn::span<Point2dFlt> srceFilterPosBuffer) const noexcept -> void
+inline auto FilterBuffersService::GetPreviousTransformBuffer() const noexcept
+    -> const std::vector<Point2dFlt>&
 {
-  m_filterBuffers.UpdateSrcePosFilterBuffer(transformBufferLerpFactor, srceFilterPosBuffer);
+  return m_filterBuffers.GetPreviousTransformBuffer();
 }
 
 inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept
@@ -89,16 +77,9 @@ inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>&
   m_filterBuffers.CopyTransformBuffer(destBuff);
 }
 
-inline auto FilterBuffersService::GetTransformBufferLerpFactor() const noexcept -> float
+inline auto FilterBuffersService::RestartTransformBuffer() noexcept -> void
 {
-  return m_transformBufferLerpFactor;
-}
-
-inline auto FilterBuffersService::SetTransformBufferLerpFactor(const float value) -> void
-{
-  Expects(value >= 0.0F);
-  Expects(value <= 1.0F);
-  m_transformBufferLerpFactor = value;
+  m_filterBuffers.RestartTransformBuffer();
 }
 
 inline auto FilterBuffersService::HaveFilterSettingsChanged() const noexcept -> bool
@@ -106,5 +87,4 @@ inline auto FilterBuffersService::HaveFilterSettingsChanged() const noexcept -> 
   return m_filterBuffers.HaveFilterSettingsChanged();
 }
 
-} // namespace FILTER_FX
-} // namespace GOOM
+} // namespace GOOM::FILTER_FX
