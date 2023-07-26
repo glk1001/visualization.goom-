@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <vector>
+#include <span>
 
 namespace GOOM
 {
@@ -24,7 +24,7 @@ public:
   //   If numSampleChannels = 2, then the 'rawAudioData' must interleave the two channels,
   //   one after the other. So 'rawAudioData[0]' is channel 0, 'rawAudioData[1]' is
   //   channel 1, 'rawAudioData[2]' is channel 0, 'rawAudioData[3]' is channel 1, etc.
-  AudioSamples(size_t numSampleChannels, const std::vector<float>& rawAudioData);
+  AudioSamples(size_t numSampleChannels, std_spn::span<const float> rawAudioData);
 
   [[nodiscard]] auto GetNumDistinctChannels() const -> size_t;
 
@@ -47,7 +47,7 @@ private:
   MinMaxValues m_overallMinMaxSampleValues{
       std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
       std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)};
-  [[nodiscard]] static auto GetSampleArrays(const std::vector<float>& rawAudioData)
+  [[nodiscard]] static auto GetSampleArrays(std_spn::span<const float> rawAudioData)
       -> std::array<SampleArray, NUM_AUDIO_SAMPLES>;
   [[nodiscard]] static auto GetMinMaxSampleValues(
       const std::array<SampleArray, NUM_AUDIO_SAMPLES>& sampleArrays)

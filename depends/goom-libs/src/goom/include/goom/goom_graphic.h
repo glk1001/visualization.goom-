@@ -238,7 +238,7 @@ inline PixelBufferVector::PixelBufferVector(const Dimensions& dimensions) noexce
 
 inline auto PixelBufferVector::GetBuffer() noexcept -> std_spn::span<Pixel>
 {
-  return std_spn::span<Pixel>{m_owningBuff.data(), m_owningBuff.size()};
+  return std_spn::span<Pixel>{m_owningBuff};
 }
 
 constexpr Pixel::Pixel(const RGB& color) noexcept

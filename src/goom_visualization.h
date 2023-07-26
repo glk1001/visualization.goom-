@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <string>
 #include <thread>
 
@@ -48,7 +49,7 @@ public:
   auto StartThread() -> void;
   auto Stop() -> void;
 
-  auto AddAudioSample(const std::vector<float>& audioSample) -> bool;
+  auto AddAudioSample(std_spn::span<const float> audioSample) -> bool;
 
   struct TrackInfo
   {

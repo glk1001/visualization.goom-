@@ -347,7 +347,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
   }
 }
 
-auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float>& audioData) noexcept
+auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float> audioData) noexcept
     -> void
 {
   if (m_audioBuffer.FreeSpace() < audioData.size())

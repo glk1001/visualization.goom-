@@ -4,18 +4,19 @@
 
 #include <algorithm>
 #include <array>
-#include <vector>
+#include <span>
 
 namespace GOOM
 {
 
-AudioSamples::AudioSamples(const size_t numSampleChannels, const std::vector<float>& rawAudioData)
+AudioSamples::AudioSamples(const size_t numSampleChannels,
+                           const std_spn::span<const float> rawAudioData)
   : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(rawAudioData)}
 {
   Expects((0 < numSampleChannels) && (numSampleChannels <= NUM_AUDIO_SAMPLES));
 }
 
-auto AudioSamples::GetSampleArrays(const std::vector<float>& rawAudioData)
+auto AudioSamples::GetSampleArrays(const std_spn::span<const float> rawAudioData)
     -> std::array<SampleArray, NUM_AUDIO_SAMPLES>
 {
   Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == rawAudioData.size());

@@ -42,7 +42,7 @@ public:
   auto UpdateTransformBuffer() noexcept -> void;
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
-  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  auto CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept -> void;
   auto RestartTransformBuffer() noexcept -> void;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
@@ -69,7 +69,7 @@ inline auto FilterBuffersService::GetPreviousTransformBuffer() const noexcept
   return m_filterBuffers.GetPreviousTransformBuffer();
 }
 
-inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept
+inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept
     -> void
 {
   m_filterBuffers.CopyTransformBuffer(destBuff);

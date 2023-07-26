@@ -144,7 +144,6 @@ add_library(goom
             src/utils/array_utils.h
             src/utils/build_time.cpp
             src/utils/buffer_saver.h
-            src/utils/buffer_view.h
             src/utils/date_utils.cpp
             src/utils/debugging_logger.cpp
             src/utils/enum_utils.h

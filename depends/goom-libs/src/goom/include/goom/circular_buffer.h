@@ -22,7 +22,7 @@ public:
   [[nodiscard]] auto DataAvailable() const noexcept -> size_t;
   [[nodiscard]] auto FreeSpace() const noexcept -> size_t;
 
-  auto Write(const std_spn::span<const T>& srce) noexcept -> void;
+  auto Write(std_spn::span<const T> srce) noexcept -> void;
   auto Read(std::vector<T>& dest) noexcept -> void;
 
 private:
@@ -72,7 +72,7 @@ inline auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
 #endif
 
 template<typename T>
-auto CircularBuffer<T>::Write(const std_spn::span<const T>& srce) noexcept -> void
+auto CircularBuffer<T>::Write(const std_spn::span<const T> srce) noexcept -> void
 {
   Expects(srce.size() <= FreeSpace());
 

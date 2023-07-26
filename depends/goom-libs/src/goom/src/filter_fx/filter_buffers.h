@@ -34,7 +34,7 @@ public:
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
-  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  auto CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept -> void;
   auto RestartTransformBuffer() noexcept -> void;
 
   auto UpdateTransformBuffer() noexcept -> void;
@@ -73,7 +73,7 @@ inline auto ZoomFilterBuffers<FilterStriper>::IsTransformBufferReady() const noe
 
 template<class FilterStriper>
 inline auto ZoomFilterBuffers<FilterStriper>::CopyTransformBuffer(
-    std_spn::span<Point2dFlt>& destBuff) noexcept -> void
+    std_spn::span<Point2dFlt> destBuff) noexcept -> void
 {
   m_filterStriper->CopyTransformBuffer(destBuff);
 }

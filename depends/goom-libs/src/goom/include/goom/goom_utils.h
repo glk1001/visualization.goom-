@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <span>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -15,6 +16,12 @@ auto SetRandSeed(uint64_t seed) noexcept -> void;
 
 [[nodiscard]] auto GetGoomLibVersionInfo() noexcept -> std::string;
 [[nodiscard]] auto GetGoomLibBuildTime() noexcept -> std::string;
+
+template<typename T, typename U>
+[[nodiscard]] constexpr auto GetConstSpan(const U& container) noexcept -> std_spn::span<const T>
+{
+  return std_spn::span<const T>{container.data(), container.size()};
+}
 
 template<typename U, typename T>
 [[nodiscard]] constexpr auto ptr_cast(const T ptr) noexcept -> U

@@ -49,7 +49,7 @@ public:
 
   [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
-  auto CopyTransformBuffer(std_spn::span<Point2dFlt>& destBuff) noexcept -> void;
+  auto CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept -> void;
   auto RestartTransformBuffer() noexcept -> void;
 
   [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
@@ -91,7 +91,7 @@ inline auto ZoomFilterBufferStriper::IsTransformBufferReady() const noexcept -> 
 }
 
 inline auto ZoomFilterBufferStriper::CopyTransformBuffer(
-    std_spn::span<Point2dFlt>& destBuff) noexcept -> void
+    std_spn::span<Point2dFlt> destBuff) noexcept -> void
 {
   Expects(m_transformBufferIsReady);
   std::copy(m_transformBuffer.cbegin(), m_transformBuffer.cend(), destBuff.begin());

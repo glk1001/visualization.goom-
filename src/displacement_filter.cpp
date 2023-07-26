@@ -26,7 +26,7 @@ using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
 {
-auto CopyBuffer(const std_spn::span<Point2dFlt>& srce, std_spn::span<Point2dFlt> dest) noexcept
+auto CopyBuffer(const std_spn::span<const Point2dFlt> srce, std_spn::span<Point2dFlt> dest) noexcept
     -> void
 {
   std::copy(srce.begin(), srce.end(), dest.begin());
