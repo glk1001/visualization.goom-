@@ -70,7 +70,7 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto SqDistance(const T x, const T y) noexcept -> T
+[[nodiscard]] constexpr auto SqDistanceFromZero(const T x, const T y) noexcept -> T
 {
   return Sq(x) + Sq(y);
 }

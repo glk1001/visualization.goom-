@@ -48,7 +48,6 @@ using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::MATH::HALF;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::Sq;
-using UTILS::MATH::SqDistance;
 using UTILS::MATH::TWO_PI;
 
 static constexpr auto CHUNK_WIDTH  = 2;
@@ -450,8 +449,7 @@ inline auto ImageFx::ImageFxImpl::GetPositionAdjustedBrightness(const float brig
                                                                 const Point2dInt& position) const
     -> float
 {
-  return m_randBrightnessFactor *
-         (brightness * static_cast<float>(SqDistance(position.x, position.y)));
+  return m_randBrightnessFactor * (brightness * static_cast<float>(SqDistanceFromZero(position)));
 }
 
 inline auto ImageFx::ImageFxImpl::UpdateFloatingStartPositions() -> void

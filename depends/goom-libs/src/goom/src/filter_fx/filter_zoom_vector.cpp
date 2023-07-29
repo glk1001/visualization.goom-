@@ -6,7 +6,6 @@
 #include "goom_config.h"
 #include "goom_logger.h"
 #include "normalized_coords.h"
-#include "utils/math/misc.h"
 
 #include <string>
 
@@ -16,7 +15,6 @@ namespace GOOM::FILTER_FX
 using FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::SqDistance;
 
 FilterZoomVector::FilterZoomVector(
     const uint32_t screenWidth,
@@ -48,10 +46,8 @@ inline auto FilterZoomVector::GetFilterEffectsZoomInPoint(
     const NormalizedCoords& coords,
     const NormalizedCoords& filterViewportCoords) const noexcept -> NormalizedCoords
 {
-  const auto absSqFilterViewportCoords =
-      SqDistance(filterViewportCoords.GetX(), filterViewportCoords.GetY());
-  const auto zoomInCoeffs =
-      m_zoomVectorEffects.GetZoomInCoefficients(filterViewportCoords, absSqFilterViewportCoords);
+  const auto zoomInCoeffs = m_zoomVectorEffects.GetZoomInCoefficients(
+      filterViewportCoords, SqDistanceFromZero(filterViewportCoords));
   const auto zoomInFactor = 1.0F - zoomInCoeffs;
 
   return zoomInFactor * coords;
@@ -62,11 +58,11 @@ inline auto FilterZoomVector::GetAfterEffectsVelocity(
     const NormalizedCoords& coords,
     const NormalizedCoords& filterEffectsZoomInPoint) const noexcept -> NormalizedCoords
 {
-  const auto zoomInVelocity = coords - filterEffectsZoomInPoint;
-  const auto absSqCoords    = SqDistance(coords.GetX(), coords.GetY());
+  const auto zoomInVelocity     = coords - filterEffectsZoomInPoint;
+  const auto sqDistanceFromZero = SqDistanceFromZero(coords);
 
   return m_zoomVectorEffects.GetAfterEffectsVelocityMultiplier() *
-         m_zoomVectorEffects.GetAfterEffectsVelocity(coords, absSqCoords, zoomInVelocity);
+         m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistanceFromZero, zoomInVelocity);
 }
 
 auto FilterZoomVector::GetNameValueParams(

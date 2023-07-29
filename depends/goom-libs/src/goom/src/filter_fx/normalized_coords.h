@@ -59,8 +59,9 @@ struct CoordsAndVelocity
     -> NormalizedCoords;
 [[nodiscard]] constexpr auto operator*(const Point2dFlt& scalars,
                                        const NormalizedCoords& coords) noexcept -> NormalizedCoords;
-[[nodiscard]] constexpr auto GetSqDistance(const NormalizedCoords& coords1,
-                                           const NormalizedCoords& coords2) noexcept -> float;
+[[nodiscard]] constexpr auto SqDistance(const NormalizedCoords& coords1,
+                                        const NormalizedCoords& coords2) noexcept -> float;
+[[nodiscard]] constexpr auto SqDistanceFromZero(const NormalizedCoords& coords) noexcept -> float;
 
 class NormalizedCoordsConverter
 {
@@ -267,10 +268,16 @@ constexpr auto operator*(const Point2dFlt& scalars, const NormalizedCoords& coor
   return {scalars.x * coords.GetX(), scalars.y * coords.GetY()};
 }
 
-constexpr auto GetSqDistance(const NormalizedCoords& coords1,
-                             const NormalizedCoords& coords2) noexcept -> float
+constexpr auto SqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept
+    -> float
 {
-  return UTILS::MATH::SqDistance(coords1.GetX() - coords2.GetX(), coords1.GetY() - coords2.GetY());
+  return UTILS::MATH::SqDistanceFromZero(coords1.GetX() - coords2.GetX(),
+                                         coords1.GetY() - coords2.GetY());
+}
+
+constexpr auto SqDistanceFromZero(const NormalizedCoords& coords) noexcept -> float
+{
+  return UTILS::MATH::SqDistanceFromZero(coords.GetX(), coords.GetY());
 }
 
 constexpr Viewport::Viewport() noexcept

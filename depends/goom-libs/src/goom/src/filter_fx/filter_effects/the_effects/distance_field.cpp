@@ -350,7 +350,7 @@ auto DistanceField::GetDistanceSquaredFromClosestPoint(const NormalizedCoords& p
   if (m_params.gridType == GridType::FULL)
   {
     const auto normalizedGridCentre = GetNormalizedGridPointCentre(gridPoint);
-    return GetSqDistance(point, normalizedGridCentre);
+    return SqDistance(point, normalizedGridCentre);
   }
 
   const auto gridPointsWithCentres = GetNearsetGridPointsWithCentres(gridPoint);
@@ -416,7 +416,7 @@ inline auto DistanceField::GetMinDistanceSquared(
 
   for (const auto& centre : centres)
   {
-    const auto distanceSquared = GetSqDistance(point, centre);
+    const auto distanceSquared = SqDistance(point, centre);
     if (distanceSquared < minDistanceSquared)
     {
       minDistanceSquared = distanceSquared;

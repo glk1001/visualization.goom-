@@ -51,6 +51,7 @@ struct Point2dInt
 [[nodiscard]] constexpr auto MidpointFromOrigin(const Point2dInt& point) noexcept -> Point2dInt;
 [[nodiscard]] constexpr auto SqDistance(const Point2dInt& point1, const Point2dInt& point2) noexcept
     -> int32_t;
+[[nodiscard]] constexpr auto SqDistanceFromZero(const Point2dInt& point) noexcept -> int32_t;
 [[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t;
 
 struct Vec2dInt
@@ -408,6 +409,11 @@ constexpr auto SqDistance(const Point2dFlt& point1, const Point2dFlt& point2) no
   const auto xDiff = point1.x - point2.x;
   const auto yDiff = point1.y - point2.y;
   return (xDiff * xDiff) + (yDiff * yDiff);
+}
+
+constexpr auto SqDistanceFromZero(const Point2dInt& point) noexcept -> int32_t
+{
+  return (point.x * point.x) + (point.y * point.y);
 }
 
 inline auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
