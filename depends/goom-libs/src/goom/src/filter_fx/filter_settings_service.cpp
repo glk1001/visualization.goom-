@@ -779,33 +779,17 @@ auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> voi
 
   // TODO(glk) Lerp between old and new?
   static constexpr auto MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{0.1F, 5.0F};
-
-  static_assert(
-      ZoomVectorEffects::MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
-      ZoomVectorEffects::GetBaseZoomInCoeff(
-          MULTIPLIER_RANGE.min * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
-  static_assert(
-      ZoomVectorEffects::MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
-      ZoomVectorEffects::GetBaseZoomInCoeff(
-          MULTIPLIER_RANGE.max * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
-  static_assert(
-      ZoomVectorEffects::MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
-      ZoomVectorEffects::GetBaseZoomInCoeff(
-          MULTIPLIER_RANGE.min * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
-  static_assert(
-      ZoomVectorEffects::MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
-      ZoomVectorEffects::GetBaseZoomInCoeff(
-          MULTIPLIER_RANGE.max * ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
+  static_assert(ZoomVectorEffects::IsValidMultiplierRange(MULTIPLIER_RANGE));
 
   m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier =
       m_goomRand->GetRandInRange(MULTIPLIER_RANGE);
 }
 
-auto FilterSettingsService::SetAfterEffectsVelocityContribution() noexcept -> void
+auto FilterSettingsService::SetAfterEffectsVelocityMultiplier() noexcept -> void
 {
   static constexpr auto CONTRIBUTION_RANGE = IGoomRand::NumberRange<float>{0.1F, 1.0F};
 
-  m_filterSettings.filterEffectsSettings.afterEffectsVelocityContribution =
+  m_filterSettings.filterEffectsSettings.afterEffectsVelocityMultiplier =
       m_goomRand->GetRandInRange(CONTRIBUTION_RANGE);
 }
 

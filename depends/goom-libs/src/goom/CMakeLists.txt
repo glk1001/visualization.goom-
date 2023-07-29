@@ -99,17 +99,17 @@ add_library(goom
             src/filter_fx/after_effects/tan_effect.cpp
             src/filter_fx/after_effects/xy_lerp_effect.cpp
             src/filter_fx/after_effects/zoom_vector_after_effects.cpp
-            src/filter_fx/filter_effects/amulet.cpp
+            src/filter_fx/filter_effects/the_effects/amulet.cpp
+            src/filter_fx/filter_effects/the_effects/crystal_ball.cpp
+            src/filter_fx/filter_effects/the_effects/distance_field.cpp
+            src/filter_fx/filter_effects/the_effects/exp_reciprocal.cpp
+            src/filter_fx/filter_effects/the_effects/image_zoom_in_coeffs.cpp
+            src/filter_fx/filter_effects/the_effects/scrunch.cpp
+            src/filter_fx/filter_effects/the_effects/speedway.cpp
+            src/filter_fx/filter_effects/the_effects/uniform_zoom_in_coefficients_effect.h
+            src/filter_fx/filter_effects/the_effects/wave.cpp
+            src/filter_fx/filter_effects/the_effects/y_only.cpp
             src/filter_fx/common_types.h
-            src/filter_fx/filter_effects/crystal_ball.cpp
-            src/filter_fx/filter_effects/distance_field.cpp
-            src/filter_fx/filter_effects/exp_reciprocal.cpp
-            src/filter_fx/filter_effects/image_zoom_in_coeffs.cpp
-            src/filter_fx/filter_effects/scrunch.cpp
-            src/filter_fx/filter_effects/speedway.cpp
-            src/filter_fx/filter_effects/uniform_zoom_in_coefficients_effect.h
-            src/filter_fx/filter_effects/wave.cpp
-            src/filter_fx/filter_effects/y_only.cpp
             src/filter_fx/filter_effects/zoom_in_coefficients_effect_factory.cpp
             src/filter_fx/filter_effects/zoom_vector_effects.cpp
             src/filter_fx/filter_utils/image_displacement.cpp

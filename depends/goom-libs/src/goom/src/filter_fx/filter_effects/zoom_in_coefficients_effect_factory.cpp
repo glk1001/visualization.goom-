@@ -1,18 +1,18 @@
 #include "zoom_in_coefficients_effect_factory.h"
 
-#include "amulet.h"
-#include "crystal_ball.h"
-#include "distance_field.h"
-#include "exp_reciprocal.h"
+#include "filter_fx/filter_effects/the_effects/amulet.h"
+#include "filter_fx/filter_effects/the_effects/crystal_ball.h"
+#include "filter_fx/filter_effects/the_effects/distance_field.h"
+#include "filter_fx/filter_effects/the_effects/exp_reciprocal.h"
+#include "filter_fx/filter_effects/the_effects/image_zoom_in_coeffs.h"
+#include "filter_fx/filter_effects/the_effects/scrunch.h"
+#include "filter_fx/filter_effects/the_effects/speedway.h"
+#include "filter_fx/filter_effects/the_effects/uniform_zoom_in_coefficients_effect.h"
+#include "filter_fx/filter_effects/the_effects/wave.h"
+#include "filter_fx/filter_effects/the_effects/y_only.h"
 #include "filter_fx/filter_settings_service.h"
 #include "goom_config.h"
-#include "image_zoom_in_coeffs.h"
-#include "scrunch.h"
-#include "speedway.h"
-#include "uniform_zoom_in_coefficients_effect.h"
 #include "utils/math/goom_rand_base.h"
-#include "wave.h"
-#include "y_only.h"
 
 #include <memory>
 

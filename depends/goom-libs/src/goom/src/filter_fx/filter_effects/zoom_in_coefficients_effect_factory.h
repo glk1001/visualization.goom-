@@ -1,22 +1,17 @@
 #pragma once
 
+#include "filter_fx/filter_settings.h"
 #include "filter_fx/filter_settings_service.h"
 
 #include <memory>
+#include <string>
 
-namespace GOOM
-{
-
-namespace UTILS
-{
-namespace MATH
+namespace GOOM::UTILS::MATH
 {
 class IGoomRand;
 }
-class Parallel;
-}
 
-namespace FILTER_FX::FILTER_EFFECTS
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 [[nodiscard]] extern auto CreateZoomInCoefficientsEffect(ZoomFilterMode filterMode,
@@ -24,5 +19,4 @@ namespace FILTER_FX::FILTER_EFFECTS
                                                          const std::string& resourcesDirectory)
     -> std::shared_ptr<IZoomInCoefficientsEffect>;
 
-} // namespace FILTER_FX::FILTER_EFFECTS
-} // namespace GOOM
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS

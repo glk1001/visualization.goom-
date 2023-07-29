@@ -147,7 +147,7 @@ private:
   [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
   auto SetMaxZoomInCoeff() -> void;
   auto SetBaseZoomInCoeffFactorMultiplier() noexcept -> void;
-  auto SetAfterEffectsVelocityContribution() noexcept -> void;
+  auto SetAfterEffectsVelocityMultiplier() noexcept -> void;
 
   enum class ZoomMidpointEvents
   {
@@ -235,7 +235,7 @@ inline auto FilterSettingsService::ChangeMilieu() -> void
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   SetMaxZoomInCoeff();
   SetBaseZoomInCoeffFactorMultiplier();
-  SetAfterEffectsVelocityContribution();
+  SetAfterEffectsVelocityMultiplier();
   SetRandomZoomMidpoint();
 }
 

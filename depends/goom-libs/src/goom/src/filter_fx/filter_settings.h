@@ -25,7 +25,7 @@ struct FilterEffectsSettings
 
   float maxZoomInCoeff;
   float baseZoomInCoeffFactorMultiplier;
-  float afterEffectsVelocityContribution;
+  float afterEffectsVelocityMultiplier;
   std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect;
 
   Point2dInt zoomMidpoint;

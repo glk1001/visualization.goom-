@@ -20,6 +20,10 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const GetAfterEffectsFunc& getAfterEffects) noexcept
   : m_zoomVectorAfterEffects{screenWidth, getAfterEffects(goomRand, resourcesDirectory)}
 {
+  static_assert(MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
+                GetBaseZoomInCoeff(RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
+  static_assert(MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
+                GetBaseZoomInCoeff(RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
 }
 
 auto ZoomVectorEffects::GetStandardAfterEffects(const IGoomRand& goomRand,

@@ -13,7 +13,7 @@
 #endif
 
 #include "filter_fx/after_effects/after_effects_types.h"
-#include "filter_fx/filter_effects/uniform_zoom_in_coefficients_effect.h"
+#include "filter_fx/filter_effects/the_effects/uniform_zoom_in_coefficients_effect.h"
 #include "filter_fx/filter_effects/zoom_vector_effects.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
@@ -55,6 +55,13 @@ using UTILS::MATH::GoomRand;
 namespace
 {
 
+class TestZoomVectorEffects : public ZoomVectorEffects
+{
+public:
+  static constexpr auto RAW_BASE_ZOOM_IN_COEFF_FACTOR =
+      ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
+};
+
 constexpr auto WIDTH                = 120;
 constexpr auto* RESOURCES_DIRECTORY = "";
 const auto GOOM_RAND                = GoomRand{};
@@ -69,7 +76,7 @@ const auto GOOM_RAND                = GoomRand{};
 
 [[nodiscard]] constexpr auto GetZoomInCoeff(const float relativeSpeed) -> float
 {
-  constexpr auto BASE_ZOOM_IN_COEFF_FACTOR = ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
+  constexpr auto BASE_ZOOM_IN_COEFF_FACTOR = TestZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
   return BASE_ZOOM_IN_COEFF_FACTOR * (1.0F + relativeSpeed);
 }
 
