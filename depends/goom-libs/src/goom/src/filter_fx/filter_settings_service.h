@@ -1,7 +1,7 @@
 #pragma once
 
 #include "after_effects/after_effects_states.h"
-#include "after_effects/rotation.h"
+#include "after_effects/the_effects/rotation.h"
 #include "filter_settings.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"

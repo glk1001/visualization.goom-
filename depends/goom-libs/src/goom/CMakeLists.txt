@@ -88,16 +88,16 @@ add_library(goom
             src/draw/goom_draw_to_buffer.cpp
             src/draw/goom_draw_to_container.cpp
             src/draw/goom_draw_to_many.cpp
+            src/filter_fx/after_effects/the_effects/hypercos.cpp
+            src/filter_fx/after_effects/the_effects/image_velocity.cpp
+            src/filter_fx/after_effects/the_effects/noise.cpp
+            src/filter_fx/after_effects/the_effects/planes.cpp
+            src/filter_fx/after_effects/the_effects/rotation.cpp
+            src/filter_fx/after_effects/the_effects/tan_effect.cpp
+            src/filter_fx/after_effects/the_effects/xy_lerp_effect.cpp
             src/filter_fx/after_effects/after_effects.cpp
             src/filter_fx/after_effects/after_effects_states.cpp
             src/filter_fx/after_effects/after_effects_types.h
-            src/filter_fx/after_effects/hypercos.cpp
-            src/filter_fx/after_effects/image_velocity.cpp
-            src/filter_fx/after_effects/noise.cpp
-            src/filter_fx/after_effects/planes.cpp
-            src/filter_fx/after_effects/rotation.cpp
-            src/filter_fx/after_effects/tan_effect.cpp
-            src/filter_fx/after_effects/xy_lerp_effect.cpp
             src/filter_fx/after_effects/zoom_vector_after_effects.cpp
             src/filter_fx/filter_effects/the_effects/amulet.cpp
             src/filter_fx/filter_effects/the_effects/crystal_ball.cpp

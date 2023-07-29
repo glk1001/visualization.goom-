@@ -1,17 +1,22 @@
 #pragma once
 
-#include "filter_fx/after_effects/hypercos.h"
-#include "filter_fx/after_effects/image_velocity.h"
-#include "filter_fx/after_effects/noise.h"
-#include "filter_fx/after_effects/planes.h"
-#include "filter_fx/after_effects/rotation.h"
-#include "filter_fx/after_effects/tan_effect.h"
-#include "filter_fx/after_effects/xy_lerp_effect.h"
-
 #include <memory>
+
+namespace GOOM::UTILS::MATH
+{
+class IGoomRand;
+}
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
+
+class Hypercos;
+class ImageVelocity;
+class Noise;
+class Planes;
+class Rotation;
+class TanEffect;
+class XYLerpEffect;
 
 class AfterEffects
 {
