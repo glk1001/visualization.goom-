@@ -2,7 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/zoom_in_coefficients_effect.h"
+#include "filter_fx/zoom_adjustment_effect.h"
 #include "goom_config.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
@@ -12,7 +12,7 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class Speedway : public IZoomInCoefficientsEffect
+class Speedway : public IZoomAdjustmentEffect
 {
 public:
   enum class Modes
@@ -25,11 +25,10 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const noexcept
-      -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
+                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
+  [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
@@ -48,30 +47,30 @@ private:
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
-  [[nodiscard]] auto GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero) const noexcept -> Point2dFlt;
-  [[nodiscard]] auto GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero) const noexcept -> Point2dFlt;
-  [[nodiscard]] auto GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
-                                                float sqDistFromZero) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetMode0ZoomAdjustment(const NormalizedCoords& coords,
+                                            float sqDistFromZero) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetMode1ZoomAdjustment(const NormalizedCoords& coords,
+                                            float sqDistFromZero) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetMode2ZoomAdjustment(const NormalizedCoords& coords,
+                                            float sqDistFromZero) const noexcept -> Point2dFlt;
 };
 
-inline auto Speedway::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                            const float sqDistFromZero) const noexcept -> Point2dFlt
+inline auto Speedway::GetZoomAdjustment(const NormalizedCoords& coords,
+                                        const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   switch (m_mode)
   {
     case Modes::MODE0:
-      return GetMode0ZoomInCoefficients(coords, sqDistFromZero);
+      return GetMode0ZoomAdjustment(coords, sqDistFromZero);
     case Modes::MODE1:
-      return GetMode1ZoomInCoefficients(coords, sqDistFromZero);
+      return GetMode1ZoomAdjustment(coords, sqDistFromZero);
     case Modes::MODE2:
-      return GetMode2ZoomInCoefficients(coords, sqDistFromZero);
+      return GetMode2ZoomAdjustment(coords, sqDistFromZero);
   }
 }
 
-inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const noexcept
+inline auto Speedway::GetMode0ZoomAdjustment(const NormalizedCoords& coords,
+                                             const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
@@ -82,15 +81,15 @@ inline auto Speedway::GetMode0ZoomInCoefficients(const NormalizedCoords& coords,
     xAdd = -xAdd;
   }
 
-  const auto xZoomInCoeff =
-      GetBaseZoomInCoeffs().x * (m_params.amplitude.x * (coords.GetY() + xAdd));
-  const auto yZoomInCoeff = m_params.amplitude.y * xZoomInCoeff;
+  const auto xZoomAdjustment =
+      GetBaseZoomAdjustment().x * (m_params.amplitude.x * (coords.GetY() + xAdd));
+  const auto yZoomAdjustment = m_params.amplitude.y * xZoomAdjustment;
 
-  return {xZoomInCoeff, yZoomInCoeff};
+  return {xZoomAdjustment, yZoomAdjustment};
 }
 
-inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const noexcept
+inline auto Speedway::GetMode1ZoomAdjustment(const NormalizedCoords& coords,
+                                             const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   auto xAdd = -1.0F;
@@ -119,14 +118,15 @@ inline auto Speedway::GetMode1ZoomInCoefficients(const NormalizedCoords& coords,
   const auto xWarp     = X_WARP_MULTIPLIER * (xAdd + ((sign * UTILS::MATH::Sq(xDiff)) / xAdd));
   const auto amplitude = AMPLITUDE_MULTIPLIER * (1.0F - sqDistFromZero);
 
-  const auto xZoomInCoeff = amplitude * GetBaseZoomInCoeffs().x * (m_params.amplitude.x * xWarp);
-  const auto yZoomInCoeff = amplitude * m_params.amplitude.y * xZoomInCoeff;
+  const auto xZoomAdjustment =
+      amplitude * GetBaseZoomAdjustment().x * (m_params.amplitude.x * xWarp);
+  const auto yZoomAdjustment = amplitude * m_params.amplitude.y * xZoomAdjustment;
 
-  return {xZoomInCoeff, yZoomInCoeff};
+  return {xZoomAdjustment, yZoomAdjustment};
 }
 
-inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const noexcept
+inline auto Speedway::GetMode2ZoomAdjustment(const NormalizedCoords& coords,
+                                             const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
@@ -137,11 +137,12 @@ inline auto Speedway::GetMode2ZoomInCoefficients(const NormalizedCoords& coords,
     xAdd = -xAdd;
   }
 
-  const auto xZoomInCoeff =
-      GetBaseZoomInCoeffs().x * (m_params.amplitude.x * (coords.GetY() + xAdd));
-  const auto yZoomInCoeff = std::tan(0.01F * sqDistFromZero) * m_params.amplitude.y * xZoomInCoeff;
+  const auto xZoomAdjustment =
+      GetBaseZoomAdjustment().x * (m_params.amplitude.x * (coords.GetY() + xAdd));
+  const auto yZoomAdjustment =
+      std::tan(0.01F * sqDistFromZero) * m_params.amplitude.y * xZoomAdjustment;
 
-  return {xZoomInCoeff, yZoomInCoeff};
+  return {xZoomAdjustment, yZoomAdjustment};
 }
 
 inline auto Speedway::GetParams() const noexcept -> const Params&

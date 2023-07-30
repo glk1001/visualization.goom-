@@ -213,7 +213,7 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
              useModifiedATanAngle,
              modifiedATanAngleFactor});
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
@@ -295,7 +295,7 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
   }
 }
 
-auto Wave::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto Wave::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

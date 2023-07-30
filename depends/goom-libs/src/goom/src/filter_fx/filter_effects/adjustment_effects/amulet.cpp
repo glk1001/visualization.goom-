@@ -27,10 +27,10 @@ auto Amulet::SetRandomParams() noexcept -> void
 
   SetParams({xAmplitude, yAmplitude});
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
-auto Amulet::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto Amulet::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

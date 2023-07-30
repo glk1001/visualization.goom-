@@ -2,7 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/zoom_in_coefficients_effect.h"
+#include "filter_fx/zoom_adjustment_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -10,7 +10,7 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class DistanceField : public IZoomInCoefficientsEffect
+class DistanceField : public IZoomAdjustmentEffect
 {
 public:
   enum class Modes
@@ -23,11 +23,10 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const noexcept
-      -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
+                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
+  [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   enum class GridType
@@ -117,14 +116,14 @@ private:
       -> float;
 };
 
-inline auto DistanceField::GetZoomInCoefficients(
+inline auto DistanceField::GetZoomAdjustment(
     const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);
 
-  return {GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromClosestPoint),
-          GetBaseZoomInCoeffs().y + (m_params.amplitude.y * sqDistFromClosestPoint)};
+  return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromClosestPoint),
+          GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromClosestPoint)};
 }
 
 inline auto DistanceField::GetParams() const noexcept -> const Params&

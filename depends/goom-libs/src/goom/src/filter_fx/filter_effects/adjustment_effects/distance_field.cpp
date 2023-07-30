@@ -137,7 +137,7 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
       gridArrays,
   });
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto DistanceField::GetGridWidth(const GridType gridType,
@@ -428,7 +428,7 @@ inline auto DistanceField::GetMinDistanceSquared(
   return minDistanceSquared;
 }
 
-auto DistanceField::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto DistanceField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "Dist Field"});
   const auto gridWidth      = m_params.gridMax + 1;

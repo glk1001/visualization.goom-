@@ -13,7 +13,7 @@
 #endif
 
 #include "filter_fx/after_effects/after_effects_types.h"
-#include "filter_fx/filter_effects/the_effects/uniform_zoom_in_coefficients_effect.h"
+#include "filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h"
 #include "filter_fx/filter_effects/zoom_vector_effects.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
@@ -47,7 +47,7 @@ using FILTER_FX::Vitesse;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlayMode;
 using FILTER_FX::AFTER_EFFECTS::RotationAdjustments;
-using FILTER_FX::FILTER_EFFECTS::UniformZoomInCoefficientsEffect;
+using FILTER_FX::FILTER_EFFECTS::UniformZoomAdjustmentEffect;
 using FILTER_FX::FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
 using UTILS::MATH::GoomRand;
@@ -58,8 +58,8 @@ namespace
 class TestZoomVectorEffects : public ZoomVectorEffects
 {
 public:
-  static constexpr auto RAW_BASE_ZOOM_IN_COEFF_FACTOR =
-      ZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
+  static constexpr auto RAW_BASE_ZOOM_ADJUSTMENT_FACTOR =
+      ZoomVectorEffects::RAW_BASE_ZOOM_ADJUSTMENT_FACTOR;
 };
 
 constexpr auto WIDTH                = 120;
@@ -74,18 +74,19 @@ const auto GOOM_RAND                = GoomRand{};
   return reverseSpeed ? -absRelativeSpeed : absRelativeSpeed;
 }
 
-[[nodiscard]] constexpr auto GetZoomInCoeff(const float relativeSpeed) -> float
+[[nodiscard]] constexpr auto GetZoomAdjustment(const float relativeSpeed) -> float
 {
-  constexpr auto BASE_ZOOM_IN_COEFF_FACTOR = TestZoomVectorEffects::RAW_BASE_ZOOM_IN_COEFF_FACTOR;
-  return BASE_ZOOM_IN_COEFF_FACTOR * (1.0F + relativeSpeed);
+  constexpr auto BASE_ZOOM_ADJUSTMENT_FACTOR =
+      TestZoomVectorEffects::RAW_BASE_ZOOM_ADJUSTMENT_FACTOR;
+  return BASE_ZOOM_ADJUSTMENT_FACTOR * (1.0F + relativeSpeed);
 }
 
 [[nodiscard]] auto GetZoomFilterEffectsSettings() -> FilterEffectsSettings
 {
   static constexpr auto DEFAULT_ZOOM_MID_X                          = 16;
   static constexpr auto DEFAULT_ZOOM_MID_Y                          = 1;
-  static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                   = 2.01F;
-  static constexpr auto UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER   = 1.0F;
+  static constexpr auto DEFAULT_MAX_ZOOM_ADJUSTMENT                 = 2.01F;
+  static constexpr auto UNIT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER = 1.0F;
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION = 0.5F;
 
   static constexpr auto ALL_OFF_AFTER_EFFECTS_STATES = EnumMap<AfterEffectsTypes, bool>{{{
@@ -100,10 +101,10 @@ const auto GOOM_RAND                = GoomRand{};
 
   return FilterEffectsSettings{
       Vitesse{},
-      DEFAULT_MAX_ZOOM_IN_COEFF,
-      UNIT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
+      DEFAULT_MAX_ZOOM_ADJUSTMENT,
+      UNIT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
       DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
-      std::make_shared<UniformZoomInCoefficientsEffect>(),
+      std::make_shared<UniformZoomAdjustmentEffect>(),
       {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
       Viewport{},
       {
@@ -113,10 +114,10 @@ const auto GOOM_RAND                = GoomRand{};
   };
 }
 
-auto TestZoomInPoint(FilterZoomVector& filterZoomVector,
-                     FilterEffectsSettings& filterSettings,
-                     const bool reverseSpeed,
-                     const uint32_t speedInc)
+auto TestZoomAdjustment(FilterZoomVector& filterZoomVector,
+                        FilterEffectsSettings& filterSettings,
+                        const bool reverseSpeed,
+                        const uint32_t speedInc)
 {
   static constexpr auto COORDS = NormalizedCoords{1.0F, 1.0F};
 
@@ -130,16 +131,16 @@ auto TestZoomInPoint(FilterZoomVector& filterZoomVector,
   filterSettings.vitesse.SetVitesse(intSpeed);
   REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(relativeSpeed));
 
-  const auto baseZoomInCoeff     = GetZoomInCoeff(relativeSpeed);
-  const auto zoomInFactor        = 1.0F - baseZoomInCoeff;
-  const auto expectedZoomInPoint = NormalizedCoords{zoomInFactor, zoomInFactor};
-  UNSCOPED_INFO("baseZoomInCoeff = " << baseZoomInCoeff);
-  UNSCOPED_INFO("zoomInFactor = " << zoomInFactor);
+  const auto baseZoomAdjustment     = GetZoomAdjustment(relativeSpeed);
+  const auto zoomFactor             = 1.0F - baseZoomAdjustment;
+  const auto expectedZoomAdjustment = NormalizedCoords{zoomFactor, zoomFactor};
+  UNSCOPED_INFO("baseZoomAdjustment = " << baseZoomAdjustment);
+  UNSCOPED_INFO("zoomFactor = " << zoomFactor);
 
   filterZoomVector.SetFilterEffectsSettings(filterSettings);
-  const auto zoomInPoint = filterZoomVector.GetZoomInPoint(COORDS, COORDS);
-  REQUIRE(zoomInPoint.GetX() == Approx(expectedZoomInPoint.GetX()));
-  REQUIRE(zoomInPoint.GetY() == Approx(expectedZoomInPoint.GetY()));
+  const auto zoomAdjustment = filterZoomVector.GetZoomPoint(COORDS, COORDS);
+  REQUIRE(zoomAdjustment.GetX() == Approx(expectedZoomAdjustment.GetX()));
+  REQUIRE(zoomAdjustment.GetY() == Approx(expectedZoomAdjustment.GetY()));
 }
 
 } // namespace
@@ -156,15 +157,15 @@ TEST_CASE("FilterZoomVector")
 
     filterSettings.vitesse.SetVitesse(Vitesse::STOP_SPEED);
     REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(0.0F));
-    const auto baseZoomInCoeff     = GetZoomInCoeff(0.0F);
-    const auto zoomInFactor        = 1.0F - baseZoomInCoeff;
-    const auto expectedZoomInPoint = zoomInFactor * coords;
+    const auto baseZoomAdjustment     = GetZoomAdjustment(0.0F);
+    const auto zoomFactor             = 1.0F - baseZoomAdjustment;
+    const auto expectedZoomAdjustment = zoomFactor * coords;
 
     filterZoomVector.SetFilterEffectsSettings(filterSettings);
-    REQUIRE(filterZoomVector.GetZoomInPoint(coords, coords).GetX() ==
-            Approx(expectedZoomInPoint.GetX()));
-    REQUIRE(filterZoomVector.GetZoomInPoint(coords, coords).GetY() ==
-            Approx(expectedZoomInPoint.GetY()));
+    REQUIRE(filterZoomVector.GetZoomPoint(coords, coords).GetX() ==
+            Approx(expectedZoomAdjustment.GetX()));
+    REQUIRE(filterZoomVector.GetZoomPoint(coords, coords).GetY() ==
+            Approx(expectedZoomAdjustment.GetY()));
   }
 
   SECTION("Non-zero Speed")
@@ -178,7 +179,7 @@ TEST_CASE("FilterZoomVector")
 
       for (auto speedInc = 0U; speedInc <= Vitesse::MAXIMUM_SPEED; ++speedInc)
       {
-        TestZoomInPoint(filterZoomVector, filterSettings, reverseSpeed, speedInc);
+        TestZoomAdjustment(filterZoomVector, filterSettings, reverseSpeed, speedInc);
       }
     }
   }

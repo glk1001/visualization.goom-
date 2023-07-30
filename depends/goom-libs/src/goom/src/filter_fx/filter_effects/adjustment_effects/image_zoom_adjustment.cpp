@@ -1,4 +1,4 @@
-#include "image_zoom_in_coeffs.h"
+#include "image_zoom_adjustment.h"
 
 #include "goom_config.h"
 
@@ -16,8 +16,8 @@ static constexpr auto ZOOM_FACTOR_RANGE  = IGoomRand::NumberRange<float>{0.10F, 
 
 static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 
-ImageZoomInCoefficients::ImageZoomInCoefficients(const std::string& resourcesDirectory,
-                                                 const IGoomRand& goomRand)
+ImageZoomAdjustment::ImageZoomAdjustment(const std::string& resourcesDirectory,
+                                         const IGoomRand& goomRand)
   : m_goomRand{&goomRand}, m_imageDisplacementList{resourcesDirectory, *m_goomRand}
 {
   if (!resourcesDirectory.empty())
@@ -26,14 +26,14 @@ ImageZoomInCoefficients::ImageZoomInCoefficients(const std::string& resourcesDir
   }
 }
 
-auto ImageZoomInCoefficients::SetRandomParams() noexcept -> void
+auto ImageZoomAdjustment::SetRandomParams() noexcept -> void
 {
   DoSetRandomParams();
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
-inline auto ImageZoomInCoefficients::DoSetRandomParams() noexcept -> void
+inline auto ImageZoomAdjustment::DoSetRandomParams() noexcept -> void
 {
   m_imageDisplacementList.SetRandomImageDisplacement();
 
@@ -49,10 +49,9 @@ inline auto ImageZoomInCoefficients::DoSetRandomParams() noexcept -> void
   });
 }
 
-auto ImageZoomInCoefficients::GetZoomInCoefficientsEffectNameValueParams() const noexcept
-    -> NameValuePairs
+auto ImageZoomAdjustment::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  static constexpr auto* IMAGE_PARAM_GROUP = "ImageZoomInCoeffs";
+  static constexpr auto* IMAGE_PARAM_GROUP = "ImageZoomAdjustment";
   return m_imageDisplacementList.GetNameValueParams(IMAGE_PARAM_GROUP);
 }
 

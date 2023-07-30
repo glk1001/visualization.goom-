@@ -23,8 +23,8 @@ public:
   virtual auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void = 0;
 
-  virtual auto GetZoomInPoint(const NormalizedCoords& coords,
-                              const NormalizedCoords& filterViewportCoords) const noexcept
+  virtual auto GetZoomPoint(const NormalizedCoords& coords,
+                            const NormalizedCoords& filterViewportCoords) const noexcept
       -> NormalizedCoords = 0;
 
   [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const noexcept

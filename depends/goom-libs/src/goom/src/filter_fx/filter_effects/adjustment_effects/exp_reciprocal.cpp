@@ -94,14 +94,14 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
   });
 }
 
-auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
-                                          const float sqDistFromZero) const noexcept -> Point2dFlt
+auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords,
+                                      const float sqDistFromZero) const noexcept -> Point2dFlt
 {
-  Expects(GetZoomInCoefficientsViewport().GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
+  Expects(GetZoomAdjustmentViewport().GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
 
   if (sqDistFromZero < UTILS::MATH::SMALL_FLOAT)
   {
-    return GetBaseZoomInCoeffs();
+    return GetBaseZoomAdjustment();
   }
 
   const auto zOffset = std::complex<FltCalcType>{};
@@ -115,21 +115,21 @@ auto ExpReciprocal::GetZoomInCoefficients(const NormalizedCoords& coords,
 
   if (absSqFz < static_cast<FltCalcType>(UTILS::MATH::SMALL_FLOAT))
   {
-    return GetBaseZoomInCoeffs();
+    return GetBaseZoomAdjustment();
   }
 
   const auto phase = GetAdjustedPhase(fz, sqDistFromZero);
 
   if (not m_params.useModulatorContours)
   {
-    return {GetBaseZoomInCoeffs().x + static_cast<float>(phase.real()),
-            GetBaseZoomInCoeffs().y + static_cast<float>(phase.imag())};
+    return {GetBaseZoomAdjustment().x + static_cast<float>(phase.real()),
+            GetBaseZoomAdjustment().y + static_cast<float>(phase.imag())};
   }
 
   const auto modulatedPhase = GetModulatedPhase(phase, absSqFz);
 
-  return {GetBaseZoomInCoeffs().x + static_cast<float>(modulatedPhase.real()),
-          GetBaseZoomInCoeffs().y + static_cast<float>(modulatedPhase.imag())};
+  return {GetBaseZoomAdjustment().x + static_cast<float>(modulatedPhase.real()),
+          GetBaseZoomAdjustment().y + static_cast<float>(modulatedPhase.imag())};
 }
 
 inline auto ExpReciprocal::GetAdjustedPhase(const std::complex<FltCalcType>& fz,
@@ -167,7 +167,7 @@ inline auto ExpReciprocal::GetModulatedPhase(const std::complex<FltCalcType>& ph
   return logAbsFzModulator * phase;
 }
 
-auto ExpReciprocal::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto ExpReciprocal::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {

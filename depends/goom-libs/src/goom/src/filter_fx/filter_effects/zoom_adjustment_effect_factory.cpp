@@ -1,15 +1,15 @@
-#include "zoom_in_coefficients_effect_factory.h"
+#include "zoom_adjustment_effect_factory.h"
 
-#include "filter_fx/filter_effects/the_effects/amulet.h"
-#include "filter_fx/filter_effects/the_effects/crystal_ball.h"
-#include "filter_fx/filter_effects/the_effects/distance_field.h"
-#include "filter_fx/filter_effects/the_effects/exp_reciprocal.h"
-#include "filter_fx/filter_effects/the_effects/image_zoom_in_coeffs.h"
-#include "filter_fx/filter_effects/the_effects/scrunch.h"
-#include "filter_fx/filter_effects/the_effects/speedway.h"
-#include "filter_fx/filter_effects/the_effects/uniform_zoom_in_coefficients_effect.h"
-#include "filter_fx/filter_effects/the_effects/wave.h"
-#include "filter_fx/filter_effects/the_effects/y_only.h"
+#include "filter_fx/filter_effects/adjustment_effects/amulet.h"
+#include "filter_fx/filter_effects/adjustment_effects/crystal_ball.h"
+#include "filter_fx/filter_effects/adjustment_effects/distance_field.h"
+#include "filter_fx/filter_effects/adjustment_effects/exp_reciprocal.h"
+#include "filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.h"
+#include "filter_fx/filter_effects/adjustment_effects/scrunch.h"
+#include "filter_fx/filter_effects/adjustment_effects/speedway.h"
+#include "filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h"
+#include "filter_fx/filter_effects/adjustment_effects/wave.h"
+#include "filter_fx/filter_effects/adjustment_effects/y_only.h"
 #include "filter_fx/filter_settings_service.h"
 #include "goom_config.h"
 #include "utils/math/goom_rand_base.h"
@@ -21,10 +21,10 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using GOOM::UTILS::MATH::IGoomRand;
 
-auto CreateZoomInCoefficientsEffect(const ZoomFilterMode filterMode,
-                                    const IGoomRand& goomRand,
-                                    const std::string& resourcesDirectory)
-    -> std::shared_ptr<IZoomInCoefficientsEffect>
+auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
+                                const IGoomRand& goomRand,
+                                const std::string& resourcesDirectory)
+    -> std::shared_ptr<IZoomAdjustmentEffect>
 {
   switch (filterMode)
   {
@@ -46,11 +46,11 @@ auto CreateZoomInCoefficientsEffect(const ZoomFilterMode filterMode,
     case ZoomFilterMode::HYPERCOS_MODE1:
     case ZoomFilterMode::HYPERCOS_MODE2:
     case ZoomFilterMode::HYPERCOS_MODE3:
-      return std::make_shared<UniformZoomInCoefficientsEffect>();
+      return std::make_shared<UniformZoomAdjustmentEffect>();
     case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
-      return std::make_shared<ImageZoomInCoefficients>(resourcesDirectory, goomRand);
+      return std::make_shared<ImageZoomAdjustment>(resourcesDirectory, goomRand);
     case ZoomFilterMode::NORMAL_MODE:
-      return std::make_shared<UniformZoomInCoefficientsEffect>();
+      return std::make_shared<UniformZoomAdjustmentEffect>();
     case ZoomFilterMode::SCRUNCH_MODE:
       return std::make_shared<Scrunch>(goomRand);
     case ZoomFilterMode::SPEEDWAY_MODE0:
@@ -60,7 +60,7 @@ auto CreateZoomInCoefficientsEffect(const ZoomFilterMode filterMode,
     case ZoomFilterMode::SPEEDWAY_MODE2:
       return std::make_shared<Speedway>(Speedway::Modes::MODE2, goomRand);
     case ZoomFilterMode::WATER_MODE:
-      return std::make_shared<UniformZoomInCoefficientsEffect>();
+      return std::make_shared<UniformZoomAdjustmentEffect>();
     case ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0:
       return std::make_shared<Wave>(Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, goomRand);
     case ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1:

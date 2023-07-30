@@ -20,10 +20,10 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const GetAfterEffectsFunc& getAfterEffects) noexcept
   : m_zoomVectorAfterEffects{screenWidth, getAfterEffects(goomRand, resourcesDirectory)}
 {
-  static_assert(MIN_ALLOWED_BASE_ZOOM_IN_COEFF <=
-                GetBaseZoomInCoeff(RAW_BASE_ZOOM_IN_COEFF_FACTOR, -1.0F));
-  static_assert(MAX_ALLOWED_BASE_ZOOM_IN_COEFF >=
-                GetBaseZoomInCoeff(RAW_BASE_ZOOM_IN_COEFF_FACTOR, +1.0F));
+  static_assert(MIN_ALLOWED_BASE_ZOOM_ADJUSTMENT <=
+                GetBaseZoomAdjustment(RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F));
+  static_assert(MAX_ALLOWED_BASE_ZOOM_ADJUSTMENT >=
+                GetBaseZoomAdjustment(RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, +1.0F));
 }
 
 auto ZoomVectorEffects::GetStandardAfterEffects(const IGoomRand& goomRand,
@@ -38,9 +38,9 @@ auto ZoomVectorEffects::SetFilterSettings(
 {
   m_filterEffectsSettings = &filterEffectsSettings;
 
-  m_filterEffectsSettings->zoomInCoefficientsEffect->SetRandomParams();
+  m_filterEffectsSettings->zoomAdjustmentEffect->SetRandomParams();
 
-  SetBaseZoomInCoeffFactor(m_filterEffectsSettings->baseZoomInCoeffFactorMultiplier);
+  SetBaseZoomAdjustmentFactor(m_filterEffectsSettings->baseZoomAdjustmentFactorMultiplier);
 
   m_zoomVectorAfterEffects.SetAfterEffectsSettings(m_filterEffectsSettings->afterEffectsSettings,
                                                    m_filterEffectsSettings->zoomMidpoint);
@@ -51,20 +51,19 @@ auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS:
   static constexpr auto* PARAM_GROUP = "ZoomEffects";
 
   auto nameValuePairs = UTILS::NameValuePairs{
-      GetPair(PARAM_GROUP, "coeffFactor", m_baseZoomInCoeffFactor),
+      GetPair(PARAM_GROUP, "coeffFactor", m_baseZoomAdjustmentFactor),
   };
 
-  UTILS::MoveNameValuePairs(GetZoomInCoeffsNameValueParams(), nameValuePairs);
+  UTILS::MoveNameValuePairs(GetZoomAdjustmentNameValueParams(), nameValuePairs);
   UTILS::MoveNameValuePairs(m_zoomVectorAfterEffects.GetZoomEffectsNameValueParams(),
                             nameValuePairs);
 
   return nameValuePairs;
 }
 
-auto ZoomVectorEffects::GetZoomInCoeffsNameValueParams() const noexcept -> NameValuePairs
+auto ZoomVectorEffects::GetZoomAdjustmentNameValueParams() const noexcept -> NameValuePairs
 {
-  return m_filterEffectsSettings->zoomInCoefficientsEffect
-      ->GetZoomInCoefficientsEffectNameValueParams();
+  return m_filterEffectsSettings->zoomAdjustmentEffect->GetZoomAdjustmentEffectNameValueParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

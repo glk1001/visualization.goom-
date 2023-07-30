@@ -66,10 +66,10 @@ auto Speedway::SetMode2RandomParams() noexcept -> void
 
   SetParams({xAmplitude, yAmplitude});
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
-auto Speedway::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto Speedway::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

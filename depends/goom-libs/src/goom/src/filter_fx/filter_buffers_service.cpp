@@ -31,7 +31,7 @@ FilterBuffersService::FilterBuffersService(
         normalizedCoordsConverter,
         [this](const NormalizedCoords& normalizedCoords,
                const NormalizedCoords& normalizedFilterViewportCoords)
-        { return m_zoomVector->GetZoomInPoint(normalizedCoords, normalizedFilterViewportCoords); })}
+        { return m_zoomVector->GetZoomPoint(normalizedCoords, normalizedFilterViewportCoords); })}
 {
 }
 
@@ -45,7 +45,7 @@ auto FilterBuffersService::SetFilterEffectsSettings(
 auto FilterBuffersService::Start() noexcept -> void
 {
   Expects(m_pendingFilterEffectsSettings);
-  Expects(m_nextFilterEffectsSettings.zoomInCoefficientsEffect != nullptr);
+  Expects(m_nextFilterEffectsSettings.zoomAdjustmentEffect != nullptr);
 
   StartFreshTransformBuffer();
 

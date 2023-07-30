@@ -68,11 +68,11 @@ auto YOnly::SetRandomParams() noexcept -> void
       { xAmplitude,  yAmplitude}
   });
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
-auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect,
-                                     const NormalizedCoords& coords) const noexcept -> float
+auto YOnly::GetYOnlyZoomAdjustmentMultiplier(const YOnlyEffect effect,
+                                             const NormalizedCoords& coords) const noexcept -> float
 {
   switch (effect)
   {
@@ -93,7 +93,7 @@ auto YOnly::GetYOnlyZoomInMultiplier(const YOnlyEffect effect,
   }
 }
 
-auto YOnly::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto YOnly::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

@@ -28,8 +28,8 @@ public:
   auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void override;
 
-  [[nodiscard]] auto GetZoomInPoint(const NormalizedCoords& coords,
-                                    const NormalizedCoords& filterViewportCoords) const noexcept
+  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords,
+                                  const NormalizedCoords& filterViewportCoords) const noexcept
       -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
@@ -37,12 +37,12 @@ public:
 
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;
-  [[nodiscard]] auto GetFilterEffectsZoomInPoint(
+  [[nodiscard]] auto GetFilterEffectsZoomPoint(
       const NormalizedCoords& coords, const NormalizedCoords& filterViewportCoords) const noexcept
       -> NormalizedCoords;
-  [[nodiscard]] auto GetAfterEffectsVelocity(
-      const NormalizedCoords& coords,
-      const NormalizedCoords& filterEffectsZoomInPoint) const noexcept -> NormalizedCoords;
+  [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
+                                             const NormalizedCoords& zoomPoint) const noexcept
+      -> NormalizedCoords;
 };
 
 } // namespace GOOM::FILTER_FX

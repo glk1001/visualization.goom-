@@ -166,16 +166,16 @@ public:
   [[nodiscard]] auto GetConstCoords() const noexcept -> const Point2dInt& { return m_constCoords; }
   auto SetConstCoords(const Point2dInt& coords) -> void { m_constCoords = coords; }
 
-  auto SetZoomInCoeff(const float val) noexcept -> void { m_zoomInCoeff = val; }
+  auto SetZoomAdjustment(const float val) noexcept -> void { m_zoomAdjustment = val; }
 
-  [[nodiscard]] auto GetZoomInPoint(const NormalizedCoords& coords,
-                                    const NormalizedCoords& filterViewportCoords) const noexcept
+  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords,
+                                  const NormalizedCoords& filterViewportCoords) const noexcept
       -> NormalizedCoords override;
 
 private:
   bool m_returnConst;
   Point2dInt m_constCoords = CONST_ZOOM_VECTOR_COORDS_1;
-  float m_zoomInCoeff      = 0.0F;
+  float m_zoomAdjustment   = 0.0F;
 };
 
 auto TestZoomVector::SetFilterEffectsSettings(
@@ -185,15 +185,15 @@ auto TestZoomVector::SetFilterEffectsSettings(
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-auto TestZoomVector::GetZoomInPoint(const NormalizedCoords& coords,
-                                    [[maybe_unused]] const NormalizedCoords& filterViewportCoords)
+auto TestZoomVector::GetZoomPoint(const NormalizedCoords& coords,
+                                  [[maybe_unused]] const NormalizedCoords& filterViewportCoords)
     const noexcept -> NormalizedCoords
 {
   if (m_returnConst)
   {
     return NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(m_constCoords);
   }
-  return (1.0F - m_zoomInCoeff) * coords;
+  return (1.0F - m_zoomAdjustment) * coords;
 }
 
 const ZoomCoordTransforms COORD_TRANSFORMS{
@@ -235,7 +235,7 @@ auto FullyUpdateDestBuffer(FilterBuffers& filterBuffers) noexcept -> void
       NORMALIZED_COORDS_CONVERTER,
       [&zoomVector](const NormalizedCoords& normalizedCoords,
                     const NormalizedCoords& viewportCoords)
-      { return zoomVector.GetZoomInPoint(normalizedCoords, viewportCoords); });
+      { return zoomVector.GetZoomPoint(normalizedCoords, viewportCoords); });
 
   return FilterBuffers{std::move(filterBufferStriper)};
 }
@@ -295,12 +295,12 @@ TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
   // const ZoomVectorFunc, returns a const normalized value
   UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.x = " << NML_CONST_ZOOM_VECTOR_COORDS_1.GetX());
   UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.y = " << NML_CONST_ZOOM_VECTOR_COORDS_1.GetY());
-  UNSCOPED_INFO("GetZoomInPoint(DUMMY_NML_COORDS).x = "
-                << CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetX());
-  UNSCOPED_INFO("GetZoomInPoint(DUMMY_NML_COORDS).y = "
-                << CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetY());
+  UNSCOPED_INFO("GetZoomPoint(DUMMY_NML_COORDS).x = "
+                << CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetX());
+  UNSCOPED_INFO("GetZoomPoint(DUMMY_NML_COORDS).y = "
+                << CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetY());
   REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS_1.Equals(
-      CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
+      CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
   const auto normalizedMidPt =
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBufferBuffMidpoint());
   const auto expectedNmlCoord1 = NormalizedCoords{
@@ -334,7 +334,7 @@ auto TestCorrectStripesBasicValues(const FilterBuffers& filterBuffers) -> void
   REQUIRE(CONST_ZOOM_VECTOR_COORDS_1 == CONSTANT_ZOOM_VECTOR.GetConstCoords());
   REQUIRE(MID_PT == filterBuffers.GetBufferBuffMidpoint());
   REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS1.Equals(
-      CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
+      CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
 
   REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
           filterBuffers.GetTransformBufferState());
@@ -368,7 +368,7 @@ auto TestCorrectStripesFullyUpdate(FilterBuffers& filterBuffers,
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS2 =
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(CONST_ZOOM_VECTOR_COORDS_2);
   REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS2.Equals(
-      constantZoomVector.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
+      constantZoomVector.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
 
   const auto expectedDestTranPoint =
       COORD_TRANSFORMS.NormalizedToTranPoint(normalizedMidPt + NML_CONST_ZOOM_VECTOR_COORDS2);
@@ -429,7 +429,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
   }
 }
 
-TEST_CASE("ZoomFilterBuffers ZoomIn")
+TEST_CASE("ZoomFilterBuffers Adjustment")
 {
   static constexpr auto TEST_SRCE_NML_COORDS =
       NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(TEST_SRCE_POINT);
@@ -445,13 +445,13 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
   SECTION("Correct Zoomed In Dest ZoomBufferTranPoint")
   {
     REQUIRE(TEST_SRCE_NML_COORDS.Equals(
-        zoomVector.GetZoomInPoint(TEST_SRCE_NML_COORDS, TEST_SRCE_NML_COORDS)));
+        zoomVector.GetZoomPoint(TEST_SRCE_NML_COORDS, TEST_SRCE_NML_COORDS)));
 
-    static constexpr auto ZOOM_IN_COEFF1  = 0.2F;
-    static constexpr auto ZOOM_IN_FACTOR1 = 1.0F - ZOOM_IN_COEFF1;
-    zoomVector.SetZoomInCoeff(ZOOM_IN_COEFF1);
-    REQUIRE((ZOOM_IN_FACTOR1 * TEST_SRCE_NML_COORDS)
-                .Equals(zoomVector.GetZoomInPoint(TEST_SRCE_NML_COORDS, TEST_SRCE_NML_COORDS)));
+    static constexpr auto ZOOM_ADJUSTMENT1 = 0.2F;
+    static constexpr auto ZOOM_FACTOR1     = 1.0F - ZOOM_ADJUSTMENT1;
+    zoomVector.SetZoomAdjustment(ZOOM_ADJUSTMENT1);
+    REQUIRE((ZOOM_FACTOR1 * TEST_SRCE_NML_COORDS)
+                .Equals(zoomVector.GetZoomPoint(TEST_SRCE_NML_COORDS, TEST_SRCE_NML_COORDS)));
 
     // GetSourcePoint uses tranPoint which comes solely from the dest Zoom buffer.
     // Because we are using a zoomed in ZoomVectorFunc, tranPoint should be zoomed in.
@@ -463,10 +463,10 @@ TEST_CASE("ZoomFilterBuffers ZoomIn")
 
     //    const auto expectedTranPoint         = ZoomCoordTransforms::ScreenToTranPoint(TEST_SRCE_POINT);
     //    const auto expectedZoomedInTranPoint = Point2dInt{
-    //        static_cast<int32_t>(ZOOM_IN_FACTOR1 *
+    //        static_cast<int32_t>(ZOOM_FACTOR1 *
     //                             static_cast<float>(expectedTranPoint.x - MID_TRAN_POINT.x)) +
     //            MID_TRAN_POINT.x,
-    //        static_cast<int32_t>(ZOOM_IN_FACTOR1 *
+    //        static_cast<int32_t>(ZOOM_FACTOR1 *
     //                             static_cast<float>(expectedTranPoint.y - MID_TRAN_POINT.y)) +
     //            MID_TRAN_POINT.y};
     //    const auto expectedZoomedInSrcePoint =
@@ -502,14 +502,12 @@ TEST_CASE("ZoomFilterBuffers Clipping")
     // const ZoomVectorFunc, returns a const normalized value
     UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.x = " << NML_CONST_ZOOM_VECTOR_COORDS1.GetX());
     UNSCOPED_INFO("NML_CONST_ZOOM_VECTOR_COORDS_1.y = " << NML_CONST_ZOOM_VECTOR_COORDS1.GetY());
-    UNSCOPED_INFO(
-        "GetZoomInPoint(DUMMY_NML_COORDS).x = "
-        << CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetX());
-    UNSCOPED_INFO(
-        "GetZoomInPoint(DUMMY_NML_COORDS).y = "
-        << CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetY());
+    UNSCOPED_INFO("GetZoomPoint(DUMMY_NML_COORDS).x = "
+                  << CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetX());
+    UNSCOPED_INFO("GetZoomPoint(DUMMY_NML_COORDS).y = "
+                  << CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS).GetY());
     REQUIRE(NML_CONST_ZOOM_VECTOR_COORDS1.Equals(
-        CONSTANT_ZOOM_VECTOR.GetZoomInPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
+        CONSTANT_ZOOM_VECTOR.GetZoomPoint(DUMMY_NML_COORDS, DUMMY_NML_COORDS)));
     const auto normalizedMidPt =
         NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(filterBuffers.GetBufferBuffMidpoint());
     const auto expectedTranPoint = COORD_TRANSFORMS.NormalizedToTranPoint(

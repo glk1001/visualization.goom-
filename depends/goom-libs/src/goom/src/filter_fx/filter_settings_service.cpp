@@ -559,7 +559,7 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
 [[nodiscard]] auto GetFilterModeData(
     const IGoomRand& goomRand,
     const std::string& resourcesDirectory,
-    const FilterSettingsService::CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect)
+    const FilterSettingsService::CreateZoomAdjustmentEffectFunc& createZoomAdjustmentEffect)
     -> FilterSettingsService::FilterModeEnumMap
 {
   static_assert(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
@@ -575,7 +575,7 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
         filterMode,
         FilterSettingsService::ZoomFilterModeInfo{
             FILTER_MODE_NAMES[filterMode],
-            createZoomInCoefficientsEffect(filterMode, goomRand, resourcesDirectory),
+            createZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory),
             {Weights<HypercosOverlayMode>{goomRand, GetHypercosWeights(filterMode)},
                                                         GetAfterEffectsProbability(filterMode)},
     });
@@ -589,8 +589,8 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,
-                                             const CreateZoomInCoefficientsEffectFunc&
-                                                 createZoomInCoefficientsEffect)
+                                             const CreateZoomAdjustmentEffectFunc&
+                                                 createZoomAdjustmentEffect)
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_screenCentre{goomInfo.GetDimensions().GetCentrePoint()},
@@ -601,13 +601,13 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              GetAfterEffectsOffTime())},
     m_filterModeData{GetFilterModeData(goomRand,
                                        m_resourcesDirectory,
-                                       createZoomInCoefficientsEffect)},
+                                       createZoomAdjustmentEffect)},
     m_filterSettings{
         false,
         {
            Vitesse{},
-           DEFAULT_MAX_ZOOM_IN_COEFF,
-           DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER,
+           DEFAULT_MAX_ZOOM_ADJUSTMENT,
+           DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
            DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
@@ -656,10 +656,10 @@ auto FilterSettingsService::Start() -> void
   SetNewRandomFilter();
 }
 
-inline auto FilterSettingsService::GetZoomInCoefficientsEffect()
-    -> std::shared_ptr<IZoomInCoefficientsEffect>&
+inline auto FilterSettingsService::GetZoomAdjustmentEffect()
+    -> std::shared_ptr<IZoomAdjustmentEffect>&
 {
-  return m_filterModeData[m_filterMode].zoomInCoefficientsEffect;
+  return m_filterModeData[m_filterMode].zoomAdjustmentEffect;
 }
 
 auto FilterSettingsService::GetNextTransformBufferLerpFactor(
@@ -698,9 +698,9 @@ auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() -> void
 
 auto FilterSettingsService::SetDefaultSettings() -> void
 {
-  m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect = GetZoomInCoefficientsEffect();
-  m_filterSettings.filterEffectsSettings.zoomMidpoint             = m_screenCentre;
-  m_filterSettings.filterEffectsSettings.filterViewport           = Viewport{};
+  m_filterSettings.filterEffectsSettings.zoomAdjustmentEffect = GetZoomAdjustmentEffect();
+  m_filterSettings.filterEffectsSettings.zoomMidpoint         = m_screenCentre;
+  m_filterSettings.filterEffectsSettings.filterViewport       = Viewport{};
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_randomizedAfterEffects->SetDefaults();
@@ -709,12 +709,12 @@ auto FilterSettingsService::SetDefaultSettings() -> void
 auto FilterSettingsService::SetFilterModeRandomViewport() -> void
 {
   m_filterSettings.filterEffectsSettings.filterViewport =
-      m_filterModeData[m_filterMode].zoomInCoefficientsEffect->GetZoomInCoefficientsViewport();
+      m_filterModeData[m_filterMode].zoomAdjustmentEffect->GetZoomAdjustmentViewport();
 }
 
 auto FilterSettingsService::SetFilterModeRandomEffects() -> void
 {
-  m_filterSettings.filterEffectsSettings.zoomInCoefficientsEffect->SetRandomParams();
+  m_filterSettings.filterEffectsSettings.zoomAdjustmentEffect->SetRandomParams();
 }
 
 auto FilterSettingsService::SetFilterModeAfterEffects() -> void
@@ -769,11 +769,11 @@ auto FilterSettingsService::UpdateFilterSettingsFromAfterEffects() -> void
       m_filterSettings.filterEffectsSettings.afterEffectsSettings);
 }
 
-auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> void
+auto FilterSettingsService::SetBaseZoomAdjustmentFactorMultiplier() noexcept -> void
 {
   if (static constexpr auto PROB_CALM_DOWN = 0.8F; m_goomRand->ProbabilityOf(PROB_CALM_DOWN))
   {
-    m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier = 1.0F;
+    m_filterSettings.filterEffectsSettings.baseZoomAdjustmentFactorMultiplier = 1.0F;
     return;
   }
 
@@ -781,7 +781,7 @@ auto FilterSettingsService::SetBaseZoomInCoeffFactorMultiplier() noexcept -> voi
   static constexpr auto MULTIPLIER_RANGE = IGoomRand::NumberRange<float>{0.1F, 5.0F};
   static_assert(ZoomVectorEffects::IsValidMultiplierRange(MULTIPLIER_RANGE));
 
-  m_filterSettings.filterEffectsSettings.baseZoomInCoeffFactorMultiplier =
+  m_filterSettings.filterEffectsSettings.baseZoomAdjustmentFactorMultiplier =
       m_goomRand->GetRandInRange(MULTIPLIER_RANGE);
 }
 

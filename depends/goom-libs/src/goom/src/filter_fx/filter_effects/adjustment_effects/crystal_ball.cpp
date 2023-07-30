@@ -101,10 +101,10 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
       {xSqDistOffset, ySqDistOffset}
   });
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
-auto CrystalBall::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto CrystalBall::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs{};
 }

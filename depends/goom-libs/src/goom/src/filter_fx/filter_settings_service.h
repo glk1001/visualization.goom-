@@ -53,22 +53,21 @@ public:
   struct ZoomFilterModeInfo
   {
     std::string_view name;
-    std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect{};
+    std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect{};
     AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
   using FilterModeEnumMap =
       UTILS::RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
-  using CreateZoomInCoefficientsEffectFunc =
-      std::function<std::shared_ptr<IZoomInCoefficientsEffect>(
-          ZoomFilterMode filterMode,
-          const UTILS::MATH::IGoomRand& goomRand,
-          const std::string& resourcesDirectory)>;
+  using CreateZoomAdjustmentEffectFunc =
+      std::function<std::shared_ptr<IZoomAdjustmentEffect>(ZoomFilterMode filterMode,
+                                                           const UTILS::MATH::IGoomRand& goomRand,
+                                                           const std::string& resourcesDirectory)>;
   // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(const GOOM::PluginInfo& goomInfo,
                         const UTILS::MATH::IGoomRand& goomRand,
                         const std::string& resourcesDirectory,
-                        const CreateZoomInCoefficientsEffectFunc& createZoomInCoefficientsEffect);
+                        const CreateZoomAdjustmentEffectFunc& createZoomAdjustmentEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
   FilterSettingsService(FilterSettingsService&&) noexcept      = delete;
   virtual ~FilterSettingsService() noexcept;
@@ -134,19 +133,19 @@ private:
 
   FilterModeEnumMap m_filterModeData;
 
-  static constexpr auto DEFAULT_ZOOM_MID_X                           = 16U;
-  static constexpr auto DEFAULT_ZOOM_MID_Y                           = 1U;
-  static constexpr auto DEFAULT_FILTER_VIEWPORT                      = Viewport{};
-  static constexpr auto DEFAULT_MAX_ZOOM_IN_COEFF                    = 2.01F;
-  static constexpr auto DEFAULT_BASE_ZOOM_IN_COEFF_FACTOR_MULTIPLIER = 1.0F;
-  static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION  = 0.5F;
-  static constexpr auto MAX_MAX_ZOOM_IN_COEFF                        = 4.01F;
+  static constexpr auto DEFAULT_ZOOM_MID_X                             = 16U;
+  static constexpr auto DEFAULT_ZOOM_MID_Y                             = 1U;
+  static constexpr auto DEFAULT_FILTER_VIEWPORT                        = Viewport{};
+  static constexpr auto DEFAULT_MAX_ZOOM_ADJUSTMENT                    = 2.01F;
+  static constexpr auto DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER = 1.0F;
+  static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION    = 0.5F;
+  static constexpr auto MAX_MAX_ZOOM_ADJUSTMENT                        = 4.01F;
   FilterSettings m_filterSettings;
   UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
-  [[nodiscard]] auto GetZoomInCoefficientsEffect() -> std::shared_ptr<IZoomInCoefficientsEffect>&;
-  auto SetMaxZoomInCoeff() -> void;
-  auto SetBaseZoomInCoeffFactorMultiplier() noexcept -> void;
+  [[nodiscard]] auto GetZoomAdjustmentEffect() -> std::shared_ptr<IZoomAdjustmentEffect>&;
+  auto SetMaxZoomAdjustment() -> void;
+  auto SetBaseZoomAdjustmentFactorMultiplier() noexcept -> void;
   auto SetAfterEffectsVelocityMultiplier() noexcept -> void;
 
   enum class ZoomMidpointEvents
@@ -233,18 +232,18 @@ inline auto FilterSettingsService::GetRWVitesse() -> Vitesse&
 inline auto FilterSettingsService::ChangeMilieu() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
-  SetMaxZoomInCoeff();
-  SetBaseZoomInCoeffFactorMultiplier();
+  SetMaxZoomAdjustment();
+  SetBaseZoomAdjustmentFactorMultiplier();
   SetAfterEffectsVelocityMultiplier();
   SetRandomZoomMidpoint();
 }
 
-inline auto FilterSettingsService::SetMaxZoomInCoeff() -> void
+inline auto FilterSettingsService::SetMaxZoomAdjustment() -> void
 {
   static constexpr auto MIN_SPEED_FACTOR = 0.5F;
   static constexpr auto MAX_SPEED_FACTOR = 1.0F;
-  m_filterSettings.filterEffectsSettings.maxZoomInCoeff =
-      m_goomRand->GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_IN_COEFF;
+  m_filterSettings.filterEffectsSettings.maxZoomAdjustment =
+      m_goomRand->GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_ADJUSTMENT;
 }
 
 inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void

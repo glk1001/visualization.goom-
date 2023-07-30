@@ -2,7 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/zoom_in_coefficients_effect.h"
+#include "filter_fx/zoom_adjustment_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -10,18 +10,17 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class Amulet : public IZoomInCoefficientsEffect
+class Amulet : public IZoomAdjustmentEffect
 {
 public:
   explicit Amulet(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const noexcept
-      -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
+                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
+  [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
@@ -38,11 +37,11 @@ private:
   Params m_params;
 };
 
-inline auto Amulet::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                          const float sqDistFromZero) const noexcept -> Point2dFlt
+inline auto Amulet::GetZoomAdjustment([[maybe_unused]] const NormalizedCoords& coords,
+                                      const float sqDistFromZero) const noexcept -> Point2dFlt
 {
-  return {GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromZero),
-          GetBaseZoomInCoeffs().y + (m_params.amplitude.y * sqDistFromZero)};
+  return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero),
+          GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromZero)};
   //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 }
 

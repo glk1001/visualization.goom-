@@ -28,10 +28,10 @@ auto Scrunch::SetRandomParams() noexcept -> void
 
   SetParams({xAmplitude, yAmplitude});
 
-  Ensures(GetZoomInCoefficientsViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
+  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
-auto Scrunch::GetZoomInCoefficientsEffectNameValueParams() const noexcept -> NameValuePairs
+auto Scrunch::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return NameValuePairs();
 }

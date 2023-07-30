@@ -18,11 +18,11 @@ ZoomFilterBufferStriper::ZoomFilterBufferStriper(
     Parallel& parallel,
     const PluginInfo& goomInfo,
     const NormalizedCoordsConverter& normalizedCoordsConverter,
-    const ZoomInPointFunc& zoomInPointFunc) noexcept
+    const ZoomPointFunc& getZoomPointFunc) noexcept
   : m_dimensions{goomInfo.GetDimensions()},
     m_normalizedCoordsConverter{&normalizedCoordsConverter},
     m_parallel{&parallel},
-    m_getZoomInPoint{zoomInPointFunc},
+    m_getZoomPoint{getZoomPointFunc},
     m_transformBuffer(m_dimensions.GetSize()),
     m_previousTransformBuffer(m_dimensions.GetSize())
 {
@@ -70,10 +70,10 @@ auto ZoomFilterBufferStriper::DoNextStripe(const uint32_t transformBufferStripeH
 
     for (auto x = 0U; x < screenWidth; ++x)
     {
-      const auto zoomInPoint = m_getZoomInPoint(centredSourceCoords, centredSourceViewportCoords);
-      const auto uncenteredZoomInPoint = m_normalizedMidpoint + zoomInPoint;
+      const auto zoomPoint = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
+      const auto uncenteredZoomPoint = m_normalizedMidpoint + zoomPoint;
 
-      m_transformBuffer[tranBufferPos] = uncenteredZoomInPoint.GetFltCoords();
+      m_transformBuffer[tranBufferPos] = uncenteredZoomPoint.GetFltCoords();
 
       centredSourceCoords.IncX(sourceCoordsStepSize);
       centredSourceViewportCoords.IncX(sourceViewportCoordsStepSize);

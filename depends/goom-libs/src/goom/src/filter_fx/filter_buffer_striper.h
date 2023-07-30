@@ -27,14 +27,14 @@ namespace GOOM::FILTER_FX
 class ZoomFilterBufferStriper
 {
 public:
-  using ZoomInPointFunc =
+  using ZoomPointFunc =
       std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords,
                                      const NormalizedCoords& normalizedFilterViewportCoords)>;
 
   ZoomFilterBufferStriper(UTILS::Parallel& parallel,
                           const PluginInfo& goomInfo,
                           const NormalizedCoordsConverter& normalizedCoordsConverter,
-                          const ZoomInPointFunc& zoomInPointFunc) noexcept;
+                          const ZoomPointFunc& getZoomPointFunc) noexcept;
 
   [[nodiscard]] auto GetTransformBufferMidpoint() const noexcept -> Point2dInt;
   auto SetTransformBufferMidpoint(const Point2dInt& midpoint) noexcept -> void;
@@ -59,7 +59,7 @@ private:
   const NormalizedCoordsConverter* m_normalizedCoordsConverter;
 
   UTILS::Parallel* m_parallel;
-  ZoomInPointFunc m_getZoomInPoint;
+  ZoomPointFunc m_getZoomPoint;
   Point2dInt m_midpoint                 = {0, 0};
   NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
   Viewport m_filterViewport             = Viewport{};

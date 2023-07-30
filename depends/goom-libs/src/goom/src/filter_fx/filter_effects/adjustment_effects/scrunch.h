@@ -2,7 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/zoom_in_coefficients_effect.h"
+#include "filter_fx/zoom_adjustment_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -10,18 +10,17 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class Scrunch : public IZoomInCoefficientsEffect
+class Scrunch : public IZoomAdjustmentEffect
 {
 public:
   explicit Scrunch(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const noexcept
-      -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
+                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
+  [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
@@ -38,12 +37,12 @@ private:
   Params m_params;
 };
 
-inline auto Scrunch::GetZoomInCoefficients([[maybe_unused]] const NormalizedCoords& coords,
-                                           const float sqDistFromZero) const noexcept -> Point2dFlt
+inline auto Scrunch::GetZoomAdjustment([[maybe_unused]] const NormalizedCoords& coords,
+                                       const float sqDistFromZero) const noexcept -> Point2dFlt
 {
-  const auto xZoomInCoeff = GetBaseZoomInCoeffs().x + (m_params.amplitude.x * sqDistFromZero);
-  const auto yZoomInCoeff = m_params.amplitude.y * xZoomInCoeff;
-  return {xZoomInCoeff, yZoomInCoeff};
+  const auto xZoomAdjustment = GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero);
+  const auto yZoomAdjustment = m_params.amplitude.y * xZoomAdjustment;
+  return {xZoomAdjustment, yZoomAdjustment};
 }
 
 inline auto Scrunch::GetParams() const noexcept -> const Params&

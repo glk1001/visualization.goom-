@@ -2,7 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/zoom_in_coefficients_effect.h"
+#include "filter_fx/zoom_adjustment_effect.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -12,19 +12,18 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class ExpReciprocal : public IZoomInCoefficientsEffect
+class ExpReciprocal : public IZoomAdjustmentEffect
 {
 public:
   explicit ExpReciprocal(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
-  [[nodiscard]] auto GetZoomInCoefficientsViewport() const noexcept -> Viewport override;
+  [[nodiscard]] auto GetZoomAdjustmentViewport() const noexcept -> Viewport override;
 
-  [[nodiscard]] auto GetZoomInCoefficients(const NormalizedCoords& coords,
-                                           float sqDistFromZero) const noexcept
-      -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
+                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
 
-  [[nodiscard]] auto GetZoomInCoefficientsEffectNameValueParams() const noexcept
+  [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
   struct Params
@@ -55,7 +54,7 @@ private:
       -> std::complex<FltCalcType>;
 };
 
-inline auto ExpReciprocal::GetZoomInCoefficientsViewport() const noexcept -> Viewport
+inline auto ExpReciprocal::GetZoomAdjustmentViewport() const noexcept -> Viewport
 {
   return m_params.viewport;
 }

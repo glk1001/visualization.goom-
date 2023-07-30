@@ -11,7 +11,7 @@
 namespace GOOM::FILTER_FX
 {
 
-class IZoomInCoefficientsEffect;
+class IZoomAdjustmentEffect;
 
 struct TransformBufferLerpData
 {
@@ -23,10 +23,10 @@ struct FilterEffectsSettings
 {
   Vitesse vitesse;
 
-  float maxZoomInCoeff;
-  float baseZoomInCoeffFactorMultiplier;
+  float maxZoomAdjustment;
+  float baseZoomAdjustmentFactorMultiplier;
   float afterEffectsVelocityMultiplier;
-  std::shared_ptr<IZoomInCoefficientsEffect> zoomInCoefficientsEffect;
+  std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect;
 
   Point2dInt zoomMidpoint;
   Viewport filterViewport{};

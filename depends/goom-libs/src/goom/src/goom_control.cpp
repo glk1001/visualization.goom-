@@ -23,7 +23,7 @@
 #include "control/goom_title_displayer.h"
 #include "draw/goom_draw_to_buffer.h"
 #include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_effects/zoom_in_coefficients_effect_factory.h"
+#include "filter_fx/filter_effects/zoom_adjustment_effect_factory.h"
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
@@ -67,7 +67,7 @@ using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
-using FILTER_FX::FILTER_EFFECTS::CreateZoomInCoefficientsEffect;
+using FILTER_FX::FILTER_EFFECTS::CreateZoomAdjustmentEffect;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
@@ -287,8 +287,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
   : m_goomInfo{dimensions, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
     m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
-    m_filterSettingsService{
-        m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomInCoefficientsEffect},
+    m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
     m_filterBuffersService{m_parallel,
                            m_goomInfo,
                            m_normalizedCoordsConverter,

@@ -99,18 +99,18 @@ add_library(goom
             src/filter_fx/after_effects/after_effects_states.cpp
             src/filter_fx/after_effects/after_effects_types.h
             src/filter_fx/after_effects/zoom_vector_after_effects.cpp
-            src/filter_fx/filter_effects/the_effects/amulet.cpp
-            src/filter_fx/filter_effects/the_effects/crystal_ball.cpp
-            src/filter_fx/filter_effects/the_effects/distance_field.cpp
-            src/filter_fx/filter_effects/the_effects/exp_reciprocal.cpp
-            src/filter_fx/filter_effects/the_effects/image_zoom_in_coeffs.cpp
-            src/filter_fx/filter_effects/the_effects/scrunch.cpp
-            src/filter_fx/filter_effects/the_effects/speedway.cpp
-            src/filter_fx/filter_effects/the_effects/uniform_zoom_in_coefficients_effect.h
-            src/filter_fx/filter_effects/the_effects/wave.cpp
-            src/filter_fx/filter_effects/the_effects/y_only.cpp
+            src/filter_fx/filter_effects/adjustment_effects/amulet.cpp
+            src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cpp
+            src/filter_fx/filter_effects/adjustment_effects/distance_field.cpp
+            src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cpp
+            src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
+            src/filter_fx/filter_effects/adjustment_effects/scrunch.cpp
+            src/filter_fx/filter_effects/adjustment_effects/speedway.cpp
+            src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h
+            src/filter_fx/filter_effects/adjustment_effects/wave.cpp
+            src/filter_fx/filter_effects/adjustment_effects/y_only.cpp
             src/filter_fx/common_types.h
-            src/filter_fx/filter_effects/zoom_in_coefficients_effect_factory.cpp
+            src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cpp
             src/filter_fx/filter_effects/zoom_vector_effects.cpp
             src/filter_fx/filter_utils/image_displacement.cpp
             src/filter_fx/filter_utils/image_displacement_list.cpp
@@ -122,7 +122,7 @@ add_library(goom
             src/filter_fx/filter_speed.h
             src/filter_fx/filter_zoom_vector.cpp
             src/filter_fx/normalized_coords.h
-            src/filter_fx/zoom_in_coefficients_effect.h
+            src/filter_fx/zoom_adjustment_effect.h
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp
