@@ -90,6 +90,7 @@ public:
   [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
 
   auto SetNewRandomFilter() -> void;
+  auto ResetRandomFilterMultiplierEffect() -> void;
   auto ResetRandomAfterEffects() -> void;
   auto ChangeMilieu() -> void;
   auto TurnOffRotation() -> void;
@@ -140,6 +141,19 @@ private:
   static constexpr auto DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER = 1.0F;
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION    = 0.5F;
   static constexpr auto MAX_MAX_ZOOM_ADJUSTMENT                        = 4.01F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE            = false;
+  static constexpr auto MIN_MULTIPLIER_EFFECT_FREQ                     = 0.5F;
+  static constexpr auto MAX_MULTIPLIER_EFFECT_FREQ                     = 20.0F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_X_FREQ               = 1.0F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_Y_FREQ               = 1.0F;
+  static constexpr auto MIN_MULTIPLIER_EFFECT_AMPLITUDE                = 0.0F;
+  static constexpr auto MAX_MULTIPLIER_EFFECT_AMPLITUDE                = 0.03F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE          = 0.0F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE          = 0.0F;
+  static constexpr auto DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS         = 0.5F;
+  static constexpr auto PROB_ACTIVE_MULTIPLIER_EFFECT                  = 0.3F;
+  static constexpr auto PROB_MULTIPLIER_EFFECT_FREQUENCIES_EQUAL       = 0.95F;
+  static constexpr auto PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL        = 0.95F;
   FilterSettings m_filterSettings;
   UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
@@ -233,6 +247,7 @@ inline auto FilterSettingsService::ChangeMilieu() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   SetMaxZoomAdjustment();
+  ResetRandomFilterMultiplierEffect();
   SetBaseZoomAdjustmentFactorMultiplier();
   SetAfterEffectsVelocityMultiplier();
   SetRandomZoomMidpoint();
@@ -272,6 +287,7 @@ inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
   SetRandomZoomMidpoint();
   SetFilterModeRandomEffects();
   SetFilterModeRandomViewport();
+  ResetRandomFilterMultiplierEffect();
   SetFilterModeAfterEffects();
   UpdateFilterSettingsFromAfterEffects();
 }

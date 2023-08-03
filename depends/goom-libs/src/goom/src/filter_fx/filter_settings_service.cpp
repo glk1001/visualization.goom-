@@ -613,6 +613,14 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
            DEFAULT_FILTER_VIEWPORT,
            {
+               DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
+               DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
+               DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
+               DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE,
+               DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
+               DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS
+           },
+           {
                HypercosOverlayMode::NONE,
                DEFAULT_AFTER_EFFECTS_STATES,
                RotationAdjustments{},
@@ -638,6 +646,16 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
       }
     }
 {
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ >= MIN_MULTIPLIER_EFFECT_FREQ);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ <= MAX_MULTIPLIER_EFFECT_FREQ);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ >= MIN_MULTIPLIER_EFFECT_FREQ);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ <= MAX_MULTIPLIER_EFFECT_FREQ);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE >= MIN_MULTIPLIER_EFFECT_AMPLITUDE);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE <= MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE >= MIN_MULTIPLIER_EFFECT_AMPLITUDE);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE <= MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+  static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS >= 0.0F);
+  static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS <= 1.0F);
 }
 
 FilterSettingsService::~FilterSettingsService() noexcept = default;
@@ -721,6 +739,47 @@ auto FilterSettingsService::SetFilterModeAfterEffects() -> void
 {
   SetRandomizedAfterEffects();
   SetWaveModeAfterEffects();
+}
+
+auto FilterSettingsService::ResetRandomFilterMultiplierEffect() -> void
+{
+  auto& multiplierEffectsSettings =
+      m_filterSettings.filterEffectsSettings.filterMultiplierEffectsSettings;
+
+  if (not m_goomRand->ProbabilityOf(PROB_ACTIVE_MULTIPLIER_EFFECT))
+  {
+    multiplierEffectsSettings.isActive = false;
+  }
+  else
+  {
+    multiplierEffectsSettings.isActive = true;
+
+    multiplierEffectsSettings.xFreq =
+        m_goomRand->GetRandInRange(MIN_MULTIPLIER_EFFECT_FREQ, MAX_MULTIPLIER_EFFECT_FREQ);
+    if (m_goomRand->ProbabilityOf(PROB_MULTIPLIER_EFFECT_FREQUENCIES_EQUAL))
+    {
+      multiplierEffectsSettings.yFreq = multiplierEffectsSettings.xFreq;
+    }
+    else
+    {
+      multiplierEffectsSettings.yFreq =
+          m_goomRand->GetRandInRange(MIN_MULTIPLIER_EFFECT_FREQ, MAX_MULTIPLIER_EFFECT_FREQ);
+    }
+
+    multiplierEffectsSettings.xAmplitude = m_goomRand->GetRandInRange(
+        MIN_MULTIPLIER_EFFECT_AMPLITUDE, MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+    if (m_goomRand->ProbabilityOf(PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL))
+    {
+      multiplierEffectsSettings.yAmplitude = multiplierEffectsSettings.xAmplitude;
+    }
+    else
+    {
+      multiplierEffectsSettings.yAmplitude = m_goomRand->GetRandInRange(
+          MIN_MULTIPLIER_EFFECT_AMPLITUDE, MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+    }
+  }
+
+  multiplierEffectsSettings.lerpZoomAdjustmentToCoords = m_goomRand->GetRandInRange(0.0F, 1.0F);
 }
 
 auto FilterSettingsService::ResetRandomAfterEffects() -> void

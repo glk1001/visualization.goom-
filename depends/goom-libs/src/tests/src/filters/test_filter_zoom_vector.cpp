@@ -85,6 +85,12 @@ const auto GOOM_RAND                = GoomRand{};
 {
   static constexpr auto DEFAULT_ZOOM_MID_X                          = 16;
   static constexpr auto DEFAULT_ZOOM_MID_Y                          = 1;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE         = false;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_X_FREQ            = 1.0F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_Y_FREQ            = 1.0F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE       = 1.0F;
+  static constexpr auto DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE       = 1.0F;
+  static constexpr auto DEFAULT_LERP_ADJUSTMENT_TO_COORDS           = 0.5F;
   static constexpr auto DEFAULT_MAX_ZOOM_ADJUSTMENT                 = 2.01F;
   static constexpr auto UNIT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER = 1.0F;
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION = 0.5F;
@@ -107,6 +113,10 @@ const auto GOOM_RAND                = GoomRand{};
       std::make_shared<UniformZoomAdjustmentEffect>(),
       {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
       Viewport{},
+      {DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
+              DEFAULT_MULTIPLIER_EFFECT_X_FREQ, DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
+              DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE, DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
+              DEFAULT_LERP_ADJUSTMENT_TO_COORDS},
       {
               HypercosOverlayMode::NONE,
               ALL_OFF_AFTER_EFFECTS_STATES, RotationAdjustments{},

@@ -19,6 +19,16 @@ struct TransformBufferLerpData
   float lerpToMaxLerp = 0.0F;
 };
 
+struct FilterMultiplierEffectsSettings
+{
+  bool isActive                    = false;
+  float xFreq                      = 1.0F;
+  float yFreq                      = 1.0F;
+  float xAmplitude                 = 1.0F;
+  float yAmplitude                 = 1.0F;
+  float lerpZoomAdjustmentToCoords = 1.0F;
+};
+
 struct FilterEffectsSettings
 {
   Vitesse vitesse;
@@ -31,6 +41,7 @@ struct FilterEffectsSettings
   Point2dInt zoomMidpoint;
   Viewport filterViewport{};
 
+  FilterMultiplierEffectsSettings filterMultiplierEffectsSettings;
   AFTER_EFFECTS::AfterEffectsStates::AfterEffectsSettings afterEffectsSettings;
 };
 

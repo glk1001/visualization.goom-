@@ -49,7 +49,10 @@ inline auto FilterZoomVector::GetFilterEffectsZoomPoint(
   const auto zoomAdjustment = m_zoomVectorEffects.GetZoomAdjustment(
       filterViewportCoords, SqDistanceFromZero(filterViewportCoords));
 
-  const auto zoomFactor = 1.0F - zoomAdjustment;
+  const auto& multiplierEffect = m_zoomVectorEffects.GetMultiplierEffect(coords, zoomAdjustment);
+
+  const auto zoomFactor = 1.0F - Point2dFlt{multiplierEffect.x * zoomAdjustment.x,
+                                            multiplierEffect.y * zoomAdjustment.y};
 
   return zoomFactor * coords;
 }

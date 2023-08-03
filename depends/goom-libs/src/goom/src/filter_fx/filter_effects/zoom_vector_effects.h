@@ -37,6 +37,10 @@ public:
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
                                        float sqDistFromZero) const noexcept -> Point2dFlt;
 
+  [[nodiscard]] auto GetMultiplierEffect(const NormalizedCoords& coords,
+                                         const Point2dFlt& zoomAdjustment) const noexcept
+      -> Point2dFlt;
+
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
                                              float sqDistFromZero,
                                              const NormalizedCoords& zoomVelocity) const noexcept

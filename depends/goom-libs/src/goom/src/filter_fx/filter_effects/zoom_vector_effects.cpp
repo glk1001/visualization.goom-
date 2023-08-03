@@ -4,6 +4,7 @@
 #include "filter_fx/filter_settings.h"
 #include "utils/name_value_pairs.h"
 
+#include <cmath>
 #include <string>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -46,12 +47,34 @@ auto ZoomVectorEffects::SetFilterSettings(
                                                    m_filterEffectsSettings->zoomMidpoint);
 }
 
+auto ZoomVectorEffects::GetMultiplierEffect(const NormalizedCoords& coords,
+                                            const Point2dFlt& zoomAdjustment) const noexcept
+    -> Point2dFlt
+{
+  const auto& multiplierSettings = m_filterEffectsSettings->filterMultiplierEffectsSettings;
+
+  if (not multiplierSettings.isActive)
+  {
+    return {1.0F, 1.0F};
+  }
+
+  const auto targetPoint =
+      lerp(zoomAdjustment, coords.GetFltCoords(), multiplierSettings.lerpZoomAdjustmentToCoords);
+
+  return {
+      1.0F - (multiplierSettings.xAmplitude * std::sin(multiplierSettings.xFreq * targetPoint.x)),
+      1.0F - (multiplierSettings.yAmplitude * std::cos(multiplierSettings.yFreq * targetPoint.y))};
+}
+
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "ZoomEffects";
 
   auto nameValuePairs = UTILS::NameValuePairs{
       GetPair(PARAM_GROUP, "coeffFactor", m_baseZoomAdjustmentFactor),
+      GetPair(PARAM_GROUP,
+              "multEffectActive",
+              m_filterEffectsSettings->filterMultiplierEffectsSettings.isActive),
   };
 
   UTILS::MoveNameValuePairs(GetZoomAdjustmentNameValueParams(), nameValuePairs);
