@@ -112,6 +112,10 @@ elif [[ "${COMPILER}" == "clang-17" ]]; then
   declare -r C_COMPILER=clang-17
   declare -r CPP_COMPILER=clang-17
   declare -r COMPILER_VERSION=17
+elif [[ "${COMPILER}" == "clang-18" ]]; then
+  declare -r C_COMPILER=clang-18
+  declare -r CPP_COMPILER=clang-18
+  declare -r COMPILER_VERSION=18
 else
   echo "ERROR: Unknown compiler \"${COMPILER}\"."
   echo
