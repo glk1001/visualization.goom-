@@ -34,6 +34,8 @@ public:
   auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
   auto DestroyScene() noexcept -> void override;
 
+  [[nodiscard]] auto GetShaderDir() const noexcept -> const std::string&;
+
   auto Render() -> void override;
 
   [[nodiscard]] auto GetFrameData(size_t pboIndex) noexcept -> GOOM::FrameData&;
@@ -250,6 +252,11 @@ private:
   auto SetupGlImageBuffers() -> void;
   auto BindGlImageBuffers() noexcept -> void;
 };
+
+inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::string&
+{
+  return m_shaderDir;
+}
 
 inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> GOOM::FrameData&
 {

@@ -35,6 +35,7 @@ vec3 blend(vec3 base, vec3 blend, float opacity)
 **/
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv);
+float GetBaseColorMultiplier(vec3 color);
 
 void main()
 {
@@ -55,8 +56,10 @@ void main()
 
   filtBuff2Val.rgb = mix(filtBuff2Val.rgb, filtBuff3Val.rgb, u_buff2Buff3Mix);
 
-//  filtBuff2Val.rgb *= 1.00;
-  filtBuff2Val.rgb *= u_baseColorMultiplier;
+  float baseMultiplier = GetBaseColorMultiplier(filtBuff2Val.rgb);
+  //float baseMultiplier = u_baseColorMultiplier;
+  //filtBuff2Val.rgb *= 1.00;
+  filtBuff2Val.rgb *= baseMultiplier;
 
   vec3 filtBuff2ColorMain = filtBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
   vec3 filtBuff2ColorLow  = filtBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
@@ -65,6 +68,22 @@ void main()
   imageStore(img_filterBuff3, xy, vec4(filtBuff2ColorMain, colorLow.a));
 
   discard;
+}
+
+const float BLACK_CUTOFF = 0.03;
+
+bool NotCloseToBlack(vec3 color)
+{
+  return (color.r > BLACK_CUTOFF) || (color.r != color.g) || (color.r != color.b);
+}
+
+// Try to get purer blacks by using a lower baseColorMultiplier for small grey values.
+float GetBaseColorMultiplier(vec3 color)
+{
+  const float LOW_BASE_COLOR_MULTIPLIER = 0.5;
+
+  return NotCloseToBlack(color) ? u_baseColorMultiplier
+         : mix(LOW_BASE_COLOR_MULTIPLIER, u_baseColorMultiplier, pow(color.r / BLACK_CUTOFF, 5.0));
 }
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)
