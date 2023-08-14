@@ -4,7 +4,10 @@
 #include "goom_config.h"
 #include "utils/enum_utils.h"
 
-#include <format>
+#include <format> // NOLINT: Waiting to use C++20.
+#include <fstream>
+#include <ios>
+#include <mutex>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -33,6 +36,7 @@ GoomLogger::~GoomLogger() noexcept
   Expects(not m_doLogging);
 }
 
+// NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
 auto GoomLogger::VLog(const LogLevel lvl,
                       const std::string& funcName,
                       const int lineNum,
@@ -44,6 +48,7 @@ auto GoomLogger::VLog(const LogLevel lvl,
   std_fmt::vformat_to(std_fmt::detail::buffer_appender<char>(buffer), formatStr, args);
   Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
 }
+// NOLINTEND(misc-include-cleaner)
 
 auto GoomLogger::Log(const LogLevel lvl,
                      const int lineNum,
@@ -77,6 +82,7 @@ auto GoomLogger::GetLogPrefix(const LogLevel lvl,
                               const int lineNum,
                               const std::string& funcName) const -> std::string
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   return std_fmt::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
 }
 

@@ -6,7 +6,7 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <memory>
+#include <array>
 
 namespace GOOM::CONTROL
 {

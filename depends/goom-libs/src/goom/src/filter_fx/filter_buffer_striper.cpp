@@ -1,13 +1,14 @@
 #include "filter_buffer_striper.h"
 
 #include "goom_config.h"
-#include "goom_logger.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 #include "utils/parallel_utils.h"
 
-#include <cmath>
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 
 namespace GOOM::FILTER_FX
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "color/random_color_maps.h"
 #include "fractal_hits.h"
 #include "goom_types.h"
 #include "ifs_types.h"
@@ -8,7 +9,6 @@
 #include "utils/t_values.h"
 
 #include <cstdint>
-#include <memory>
 #include <vector>
 
 namespace GOOM

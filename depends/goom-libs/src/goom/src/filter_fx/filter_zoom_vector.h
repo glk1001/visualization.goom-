@@ -6,7 +6,7 @@
 #include "zoom_vector.h"
 
 #include <cstdint>
-#include <memory>
+#include <string>
 
 namespace GOOM::UTILS::MATH
 {

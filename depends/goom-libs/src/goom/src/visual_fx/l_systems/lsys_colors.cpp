@@ -1,6 +1,19 @@
 #include "lsys_colors.h"
 
+#include "color/color_data/color_map_enums.h"
+#include "color/color_maps.h"
+#include "color/color_utils.h"
+#include "draw/goom_draw.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
+#include "utils/enum_utils.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/t_values.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

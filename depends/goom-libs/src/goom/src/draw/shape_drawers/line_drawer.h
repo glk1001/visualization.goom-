@@ -3,12 +3,12 @@
 #include "draw/goom_draw.h"
 #include "drawer_utils.h"
 #include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom_types.h"
 #include "line_draw_thick.h"
 #include "line_draw_wu.h"
 #include "point2d.h"
 
-#include <vector>
+#include <cstdint>
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

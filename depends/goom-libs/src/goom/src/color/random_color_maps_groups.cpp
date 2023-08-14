@@ -1,7 +1,10 @@
 #include "random_color_maps_groups.h"
 
+#include "color_maps.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "random_color_maps.h"
+#include "utils/math/goom_rand_base.h"
 
 namespace GOOM::COLOR
 {

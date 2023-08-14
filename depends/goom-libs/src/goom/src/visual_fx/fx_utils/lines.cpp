@@ -1,7 +1,12 @@
 #include "lines.h"
 
 #include "goom_config.h"
+#include "goom_types.h"
 #include "utils/math/misc.h"
+
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {

@@ -9,7 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <stdexcept>
+#include <string>
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

@@ -1,7 +1,8 @@
 #include "all_standard_visual_fx.h"
 
 #include "goom_config.h"
-#include "goom_plugin_info.h"
+#include "goom_effects.h"
+#include "goom_states.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -24,7 +25,10 @@
 #include "visual_fx_color_maps.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <unordered_set>
 
 namespace GOOM::CONTROL
 {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bitmap_getter_base.h"
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/color_maps_grids.h"
@@ -11,17 +10,14 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "goom_graphic.h"
-#include "goom_plugin_info.h"
 #include "helper.h"
 #include "point2d.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
-#include "utils/math/paths.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/t_values.h"
-#include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
 
-#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <vector>

@@ -4,13 +4,22 @@
 
 #include "build_time.h"
 #include "displacement_filter.h"
+#include "gl_render_types.h"
 #include "goom/compiler_versions.h"
+#include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_types.h"
+#include "goom/goom_utils.h"
 #include "slot_producer_consumer.h"
 
 #include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <thread>
+#include <utility>
 
 namespace GOOM::VIS
 {
@@ -18,10 +27,8 @@ namespace GOOM::VIS
 using GOOM::AudioSamples;
 using GOOM::Dimensions;
 using GOOM::GoomControl;
-using GOOM::GoomLogger;
 using GOOM::SetRandSeed;
 using GOOM::ShowSongTitleType;
-using GOOM::SlotProducerConsumer;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;
 using GOOM::OPENGL::DisplacementFilter;
@@ -233,6 +240,7 @@ auto GoomVisualization::InitGoomControl() noexcept -> void
   m_goomControl->SetFrameData(m_glScene->GetFrameData(0));
 }
 
+// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
 auto GoomVisualization::AddAudioSample(const std_spn::span<const float> audioSample) -> bool
 {
   Expects(m_started);

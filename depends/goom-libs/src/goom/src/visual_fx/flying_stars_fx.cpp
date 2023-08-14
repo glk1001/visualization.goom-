@@ -9,8 +9,9 @@
 #include "flying_stars/stars.h"
 #include "fx_helper.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "goom_visual_fx.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -18,6 +19,7 @@
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -279,7 +281,7 @@ auto FlyingStarsFx::FlyingStarsImpl::DrawStars() noexcept -> void
 auto FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars() noexcept -> void
 {
   const auto isDead = [this](const Star& star) { return IsStarDead(star); };
-#if __cplusplus <= 201703L
+#if __cplusplus <= 201703L // NOLINT: Clang-tidy issue: what includes this??
   m_activeStars.erase(std::remove_if(begin(m_activeStars), end(m_activeStars), isDead),
                       end(m_activeStars));
 #else

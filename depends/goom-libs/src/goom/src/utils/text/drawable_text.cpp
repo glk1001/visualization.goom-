@@ -5,8 +5,10 @@
 #include "draw/shape_drawers/text_drawer.h"
 #include "goom_logger.h"
 #include "point2d.h"
+#include "utils/math/misc.h"
 #include "utils/strutils.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -27,7 +29,7 @@ auto GetLinesOfWords(const std::string& text, const uint32_t maxLineLength)
 
   const auto words = StringSplit(text, " ");
   auto textLines   = std::vector<std::string>{};
-  auto str         = ""s;
+  auto str         = ""s; // NOLINT: Supposed to be in 'string' header.
 
   for (const auto& word : words)
   {

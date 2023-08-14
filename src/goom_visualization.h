@@ -2,12 +2,14 @@
 
 #include "displacement_filter.h"
 #include "gl_render_types.h"
+#include "goom/goom_types.h"
 #include "goom/sound_info.h"
 #include "slot_producer_consumer.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <string>
 #include <thread>
 

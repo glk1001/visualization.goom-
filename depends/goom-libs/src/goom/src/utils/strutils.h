@@ -1,7 +1,11 @@
 #pragma once
 
 #include <algorithm>
+#include <cctype>
+#include <cstddef>
 #include <cstdint>
+#include <istream>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>

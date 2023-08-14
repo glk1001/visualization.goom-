@@ -3,20 +3,30 @@
 #include "circle.h"
 
 #include "color/color_maps.h"
+#include "color/color_maps_grids.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
+#include "dot_diameters.h"
+#include "dot_drawer.h"
+#include "dot_paths.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
+#include "helper.h"
 #include "point2d.h"
 #include "utils/enum_utils.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
+#include "visual_fx/fx_helper.h"
 
+#include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::CIRCLES

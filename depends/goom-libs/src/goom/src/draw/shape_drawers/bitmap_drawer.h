@@ -5,7 +5,6 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 
-#include <cstdint>
 #include <functional>
 #include <vector>
 

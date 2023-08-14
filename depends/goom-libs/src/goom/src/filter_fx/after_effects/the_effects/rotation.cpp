@@ -1,5 +1,7 @@
 #include "rotation.h"
 
+#include "math/goom_rand_base.h"
+#include "point2d.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 

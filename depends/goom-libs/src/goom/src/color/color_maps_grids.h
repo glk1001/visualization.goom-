@@ -4,6 +4,7 @@
 #include "goom_graphic.h"
 #include "utils/t_values.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <vector>

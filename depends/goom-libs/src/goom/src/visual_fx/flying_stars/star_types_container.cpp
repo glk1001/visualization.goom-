@@ -1,15 +1,24 @@
 #include "star_types_container.h"
 
+#include "color/color_data/color_map_enums.h"
 #include "color/random_color_maps_groups.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "math20.h"
 #include "point2d.h"
+#include "star_colors.h"
 #include "star_colors_maker.h"
-#include "stars.h"
+#include "star_types_base.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
+#include <cmath>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {

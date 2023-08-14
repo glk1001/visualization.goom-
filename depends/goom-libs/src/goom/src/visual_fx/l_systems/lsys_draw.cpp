@@ -2,10 +2,16 @@
 
 //#undef NO_LOGGING
 
-#include "goom_logger.h"
+#include "goom_config.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
 #include "point2d.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <lsys/parsed_model.h>
+#include <lsys/vector.h>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

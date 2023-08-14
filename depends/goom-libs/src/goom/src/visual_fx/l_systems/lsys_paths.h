@@ -2,8 +2,10 @@
 
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
+#include <cstdint>
 #include <memory>
 
 namespace GOOM::VISUAL_FX::L_SYSTEM

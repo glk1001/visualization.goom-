@@ -3,8 +3,14 @@
 #include "color/color_utils.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/line_drawer.h"
+#include "goom_graphic.h"
 #include "image_bitmaps.h"
 #include "point2d.h"
+
+#include <algorithm>
+#include <bezier/bezier.h>
+#include <cstddef>
+#include <cstdint>
 
 namespace GOOM::UTILS::GRAPHICS
 {

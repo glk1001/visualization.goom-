@@ -1,11 +1,15 @@
+#include "color/color_data/color_map_enums.h"
 #include "color/color_maps.h"
+#include "color/color_maps_base.h"
 #include "color/color_maps_grids.h"
 #include "color/color_utils.h"
 #include "goom_graphic.h"
 #include "utils/t_values.h"
 
-#include <algorithm>
+#include <cstddef>
 #include <string>
+#include <utility>
+#include <vector>
 
 #if not defined(_MSC_VER)
 #include <vivid.h>
@@ -16,14 +20,14 @@
 #pragma warning(pop)
 #endif
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 

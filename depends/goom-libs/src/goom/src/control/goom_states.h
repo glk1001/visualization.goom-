@@ -4,7 +4,7 @@
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <array>
+#include <cstddef>
 #include <string_view>
 #include <vector>
 

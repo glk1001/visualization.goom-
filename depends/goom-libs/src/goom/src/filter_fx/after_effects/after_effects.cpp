@@ -8,6 +8,10 @@
 #include "filter_fx/after_effects/the_effects/tan_effect.h"
 #include "filter_fx/after_effects/the_effects/xy_lerp_effect.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 

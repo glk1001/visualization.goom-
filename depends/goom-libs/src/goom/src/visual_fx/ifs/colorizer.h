@@ -3,7 +3,6 @@
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "utils/math/goom_rand_base.h"
@@ -11,7 +10,8 @@
 
 #include <cmath>
 #include <cstdint>
-#include <memory>
+#include <set>
+#include <utility>
 
 namespace GOOM::VISUAL_FX::IFS
 {

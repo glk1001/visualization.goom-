@@ -1,12 +1,19 @@
 #pragma once
 
+#ifdef TARGET_DARWIN
+#define GL_SILENCE_DEPRECATION
+#endif
+
 #include "gl_utils.h"
 #include "glsl_program.h"
 #include "goom/goom_utils.h"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
-#include <format>
-#include <span>
+#include <format> // NOLINT: Waiting to use C++20.
+#include <span> // NOLINT: Waiting to use C++20.
+#include <stdexcept>
 
 namespace GOOM::OPENGL
 {
@@ -28,6 +35,7 @@ public:
   auto DeleteBuffers() -> void;
 
   [[nodiscard]] auto GetTextureName() const noexcept -> GLuint;
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> std_spn::span<CppTextureType>;
 
   auto ZeroTextureData() noexcept -> void;
@@ -69,6 +77,7 @@ auto Gl2DTexture<CppTextureType,
                  TextureInternalFormat,
                  TexturePixelType,
                  NumPbos>::Setup(const char* const textureShaderName,
+                                 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                                  const int32_t textureWidth,
                                  const int32_t textureHeight) -> void
 {
@@ -196,8 +205,10 @@ inline auto Gl2DTexture<CppTextureType,
                         TextureInternalFormat,
                         TexturePixelType,
                         NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     -> std_spn::span<CppTextureType>
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   return std_spn::span<CppTextureType>{m_pboBuffers.mappedBuffers.at(pboIndex), m_buffSize};
 }
 
@@ -301,6 +312,7 @@ auto Gl2DTexture<CppTextureType,
                          GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT));
     if (nullptr == m_pboBuffers.mappedBuffers.at(i))
     {
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       throw std::runtime_error(std_fmt::format("Could not allocate mapped buffer for pbo {}.", i));
     }
 

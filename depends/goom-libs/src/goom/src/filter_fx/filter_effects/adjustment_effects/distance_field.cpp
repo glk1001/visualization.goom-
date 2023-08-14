@@ -3,14 +3,20 @@
 #include "distance_field.h"
 
 #include "filter_fx/common_types.h"
+#include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "point2d.h"
 #include "utils/enum_utils.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <vector>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

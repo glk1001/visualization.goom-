@@ -3,19 +3,27 @@
 //#undef NO_LOGGING
 
 #include "draw/goom_draw.h"
-#include "goom_logger.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "lsys_draw.h"
+#include "math20.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 
+#include <cmath>
+#include <cstdint>
 #include <lsys/graphics_generator.h>
 #include <lsys/interpret.h>
 #include <lsys/list.h>
 #include <lsys/module.h>
 #include <lsys/parsed_model.h>
+#include <lsys/value.h>
+#include <lsys/vector.h>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace GOOM::UTILS

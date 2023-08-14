@@ -1,5 +1,9 @@
 #include "high_contrast.h"
 
+#include "goom_plugin_info.h"
+#include "math20.h"
+#include "utils/math/goom_rand_base.h"
+
 
 namespace GOOM::VISUAL_FX::SHADERS
 {

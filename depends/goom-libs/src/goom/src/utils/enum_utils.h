@@ -5,6 +5,7 @@
 #include "goom_config.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <type_traits>

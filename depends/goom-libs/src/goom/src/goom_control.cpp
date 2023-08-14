@@ -10,7 +10,7 @@
  *
  */
 
-#undef NO_LOGGING
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "goom_control.h"
 
@@ -27,10 +27,14 @@
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
+#include "frame_data.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
+#include "point2d.h"
+#include "sound_info.h"
 #include "spimpl.h"
 #include "utils/debugging_logger.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -40,8 +44,13 @@
 #include "utils/strutils.h"
 #include "visual_fx/fx_helper.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 
 #ifdef DO_GOOM_STATE_DUMP
@@ -752,10 +761,12 @@ inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string
   const auto timeLeftStr =
       not m_runningTimeStopwatch.AreTimesValid()
           ? "Time left: not valid!"
+          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
           : std_fmt::format("Time left: {}  ({}%)",
                             m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
                             m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   return timeLeftStr + "\n" + std_fmt::format("Update Num: {}", m_updateNum);
 }
 

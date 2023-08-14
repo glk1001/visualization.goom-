@@ -1,10 +1,18 @@
 #include "fractal.h"
 
 #include "color/random_color_maps.h"
+#include "goom_types.h"
+#include "ifs_types.h"
+#include "math20.h"
 #include "similitudes.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
+
+#include <cstdint>
+#include <cstdlib>
+#include <utility>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::IFS
 {

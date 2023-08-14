@@ -1,7 +1,8 @@
 #include "line_drawer_manager.h"
 
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/line_drawer_with_effects.h"
+#include "draw/shape_drawers/line_drawer_moving_noise.h"
+#include "goom_config.h"
 #include "utils/math/goom_rand_base.h"
 
 namespace GOOM::VISUAL_FX::L_SYSTEM

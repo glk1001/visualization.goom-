@@ -7,6 +7,7 @@
 #include "goom_graphic.h"
 #include "utils/math/misc.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

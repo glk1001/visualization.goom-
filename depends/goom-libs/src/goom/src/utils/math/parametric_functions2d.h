@@ -1,10 +1,12 @@
 #pragma once
 
 #include "goom_types.h"
+#include "math20.h"
 #include "misc.h"
 #include "point2d.h"
 
 #include <cmath>
+#include <cstdint>
 #include <functional>
 
 namespace GOOM::UTILS::MATH

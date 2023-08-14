@@ -3,7 +3,9 @@
 #include "goom_draw_to_buffer.h"
 
 #include "goom_config.h"
+#include "goom_draw.h"
 #include "goom_logger.h"
+#include "goom_types.h"
 
 namespace GOOM::DRAW
 {

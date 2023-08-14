@@ -5,11 +5,15 @@
 #include "glsl_program.h"
 #include "goom/frame_data.h"
 #include "goom/goom_graphic.h"
+#include "goom/point2d.h"
 #include "scene.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <functional>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace GOOM

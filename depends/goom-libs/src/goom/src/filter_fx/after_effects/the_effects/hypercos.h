@@ -1,7 +1,7 @@
 #pragma once
 
+#include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/common_types.h"
-#include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"

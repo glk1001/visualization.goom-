@@ -3,11 +3,12 @@
 #include "goom_states.h"
 
 #include "goom_config.h"
-#include "goom_logger.h"
 #include "utils/enum_utils.h"
 
-#include <format>
+#include <algorithm>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace GOOM::CONTROL

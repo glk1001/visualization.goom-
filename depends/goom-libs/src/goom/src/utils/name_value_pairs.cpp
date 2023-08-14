@@ -3,6 +3,8 @@
 #include "strutils.h"
 
 #include <algorithm>
+#include <iterator>
+#include <string>
 #include <vector>
 
 namespace GOOM::UTILS

@@ -11,10 +11,12 @@
 #include "filter_fx/filter_effects/adjustment_effects/wave.h"
 #include "filter_fx/filter_effects/adjustment_effects/y_only.h"
 #include "filter_fx/filter_settings_service.h"
+#include "filter_fx/zoom_adjustment_effect.h"
 #include "goom_config.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <memory>
+#include <string>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

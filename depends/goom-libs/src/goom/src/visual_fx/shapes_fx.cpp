@@ -4,8 +4,10 @@
 
 #include "fx_helper.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "goom_graphic.h"
 #include "goom_types.h"
+#include "goom_visual_fx.h"
+#include "math20.h"
 #include "point2d.h"
 #include "shapes/shapes.h"
 #include "spimpl.h"
@@ -17,6 +19,9 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 

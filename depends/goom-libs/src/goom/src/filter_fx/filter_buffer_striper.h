@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <functional>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <vector>
 
 namespace GOOM

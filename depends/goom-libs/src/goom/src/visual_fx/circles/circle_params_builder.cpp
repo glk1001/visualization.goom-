@@ -1,6 +1,14 @@
 #include "circle_params_builder.h"
 
+#include "circle.h"
+#include "goom_config.h"
+#include "point2d.h"
 #include "utils/math/misc.h"
+#include "visual_fx/fx_helper.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

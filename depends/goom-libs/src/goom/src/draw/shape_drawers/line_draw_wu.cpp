@@ -1,6 +1,8 @@
 #include "line_draw_wu.h"
 
 #include <cmath>
+#include <cstdint>
+#include <utility>
 
 namespace GOOM::DRAW::SHAPE_DRAWERS::WU_LINES
 {

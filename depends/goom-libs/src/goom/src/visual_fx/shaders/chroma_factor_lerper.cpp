@@ -1,7 +1,9 @@
 #include "chroma_factor_lerper.h"
 
 #include "goom_config.h"
-#include "utils/math/misc.h"
+#include "goom_plugin_info.h"
+#include "math20.h"
+#include "utils/math/goom_rand_base.h"
 
 #include <cmath>
 
@@ -10,8 +12,9 @@ namespace GOOM::VISUAL_FX::SHADERS
 
 ChromaFactorLerper::ChromaFactorLerper(const PluginInfo& goomInfo,
                                        const UTILS::MATH::IGoomRand& goomRand,
-                                       float minChromaFactor,
-                                       float maxChromaFactor) noexcept
+                                       // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+                                       const float minChromaFactor,
+                                       const float maxChromaFactor) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_minChromaFactor{minChromaFactor},

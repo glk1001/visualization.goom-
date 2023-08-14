@@ -5,7 +5,6 @@
 #include "normalized_coords.h"
 #include "point2d.h"
 
-#include <cstdint>
 #include <memory>
 
 namespace GOOM::FILTER_FX

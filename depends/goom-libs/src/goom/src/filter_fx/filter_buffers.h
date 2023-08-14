@@ -1,12 +1,11 @@
 #pragma once
 
-#include "goom_types.h"
 #include "normalized_coords.h"
 #include "point2d.h"
 
 #include <cstdint>
 #include <memory>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <vector>
 
 namespace GOOM::FILTER_FX

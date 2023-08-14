@@ -1,9 +1,8 @@
 #pragma once
 
+#include "goom_graphic.h"
 #include "random_color_maps.h"
 #include "utils/math/goom_rand_base.h"
-
-#include <memory>
 
 namespace GOOM::COLOR
 {

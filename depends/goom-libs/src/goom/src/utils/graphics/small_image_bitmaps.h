@@ -4,8 +4,11 @@
 #include "utils/graphics/image_bitmaps.h"
 
 #include <array>
+#include <cstddef>
+#include <functional>
 #include <map>
 #include <memory>
+#include <string>
 
 namespace GOOM::UTILS::GRAPHICS
 {

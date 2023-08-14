@@ -2,6 +2,7 @@
 
 #include "../goom_visual_fx.h"
 #include "draw/goom_draw.h"
+#include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "line_drawer_manager.h"
 #include "lsys_colors.h"
@@ -10,7 +11,6 @@
 #include "lsys_paths.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
@@ -22,6 +22,7 @@
 #include <lsys/module.h>
 #include <lsys/parsed_model.h>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
