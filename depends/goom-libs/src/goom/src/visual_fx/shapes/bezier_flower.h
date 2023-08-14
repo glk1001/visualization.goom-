@@ -1,6 +1,8 @@
 #pragma once
 
+#include "color/color_maps.h"
 #include "color/color_maps_base.h"
+#include "point2d.h"
 #include "utils/graphics/bezier_drawer.h"
 #include "utils/math/goom_rand_base.h"
 

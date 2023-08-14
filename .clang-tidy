@@ -22,7 +22,8 @@ Checks: >
   portability-*,
   readability-*,
   zircon-*,
-  -llvm-header-guard
+  -llvm-header-guard,
+  -abseil-string-find-str-contains
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: '*'
@@ -91,3 +92,4 @@ CheckOptions:
   - { key: modernize-loop-convert.NamingStyle,                              value: CamelCase }
   - { key: modernize-pass-by-value.IncludeStyle,                            value: llvm }
   - { key: modernize-replace-auto-ptr.IncludeStyle,                         value: llvm }
+  - { key: misc-include-cleaner.IgnoreHeaders,                              value: 'GL/.*;vivid/.*;goom_config\.h' }

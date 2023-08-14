@@ -3,9 +3,10 @@
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "goom_graphic.h"
+#include "math20.h"
 #include "utils/graphics/pixel_utils.h"
-#include "utils/math/misc.h"
 
+#include <algorithm>
 #include <cstdint>
 
 namespace GOOM::UTILS::GRAPHICS

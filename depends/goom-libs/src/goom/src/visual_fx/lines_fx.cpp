@@ -3,10 +3,11 @@
 #include "lines_fx.h"
 
 #include "color/color_utils.h"
+#include "color/random_color_maps.h"
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
+#include "goom_visual_fx.h"
 #include "lines/line_morph.h"
 #include "lines/line_types.h"
 #include "sound_info.h"
@@ -14,7 +15,10 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
+#include <algorithm>
 #include <array>
+#include <cstdint>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX

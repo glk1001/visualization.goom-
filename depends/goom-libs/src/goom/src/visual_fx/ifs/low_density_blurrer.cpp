@@ -5,12 +5,17 @@
 #include "draw/goom_draw.h"
 #include "fractal.h"
 #include "goom_graphic.h"
+#include "point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
+#include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::IFS

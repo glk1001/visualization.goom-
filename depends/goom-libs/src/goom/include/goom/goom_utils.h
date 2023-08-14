@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <string>
 #include <type_traits>
 #include <vector>

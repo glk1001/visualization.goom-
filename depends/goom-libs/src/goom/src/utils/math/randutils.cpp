@@ -4,10 +4,11 @@
 
 #include "goom_config.h"
 #include "goom_logger.h"
-#include "splitmix.hpp"
-#include "utils/math/misc.h"
+#include "math20.h"
 #include "xoshiro.hpp"
 
+#include <cstdint>
+#include <istream>
 #include <limits>
 #include <ostream>
 

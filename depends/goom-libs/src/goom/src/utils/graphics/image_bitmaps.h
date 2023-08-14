@@ -3,7 +3,11 @@
 #include "goom_graphic.h"
 #include "goom_types.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <string>
+#include <tuple>
+#include <vector>
 
 namespace GOOM::UTILS::GRAPHICS
 {

@@ -5,13 +5,20 @@
 #include "color_data/color_data_maps.h"
 #include "color_data/color_map_enums.h"
 #include "color_data/extra_color_groups.h"
+#include "color_maps_base.h"
 #include "color_utils.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "utils/enum_utils.h"
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <utility>
 #include <vector>
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201) // glm: nonstandard extension used: nameless struct/union

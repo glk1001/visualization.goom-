@@ -12,26 +12,30 @@
 #pragma warning(pop)
 #endif
 
+#include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/after_effects/after_effects_types.h"
+#include "filter_fx/after_effects/the_effects/rotation.h"
 #include "filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h"
 #include "filter_fx/filter_effects/zoom_vector_effects.h"
+#include "filter_fx/filter_speed.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 
-#include <cmath>
+#include <cstdint>
 #include <memory>
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 

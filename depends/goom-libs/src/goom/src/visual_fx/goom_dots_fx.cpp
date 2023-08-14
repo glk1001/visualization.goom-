@@ -9,20 +9,27 @@
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "fx_helper.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "goom_visual_fx.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace GOOM::VISUAL_FX
 {

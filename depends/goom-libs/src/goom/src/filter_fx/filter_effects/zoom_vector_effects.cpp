@@ -1,10 +1,14 @@
 #include "zoom_vector_effects.h"
 
+#include "filter_fx/after_effects/after_effects.h"
 #include "filter_fx/after_effects/zoom_vector_after_effects.h"
 #include "filter_fx/filter_settings.h"
+#include "filter_fx/normalized_coords.h"
+#include "point2d.h"
 #include "utils/name_value_pairs.h"
 
 #include <cmath>
+#include <cstdint>
 #include <string>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

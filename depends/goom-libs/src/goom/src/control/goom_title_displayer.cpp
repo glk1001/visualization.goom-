@@ -8,13 +8,19 @@
 #include "draw/shape_drawers/text_drawer.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
+#include "goom_types.h"
+#include "math20.h"
+#include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/text/drawable_text.h"
 
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace GOOM::CONTROL
 {

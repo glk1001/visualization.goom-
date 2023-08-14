@@ -1,7 +1,9 @@
 #include "test_patterns.h"
 
+#include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer.h"
+#include "goom_graphic.h"
 #include "goom_types.h"
 #include "point2d.h"
 

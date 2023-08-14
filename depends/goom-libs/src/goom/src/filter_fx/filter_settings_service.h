@@ -1,13 +1,19 @@
 #pragma once
 
 #include "after_effects/after_effects_states.h"
+#include "after_effects/after_effects_types.h"
 #include "after_effects/the_effects/rotation.h"
 #include "filter_settings.h"
+#include "filter_speed.h"
+#include "goom_config.h"
+#include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <functional>
 #include <memory>
+#include <string>
 #include <string_view>
 
 namespace GOOM

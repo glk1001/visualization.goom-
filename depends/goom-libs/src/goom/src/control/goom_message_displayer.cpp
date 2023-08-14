@@ -4,10 +4,15 @@
 
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
+#include "draw/shape_drawers/text_drawer.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
+#include "goom_types.h"
 #include "point2d.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
 #include <vector>
 
 namespace GOOM::CONTROL

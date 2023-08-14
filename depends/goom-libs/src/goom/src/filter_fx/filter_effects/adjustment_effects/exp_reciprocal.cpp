@@ -3,12 +3,15 @@
 #include "exp_reciprocal.h"
 
 #include "filter_fx/normalized_coords.h"
-#include "goom_logger.h"
+#include "point2d.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
+#include <array>
 #include <cmath>
 #include <complex>
+#include <cstdint>
 #include <limits>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

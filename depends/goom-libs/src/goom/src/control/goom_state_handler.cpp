@@ -1,5 +1,7 @@
 #include "goom_state_handler.h"
 
+#include "goom_states.h"
+
 namespace GOOM::CONTROL
 {
 

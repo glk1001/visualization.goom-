@@ -12,8 +12,8 @@
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "goom_visual_fx.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/image_bitmaps.h"
@@ -22,8 +22,11 @@
 #include "utils/t_values.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -501,7 +504,7 @@ auto ImageFx::ImageFxImpl::DrawChunk(const Point2dInt& pos,
   auto y = pos.y;
   for (auto i = 0U; i < CHUNK_HEIGHT; ++i)
   {
-    const auto& pixelRow = pixels[i];
+    const auto& pixelRow = pixels.at(i);
 
     auto x = pos.x;
     for (const auto& xPixel : pixelRow)
@@ -582,8 +585,8 @@ auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const Pl
   const auto x0     = centre.x - static_cast<int32_t>(imageBitmap.GetWidth() / 2);
   const auto y0     = centre.y - static_cast<int32_t>(imageBitmap.GetHeight() / 2);
 
-  assert(x0 >= 0);
-  assert(y0 >= 0);
+  Ensures(x0 >= 0);
+  Ensures(y0 >= 0);
 
   const auto numYChunks = static_cast<int32_t>(imageBitmap.GetHeight()) / CHUNK_HEIGHT;
   const auto numXChunks = static_cast<int32_t>(imageBitmap.GetWidth()) / CHUNK_WIDTH;

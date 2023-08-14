@@ -52,12 +52,12 @@ private:
 
 [[nodiscard]] inline auto DivByUnit(const Flt x) -> Flt
 {
-  return x >> FIX;
+  return x >> FIX; // NOLINT(hicpp-signed-bitwise)
 }
 
 [[nodiscard]] inline auto DivBy2Units(const Flt x) -> Flt
 {
-  return x >> (FIX + 1);
+  return x >> (FIX + 1); // NOLINT(hicpp-signed-bitwise)
 }
 
 inline IfsPoint::IfsPoint(const Point2dInt& point, const uint32_t count) noexcept

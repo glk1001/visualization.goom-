@@ -2,10 +2,12 @@
 
 #include "draw/goom_draw.h"
 #include "goom_graphic.h"
+#include "image_bitmaps.h"
 #include "point2d.h"
 #include "small_image_bitmaps.h"
 
 #include <bezier/bezier.h>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 

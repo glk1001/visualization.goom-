@@ -1,20 +1,20 @@
 #pragma once
 
-#include "goom_config.h"
-
-//#define DO_GOOM_STATE_DUMP
+// #define DO_GOOM_STATE_DUMP
 
 #ifdef DO_GOOM_STATE_DUMP
 
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
+#include "goom_config.h"
 #include "goom_music_settings_reactor.h"
 #include "utils/stopwatch.h"
 
 #include <chrono>
 #include <cstdint>
 #include <memory>
-#include <string_view>
+#include <string>
+#include <vector>
 
 namespace GOOM
 {

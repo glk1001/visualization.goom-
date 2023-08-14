@@ -8,18 +8,25 @@
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "goom_graphic.h"
+#include "math20.h"
 #include "point2d.h"
 #include "spimpl.h"
+#include "tube_data.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
+#include <algorithm>
 #include <array>
+#include <cmath>
+#include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::TUBES

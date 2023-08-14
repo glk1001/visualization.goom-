@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color/color_adjustment.h"
+#include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/circle_drawer.h"
@@ -8,7 +9,9 @@
 #include "point2d.h"
 #include "utils/math/paths.h"
 
+#include <cstdint>
 #include <memory>
+#include <set>
 
 namespace GOOM::VISUAL_FX::SHAPES
 {

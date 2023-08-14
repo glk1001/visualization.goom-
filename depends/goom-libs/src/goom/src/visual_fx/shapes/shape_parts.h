@@ -1,19 +1,24 @@
 #pragma once
 
-#include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
+#include "goom_graphic.h"
 #include "goom_plugin_info.h"
 #include "goom_types.h"
 #include "point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/parametric_functions2d.h"
+#include "utils/math/paths.h"
+#include "utils/math/transform2d.h"
 #include "utils/step_speed.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
-#include <memory>
+#include <type_traits>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::SHAPES

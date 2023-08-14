@@ -2,6 +2,9 @@
 
 #include "utils/math/damping_functions.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>

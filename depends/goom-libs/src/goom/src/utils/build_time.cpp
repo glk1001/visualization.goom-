@@ -2,6 +2,8 @@
 
 #include "date_utils.h"
 
+#include <string>
+
 namespace GOOM::UTILS
 {
 

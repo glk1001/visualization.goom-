@@ -5,12 +5,16 @@
 #endif
 
 #ifdef IS_KODI_BUILD
-#include <kodi/gui/gl/GL.h>
+#include <kodi/gui/gl/GL.h> // NOLINT: False positive??
 #else
 #include "glad/glad.h"
 #endif
 
-#include <glm/glm.hpp>
+#include <glm/ext/matrix_float3x3.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -73,7 +77,7 @@ private:
   auto DetachAndDeleteShaderObjects() const -> void;
 
   [[nodiscard]] static auto FileExists(const std::string_view& fileName) -> bool;
-  [[nodiscard]] static auto GetExtension(const std::string_view& fileName) -> std::string;
+  [[nodiscard]] static auto GetExtension(const std::string_view& filename) -> std::string;
 };
 
 } // namespace GOOM::OPENGL

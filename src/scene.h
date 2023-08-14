@@ -3,7 +3,6 @@
 #include "gl_render_types.h"
 
 #include <cstdint>
-#include <string>
 
 namespace GOOM::OPENGL
 {
@@ -28,7 +27,7 @@ public:
   auto SetFramebufferDimensions(const GOOM::WindowDimensions& windowDimensions) noexcept -> void;
 
   // Load textures, initialize shaders, etc.
-  virtual auto InitScene() -> void = 0;
+  virtual auto InitScene() -> void             = 0;
   virtual auto DestroyScene() noexcept -> void = 0;
 
   // Draw your scene.

@@ -1,13 +1,20 @@
 #include "strutils.h"
 
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L // NOLINT: Can't include header for this.
 #include <ranges>
 #endif
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
-#include <format>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <fstream>
+#include <istream>
+#include <iterator>
+#include <ostream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace GOOM::UTILS
@@ -16,8 +23,8 @@ namespace GOOM::UTILS
 namespace
 {
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto GetIncludeFileName(const std::string& includeDir,
+                        // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                         const std::string& parentFileDir,
                         const std::string& includeLine) -> std::string
 {
@@ -34,11 +41,13 @@ auto GetIncludeFileName(const std::string& includeDir,
   if (filename[0] != '\"')
   {
     throw std::runtime_error(
+        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
         std_fmt::format("Expected #include filename '{}' to start with \"", filename));
   }
   if (filename[filename.size() - 1] != '\"')
   {
     throw std::runtime_error(
+        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
         std_fmt::format("Expected #include filename '{}' to end with \"", filename));
   }
   if (filename.size() <= 2)
@@ -60,11 +69,13 @@ auto GetIncludeFileName(const std::string& includeDir,
   if (not std::filesystem::exists(inclFilename))
   {
     throw std::runtime_error{
+        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
         std_fmt::format("Could not open file \"{}\" or \"{}\"", theFilename, inclFilename)};
   }
   return inclFilename;
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 auto GetExpandedFileLines(const std::string& includeDir,
                           const std::string& parentFileDir,
                           const std::vector<std::string>& inLines) -> std::vector<std::string>
@@ -72,6 +83,7 @@ auto GetExpandedFileLines(const std::string& includeDir,
   if (not std::filesystem::exists(includeDir))
   {
     throw std::runtime_error{
+        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
         std_fmt::format("Could not find include directory \"{}\"", includeDir)};
   }
 
@@ -103,6 +115,7 @@ auto GetFileLines(const std::string& filepath) -> std::vector<std::string>
   auto inStream = std::ifstream{filepath};
   if (not inStream)
   {
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     throw std::runtime_error{std_fmt::format("Could not open file \"{}\"", filepath)};
   }
 
@@ -130,6 +143,7 @@ auto PutFileLines(const std::string& filepath, const std::vector<std::string>& l
   auto outStream = std::ofstream{filepath};
   if (not outStream)
   {
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     throw std::runtime_error{std_fmt::format("Could not open file \"{}\"", filepath)};
   }
 
@@ -144,6 +158,7 @@ auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines
   }
 }
 
+// NOLINTNEXTLINE(misc-no-recursion)
 auto GetFileLinesWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
     -> std::vector<std::string>
 {
@@ -179,6 +194,7 @@ auto ImageBufferIndexToString(const int32_t imageWidth, const size_t bufferIndex
 {
   const auto y = bufferIndex / static_cast<size_t>(imageWidth);
   const auto x = bufferIndex % static_cast<size_t>(imageWidth);
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   return std_fmt::format("{:5d}, {:5d}", x, y);
 }
 
@@ -201,7 +217,7 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string_view&
 
 auto StringSplit(const std::string& str, const std::string_view& delim) -> std::vector<std::string>
 {
-#if __cplusplus <= 201703L
+#if __cplusplus <= 201703L // NOLINT: Can't include header for this.
   auto vec       = std::vector<std::string>{};
   auto copyOfStr = str;
   while (true)

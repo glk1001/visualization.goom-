@@ -5,9 +5,10 @@
 #include "utils/enum_utils.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
-#include <format>
 #include <map>
+#include <type_traits>
 #include <vector>
 
 namespace GOOM::UTILS::MATH

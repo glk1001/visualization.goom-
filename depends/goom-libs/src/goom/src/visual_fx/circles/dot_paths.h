@@ -2,10 +2,12 @@
 
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <vector>
 

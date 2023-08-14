@@ -1,16 +1,18 @@
 #pragma once
 
-#include "draw/goom_draw.h"
+#include "frame_data.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "spimpl.h"
-#include "utils/math/misc.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/goom_visual_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
+#include <string>
 #include <string_view>
 #include <unordered_set>
 

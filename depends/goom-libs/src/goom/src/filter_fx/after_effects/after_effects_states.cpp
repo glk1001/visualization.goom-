@@ -1,9 +1,11 @@
 #include "after_effects_states.h"
 
+#include "after_effects_types.h"
 #include "filter_fx/filter_consts.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
 
+#include <cstdint>
 #include <memory>
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS

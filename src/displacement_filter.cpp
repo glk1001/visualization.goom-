@@ -3,19 +3,35 @@
 #include "displacement_filter.h"
 
 #include "filter_fx/normalized_coords.h"
+#include "gl_render_types.h"
 #include "gl_utils.h"
+#include "glsl_program.h"
 #include "glsl_shader_file.h"
+#include "goom/frame_data.h"
+#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
+#include "scene.h"
 
+#include <GL/gl.h>
 #include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
-#include <format>
-#include <span>
+#include <format> // NOLINT: Waiting to use C++20.
+#include <glm/ext/vector_float4.hpp>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace fs = std::filesystem;
 
-// TODO - Need to pass goomLogger
+// TODO(glk) - Need to pass goomLogger
 //std_fmt::println("{}", __LINE__);
 
 namespace GOOM::OPENGL
@@ -26,14 +42,16 @@ using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
 {
+// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
 auto CopyBuffer(const std_spn::span<const Point2dFlt> srce, std_spn::span<Point2dFlt> dest) noexcept
     -> void
 {
   std::copy(srce.begin(), srce.end(), dest.begin());
 }
 
-// TODO - Move this into goom filters?
+// TODO(glk) - Move this into goom filters?
 auto InitFilterPosBuffer(const Dimensions& dimensions,
+                         // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
                          std_spn::span<Point2dFlt> tranBufferFlt) noexcept -> void
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
@@ -260,7 +278,7 @@ auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
                       TEX_COORDS.data(),
                       GL_STATIC_DRAW));
 
-  // TODO - Use 4.4 OpenGL - see cookbook
+  // TODO(glk) - Use 4.4 OpenGL - see cookbook
   // Setup the vertex and texture array objects.
   GlCall(glGenVertexArrays(1, &m_fsQuad));
   GlCall(glBindVertexArray(m_fsQuad));
@@ -341,6 +359,7 @@ auto DisplacementFilter::CompileShaderFile(GlslProgram& program,
   shaderFile.WriteToFile(tempShaderFile);
   if (not fs::exists(tempShaderFile))
   {
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     throw std::runtime_error(std_fmt::format("Could not find output file '{}'", tempShaderFile));
   }
 

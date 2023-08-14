@@ -3,10 +3,13 @@
 #include "filter_zoom_vector.h"
 
 #include "filter_effects/zoom_vector_effects.h"
+#include "filter_settings.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "name_value_pairs.h"
 #include "normalized_coords.h"
+#include "point2d.h"
 
+#include <cstdint>
 #include <string>
 
 namespace GOOM::FILTER_FX

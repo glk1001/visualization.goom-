@@ -2,7 +2,9 @@
 
 #include "color_utils.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
+#include "utils/math/misc.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -10,10 +12,14 @@
 #pragma warning(disable : 4242) // possible loss of data
 #pragma warning(disable : 4244) // possible loss of data
 #endif
-#include <vivid/vivid.h>
+#include <vivid/conversion.h>
+#include <vivid/types.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+
+#include <cmath>
+#include <cstdint>
 
 namespace GOOM::COLOR
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef IS_KODI_BUILD
-#include <kodi/gui/gl/GL.h>
+#include <kodi/gui/gl/GL.h> // NOLINT: Too tricky with Kodi GL.
 #else
 #include "glad/glad.h"
 #endif
@@ -23,6 +23,7 @@ auto APIENTRY DebugCallback(GLenum source,
 
 auto GlClearError() -> void;
 
+// NOLINTNEXTLINE: Happy with this case for my GL macro.
 #define GlCall(x) \
   GlClearError(); \
   x; \

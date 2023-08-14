@@ -2,12 +2,15 @@
 
 #include "dot_paths.h"
 
-#include "goom_logger.h"
 #include "point2d.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
+#include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::CIRCLES

@@ -24,6 +24,7 @@ inline auto GetTimeTAsString(const std::time_t timeT) noexcept -> std::string
   }
 #else
   if (auto str = std::array<char, BUFF_SIZE>{};
+      // NOLINTNEXTLINE(misc-include-cleaner): Too hard for time headers.
       std::strftime(str.data(), BUFF_SIZE, "%Y-%m-%d_%H-%M-%S", ::localtime_r(&timeT, &buff)))
   {
     return std::string{str.data()};
@@ -56,6 +57,7 @@ auto GetStandardDateTimeString(const std::string& otherFormatDateTime,
                                const std::string& otherFormat) noexcept -> std::string
 {
   auto timeTm = tm{};
+  // NOLINTNEXTLINE(misc-include-cleaner): Too hard for time headers.
   ::strptime(otherFormatDateTime.c_str(), otherFormat.c_str(), &timeTm);
   timeTm.tm_isdst  = -1; // check for daylight savings
   const auto timeT = ::mktime(&timeTm);

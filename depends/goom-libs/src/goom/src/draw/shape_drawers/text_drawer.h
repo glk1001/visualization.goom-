@@ -5,9 +5,9 @@
 #include "point2d.h"
 #include "spimpl.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <memory>
 #include <string>
 
 namespace GOOM

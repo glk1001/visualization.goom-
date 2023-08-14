@@ -4,11 +4,14 @@
 
 #include "goom_config.h"
 #include "goom_logger.h"
+#include "image_bitmaps.h"
 #include "utils/enum_utils.h"
 #include "utils/math/misc.h"
 
 #include <array>
-#include <format>
+#include <cstddef>
+#include <format> // NOLINT: Waiting to use C++20.
+#include <memory>
 #include <string>
 
 namespace GOOM::UTILS::GRAPHICS
@@ -65,6 +68,7 @@ auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name,
 inline auto SmallImageBitmaps::GetImageKey(const ImageNames name, const size_t sizeOfImageSquare)
     -> std::string
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   return std_fmt::format("{}_{:02}", IMAGE_NAMES.at(static_cast<size_t>(name)), sizeOfImageSquare);
 }
 
@@ -72,6 +76,7 @@ auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
                                          const size_t sizeOfImageSquare) const -> std::string
 {
   const auto imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   return std_fmt::format("{}/{}{:02}x{:02}.png",
                          imagesDir,
                          IMAGE_NAMES.at(static_cast<size_t>(name)),

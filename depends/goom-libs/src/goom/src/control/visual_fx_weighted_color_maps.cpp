@@ -1,5 +1,9 @@
 #include "visual_fx_weighted_color_maps.h"
 
+#include "color/random_color_maps_groups.h"
+#include "goom_effects.h"
+#include "utils/math/goom_rand_base.h"
+
 namespace GOOM::CONTROL
 {
 

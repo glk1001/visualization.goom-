@@ -1,5 +1,6 @@
 #include "image_velocity.h"
 
+#include "math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 #include <string>

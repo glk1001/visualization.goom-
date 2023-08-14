@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
+#include <utility>
 
 namespace GOOM::UTILS
 {

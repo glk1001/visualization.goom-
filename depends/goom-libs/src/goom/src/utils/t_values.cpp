@@ -2,9 +2,12 @@
 
 #include "t_values.h"
 
-#include "debugging_logger.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+
+#include <cassert>
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::UTILS
 {

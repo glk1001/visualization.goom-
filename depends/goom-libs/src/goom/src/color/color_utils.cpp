@@ -2,6 +2,7 @@
 
 #include "goom_graphic.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace GOOM::COLOR

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
+#include "math20.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
-#include <algorithm>
 #include <cmath>
-#include <stdexcept>
+#include <string>
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

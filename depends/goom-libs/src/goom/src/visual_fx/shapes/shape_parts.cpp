@@ -4,13 +4,29 @@
 
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
+#include "draw/goom_draw.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "goom_logger.h"
+#include "goom_plugin_info.h"
+#include "goom_types.h"
+#include "math20.h"
 #include "point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
+#include "utils/math/parametric_functions2d.h"
+#include "utils/math/paths.h"
+#include "utils/math/transform2d.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
+
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::SHAPES
 {
@@ -202,8 +218,8 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
       LogError("scale = {}", scale);
       LogError("numSteps = {}", numSteps);
     }
-    assert(SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) <=
-           CLOSE_ENOUGH);
+    Ensures(SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) <=
+            CLOSE_ENOUGH);
 
     stepFraction.Increment();
   }

@@ -7,9 +7,9 @@
 #include "utils/math/goom_rand_base.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <memory>
 #include <vector>
 
 namespace GOOM

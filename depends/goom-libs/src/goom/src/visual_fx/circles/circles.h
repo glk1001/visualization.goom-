@@ -2,16 +2,14 @@
 
 #include "bitmap_getter.h"
 #include "circle.h"
-#include "color/color_utils.h"
 #include "color/random_color_maps.h"
+#include "dot_paths.h"
 #include "helper.h"
-#include "point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/paths.h"
+#include "utils/math/parametric_functions2d.h"
 #include "visual_fx/fx_helper.h"
 
 #include <cstdint>
-#include <memory>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::CIRCLES

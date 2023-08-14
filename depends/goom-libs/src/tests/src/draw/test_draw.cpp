@@ -3,16 +3,19 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 
-#include <format>
+#include <algorithm>
+#include <cstdint>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <vector>
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 
@@ -49,6 +52,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
 
     const auto& coords = changedPixels[i];
 
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     INFO(std_fmt::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})",
                          i,
                          coords.point.x,
@@ -58,6 +62,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
     REQUIRE(coords.point.x == point.x);
     REQUIRE(coords.point.y == point.y);
 
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     INFO(std_fmt::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})",
                          0,
                          coords.colors.color1.R(),
@@ -76,6 +81,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
 
 void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo>& expectedPixels)
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   INFO(std_fmt::format("draw.GetNumChangedCoords() = {}", draw.GetNumChangedCoords()));
   REQUIRE(draw.GetNumChangedCoords() == expectedPixels.size());
 

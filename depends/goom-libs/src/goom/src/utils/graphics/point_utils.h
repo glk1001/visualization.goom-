@@ -5,6 +5,10 @@
 #include "line_clipper.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
+
+#include <algorithm>
+#include <cstdint>
 
 namespace GOOM::UTILS::GRAPHICS
 {

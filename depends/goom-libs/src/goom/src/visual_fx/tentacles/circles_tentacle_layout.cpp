@@ -3,6 +3,7 @@
 #include "point2d.h"
 #include "utils/math/misc.h"
 
+#include <cmath>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES

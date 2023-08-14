@@ -1,8 +1,12 @@
 #pragma once
 
+#include "frame_data.h"
 #include "goom_visual_fx.h"
 #include "spimpl.h"
 #include "utils/stopwatch.h"
+
+#include <string>
+#include <vector>
 
 namespace GOOM::VISUAL_FX
 {

@@ -1,26 +1,35 @@
-#undef NO_LOGGING
+// #define DO_GOOM_STATE_DUMP
 
-#include "goom_state_dump.h"
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
+
+#include "goom_state_dump.h" // NOLINT: Have to include this.
 
 #ifdef DO_GOOM_STATE_DUMP
 
+#include "filter_fx/after_effects/after_effects_states.h"
+#include "filter_fx/after_effects/after_effects_types.h"
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
-#include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_music_settings_reactor.h"
+#include "goom_states.h"
 #include "utils/date_utils.h"
 
+#include <chrono>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <memory>
+#include <ostream>
 #include <string>
+#include <vector>
 
 namespace GOOM::CONTROL
 {
 
 using FILTER_FX::FilterSettingsService;
 using FILTER_FX::ZoomFilterMode;
-using FILTER_FX::AFTER_EFFECTS::HypercosOverlay;
+using FILTER_FX::AFTER_EFFECTS::HypercosOverlayMode;
 using UTILS::GetCurrentDateTimeAsString;
 
 class GoomStateDump::CumulativeState
@@ -37,7 +46,7 @@ public:
 
   void AddCurrentGoomState(GoomStates goomState);
   void AddCurrentFilterMode(ZoomFilterMode filterMode);
-  void AddCurrentHypercosOverlay(HypercosOverlay hypercosOverlay);
+  void AddCurrentHypercosOverlay(HypercosOverlayMode hypercosOverlay);
   void AddCurrentImageVelocityEffect(bool value);
   void AddCurrentNoiseEffect(bool value);
   void AddCurrentPlaneEffect(bool value);
@@ -138,17 +147,19 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   const auto filterSettings        = m_filterSettingsService->GetFilterSettings();
   using AfterEffects               = FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
   const auto& afterEffectsSettings = filterSettings.filterEffectsSettings.afterEffectsSettings;
-  m_cumulativeState->AddCurrentHypercosOverlay(afterEffectsSettings.hypercosOverlay);
+  m_cumulativeState->AddCurrentHypercosOverlay(afterEffectsSettings.hypercosOverlayMode);
   m_cumulativeState->AddCurrentImageVelocityEffect(
-      afterEffectsSettings.active[AfterEffects::IMAGE_VELOCITY]);
-  m_cumulativeState->AddCurrentNoiseEffect(afterEffectsSettings.active[AfterEffects::NOISE]);
-  m_cumulativeState->AddCurrentPlaneEffect(afterEffectsSettings.active[AfterEffects::PLANES]);
-  m_cumulativeState->AddCurrentRotationEffect(afterEffectsSettings.active[AfterEffects::ROTATION]);
-  m_cumulativeState->AddCurrentTanEffect(afterEffectsSettings.active[AfterEffects::TAN_EFFECT]);
+      afterEffectsSettings.isActive[AfterEffects::IMAGE_VELOCITY]);
+  m_cumulativeState->AddCurrentNoiseEffect(afterEffectsSettings.isActive[AfterEffects::NOISE]);
+  m_cumulativeState->AddCurrentPlaneEffect(afterEffectsSettings.isActive[AfterEffects::PLANES]);
+  m_cumulativeState->AddCurrentRotationEffect(
+      afterEffectsSettings.isActive[AfterEffects::ROTATION]);
+  m_cumulativeState->AddCurrentTanEffect(afterEffectsSettings.isActive[AfterEffects::TAN_EFFECT]);
   m_cumulativeState->AddCurrentXYLerpEffect(
-      afterEffectsSettings.active[AfterEffects::XY_LERP_EFFECT]);
+      afterEffectsSettings.isActive[AfterEffects::XY_LERP_EFFECT]);
 
-  m_cumulativeState->AddBufferLerp(m_visualFx->GetZoomFilterFx().GetTranLerpFactor());
+  // TODO(glk) - Sort out lerp factor!
+  //m_cumulativeState->AddBufferLerp(m_visualFx->GetZoomFilterFx().GetTranLerpFactor());
 
   const auto& goomSoundEvents = m_goomInfo->GetSoundEvents();
   m_cumulativeState->AddCurrentTimeSinceLastGoom(goomSoundEvents.GetTimeSinceLastGoom());
@@ -208,8 +219,8 @@ auto GoomStateDump::DumpSummary() const noexcept -> void
   out << "Song:       " << m_songTitle << "\n";
   out << "Date:       " << m_dateTime << "\n";
   out << "Seed:       " << m_goomSeed << "\n";
-  out << "Width:      " << m_goomInfo->GetScreenWidth() << "\n";
-  out << "Height:     " << m_goomInfo->GetScreenHeight() << "\n";
+  out << "Width:      " << m_goomInfo->GetDimensions().GetWidth() << "\n";
+  out << "Height:     " << m_goomInfo->GetDimensions().GetHeight() << "\n";
   out << "Start Time: " << m_stopwatch->GetStartTimeAsStr() << "\n";
   out << "Stop Time:  " << m_stopwatch->GetLastMarkedTimeAsStr() << "\n";
   out << "Act Dur:    " << m_stopwatch->GetActualDurationInMs() << "\n";
@@ -301,7 +312,7 @@ inline void GoomStateDump::CumulativeState::AddCurrentFilterMode(const ZoomFilte
 }
 
 inline void GoomStateDump::CumulativeState::AddCurrentHypercosOverlay(
-    const HypercosOverlay hypercosOverlay)
+    const HypercosOverlayMode hypercosOverlay)
 {
   m_hypercosOverlays.push_back(static_cast<uint8_t>(hypercosOverlay));
 }

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "frame_data.h"
 #include "goom_config.h"
-#include "goom_graphic.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "point2d.h"
@@ -12,8 +12,8 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 #include <unordered_set>
-#include <vector>
 
 namespace GOOM
 {

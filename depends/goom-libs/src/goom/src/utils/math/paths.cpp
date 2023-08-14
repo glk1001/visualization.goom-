@@ -2,10 +2,13 @@
 
 #include "goom_config.h"
 #include "utils/math/misc.h"
+#include "utils/math/transform2d.h"
 #include "utils/t_values.h"
 
 #include <algorithm>
 #include <memory>
+#include <utility>
+#include <vector>
 
 namespace GOOM::UTILS::MATH
 {
@@ -37,8 +40,8 @@ JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
   Expects(not pathTStarts.empty());
   Expects(pathTStarts.size() == m_subPaths.size());
 
-  assert(SegmentPathTsAreAscending());
-  assert(SegmentPathTsAreValid());
+  Expects(SegmentPathTsAreAscending());
+  Expects(SegmentPathTsAreValid());
 
   AdjustSegmentStepSizes();
 }

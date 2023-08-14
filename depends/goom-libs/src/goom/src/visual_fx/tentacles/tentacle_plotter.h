@@ -9,7 +9,9 @@
 #include "utils/graphics/line_clipper.h"
 #include "utils/math/goom_rand_base.h"
 
+#include <cstdint>
 #include <functional>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {

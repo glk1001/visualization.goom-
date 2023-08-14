@@ -5,7 +5,6 @@
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer.h"
 #include "goom_config.h"
@@ -18,7 +17,7 @@
 #include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
-#include <memory>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::LINES

@@ -1,12 +1,18 @@
 #pragma once
 
+#include "color/color_maps.h"
 #include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/circle_drawer.h"
+#include "goom_graphic.h"
 #include "helper.h"
+#include "point2d.h"
+#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
+
+#include <cstdint>
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

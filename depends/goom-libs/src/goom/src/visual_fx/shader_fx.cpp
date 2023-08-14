@@ -2,8 +2,9 @@
 
 #include "shader_fx.h"
 
+#include "frame_data.h"
 #include "fx_helper.h"
-#include "goom_logger.h"
+#include "goom_config.h"
 #include "shaders/chroma_factor_lerper.h"
 #include "shaders/color_multiplier_lerper.h"
 #include "shaders/high_contrast.h"
@@ -13,6 +14,7 @@
 #include "utils/stopwatch.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 
 namespace GOOM::VISUAL_FX

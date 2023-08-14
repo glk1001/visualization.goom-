@@ -1,6 +1,13 @@
 #include "fractal_hits.h"
 
 #include "color/color_utils.h"
+#include "goom_types.h"
+#include "ifs_types.h"
+#include "point2d.h"
+#include "similitudes.h"
+
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::IFS
 {

@@ -1,15 +1,20 @@
 #include "color_multiplier_lerper.h"
 
 #include "goom_config.h"
-#include "utils/math/misc.h"
+#include "goom_plugin_info.h"
+#include "math20.h"
+#include "utils/math/goom_rand_base.h"
+
+#include <cmath>
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
 
 ColorMultiplierLerper::ColorMultiplierLerper(const PluginInfo& goomInfo,
                                              const UTILS::MATH::IGoomRand& goomRand,
-                                             float minColorMultiplier,
-                                             float maxColorMultiplier) noexcept
+                                             // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+                                             const float minColorMultiplier,
+                                             const float maxColorMultiplier) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_minColorMultiplier{minColorMultiplier},

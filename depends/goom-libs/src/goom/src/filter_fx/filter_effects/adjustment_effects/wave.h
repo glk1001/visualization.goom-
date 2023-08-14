@@ -6,6 +6,8 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
+#include <cmath>
+
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -107,7 +109,7 @@ private:
 
   [[nodiscard]] auto GetSqDistEffect() const noexcept -> Wave::AngleEffect;
   [[nodiscard]] auto GetATanAngle(const NormalizedCoords& coords) const noexcept -> float;
-  [[nodiscard]] auto GetSqDistSpiralRotateAngle(const float sqDistFromZero,
+  [[nodiscard]] auto GetSqDistSpiralRotateAngle(float sqDistFromZero,
                                                 const NormalizedCoords& coords) const noexcept
       -> float;
 };

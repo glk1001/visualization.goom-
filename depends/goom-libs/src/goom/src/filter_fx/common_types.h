@@ -2,6 +2,8 @@
 
 #include "utils/math/goom_rand_base.h"
 
+#include <cstdint>
+
 namespace GOOM::FILTER_FX
 {
 

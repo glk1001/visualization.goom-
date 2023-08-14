@@ -1,15 +1,13 @@
 #pragma once
 
-#include "draw/goom_draw.h"
 #include "goom_graphic.h"
 #include "point2d.h"
 #include "spimpl.h"
 #include "tube_data.h"
-#include "utils/math/paths.h"
-#include "utils/timer.h"
+#include "utils/math/parametric_functions2d.h"
 
+#include <cstdint>
 #include <functional>
-#include <memory>
 
 namespace GOOM::COLOR
 {

@@ -5,12 +5,11 @@
 #include "goom_types.h"
 #include "point2d.h"
 #include "utils/graphics/pixel_blend.h"
+#include "utils/graphics/pixel_utils.h"
 
 #include <cmath>
-#include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <vector>
 
 namespace GOOM::DRAW
 {

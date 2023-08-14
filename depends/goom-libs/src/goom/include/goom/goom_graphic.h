@@ -2,11 +2,12 @@
 
 #include "goom_config.h"
 #include "goom_types.h"
-#include "goom_utils.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <vector>
 
 namespace GOOM
