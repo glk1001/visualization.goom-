@@ -2,7 +2,7 @@
 
 #include "goom_config.h"
 #include "goom_types.h"
-#include "math/misc.h"
+#include "math20.h"
 
 #include <cstdint>
 

@@ -1,11 +1,3 @@
-/*
- *  Copyright (C) 2005-2022 Team Kodi (https://kodi.tv)
- *  Copyright (C) 2005-2013 Team XBMC
- *
- *  SPDX-License-Identifier: GPL-2.0-or-later
- *  See LICENSE.md for more information.
- */
-
 #undef NO_LOGGING
 
 #include "Main.h"
@@ -17,14 +9,21 @@
 #include "goom/goom_types.h"
 #include "goom_visualization.h"
 
+#include <algorithm>
+#include <array>
+#include <c-api/addon_base.h>
 #include <chrono>
-#include <format>
+#include <cstddef>
+#include <cstdint>
+#include <exception>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <fstream>
 #include <ios>
-#include <iostream>
+#include <kodi/AddonBase.h>
 #include <kodi/Filesystem.h>
+#include <kodi/addon-instance/Visualization.h>
 #include <random>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
@@ -89,10 +88,12 @@ struct Memory
       niceVal >> oVal >> itRealValue >> startTime >> vSize >> rss; // don't care about the rest
   statStream.close();
 
-  // For x86-64 is configured to use 2MB pages.
-  auto pageSizeKb = static_cast<double>(sysconf(_SC_PAGE_SIZE)) / 1024.0;
+  static constexpr auto KILO = 1024.0;
 
-  return Memory{static_cast<double>(vSize) / 1024.0, static_cast<double>(rss) * pageSizeKb};
+  // For x86-64 is configured to use 2MB pages.
+  auto pageSizeKb = static_cast<double>(sysconf(_SC_PAGE_SIZE)) / KILO;
+
+  return Memory{static_cast<double>(vSize) / KILO, static_cast<double>(rss) * pageSizeKb};
 }
 
 constexpr auto MAX_QUALITY = 4;
@@ -138,6 +139,7 @@ CVisualizationGoom::CVisualizationGoom()
         *m_goomLogger,
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
         CONSUME_WAIT_FOR_PRODUCER_MS,
+        // NOLINTNEXTLINE(misc-include-cleaner): Hard to include the right gl header.
         KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
         GetTextureBufferDimensions()}
 {
@@ -147,16 +149,17 @@ CVisualizationGoom::CVisualizationGoom()
   m_goomVisualization.SetWindowDimensions({Width(), Height()});
 }
 
-// NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall)
+// NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall): Third party parent code.
 CVisualizationGoom::~CVisualizationGoom()
 {
-  kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Destroyed CVisualizationGoom object.");
+  LogInfo(*m_goomLogger, "Destroyed CVisualizationGoom object.");
   LogStop(*m_goomLogger);
 }
 // NOLINTEND(clang-analyzer-optin.cplusplus.VirtualCall)
 
 auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   const auto fullMsg = std_fmt::format("CVisualizationGoom: {}", errorMsg);
 
   LogError(*m_goomLogger, fullMsg);
@@ -214,6 +217,7 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels) -> void
   }
   catch (const std::exception& e)
   {
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     HandleError(std_fmt::format("CVisualizationGoom start failed: {}", e.what()));
   }
 }
@@ -229,11 +233,15 @@ auto CVisualizationGoom::Stop() -> void
     return;
   }
 
+  LogInfo(*m_goomLogger, "Begin stopping...");
+
 #ifdef GOOM_DEBUG
   StopWithoutCatch();
 #else
   StopWithCatch();
 #endif
+
+  LogInfo(*m_goomLogger, "Finished stopping.");
 }
 
 inline auto CVisualizationGoom::StopWithoutCatch() -> void
@@ -249,6 +257,7 @@ auto CVisualizationGoom::StopWithCatch() -> void
   }
   catch (const std::exception& e)
   {
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     HandleError(std_fmt::format("Goom stop failed: {}", e.what()));
   }
 }
@@ -276,22 +285,20 @@ auto CVisualizationGoom::StartVis(const int numChannels) -> void
 
 inline auto CVisualizationGoom::StopVis() -> void
 {
+  m_started = false;
+
+  m_goomVisualization.Stop();
+
   LogInfo(*m_goomLogger, "Number of renders = {}.", m_numRenders);
   LogInfo(*m_goomLogger,
           "Average render time = {:.1f}ms.",
           m_totalRenderTimeInMs / static_cast<double>(m_numRenders));
-
-  m_started = false;
-
-  m_goomVisualization.Stop();
 
   auto memUsage = GetMemUsage();
   LogInfo(*m_goomLogger,
           "Stop: vmUsage = {}, residentSet = {}.",
           memUsage.vmUsage,
           memUsage.residentSet);
-
-  LogStop(*m_goomLogger);
 }
 
 auto CVisualizationGoom::InitAudioData(const int32_t numChannels) noexcept -> void
@@ -339,6 +346,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   AddAudioDataToBuffer(std_spn::span<const float>{audioData, audioDataLength});
 
   if (m_audioBuffer.DataAvailable() >= m_audioSampleLen)
@@ -347,12 +355,13 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
   }
 }
 
+// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
 auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float> audioData) noexcept
     -> void
 {
   if (m_audioBuffer.FreeSpace() < audioData.size())
   {
-    // TODO - is this a good idea?
+    // TODO(glk) - is this a good idea?
     // Lose the audio or somehow start averaging?
     ++m_dropAudioDataNum;
 #ifdef DEBUG_LOGGING

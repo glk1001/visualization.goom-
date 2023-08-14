@@ -2,9 +2,8 @@
 
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "point2d.h"
 
-#include <format>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <string>
 
 namespace GOOM::UTILS::FMT

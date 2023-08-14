@@ -1,10 +1,14 @@
 #include "goom_state_monitor.h"
 
+#include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
-#include "goom_graphic.h"
 #include "goom_music_settings_reactor.h"
+#include "point2d.h"
 #include "utils/name_value_pairs.h"
+
+#include <string>
+#include <unordered_set>
 
 namespace GOOM::CONTROL
 {

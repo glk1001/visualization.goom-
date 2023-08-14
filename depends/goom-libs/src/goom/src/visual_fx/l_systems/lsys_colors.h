@@ -1,17 +1,19 @@
 #pragma once
 
-#include "../goom_visual_fx.h"
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/color_utils.h"
-#include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "math20.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/t_values.h"
+
+#include <cstdint>
+#include <functional>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

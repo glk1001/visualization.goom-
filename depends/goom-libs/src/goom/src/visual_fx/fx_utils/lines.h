@@ -4,6 +4,8 @@
 #include "goom_types.h"
 #include "point2d.h"
 
+#include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

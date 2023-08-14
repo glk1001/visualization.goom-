@@ -19,18 +19,24 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
 #include "point2d.h"
 #include "sound_info.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
 
-#if __clang_major__ >= 16
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 
@@ -72,7 +78,7 @@ public:
 namespace
 {
 
-// TODO - Get rid of this!
+// TODO(glk) - Get rid of this!
 class ZoomCoordTransforms
 {
 public:
@@ -101,12 +107,14 @@ inline auto ZoomCoordTransforms::TranToScreenPoint(const Point2dInt& tranPoint) 
     -> Point2dInt
 {
   // Note: Truncation here but seems OK. Trying to round adds about 2ms.
+  // NOLINTNEXTLINE(hicpp-signed-bitwise)
   return {tranPoint.x >> DIM_FILTER_COEFFS_EXP, tranPoint.y >> DIM_FILTER_COEFFS_EXP};
 }
 
 inline auto ZoomCoordTransforms::ScreenToTranPoint(const Point2dInt& screenPoint) noexcept
     -> Point2dInt
 {
+  // NOLINTNEXTLINE(hicpp-signed-bitwise)
   return {screenPoint.x << DIM_FILTER_COEFFS_EXP, screenPoint.y << DIM_FILTER_COEFFS_EXP};
 }
 
@@ -396,7 +404,7 @@ auto TestCorrectStripesDestPoint([[maybe_unused]] FilterBuffers& filterBuffers,
                                  [[maybe_unused]] const uint32_t buffPos,
                                  [[maybe_unused]] const Point2dInt& expectedDestPoint) -> void
 {
-  //TODO - fix this
+  //TODO(glk) - fix this
   //  const auto destPoint = GetSourcePoint(filterBuffers, buffPos);
   //  UNSCOPED_INFO("destPoint.x = " << destPoint.x);
   //  UNSCOPED_INFO("destPoint.y = " << destPoint.y);
@@ -461,7 +469,7 @@ TEST_CASE("ZoomFilterBuffers Adjustment")
     REQUIRE(FilterBuffers::TransformBufferState::START_FRESH_TRANSFORM_BUFFER ==
             filterBuffers.GetTransformBufferState());
 
-    //    const auto expectedTranPoint         = ZoomCoordTransforms::ScreenToTranPoint(TEST_SRCE_POINT);
+    //    const auto expectedTranPoint = ZoomCoordTransforms::ScreenToTranPoint(TEST_SRCE_POINT);
     //    const auto expectedZoomedInTranPoint = Point2dInt{
     //        static_cast<int32_t>(ZOOM_FACTOR1 *
     //                             static_cast<float>(expectedTranPoint.x - MID_TRAN_POINT.x)) +

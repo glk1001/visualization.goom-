@@ -1,10 +1,7 @@
 #pragma once
 
-#include "xoshiro.hpp"
-
-#include <cstdlib>
+#include <cstdint>
 #include <iosfwd>
-#include <stdexcept>
 #include <type_traits>
 
 namespace GOOM::UTILS::MATH::RAND

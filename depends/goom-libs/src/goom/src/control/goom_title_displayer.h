@@ -8,6 +8,7 @@
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>

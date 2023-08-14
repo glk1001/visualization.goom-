@@ -9,6 +9,8 @@
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
+#include <cmath>
+
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 

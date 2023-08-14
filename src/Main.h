@@ -9,7 +9,7 @@
  */
 
 #include "goom/circular_buffer.h"
-#include "goom/goom_config.h"
+#include "goom/goom_config.h" // NOLINT: Always want this
 #include "goom/sound_info.h"
 #include "goom_visualization.h"
 
@@ -23,17 +23,19 @@
 #pragma warning(disable : 4702) // kodi/gui/gl/Shader.h: unreachable code
 #endif
 
-#include <kodi/addon-instance/Visualization.h>
-#include <kodi/gui/gl/Shader.h>
-
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
+#include <cstddef>
+#include <cstdint>
+#include <kodi/AddonBase.h>
+#include <kodi/addon-instance/Visualization.h>
+#include <kodi/gui/gl/Shader.h>
 #include <memory>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <string>
-#include <thread>
+#include <vector>
 
 #if !defined(ATTRIBUTE_HIDDEN)
 #define ATTRIBUTE_HIDDEN
@@ -94,6 +96,7 @@ private:
                                                  GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
   GOOM::CircularBuffer<float> m_audioBuffer{CIRCULAR_BUFFER_SIZE};
   auto InitAudioData(int32_t numChannels) noexcept -> void;
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   auto AddAudioDataToBuffer(std_spn::span<const float> audioData) noexcept -> void;
   auto MoveNextAudioSampleToProducer() noexcept -> void;
 

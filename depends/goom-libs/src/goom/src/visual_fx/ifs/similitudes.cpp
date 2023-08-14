@@ -4,9 +4,15 @@
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
+#include "ifs_types.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
 
 namespace GOOM::VISUAL_FX::IFS
 {
@@ -39,7 +45,7 @@ Similitudes::Similitudes(const IGoomRand& goomRand,
         }
     }
 {
-  assert(m_centreWeights.GetNumElements() == CENTRE_LIST.size());
+  Expects(m_centreWeights.GetNumElements() == CENTRE_LIST.size());
 
   Init();
   ResetCurrentIfsFunc();
@@ -70,7 +76,7 @@ inline auto Similitudes::ResetSimiGroups() -> void
   ResetSimiGroup(m_mainSimiGroup);
   for (auto i = 0U; i < NUM_EXTRA_SIMI_GROUPS; ++i)
   {
-    ResetSimiGroup(m_extraSimiGroups[i]);
+    ResetSimiGroup(m_extraSimiGroups.at(i));
   }
 }
 
@@ -122,6 +128,7 @@ inline auto Similitudes::UpdateMainSimiDblPart(const UValuesArray& uValues,
 
   for (auto j = 0U; j < NUM_EXTRA_SIMI_GROUPS; ++j)
   {
+    // NOLINTBEGIN(cppcoreguidelines-pro-bounds-constant-array-index)
     mainSimi.m_dbl_cx += uValues[j] * m_extraSimiGroups[j][extraSimiIndex].m_dbl_cx;
     mainSimi.m_dbl_cy += uValues[j] * m_extraSimiGroups[j][extraSimiIndex].m_dbl_cy;
 
@@ -130,6 +137,7 @@ inline auto Similitudes::UpdateMainSimiDblPart(const UValuesArray& uValues,
 
     mainSimi.m_dbl_A1 += uValues[j] * m_extraSimiGroups[j][extraSimiIndex].m_dbl_A1;
     mainSimi.m_dbl_A2 += uValues[j] * m_extraSimiGroups[j][extraSimiIndex].m_dbl_A2;
+    // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
   }
 }
 
@@ -188,7 +196,7 @@ auto Similitudes::IterateSimis() -> void
 auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
 {
 // NOLINTBEGIN(readability-identifier-naming)
-#if __cplusplus <= 201703L
+#if __cplusplus <= 201703L // NOLINT: Can't include header for this.
   static const auto c_factor             = 0.8F * Get_1_minus_exp_neg_S(4.0);
   static const auto r1_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(3.0);
   static const auto r2_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(2.0);

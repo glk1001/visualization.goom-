@@ -8,16 +8,22 @@
 #include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "line_types.h"
+#include "math20.h"
 #include "point2d.h"
 #include "sound_info.h"
 #include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
+#include "visual_fx/fx_utils/dot_drawer.h"
+#include "visual_fx/fx_utils/lines.h"
 
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::LINES
@@ -257,7 +263,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
   const auto lineColor = GetFinalLineColor(m_srceLineParams.color);
 
   m_audioRange = soundMinMax.maxVal - soundMinMax.minVal;
-  assert(m_audioRange >= 0.0F);
+  Ensures(m_audioRange >= 0.0F);
   m_minAudioValue = soundMinMax.minVal;
 
   if (m_audioRange < SMALL_FLOAT)
@@ -318,7 +324,7 @@ auto LineMorph::GetAudioPoints(const Pixel& lineColor,
   for (auto i = 0U; i < audioData.size(); ++i)
   {
     audioPoints.emplace_back(
-        GetNextPointData(m_srcePoints[i], GetMainColor(lineColor, t), randColor, audioData[i]));
+        GetNextPointData(m_srcePoints[i], GetMainColor(lineColor, t), randColor, audioData.at(i)));
 
     if (t >= HALFWAY_T)
     {
@@ -348,12 +354,12 @@ auto LineMorph::GetNextPointData(const LinePoint& linePoint,
   Expects(dataVal <= ((m_minAudioValue + m_audioRange) + SMALL_FLOAT));
 
   const auto tData = (dataVal - m_minAudioValue) / m_audioRange;
-  assert((0.0F <= tData) && (tData <= 1.0F));
+  Ensures((0.0F <= tData) && (tData <= 1.0F));
 
   const auto cosAngle          = std::cos(linePoint.angle);
   const auto sinAngle          = std::sin(linePoint.angle);
   const auto normalizedDataVal = m_maxNormalizedPeak * tData;
-  assert(normalizedDataVal >= 0.0F);
+  Ensures(normalizedDataVal >= 0.0F);
   // TODO(glk) - Is 'm_srceLineParams.amplitude' the right abstraction level?
   const auto nextPointData =
       Point2dInt{static_cast<int32_t>(linePoint.point.x +

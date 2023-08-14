@@ -1,4 +1,4 @@
-#undef NO_LOGGING
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "particles_fx.h"
 
@@ -9,10 +9,13 @@
 #include "draw/shape_drawers/circle_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
 #include "fx_helper.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_types.h"
 #include "particles/effects/attractor_effect.h"
 #include "particles/effects/effect.h"
+#include "point2d.h"
 #include "spimpl.h"
 #include "utils/graphics/camera.h"
 #include "utils/graphics/pixel_utils.h"
@@ -22,7 +25,12 @@
 #include "utils/t_values.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
+#include <cmath>
+#include <cstdint>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX
@@ -280,8 +288,9 @@ public:
 private:
   const FxHelper* m_fxHelper;
   //const SmallImageBitmaps* m_smallBitmaps;
-  PixelChannelType m_defaultAlpha = MAX_ALPHA / 20; //DEFAULT_VISUAL_FX_ALPHA;
-  uint64_t m_updateNum            = 0U;
+  static constexpr auto DEFAULT_PARTICLES_FX_ALPHA = MAX_ALPHA / 20U;
+  PixelChannelType m_defaultAlpha                  = DEFAULT_PARTICLES_FX_ALPHA;
+  uint64_t m_updateNum                             = 0U;
   auto UpdateCounter() noexcept -> void;
 
   static constexpr auto ADD_WEIGHT          = 100.0F;

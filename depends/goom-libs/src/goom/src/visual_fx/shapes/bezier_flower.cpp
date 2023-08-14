@@ -1,7 +1,14 @@
 #include "bezier_flower.h"
 
+#include "bezier/bezier.h"
 #include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
+#include "goom_config.h"
+#include "goom_graphic.h"
+#include "math/misc.h"
+#include "point2d.h"
+
+#include <cstdint>
 
 namespace GOOM::VISUAL_FX::SHAPES
 {
@@ -74,7 +81,7 @@ void PetalColoring::SetNumPetals(const uint32_t numPetals)
 
 inline void PetalColoring::StartColoringPetal(const uint32_t petalNum)
 {
-  assert(petalNum < m_numPetals);
+  Expects(petalNum < m_numPetals);
   m_currentPetalNum = petalNum;
 }
 

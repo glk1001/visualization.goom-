@@ -4,9 +4,6 @@
 #include "goom_config.h"
 #include "goom_types.h"
 
-#include <cstdint>
-#include <memory>
-
 namespace GOOM
 {
 

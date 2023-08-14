@@ -3,7 +3,6 @@
 #include "gl_render_types.h"
 
 #include <cstdint>
-#include <string>
 
 namespace GOOM::OPENGL
 {

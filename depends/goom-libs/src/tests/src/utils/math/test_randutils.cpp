@@ -1,13 +1,15 @@
 #include "utils/math/randutils.h"
 
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <limits>
 #include <tuple>
 #include <vector>
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
@@ -16,7 +18,7 @@
 #ifndef NDEBUG
 #include <catch2/matchers/catch_matchers_all.hpp>
 #endif
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 

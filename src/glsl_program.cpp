@@ -1,11 +1,20 @@
 #include "glsl_program.h"
 
-#include "gl_utils.h"
-
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <glm/ext/matrix_float3x3.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace GOOM::OPENGL
@@ -14,6 +23,7 @@ namespace GOOM::OPENGL
 namespace
 {
 
+// NOLINTNEXTLINE(cert-err58-cpp)
 const std::unordered_map<std::string, int32_t> EXTENSIONS = {
     {       ".vs",          GL_VERTEX_SHADER},
     {     ".vert",          GL_VERTEX_SHADER},
@@ -92,9 +102,9 @@ auto GlslProgram::CompileShader(const std::string_view& fileName) -> void
   CompileShader(fileName, static_cast<GLenum>(type));
 }
 
-auto GlslProgram::GetExtension(const std::string_view& name) -> std::string
+auto GlslProgram::GetExtension(const std::string_view& filename) -> std::string
 {
-  const auto nameStr = std::string{name};
+  const auto nameStr = std::string{filename};
 
   const auto dotLoc = nameStr.find_last_of('.');
   if (dotLoc != std::string::npos)
@@ -335,19 +345,19 @@ auto GlslProgram::SetUniform(const std::string_view& name,
 
 auto GlslProgram::SetUniform(const std::string_view& name, const glm::vec3& vec) -> void
 {
-  SetUniform(name, vec.x, vec.y, vec.z);
+  SetUniform(name, vec.x, vec.y, vec.z); // NOLINT: union hard to fix here
 }
 
 auto GlslProgram::SetUniform(const std::string_view& name, const glm::vec4& vec) -> void
 {
   const auto loc = GetUniformLocation(name);
-  glUniform4f(loc, vec.x, vec.y, vec.z, vec.w);
+  glUniform4f(loc, vec.x, vec.y, vec.z, vec.w); // NOLINT: union hard to fix here
 }
 
 auto GlslProgram::SetUniform(const std::string_view& name, const glm::vec2& vec) -> void
 {
   const auto loc = GetUniformLocation(name);
-  glUniform2f(loc, vec.x, vec.y);
+  glUniform2f(loc, vec.x, vec.y); // NOLINT: union hard to fix here
 }
 
 auto GlslProgram::SetUniform(const std::string_view& name, const glm::mat4& mat) -> void

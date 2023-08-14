@@ -1,9 +1,13 @@
 #include "random_pixel_blender.h"
 
+#include "color/color_utils.h"
 #include "goom_config.h"
+#include "goom_graphic.h"
 #include "utils/graphics/pixel_blend.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
+
+#include <cstdint>
 
 namespace GOOM::VISUAL_FX::FX_UTILS
 {

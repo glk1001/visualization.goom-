@@ -6,7 +6,6 @@
 #include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
-#include <vector>
 
 namespace GOOM
 {

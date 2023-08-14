@@ -3,6 +3,8 @@
 #include "draw/shape_drawers/text_drawer.h"
 #include "utils/parallel_utils.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 

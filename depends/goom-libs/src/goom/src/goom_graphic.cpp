@@ -1,6 +1,9 @@
 #include "goom_graphic.h"
 
 #include "goom_config.h"
+#include "goom_types.h"
+
+#include <cstddef>
 
 namespace GOOM
 {

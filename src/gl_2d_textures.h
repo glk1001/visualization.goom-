@@ -4,9 +4,11 @@
 #include "glsl_program.h"
 #include "goom/goom_utils.h"
 
+#include <array>
+#include <cstddef>
 #include <cstdint>
-#include <format>
-#include <span>
+#include <format> // NOLINT: Waiting to use C++20.
+#include <span> // NOLINT: Waiting to use C++20.
 
 namespace GOOM::OPENGL
 {

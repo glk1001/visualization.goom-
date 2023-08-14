@@ -1,10 +1,12 @@
 #include "parametric_functions2d.h"
 
 #include "goom_config.h"
+#include "goom_types.h"
 #include "misc.h"
 #include "point2d.h"
 
 #include <cmath>
+#include <cstdint>
 
 namespace GOOM::UTILS::MATH
 {

@@ -1,9 +1,16 @@
 #include "shape_paths.h"
 
 #include "color/color_maps.h"
+#include "draw/goom_draw.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
+#include "math20.h"
+#include "utils/math/paths.h"
 #include "utils/t_values.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <memory>
 
 namespace GOOM::VISUAL_FX::SHAPES
 {

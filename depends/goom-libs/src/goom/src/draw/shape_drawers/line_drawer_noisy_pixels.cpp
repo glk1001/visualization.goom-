@@ -2,10 +2,12 @@
 
 #include "line_drawer_noisy_pixels.h"
 
-#include "debugging_logger.h"
+#include "draw/goom_draw.h"
 #include "drawer_utils.h"
-#include "goom_config.h"
-#include "goom_logger.h"
+#include "math/goom_rand_base.h"
+#include "point2d.h"
+
+#include <cstddef>
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

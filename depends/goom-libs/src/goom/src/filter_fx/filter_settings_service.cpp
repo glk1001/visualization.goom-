@@ -1,17 +1,28 @@
 #include "filter_settings_service.h"
 
 #include "after_effects/after_effects_states.h"
+#include "after_effects/after_effects_types.h"
+#include "after_effects/the_effects/rotation.h"
 #include "filter_consts.h"
 #include "filter_effects/zoom_vector_effects.h"
 #include "filter_settings.h"
+#include "filter_speed.h"
 #include "goom_config.h"
 #include "goom_plugin_info.h"
+#include "math20.h"
+#include "normalized_coords.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
+#include <algorithm>
 #include <array>
-#include <stdexcept>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 namespace GOOM::FILTER_FX

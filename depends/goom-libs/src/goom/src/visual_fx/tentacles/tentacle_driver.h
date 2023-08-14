@@ -5,13 +5,16 @@
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "draw/goom_draw.h"
+#include "goom_graphic.h"
 #include "point2d.h"
+#include "tentacle2d.h"
 #include "tentacle3d.h"
 #include "tentacle_plotter.h"
 #include "utils/math/damping_functions.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>

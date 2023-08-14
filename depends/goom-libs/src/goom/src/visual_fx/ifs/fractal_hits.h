@@ -5,6 +5,7 @@
 #include "ifs_types.h"
 #include "similitudes.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

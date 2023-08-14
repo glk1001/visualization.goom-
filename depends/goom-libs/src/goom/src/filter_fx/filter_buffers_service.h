@@ -3,13 +3,15 @@
 #include "filter_buffer_striper.h"
 #include "filter_buffers.h"
 #include "filter_settings.h"
+#include "normalized_coords.h"
+#include "point2d.h"
 #include "utils/name_value_pairs.h"
 #include "zoom_vector.h"
 
-#include <cstdint>
 #include <memory>
-#include <span>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <string>
+#include <vector>
 
 namespace GOOM
 {

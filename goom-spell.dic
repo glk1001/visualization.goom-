@@ -12,6 +12,8 @@ BGRA
 calc
 cbegin
 cend
+cmaj
+cmin
 CODECVT
 coeff
 coeffs
@@ -85,5 +87,8 @@ utils
 vivid
 vivid's
 Wu
+Wmissing
+Wunknown
+Wunsafe
 Xiaolin
 xoshiro

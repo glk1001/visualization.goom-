@@ -5,8 +5,11 @@
 #include "draw/shape_drawers/text_drawer.h"
 #include "goom_logger.h"
 #include "point2d.h"
+#include "utils/math/misc.h"
 #include "utils/strutils.h"
 
+#include <bits/basic_string.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 

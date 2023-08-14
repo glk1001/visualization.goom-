@@ -2,7 +2,13 @@
 
 #include "color/color_utils.h"
 #include "goom_config.h"
+#include "goom_draw.h"
 #include "goom_types.h"
+#include "point2d.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 
 namespace GOOM::DRAW
 {
@@ -57,7 +63,7 @@ auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt& point,
   // NOTE: Just save the first pixel in 'colors'. May need to improve this.
   const auto newColor = GetBrighterColorInt(GetIntBuffIntensity(), colors.color1);
 
-  colorsList.colorsArray[colorsList.count] = newColor;
+  colorsList.colorsArray.at(colorsList.count) = newColor;
   ++colorsList.count;
   if (1 == colorsList.count)
   {

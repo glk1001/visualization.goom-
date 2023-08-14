@@ -6,14 +6,16 @@
 #include "utils/math/randutils.h"
 #include "utils/strutils.h"
 
+#include <cstdint>
 #include <filesystem>
+#include <string>
+#include <vector>
 
 namespace GOOM
 {
 
 using UTILS::GetFileLinesWithExpandedIncludes;
 using UTILS::PutFileLines;
-using UTILS::StringJoin;
 
 auto GetRandSeed() noexcept -> uint64_t
 {

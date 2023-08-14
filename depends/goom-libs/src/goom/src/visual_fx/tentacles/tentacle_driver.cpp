@@ -2,17 +2,23 @@
 
 #include "tentacle_driver.h"
 
+#include "../goom_visual_fx.h"
+#include "circles_tentacle_layout.h"
 #include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "goom_graphic.h"
+#include "point2d.h"
+#include "tentacle2d.h"
 #include "tentacle3d.h"
-#include "utils/debugging_logger.h"
+#include "utils/math/damping_functions.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>

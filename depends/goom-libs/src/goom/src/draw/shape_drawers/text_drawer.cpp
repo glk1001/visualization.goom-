@@ -28,7 +28,7 @@
 #include "utils/parallel_utils.h"
 
 #include <codecvt>
-#include <format>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <fstream>
 #include <ft2build.h>
 #include <locale>

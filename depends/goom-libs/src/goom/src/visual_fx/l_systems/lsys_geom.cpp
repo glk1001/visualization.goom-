@@ -2,7 +2,15 @@
 
 //#undef NO_LOGGING
 
-#include "goom_logger.h"
+#include "goom_config.h"
+#include "point2d.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
+#include "utils/t_values.h"
+
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

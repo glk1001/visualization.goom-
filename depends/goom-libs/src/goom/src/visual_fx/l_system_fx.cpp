@@ -1,13 +1,14 @@
 //#undef NO_LOGGING
 
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
-
 #include "l_system_fx.h"
 
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
+#include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "goom_visual_fx.h"
 #include "l_systems/l_system.h"
 #include "point2d.h"
 #include "spimpl.h"
@@ -16,6 +17,8 @@
 #include "utils/timer.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <lsys/rand.h>
 #include <memory>
 #include <string>

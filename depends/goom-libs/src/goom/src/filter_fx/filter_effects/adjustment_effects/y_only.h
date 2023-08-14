@@ -4,7 +4,6 @@
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "point2d.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 

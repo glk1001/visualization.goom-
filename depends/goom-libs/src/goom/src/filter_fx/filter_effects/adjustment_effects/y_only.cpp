@@ -1,9 +1,14 @@
 #include "y_only.h"
 
 #include "filter_fx/common_types.h"
+#include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
 #include "utils/enum_utils.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
+
+#include <cmath>
+#include <cstdint>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

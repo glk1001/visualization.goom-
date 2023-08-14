@@ -1,6 +1,11 @@
 #include "dot_diameters.h"
 
 #include "goom_config.h"
+#include "utils/math/goom_rand_base.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

@@ -2,19 +2,25 @@
 
 #include "shapes.h"
 
-#include "color/color_adjustment.h"
 #include "color/random_color_maps.h"
+#include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "goom_graphic.h"
 #include "goom_plugin_info.h"
+#include "goom_types.h"
+#include "math20.h"
 #include "point2d.h"
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
 
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <vector>
+
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-using COLOR::ColorAdjustment;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;

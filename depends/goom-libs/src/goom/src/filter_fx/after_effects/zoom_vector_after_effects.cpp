@@ -1,5 +1,8 @@
 #include "zoom_vector_after_effects.h"
 
+#include "after_effects.h"
+#include "after_effects_states.h"
+#include "after_effects_types.h"
 #include "filter_fx/after_effects/the_effects/hypercos.h"
 #include "filter_fx/after_effects/the_effects/image_velocity.h"
 #include "filter_fx/after_effects/the_effects/noise.h"
@@ -9,7 +12,11 @@
 #include "filter_fx/after_effects/the_effects/xy_lerp_effect.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
+#include "point2d.h"
 #include "utils/name_value_pairs.h"
+
+#include <cstdint>
+#include <utility>
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

@@ -5,9 +5,11 @@
 #include "goom_graphic.h"
 #include "utils/enum_utils.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <magic_enum.hpp>
 #include <memory>
-#include <utility>
+#include <vector>
 
 #ifndef NO_MAGIC_ENUM_AVAILABLE
 template<>

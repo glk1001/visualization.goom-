@@ -1,7 +1,13 @@
 #include "image_displacement_list.h"
 
 #include "goom_config.h"
+#include "point2d.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
+
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

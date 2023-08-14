@@ -4,18 +4,21 @@
 
 #include <algorithm>
 #include <array>
-#include <span>
+#include <cstddef>
+#include <span> // NOLINT: Waiting to use C++20.
 
 namespace GOOM
 {
 
 AudioSamples::AudioSamples(const size_t numSampleChannels,
+                           // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
                            const std_spn::span<const float> rawAudioData)
   : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(rawAudioData)}
 {
   Expects((0 < numSampleChannels) && (numSampleChannels <= NUM_AUDIO_SAMPLES));
 }
 
+// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
 auto AudioSamples::GetSampleArrays(const std_spn::span<const float> rawAudioData)
     -> std::array<SampleArray, NUM_AUDIO_SAMPLES>
 {

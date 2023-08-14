@@ -7,6 +7,9 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
+#include <cstdint>
+#include <vector>
+
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 

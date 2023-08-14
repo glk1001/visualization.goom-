@@ -6,7 +6,9 @@
 #include "point2d.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 namespace GOOM::DRAW
@@ -71,7 +73,7 @@ inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt& point) cons
   {
     return BLACK_PIXEL;
   }
-  return colorsList.colorsArray[static_cast<size_t>(colorsList.count - 1)];
+  return colorsList.colorsArray.at(static_cast<size_t>(colorsList.count - 1));
 }
 
 inline auto GoomDrawToContainer::GetLastDrawnColors(const Point2dInt& point) const noexcept

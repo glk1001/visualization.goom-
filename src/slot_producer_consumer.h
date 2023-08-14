@@ -7,7 +7,9 @@
 
 #include <chrono>
 #include <condition_variable>
-#include <format>
+#include <cstddef>
+#include <cstdint>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <functional>
 #include <mutex>
 #include <queue>
@@ -200,7 +202,7 @@ inline auto SlotProducerConsumer<TResource>::SetConsumeItemFunc(
   m_consumeItem = consumeItemFunc;
 }
 
-// TODO - USE MOVE???
+// TODO(glk) - USE MOVE???
 template<typename TResource>
 auto SlotProducerConsumer<TResource>::AddResource(const TResource& resource) noexcept -> bool
 {

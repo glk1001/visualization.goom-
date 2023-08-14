@@ -1,7 +1,11 @@
 #include "color_multiplier_lerper.h"
 
 #include "goom_config.h"
-#include "utils/math/misc.h"
+#include "goom_plugin_info.h"
+#include "math20.h"
+#include "utils/math/goom_rand_base.h"
+
+#include <cmath>
 
 namespace GOOM::VISUAL_FX::SHADERS
 {

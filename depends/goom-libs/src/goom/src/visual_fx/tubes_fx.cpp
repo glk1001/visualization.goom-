@@ -14,13 +14,16 @@
 #include "fx_helper.h"
 #include "goom_config.h"
 #include "goom_graphic.h"
-#include "goom_logger.h"
 #include "goom_plugin_info.h"
+#include "goom_visual_fx.h"
+#include "math20.h"
 #include "point2d.h"
 #include "spimpl.h"
+#include "tubes/tube_data.h"
 #include "tubes/tubes.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
+#include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
@@ -29,6 +32,8 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 

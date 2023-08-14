@@ -8,7 +8,6 @@
 #include "goom_types.h"
 #include "utils/math/goom_rand_base.h"
 
-#include <memory>
 #include <set>
 #include <string>
 

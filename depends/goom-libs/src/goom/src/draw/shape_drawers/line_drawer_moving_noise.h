@@ -2,14 +2,13 @@
 
 #include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "goom_graphic.h"
 #include "goom_types.h"
 #include "line_drawer_noisy_pixels.h"
 #include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
-#include <memory>
+#include <cstdint>
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

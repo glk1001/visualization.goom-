@@ -4,7 +4,9 @@
 #include "point2d.h"
 #include "utils/math/misc.h"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 
 namespace GOOM::UTILS::GRAPHICS
 {
@@ -79,8 +81,10 @@ inline auto Camera::GetScreenPosition(const glm::vec4& worldPosition) const noex
 {
   const auto mvpPos = m_modelViewProjection * worldPosition;
 
+  // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access): union hard to fix here
   return m_screenPositionOffset + ToVec2dInt(Vec2dFlt{m_halfScreenWidth * (1.0F + mvpPos.x),
                                                       m_halfScreenHeight * (1.0F - mvpPos.y)});
+  // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

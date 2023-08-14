@@ -4,12 +4,16 @@
 
 #include "draw/goom_draw.h"
 #include "goom_config.h"
-#include "goom_logger.h"
+#include "goom_types.h"
 #include "point2d.h"
-#include "utils/debugging_logger.h"
+#include "tentacle3d.h"
 #include "utils/graphics/line_clipper.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {

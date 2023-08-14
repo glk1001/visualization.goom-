@@ -24,8 +24,9 @@ fi
 
 if [[ "${1:-}" != "" ]]; then
   declare -r CUSTOM_SRCE=$1
-  "${RUN_CLANG_TIDY}" -j 6 -header-filter='^((?!catch2).)*$' -extra-arg=-Wno-unknown-warning-option \
-                      -p "${BUILD_DIRNAME}" "${CUSTOM_SRCE}" |& tee "${CLANG_TIDY_LOG}"
+  "${RUN_CLANG_TIDY}" -j $(getconf _NPROCESSORS_ONLN) -header-filter='^((?!catch2).)*$' \
+                      -extra-arg=-Wno-unknown-warning-option -p "${BUILD_DIRNAME}" \
+					  "${CUSTOM_SRCE}" |& tee "${CLANG_TIDY_LOG}"
   exit $?
 fi
 

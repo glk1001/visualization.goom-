@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "utils/math/misc.h"
 
+#include <algorithm>
 #include <cstdint>
 
 namespace GOOM::UTILS::GRAPHICS

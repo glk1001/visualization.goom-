@@ -2,17 +2,20 @@
 #include "utils/math/goom_rand.h"
 
 #include <array>
-#include <format>
+#include <cstddef>
+#include <cstdint>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <map>
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 #include <catch2/catch_approx.hpp>
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 
@@ -99,6 +102,7 @@ TEST_CASE("Weighted Events")
       const auto countFraction = fEventCount / DBL_NUM_LOOPS;
       const auto eventFraction = fEventWeight / sumOfWeights;
 
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       UNSCOPED_INFO(std_fmt::format(
           "i = {}, countFraction = {}, eventFraction = {}", i, countFraction, eventFraction));
       static constexpr auto CLOSE_ENOUGH = 0.005;
@@ -132,23 +136,29 @@ TEST_CASE("Weighted Events")
       const auto conditionalCountFraction = fConditionalEventCount / DBL_NUM_LOOPS;
 
       UNSCOPED_INFO(
+          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
           std_fmt::format("i:{}, fConditionalEventCount = {}", i, fConditionalEventCount));
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       UNSCOPED_INFO(std_fmt::format("i:{}, NUM_LOOPS = {}", i, NUM_LOOPS));
       UNSCOPED_INFO(
+          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
           std_fmt::format("i:{}, conditionalCountFraction = {}", i, conditionalCountFraction));
 
       const auto fConditionalEventWeight = static_cast<double>(
           conditionalWeightedEvents.GetWeight({PREVIOUS_EVENT, static_cast<Events>(i)}));
       const auto conditionalEventFraction = fConditionalEventWeight / conditionalSumOfWeights;
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       UNSCOPED_INFO(std_fmt::format("i:{}, fConditionalEventWeight({}) = {}",
                                     i,
                                     EnumToString(PREVIOUS_EVENT),
                                     fConditionalEventWeight));
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       UNSCOPED_INFO(std_fmt::format("i:{}, conditionalSumOfWeights({}) = {}",
                                     i,
                                     EnumToString(PREVIOUS_EVENT),
                                     conditionalSumOfWeights));
       UNSCOPED_INFO(
+          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
           std_fmt::format("i:{}, conditionalEventFraction = {}", i, conditionalEventFraction));
 
       static constexpr auto CLOSE_ENOUGH = 0.005;

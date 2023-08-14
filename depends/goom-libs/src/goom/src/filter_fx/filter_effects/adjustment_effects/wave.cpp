@@ -1,7 +1,13 @@
 #include "wave.h"
 
+#include "filter_fx/normalized_coords.h"
 #include "goom_config.h"
+#include "math20.h"
+#include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
+
+#include <cmath>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

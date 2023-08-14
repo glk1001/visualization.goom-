@@ -4,10 +4,10 @@
 #include "goom_types.h"
 #include "spimpl.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace GOOM
 {

@@ -2,10 +2,10 @@
 
 #include "color/random_color_maps.h"
 #include "goom/frame_data.h"
+#include "goom_graphic.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
