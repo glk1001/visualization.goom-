@@ -41,6 +41,8 @@ public:
   };
   explicit OnOffTimer(const TimerCounts& timerCounts) noexcept;
 
+  auto Reset() noexcept -> void;
+
   using Action = std::function<bool()>; // return true if action succeeded.
   struct OnAndOffActions
   {
@@ -130,6 +132,15 @@ inline auto Timer::Increment() noexcept -> void
 
 inline OnOffTimer::OnOffTimer(const TimerCounts& timerCounts) noexcept : m_timerCounts{timerCounts}
 {
+}
+
+inline auto OnOffTimer::Reset() noexcept -> void
+{
+  m_onTimer.ResetToZero();
+  m_offTimer.ResetToZero();
+  m_onTimer.SetToFinished();
+  m_offTimer.SetToFinished();
+  m_timerState = TimerState::NO_TIMERS_ACTIVE;
 }
 
 inline auto OnOffTimer::SetActions(const OnAndOffActions& onAndOffActions) noexcept -> void
