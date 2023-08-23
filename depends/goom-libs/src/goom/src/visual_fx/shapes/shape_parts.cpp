@@ -434,6 +434,7 @@ inline auto ShapePart::DoMegaColorChange() noexcept -> void
 
 inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 {
+  m_megaColorChangeOnOffTimer.Reset();
   m_megaColorChangeOnOffTimer.SetActions(
       {[this]() { return SetMegaColorChangeOn(); }, [this]() { return SetMegaColorChangeOff(); }});
   m_megaColorChangeOnOffTimer.StartOffTimer();
