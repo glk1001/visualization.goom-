@@ -1,7 +1,7 @@
 name: Build kodi goom-pp using 'cmake'
 on:
   push:
-    branches: []
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -60,20 +60,6 @@ jobs:
             os: 'ubuntu-latest',
             cc: 'gcc-${{ vars.GCC_VER }}',
             cxx: 'g++-${{ vars.GCC_VER }}',
-            build_type: 'Release',
-          }
-        - {
-            name: 'MacOS Latest Clang - Release',
-            os: 'macos-latest',
-            cc: 'clang',
-            cxx: 'clang++',
-            build_type: 'Release',
-          }
-        - {
-            name: 'Windows Latest MSVC - Release',
-            os: 'windows-latest',
-            cc: 'cl',
-            cxx: 'cl',
             build_type: 'Release',
           }
 
