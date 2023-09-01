@@ -1,202 +1,129 @@
 #pragma once
 
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "normalized_coords.h"
+#include "utils/parallel_utils.h"
 
-#include <cstdint>
-#include <memory>
+#include <algorithm>
+#include <condition_variable>
+#include <functional>
+#include <mutex>
 #include <span> // NOLINT: Waiting to use C++20.
 #include <vector>
+
+namespace GOOM
+{
+class PluginInfo;
+}
 
 namespace GOOM::FILTER_FX
 {
 
-template<class FilterStriper>
 class ZoomFilterBuffers
 {
 public:
-  enum class TransformBufferState
+  enum class UpdateStatus : UnderlyingEnumType
   {
-    START_FRESH_TRANSFORM_BUFFER,
-    RESET_TRANSFORM_BUFFER,
-    TRANSFORM_BUFFER_READY,
+    AT_START,
+    IN_PROGRESS,
+    AT_END,
+    HAS_BEEN_COPIED,
   };
 
-  explicit ZoomFilterBuffers(std::unique_ptr<FilterStriper> filterStriper) noexcept;
+  using ZoomPointFunc =
+      std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords,
+                                     const NormalizedCoords& normalizedFilterViewportCoords)>;
+
+  ZoomFilterBuffers(const PluginInfo& goomInfo,
+                    const NormalizedCoordsConverter& normalizedCoordsConverter,
+                    const ZoomPointFunc& getZoomPointFunc) noexcept;
+
+  auto SetTransformBufferMidpoint(const Point2dInt& midpoint) noexcept -> void;
+  auto SetFilterViewport(const Viewport& viewport) noexcept -> void;
 
   auto Start() noexcept -> void;
+  auto Finish() noexcept -> void;
 
-  auto SetTransformBufferMidpoint(const Point2dInt& val) noexcept -> void;
-  auto SetFilterViewport(const Viewport& val) noexcept -> void;
+  auto TransformBufferThread() noexcept -> void;
 
-  auto NotifyFilterSettingsHaveChanged() noexcept -> void;
+  [[nodiscard]] auto GetUpdateStatus() const noexcept -> UpdateStatus;
+  auto ResetTransformBufferToStart() noexcept -> void;
+  auto StartTransformBufferUpdates() noexcept -> void;
 
-  [[nodiscard]] auto IsTransformBufferReady() const noexcept -> bool;
   [[nodiscard]] auto GetPreviousTransformBuffer() const noexcept -> const std::vector<Point2dFlt>&;
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   auto CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept -> void;
-  auto RestartTransformBuffer() noexcept -> void;
-
-  auto UpdateTransformBuffer() noexcept -> void;
-  [[nodiscard]] auto GetTransformBufferState() const noexcept -> TransformBufferState;
 
 protected:
   // For testing only.
-  [[nodiscard]] auto GetTransformBufferBuffMidpoint() const noexcept -> Point2dInt;
-  [[nodiscard]] auto GetTransformBufferYLineStart() const noexcept -> uint32_t;
-  [[nodiscard]] auto HaveFilterSettingsChanged() const noexcept -> bool;
+  [[nodiscard]] auto GetTransformBufferMidpoint() const noexcept -> Point2dInt;
+  auto UpdateTransformBuffer() noexcept -> void;
 
 private:
-  std::unique_ptr<FilterStriper> m_filterStriper;
+  Dimensions m_dimensions;
+  const NormalizedCoordsConverter* m_normalizedCoordsConverter;
+  UpdateStatus m_updateStatus = UpdateStatus::AT_START;
 
-  bool m_filterSettingsHaveChanged            = false;
-  TransformBufferState m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
+  bool m_shutdown = false;
+  std::mutex m_mutex{};
+  std::condition_variable m_bufferProducer_cv{};
 
-  auto InitTransformBuffer() noexcept -> void;
-  auto StartFreshTranBuffer() noexcept -> void;
-  auto ResetTransformBuffer() noexcept -> void;
-  auto UpdateNextTransformBufferStripe() noexcept -> void;
+  UTILS::Parallel m_parallel{UTILS::GetNumAvailablePoolThreads()};
+  ZoomPointFunc m_getZoomPoint;
+  Point2dInt m_midpoint                 = {0, 0};
+  NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
+  Viewport m_filterViewport             = Viewport{};
+
+  std::vector<Point2dFlt> m_transformBuffer;
+  std::vector<Point2dFlt> m_previousTransformBuffer;
+
+  auto DoNextTransformBuffer() noexcept -> void;
 };
 
-template<class FilterStriper>
-ZoomFilterBuffers<FilterStriper>::ZoomFilterBuffers(
-    std::unique_ptr<FilterStriper> filterStriper) noexcept
-  : m_filterStriper{std::move(filterStriper)}
+inline auto ZoomFilterBuffers::GetUpdateStatus() const noexcept -> UpdateStatus
 {
+  return m_updateStatus;
 }
 
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::IsTransformBufferReady() const noexcept -> bool
+inline auto ZoomFilterBuffers::GetTransformBufferMidpoint() const noexcept -> Point2dInt
 {
-  return m_filterStriper->IsTransformBufferReady();
+  return m_midpoint;
 }
 
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::CopyTransformBuffer(
-    std_spn::span<Point2dFlt> destBuff) noexcept -> void
-{
-  m_filterStriper->CopyTransformBuffer(destBuff);
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::RestartTransformBuffer() noexcept -> void
-{
-  m_filterStriper->RestartTransformBuffer();
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferBuffMidpoint() const noexcept
-    -> Point2dInt
-{
-  return m_filterStriper->GetTransformBufferMidpoint();
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::SetTransformBufferMidpoint(
-    const Point2dInt& val) noexcept -> void
-{
-  m_filterStriper->SetTransformBufferMidpoint(val);
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::SetFilterViewport(const Viewport& val) noexcept
+inline auto ZoomFilterBuffers::SetTransformBufferMidpoint(const Point2dInt& midpoint) noexcept
     -> void
 {
-  m_filterStriper->SetFilterViewport(val);
+  Expects(UpdateStatus::AT_START == m_updateStatus);
+
+  m_midpoint           = midpoint;
+  m_normalizedMidpoint = m_normalizedCoordsConverter->OtherToNormalizedCoords(m_midpoint);
 }
 
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferState() const noexcept
-    -> TransformBufferState
+inline auto ZoomFilterBuffers::SetFilterViewport(const Viewport& viewport) noexcept -> void
 {
-  return m_transformBufferState;
+  Expects(UpdateStatus::AT_START == m_updateStatus);
+
+  m_filterViewport = viewport;
 }
 
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::HaveFilterSettingsChanged() const noexcept -> bool
-{
-  return m_filterSettingsHaveChanged;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::NotifyFilterSettingsHaveChanged() noexcept -> void
-{
-  m_filterSettingsHaveChanged = true;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetTransformBufferYLineStart() const noexcept
-    -> uint32_t
-{
-  return m_filterStriper->GetTransformBufferYLineStart();
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::Start() noexcept -> void
-{
-  InitTransformBuffer();
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::InitTransformBuffer() noexcept -> void
-{
-  m_filterStriper->FillTransformBuffer();
-  m_filterStriper->ResetStripes();
-  m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::UpdateTransformBuffer() noexcept -> void
-{
-  if (m_transformBufferState == TransformBufferState::RESET_TRANSFORM_BUFFER)
-  {
-    ResetTransformBuffer();
-  }
-  else if (m_transformBufferState == TransformBufferState::START_FRESH_TRANSFORM_BUFFER)
-  {
-    StartFreshTranBuffer();
-  }
-  else
-  {
-    UpdateNextTransformBufferStripe();
-  }
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::StartFreshTranBuffer() noexcept -> void
-{
-  if (not m_filterSettingsHaveChanged)
-  {
-    return;
-  }
-
-  m_filterSettingsHaveChanged = false;
-  m_filterStriper->ResetStripes();
-  m_filterStriper->ResetTransformBufferIsReadyFlag();
-  m_transformBufferState = TransformBufferState::TRANSFORM_BUFFER_READY;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::ResetTransformBuffer() noexcept -> void
-{
-  m_filterStriper->ResetStripes();
-  m_transformBufferState = TransformBufferState::START_FRESH_TRANSFORM_BUFFER;
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::UpdateNextTransformBufferStripe() noexcept -> void
-{
-  m_filterStriper->UpdateNextStripe();
-  if (0 == m_filterStriper->GetTransformBufferYLineStart())
-  {
-    m_transformBufferState = TransformBufferState::RESET_TRANSFORM_BUFFER;
-  }
-}
-
-template<class FilterStriper>
-inline auto ZoomFilterBuffers<FilterStriper>::GetPreviousTransformBuffer() const noexcept
+inline auto ZoomFilterBuffers::GetPreviousTransformBuffer() const noexcept
     -> const std::vector<Point2dFlt>&
 {
-  return m_filterStriper->GetPreviousTransformBuffer();
+  Expects(UpdateStatus::AT_END == m_updateStatus);
+
+  return m_previousTransformBuffer;
+}
+
+// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+inline auto ZoomFilterBuffers::CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept
+    -> void
+{
+  Expects(UpdateStatus::AT_END == m_updateStatus);
+
+  std::copy(m_transformBuffer.cbegin(), m_transformBuffer.cend(), destBuff.begin());
+  m_updateStatus = UpdateStatus::HAS_BEEN_COPIED;
 }
 
 } // namespace GOOM::FILTER_FX

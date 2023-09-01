@@ -314,8 +314,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
     m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
     m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
-    m_filterBuffersService{m_parallel,
-                           m_goomInfo,
+    m_filterBuffersService{m_goomInfo,
                            m_normalizedCoordsConverter,
                            std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
                                                               resourcesDirectory,
@@ -357,7 +356,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameData() -> void
   m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
   m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 
-  if (not m_filterBuffersService.IsTransformBufferReady())
+  if (not m_filterBuffersService.IsTransformBufferReadyToCopy())
   {
     m_frameData->filterPosArrays.filterSrcePosNeedsUpdating = false;
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating = false;
@@ -392,7 +391,6 @@ auto GoomControl::GoomControlImpl::UpdateFrameDataFilterSrcePosBuffer() const no
 auto GoomControl::GoomControlImpl::UpdateFrameDataFilterDestPosBuffer() noexcept -> void
 {
   m_filterBuffersService.CopyTransformBuffer(m_frameData->filterPosArrays.filterDestPos);
-  m_filterBuffersService.RestartTransformBuffer();
 
   m_frameData->filterPosArrays.filterDestPosNeedsUpdating = true;
 }
@@ -469,6 +467,7 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
 #endif
 
   m_visualFx.Finish();
+  m_filterBuffersService.Finish();
 
   m_goomLogger->StopGoomControl();
 }
