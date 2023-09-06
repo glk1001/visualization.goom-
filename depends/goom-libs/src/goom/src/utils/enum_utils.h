@@ -123,13 +123,13 @@ constexpr auto EnumMap<E, T>::keys() -> std::array<E, NUM<E>>
 template<typename E, typename T>
 constexpr auto EnumMap<E, T>::operator[](const E key) const noexcept -> const T&
 {
-  return m_keyValues.at(static_cast<uint32_t>(key));
+  return m_keyValues.at(static_cast<size_t>(key));
 }
 
 template<typename E, typename T>
 constexpr auto EnumMap<E, T>::operator[](const E key) noexcept -> T&
 {
-  return m_keyValues.at(static_cast<uint32_t>(key));
+  return m_keyValues.at(static_cast<size_t>(key));
 }
 
 template<typename E, typename T>
@@ -145,7 +145,7 @@ constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> st
   auto sortedValuesArray = std::array<T, NUM<E>>{};
   for (auto& keyValue : std::forward<V>(keyValues))
   {
-    sortedValuesArray.at(static_cast<uint32_t>(keyValue.key)) = std::move(keyValue.value);
+    sortedValuesArray.at(static_cast<size_t>(keyValue.key)) = std::move(keyValue.value);
   }
   return sortedValuesArray;
 }
@@ -185,13 +185,13 @@ inline RuntimeEnumMap<E, T>::RuntimeEnumMap(std::vector<T>&& keyValues) noexcept
 template<typename E, typename T>
 inline auto RuntimeEnumMap<E, T>::operator[](const E key) const noexcept -> const T&
 {
-  return m_keyValues.at(static_cast<uint32_t>(key));
+  return m_keyValues.at(static_cast<size_t>(key));
 }
 
 template<typename E, typename T>
 inline auto RuntimeEnumMap<E, T>::operator[](const E key) noexcept -> T&
 {
-  return m_keyValues.at(static_cast<uint32_t>(key));
+  return m_keyValues.at(static_cast<size_t>(key));
 }
 
 template<typename E, typename T>
@@ -210,7 +210,7 @@ inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(const V& keyValues) noexc
   auto keysArray = std::vector<uint32_t>(NUM<E>);
   for (auto i = 0U; i < NUM<E>; ++i)
   {
-    keysArray.at(static_cast<uint32_t>(keyValues.at(i).key)) = i;
+    keysArray.at(static_cast<size_t>(keyValues.at(i).key)) = i;
   }
 
   auto sortedValuesArray = std::vector<T>{};

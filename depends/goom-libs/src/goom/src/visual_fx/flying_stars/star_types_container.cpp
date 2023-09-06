@@ -15,6 +15,7 @@
 #include "utils/math/misc.h"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -170,7 +171,7 @@ StarTypesContainer::~StarTypesContainer() noexcept = default;
 
 auto StarTypesContainer::GetRandomStarType() noexcept -> IStarType&
 {
-  return *m_starTypesList.at(static_cast<uint32_t>(m_weightedStarTypes.GetRandomWeighted())).get();
+  return *m_starTypesList.at(static_cast<size_t>(m_weightedStarTypes.GetRandomWeighted())).get();
 }
 
 auto StarTypesContainer::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
