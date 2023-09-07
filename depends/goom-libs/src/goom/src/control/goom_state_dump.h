@@ -5,8 +5,8 @@
 #ifdef DO_GOOM_STATE_DUMP
 
 #include "filter_fx/filter_settings_service.h"
+#include "goom/goom_config.h"
 #include "goom_all_visual_fx.h"
-#include "goom_config.h"
 #include "goom_music_settings_reactor.h"
 #include "utils/stopwatch.h"
 

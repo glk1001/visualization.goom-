@@ -1,8 +1,8 @@
 #include "line_drawer_moving_noise.h"
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 

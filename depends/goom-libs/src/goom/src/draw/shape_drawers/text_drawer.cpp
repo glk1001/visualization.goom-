@@ -16,11 +16,11 @@
 //#define NO_FREETYPE_INSTALLED
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
-#include "goom_logger.h"
-#include "goom_utils.h"
-#include "spimpl.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_logger.h"
+#include "goom/goom_utils.h"
+#include "goom/spimpl.h"
 #include "utils/graphics/pixel_blend.h"
 #include "utils/math/misc.h"
 

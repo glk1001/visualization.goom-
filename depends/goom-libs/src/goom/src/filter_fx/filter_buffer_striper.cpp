@@ -1,9 +1,9 @@
 #include "filter_buffer_striper.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "point2d.h"
 #include "utils/parallel_utils.h"
 
 #include <algorithm>

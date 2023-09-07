@@ -1,6 +1,6 @@
 #include "gl_utils.h"
 
-#include "goom_utils.h"
+#include "goom/goom_utils.h"
 
 #include <format> // NOLINT: Waiting to use C++20.
 #include <string>

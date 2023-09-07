@@ -20,7 +20,7 @@
 #include "filter_fx/filter_speed.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 

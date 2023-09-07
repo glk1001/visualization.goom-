@@ -1,7 +1,7 @@
 #include "tentacle2d.h"
 
-#include "goom_config.h"
-#include "math20.h"
+#include "goom/goom_config.h"
+#include "goom/math20.h"
 #include "utils/math/damping_functions.h"
 #include "utils/math/misc.h"
 

@@ -1,4 +1,4 @@
-#include "goom_logger.h"
+#include "goom/goom_logger.h"
 
 // *** Put the header guard here to disable CLion's
 // *** 'unused include directive' inspection.

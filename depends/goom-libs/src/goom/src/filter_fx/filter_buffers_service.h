@@ -3,8 +3,8 @@
 #include "filter_buffer_striper.h"
 #include "filter_buffers.h"
 #include "filter_settings.h"
+#include "goom/point2d.h"
 #include "normalized_coords.h"
-#include "point2d.h"
 #include "utils/name_value_pairs.h"
 #include "zoom_vector.h"
 

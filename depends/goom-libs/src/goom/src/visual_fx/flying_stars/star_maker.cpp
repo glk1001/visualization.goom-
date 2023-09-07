@@ -1,7 +1,7 @@
 #include "star_maker.h"
 
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "star_colors_maker.h"
 #include "star_types_base.h"
 #include "stars.h"

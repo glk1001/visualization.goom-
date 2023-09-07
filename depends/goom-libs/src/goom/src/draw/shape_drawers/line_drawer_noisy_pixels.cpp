@@ -4,8 +4,8 @@
 
 #include "draw/goom_draw.h"
 #include "drawer_utils.h"
+#include "goom/point2d.h"
 #include "math/goom_rand_base.h"
-#include "point2d.h"
 
 #include <cstddef>
 

@@ -4,8 +4,8 @@
 
 #include "debugging_logger.h"
 
-#include "goom_config.h"
-#include "goom_logger.h"
+#include "goom/goom_config.h"
+#include "goom/goom_logger.h"
 
 namespace GOOM::UTILS
 {

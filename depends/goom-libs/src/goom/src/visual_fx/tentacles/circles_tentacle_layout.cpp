@@ -1,6 +1,6 @@
 #include "circles_tentacle_layout.h"
 
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "utils/math/misc.h"
 
 #include <cmath>

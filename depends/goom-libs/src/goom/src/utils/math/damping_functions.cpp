@@ -1,6 +1,6 @@
 #include "damping_functions.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "misc.h"
 
 #include <cmath>

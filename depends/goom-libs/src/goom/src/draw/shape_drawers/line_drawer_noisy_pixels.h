@@ -1,9 +1,9 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "line_drawer.h"
-#include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <array>

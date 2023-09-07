@@ -1,9 +1,9 @@
 #include "parametric_functions2d.h"
 
-#include "goom_config.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "misc.h"
-#include "point2d.h"
 
 #include <cmath>
 #include <cstdint>

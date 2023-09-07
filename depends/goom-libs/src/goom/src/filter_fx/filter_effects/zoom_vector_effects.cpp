@@ -4,7 +4,7 @@
 #include "filter_fx/after_effects/zoom_vector_after_effects.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "utils/name_value_pairs.h"
 
 #include <cmath>

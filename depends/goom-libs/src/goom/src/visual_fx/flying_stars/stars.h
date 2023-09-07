@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "star_colors.h"
 
 namespace GOOM::VISUAL_FX::FLYING_STARS

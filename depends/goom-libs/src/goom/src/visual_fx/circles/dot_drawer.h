@@ -6,9 +6,9 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/circle_drawer.h"
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
 #include "helper.h"
-#include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 

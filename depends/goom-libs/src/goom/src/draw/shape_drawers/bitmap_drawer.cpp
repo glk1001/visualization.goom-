@@ -1,8 +1,8 @@
 #include "bitmap_drawer.h"
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 
 #include <cstdint>

@@ -2,7 +2,7 @@
 
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "utils/graphics/small_image_bitmaps.h"
 
 #include <cstdint>

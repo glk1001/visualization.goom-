@@ -2,8 +2,8 @@
 
 #include "draw/goom_draw.h"
 #include "drawer_utils.h"
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 
 #include <cstdint>
 

@@ -3,10 +3,10 @@
 #include "bezier/bezier.h"
 #include "color/color_maps_base.h"
 #include "color/random_color_maps.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
 #include "math/misc.h"
-#include "point2d.h"
 
 #include <cstdint>
 

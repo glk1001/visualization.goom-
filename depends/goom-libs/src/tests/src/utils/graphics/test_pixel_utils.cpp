@@ -1,4 +1,4 @@
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
 
 #include <cstdint>

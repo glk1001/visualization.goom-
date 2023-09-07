@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
 
 #include <format> // NOLINT: Waiting to use C++20.
 #include <string>

@@ -3,8 +3,8 @@
 #include "drawable_text.h"
 
 #include "draw/shape_drawers/text_drawer.h"
-#include "goom_logger.h"
-#include "point2d.h"
+#include "goom/goom_logger.h"
+#include "goom/point2d.h"
 #include "utils/math/misc.h"
 #include "utils/strutils.h"
 

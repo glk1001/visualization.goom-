@@ -2,7 +2,7 @@
 
 #include "t_values.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <cassert>
 #include <cmath>

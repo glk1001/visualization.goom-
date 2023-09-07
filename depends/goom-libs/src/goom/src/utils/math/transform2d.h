@@ -1,7 +1,7 @@
 #pragma once
 
+#include "goom/point2d.h"
 #include "misc.h"
-#include "point2d.h"
 
 #include <cmath>
 

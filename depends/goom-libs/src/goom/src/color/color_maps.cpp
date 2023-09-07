@@ -7,8 +7,8 @@
 #include "color_data/extra_color_groups.h"
 #include "color_maps_base.h"
 #include "color_utils.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
 #include "utils/enum_utils.h"
 
 #include <algorithm>

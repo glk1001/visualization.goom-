@@ -4,7 +4,7 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
 #include "utils/math/misc.h"
 
 #include <cstddef>

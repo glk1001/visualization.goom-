@@ -4,7 +4,7 @@
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/circle_drawer.h"
 #include "draw/shape_drawers/line_drawer.h"
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "stars.h"
 #include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"

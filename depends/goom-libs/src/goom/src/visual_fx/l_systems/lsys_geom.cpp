@@ -2,8 +2,8 @@
 
 //#undef NO_LOGGING
 
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"

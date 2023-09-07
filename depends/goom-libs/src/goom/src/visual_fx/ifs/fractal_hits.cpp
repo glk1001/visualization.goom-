@@ -1,9 +1,9 @@
 #include "fractal_hits.h"
 
 #include "color/color_utils.h"
-#include "goom_types.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "ifs_types.h"
-#include "point2d.h"
 #include "similitudes.h"
 
 #include <cstdint>

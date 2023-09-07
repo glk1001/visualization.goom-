@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_types.h"
-#include "point2d.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "utils/math/misc.h"
 
 #include <glm/ext/matrix_float4x4.hpp>

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "format_utils.h"
-#include "goom_graphic.h"
-#include "point2d.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
 #include "strutils.h"
 
 #include <algorithm>

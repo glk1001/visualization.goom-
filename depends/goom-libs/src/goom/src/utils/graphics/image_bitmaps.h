@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_graphic.h"
-#include "goom_types.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 
 #include <cstddef>
 #include <cstdint>

@@ -3,9 +3,9 @@
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "goom_graphic.h"
-#include "goom_types.h"
-#include "point2d.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <cstddef>

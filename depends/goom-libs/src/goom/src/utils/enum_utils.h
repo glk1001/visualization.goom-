@@ -2,7 +2,7 @@
 
 //#define NO_MAGIC_ENUM_AVAILABLE
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <array>
 #include <cstddef>

@@ -1,7 +1,7 @@
 #undef NO_LOGGING
 
-#include "goom_control.h"
-#include "goom_logger.h"
+#include "goom/goom_control.h"
+#include "goom/goom_logger.h"
 
 #include <iostream>
 #include <ostream>

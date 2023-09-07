@@ -2,7 +2,7 @@
 
 #include "color/random_color_maps.h"
 #include "fractal_hits.h"
-#include "goom_types.h"
+#include "goom/goom_types.h"
 #include "ifs_types.h"
 #include "similitudes.h"
 #include "utils/math/goom_rand_base.h"

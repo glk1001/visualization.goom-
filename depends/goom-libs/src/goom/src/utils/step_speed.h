@@ -1,8 +1,8 @@
 #pragma once
 
-#include "goom_config.h"
-#include "goom_types.h"
-#include "math20.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
+#include "goom/math20.h"
 
 #include <cstdint>
 

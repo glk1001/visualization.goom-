@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "math20.h"
+#include "goom/math20.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"

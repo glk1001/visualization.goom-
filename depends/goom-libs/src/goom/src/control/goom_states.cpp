@@ -2,7 +2,7 @@
 
 #include "goom_states.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "utils/enum_utils.h"
 
 #include <algorithm>

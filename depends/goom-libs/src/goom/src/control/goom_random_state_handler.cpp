@@ -1,6 +1,6 @@
 #include "goom_random_state_handler.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "goom_states.h"
 #include "state_and_filter_consts.h"
 #include "utils/enum_utils.h"

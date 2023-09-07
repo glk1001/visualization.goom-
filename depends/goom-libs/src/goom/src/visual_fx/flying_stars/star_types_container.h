@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "star_types_base.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"

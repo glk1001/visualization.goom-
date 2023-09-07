@@ -1,7 +1,7 @@
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
-#include "goom_graphic.h"
-#include "point2d.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
 
 #include <algorithm>
 #include <cstdint>

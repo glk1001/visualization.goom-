@@ -3,7 +3,7 @@
 #include "filter_fx/after_effects/after_effects.h"
 #include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/normalized_coords.h"
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "the_effects/rotation.h"
 #include "utils/name_value_pairs.h"
 

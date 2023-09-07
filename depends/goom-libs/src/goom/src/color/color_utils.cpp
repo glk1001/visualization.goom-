@@ -1,6 +1,6 @@
 #include "color_utils.h"
 
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
 
 #include <algorithm>
 #include <cmath>

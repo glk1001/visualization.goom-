@@ -1,6 +1,6 @@
 #pragma once
 
-#include "point2d.h"
+#include "goom/point2d.h"
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {

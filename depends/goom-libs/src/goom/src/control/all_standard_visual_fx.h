@@ -1,10 +1,10 @@
 #pragma once
 
-#include "frame_data.h"
-#include "goom_config.h"
+#include "goom/frame_data.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/shader_fx.h"

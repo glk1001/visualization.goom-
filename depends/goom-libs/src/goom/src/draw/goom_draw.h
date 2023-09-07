@@ -1,9 +1,9 @@
 #pragma once
 
 #include "color/color_utils.h"
-#include "goom_graphic.h"
-#include "goom_types.h"
-#include "point2d.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "utils/graphics/pixel_blend.h"
 #include "utils/graphics/pixel_utils.h"
 

@@ -2,11 +2,11 @@
 
 #include "draw/goom_draw.h"
 #include "drawer_utils.h"
-#include "goom_config.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "line_draw_thick.h"
 #include "line_draw_wu.h"
-#include "point2d.h"
 
 #include <cstdint>
 

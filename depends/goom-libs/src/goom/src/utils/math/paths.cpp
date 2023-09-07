@@ -1,6 +1,6 @@
 #include "paths.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "utils/math/misc.h"
 #include "utils/math/transform2d.h"
 #include "utils/t_values.h"

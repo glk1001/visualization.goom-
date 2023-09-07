@@ -2,8 +2,8 @@
 #define GOOM_DEBUG
 #endif
 
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
 #include "utils/math/misc.h"
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.

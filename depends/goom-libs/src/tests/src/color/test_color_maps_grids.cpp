@@ -3,7 +3,7 @@
 #include "color/color_maps_base.h"
 #include "color/color_maps_grids.h"
 #include "color/color_utils.h"
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
 #include "utils/t_values.h"
 
 #include <cstddef>

@@ -2,7 +2,7 @@
 
 #include "tentacle3d.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "tentacle2d.h"
 
 #include <memory>

@@ -2,10 +2,10 @@
 
 //#undef NO_LOGGING
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
-#include "point2d.h"
 
 #include <algorithm>
 #include <cstdint>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "goom_config.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "line_clipper.h"
-#include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 

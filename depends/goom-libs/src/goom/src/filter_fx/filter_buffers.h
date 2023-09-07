@@ -1,7 +1,7 @@
 #pragma once
 
+#include "goom/point2d.h"
 #include "normalized_coords.h"
-#include "point2d.h"
 
 #include <cstdint>
 #include <memory>

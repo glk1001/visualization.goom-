@@ -3,9 +3,9 @@
 #include "color_data/color_map_enums.h"
 #include "color_maps.h"
 #include "color_maps_base.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <set>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sound_info.h"
+#include "goom/sound_info.h"
 
 #include <cstdint>
 

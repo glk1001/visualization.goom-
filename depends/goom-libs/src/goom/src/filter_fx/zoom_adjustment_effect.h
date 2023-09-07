@@ -1,7 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "utils/name_value_pairs.h"
 
 namespace GOOM::FILTER_FX

@@ -30,7 +30,7 @@ if (NO_SAN)
     set(vis_goom_pp_ENABLE_SANITIZER_THREAD OFF)
     set(vis_goom_pp_ENABLE_SANITIZER_MEMORY OFF)
     set(ENABLE_UBSAN_MINIMAL_RUNTIME FALSE)
-else()
+else ()
     set(vis_goom_pp_ENABLE_SANITIZER_ADDRESS OFF)
     set(vis_goom_pp_ENABLE_SANITIZER_LEAK OFF)
     set(vis_goom_pp_ENABLE_SANITIZER_UNDEFINED OFF)
@@ -230,7 +230,6 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/src/goom/include
                            ${GOOM_LIBS_DIR}/src/goom/src/utils
                            PRIVATE
-                           ${GOOM_LIBS_DIR}/src/goom/include/goom
                            ${GOOM_LIBS_DIR}/src/goom/src
 )
 

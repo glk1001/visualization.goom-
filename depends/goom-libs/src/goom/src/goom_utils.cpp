@@ -1,7 +1,7 @@
-#include "goom_utils.h"
+#include "goom/goom_utils.h"
 
-#include "compiler_versions.h"
-#include "goom_version.h"
+#include "goom/compiler_versions.h"
+#include "goom/goom_version.h"
 #include "utils/build_time.h"
 #include "utils/math/randutils.h"
 #include "utils/strutils.h"

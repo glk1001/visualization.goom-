@@ -1,10 +1,10 @@
 //#undef NO_LOGGING
 
 #include "color/color_maps.h"
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
+#include "goom/sound_info.h"
 #include "goom_visual_fx.h"
-#include "point2d.h"
-#include "sound_info.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -15,9 +15,9 @@
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "fx_helper.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/spimpl.h"
 #include "goom_plugin_info.h"
-#include "spimpl.h"
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
 #include "tentacles_fx.h"

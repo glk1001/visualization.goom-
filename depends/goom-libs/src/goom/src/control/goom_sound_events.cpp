@@ -1,6 +1,7 @@
 #include "goom_sound_events.h"
 
-#include "sound_info.h"
+#include "goom/goom_config.h"
+#include "goom/sound_info.h"
 
 #include <algorithm>
 

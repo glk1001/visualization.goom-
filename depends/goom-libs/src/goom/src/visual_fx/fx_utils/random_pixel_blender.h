@@ -1,7 +1,7 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 

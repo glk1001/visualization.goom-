@@ -5,8 +5,8 @@
 //#include "utils/debugging_logger.h"
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_speed.h"
-#include "math20.h"
-#include "sound_info.h"
+#include "goom/math20.h"
+#include "goom/sound_info.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 

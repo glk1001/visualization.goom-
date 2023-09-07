@@ -1,7 +1,7 @@
-#include "goom_logger.h"
+#include "goom/goom_logger.h"
 
 #include "date_utils.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "utils/enum_utils.h"
 
 #include <format> // NOLINT: Waiting to use C++20.

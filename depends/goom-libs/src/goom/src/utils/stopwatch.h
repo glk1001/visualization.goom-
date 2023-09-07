@@ -1,7 +1,7 @@
 #pragma once
 
 #include "date_utils.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <chrono>
 #include <cstdint>

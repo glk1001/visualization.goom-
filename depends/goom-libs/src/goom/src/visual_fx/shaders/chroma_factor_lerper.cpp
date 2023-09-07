@@ -1,8 +1,8 @@
 #include "chroma_factor_lerper.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/math20.h"
 #include "goom_plugin_info.h"
-#include "math20.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <cmath>

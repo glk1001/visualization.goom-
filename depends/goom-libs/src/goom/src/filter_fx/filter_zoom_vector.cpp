@@ -4,10 +4,10 @@
 
 #include "filter_effects/zoom_vector_effects.h"
 #include "filter_settings.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "name_value_pairs.h"
 #include "normalized_coords.h"
-#include "point2d.h"
 
 #include <cstdint>
 #include <string>

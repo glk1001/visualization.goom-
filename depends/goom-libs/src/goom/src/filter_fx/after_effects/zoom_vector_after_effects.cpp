@@ -11,8 +11,8 @@
 #include "filter_fx/after_effects/the_effects/tan_effect.h"
 #include "filter_fx/after_effects/the_effects/xy_lerp_effect.h"
 #include "filter_fx/normalized_coords.h"
-#include "goom_config.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "utils/name_value_pairs.h"
 
 #include <cstdint>

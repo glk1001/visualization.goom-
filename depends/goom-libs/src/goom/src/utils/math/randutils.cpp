@@ -2,9 +2,9 @@
 
 #include "randutils.h"
 
-#include "goom_config.h"
-#include "goom_logger.h"
-#include "math20.h"
+#include "goom/goom_config.h"
+#include "goom/goom_logger.h"
+#include "goom/math20.h"
 #include "xoshiro.hpp"
 
 #include <cstdint>

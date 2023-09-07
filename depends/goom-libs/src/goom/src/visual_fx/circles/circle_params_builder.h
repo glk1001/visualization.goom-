@@ -1,8 +1,8 @@
 #pragma once
 
 #include "circle.h"
+#include "goom/point2d.h"
 #include "goom_plugin_info.h"
-#include "point2d.h"
 #include "visual_fx/fx_helper.h"
 
 #include <cstdint>

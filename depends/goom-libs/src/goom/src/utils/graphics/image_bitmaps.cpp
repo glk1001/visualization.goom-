@@ -1,6 +1,6 @@
 #include "image_bitmaps.h"
 
-#include "goom_types.h"
+#include "goom/goom_types.h"
 
 #include <cstddef>
 #include <cstdint>

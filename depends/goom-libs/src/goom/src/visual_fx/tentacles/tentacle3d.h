@@ -1,8 +1,8 @@
 #pragma once
 
-#include "goom_config.h"
-#include "math20.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/math20.h"
+#include "goom/point2d.h"
 #include "tentacle2d.h"
 
 #include <memory>

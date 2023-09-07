@@ -3,8 +3,8 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
 #include "math/goom_rand_base.h"
 #include "visual_fx/ifs_dancers_fx.h"
 

@@ -3,7 +3,7 @@
 
 #include "thread_pool.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <functional>
 #include <thread>

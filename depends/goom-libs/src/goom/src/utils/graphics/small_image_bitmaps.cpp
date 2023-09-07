@@ -2,8 +2,8 @@
 
 #include "small_image_bitmaps.h"
 
-#include "goom_config.h"
-#include "goom_logger.h"
+#include "goom/goom_config.h"
+#include "goom/goom_logger.h"
 #include "image_bitmaps.h"
 #include "utils/enum_utils.h"
 #include "utils/math/misc.h"

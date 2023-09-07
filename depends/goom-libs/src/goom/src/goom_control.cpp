@@ -12,7 +12,7 @@
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
-#include "goom_control.h"
+#include "goom/goom_control.h"
 
 #include "control/goom_all_visual_fx.h"
 #include "control/goom_message_displayer.h"
@@ -27,18 +27,19 @@
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
-#include "frame_data.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
-#include "goom_logger.h"
+#include "goom/frame_data.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_logger.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
+#include "goom/sound_info.h"
+#include "goom/spimpl.h"
 #include "goom_plugin_info.h"
-#include "goom_types.h"
-#include "point2d.h"
-#include "sound_info.h"
-#include "spimpl.h"
 #include "utils/debugging_logger.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
+#include "utils/name_value_pairs.h"
 #include "utils/parallel_utils.h"
 #include "utils/stopwatch.h"
 #include "utils/strutils.h"
@@ -59,15 +60,15 @@
 
 namespace GOOM
 {
+#ifdef DO_GOOM_STATE_DUMP
+using CONTROL::GoomStateDump;
+#endif
 
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomSoundEvents;
-#ifdef DO_GOOM_STATE_DUMP
-using CONTROL::GoomStateDump;
-#endif
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
 using DRAW::GoomDrawToSingleBuffer;
@@ -77,6 +78,9 @@ using FILTER_FX::FilterSettingsService;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::FILTER_EFFECTS::CreateZoomAdjustmentEffect;
+using UTILS::GetNameValuesString;
+using UTILS::GetPair;
+using UTILS::NameValuePairs;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
@@ -194,6 +198,7 @@ private:
   auto DisplayTitleAndMessages(const std::string& message) -> void;
   auto DisplayCurrentTitle() -> void;
   auto UpdateMessages(const std::string& messages) -> void;
+  auto GetNameValueParams() const -> NameValuePairs;
 
 #ifdef DO_GOOM_STATE_DUMP
   std::unique_ptr<GoomStateDump> m_goomStateDump{};
@@ -752,8 +757,17 @@ auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
     return;
   }
 
-  const std::string message = GetGoomTimeInfo() + "\n" + m_goomStateMonitor.GetCurrentState();
+  const std::string message = GetGoomTimeInfo() + "\n" + GetNameValuesString(GetNameValueParams()) +
+                              "\n" + m_goomStateMonitor.GetCurrentState();
   UpdateMessages(message);
+}
+
+auto GoomControl::GoomControlImpl::GetNameValueParams() const -> NameValuePairs
+{
+  static constexpr auto* PARAM_GROUP = "Control Settings";
+  return {
+      GetPair(PARAM_GROUP, "lerp", m_transformBufferLerpFactor),
+  };
 }
 
 inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string

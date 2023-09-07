@@ -2,9 +2,9 @@
 
 #include "../goom_draw.h"
 #include "color/color_utils.h"
-#include "goom_config.h"
-#include "goom_types.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 
 #include <cstdint>
 

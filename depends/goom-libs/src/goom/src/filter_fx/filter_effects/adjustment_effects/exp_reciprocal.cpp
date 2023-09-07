@@ -3,7 +3,7 @@
 #include "exp_reciprocal.h"
 
 #include "filter_fx/normalized_coords.h"
-#include "point2d.h"
+#include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "control/goom_sound_events.h"
-#include "goom_config.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
 
 namespace GOOM
 {

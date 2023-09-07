@@ -1,11 +1,11 @@
 #pragma once
 
-#include "frame_data.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/frame_data.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "spimpl.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/stopwatch.h"
 #include "visual_fx/goom_visual_fx.h"

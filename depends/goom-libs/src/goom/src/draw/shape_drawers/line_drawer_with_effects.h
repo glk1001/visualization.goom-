@@ -1,11 +1,11 @@
 #pragma once
 
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
 #include "line_drawer.h"
 #include "line_drawer_moving_noise.h"
 #include "line_drawer_noisy_pixels.h"
-#include "point2d.h"
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

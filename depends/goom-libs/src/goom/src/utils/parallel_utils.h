@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "thread_pool.h"
 
 #include <algorithm>

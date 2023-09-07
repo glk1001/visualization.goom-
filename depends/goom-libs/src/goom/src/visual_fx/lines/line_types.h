@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
 
 namespace GOOM::VISUAL_FX::LINES
 {

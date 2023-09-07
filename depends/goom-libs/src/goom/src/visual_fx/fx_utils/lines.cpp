@@ -1,7 +1,7 @@
 #include "lines.h"
 
-#include "goom_config.h"
-#include "goom_types.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "utils/math/misc.h"
 
 #include <cmath>

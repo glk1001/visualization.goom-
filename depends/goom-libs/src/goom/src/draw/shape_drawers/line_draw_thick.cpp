@@ -2,7 +2,7 @@
 
 #include "line_draw_thick.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <cmath>
 

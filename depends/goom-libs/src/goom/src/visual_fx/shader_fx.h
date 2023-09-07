@@ -1,8 +1,8 @@
 #pragma once
 
-#include "frame_data.h"
+#include "goom/frame_data.h"
+#include "goom/spimpl.h"
 #include "goom_visual_fx.h"
-#include "spimpl.h"
 #include "utils/stopwatch.h"
 
 #include <string>

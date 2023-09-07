@@ -3,13 +3,17 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 
+#include <span> // NOLINT(misc-include-cleaner): Waiting for C++20.
+
 namespace GOOM
 {
 
 struct FilterPosArrays
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   std_spn::span<Point2dFlt> filterSrcePos{};
   bool filterSrcePosNeedsUpdating = false;
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   std_spn::span<Point2dFlt> filterDestPos{};
   bool filterDestPosNeedsUpdating = false;
 };

@@ -3,9 +3,9 @@
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
-#include "math20.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/math20.h"
 
 #include <cmath>
 #include <memory>

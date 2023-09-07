@@ -1,9 +1,9 @@
 #include "fractal.h"
 
 #include "color/random_color_maps.h"
-#include "goom_types.h"
+#include "goom/goom_types.h"
+#include "goom/math20.h"
 #include "ifs_types.h"
-#include "math20.h"
 #include "similitudes.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"

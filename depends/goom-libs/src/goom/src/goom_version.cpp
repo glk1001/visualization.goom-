@@ -1,4 +1,4 @@
-#include "goom_version.h"
+#include "goom/goom_version.h"
 
 #include <string>
 

@@ -1,6 +1,6 @@
-#include "sound_info.h"
+#include "goom/sound_info.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <algorithm>
 #include <array>

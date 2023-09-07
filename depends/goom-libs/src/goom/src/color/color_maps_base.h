@@ -1,7 +1,7 @@
 #pragma once
 
 #include "color_data/color_map_enums.h"
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
 
 #include <cstddef>
 

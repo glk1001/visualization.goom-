@@ -1,7 +1,7 @@
 #pragma once
 
-#include "goom_config.h"
-#include "math20.h"
+#include "goom/goom_config.h"
+#include "goom/math20.h"
 
 #include <algorithm>
 #include <cmath>

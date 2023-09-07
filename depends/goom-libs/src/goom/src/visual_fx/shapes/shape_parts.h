@@ -2,10 +2,10 @@
 
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "goom_graphic.h"
+#include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "goom_plugin_info.h"
-#include "goom_types.h"
-#include "point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"

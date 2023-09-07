@@ -1,9 +1,9 @@
 #pragma once
 
 #include "draw/goom_draw.h"
-#include "goom_types.h"
-#include "point2d.h"
-#include "spimpl.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
+#include "goom/spimpl.h"
 
 #include <cstddef>
 #include <cstdint>

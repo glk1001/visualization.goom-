@@ -3,8 +3,8 @@
 #include "color_maps_grids.h"
 
 #include "color_maps.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
 #include "utils/t_values.h"
 
 #include <cmath>

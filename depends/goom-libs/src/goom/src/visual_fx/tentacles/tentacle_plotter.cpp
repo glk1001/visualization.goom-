@@ -3,9 +3,9 @@
 #include "tentacle_plotter.h"
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
-#include "goom_types.h"
-#include "point2d.h"
+#include "goom/goom_config.h"
+#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "tentacle3d.h"
 #include "utils/graphics/line_clipper.h"
 #include "utils/math/goom_rand_base.h"

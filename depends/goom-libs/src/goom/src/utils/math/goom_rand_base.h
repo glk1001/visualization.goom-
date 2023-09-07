@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "misc.h"
 #include "utils/enum_utils.h"
 

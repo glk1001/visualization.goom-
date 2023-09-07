@@ -2,7 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
 #include "name_value_pairs.h"
 #include "utils/math/goom_rand_base.h"
 

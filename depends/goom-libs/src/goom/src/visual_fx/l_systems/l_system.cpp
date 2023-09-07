@@ -3,12 +3,12 @@
 //#undef NO_LOGGING
 
 #include "draw/goom_draw.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
+#include "goom/math20.h"
+#include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "lsys_draw.h"
-#include "math20.h"
-#include "point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"

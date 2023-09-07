@@ -1,8 +1,8 @@
 #pragma once
 
-#include "goom_graphic.h"
-#include "point2d.h"
-#include "spimpl.h"
+#include "goom/goom_graphic.h"
+#include "goom/point2d.h"
+#include "goom/spimpl.h"
 #include "tube_data.h"
 #include "utils/math/parametric_functions2d.h"
 

@@ -2,8 +2,8 @@
 
 #include "after_effects/after_effects_states.h"
 #include "filter_speed.h"
+#include "goom/point2d.h"
 #include "normalized_coords.h"
-#include "point2d.h"
 
 #include <memory>
 

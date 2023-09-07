@@ -1,8 +1,8 @@
 #include "color_adjustment.h"
 
 #include "color_utils.h"
-#include "goom_config.h"
-#include "goom_graphic.h"
+#include "goom/goom_config.h"
+#include "goom/goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/misc.h"
 

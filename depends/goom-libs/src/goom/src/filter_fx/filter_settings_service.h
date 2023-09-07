@@ -5,9 +5,9 @@
 #include "after_effects/the_effects/rotation.h"
 #include "filter_settings.h"
 #include "filter_speed.h"
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "normalized_coords.h"
-#include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 

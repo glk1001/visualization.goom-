@@ -207,6 +207,8 @@ auto GoomVisualization::Stop() -> void
   m_slotProducerConsumer.Stop();
   m_slotProducerConsumerThread.join();
 
+  m_goomControl->Finish();
+
   m_glScene->DestroyScene();
 
   LogProducerConsumerSummary();

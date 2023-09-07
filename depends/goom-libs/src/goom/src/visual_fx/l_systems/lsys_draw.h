@@ -1,9 +1,9 @@
 #pragma once
 
 #include "draw/shape_drawers/line_drawer_with_effects.h"
+#include "goom/point2d.h"
 #include "lsys_colors.h"
 #include "lsys_geom.h"
-#include "point2d.h"
 
 #include <cstdint>
 #include <lsys/parsed_model.h>

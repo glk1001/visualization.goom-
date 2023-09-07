@@ -1,9 +1,9 @@
 #include "all_standard_visual_fx.h"
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
+#include "goom/point2d.h"
 #include "goom_effects.h"
 #include "goom_states.h"
-#include "point2d.h"
 #include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/stopwatch.h"

@@ -2,9 +2,9 @@
 
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_settings_service.h"
+#include "goom/point2d.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
-#include "point2d.h"
 #include "utils/name_value_pairs.h"
 
 #include <string>
