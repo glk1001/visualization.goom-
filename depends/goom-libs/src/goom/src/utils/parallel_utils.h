@@ -17,6 +17,8 @@
 namespace GOOM::UTILS
 {
 
+auto GetNumAvailablePoolThreads() noexcept -> int32_t;
+
 class Parallel
 {
 public:
@@ -102,6 +104,22 @@ auto Parallel::ForLoop(const size_t numIters, const Callable loopFunc) noexcept 
   }
 
   m_forLoopInUse = false;
+}
+
+inline auto GetNumAvailablePoolThreads() noexcept -> int32_t
+{
+  static constexpr auto DESIRED_NUM_THREADS = 4;
+  static constexpr auto MIN_NUM_THREADS     = 2;
+  static constexpr auto NUM_FREE_THREADS    = 2;
+
+  const auto numHardwareThreads = static_cast<int32_t>(std::thread::hardware_concurrency());
+
+  if (DESIRED_NUM_THREADS <= (numHardwareThreads - NUM_FREE_THREADS))
+  {
+    return DESIRED_NUM_THREADS;
+  }
+
+  return std::max(MIN_NUM_THREADS, numHardwareThreads - NUM_FREE_THREADS);
 }
 
 } // namespace GOOM::UTILS

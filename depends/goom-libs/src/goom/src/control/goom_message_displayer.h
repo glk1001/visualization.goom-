@@ -27,7 +27,7 @@ public:
   void UpdateMessages(const std::vector<std::string>& msgLines);
 
 private:
-  UTILS::Parallel m_parallel{-1}; // max cores - 1
+  UTILS::Parallel m_parallel{UTILS::GetNumAvailablePoolThreads()};
   DRAW::IGoomDraw* m_draw;
   std::string m_updateMessagesFontFile;
 

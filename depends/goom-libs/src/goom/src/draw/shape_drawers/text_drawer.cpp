@@ -223,7 +223,7 @@ public:
 
 private:
   IGoomDraw* m_draw;
-  UTILS::Parallel m_parallel{-1}; // max cores - 1
+  UTILS::Parallel m_parallel{UTILS::GetNumAvailablePoolThreads()};
   FT_Library m_library{};
   static constexpr int32_t DEFAULT_FONT_SIZE       = 100;
   int32_t m_fontSize                               = DEFAULT_FONT_SIZE;

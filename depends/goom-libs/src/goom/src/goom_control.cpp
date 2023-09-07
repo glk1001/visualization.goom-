@@ -52,7 +52,6 @@
 #include <format> // NOLINT: Waiting to use C++20.
 #include <memory>
 #include <string>
-#include <thread>
 #include <utility>
 
 #ifdef DO_GOOM_STATE_DUMP
@@ -80,6 +79,7 @@ using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::FILTER_EFFECTS::CreateZoomAdjustmentEffect;
 using UTILS::GetNameValuesString;
+using UTILS::GetNumAvailablePoolThreads;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::Parallel;
@@ -132,7 +132,6 @@ public:
 
 private:
   Parallel m_parallel{GetNumAvailablePoolThreads()};
-  [[nodiscard]] static auto GetNumAvailablePoolThreads() noexcept -> int32_t;
   GoomTime m_goomTime{};
   SoundInfo m_soundInfo{};
   GoomSoundEvents m_goomSoundEvents{m_goomTime, m_soundInfo};
@@ -315,22 +314,6 @@ GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
   UTILS::SetGoomLogger(*m_goomLogger);
-}
-
-auto GoomControl::GoomControlImpl::GetNumAvailablePoolThreads() noexcept -> int32_t
-{
-  static constexpr auto DESIRED_NUM_THREADS = 4;
-  static constexpr auto MIN_NUM_THREADS     = 2;
-  static constexpr auto NUM_FREE_THREADS    = 2;
-
-  const auto numHardwareThreads = static_cast<int32_t>(std::thread::hardware_concurrency());
-
-  if (DESIRED_NUM_THREADS <= (numHardwareThreads - NUM_FREE_THREADS))
-  {
-    return DESIRED_NUM_THREADS;
-  }
-
-  return std::max(MIN_NUM_THREADS, numHardwareThreads - NUM_FREE_THREADS);
 }
 
 inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint64_t
