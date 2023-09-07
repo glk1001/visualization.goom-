@@ -3,6 +3,7 @@
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -23,7 +24,7 @@ public:
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
-  enum class YOnlyEffect
+  enum class YOnlyEffect : UnderlyingEnumType
   {
     NONE,
     X_SIN_Y_SIN,

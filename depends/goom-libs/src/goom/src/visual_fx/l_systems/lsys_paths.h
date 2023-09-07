@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
@@ -44,7 +45,7 @@ private:
   std::unique_ptr<PathsToAndFrom> m_pathsToAndFrom = GetPathsToAndFrom();
   [[nodiscard]] auto GetPathsToAndFrom() const noexcept -> std::unique_ptr<PathsToAndFrom>;
   [[nodiscard]] auto GetPathParams() const noexcept -> UTILS::MATH::OscillatingFunction::Params;
-  enum class Direction
+  enum class Direction : UnderlyingEnumType
   {
     TO_TARGET,
     FROM_TARGET,

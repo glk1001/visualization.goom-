@@ -2,6 +2,7 @@
 
 #include "color/color_maps.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
 #include "goom_visual_fx.h"
@@ -63,9 +64,9 @@ private:
 
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
 
-  enum class Drivers
+  enum class Drivers : UnderlyingEnumType
   {
-    NUM0 = 0,
+    NUM0,
     NUM1,
     NUM2,
     NUM3,

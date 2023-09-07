@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -75,7 +76,7 @@ enum class GoomStates : size_t
   _num // unused, and marks the enum end
 };
 
-enum class GoomDrawables
+enum class GoomDrawables : UnderlyingEnumType
 {
   CIRCLES = 0,
   DOTS,

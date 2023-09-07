@@ -1,9 +1,11 @@
 #pragma once
 
+#include "goom/goom_types.h"
+
 namespace GOOM::CONTROL
 {
 
-enum class GoomEffect
+enum class GoomEffect : UnderlyingEnumType
 {
   CIRCLES_MAIN = 0,
   CIRCLES_LOW,

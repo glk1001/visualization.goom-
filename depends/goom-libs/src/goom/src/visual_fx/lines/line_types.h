@@ -1,11 +1,12 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 
 namespace GOOM::VISUAL_FX::LINES
 {
 
-enum class LineType
+enum class LineType : UnderlyingEnumType
 {
   CIRCLE = 0, // (param = radius)
   H_LINE, // (param = y)

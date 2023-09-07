@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "goom/math20.h"
 #include "math/misc.h"
 
@@ -22,7 +23,7 @@ public:
     float t0;
     uint32_t delayTime;
   };
-  enum class StepType
+  enum class StepType : UnderlyingEnumType
   {
     CONTINUOUS_REPEATABLE,
     CONTINUOUS_REVERSIBLE,
@@ -76,7 +77,7 @@ private:
   float m_currentStep{m_stepSize};
   float m_t;
 
-  enum class Boundaries
+  enum class Boundaries : UnderlyingEnumType
   {
     START,
     INSIDE,
@@ -99,7 +100,7 @@ private:
   auto ContinuousRepeatableIncrement() noexcept -> void;
   auto ContinuousReversibleIncrement() noexcept -> void;
   auto CheckContinuousReversibleBoundary() noexcept -> void;
-  enum class FloatSign
+  enum class FloatSign : UnderlyingEnumType
   {
     POSITIVE,
     NEGATIVE

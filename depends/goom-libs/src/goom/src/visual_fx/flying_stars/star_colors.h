@@ -5,6 +5,7 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 
 #include <memory>
 
@@ -21,7 +22,7 @@ public:
     COLOR::ColorMapSharedPtr dominantMainColorMapPtr = nullptr;
     COLOR::ColorMapSharedPtr dominantLowColorMapPtr  = nullptr;
   };
-  enum class ColorMode
+  enum class ColorMode : UnderlyingEnumType
   {
     MIX_COLORS,
     REVERSE_MIX_COLORS,

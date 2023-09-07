@@ -6,6 +6,7 @@
 #include "filter_settings.h"
 #include "filter_speed.h"
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "normalized_coords.h"
 #include "utils/enum_utils.h"
@@ -25,7 +26,7 @@ class PluginInfo;
 namespace GOOM::FILTER_FX
 {
 
-enum class ZoomFilterMode
+enum class ZoomFilterMode : UnderlyingEnumType
 {
   AMULET_MODE = 0,
   CRYSTAL_BALL_MODE0,
@@ -168,7 +169,7 @@ private:
   auto SetBaseZoomAdjustmentFactorMultiplier() noexcept -> void;
   auto SetAfterEffectsVelocityMultiplier() noexcept -> void;
 
-  enum class ZoomMidpointEvents
+  enum class ZoomMidpointEvents : UnderlyingEnumType
   {
     BOTTOM_MID_POINT,
     TOP_MID_POINT,

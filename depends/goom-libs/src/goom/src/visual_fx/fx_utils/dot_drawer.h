@@ -2,6 +2,7 @@
 
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -26,7 +27,7 @@ class SmallImageBitmaps;
 namespace VISUAL_FX::FX_UTILS
 {
 
-enum class DotSizes
+enum class DotSizes : UnderlyingEnumType
 {
   DOT_SIZE01,
   DOT_SIZE02,

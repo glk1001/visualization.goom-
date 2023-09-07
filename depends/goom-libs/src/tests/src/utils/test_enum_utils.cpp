@@ -1,3 +1,4 @@
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 
 #include <algorithm>
@@ -16,6 +17,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using GOOM::UnderlyingEnumType;
 using UTILS::EnumMap;
 using UTILS::EnumToString;
 using UTILS::NUM;
@@ -25,7 +27,7 @@ using UTILS::StringToEnum;
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("EnumMap")
 {
-  enum class EnumClass
+  enum class EnumClass : UnderlyingEnumType
   {
     ENUM1,
     ENUM2,
@@ -99,7 +101,7 @@ TEST_CASE("EnumMap")
 
 TEST_CASE("ForRange")
 {
-  enum class EnumClass
+  enum class EnumClass : UnderlyingEnumType
   {
     ENUM1,
     ENUM2,
@@ -133,7 +135,7 @@ TEST_CASE("ForRange")
 #ifdef TEST_SHOULD_NOT_COMPILE
 TEST_CASE("EnumMapValidation")
 {
-  enum class EnumClass
+  enum class EnumClass : UnderlyingEnumType
   {
     ENUM1,
     ENUM2,
@@ -160,7 +162,7 @@ TEST_CASE("EnumToString/StringToEnum")
 #ifdef NO_MAGIC_ENUM_AVAILABLE
   return;
 #else
-  enum class EnumClass
+  enum class EnumClass : UnderlyingEnumType
   {
     ENUM1,
     ENUM2,

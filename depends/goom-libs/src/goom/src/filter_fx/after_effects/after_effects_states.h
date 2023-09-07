@@ -1,6 +1,7 @@
 #pragma once
 
 #include "after_effects_types.h"
+#include "goom/goom_types.h"
 #include "the_effects/rotation.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
@@ -16,7 +17,7 @@ class IGoomRand;
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
-enum class HypercosOverlayMode
+enum class HypercosOverlayMode : UnderlyingEnumType
 {
   NONE,
   MODE0,

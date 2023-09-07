@@ -4,6 +4,7 @@
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/circle_drawer.h"
 #include "draw/shape_drawers/line_drawer.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "stars.h"
 #include "utils/enum_utils.h"
@@ -35,7 +36,7 @@ private:
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
   DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer;
 
-  enum class DrawElementTypes
+  enum class DrawElementTypes : UnderlyingEnumType
   {
     CIRCLES,
     LINES,
@@ -61,7 +62,7 @@ private:
   DrawElementTypes m_requestedDrawElement = m_drawElementWeights.GetRandomWeighted();
   DrawElementTypes m_currentActualDrawElement{};
   auto UpdateActualDrawElement() noexcept -> void;
-  enum class DrawModes
+  enum class DrawModes : UnderlyingEnumType
   {
     CLEAN,
     SUPER_CLEAN,

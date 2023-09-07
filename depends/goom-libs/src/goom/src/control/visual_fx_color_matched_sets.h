@@ -2,6 +2,7 @@
 
 #include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "goom_effects.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
@@ -22,7 +23,7 @@ public:
 
 private:
   using ColorMatchedSet = UTILS::EnumMap<GoomEffect, COLOR::RandomColorMapsGroups::Groups>;
-  enum class ColorMatchedSets
+  enum class ColorMatchedSets : UnderlyingEnumType
   {
     RED_GREEN_STD_MAPS,
     RED_BLUE_STD_MAPS,

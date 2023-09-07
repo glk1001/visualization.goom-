@@ -2,6 +2,7 @@
 
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
@@ -11,7 +12,7 @@ namespace GOOM::VISUAL_FX::FX_UTILS
 class RandomPixelBlender
 {
 public:
-  enum class PixelBlendType
+  enum class PixelBlendType : UnderlyingEnumType
   {
     ADD,
     DARKEN_ONLY,

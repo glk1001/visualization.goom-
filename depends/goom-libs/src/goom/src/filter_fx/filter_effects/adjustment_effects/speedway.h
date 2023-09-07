@@ -4,6 +4,7 @@
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -17,7 +18,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class Speedway : public IZoomAdjustmentEffect
 {
 public:
-  enum class Modes
+  enum class Modes : UnderlyingEnumType
   {
     MODE0,
     MODE1,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "star_types_base.h"
 #include "utils/enum_utils.h"
@@ -52,7 +53,7 @@ public:
   static const auto NUM_STAR_TYPES = 3U;
 
 private:
-  enum class AvailableStarTypes
+  enum class AvailableStarTypes : UnderlyingEnumType
   {
     FIREWORKS,
     RAIN,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
+#include "goom/goom_types.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
@@ -14,7 +15,7 @@ class RotationAdjustments
 public:
   RotationAdjustments() noexcept = default;
 
-  enum class AdjustmentType
+  enum class AdjustmentType : UnderlyingEnumType
   {
     NONE,
     AFTER_RANDOM,

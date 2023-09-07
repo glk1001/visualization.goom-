@@ -25,6 +25,7 @@ public:
   //   If numSampleChannels = 2, then the 'rawAudioData' must interleave the two channels,
   //   one after the other. So 'rawAudioData[0]' is channel 0, 'rawAudioData[1]' is
   //   channel 1, 'rawAudioData[2]' is channel 0, 'rawAudioData[3]' is channel 1, etc.
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   AudioSamples(size_t numSampleChannels, std_spn::span<const float> rawAudioData);
 
   [[nodiscard]] auto GetNumDistinctChannels() const -> size_t;
@@ -48,6 +49,7 @@ private:
   MinMaxValues m_overallMinMaxSampleValues{
       std::min(m_minMaxSampleValues[0].minVal, m_minMaxSampleValues[1].minVal),
       std::max(m_minMaxSampleValues[0].maxVal, m_minMaxSampleValues[1].maxVal)};
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   [[nodiscard]] static auto GetSampleArrays(std_spn::span<const float> rawAudioData)
       -> std::array<SampleArray, NUM_AUDIO_SAMPLES>;
   [[nodiscard]] static auto GetMinMaxSampleValues(

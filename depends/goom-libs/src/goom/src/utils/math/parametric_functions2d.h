@@ -74,7 +74,7 @@ struct AngleParams
 class CircleFunction : public IParametricFunction2d
 {
 public:
-  enum class Direction
+  enum class Direction : UnderlyingEnumType
   {
     CLOCKWISE,
     COUNTER_CLOCKWISE
@@ -98,7 +98,7 @@ private:
 class SpiralFunction : public IParametricFunction2d
 {
 public:
-  enum class Direction
+  enum class Direction : UnderlyingEnumType
   {
     CLOCKWISE,
     COUNTER_CLOCKWISE

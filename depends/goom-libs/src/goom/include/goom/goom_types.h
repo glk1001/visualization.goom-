@@ -8,7 +8,9 @@
 namespace GOOM
 {
 
-enum class ShowSongTitleType
+using UnderlyingEnumType = std::int8_t;
+
+enum class ShowSongTitleType : UnderlyingEnumType
 {
   AT_START,
   ALWAYS,

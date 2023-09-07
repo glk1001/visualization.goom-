@@ -3,6 +3,7 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "ifs_types.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -122,7 +123,7 @@ private:
           /*.r1Mean = */ 0.4F, /*.r2Mean = */ 0.0F, /*.dr1Mean = */ 0.5F, /*.dr2Mean = */ 0.3F},
   };
   // clang-format on
-  enum class CentreNums
+  enum class CentreNums : UnderlyingEnumType
   {
     NUM0 = 0,
     NUM1,

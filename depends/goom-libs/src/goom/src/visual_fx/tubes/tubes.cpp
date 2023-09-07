@@ -9,6 +9,7 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
@@ -82,7 +83,7 @@ static constexpr auto MIN_CENTRE_SPEED = 0.0005F;
 static constexpr auto NML_CENTRE_SPEED = 0.005F;
 static constexpr auto MAX_CENTRE_SPEED = 0.05F;
 
-enum class LowColorTypes
+enum class LowColorTypes : UnderlyingEnumType
 {
   TRUE_LOW_COLOR,
   MAIN_COLOR,

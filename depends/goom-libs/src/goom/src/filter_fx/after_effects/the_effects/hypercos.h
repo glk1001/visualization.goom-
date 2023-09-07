@@ -3,6 +3,7 @@
 #include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
+#include "goom/goom_types.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
@@ -33,7 +34,7 @@ public:
   virtual auto SetMode2RandomParams() -> void;
   virtual auto SetMode3RandomParams() -> void;
 
-  enum class HypercosEffect
+  enum class HypercosEffect : UnderlyingEnumType
   {
     NONE,
     SIN_CURL_SWIRL,

@@ -1,3 +1,4 @@
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 #include "utils/strutils.h"
 
@@ -18,6 +19,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+using GOOM::UnderlyingEnumType;
 using UTILS::EnumToString;
 using UTILS::FindAndReplaceAll;
 using UTILS::StringJoin;
@@ -87,7 +89,7 @@ TEST_CASE("EnumToString")
 #ifdef NO_MAGIC_ENUM_AVAILABLE
   return;
 #else
-  enum class EnumTester
+  enum class EnumTester : UnderlyingEnumType
   {
     _NULL = -1, // NOLINT: Need special name here
     TEST1,

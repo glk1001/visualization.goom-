@@ -36,7 +36,7 @@ public:
   [[nodiscard]] auto GetRandomColorMap(ColorMapGroup colorMapGroup) const noexcept
       -> ColorMapPtrWrapper;
 
-  enum class ColorMapTypes
+  enum class ColorMapTypes : UnderlyingEnumType
   {
     ROTATED_T,
     SHADES,

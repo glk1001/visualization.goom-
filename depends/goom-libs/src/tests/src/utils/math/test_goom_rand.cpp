@@ -1,3 +1,4 @@
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 
@@ -23,6 +24,7 @@ namespace GOOM::UNIT_TESTS
 {
 
 using Catch::Approx;
+using GOOM::UnderlyingEnumType;
 using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
@@ -32,7 +34,7 @@ using UTILS::MATH::Weights;
 namespace
 {
 
-enum class Events
+enum class Events : UnderlyingEnumType
 {
   EVENT1,
   EVENT2,

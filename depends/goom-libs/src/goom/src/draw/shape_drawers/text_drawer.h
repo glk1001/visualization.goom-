@@ -23,7 +23,7 @@ class TextDrawer
 public:
   explicit TextDrawer(IGoomDraw& draw) noexcept;
 
-  enum class TextAlignment
+  enum class TextAlignment : UnderlyingEnumType
   {
     LEFT,
     CENTER,

@@ -1,3 +1,5 @@
+#include "goom/goom_types.h"
+
 #include <format> // NOLINT: Waiting to use C++20.
 #include <functional>
 #include <mutex>
@@ -17,7 +19,7 @@ namespace GOOM
 class GoomLogger
 {
 public:
-  enum class LogLevel
+  enum class LogLevel : UnderlyingEnumType
   {
     DEBUG,
     INFO,

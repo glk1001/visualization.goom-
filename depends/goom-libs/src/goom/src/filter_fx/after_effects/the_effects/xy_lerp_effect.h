@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
+#include "goom/goom_types.h"
 #include "goom/math20.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -30,7 +31,7 @@ public:
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
 
-  enum class Modes
+  enum class Modes : UnderlyingEnumType
   {
     MODE0,
     MODE1,

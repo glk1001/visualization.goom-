@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -40,7 +41,7 @@ public:
            const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept;
 
   [[nodiscard]] auto GetNumDots() const noexcept -> uint32_t;
-  enum class Direction
+  enum class Direction : UnderlyingEnumType
   {
     TO_TARGET,
     FROM_TARGET,

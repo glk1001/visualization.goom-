@@ -3,6 +3,7 @@
 #include "color_data/color_map_enums.h"
 #include "color_maps_base.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 
 #include <cstddef>
@@ -53,7 +54,7 @@ private:
   PixelChannelType m_defaultAlpha;
 };
 
-enum class ColorMapGroup
+enum class ColorMapGroup : UnderlyingEnumType
 {
   ALL, // all possible maps
   PERCEPTUALLY_UNIFORM_SEQUENTIAL,

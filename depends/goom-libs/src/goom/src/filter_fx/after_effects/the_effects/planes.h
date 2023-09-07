@@ -2,6 +2,7 @@
 
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -34,7 +35,7 @@ public:
 
   virtual auto SetRandomParams(const Point2dInt& zoomMidpoint, uint32_t screenWidth) -> void;
 
-  enum class PlaneSwirlType
+  enum class PlaneSwirlType : UnderlyingEnumType
   {
     NONE,
     SIN_CURL_SWIRL,
@@ -72,7 +73,7 @@ protected:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
-  enum class PlaneEffectEvents
+  enum class PlaneEffectEvents : UnderlyingEnumType
   {
     ZERO_EFFECTS,
     SMALL_EFFECTS,

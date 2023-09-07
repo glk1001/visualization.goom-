@@ -22,7 +22,7 @@ public:
 
   constexpr auto SetClipRectangle(const Rectangle2dInt& clipRectangle) noexcept -> void;
 
-  enum class ClipResult
+  enum class ClipResult : UnderlyingEnumType
   {
     INSIDE,
     CLIPPED,

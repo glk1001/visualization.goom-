@@ -21,7 +21,7 @@ public:
   [[nodiscard]] auto GetLineDrawer() const noexcept -> const ILineDrawerWithEffects&;
   [[nodiscard]] auto GetLineDrawer() noexcept -> ILineDrawerWithEffects&;
 
-  enum class SwitchLineDrawerType
+  enum class SwitchLineDrawerType : UnderlyingEnumType
   {
     CONST,
     MOVING,

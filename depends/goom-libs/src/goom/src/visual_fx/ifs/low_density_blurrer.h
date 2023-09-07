@@ -5,6 +5,7 @@
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "utils/math/misc.h"
 
 #include <cstddef>
@@ -30,7 +31,7 @@ namespace VISUAL_FX::IFS
 class IfsPoint;
 class Colorizer;
 
-enum class BlurrerColorMode
+enum class BlurrerColorMode : UnderlyingEnumType
 {
   SMOOTH_WITH_NEIGHBOURS,
   SMOOTH_NO_NEIGHBOURS,

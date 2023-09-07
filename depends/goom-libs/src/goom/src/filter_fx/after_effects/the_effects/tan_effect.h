@@ -3,6 +3,7 @@
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -32,7 +33,7 @@ public:
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
       -> UTILS::NameValuePairs;
 
-  enum class TanType
+  enum class TanType : UnderlyingEnumType
   {
     TAN_ONLY,
     COT_ONLY,

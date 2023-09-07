@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom/goom_types.h"
 #include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
 
@@ -16,7 +17,7 @@ namespace GOOM::UTILS::GRAPHICS
 class SmallImageBitmaps
 {
 public:
-  enum class ImageNames
+  enum class ImageNames : UnderlyingEnumType
   {
     CIRCLE,
     SPHERE,

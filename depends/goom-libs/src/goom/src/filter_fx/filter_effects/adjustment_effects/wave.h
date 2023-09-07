@@ -2,6 +2,7 @@
 
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -14,7 +15,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class Wave : public IZoomAdjustmentEffect
 {
 public:
-  enum class Modes
+  enum class Modes : UnderlyingEnumType
   {
     SQ_DIST_ANGLE_EFFECT_MODE0,
     SQ_DIST_ANGLE_EFFECT_MODE1,
@@ -31,13 +32,13 @@ public:
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
-  enum class AngleEffect
+  enum class AngleEffect : UnderlyingEnumType
   {
     ATAN,
     SQ_DIST,
     SQ_DIST_AND_SPIRAL
   };
-  enum class WaveEffect
+  enum class WaveEffect : UnderlyingEnumType
   {
     WAVE_SIN_EFFECT,
     WAVE_COS_EFFECT,

@@ -1,9 +1,11 @@
 #pragma once
 
+#include "goom/goom_types.h"
+
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
-enum class AfterEffectsTypes
+enum class AfterEffectsTypes : UnderlyingEnumType
 {
   HYPERCOS,
   IMAGE_VELOCITY,

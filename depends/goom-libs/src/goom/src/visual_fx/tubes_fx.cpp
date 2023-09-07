@@ -154,7 +154,6 @@ private:
   const FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
-  uint64_t m_updateNum            = 0;
 
   GoomDrawToContainer m_drawToContainer{m_fxHelper->draw->GetDimensions()};
   GoomDrawToMany m_drawToMany{
@@ -327,7 +326,6 @@ TubesFx::TubeFxImpl::TubeFxImpl(const FxHelper& fxHelper,
 
 auto TubesFx::TubeFxImpl::Start() -> void
 {
-  m_updateNum                   = 0;
   m_numCapturedPrevShapesGroups = 0;
 
   InitTubes();
@@ -575,8 +573,6 @@ inline auto TubesFx::TubeFxImpl::UpdatePixelBlender() noexcept -> void
 
 auto TubesFx::TubeFxImpl::DoUpdates() -> void
 {
-  ++m_updateNum;
-
   m_colorMapTimer.Increment();
   m_changedSpeedTimer.Increment();
   m_jitterTimer.Increment();

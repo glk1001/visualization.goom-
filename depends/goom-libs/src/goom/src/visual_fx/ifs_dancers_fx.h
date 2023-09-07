@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom/goom_types.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
 
@@ -22,7 +23,7 @@ struct FxHelper;
 class IfsDancersFx : public IVisualFx
 {
 public:
-  enum class ColorMode
+  enum class ColorMode : UnderlyingEnumType
   {
     _NULL = -1, // NOLINT: Need special name here
     MAP_COLORS,

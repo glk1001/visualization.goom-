@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "random_color_maps.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -12,7 +13,7 @@ class RandomColorMapsGroups
 public:
   explicit RandomColorMapsGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
-  enum class Groups
+  enum class Groups : UnderlyingEnumType
   {
     ALL_MAPS_UNWEIGHTED,
     ALL_STANDARD_MAPS,

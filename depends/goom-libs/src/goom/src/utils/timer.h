@@ -1,6 +1,7 @@
 #pragma once
 
 #include "goom/goom_config.h"
+#include "goom/goom_types.h"
 
 #include <cstdint>
 #include <functional>
@@ -12,10 +13,10 @@ class Timer
 {
 public:
   Timer() noexcept = default;
-  explicit Timer(uint32_t numCount, bool setToFinished = false) noexcept;
+  explicit Timer(uint32_t timeLimit, bool setToFinished = false) noexcept;
 
   [[nodiscard]] auto GetTimeLimit() const noexcept -> uint32_t;
-  auto SetTimeLimit(uint32_t val, bool setToFinished = false) noexcept -> void;
+  auto SetTimeLimit(uint32_t timeLimit, bool setToFinished = false) noexcept -> void;
   auto ResetToZero() noexcept -> void;
   auto SetToFinished() noexcept -> void;
 
@@ -25,8 +26,8 @@ public:
   [[nodiscard]] auto GetCurrentCount() const noexcept -> uint64_t;
 
 private:
-  uint32_t m_numCount{};
-  uint64_t m_count{};
+  uint32_t m_timeLimit = 0U;
+  uint64_t m_count     = 0U;
 };
 
 class OnOffTimer
@@ -65,7 +66,7 @@ private:
   Timer m_offTimer{m_timerCounts.numOffCount, true};
   Action m_onAction  = nullptr;
   Action m_offAction = nullptr;
-  enum class TimerState
+  enum class TimerState : UnderlyingEnumType
   {
     NO_TIMERS_ACTIVE,
     ON_TIMER_ACTIVE,
@@ -76,8 +77,8 @@ private:
   auto ChangeStateToOn() -> void;
 };
 
-inline Timer::Timer(const uint32_t numCount, const bool setToFinished) noexcept
-  : m_numCount{numCount}, m_count(setToFinished ? m_numCount : 0)
+inline Timer::Timer(const uint32_t timeLimit, const bool setToFinished) noexcept
+  : m_timeLimit{timeLimit}, m_count(setToFinished ? m_timeLimit : 0)
 {
 }
 
@@ -88,12 +89,12 @@ inline auto Timer::GetCurrentCount() const noexcept -> uint64_t
 
 inline auto Timer::GetTimeLimit() const noexcept -> uint32_t
 {
-  return m_numCount;
+  return m_timeLimit;
 }
 
-inline auto Timer::SetTimeLimit(const uint32_t val, const bool setToFinished) noexcept -> void
+inline auto Timer::SetTimeLimit(const uint32_t timeLimit, const bool setToFinished) noexcept -> void
 {
-  m_numCount = val;
+  m_timeLimit = timeLimit;
 
   if (setToFinished)
   {
@@ -107,12 +108,12 @@ inline auto Timer::SetTimeLimit(const uint32_t val, const bool setToFinished) no
 
 inline auto Timer::JustFinished() const noexcept -> bool
 {
-  return m_count == m_numCount;
+  return m_count == m_timeLimit;
 }
 
 inline auto Timer::Finished() const noexcept -> bool
 {
-  return m_count >= m_numCount;
+  return m_count >= m_timeLimit;
 }
 
 inline auto Timer::ResetToZero() noexcept -> void
@@ -122,7 +123,7 @@ inline auto Timer::ResetToZero() noexcept -> void
 
 inline auto Timer::SetToFinished() noexcept -> void
 {
-  m_count = m_numCount;
+  m_count = m_timeLimit;
 }
 
 inline auto Timer::Increment() noexcept -> void

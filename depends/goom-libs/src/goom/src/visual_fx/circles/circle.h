@@ -10,6 +10,7 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "helper.h"
 #include "utils/enum_utils.h"
@@ -131,7 +132,7 @@ private:
   };
   auto UpdateRotatingColorMaps() noexcept -> void;
 
-  enum class GridColorRange
+  enum class GridColorRange : UnderlyingEnumType
   {
     ONE,
     LOW,

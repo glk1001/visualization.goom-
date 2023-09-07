@@ -3,6 +3,7 @@
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
@@ -98,7 +99,7 @@ private:
 
   [[nodiscard]] auto GetNextPixelBlenderParams() const noexcept
       -> VISUAL_FX::IVisualFx::PixelBlenderParams;
-  enum class GlobalBlendType
+  enum class GlobalBlendType : UnderlyingEnumType
   {
     NONRANDOM,
     ASYNC_RANDOM,

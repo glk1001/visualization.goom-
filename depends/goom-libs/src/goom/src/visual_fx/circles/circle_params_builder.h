@@ -1,6 +1,7 @@
 #pragma once
 
 #include "circle.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "visual_fx/fx_helper.h"
@@ -16,7 +17,7 @@ class CircleParamsBuilder
 public:
   CircleParamsBuilder(uint32_t numCircles, const FxHelper& fxHelper) noexcept;
 
-  enum class CircleStartModes
+  enum class CircleStartModes : UnderlyingEnumType
   {
     SAME_RADIUS,
     REDUCING_RADIUS,
@@ -25,7 +26,7 @@ public:
   };
   auto SetCircleStartMode(CircleStartModes mode) noexcept -> void;
 
-  enum class CircleTargetModes
+  enum class CircleTargetModes : UnderlyingEnumType
   {
     FOUR_CORNERS,
     SIMILAR_TARGETS,

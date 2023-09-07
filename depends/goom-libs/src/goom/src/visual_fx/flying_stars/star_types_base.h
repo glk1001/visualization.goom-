@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
@@ -30,7 +31,7 @@ public:
   [[nodiscard]] virtual auto GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept
       -> float = 0;
 
-  enum class ColorMapMode
+  enum class ColorMapMode : UnderlyingEnumType
   {
     ONE_MAP_PER_ANGLE,
     ONE_MAP_FOR_ALL_ANGLES,

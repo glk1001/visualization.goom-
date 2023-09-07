@@ -7,6 +7,7 @@
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/circle_drawer.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "helper.h"
 #include "utils/enum_utils.h"
@@ -42,7 +43,7 @@ private:
   static constexpr float MAX_BGND_MIX_T = 0.8F;
   float m_bgndMainColorMixT;
   float m_bgndLowColorMixT;
-  enum class DecorationType
+  enum class DecorationType : UnderlyingEnumType
   {
     NO_DECORATION,
     BLACK_LINES,
