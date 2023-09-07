@@ -18,6 +18,7 @@
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
+#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
@@ -138,10 +139,11 @@ constexpr auto* RESOURCES_DIRECTORY = "";
 const auto GOOM_RAND                = GoomRand{};
 
 const auto SOUND_INFO   = SoundInfo{};
-const auto SOUND_EVENTS = GoomSoundEvents{SOUND_INFO};
+const auto GOOM_TIME    = GoomTime{};
+const auto SOUND_EVENTS = GoomSoundEvents{GOOM_TIME, SOUND_INFO};
 const auto GOOM_INFO    = PluginInfo{
        {WIDTH, HEIGHT},
-       SOUND_EVENTS
+       GOOM_TIME, SOUND_EVENTS
 };
 constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT}

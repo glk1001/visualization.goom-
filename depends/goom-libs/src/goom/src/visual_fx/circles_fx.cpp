@@ -8,6 +8,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_time.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
@@ -70,7 +71,6 @@ private:
 
   auto DrawCircles() noexcept -> void;
   auto IncrementTs() noexcept -> void;
-  uint64_t m_updateNum = 0;
   auto UpdateStates() noexcept -> void;
   auto UpdateCirclePathParams() noexcept -> void;
   [[nodiscard]] auto GetPathParams() const noexcept -> std::vector<OscillatingFunction::Params>;
@@ -265,8 +265,6 @@ inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
 
 inline auto CirclesFx::CirclesFxImpl::Start() noexcept -> void
 {
-  m_updateNum = 0;
-
   m_blankAtTargetTimer.SetToFinished();
   m_pauseAtStartTimer.SetToFinished();
 
@@ -316,9 +314,8 @@ inline auto CirclesFx::CirclesFxImpl::IncrementTs() noexcept -> void
 
 inline auto CirclesFx::CirclesFxImpl::UpdateStates() noexcept -> void
 {
-  ++m_updateNum;
-
-  if (static constexpr auto NUM_UPDATE_SKIPS = 10U; (m_updateNum % NUM_UPDATE_SKIPS) != 0)
+  if (static constexpr auto NUM_UPDATE_SKIPS = 10U;
+      (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % NUM_UPDATE_SKIPS) != 0)
   {
     return;
   }

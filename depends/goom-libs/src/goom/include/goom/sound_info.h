@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <limits>
 #include <span> // NOLINT: Waiting to use C++20.
 
@@ -79,8 +78,6 @@ public:
   [[nodiscard]] auto GetAllTimesMinVolume() const -> float;
 
 private:
-  uint32_t m_updateNum = 0;
-
   float m_volume       = 0.0F;
   float m_acceleration = 0.0F;
   float m_speed        = 0.0F;

@@ -1,6 +1,7 @@
 #include "goom_sound_events.h"
 
 #include "goom/goom_config.h"
+#include "goom/goom_time.h"
 #include "goom/sound_info.h"
 
 #include <algorithm>
@@ -8,14 +9,13 @@
 namespace GOOM::CONTROL
 {
 
-GoomSoundEvents::GoomSoundEvents(const SoundInfo& soundInfo) noexcept : m_soundInfo{&soundInfo}
+GoomSoundEvents::GoomSoundEvents(const GoomTime& goomTime, const SoundInfo& soundInfo) noexcept
+  : m_goomTime{&goomTime}, m_soundInfo{&soundInfo}
 {
 }
 
 auto GoomSoundEvents::Update() noexcept -> void
 {
-  ++m_updateNum;
-
   UpdateLastGoom();
   UpdateLastBigGoom();
   CheckSettledGoomLimits();
@@ -42,7 +42,7 @@ auto GoomSoundEvents::UpdateLastGoom() -> void
 
   // Toute les 2 secondes: vérifier si le taux de goom est correct et le modifier sinon.
   // Every 2 seconds: check if the goom rate is correct and modify it otherwise.
-  if (0 == (m_updateNum % CYCLE_TIME))
+  if (0 == (m_goomTime->GetCurrentTime() % CYCLE_TIME))
   {
     CheckGoomRate();
   }
@@ -123,7 +123,8 @@ auto GoomSoundEvents::UpdateLastBigGoom() -> void
 
 inline void GoomSoundEvents::CheckSettledGoomLimits()
 {
-  if (static constexpr auto NUM_UPDATES_TO_SETTLE = 5U; m_updateNum <= NUM_UPDATES_TO_SETTLE)
+  if (static constexpr auto NUM_UPDATES_TO_SETTLE = 5U;
+      m_goomTime->GetCurrentTime() <= NUM_UPDATES_TO_SETTLE)
   {
     m_goomLimit    = m_soundInfo->GetAcceleration() + GOOM_LIMIT_SHORT_CYCLE_INCREMENT;
     m_bigGoomLimit = BIG_GOOM_FACTOR * m_goomLimit;

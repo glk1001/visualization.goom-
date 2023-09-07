@@ -2,6 +2,7 @@
 
 #include "color/color_maps.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
@@ -78,6 +79,7 @@ private:
   [[nodiscard]] static auto GetTentacleDrivers(
       IGoomDraw& draw,
       const IGoomRand& goomRand,
+      const GoomTime& goomTime,
       const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
       PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>;
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
@@ -190,6 +192,7 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
     m_tentacleDrivers{GetTentacleDrivers(
         *fxHelper.draw,
         *m_fxHelper->goomRand,
+        m_fxHelper->goomInfo->GetTime(),
         {{
            CirclesTentacleLayout{{LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES}},
            CirclesTentacleLayout{{LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES}},
@@ -228,13 +231,14 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 auto TentaclesFx::TentaclesImpl::GetTentacleDrivers(
     IGoomDraw& draw,
     const IGoomRand& goomRand,
+    const GoomTime& goomTime,
     const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
     const PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>
 {
   auto tentacleDrivers = std::vector<TentacleDriver>{};
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)
   {
-    tentacleDrivers.emplace_back(draw, goomRand, tentacleLayouts.at(i), defaultAlpha);
+    tentacleDrivers.emplace_back(draw, goomRand, goomTime, tentacleLayouts.at(i), defaultAlpha);
   }
 
   for (auto i = 0U; i < NUM_TENTACLE_DRIVERS; ++i)

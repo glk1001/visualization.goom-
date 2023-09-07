@@ -1,4 +1,5 @@
 #include "control/goom_sound_events.h"
+#include "goom/goom_time.h"
 #include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 #include "utils/math/misc.h"
@@ -114,8 +115,9 @@ TEST_CASE("Test AudioSamples Arrays")
 
 TEST_CASE("Test SoundInfo ProcessSample Defaults")
 {
+  auto goomTime        = GoomTime{};
   auto soundInfo       = SoundInfo{};
-  auto goomSoundEvents = GoomSoundEvents{soundInfo};
+  auto goomSoundEvents = GoomSoundEvents{goomTime, soundInfo};
 
   REQUIRE(soundInfo.GetVolume() == Approx(0.0F));
   REQUIRE(goomSoundEvents.GetTimeSinceLastGoom() == 0);

@@ -8,6 +8,7 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_time.h"
 #include "goom/point2d.h"
 #include "tentacle2d.h"
 #include "tentacle3d.h"
@@ -100,9 +101,11 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
                                const IGoomRand& goomRand,
+                               const GoomTime& goomTime,
                                const CirclesTentacleLayout& tentacleLayout,
                                const PixelChannelType defaultAlpha) noexcept
   : m_goomRand{&goomRand},
+    m_goomTime{&goomTime},
     m_screenCentre{draw.GetDimensions().GetCentrePoint()},
     m_colorMaps{defaultAlpha},
     m_tentacleParams{
@@ -204,7 +207,6 @@ auto TentacleDriver::StartIterating() -> void
                 end(m_tentacles),
                 [](auto& tentacle) { tentacle.tentacle3D.StartIterating(); });
 
-  m_updateNum = 0;
   m_endCentrePosT.Reset();
 }
 
@@ -222,7 +224,7 @@ auto TentacleDriver::MultiplyIterZeroYValWaveFreq(const float value) -> void
 
 auto TentacleDriver::CheckForTimerEvents() -> void
 {
-  if ((m_updateNum % CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES) != 0U)
+  if ((m_goomTime->GetCurrentTime() % CHANGE_CURRENT_COLOR_MAP_GROUP_EVERY_N_UPDATES) != 0U)
   {
     return;
   }
@@ -312,8 +314,6 @@ auto TentacleDriver::GetNewRadiusEndCentrePosOffset(
 
 auto TentacleDriver::Update() -> void
 {
-  ++m_updateNum;
-
   CheckForTimerEvents();
 
   PreDrawUpdateTentacles();

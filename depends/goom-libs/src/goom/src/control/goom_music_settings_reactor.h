@@ -63,8 +63,6 @@ private:
   static constexpr uint32_t CHANGE_SWITCH_VALUES_LOCK_TIME         = 150;
   GoomLock m_lock{}; // pour empecher de nouveaux changements
 
-  uint32_t m_updateNum = 0;
-
   static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 300;
   static constexpr auto MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 500;
   int32_t m_maxTimeBetweenFilterSettingsChange      = MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE;

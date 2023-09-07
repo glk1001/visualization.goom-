@@ -36,7 +36,6 @@ GoomMusicSettingsReactor::GoomMusicSettingsReactor(
 
 auto GoomMusicSettingsReactor::Start() -> void
 {
-  m_updateNum   = 0;
   m_timeInState = 0;
 
   DoChangeState();
@@ -44,7 +43,6 @@ auto GoomMusicSettingsReactor::Start() -> void
 
 auto GoomMusicSettingsReactor::NewCycle() -> void
 {
-  ++m_updateNum;
   ++m_timeInState;
   m_lock.Update();
 }
@@ -53,7 +51,7 @@ auto GoomMusicSettingsReactor::RegularlyLowerTheSpeed() -> void
 {
   static constexpr auto LOWER_SPEED_CYCLES = 73U;
 
-  if ((0 == (m_updateNum % LOWER_SPEED_CYCLES)) and
+  if ((0 == (m_goomInfo->GetTime().GetCurrentTime() % LOWER_SPEED_CYCLES)) and
       (m_filterSettingsService->GetROVitesse().IsFasterThan(FILTER_FX::Vitesse::FAST_SPEED)))
   {
     m_filterSettingsService->GetRWVitesse().GoSlowerBy(1U);
@@ -67,7 +65,7 @@ auto GoomMusicSettingsReactor::BigBreakIfMusicIsCalm() -> void
 
   if ((m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed() < CALM_SOUND_SPEED) and
       (m_filterSettingsService->GetROVitesse().IsFasterThan(FILTER_FX::Vitesse::CALM_SPEED)) and
-      (0 == (m_updateNum % CALM_CYCLES)))
+      (0 == (m_goomInfo->GetTime().GetCurrentTime() % CALM_CYCLES)))
   {
     BigBreak();
   }
@@ -189,7 +187,7 @@ inline auto GoomMusicSettingsReactor::ChangeSpeedReverse() -> void
 
   if (static constexpr auto REVERSE_VITESSE_CYCLES = 13U;
       (m_filterSettingsService->GetROVitesse().GetReverseVitesse()) and
-      ((m_updateNum % REVERSE_VITESSE_CYCLES) != 0) and
+      ((m_goomInfo->GetTime().GetCurrentTime() % REVERSE_VITESSE_CYCLES) != 0) and
       m_goomRand->ProbabilityOf(PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED))
   {
     m_filterSettingsService->GetRWVitesse().SetReverseVitesse(false);
@@ -271,7 +269,7 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   // on accelere
   if (static constexpr auto VITESSE_CYCLES = 3U;
       ((currentVitesse > Vitesse::FASTER_SPEED) and (newVitesse > Vitesse::EVEN_FASTER_SPEED) and
-       (0 == (m_updateNum % VITESSE_CYCLES))) or
+       (0 == (m_goomInfo->GetTime().GetCurrentTime() % VITESSE_CYCLES))) or
       m_goomRand->ProbabilityOf(PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
   {
     filterVitesse.SetVitesse(Vitesse::SLOWEST_SPEED);

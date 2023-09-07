@@ -31,6 +31,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
@@ -101,8 +102,8 @@ public:
 
 private:
   const GoomControl::GoomControlImpl* m_goomControl = nullptr;
-  static constexpr auto MIN_UPDATE_NUM_TO_LOG       = 0U;
-  static constexpr auto MAX_UPDATE_NUM_TO_LOG       = 1000000000U;
+  static constexpr auto MIN_UPDATE_NUM_TO_LOG       = static_cast<uint64_t>(0);
+  static constexpr auto MAX_UPDATE_NUM_TO_LOG       = static_cast<uint64_t>(1000000000);
 };
 
 class GoomControl::GoomControlImpl
@@ -112,7 +113,7 @@ public:
                   const std::string& resourcesDirectory,
                   GoomLogger& goomLogger);
 
-  [[nodiscard]] auto GetUpdateNum() const -> uint32_t;
+  [[nodiscard]] auto GetUpdateNum() const -> uint64_t;
 
   auto SetShowSongTitle(ShowSongTitleType value) -> void;
 
@@ -132,8 +133,9 @@ public:
 private:
   Parallel m_parallel{GetNumAvailablePoolThreads()};
   [[nodiscard]] static auto GetNumAvailablePoolThreads() noexcept -> int32_t;
+  GoomTime m_goomTime{};
   SoundInfo m_soundInfo{};
-  GoomSoundEvents m_goomSoundEvents{m_soundInfo};
+  GoomSoundEvents m_goomSoundEvents{m_goomTime, m_soundInfo};
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
   GoomRand m_goomRand{};
@@ -146,10 +148,9 @@ private:
   auto UpdateFrameDataFilterSrcePosBuffer() const noexcept -> void;
   auto UpdateFrameDataFilterDestPosBuffer() noexcept -> void;
 
-  bool m_noZooms       = false;
-  uint32_t m_updateNum = 0;
-  PixelBuffer* m_p1    = nullptr;
-  PixelBuffer* m_p2    = nullptr;
+  bool m_noZooms    = false;
+  PixelBuffer* m_p1 = nullptr;
+  PixelBuffer* m_p2 = nullptr;
 
   FilterSettingsService m_filterSettingsService;
   FilterBuffersService m_filterBuffersService;
@@ -184,7 +185,7 @@ private:
   float m_upperLimitOfTimeIntervalInMsSinceLastMarked =
       UPDATE_TIME_SAFETY_FACTOR *
       (static_cast<float>(m_numUpdatesBetweenTimeChecks) * UPDATE_TIME_ESTIMATE_IN_MS);
-  auto UpdateTime() -> void;
+  auto UpdateTimeDependencies() -> void;
 
   SongInfo m_songInfo{};
   ShowSongTitleType m_showTitle = ShowSongTitleType::AT_START;
@@ -298,7 +299,7 @@ auto GoomControl::MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>
 GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
                                               const std::string& resourcesDirectory,
                                               GoomLogger& goomLogger)
-  : m_goomInfo{dimensions, m_goomSoundEvents},
+  : m_goomInfo{dimensions, m_goomTime, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
     m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
     m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
@@ -332,9 +333,9 @@ auto GoomControl::GoomControlImpl::GetNumAvailablePoolThreads() noexcept -> int3
   return std::max(MIN_NUM_THREADS, numHardwareThreads - NUM_FREE_THREADS);
 }
 
-inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint32_t
+inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint64_t
 {
-  return m_updateNum;
+  return m_goomTime.GetCurrentTime();
 }
 
 inline auto GoomControl::GoomControlImpl::SetShowSongTitle(const ShowSongTitleType value) -> void
@@ -453,7 +454,7 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
   m_runningTimeStopwatch.StartNow();
 
   m_numUpdatesBetweenTimeChecks = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
-  m_updateNum                   = 0;
+  m_goomTime.ResetTime();
 }
 
 inline auto GoomControl::GoomControlImpl::Finish() -> void
@@ -560,13 +561,13 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
 
 inline auto GoomControl::GoomControlImpl::NewCycle() -> void
 {
-  ++m_updateNum;
+  m_goomTime.UpdateTime();
 
   m_visualFx.SetAllowMultiThreadedStates(m_goomTitleDisplayer.IsFinished());
   m_musicSettingsReactor.NewCycle();
   m_filterSettingsService.NewCycle();
 
-  UpdateTime();
+  UpdateTimeDependencies();
 }
 
 inline auto GoomControl::GoomControlImpl::SetSongInfo(const SongInfo& songInfo) -> void
@@ -584,13 +585,13 @@ inline auto GoomControl::GoomControlImpl::SetSongInfo(const SongInfo& songInfo) 
   InitTitleDisplay();
 }
 
-auto GoomControl::GoomControlImpl::UpdateTime() -> void
+auto GoomControl::GoomControlImpl::UpdateTimeDependencies() -> void
 {
   if (0 == m_songInfo.duration)
   {
     return;
   }
-  if (0 != (m_updateNum % m_numUpdatesBetweenTimeChecks))
+  if (0 != (m_goomTime.GetCurrentTime() % m_numUpdatesBetweenTimeChecks))
   {
     return;
   }
@@ -781,7 +782,7 @@ inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string
                             m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
   // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return timeLeftStr + "\n" + std_fmt::format("Update Num: {}", m_updateNum);
+  return timeLeftStr + "\n" + std_fmt::format("Update Num: {}", m_goomTime.GetCurrentTime());
 }
 
 } // namespace GOOM

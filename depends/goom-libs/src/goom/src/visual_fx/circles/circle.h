@@ -10,6 +10,7 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "helper.h"
@@ -64,13 +65,12 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
+  const GoomTime* m_goomTime;
   Helper m_helper;
   DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer;
 
-  uint64_t m_updateNum = 0U;
   [[nodiscard]] auto IsSpecialUpdateNum() const noexcept -> bool;
   [[nodiscard]] auto IsSpecialLineUpdateNum() const noexcept -> bool;
-  auto UpdateTime() noexcept -> void;
   auto ResetNumSteps() noexcept -> void;
 
   class CircleDots;

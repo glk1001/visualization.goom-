@@ -7,6 +7,7 @@
 #include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_time.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
@@ -91,7 +92,6 @@ private:
 
   float m_screenWidth         = m_fxHelper->goomInfo->GetDimensions().GetFltWidth();
   float m_screenHeight        = m_fxHelper->goomInfo->GetDimensions().GetFltHeight();
-  uint32_t m_updateNum        = 0;
   int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
   int32_t m_lineMode          = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
   uint32_t m_stopLines        = 0;
@@ -236,8 +236,6 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
 
 inline auto LinesFx::LinesImpl::Start() noexcept -> void
 {
-  m_updateNum = 0;
-
   std::for_each(begin(m_lineMorphs), end(m_lineMorphs), [](LineMorph& line) { line.Start(); });
 }
 
@@ -320,8 +318,6 @@ inline auto LinesFx::LinesImpl::SetSoundData(const AudioSamples& soundData) noex
 
 inline auto LinesFx::LinesImpl::ApplyToImageBuffers() noexcept -> void
 {
-  ++m_updateNum;
-
   UpdatePixelBlender();
   UpdateScopes();
   UpdateLineModes();
@@ -346,7 +342,7 @@ inline auto LinesFx::LinesImpl::UpdatePixelBlender() noexcept -> void
 inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
 {
   static constexpr auto NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200U;
-  if (0 == (m_updateNum % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
+  if (0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
     m_isNearScope = m_fxHelper->goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
     m_isFarScope  = m_fxHelper->goomRand->ProbabilityOf(PROB_FAR_SCOPE);
@@ -380,7 +376,8 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
   static constexpr auto CHANGE_GOOM_LINE_CYCLES = 121U;
   static constexpr auto GOOM_CYCLE_MOD_CHANGE   = 9U;
 
-  if ((GOOM_CYCLE_MOD_CHANGE == (m_updateNum % CHANGE_GOOM_LINE_CYCLES)) and
+  if ((GOOM_CYCLE_MOD_CHANGE ==
+       (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % CHANGE_GOOM_LINE_CYCLES)) and
       m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
       ((0 == m_lineMode) or (m_lineMode == m_drawLinesDuration)))
   {
@@ -608,13 +605,13 @@ auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
       m_lineMode = 0;
     }
   }
-  else if ((0 == (m_updateNum % DEC_LINE_MODE_CYCLES)) and
+  else if ((0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % DEC_LINE_MODE_CYCLES)) and
            m_fxHelper->goomRand->ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
   {
     --m_lineMode;
   }
 
-  if ((0 == (m_updateNum % UPDATE_LINE_MODE_CYCLES)) and
+  if ((0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % UPDATE_LINE_MODE_CYCLES)) and
       m_fxHelper->goomRand->ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
   {
     if (0 == m_lineMode)

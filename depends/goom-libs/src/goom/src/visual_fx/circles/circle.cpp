@@ -15,6 +15,7 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
+#include "goom_plugin_info.h"
 #include "helper.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
@@ -186,6 +187,7 @@ Circle::Circle(const FxHelper& fxHelper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
   : m_goomRand{fxHelper.goomRand},
+    m_goomTime{&fxHelper.goomInfo->GetTime()},
     m_helper{helper},
     m_lineDrawer{*fxHelper.draw, *fxHelper.goomRand,
                  {CIRCLE_NOISE_RADIUS, NUM_CIRCLE_NOISE_PIXELS}},
@@ -253,7 +255,8 @@ inline auto Circle::GetColorMixT([[maybe_unused]] const float tX,
 
 inline auto Circle::UpdateNumDifferentGridMaps() noexcept -> void
 {
-  if (static constexpr auto NUM_UPDATE_SKIPS = 5U; (m_updateNum % NUM_UPDATE_SKIPS) != 0)
+  if (static constexpr auto NUM_UPDATE_SKIPS = 5U;
+      (m_goomTime->GetCurrentTime() % NUM_UPDATE_SKIPS) != 0)
   {
     return;
   }
@@ -395,24 +398,17 @@ auto Circle::SetGlobalBrightnessFactor(const float val) noexcept -> void
 
 auto Circle::Start() noexcept -> void
 {
-  m_updateNum = 0;
   m_circleDots->GetDotPaths().ChangeDirection(DotPaths::Direction::TO_TARGET);
 }
 
 auto Circle::UpdateAndDraw() noexcept -> void
 {
-  UpdateTime();
   DrawNextCircle();
 
   if (m_resetNumDotsRequired)
   {
     ResetNumDots();
   }
-}
-
-inline auto Circle::UpdateTime() noexcept -> void
-{
-  ++m_updateNum;
 }
 
 inline auto Circle::DrawNextCircle() noexcept -> void
@@ -526,7 +522,7 @@ inline auto Circle::GetDotBrightness(const float brightness) const noexcept -> f
 inline auto Circle::IsSpecialUpdateNum() const noexcept -> bool
 {
   static constexpr auto SPECIAL_UPDATE_MULTIPLE = 5U;
-  return 0 == (m_updateNum % SPECIAL_UPDATE_MULTIPLE);
+  return 0 == (m_goomTime->GetCurrentTime() % SPECIAL_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
@@ -536,7 +532,7 @@ inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
     return true;
   }
   static constexpr auto LINE_UPDATE_MULTIPLE = 8U;
-  return 0 == (m_updateNum % LINE_UPDATE_MULTIPLE);
+  return 0 == (m_goomTime->GetCurrentTime() % LINE_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::GetLineBrightness(const float brightness) const noexcept -> float

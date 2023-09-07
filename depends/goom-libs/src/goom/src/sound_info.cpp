@@ -58,8 +58,6 @@ auto AudioSamples::GetMinMaxSampleValues(
 
 void SoundInfo::ProcessSample(const AudioSamples& samples)
 {
-  ++m_updateNum;
-
   const auto prevVolume = m_volume;
   UpdateVolume(samples);
 

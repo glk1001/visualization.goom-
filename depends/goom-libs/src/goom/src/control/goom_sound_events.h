@@ -1,5 +1,6 @@
 #pragma once
 
+#include "goom/goom_time.h"
 #include "goom/sound_info.h"
 
 #include <cstdint>
@@ -10,7 +11,7 @@ namespace GOOM::CONTROL
 class GoomSoundEvents
 {
 public:
-  explicit GoomSoundEvents(const SoundInfo& soundInfo) noexcept;
+  GoomSoundEvents(const GoomTime& goomTime, const SoundInfo& soundInfo) noexcept;
 
   [[nodiscard]] auto GetSoundInfo() const noexcept -> const SoundInfo&;
 
@@ -31,9 +32,8 @@ public:
   [[nodiscard]] auto GetBigGoomLimit() const noexcept -> float;
 
 private:
+  const GoomTime* m_goomTime;
   const SoundInfo* m_soundInfo;
-
-  uint32_t m_updateNum = 0;
 
   uint32_t m_totalGoomsInCurrentCycle             = 0;
   uint32_t m_timeSinceLastGoom                    = 0;

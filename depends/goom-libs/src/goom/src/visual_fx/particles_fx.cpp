@@ -12,9 +12,11 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
+#include "goom_plugin_info.h"
 #include "particles/effects/attractor_effect.h"
 #include "particles/effects/effect.h"
 #include "utils/graphics/camera.h"
@@ -290,7 +292,6 @@ private:
   //const SmallImageBitmaps* m_smallBitmaps;
   static constexpr auto DEFAULT_PARTICLES_FX_ALPHA = MAX_ALPHA / 20U;
   PixelChannelType m_defaultAlpha                  = DEFAULT_PARTICLES_FX_ALPHA;
-  uint64_t m_updateNum                             = 0U;
   auto UpdateCounter() noexcept -> void;
 
   static constexpr auto ADD_WEIGHT          = 100.0F;
@@ -513,7 +514,6 @@ inline auto ParticlesFx::ParticlesFxImpl::GetScreenPositionOffset() const noexce
 
 inline auto ParticlesFx::ParticlesFxImpl::Start() noexcept -> void
 {
-  m_updateNum = 0U;
   ResetEffect();
 }
 
@@ -540,8 +540,7 @@ inline auto ParticlesFx::ParticlesFxImpl::UpdateEffect() noexcept -> void
 
 inline auto ParticlesFx::ParticlesFxImpl::UpdateCounter() noexcept -> void
 {
-  ++m_updateNum;
-  if (0 == (m_updateNum % m_numUpdatesBeforeReset))
+  if (0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % m_numUpdatesBeforeReset))
   {
     ResetEffect();
   }

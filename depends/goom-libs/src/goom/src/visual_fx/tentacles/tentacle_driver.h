@@ -6,6 +6,7 @@
 #include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_time.h"
 #include "goom/point2d.h"
 #include "tentacle2d.h"
 #include "tentacle3d.h"
@@ -14,7 +15,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -27,6 +27,7 @@ class TentacleDriver
 public:
   TentacleDriver(DRAW::IGoomDraw& draw,
                  const UTILS::MATH::IGoomRand& goomRand,
+                 const GoomTime& goomTime,
                  const CirclesTentacleLayout& tentacleLayout,
                  PixelChannelType defaultAlpha) noexcept;
 
@@ -45,6 +46,7 @@ public:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
+  const GoomTime* m_goomTime;
   Point2dInt m_screenCentre;
 
   COLOR::ColorMaps m_colorMaps;
@@ -102,7 +104,6 @@ private:
   float m_lowColorSegmentMixT                       = DEFAULT_COLOR_SEGMENT_MIX_T;
   auto ChangeSegmentMixes() noexcept -> void;
 
-  size_t m_updateNum = 0U;
   auto CheckForTimerEvents() -> void;
 
   using StepType = UTILS::TValue::StepType;
