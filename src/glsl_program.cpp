@@ -378,6 +378,12 @@ auto GlslProgram::SetUniform(const std::string_view& name, const float val) -> v
   glUniform1f(loc, val);
 }
 
+auto GlslProgram::SetUniform(const std::string_view& name, const std::vector<float>& vals) -> void
+{
+  const auto loc = GetUniformLocation(name);
+  glUniform1fv(loc, static_cast<int32_t>(vals.size()), vals.data());
+}
+
 auto GlslProgram::SetUniform(const std::string_view& name, const int val) -> void
 {
   const auto loc = GetUniformLocation(name);

@@ -16,7 +16,7 @@ layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16) uniform image2D img_filterBuff3;
 in vec3 position;
 in vec2 texCoord;
 
-uniform float u_lerpFactor;
+uniform float u_lerpFactor[NUM_LERP_FACTORS];
 uniform float u_buff2Buff3Mix = 0.1;
 
 // For base multiplier, too close to 1, gives washed
@@ -86,12 +86,20 @@ float GetBaseColorMultiplier(vec3 color)
          : mix(LOW_BASE_COLOR_MULTIPLIER, u_baseColorMultiplier, pow(color.r / BLACK_CUTOFF, 5.0));
 }
 
+uint GetLerpFactorIndex(vec2 uv)
+{
+  uint xTile = min(uint(SQRT_NUM_LERP_FACTORS * uv.x), SQRT_NUM_LERP_FACTORS - 1);
+  uint yTile = min(uint(SQRT_NUM_LERP_FACTORS * uv.y), SQRT_NUM_LERP_FACTORS - 1);
+
+  return (SQRT_NUM_LERP_FACTORS * yTile) + xTile;
+}
+
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)
 {
   vec2 srceNormalizedPos = texture(tex_filterSrcePositions, uv).xy;
   vec2 destNormalizedPos = texture(tex_filterDestPositions, uv).xy;
 
-  vec2 lerpNormalizedPos = mix(srceNormalizedPos, destNormalizedPos, u_lerpFactor);
+  vec2 lerpNormalizedPos = mix(srceNormalizedPos, destNormalizedPos, u_lerpFactor[GetLerpFactorIndex(uv)]);
 
   vec2 filtBuff2Pos = vec2((lerpNormalizedPos.x - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH,
                            (lerpNormalizedPos.y - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH);

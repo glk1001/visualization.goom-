@@ -305,6 +305,8 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
       {              "ASPECT_RATIO",                 std::to_string(m_aspectRatio)},
       {      "FILTER_POS_MIN_COORD",   std::to_string(NormalizedCoords::MIN_COORD)},
       {    "FILTER_POS_COORD_WIDTH", std::to_string(NormalizedCoords::COORD_WIDTH)},
+      {          "NUM_LERP_FACTORS",                       std::to_string(80 * 80)},
+      {     "SQRT_NUM_LERP_FACTORS",                            std::to_string(80)},
   };
 
   try
@@ -587,8 +589,14 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 
 auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept -> void
 {
-  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
-      UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.lerpFactor);
+  auto lerpFactors = std::vector<float>(80 * 80);
+  lerpFactors[0]   = m_frameDataArray.at(pboIndex).miscData.lerpFactor;
+  for (auto i = 1U; i < lerpFactors.size(); ++i)
+  {
+    lerpFactors[i] = 0.99999F * lerpFactors[i - 1];
+  }
+
+  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(UNIFORM_LERP_FACTOR, lerpFactors);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
 }

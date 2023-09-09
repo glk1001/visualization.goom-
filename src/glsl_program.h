@@ -19,6 +19,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace GOOM::OPENGL
 {
@@ -58,6 +59,7 @@ public:
   auto SetUniform(const std::string_view& name, const glm::mat4& mat) -> void;
   auto SetUniform(const std::string_view& name, const glm::mat3& mat) -> void;
   auto SetUniform(const std::string_view& name, float val) -> void;
+  auto SetUniform(const std::string_view& name, const std::vector<float>& vals) -> void;
   auto SetUniform(const std::string_view& name, int val) -> void;
   auto SetUniform(const std::string_view& name, bool val) -> void;
   auto SetUniform(const std::string_view& name, GLuint val) -> void;
