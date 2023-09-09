@@ -2,22 +2,24 @@
 
 // #define DO_GOOM_STATE_DUMP
 
+#include "goom/goom_config.h"
+
 #ifdef DO_GOOM_STATE_DUMP
 
 #include "filter_fx/filter_settings_service.h"
-#include "goom/goom_config.h"
+#include "goom/spimpl.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
 #include "utils/stopwatch.h"
 
 #include <chrono>
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
 namespace GOOM
 {
+class GoomControl;
 class GoomLogger;
 }
 
@@ -29,14 +31,10 @@ class GoomStateDump
 public:
   GoomStateDump(const PluginInfo& goomInfo,
                 GoomLogger& goomLogger,
+                const GoomControl& goomControl,
                 const GoomAllVisualFx& visualFx,
                 const GoomMusicSettingsReactor& musicSettingsReactor,
                 const FILTER_FX::FilterSettingsService& filterSettingsService) noexcept;
-  GoomStateDump(const GoomStateDump&) noexcept = delete;
-  GoomStateDump(GoomStateDump&&) noexcept      = delete;
-  ~GoomStateDump() noexcept;
-  auto operator=(const GoomStateDump&) -> GoomStateDump& = delete;
-  auto operator=(GoomStateDump&&) -> GoomStateDump&      = delete;
 
   auto SetSongTitle(const std::string& songTitle) noexcept -> void;
   auto SetGoomSeed(uint64_t goomSeed) noexcept -> void;
@@ -52,6 +50,7 @@ private:
 
   const PluginInfo* m_goomInfo;
   GoomLogger* m_goomLogger;
+  const GoomControl* m_goomControl;
   const GoomAllVisualFx* m_visualFx;
   const FILTER_FX::FilterSettingsService* m_filterSettingsService;
 
@@ -59,7 +58,7 @@ private:
   std::chrono::high_resolution_clock::time_point m_prevTimeHiRes{};
 
   class CumulativeState;
-  std::unique_ptr<CumulativeState> m_cumulativeState;
+  spimpl::unique_impl_ptr<CumulativeState> m_cumulativeState;
 
   std::string m_songTitle{};
   std::string m_dateTime{};
@@ -68,10 +67,11 @@ private:
 
   std::string m_datedDirectory{};
   auto SetCurrentDatedDirectory(const std::string& parentDirectory) -> void;
-  auto DumpSummary() const noexcept -> void;
+  auto DumpSummary() const -> void;
   template<typename T>
-  auto DumpDataArray(const std::string& filename, const std::vector<T>& dataArray) const noexcept
-      -> void;
+  auto DumpDataArray(const std::string& filename, const std::vector<T>& dataArray) const -> void;
+  template<typename T>
+  [[nodiscard]] static auto GetFormattedRowStr(uint64_t value1, T value2) -> std::string;
 };
 
 inline auto GoomStateDump::SetSongTitle(const std::string& songTitle) noexcept -> void

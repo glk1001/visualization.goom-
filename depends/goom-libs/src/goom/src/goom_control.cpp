@@ -56,6 +56,7 @@
 
 #ifdef DO_GOOM_STATE_DUMP
 #include "control/goom_state_dump.h"
+#include "utils/math/randutils.h"
 #endif
 
 namespace GOOM
@@ -109,7 +110,8 @@ private:
 class GoomControl::GoomControlImpl
 {
 public:
-  GoomControlImpl(const Dimensions& dimensions,
+  GoomControlImpl(const GoomControl& parentGoomControl,
+                  const Dimensions& dimensions,
                   const std::string& resourcesDirectory,
                   GoomLogger& goomLogger);
 
@@ -128,9 +130,11 @@ public:
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
 
+  [[nodiscard]] auto GetFrameData() const noexcept -> const FrameData&;
   [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;
 
 private:
+  [[maybe_unused]] const GoomControl* m_parentGoomControl;
   Parallel m_parallel{GetNumAvailablePoolThreads()};
   GoomTime m_goomTime{};
   SoundInfo m_soundInfo{};
@@ -217,7 +221,8 @@ private:
 GoomControl::GoomControl(const Dimensions& dimensions,
                          const std::string& resourcesDirectory,
                          GoomLogger& goomLogger)
-  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(dimensions, resourcesDirectory, goomLogger)}
+  : m_pimpl{spimpl::make_unique_impl<GoomControlImpl>(
+        *this, dimensions, resourcesDirectory, goomLogger)}
 {
 }
 
@@ -267,6 +272,11 @@ auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std:
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }
 
+auto GoomControl::GetFrameData() const noexcept -> const FrameData&
+{
+  return m_pimpl->GetFrameData();
+}
+
 auto GoomControl::GetNumPoolThreads() const noexcept -> size_t
 {
   return m_pimpl->GetNumPoolThreads();
@@ -295,10 +305,12 @@ auto GoomControl::MakeGoomLogger() noexcept -> std::unique_ptr<GoomLogger>
   return std::make_unique<GoomControlLogger>();
 }
 
-GoomControl::GoomControlImpl::GoomControlImpl(const Dimensions& dimensions,
+GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomControl,
+                                              const Dimensions& dimensions,
                                               const std::string& resourcesDirectory,
                                               GoomLogger& goomLogger)
-  : m_goomInfo{dimensions, m_goomTime, m_goomSoundEvents},
+  : m_parentGoomControl{&parentGoomControl},
+    m_goomInfo{dimensions, m_goomTime, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
     m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
     m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
@@ -408,6 +420,11 @@ inline auto GoomControl::GoomControlImpl::SetDumpDirectory(
 }
 #endif
 
+inline auto GoomControl::GoomControlImpl::GetFrameData() const noexcept -> const FrameData&
+{
+  return *m_frameData;
+}
+
 inline auto GoomControl::GoomControlImpl::GetNumPoolThreads() const noexcept -> size_t
 {
   return m_parallel.GetNumThreadsUsed();
@@ -482,8 +499,12 @@ auto GoomControl::GoomControlImpl::StartVisualFx() noexcept -> void
 #ifdef DO_GOOM_STATE_DUMP
 inline auto GoomControl::GoomControlImpl::StartGoomStateDump() -> void
 {
-  m_goomStateDump = std::make_unique<GoomStateDump>(
-      m_goomInfo, *m_goomLogger, m_visualFx, m_musicSettingsReactor, m_filterSettingsService);
+  m_goomStateDump = std::make_unique<GoomStateDump>(m_goomInfo,
+                                                    *m_goomLogger,
+                                                    *m_parentGoomControl,
+                                                    m_visualFx,
+                                                    m_musicSettingsReactor,
+                                                    m_filterSettingsService);
   m_goomStateDump->Start();
 }
 

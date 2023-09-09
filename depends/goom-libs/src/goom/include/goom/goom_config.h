@@ -1,5 +1,5 @@
 #if defined(REQUIRE_ASSERTS_FOR_ALL_BUILDS) or defined(GOOM_DEBUG)
-#undef NDEBUG
+#undef NDEBUG // NOLINT: Can't include header for this.
 //#define DO_GOOM_STATE_DUMP
 #endif
 
@@ -13,9 +13,9 @@
 
 namespace GOOM
 {
-#define Expects(cond) assert(cond)
-#define Ensures(cond) assert(cond)
-#define USED_FOR_DEBUGGING(x) ((void)(x))
+#define Expects(cond) assert(cond) // NOLINT: Happy with this as a macro.
+#define Ensures(cond) assert(cond) // NOLINT: Happy with this as a macro.
+#define USED_FOR_DEBUGGING(x) ((void)(x)) // NOLINT: Happy with this as a macro.
 
 [[noreturn]] inline auto FailFast() noexcept -> void
 {

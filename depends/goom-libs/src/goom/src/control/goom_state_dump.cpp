@@ -4,11 +4,13 @@
 
 #include "goom_state_dump.h" // NOLINT: Have to include this.
 
-#ifdef DO_GOOM_STATE_DUMP
+#include "goom/goom_config.h"
 
+#ifdef DO_GOOM_STATE_DUMP
 #include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/after_effects/after_effects_types.h"
 #include "filter_fx/filter_settings_service.h"
+#include "goom/goom_control.h"
 #include "goom/goom_logger.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
@@ -18,9 +20,9 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
+#include <format> // NOLINT(misc-include-cleaner): Waiting for C++20.
 #include <fstream>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -35,32 +37,34 @@ using UTILS::GetCurrentDateTimeAsString;
 class GoomStateDump::CumulativeState
 {
 public:
-  CumulativeState() noexcept;
+  CumulativeState() noexcept = default;
 
-  void Reset();
-  void IncrementUpdateNum();
+  auto Reset() noexcept -> void;
+  auto IncrementUpdateNum() noexcept -> void;
 
   [[nodiscard]] auto GetNumUpdates() const -> uint32_t;
+  [[nodiscard]] auto GetGoomTimes() const -> const std::vector<uint64_t>&;
 
-  void AddCurrentUpdateTime(uint32_t timeInMs);
+  auto AddCurrentGoomTime(uint64_t goomTime) noexcept -> void;
+  auto AddCurrentUpdateTime(uint32_t timeInMs) noexcept -> void;
 
-  void AddCurrentGoomState(GoomStates goomState);
-  void AddCurrentFilterMode(ZoomFilterMode filterMode);
-  void AddCurrentHypercosOverlay(HypercosOverlayMode hypercosOverlay);
-  void AddCurrentImageVelocityEffect(bool value);
-  void AddCurrentNoiseEffect(bool value);
-  void AddCurrentPlaneEffect(bool value);
-  void AddCurrentRotationEffect(bool value);
-  void AddCurrentTanEffect(bool value);
-  void AddCurrentXYLerpEffect(bool value);
+  auto AddCurrentGoomState(GoomStates goomState) noexcept -> void;
+  auto AddCurrentFilterMode(ZoomFilterMode filterMode) noexcept -> void;
+  auto AddCurrentHypercosOverlay(HypercosOverlayMode hypercosOverlay) noexcept -> void;
+  auto AddCurrentImageVelocityEffect(bool value) noexcept -> void;
+  auto AddCurrentNoiseEffect(bool value) noexcept -> void;
+  auto AddCurrentPlaneEffect(bool value) noexcept -> void;
+  auto AddCurrentRotationEffect(bool value) noexcept -> void;
+  auto AddCurrentTanEffect(bool value) noexcept -> void;
+  auto AddCurrentXYLerpEffect(bool value) noexcept -> void;
 
-  void AddBufferLerp(uint32_t value);
+  auto AddTransformBufferLerpFactor(float value) noexcept -> void;
 
-  void AddCurrentTimeSinceLastGoom(uint32_t value);
-  void AddCurrentTimeSinceLastBigGoom(uint32_t value);
-  void AddCurrentTotalGoomsInCurrentCycle(uint32_t value);
-  void AddCurrentGoomPower(float value);
-  void AddCurrentGoomVolume(float value);
+  auto AddCurrentTimeSinceLastGoom(uint32_t value) noexcept -> void;
+  auto AddCurrentTimeSinceLastBigGoom(uint32_t value) noexcept -> void;
+  auto AddCurrentTotalGoomsInCurrentCycle(uint32_t value) noexcept -> void;
+  auto AddCurrentGoomPower(float value) noexcept -> void;
+  auto AddCurrentGoomVolume(float value) noexcept -> void;
 
   [[nodiscard]] auto GetUpdateTimesInMs() const -> const std::vector<uint32_t>&;
 
@@ -74,7 +78,7 @@ public:
   [[nodiscard]] auto GetTanEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetXYLerpEffects() const -> const std::vector<uint8_t>&;
 
-  [[nodiscard]] auto GetBufferLerps() const -> const std::vector<uint32_t>&;
+  [[nodiscard]] auto GetTransformBufferLerpFactors() const -> const std::vector<float>&;
 
   [[nodiscard]] auto GetTimesSinceLastGoom() const -> const std::vector<uint32_t>&;
   [[nodiscard]] auto GetTimesSinceLastBigGoom() const -> const std::vector<uint32_t>&;
@@ -88,6 +92,7 @@ private:
   uint32_t m_numUpdatesEstimate                          = INITIAL_NUM_UPDATES_ESTIMATE;
   uint32_t m_updateNum                                   = 0;
 
+  std::vector<uint64_t> m_goomTimes{};
   std::vector<uint32_t> m_updateTimesInMs{};
   std::vector<uint8_t> m_goomStates{};
   std::vector<uint8_t> m_filterModes{};
@@ -99,7 +104,7 @@ private:
   std::vector<uint8_t> m_tanEffects{};
   std::vector<uint8_t> m_xyLerpEffects{};
 
-  std::vector<uint32_t> m_bufferLerps{};
+  std::vector<float> m_bufferLerps{};
 
   std::vector<uint32_t> m_timesSinceLastGoom{};
   std::vector<uint32_t> m_timesSinceLastBigGoom{};
@@ -107,24 +112,24 @@ private:
   std::vector<float> m_goomPowers{};
   std::vector<float> m_goomVolumes{};
 
-  void Reserve();
+  auto Reserve() noexcept -> void;
 };
 
 GoomStateDump::GoomStateDump(const PluginInfo& goomInfo,
                              GoomLogger& goomLogger,
+                             const GoomControl& goomControl,
                              const GoomAllVisualFx& visualFx,
                              [[maybe_unused]] const GoomMusicSettingsReactor& musicSettingsReactor,
                              const FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{&goomInfo},
     m_goomLogger{&goomLogger},
+    m_goomControl{&goomControl},
     m_visualFx{&visualFx},
     //    m_musicSettingsReactor{musicSettingsReactor},
     m_filterSettingsService{&filterSettingsService},
     m_cumulativeState{std::make_unique<CumulativeState>()}
 {
 }
-
-GoomStateDump::~GoomStateDump() noexcept = default;
 
 auto GoomStateDump::Start() noexcept -> void
 {
@@ -135,6 +140,8 @@ auto GoomStateDump::Start() noexcept -> void
 
 auto GoomStateDump::AddCurrentState() noexcept -> void
 {
+  m_cumulativeState->AddCurrentGoomTime(m_goomInfo->GetTime().GetCurrentTime());
+
   const auto timeNow          = std::chrono::high_resolution_clock::now();
   const auto diff             = std::chrono::duration_cast<Ms>(timeNow - m_prevTimeHiRes);
   const auto timeOfUpdateInMs = static_cast<uint32_t>(diff.count());
@@ -143,6 +150,9 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
 
   m_cumulativeState->AddCurrentGoomState(m_visualFx->GetCurrentState());
   m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService->GetCurrentFilterMode());
+
+  m_cumulativeState->AddTransformBufferLerpFactor(
+      m_goomControl->GetFrameData().miscData.lerpFactor);
 
   const auto filterSettings        = m_filterSettingsService->GetFilterSettings();
   using AfterEffects               = FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
@@ -157,9 +167,6 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentTanEffect(afterEffectsSettings.isActive[AfterEffects::TAN_EFFECT]);
   m_cumulativeState->AddCurrentXYLerpEffect(
       afterEffectsSettings.isActive[AfterEffects::XY_LERP_EFFECT]);
-
-  // TODO(glk) - Sort out lerp factor!
-  //m_cumulativeState->AddBufferLerp(m_visualFx->GetZoomFilterFx().GetTranLerpFactor());
 
   const auto& goomSoundEvents = m_goomInfo->GetSoundEvents();
   m_cumulativeState->AddCurrentTimeSinceLastGoom(goomSoundEvents.GetTimeSinceLastGoom());
@@ -201,33 +208,13 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
   DumpDataArray("tan_effects", m_cumulativeState->GetTanEffects());
   DumpDataArray("xyLerp_effects", m_cumulativeState->GetXYLerpEffects());
 
-  DumpDataArray("buffer_lerps", m_cumulativeState->GetBufferLerps());
+  DumpDataArray("buffer_lerps", m_cumulativeState->GetTransformBufferLerpFactors());
 
   DumpDataArray("times_since_last_goom", m_cumulativeState->GetTimesSinceLastGoom());
   DumpDataArray("times_since_last_big_goom", m_cumulativeState->GetTimesSinceLastBigGoom());
   DumpDataArray("total_gooms_in_current_cycle", m_cumulativeState->GetTotalGoomsInCurrentCycle());
   DumpDataArray("goom_powers", m_cumulativeState->GetGoomPowers());
   DumpDataArray("goom_volumes", m_cumulativeState->GetGoomVolumes());
-}
-
-auto GoomStateDump::DumpSummary() const noexcept -> void
-{
-  static constexpr auto* SUMMARY_FILENAME = "summary.dat";
-  auto out                                = std::ofstream{};
-  out.open(m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out);
-
-  out << "Song:       " << m_songTitle << "\n";
-  out << "Date:       " << m_dateTime << "\n";
-  out << "Seed:       " << m_goomSeed << "\n";
-  out << "Width:      " << m_goomInfo->GetDimensions().GetWidth() << "\n";
-  out << "Height:     " << m_goomInfo->GetDimensions().GetHeight() << "\n";
-  out << "Start Time: " << m_stopwatch->GetStartTimeAsStr() << "\n";
-  out << "Stop Time:  " << m_stopwatch->GetLastMarkedTimeAsStr() << "\n";
-  out << "Act Dur:    " << m_stopwatch->GetActualDurationInMs() << "\n";
-  out << "Given Dur:  " << m_stopwatch->GetDurationInMs() << "\n";
-  out << "Time Left:  " << m_stopwatch->GetTimeValues().timeRemainingInMs << "\n";
-
-  out.close();
 }
 
 auto GoomStateDump::SetCurrentDatedDirectory(const std::string& parentDirectory) -> void
@@ -237,40 +224,63 @@ auto GoomStateDump::SetCurrentDatedDirectory(const std::string& parentDirectory)
   std::filesystem::create_directories(m_datedDirectory);
 }
 
-inline std::ostream& operator<<(std::ostream& out, const uint8_t value)
+auto GoomStateDump::DumpSummary() const -> void
 {
-  return out << static_cast<uint32_t>(value);
+  static constexpr auto* SUMMARY_FILENAME = "summary.dat";
+  auto out = std::ofstream{m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out};
+
+  // NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
+  out << fmt::format("Song:       {}\n", m_songTitle);
+  out << fmt::format("Date:       {}\n", m_dateTime);
+  out << fmt::format("Seed:       {}\n", m_goomSeed);
+  out << fmt::format("Width:      {}\n", m_goomInfo->GetDimensions().GetWidth());
+  out << fmt::format("Height:     {}\n", m_goomInfo->GetDimensions().GetHeight());
+  out << fmt::format("Start Time: {}\n", m_stopwatch->GetStartTimeAsStr());
+  out << fmt::format("Stop Time:  {}\n", m_stopwatch->GetLastMarkedTimeAsStr());
+  out << fmt::format("Act Dur:    {}\n", m_stopwatch->GetActualDurationInMs());
+  out << fmt::format("Given Dur:  {}\n", m_stopwatch->GetDurationInMs());
+  out << fmt::format("Time Left:  {}\n", m_stopwatch->GetTimeValues().timeRemainingInMs);
+  // NOLINTEND(misc-include-cleaner)
 }
 
 template<typename T>
 auto GoomStateDump::DumpDataArray(const std::string& filename,
-                                  const std::vector<T>& dataArray) const noexcept -> void
+                                  const std::vector<T>& dataArray) const -> void
 {
   const auto dataLen = m_cumulativeState->GetNumUpdates();
   LogInfo(*m_goomLogger, "Dumping Goom state data ({} values) to \"{}\".", dataLen, filename);
 
   static constexpr auto* EXT = ".dat";
-  auto out                   = std::ofstream{};
-  out.open(m_datedDirectory + "/" + filename + EXT, std::ofstream::out);
+  auto out = std::ofstream{m_datedDirectory + "/" + filename + EXT, std::ofstream::out};
 
   for (auto i = 0U; i < dataLen; ++i)
   {
-    out << dataArray[i] << "\n";
+    out << GetFormattedRowStr(m_cumulativeState->GetGoomTimes().at(i), dataArray.at(i));
   }
-
-  out.close();
 }
 
-GoomStateDump::CumulativeState::CumulativeState() noexcept = default;
+template<typename T>
+auto GoomStateDump::GetFormattedRowStr(const uint64_t value1, const T value2) -> std::string
+{
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+  return fmt::format("{:6} {:7}\n", value1, value2);
+}
 
-inline void GoomStateDump::CumulativeState::Reset()
+template<>
+auto GoomStateDump::GetFormattedRowStr(const uint64_t value1, const float value2) -> std::string
+{
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+  return fmt::format("{:6} {:7.3f}\n", value1, value2);
+}
+
+inline auto GoomStateDump::CumulativeState::Reset() noexcept -> void
 {
   m_updateNum = 0;
 
   Reserve();
 }
 
-void GoomStateDump::CumulativeState::Reserve()
+auto GoomStateDump::CumulativeState::Reserve() noexcept -> void
 {
   m_updateTimesInMs.reserve(m_numUpdatesEstimate);
   m_goomStates.reserve(m_numUpdatesEstimate);
@@ -285,7 +295,7 @@ void GoomStateDump::CumulativeState::Reserve()
   m_xyLerpEffects.reserve(m_numUpdatesEstimate);
 }
 
-inline void GoomStateDump::CumulativeState::IncrementUpdateNum()
+inline auto GoomStateDump::CumulativeState::IncrementUpdateNum() noexcept -> void
 {
   ++m_updateNum;
 
@@ -296,83 +306,99 @@ inline void GoomStateDump::CumulativeState::IncrementUpdateNum()
   }
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentUpdateTime(const uint32_t timeInMs)
+inline auto GoomStateDump::CumulativeState::AddCurrentGoomTime(const uint64_t goomTime) noexcept
+    -> void
+{
+  m_goomTimes.push_back(goomTime);
+}
+
+inline auto GoomStateDump::CumulativeState::AddCurrentUpdateTime(const uint32_t timeInMs) noexcept
+    -> void
 {
   m_updateTimesInMs.push_back(timeInMs);
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentGoomState(const GoomStates goomState)
+inline auto GoomStateDump::CumulativeState::AddCurrentGoomState(const GoomStates goomState) noexcept
+    -> void
 {
   m_goomStates.push_back(static_cast<uint8_t>(goomState));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentFilterMode(const ZoomFilterMode filterMode)
+inline auto GoomStateDump::CumulativeState::AddCurrentFilterMode(
+    const ZoomFilterMode filterMode) noexcept -> void
 {
   m_filterModes.push_back(static_cast<uint8_t>(filterMode));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentHypercosOverlay(
-    const HypercosOverlayMode hypercosOverlay)
+inline auto GoomStateDump::CumulativeState::AddCurrentHypercosOverlay(
+    const HypercosOverlayMode hypercosOverlay) noexcept -> void
 {
   m_hypercosOverlays.push_back(static_cast<uint8_t>(hypercosOverlay));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentImageVelocityEffect(const bool value)
+inline auto GoomStateDump::CumulativeState::AddCurrentImageVelocityEffect(const bool value) noexcept
+    -> void
 {
   m_imageVelocityEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentNoiseEffect(const bool value)
+inline auto GoomStateDump::CumulativeState::AddCurrentNoiseEffect(const bool value) noexcept -> void
 {
   m_noiseEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentPlaneEffect(const bool value)
+inline auto GoomStateDump::CumulativeState::AddCurrentPlaneEffect(const bool value) noexcept -> void
 {
   m_planeEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentRotationEffect(const bool value)
+inline auto GoomStateDump::CumulativeState::AddCurrentRotationEffect(const bool value) noexcept
+    -> void
 {
   m_rotationEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddBufferLerp(const uint32_t value)
+inline auto GoomStateDump::CumulativeState::AddTransformBufferLerpFactor(const float value) noexcept
+    -> void
 {
   m_bufferLerps.push_back(value);
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentTanEffect(const bool value)
+inline auto GoomStateDump::CumulativeState::AddCurrentTanEffect(const bool value) noexcept -> void
 {
   m_tanEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentXYLerpEffect(const bool value)
+inline auto GoomStateDump::CumulativeState::AddCurrentXYLerpEffect(const bool value) noexcept
+    -> void
 {
   m_xyLerpEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentTimeSinceLastGoom(const uint32_t value)
+inline auto GoomStateDump::CumulativeState::AddCurrentTimeSinceLastGoom(
+    const uint32_t value) noexcept -> void
 {
   m_timesSinceLastGoom.push_back(value);
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentTimeSinceLastBigGoom(const uint32_t value)
+inline auto GoomStateDump::CumulativeState::AddCurrentTimeSinceLastBigGoom(
+    const uint32_t value) noexcept -> void
 {
   m_timesSinceLastBigGoom.push_back(value);
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentTotalGoomsInCurrentCycle(const uint32_t value)
+inline auto GoomStateDump::CumulativeState::AddCurrentTotalGoomsInCurrentCycle(
+    const uint32_t value) noexcept -> void
 {
   m_totalGoomsInCurrentCycle.push_back(value);
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentGoomPower(const float value)
+inline auto GoomStateDump::CumulativeState::AddCurrentGoomPower(const float value) noexcept -> void
 {
   m_goomPowers.push_back(value);
 }
 
-inline void GoomStateDump::CumulativeState::AddCurrentGoomVolume(const float value)
+inline auto GoomStateDump::CumulativeState::AddCurrentGoomVolume(const float value) noexcept -> void
 {
   m_goomVolumes.push_back(value);
 }
@@ -380,6 +406,11 @@ inline void GoomStateDump::CumulativeState::AddCurrentGoomVolume(const float val
 inline auto GoomStateDump::CumulativeState::GetNumUpdates() const -> uint32_t
 {
   return m_updateNum;
+}
+
+inline auto GoomStateDump::CumulativeState::GetGoomTimes() const -> const std::vector<uint64_t>&
+{
+  return m_goomTimes;
 }
 
 inline auto GoomStateDump::CumulativeState::GetUpdateTimesInMs() const
@@ -426,7 +457,8 @@ inline auto GoomStateDump::CumulativeState::GetRotationEffects() const
   return m_rotationEffects;
 }
 
-inline auto GoomStateDump::CumulativeState::GetBufferLerps() const -> const std::vector<uint32_t>&
+inline auto GoomStateDump::CumulativeState::GetTransformBufferLerpFactors() const
+    -> const std::vector<float>&
 {
   return m_bufferLerps;
 }
