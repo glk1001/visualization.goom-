@@ -1,5 +1,7 @@
 #pragma once
 
+#define NO_MAGIC_ENUM_AVAILABLE
+
 #include "gl_2d_textures.h"
 #include "gl_render_types.h"
 #include "glsl_program.h"
@@ -7,6 +9,7 @@
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "scene.h"
+#include "utils/math/goom_rand.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -154,6 +157,7 @@ private:
   static constexpr auto MAIN_IMAGE_TEX_LOCATION      = 5;
   static constexpr auto LOW_IMAGE_TEX_LOCATION       = 6;
   static constexpr auto LUM_AVG_TEX_LOCATION         = 7;
+  static constexpr auto LERP_FACTORS_TEX_LOCATION    = 8;
 
   static constexpr auto FILTER_BUFF1_TEX_SHADER_NAME    = "";
   static constexpr auto FILTER_BUFF2_TEX_SHADER_NAME    = "tex_filterBuff2";
@@ -162,6 +166,7 @@ private:
   static constexpr auto FILTER_DEST_POS_TEX_SHADER_NAME = "tex_filterDestPositions";
   static constexpr auto MAIN_IMAGE_TEX_SHADER_NAME      = "tex_mainImage";
   static constexpr auto LOW_IMAGE_TEX_SHADER_NAME       = "tex_lowImage";
+  static constexpr auto LERP_FACTORS_TEX_SHADER_NAME    = "tex_lerpFactors";
 
   static constexpr auto FILTER_BUFF1_IMAGE_UNIT = 0;
   static constexpr auto FILTER_BUFF2_IMAGE_UNIT = 1;
@@ -178,6 +183,12 @@ private:
   GLuint m_lumAverageDataTextureName{};
   auto SetLumAverageParams(float frameTime) noexcept -> void;
   auto SetupGlLumAverageData() noexcept -> void;
+
+  UTILS::MATH::GoomRand m_goomRand{};
+  Gl2DTexture<float, -1, LERP_FACTORS_TEX_LOCATION, GL_RED, GL_R32F, GL_FLOAT, NUM_PBOS>
+      m_lerpFactorsTexture{};
+  auto SetupGlLerpFactors() -> void;
+  auto BindGlLerpFactors() noexcept -> void;
 
   struct GlFilterPosBuffers
   {

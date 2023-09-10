@@ -13,6 +13,7 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "scene.h"
+#include "utils/math/goom_rand.h"
 
 #include <GL/gl.h>
 #include <algorithm>
@@ -42,6 +43,10 @@ using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
 {
+
+static constexpr auto LERP_FACTORS_WIDTH  = 50U;
+static constexpr auto LERP_FACTORS_HEIGHT = 50U;
+
 // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
 auto CopyBuffer(const std_spn::span<const Point2dFlt> srce, std_spn::span<Point2dFlt> dest) noexcept
     -> void
@@ -132,6 +137,7 @@ auto DisplacementFilter::DestroyScene() noexcept -> void
   m_glFilterBuffers.filterBuff1Texture.DeleteBuffers();
   m_glFilterBuffers.filterBuff2Texture.DeleteBuffers();
   m_glFilterBuffers.filterBuff3Texture.DeleteBuffers();
+  m_lerpFactorsTexture.DeleteBuffers();
 
   m_programPass1UpdateFilterBuff1AndBuff3.DeleteProgram();
   m_programPass2FilterBuff1LuminanceHistogram.DeleteProgram();
@@ -305,8 +311,6 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
       {              "ASPECT_RATIO",                 std::to_string(m_aspectRatio)},
       {      "FILTER_POS_MIN_COORD",   std::to_string(NormalizedCoords::MIN_COORD)},
       {    "FILTER_POS_COORD_WIDTH", std::to_string(NormalizedCoords::COORD_WIDTH)},
-      {          "NUM_LERP_FACTORS",                       std::to_string(30 * 30)},
-      {     "SQRT_NUM_LERP_FACTORS",                            std::to_string(30)},
   };
 
   try
@@ -371,6 +375,7 @@ auto DisplacementFilter::CompileShaderFile(GlslProgram& program,
 auto DisplacementFilter::SetupGlData() -> void
 {
   SetupGlSettings();
+  SetupGlLerpFactors();
   SetupGlFilterBuffers();
   SetupGlFilterPosBuffers();
   SetupGlImageBuffers();
@@ -425,6 +430,7 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
 
   BindGlFilterBuffer2();
   BindGlImageBuffers();
+  BindGlLerpFactors();
   BindGlFilterPosBuffers();
 
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
@@ -589,14 +595,17 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 
 auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept -> void
 {
-  auto lerpFactors = std::vector<float>(30 * 30);
+  auto lerpFactors = m_lerpFactorsTexture.GetMappedBuffer(pboIndex);
   lerpFactors[0]   = m_frameDataArray.at(pboIndex).miscData.lerpFactor;
   for (auto i = 1U; i < lerpFactors.size(); ++i)
   {
-    lerpFactors[i] = 0.99999F * lerpFactors[i - 1];
+    //lerpFactors[i] = lerpFactors[0];
+    lerpFactors[i] = lerpFactors[0] * m_goomRand.GetRandInRange(0.25F, 0.75F);
   }
+  m_lerpFactorsTexture.CopyMappedBufferToTexture(pboIndex);
 
-  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(UNIFORM_LERP_FACTOR, lerpFactors);
+  //  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
+  //      UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.lerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
 }
@@ -663,6 +672,11 @@ auto DisplacementFilter::UpdateImageBuffersToGl(size_t pboIndex) noexcept -> voi
   }
 }
 
+auto DisplacementFilter::BindGlLerpFactors() noexcept -> void
+{
+  m_lerpFactorsTexture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
+}
+
 auto DisplacementFilter::BindGlFilterPosBuffers() noexcept -> void
 {
   m_glFilterPosBuffers.filterSrcePosTexture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
@@ -678,6 +692,11 @@ auto DisplacementFilter::BindGlImageBuffers() noexcept -> void
 {
   m_glImageBuffers.mainImageTexture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
   m_glImageBuffers.lowImageTexture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
+}
+
+auto DisplacementFilter::SetupGlLerpFactors() -> void
+{
+  m_lerpFactorsTexture.Setup(LERP_FACTORS_TEX_SHADER_NAME, LERP_FACTORS_WIDTH, LERP_FACTORS_HEIGHT);
 }
 
 auto DisplacementFilter::SetupGlFilterBuffers() -> void
