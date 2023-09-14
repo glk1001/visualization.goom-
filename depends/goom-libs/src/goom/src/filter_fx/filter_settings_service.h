@@ -104,12 +104,11 @@ public:
   auto ToggleRotationDirection() -> void;
 
   static constexpr auto DEFAULT_TRAN_LERP_INCREMENT = 0.002F;
-  static constexpr auto DEFAULT_SWITCH_MULT         = 0.03F;
   auto ResetTransformBufferLerpData() -> void;
   auto SetTransformBufferLerpIncrement(float value) -> void;
   auto SetDefaultTransformBufferLerpIncrement() -> void;
   auto MultiplyTransformBufferLerpIncrement(float factor) -> void;
-  auto SetTransformBufferLerpToMaxLerp(float value) -> void;
+  auto SetTransformBufferLerpToEnd() -> void;
 
 protected:
   [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
@@ -337,13 +336,12 @@ inline auto FilterSettingsService::ToggleRotationDirection() -> void
 inline auto FilterSettingsService::ResetTransformBufferLerpData() -> void
 {
   m_filterSettings.transformBufferLerpData.Reset();
-  m_filterSettings.transformBufferLerpData.SetLerpToOneFactor(DEFAULT_SWITCH_MULT);
 }
 
 inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const float value) -> void
 {
   Expects(value >= 0.0F);
-  m_filterSettings.transformBufferLerpData.SetLerpFactor(value);
+  m_filterSettings.transformBufferLerpData.SetIncrement(value);
 }
 
 inline auto FilterSettingsService::SetDefaultTransformBufferLerpIncrement() -> void
@@ -357,9 +355,9 @@ inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const fl
       m_filterSettings.transformBufferLerpData.GetIncrement() * factor);
 }
 
-inline auto FilterSettingsService::SetTransformBufferLerpToMaxLerp(const float value) -> void
+inline auto FilterSettingsService::SetTransformBufferLerpToEnd() -> void
 {
-  m_filterSettings.transformBufferLerpData.SetLerpToOneFactor(value);
+  m_filterSettings.transformBufferLerpData.SetLerpToEnd();
 }
 
 } // namespace GOOM::FILTER_FX

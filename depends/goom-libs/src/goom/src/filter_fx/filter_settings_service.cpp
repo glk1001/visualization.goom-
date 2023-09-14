@@ -638,7 +638,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                RotationAdjustments{},
             }
         },
-        {0.0F, DEFAULT_TRAN_LERP_INCREMENT, DEFAULT_SWITCH_MULT},
+        GoomLerpData{DEFAULT_TRAN_LERP_INCREMENT, true},
     },
     m_weightedFilterEvents{GetWeightedFilterEvents(goomRand)},
     m_zoomMidpointWeights{

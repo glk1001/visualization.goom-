@@ -135,7 +135,7 @@ inline auto GoomMusicSettingsReactor::MegaLentUpdate() -> void
   m_visualFx->ChangeAllFxColorMaps();
   m_filterSettingsService->GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOWEST_SPEED);
   m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
-  m_filterSettingsService->SetTransformBufferLerpToMaxLerp(1.0F);
+  m_filterSettingsService->SetTransformBufferLerpToEnd();
 }
 
 inline auto GoomMusicSettingsReactor::BigNormalUpdate() -> void
@@ -148,7 +148,7 @@ inline auto GoomMusicSettingsReactor::BigNormalUpdate() -> void
   ChangeRotation();
   ChangeFilterExtraSettings();
   ChangeVitesse();
-  ChangeTransformBufferLerpToMaxLerp();
+  ChangeTransformBufferLerpToEnd();
   m_visualFx->ChangeAllFxColorMaps();
 
   m_maxTimeBetweenFilterSettingsChange = m_goomRand->GetRandInRange(
@@ -284,12 +284,12 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   m_lock.IncreaseLockTime(CHANGE_VITESSE_LOCK_TIME_INCREASE);
 }
 
-inline auto GoomMusicSettingsReactor::ChangeTransformBufferLerpToMaxLerp() -> void
+inline auto GoomMusicSettingsReactor::ChangeTransformBufferLerpToEnd() -> void
 {
   if (m_lock.GetLockTime() > CHANGE_SWITCH_VALUES_LOCK_TIME)
   {
     m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
-    m_filterSettingsService->SetTransformBufferLerpToMaxLerp(1.0F);
+    m_filterSettingsService->SetTransformBufferLerpToEnd();
   }
 }
 
@@ -387,8 +387,6 @@ inline auto GoomMusicSettingsReactor::SetNewTransformBufferLerpDataBasedOnSpeed(
   //          "Final Lerp Inc = {}.",
   //          m_filterSettingsService->GetFilterSettings()
   //              .filterTransformBufferSettings.lerpData.lerpIncrement);
-
-  m_filterSettingsService->SetTransformBufferLerpToMaxLerp(0.0F);
 }
 
 auto GoomMusicSettingsReactor::GetNameValueParams() const -> NameValuePairs

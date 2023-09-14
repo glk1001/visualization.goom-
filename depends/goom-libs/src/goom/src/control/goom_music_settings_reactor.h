@@ -84,7 +84,7 @@ private:
   auto UpdateFilterSettings() -> void;
   auto UpdateTransformBufferLerpData() -> void;
   auto SetNewTransformBufferLerpDataBasedOnSpeed() -> void;
-  auto ChangeTransformBufferLerpToMaxLerp() -> void;
+  auto ChangeTransformBufferLerpToEnd() -> void;
   auto ChangeRotation() -> void;
   auto ChangeSpeedReverse() -> void;
   auto ChangeVitesse() -> void;
