@@ -1,5 +1,6 @@
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
+#include <cmath>
 #endif
 
 #include "goom/goom_config.h"
@@ -45,7 +46,7 @@ TEST_CASE("LerpData Simple")
   auto lerpData = GoomLerpData{};
 
   REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
-  REQUIRE(lerpData.GetIncrement() == Approx(0.0F));
+  REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
   REQUIRE(not lerpData.GetUseSFunction());
 
   static constexpr auto TEST_INCREMENT = 0.1F;
@@ -59,13 +60,13 @@ TEST_CASE("LerpData Simple")
 
   lerpData.Reset();
   REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
-  REQUIRE(lerpData.GetIncrement() == Approx(0.0F));
+  REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
 }
 
 TEST_CASE("LerpData More Complicated")
 {
-  auto lerpData = GoomLerpData{0.0F, true};
-  REQUIRE(lerpData.GetIncrement() == Approx(0.0F));
+  auto lerpData = GoomLerpData{GoomLerpData::DEFAULT_INCREMENT, true};
+  REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
 
   UNSCOPED_INFO("GetSFuncValue = " << GoomLerpData::GetSFuncValue(0.0F));
   UNSCOPED_INFO("lerpFactor = " << STD20::lerp(0.0F, 1.0F, GoomLerpData::GetSFuncValue(0.0F)));
@@ -82,6 +83,7 @@ TEST_CASE("LerpData More Complicated")
   static constexpr auto TEST_INCREMENT = 0.1F;
   lerpData.SetIncrement(TEST_INCREMENT);
   lerpData.Update();
+  UNSCOPED_INFO("GetLerpFactor = " << lerpData.GetLerpFactor());
   REQUIRE(lerpData.GetLerpFactor() ==
           Approx(TEST_INCREMENT +
                  GoomLerpData::GetSFuncValue(sFunctionTIncrement + sFunctionTIncrement)));
@@ -92,15 +94,6 @@ TEST_CASE("LerpData More Complicated")
                  GoomLerpData::GetSFuncValue(sFunctionTIncrement + sFunctionTIncrement +
                                              sFunctionTIncrement)));
 
-  lerpData.SetIncrement(0.0F);
-  static constexpr auto NUM_TO_GET_TO_ONE = 265U;
-  UpdateLerpData(lerpData, NUM_TO_GET_TO_ONE);
-  REQUIRE(lerpData.GetLerpFactor() == Approx(1.0F));
-
-  lerpData.Reset();
-  REQUIRE(lerpData.GetIncrement() == Approx(0.0F));
-  REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
-
   lerpData.SetLerpToEnd();
   lerpData.Update();
   REQUIRE(lerpData.GetLerpFactor() == Approx(1.0F));
@@ -108,34 +101,54 @@ TEST_CASE("LerpData More Complicated")
 
 TEST_CASE("LerpData Negative Increment")
 {
-  auto lerpData = GoomLerpData{};
+  auto lerpData                  = GoomLerpData{};
+  const auto sFunctionTIncrement = lerpData.GetSFunctionTIncrement();
 
   REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
-  REQUIRE(lerpData.GetIncrement() == Approx(0.0F));
+  REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
+  REQUIRE(not lerpData.GetUseSFunction());
+
+  // Test S function going backwards.
+  lerpData.SetUseSFunction(true);
+  REQUIRE(lerpData.GetUseSFunction());
+
+  lerpData.SetIncrement(GoomLerpData::DEFAULT_INCREMENT);
+  lerpData.Reset();
+  REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
+  REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
+
+  auto numToGetToOne = static_cast<uint32_t>(std::round(1.0F / sFunctionTIncrement));
+  UpdateLerpData(lerpData, numToGetToOne);
+  UNSCOPED_INFO("GetLerpFactor = " << lerpData.GetLerpFactor());
+  auto lerpAtMax = lerpData.GetLerpFactor();
+
+  // Should now go backwards.
+  lerpData.Update();
+  UNSCOPED_INFO("GetLerpFactor = " << lerpData.GetLerpFactor());
+  REQUIRE(lerpData.GetLerpFactor() < lerpAtMax);
+
+  // Test increment going backwards.
+  lerpData.SetUseSFunction(false);
   REQUIRE(not lerpData.GetUseSFunction());
 
   lerpData.Reset();
-  static constexpr auto TEST_INCREMENT          = 0.1F;
-  static constexpr auto TEST_NEGATIVE_INCREMENT = -TEST_INCREMENT;
+  REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
+  REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
 
-  static constexpr auto NUM_INCS_TO_ONE = static_cast<uint32_t>(1.0F / TEST_INCREMENT);
+  static constexpr auto TEST_INCREMENT = 0.1F;
   lerpData.SetIncrement(TEST_INCREMENT);
-  UpdateLerpData(lerpData, NUM_INCS_TO_ONE);
+  REQUIRE(lerpData.GetIncrement() == Approx(TEST_INCREMENT));
+  REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
+
+  numToGetToOne = static_cast<uint32_t>(std::round(1.0F / TEST_INCREMENT));
+  UpdateLerpData(lerpData, numToGetToOne);
+  UNSCOPED_INFO("GetLerpFactor = " << lerpData.GetLerpFactor());
   REQUIRE(lerpData.GetLerpFactor() == Approx(1.0F));
 
-  lerpData.SetIncrement(TEST_NEGATIVE_INCREMENT);
+  // Should now go backwards.
   lerpData.Update();
-  REQUIRE(lerpData.GetLerpFactor() == Approx(1.0F + TEST_NEGATIVE_INCREMENT));
-
-  static constexpr auto NUM_INCS_TO_START =
-      static_cast<uint32_t>(1.0F / (-TEST_NEGATIVE_INCREMENT)) - 2U;
-  UpdateLerpData(lerpData, NUM_INCS_TO_START);
-  REQUIRE(lerpData.GetLerpFactor() == Approx(-TEST_NEGATIVE_INCREMENT));
-
-  lerpData.Update();
-  REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
-  lerpData.Update();
-  REQUIRE(lerpData.GetLerpFactor() == Approx(0.0F));
+  UNSCOPED_INFO("GetLerpFactor = " << lerpData.GetLerpFactor());
+  REQUIRE(lerpData.GetLerpFactor() == Approx(1.0F - TEST_INCREMENT));
 }
 
 // NOLINTEND(readability-function-cognitive-complexity)
