@@ -1,0 +1,9 @@
+From home goom directory:
+
+bash scripts/goom-docker-build-run.sh --user-addon
+
+bash scripts/goom-docker-remote-copy.sh kodi-2 && ./goom-docker-remote-build.sh --user-addon --remote-host kodi-2
+
+# Run just Kodi, no goom:
+cd dockerize-kodi-goom && bash kodi-docker-run.sh --user-addon --kodi-home-dir ${HOME}/docker/kodi-nightly
+

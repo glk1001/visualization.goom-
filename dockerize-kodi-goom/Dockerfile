@@ -18,6 +18,7 @@ ARG KODI_ESSENTIAL_PACKAGES=" \
   ca-certificates             \
   kodi                        \
   kodi-inputstream-adaptive   \
+  kodi-repository-kodi        \
   locales                     \
   pulseaudio                  \
   tzdata                      \
@@ -42,18 +43,9 @@ RUN if [ "${END_OF_LIFE}" = "yes" ] ; then                                   \
     fi                                                                    && \
     apt-get install -y --no-install-recommends ${KODI_PACKAGES}           && \
                                                                              \
-    apt-get -y purge openssl software-properties-common                   && \
+    apt-get -y purge software-properties-common                           && \
     apt-get -y --purge autoremove                                         && \
     rm -rf /var/lib/apt/lists/*                                           && \
-    apt-get clean -y
-
-
-# Install Spotify python dependencies.
-ARG PYTHON_PACKAGES="python3-requests python3-urllib3 python3-chardet \
-                     python3-certifi python3-idna"
-
-RUN apt-get update                                                        && \
-    apt-get install -y --no-install-recommends ${PYTHON_PACKAGES}         && \
     apt-get clean -y
 
 
