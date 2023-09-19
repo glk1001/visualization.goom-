@@ -57,7 +57,7 @@ static constexpr auto PROB_ALLOW_STRANGE_WAVE_VALUES          = 0.1F;
 static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL              = 0.75F;
 static constexpr auto PROB_NO_PERIODIC_FACTOR                 = 0.2F;
 static constexpr auto PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
-static constexpr auto PROB_SPIRAL_SQ_DIST_EFFECT              = 0.4F;
+static constexpr auto PROB_SPIRAL_SQ_DIST_EFFECT              = 0.0F;
 static constexpr auto PROB_USE_MODIFIED_ATAN_ANGLE            = 0.5F;
 
 static constexpr auto WAVE_SIN_EFFECT_WEIGHT      = 200.0F;
