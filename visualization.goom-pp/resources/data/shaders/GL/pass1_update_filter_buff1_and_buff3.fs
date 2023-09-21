@@ -80,10 +80,10 @@ bool NotCloseToBlack(vec3 color)
 // Try to get purer blacks by using a lower baseColorMultiplier for small grey values.
 float GetBaseColorMultiplier(vec3 color)
 {
-  const float LOW_BASE_COLOR_MULTIPLIER = 0.5;
+  const float LOW_BASE_COLOR_MULTIPLIER = 0.25;
 
   return NotCloseToBlack(color) ? u_baseColorMultiplier
-         : mix(LOW_BASE_COLOR_MULTIPLIER, u_baseColorMultiplier, pow(color.r / BLACK_CUTOFF, 5.0));
+         : mix(LOW_BASE_COLOR_MULTIPLIER, u_baseColorMultiplier, pow(color.r / BLACK_CUTOFF, 3.0));
 }
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)
