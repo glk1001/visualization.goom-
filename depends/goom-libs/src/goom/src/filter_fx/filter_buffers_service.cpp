@@ -117,7 +117,7 @@ auto FilterBuffersService::CompletePendingSettings() noexcept -> void
 
 auto FilterBuffersService::UpdateCompletedTransformBufferStats() noexcept -> void
 {
-  if (m_goomTimeAtTransformBufferStart == 0U)
+  if (0U == m_goomTimeAtTransformBufferStart)
   {
     return;
   }
@@ -147,7 +147,7 @@ auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) con
 
 auto FilterBuffersService::GetAverageGoomTimeOfBufferProcessing() const noexcept -> uint32_t
 {
-  if (m_numTransformBuffersCompleted == 0)
+  if (0U == m_numTransformBuffersCompleted)
   {
     return 0U;
   }
@@ -158,7 +158,7 @@ auto FilterBuffersService::GetAverageGoomTimeOfBufferProcessing() const noexcept
 
 auto FilterBuffersService::GetAverageGoomTimeBetweenBufferResets() const noexcept -> uint32_t
 {
-  if (m_numTransformBuffersCompleted == 0)
+  if (0U == m_numTransformBuffersCompleted)
   {
     return 0U;
   }

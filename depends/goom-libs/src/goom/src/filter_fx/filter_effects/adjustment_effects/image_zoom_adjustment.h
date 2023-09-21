@@ -33,7 +33,7 @@ private:
 };
 
 inline auto ImageZoomAdjustment::GetZoomAdjustment(
-    const NormalizedCoords& coords, [[maybe_unused]] float sqDistFromZero) const noexcept
+    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
     -> Point2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);

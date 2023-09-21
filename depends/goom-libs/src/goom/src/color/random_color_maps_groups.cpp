@@ -433,7 +433,7 @@ RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
 }
 
 auto RandomColorMapsGroups::GetWeightedRandomColorMapsForGroup(
-    Groups randomColorMapsGroup) const noexcept -> WeightedRandomColorMaps
+    const Groups randomColorMapsGroup) const noexcept -> WeightedRandomColorMaps
 {
   switch (randomColorMapsGroup)
   {

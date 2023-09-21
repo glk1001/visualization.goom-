@@ -154,9 +154,9 @@ template<typename E, typename T>
 [[nodiscard]] constexpr auto GetFilledEnumMap(const T& value) -> EnumMap<E, T>
 {
   auto enumMap = EnumMap<E, T>{};
-  for (auto i = 0U; i < NUM<E>; ++i)
+  for (auto& enumValue : enumMap)
   {
-    enumMap[static_cast<E>(i)] = value;
+    enumValue = value;
   }
   static_assert(enumMap.size() == NUM<E>);
 

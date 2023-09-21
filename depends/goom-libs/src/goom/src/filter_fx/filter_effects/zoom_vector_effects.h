@@ -1,14 +1,18 @@
 #pragma once
 
+#include "filter_fx/after_effects/after_effects.h"
 #include "filter_fx/after_effects/zoom_vector_after_effects.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
+#include "goom/goom_config.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
+#include <cstdint>
 #include <functional>
+#include <string>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -25,7 +29,7 @@ public:
                     const UTILS::MATH::IGoomRand& goomRand,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
-  static constexpr auto IsValidMultiplierRange(
+  [[nodiscard]] static constexpr auto IsValidMultiplierRange(
       const UTILS::MATH::IGoomRand::NumberRange<float>& range) noexcept -> bool;
 
   [[nodiscard]] static auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,

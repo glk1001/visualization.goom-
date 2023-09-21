@@ -241,7 +241,7 @@ WeightedRandomColorMaps::WeightedRandomColorMaps(const PixelChannelType defaultA
 
 WeightedRandomColorMaps::WeightedRandomColorMaps(
     const WeightedRandomColorMaps& weightedRandomColorMaps,
-    PixelChannelType newDefaultAlpha) noexcept
+    const PixelChannelType newDefaultAlpha) noexcept
   : RandomColorMaps{newDefaultAlpha,
                     weightedRandomColorMaps.GetGoomRand(),
                     weightedRandomColorMaps.GetColorMapsName()},

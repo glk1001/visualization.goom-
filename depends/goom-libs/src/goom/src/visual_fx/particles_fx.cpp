@@ -202,40 +202,23 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
 
   for (auto i = 0U; i < effect.GetSystem()->GetNumAliveParticles(); ++i)
   {
-    const auto pos = effect.GetSystem()->GetFinalData()->GetPosition(i);
-    //LogInfo(*goomLogger, "pos = {},{},{},{}.", pos[0], pos[1], pos[2], pos[3]);
-
-    const auto color = effect.GetSystem()->GetFinalData()->GetColor(i);
-    //LogInfo(*goomLogger, "color = {},{},{},{}.", color[0], color[1], color[2], color[3]);
-
+    const auto pos       = effect.GetSystem()->GetFinalData()->GetPosition(i);
+    const auto color     = effect.GetSystem()->GetFinalData()->GetColor(i);
     const auto screenPos = GetScreenPos(pos);
-    //LogInfo(*goomLogger, "screenPos = {},{}.", screenPos.x, screenPos.y);
 
     if ((screenPos.x < 0) or (screenPos.y < 0))
     {
       ++m_numSkippedTooBigParticles;
-      /**
-          LogInfo(*goomLogger, "pos = {},{},{},{}.", pos[0], pos[1], pos[2], pos[3]);
-          LogInfo(*goomLogger, "screenPos = {},{}.", screenPos.x, screenPos.y);
-          LogInfo(*goomLogger, "Skipped negative position.");
-          **/
       continue;
     }
     if ((screenPos.x >= m_draw->GetDimensions().GetIntWidth()) or
         (screenPos.y >= m_draw->GetDimensions().GetIntHeight()))
     {
       ++m_numSkippedTooBigParticles;
-      /**
-          LogInfo(*goomLogger, "pos = {},{},{},{}.", pos[0], pos[1], pos[2], pos[3]);
-          LogInfo(*goomLogger, "screenPos = {},{}.", screenPos.x, screenPos.y);
-          LogInfo(*goomLogger, "Skipped too big position.");
-          **/
       continue;
     }
 
     const auto pixelColor = GetPixel(color);
-    //LogInfo(*m_goomLogger,
-    // "pixelColor = {},{},{},{}.", pixelColor.R(), pixelColor.G(), pixelColor.B(), pixelColor.A());
 
     if (0 == (i % m_drawCircleFrequency))
     {
@@ -248,22 +231,6 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
       const auto brighterPixelColor = GetBrighterColor(m_pixelBrightness, pixelColor);
       pixelDrawer.DrawPixelsClipped(screenPos, {brighterPixelColor, brighterPixelColor});
     }
-
-    /**
-    LogInfo(*goomLogger, "color = {},{},{},{}.", color[0], color[1], color[2], color[3]);
-    LogInfo(*goomLogger,
-            "pixelColor = {},{},{},{}.",
-            pixelColor.R(),
-            pixelColor.G(),
-            pixelColor.B(),
-            pixelColor.A());
-    LogInfo(*goomLogger,
-            "brighterPixelColor = {},{},{},{}.",
-            brighterPixelColor.R(),
-            brighterPixelColor.G(),
-            brighterPixelColor.B(),
-            brighterPixelColor.A());
-    **/
   }
 }
 

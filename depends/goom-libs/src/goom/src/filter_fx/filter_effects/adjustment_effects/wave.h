@@ -129,7 +129,7 @@ inline auto Wave::GetZoomAdjustment(const NormalizedCoords& coords,
   return {xZoomAdjustment, yZoomAdjustment};
 }
 
-inline auto Wave::GetZoomAdjustmentAdd(WaveEffect waveEffect,
+inline auto Wave::GetZoomAdjustmentAdd(const WaveEffect waveEffect,
                                        const float angle,
                                        const float reducer) const noexcept -> float
 {

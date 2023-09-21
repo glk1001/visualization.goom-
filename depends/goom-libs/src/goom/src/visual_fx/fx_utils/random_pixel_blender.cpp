@@ -140,7 +140,7 @@ auto RandomPixelBlender::GetColorAddPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }
@@ -155,7 +155,7 @@ auto RandomPixelBlender::GetDarkenOnlyPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }
@@ -170,7 +170,7 @@ auto RandomPixelBlender::GetLightenOnlyPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }
@@ -185,7 +185,7 @@ auto RandomPixelBlender::GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }
@@ -200,7 +200,7 @@ auto RandomPixelBlender::GetAlphaPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }
@@ -215,7 +215,7 @@ auto RandomPixelBlender::GetAlphaAndAddPixelBlendFunc() -> PixelBlendFunc
             const Pixel& fgndColor,
             const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }
@@ -230,7 +230,7 @@ auto RandomPixelBlender::GetSameLumaMixPixelBlendFunc(const float lumaMixT) -> P
                     const Pixel& fgndColor,
                     const PixelChannelType newAlpha)
   {
-    if (bgndColor.A() == 0)
+    if (0 == bgndColor.A())
     {
       return GetPixelWithNewAlpha(fgndColor, newAlpha);
     }

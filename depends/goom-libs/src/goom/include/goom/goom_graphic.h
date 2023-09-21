@@ -85,7 +85,7 @@ static_assert(MAX_CHANNEL_VALUE_HDR <= std::numeric_limits<PixelChannelType>::ma
 
 inline constexpr auto MAX_COLOR_VAL = channel_limits<PixelChannelType>::max();
 inline constexpr auto MAX_ALPHA     = std::numeric_limits<PixelChannelType>::max();
-constexpr auto ToPixelAlpha(const uint8_t byteAlpha) -> PixelChannelType
+[[nodiscard]] constexpr auto ToPixelAlpha(const uint8_t byteAlpha) -> PixelChannelType
 {
   constexpr auto MAX_ALPHA_PLUS_1 = static_cast<uint32_t>(MAX_ALPHA) + 1;
   constexpr auto MAX_BYTE_PLUS_1  = static_cast<uint32_t>(std::numeric_limits<uint8_t>::max()) + 1;

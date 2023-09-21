@@ -42,13 +42,13 @@ auto GetIncludeFileName(const std::string& includeDir,
   {
     throw std::runtime_error(
         // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format("Expected #include filename '{}' to start with \"", filename));
+        std_fmt::format(R"(Expected #include filename '{}' to start with ")", filename));
   }
   if (filename[filename.size() - 1] != '\"')
   {
     throw std::runtime_error(
         // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format("Expected #include filename '{}' to end with \"", filename));
+        std_fmt::format(R"(Expected #include filename '{}' to end with ")", filename));
   }
   if (filename.size() <= 2)
   {
@@ -70,7 +70,7 @@ auto GetIncludeFileName(const std::string& includeDir,
   {
     throw std::runtime_error{
         // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format("Could not open file \"{}\" or \"{}\"", theFilename, inclFilename)};
+        std_fmt::format(R"(Could not open file "{}" or "{}")", theFilename, inclFilename)};
   }
   return inclFilename;
 }
@@ -84,7 +84,7 @@ auto GetExpandedFileLines(const std::string& includeDir,
   {
     throw std::runtime_error{
         // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format("Could not find include directory \"{}\"", includeDir)};
+        std_fmt::format(R"(Could not find include directory "{}")", includeDir)};
   }
 
   auto outLines = std::vector<std::string>{};
@@ -144,7 +144,7 @@ auto PutFileLines(const std::string& filepath, const std::vector<std::string>& l
   if (not outStream)
   {
     // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error{std_fmt::format("Could not open file \"{}\"", filepath)};
+    throw std::runtime_error{std_fmt::format(R"(Could not open file "{}")", filepath)};
   }
 
   PutFileLines(outStream, lines);
@@ -152,9 +152,9 @@ auto PutFileLines(const std::string& filepath, const std::vector<std::string>& l
 
 auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines) -> void
 {
-  for (auto i = 0U; i < lines.size(); ++i)
+  for (const auto& line : lines)
   {
-    outStream << lines.at(i) << "\n";
+    outStream << line << "\n";
   }
 }
 
@@ -231,7 +231,7 @@ auto StringSplit(const std::string& str, const std::string_view& delim) -> std::
     copyOfStr.erase(0, pos + delim.length());
     vec.emplace_back(token);
   }
-  if (!copyOfStr.empty())
+  if (not copyOfStr.empty())
   {
     vec.emplace_back(copyOfStr);
   }

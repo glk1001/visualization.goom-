@@ -80,8 +80,6 @@ auto GoomStateMonitor::GetShaderVariablesNameValueParams() const -> UTILS::NameV
   static constexpr auto* PARAM_GROUP = "Shader";
   const auto& lastFrameMiscData      = m_visualFx->GetFrameMiscData();
   return {
-      //GetPair(PARAM_GROUP, "Contrast", lastFrameMiscData.contrast),
-      //GetPair(PARAM_GROUP, "MinChan", lastFrameMiscData.contrastMinChannelValue),
       GetPair(PARAM_GROUP, "Brightness", lastFrameMiscData.brightness),
       GetPair(PARAM_GROUP, "HueShift", lastFrameMiscData.hueShift),
       GetPair(PARAM_GROUP, "ChromaFactor", lastFrameMiscData.chromaFactor),

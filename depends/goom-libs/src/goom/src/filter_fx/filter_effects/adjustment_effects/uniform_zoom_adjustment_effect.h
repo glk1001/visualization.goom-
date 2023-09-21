@@ -24,7 +24,7 @@ public:
 
 inline auto UniformZoomAdjustmentEffect::GetZoomAdjustment(
     [[maybe_unused]] const NormalizedCoords& coords,
-    [[maybe_unused]] float sqDistFromZero) const noexcept -> Point2dFlt
+    [[maybe_unused]] const float sqDistFromZero) const noexcept -> Point2dFlt
 {
   return GetBaseZoomAdjustment();
 }

@@ -209,7 +209,7 @@ private:
       m_visualFx, m_musicSettingsReactor, m_filterSettingsService, m_filterBuffersService};
   bool m_showGoomState = false;
   auto DisplayGoomState() -> void;
-  [[nodiscard]] auto GetGoomTimeInfo() -> std::string;
+  [[nodiscard]] auto GetGoomTimeInfo() const -> std::string;
 };
 
 GoomControl::GoomControl(const Dimensions& dimensions,
@@ -373,7 +373,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameDataFilterSrcePosBuffer() const no
 {
   const auto lerpFactor =
       m_filterSettingsService.GetFilterSettings().transformBufferLerpData.GetLerpFactor();
-  auto srceFilterPosBuffer        = m_frameData->filterPosArrays.filterSrcePos;
+  auto& srceFilterPosBuffer       = m_frameData->filterPosArrays.filterSrcePos;
   const auto& destFilterPosBuffer = m_filterBuffersService.GetPreviousTransformBuffer();
 
   std::transform(destFilterPosBuffer.begin(),
@@ -760,7 +760,7 @@ auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
   UpdateMessages(message);
 }
 
-inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() -> std::string
+inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() const -> std::string
 {
   const auto timeLeftStr =
       not m_runningTimeStopwatch.AreTimesValid()

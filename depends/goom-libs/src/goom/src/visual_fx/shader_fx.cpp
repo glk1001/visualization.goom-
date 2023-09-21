@@ -153,10 +153,6 @@ inline auto ShaderFx::ShaderFxImpl::ApplyToImageBuffers() -> void
   m_chromaFactorLerper.Update();
   m_baseColorMultiplierLerper.Update();
 
-  //m_goomShaderVariables.contrast = m_highContrast.GetCurrentContrast();
-  //m_goomShaderVariables.contrastMinChannelValue =
-  //    m_highContrast.GetCurrentContrastMinChannelValue();
-
   m_frameMiscData->brightness          = m_highContrast.GetCurrentBrightness();
   m_frameMiscData->hueShift            = m_hueShiftLerper.GetHueShift();
   m_frameMiscData->chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
