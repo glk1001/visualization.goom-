@@ -1,21 +1,26 @@
-# build artifacts
+# Build artifacts
 build*
-.idea*
-visualization.*/addon.xml
+*.log
 
-# Debian build files
-debian/changelog
-debian/files
-debian/*.log
-debian/*.substvars
-debian/.debhelper/
-debian/tmp/
-debian/kodi-visualization-*/
-obj-x86_64-linux-gnu/
+# Git
+*.orig
+
+# to prevent add after a "git format-patch VALUE" and "git add ." call
+/*.patch
+
+# Clion
+.idea/
+
+# python
+__pycache__/
+
+# Image files
+*.buff
 
 # commonly used editors
 # vim
 *.swp
+*~
 
 # Eclipse
 *.project
@@ -27,21 +32,8 @@ obj-x86_64-linux-gnu/
 # KDevelop 4
 *.kdev4
 
-# gedit
-*~
-
-# clion
-.idea/
-
-# python
-__pycache__/
-
-# to prevent add after a "git format-patch VALUE" and "git add ." call
-/*.patch
-
 # Visual Studio Code
 .vscode
-
 # to prevent add if project code opened by Visual Studio over CMake file
 .vs/
 
@@ -49,3 +41,36 @@ __pycache__/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app

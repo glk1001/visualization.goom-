@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __GNUC__
+#if defined(__GNUC__) and not defined(__clang__)
 // Broken with gcc 13.1 and fmt 10.0.0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
@@ -14,7 +14,7 @@
 #include "fmt/format.h"
 // NOLINTEND: third-party code
 
-#ifdef __GNUC__
+#if defined(__GNUC__) and not defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 

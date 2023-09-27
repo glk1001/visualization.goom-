@@ -23,8 +23,8 @@ fi
 
 if [[ "${1:-}" != "" ]]; then
   declare -r CUSTOM_SRCE=$1
-python3 "${RUN_CLANG_FORMAT}" --clang-format-executable "${CLANG_FORMAT_EXE}" \
-        -i -r -j 6 -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" "${CUSTOM_SRCE}"
+  python3 "${RUN_CLANG_FORMAT}" --clang-format-executable "${CLANG_FORMAT_EXE}" \
+          -i -r -j 6 -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" "${CUSTOM_SRCE}"
   exit $?
 fi
 
