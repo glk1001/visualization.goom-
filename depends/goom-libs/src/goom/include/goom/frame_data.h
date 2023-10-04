@@ -3,6 +3,7 @@
 #include "goom_graphic.h"
 #include "point2d.h"
 
+#include <cstdint>
 #include <span> // NOLINT(misc-include-cleaner): Waiting for C++20.
 
 namespace GOOM
@@ -32,6 +33,7 @@ struct MiscData
   float hueShift                   = 0.0F;
   float chromaFactor               = 1.0F;
   float baseColorMultiplier        = 1.0F;
+  uint64_t goomTime                = 0U;
 };
 struct FrameData
 {

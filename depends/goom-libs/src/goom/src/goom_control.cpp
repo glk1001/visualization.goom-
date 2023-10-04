@@ -347,6 +347,8 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
 auto GoomControl::GoomControlImpl::UpdateFrameData() -> void
 {
+  m_frameData->miscData.goomTime = m_goomTime.GetCurrentTime();
+
   m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
   m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 

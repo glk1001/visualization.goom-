@@ -58,6 +58,7 @@ protected:
   static constexpr auto* UNIFORM_CHROMA_FACTOR         = "u_chromaFactor";
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
+  static constexpr auto* UNIFORM_TIME                  = "u_time";
 
   static constexpr auto FILTER_BUFF_TEX_INTERNAL_FORMAT = GL_RGBA16;
   static constexpr auto FILTER_POS_TEX_INTERNAL_FORMAT  = GL_RG32F;

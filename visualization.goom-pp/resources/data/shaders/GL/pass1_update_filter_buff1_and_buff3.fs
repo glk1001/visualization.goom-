@@ -18,6 +18,7 @@ in vec2 texCoord;
 
 uniform float u_lerpFactor;
 uniform float u_buff2Buff3Mix = 0.1;
+uniform uint u_time;
 
 // For base multiplier, too close to 1, gives washed
 // out look, too far away things get too dark.
@@ -91,7 +92,24 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv)
   vec2 srceNormalizedPos = texture(tex_filterSrcePositions, uv).xy;
   vec2 destNormalizedPos = texture(tex_filterDestPositions, uv).xy;
 
+  // u_time example use 1.
+  // vec2 focusPoint = 0.5 * (1.0 + vec2(sin(0.01*u_time), cos(0.01*u_time)));
+  // float d = length(destNormalizedPos - focusPoint);
+  // destNormalizedPos *= 1.0 - 0.5*d;
+  // float FREQ_FACTOR = (1.0 + (0.5*(1.0 + sin(0.01 * u_time))))*1.1;
+  // destNormalizedPos = vec2(fract(FREQ_FACTOR * destNormalizedPos.x),
+  //                          fract(FREQ_FACTOR * destNormalizedPos.y));
+  // const float FREQ_FACTOR = 20.1;
+  // destNormalizedPos = vec2((1.0 - 0.5*0.5*(1.0 + sin(FREQ_FACTOR*u_time))) * destNormalizedPos.x,
+  //                          (1.0 - 0.5*0.5*(1.0 + cos(FREQ_FACTOR*u_time))) * destNormalizedPos.y);
+
   vec2 lerpNormalizedPos = mix(srceNormalizedPos, destNormalizedPos, u_lerpFactor);
+
+  // u_time example use 2.
+  // const float FREQ_FACTOR = 0.01;
+  // float amp = 0.5 * 0.5*(1.0 + sin(0.1*u_time));
+  // vec2 newMidPoint = amp * vec2(0.5*(1.0 + sin(FREQ_FACTOR*u_time)), 0.5*(1.0 + cos(FREQ_FACTOR*u_time)));
+  // lerpNormalizedPos -= newMidPoint;
 
   vec2 filtBuff2Pos = vec2((lerpNormalizedPos.x - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH,
                            (lerpNormalizedPos.y - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH);

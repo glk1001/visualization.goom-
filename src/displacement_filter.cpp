@@ -591,6 +591,8 @@ auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept
       UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.filterPosBuffersLerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
+  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
+      UNIFORM_TIME, static_cast<uint32_t>(m_frameDataArray.at(pboIndex).miscData.goomTime));
 }
 
 auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept -> void
