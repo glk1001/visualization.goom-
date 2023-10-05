@@ -18,8 +18,10 @@ uniform vec4 u_params;
 #define WIDTH                 u_params.z
 #define HEIGHT                u_params.w
 
-layout(binding=FILTER_BUFF1_IMAGE_UNIT,    rgba16) uniform readonly image2D img_input;
-layout(binding=LUM_HISTOGRAM_BUFFER_INDEX, std430)                  buffer  buff_histogram
+// @formatter:off
+layout(binding=FILTER_BUFF1_IMAGE_UNIT,    rgba16f) uniform readonly image2D img_input;
+layout(binding=LUM_HISTOGRAM_BUFFER_INDEX,  std430)                  buffer  buff_histogram
+// @formatter:on
 {
   uint histogram[];
 };

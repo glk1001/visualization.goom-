@@ -60,7 +60,9 @@ protected:
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
   static constexpr auto* UNIFORM_TIME                  = "u_time";
 
-  static constexpr auto FILTER_BUFF_TEX_INTERNAL_FORMAT = GL_RGBA16;
+  // IMPORTANT - To make proper use of HDR (which is why we're using RGBA16), we
+  //             must use a floating point internal format.
+  static constexpr auto FILTER_BUFF_TEX_INTERNAL_FORMAT = GL_RGBA16F;
   static constexpr auto FILTER_POS_TEX_INTERNAL_FORMAT  = GL_RG32F;
   static constexpr auto IMAGE_TEX_INTERNAL_FORMAT       = FILTER_BUFF_TEX_INTERNAL_FORMAT;
 

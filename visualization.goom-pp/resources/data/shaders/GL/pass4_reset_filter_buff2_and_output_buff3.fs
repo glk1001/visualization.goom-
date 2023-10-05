@@ -7,10 +7,12 @@
 
 layout(location = 0) out vec4 fragColor;
 
-layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16) uniform readonly image2D img_filterBuff1;
-layout(binding=FILTER_BUFF2_IMAGE_UNIT, rgba16) uniform          image2D img_filterBuff2;
-layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16) uniform readonly image2D img_filterBuff3;
-layout(binding=LUM_AVG_IMAGE_UNIT,        r16f) uniform readonly image2D img_lumAvg;
+// @formatter:off
+layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform readonly image2D img_filterBuff1;
+layout(binding=FILTER_BUFF2_IMAGE_UNIT, rgba16f) uniform          image2D img_filterBuff2;
+layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform readonly image2D img_filterBuff3;
+layout(binding=LUM_AVG_IMAGE_UNIT,         r16f) uniform readonly image2D img_lumAvg;
+// @formatter:on
 
 uniform float u_brightness;
 uniform float u_hueShift;

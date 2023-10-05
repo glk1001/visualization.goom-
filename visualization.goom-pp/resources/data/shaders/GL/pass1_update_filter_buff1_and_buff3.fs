@@ -10,8 +10,8 @@ uniform sampler2D tex_filterDestPositions;
 uniform sampler2D tex_mainImage;
 uniform sampler2D tex_lowImage;
 
-layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16) uniform image2D img_filterBuff1;
-layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16) uniform image2D img_filterBuff3;
+layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff1;
+layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff3;
 
 in vec3 position;
 in vec2 texCoord;
