@@ -306,9 +306,22 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
 {
   static_assert(not std::is_same_v<HeaderT, std::nullptr_t>, "Write formatted header not ready.");
 
-  file << "tag: " << tag << "\n";
-  file << "bufferLen: " << buffer.size() << "\n";
-  file << "bufferSize: " << (buffer.size() * sizeof(T)) << "\n";
+  file << std_fmt::format("tag:        {:>8d}\n", tag);
+  file << std_fmt::format("bufferLen:  {:>8d}\n", buffer.size());
+  file << std_fmt::format("bufferSize: {:>8d}\n", buffer.size() * sizeof(T));
+  file << "\n";
+
+  if constexpr (not std::is_same_v<HeaderT, std::nullptr_t>)
+  {
+    file << std_fmt::format("width:            {:5d}\n", header.width);
+    file << std_fmt::format("height:           {:5d}\n", header.height);
+    file << std_fmt::format("averageLuminance: {:5.3f}\n", header.shaderValues.averageLuminance);
+    file << std_fmt::format("brightness:       {:5.3f}\n", header.shaderValues.brightness);
+    file << std_fmt::format("hueShift:         {:5.3f}\n", header.shaderValues.hueShift);
+    file << std_fmt::format("chromaFactor:     {:5.3f}\n", header.shaderValues.chromaFactor);
+    file << "\n";
+  }
+
   for (auto i = 0U; i < buffer.size(); ++i)
   {
     // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.

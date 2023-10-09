@@ -1,3 +1,4 @@
+//#define SAVE_FILTER_BUFFERS
 #undef NO_LOGGING
 
 #include "displacement_filter.h"
@@ -28,6 +29,10 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#ifdef SAVE_FILTER_BUFFERS
+#include <fstream>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -433,6 +438,10 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
   GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
   GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+
+#ifdef SAVE_FILTER_BUFFERS
+  SaveFilterBuffersAfterPass1();
+#endif
 }
 
 auto DisplacementFilter::WaitForRenderSync() noexcept -> void
@@ -462,9 +471,6 @@ auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
 {
   m_programPass4ResetFilterBuff2AndOutputBuff3.Use();
 
-  //std_fmt::println("After av lum {}", __LINE__);
-  //std_fmt::println("LumAverage = {}.", GetLumAverage());
-
   UpdatePass4MiscDataToGl(m_currentPboIndex);
 
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
@@ -475,6 +481,10 @@ auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
   GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
   GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+
+#ifdef SAVE_FILTER_BUFFERS
+  SaveFilterBuffersAfterPass4();
+#endif
 }
 
 auto DisplacementFilter::Pass5OutputToScreen() noexcept -> void
@@ -733,5 +743,75 @@ auto DisplacementFilter::InitTextureBuffers() noexcept -> void
 
   GlCall(glMemoryBarrier(GL_TEXTURE_UPDATE_BARRIER_BIT));
 }
+
+#ifdef SAVE_FILTER_BUFFERS
+auto DisplacementFilter::SaveFilterBuffersAfterPass1() -> void
+{
+  auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
+  m_glFilterBuffers.filterBuff1Texture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
+  GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
+
+  static auto s_saveNum = 1U;
+  const auto filename =
+      std_fmt::format("/home/greg/.kodi/filter_buffers/filter_buffer1_{:04d}.txt", s_saveNum);
+  ++s_saveNum;
+
+  SaveFilterBuffer(filename, filterBuffer);
+}
+
+auto DisplacementFilter::SaveFilterBuffersAfterPass4() -> void
+{
+  const auto lumAverage = GetLumAverage();
+
+  auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
+  m_glFilterBuffers.filterBuff3Texture.BindTexture(m_programPass4ResetFilterBuff2AndOutputBuff3);
+  GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
+
+  static auto s_saveNum = 1U;
+  const auto filename =
+      std_fmt::format("/home/greg/.kodi/filter_buffers/filter_buffer3_{:04d}.txt", s_saveNum);
+  ++s_saveNum;
+
+  SaveFilterBuffer(filename, filterBuffer, lumAverage);
+}
+
+auto DisplacementFilter::SaveFilterBuffer(const std::string& filename,
+                                          const std::vector<GOOM::Pixel>& buffer,
+                                          const float lumAverage) -> void
+{
+  auto file = std::ofstream{filename};
+  if (not file.good())
+  {
+    std_fmt::println(stderr, "ERROR: Could not open file '{}'.", filename);
+    return;
+  }
+
+  const auto linearScale   = 0.18F; // MAYBE brightness ??
+  const auto finalExposure = linearScale / (lumAverage + 0.0001F);
+  file << std_fmt::format("LumAverage    = {:.3f}.\n", lumAverage);
+  file << std_fmt::format("FinalExposure = {:.3f}.\n\n", finalExposure);
+
+  auto index = 0U;
+  for (auto y = 0; y < GetHeight(); ++y)
+  {
+    for (auto x = 0; x < GetWidth(); ++x)
+    {
+      const auto pixel              = buffer[index];
+      static constexpr auto CUT_OFF = 256U;
+      if ((pixel.R() > CUT_OFF) or (pixel.G() > CUT_OFF) or (pixel.B() > CUT_OFF))
+      {
+        file << std_fmt::format("[{:4d} {:4d}]  {:6d}, {:6d}, {:6d}, {:6d}\n",
+                                x,
+                                y,
+                                pixel.R(),
+                                pixel.G(),
+                                pixel.B(),
+                                pixel.A());
+      }
+      ++index;
+    }
+  }
+}
+#endif
 
 } // namespace GOOM::OPENGL

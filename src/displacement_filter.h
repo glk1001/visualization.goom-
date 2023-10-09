@@ -258,6 +258,14 @@ private:
   GlImageBuffers m_glImageBuffers{};
   auto SetupGlImageBuffers() -> void;
   auto BindGlImageBuffers() noexcept -> void;
+
+#ifdef SAVE_FILTER_BUFFERS
+  auto SaveFilterBuffersAfterPass1() -> void;
+  auto SaveFilterBuffersAfterPass4() -> void;
+  auto SaveFilterBuffer(const std::string& filename,
+                        const std::vector<GOOM::Pixel>& buffer,
+                        float lumAverage = 0.0F) -> void;
+#endif
 };
 
 inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::string&
