@@ -46,6 +46,7 @@ public:
   auto SetShowSongTitle(ShowSongTitleType showMusicTitleType) -> void;
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
+  auto SetBrightnessAdjust(float value) -> void;
 
   auto Start(int numChannels) -> void;
   auto StartThread() -> void;

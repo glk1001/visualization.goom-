@@ -117,10 +117,11 @@ static_assert(HEIGHTS_BY_QUALITY.size() == WIDTHS_BY_QUALITY.size());
 
 constexpr auto* GOOM_ADDON_DATA_DIR = "special://userdata/addon_data/visualization.goom-pp";
 
-constexpr auto* QUALITY_SETTING         = "quality";
-constexpr auto* SHOW_TITLE_SETTING      = "show_title";
-constexpr auto* SHOW_GOOM_STATE_SETTING = "show_goom_state";
-constexpr auto* GOOM_DUMPS_SETTING      = "goom_dumps";
+constexpr auto* QUALITY_SETTING           = "quality";
+constexpr auto* SHOW_TITLE_SETTING        = "show_title";
+constexpr auto* SHOW_GOOM_STATE_SETTING   = "show_goom_state";
+constexpr auto* GOOM_DUMPS_SETTING        = "goom_dumps";
+constexpr auto* BRIGHTNESS_ADJUST_SETTING = "brightness";
 
 [[nodiscard]] inline auto GetTextureBufferDimensions() noexcept -> TextureBufferDimensions
 {
@@ -178,6 +179,12 @@ auto CVisualizationGoom::PassSettings() noexcept -> void
       std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
   m_goomVisualization.SetShowSongTitle(
       static_cast<ShowSongTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)));
+
+  static constexpr auto PERCENT_MULTIPLIER    = 1.0F / 100.0F;
+  static constexpr auto MAX_BRIGHTNESS_ADJUST = 2.0F;
+  m_goomVisualization.SetBrightnessAdjust(
+      MAX_BRIGHTNESS_ADJUST * PERCENT_MULTIPLIER *
+      static_cast<float>(KODI_ADDON::GetSettingInt(BRIGHTNESS_ADJUST_SETTING)));
 }
 
 //-- Start --------------------------------------------------------------------

@@ -39,6 +39,8 @@ public:
   auto DestroyScene() noexcept -> void override;
 
   [[nodiscard]] auto GetShaderDir() const noexcept -> const std::string&;
+  [[nodiscard]] auto GetBrightnessAdjust() const noexcept -> float;
+  auto SetBrightnessAdjust(float value) -> void;
 
   auto Render() -> void override;
 
@@ -54,6 +56,7 @@ public:
 protected:
   static constexpr auto* UNIFORM_LERP_FACTOR           = "u_lerpFactor";
   static constexpr auto* UNIFORM_BRIGHTNESS            = "u_brightness";
+  static constexpr auto* UNIFORM_BRIGHTNESS_ADJUST     = "u_brightnessAdjust";
   static constexpr auto* UNIFORM_HUE_SHIFT             = "u_hueShift";
   static constexpr auto* UNIFORM_CHROMA_FACTOR         = "u_chromaFactor";
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
@@ -89,6 +92,7 @@ private:
   std::string m_shaderDir;
   size_t m_buffSize;
   float m_aspectRatio;
+  float m_brightnessAdjust = 1.0F;
   GLuint m_renderToTextureFbo{};
   GLuint m_renderTextureName{};
   bool m_receivedFrameData = false;
@@ -276,6 +280,16 @@ inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::stri
 inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> GOOM::FrameData&
 {
   return m_frameDataArray.at(pboIndex);
+}
+
+inline auto DisplacementFilter::GetBrightnessAdjust() const noexcept -> float
+{
+  return m_brightnessAdjust;
+}
+
+inline auto DisplacementFilter::SetBrightnessAdjust(const float value) -> void
+{
+  m_brightnessAdjust = value;
 }
 
 inline auto DisplacementFilter::SetRequestNextFrameDataFunc(

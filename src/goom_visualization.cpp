@@ -147,6 +147,11 @@ auto GoomVisualization::SetDumpDirectory(const std::string& dumpDirectory) -> vo
   m_goomControl->SetDumpDirectory(dumpDirectory);
 }
 
+auto GoomVisualization::SetBrightnessAdjust(const float value) -> void
+{
+  m_glScene->SetBrightnessAdjust(value);
+}
+
 auto GoomVisualization::Start(const int numChannels) -> void
 {
   Expects(not m_started);
@@ -172,6 +177,7 @@ auto GoomVisualization::Start(const int numChannels) -> void
           m_glScene->GetFramebufferWidth(),
           m_glScene->GetFramebufferHeight());
   LogInfo(*m_goomLogger, "Shader Dir               : '{}'.", m_glScene->GetShaderDir());
+  LogInfo(*m_goomLogger, "Brightness Adjust        : {:.2f}.", m_glScene->GetBrightnessAdjust());
 
   InitAudioValues(numChannels);
   InitSceneFrameData();

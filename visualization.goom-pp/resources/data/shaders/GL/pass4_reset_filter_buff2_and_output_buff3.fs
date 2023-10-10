@@ -15,6 +15,7 @@ layout(binding=LUM_AVG_IMAGE_UNIT,         r16f) uniform readonly image2D img_lu
 // @formatter:on
 
 uniform float u_brightness;
+uniform float u_brightnessAdjust;
 uniform float u_hueShift;
 uniform float u_chromaFactor;
 
@@ -41,9 +42,11 @@ void main()
   
   // Finish with the tone mapping.
   float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
-  vec3 toneMappedColor = GetToneMappedColor(hdrColor.rgb, averageLuminance, u_brightness);
+  vec3 toneMappedColor = GetToneMappedColor(hdrColor.rgb,
+                                            averageLuminance,
+                                            u_brightnessAdjust * u_brightness);
   //  vec3 toneMappedColor = GetToneMappedColor(hdrColor, 1.0, u_brightness);
-  //  vec3 toneMappedColor = hdrColor;
+  //  vec3 toneMappedColor = hdrColor.rgb;
 
   fragColor = vec4(toneMappedColor, 1.0F);
 }

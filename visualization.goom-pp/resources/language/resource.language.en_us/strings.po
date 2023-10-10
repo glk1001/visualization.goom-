@@ -89,3 +89,11 @@ msgstr ""
 msgctxt "#30015"
 msgid "If set, then the current Goom state values will be overlaid on the main Goom window."
 msgstr ""
+
+msgctxt "#30016"
+msgid "Display Brightness"
+msgstr ""
+
+msgctxt "#30017"
+msgid "Set the display brightness multiplier."
+msgstr ""

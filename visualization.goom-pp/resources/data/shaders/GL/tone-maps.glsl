@@ -8,9 +8,9 @@
 #define UNREAL_TONE_MAP 8
 
 //#define toneMapToUse EXPOSURE_TONE_MAP
-#define toneMapToUse UCHIMURA_TONE_MAP
+//#define toneMapToUse UCHIMURA_TONE_MAP
 //#define toneMapToUse LOTTES_TONE_MAP
-//#define toneMapToUse ACES_TONE_MAP
+#define toneMapToUse ACES_TONE_MAP
 //#define toneMapToUse UNCHARTED2_TONE_MAP
 //#define toneMapToUse REINHARD2_TONE_MAP
 //#define toneMapToUse UNREAL_TONE_MAP
@@ -226,8 +226,8 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
   vec3 mapped = color;
   //const float exposureMultiplier = 9.6;
   //float finalExposure = 1.0 / ((exposureMultiplier * averageLuminance) + 0.001);
-  const float linearScale = 0.18 + 0.02; // MAYBE brightness ??
-  float finalExposure = linearScale / (averageLuminance + 0.0001);
+  const float linearScale = 0.18; // MAYBE brightness ??
+  float finalExposure = brightness * (linearScale / (averageLuminance + 0.0001));
 
   #if (toneMapToUse == NO_TONE_MAP)
   {
@@ -236,13 +236,13 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
   }
   #elif (toneMapToUse == UCHIMURA_TONE_MAP)
   {
-    A = 2.0;
+    A = 4.0;
     gamma = 1.7;
     mapped = uchimura(finalExposure * mapped);
   }
   #elif (toneMapToUse == LOTTES_TONE_MAP)
   {
-    A = 1.0;
+    A = 5.0;
     gamma = 2.2;
     mapped = lottes(finalExposure * mapped);
   }
@@ -279,9 +279,6 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
     mapped = vec3(1.0) - exp(-finalExposure * mapped);
   }
   #endif
-
-  const float brightnessMultiplier = 1.0;
-  mapped *= brightnessMultiplier * brightness;
 
   return A * pow(mapped, vec3(1.0 / gamma));
 }
