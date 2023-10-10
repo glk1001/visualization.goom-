@@ -143,8 +143,8 @@ auto LSysColors::IncrementColorTs() noexcept -> void
 auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) const noexcept
     -> MultiplePixels
 {
-  static constexpr auto MAIN_BRIGHTNESS = 1.0F;
-  static constexpr auto LOW_BRIGHTNESS  = 2.5F;
+  static constexpr auto MAIN_BRIGHTNESS = 1.5F;
+  static constexpr auto LOW_BRIGHTNESS  = 3.0F;
 
   const auto colorT         = m_currentColorTs.at(colorNum)();
   const auto mainBrightness = m_globalBrightness * GetBrightness(MAIN_BRIGHTNESS, lSysColor);

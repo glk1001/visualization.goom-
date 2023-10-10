@@ -351,7 +351,7 @@ auto TentacleDriver::DrawTentacles() noexcept -> void
 
     m_tentaclePlotter.SetTentacleLineThickness(GetLineThickness(i));
 
-    static constexpr auto BRIGHTNESS = 5.0F;
+    static constexpr auto BRIGHTNESS = 10.0F;
     m_tentaclePlotter.SetGetColorsFunc(
         [this, &colorT, &tentacleAndAttributes](const float nodeT)
         { return GetMixedColors(colorT(), nodeT, tentacleAndAttributes, BRIGHTNESS); });

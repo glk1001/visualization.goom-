@@ -448,12 +448,12 @@ auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 
   const auto getColor1 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
-    static constexpr auto MAIN_BRIGHTNESS = 2.5F;
+    static constexpr auto MAIN_BRIGHTNESS = 5.0F;
     return GetMixedColor(MAIN_BRIGHTNESS, bitmapPoint, color, radius, bgnd);
   };
   const auto getColor2 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
-    static constexpr auto LOW_BRIGHTNESS = 3.0F;
+    static constexpr auto LOW_BRIGHTNESS = 6.0F;
     return GetMixedColor(LOW_BRIGHTNESS, bitmapPoint, color, radius, bgnd);
   };
 

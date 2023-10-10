@@ -42,8 +42,8 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
   };
 
   // clang-format off
-  static constexpr auto MIN_BRIGHTNESS = 0.5F;
-  static constexpr auto MAX_BRIGHTNESS = 4.0F;
+  static constexpr auto MIN_BRIGHTNESS = 2.0F;
+  static constexpr auto MAX_BRIGHTNESS = 10.0F;
   auto brightnessT = TValue{
       {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)}};
   // clang-format on

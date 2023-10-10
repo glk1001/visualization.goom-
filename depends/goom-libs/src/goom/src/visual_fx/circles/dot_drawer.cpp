@@ -29,10 +29,10 @@ using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 
 static constexpr auto PROB_CIRCLES                          = 0.5F;
-static constexpr auto DOT_INSIDE_MIN_BRIGHTNESS_FACTOR      = 0.5F;
-static constexpr auto DOT_INSIDE_MAX_BRIGHTNESS_FACTOR      = 1.0F;
-static constexpr auto DECORATION_DIFFERENT_COLOR_BRIGHTNESS = 1.0F;
-static constexpr auto DECORATION_SPECIAL_BRIGHTNESS         = 2.0F;
+static constexpr auto DOT_INSIDE_MIN_BRIGHTNESS_FACTOR      = 1.0F;
+static constexpr auto DOT_INSIDE_MAX_BRIGHTNESS_FACTOR      = 2.0F;
+static constexpr auto DECORATION_DIFFERENT_COLOR_BRIGHTNESS = 2.0F;
+static constexpr auto DECORATION_SPECIAL_BRIGHTNESS         = 4.0F;
 
 DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
                      const IGoomRand& goomRand,

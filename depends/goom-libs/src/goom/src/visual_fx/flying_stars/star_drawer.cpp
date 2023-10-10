@@ -112,8 +112,8 @@ inline auto StarDrawer::GetPointVelocity(const Vec2dFlt& twistFrequency,
 
 inline auto StarDrawer::GetBrightness(const float tAge) noexcept -> float
 {
-  static constexpr auto BRIGHTNESS_FACTOR = 10.0F;
-  static constexpr auto BRIGHTNESS_MIN    = 0.2F;
+  static constexpr auto BRIGHTNESS_FACTOR = 15.0F;
+  static constexpr auto BRIGHTNESS_MIN    = 0.4F;
   const auto ageBrightness                = (0.8F * std::fabs(0.10F - tAge)) / 0.25F;
 
   return BRIGHTNESS_FACTOR * (BRIGHTNESS_MIN + ageBrightness);

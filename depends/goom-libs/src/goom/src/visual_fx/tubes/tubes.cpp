@@ -93,7 +93,7 @@ enum class LowColorTypes : UnderlyingEnumType
 static constexpr auto MIN_LOW_COLOR_TYPE_TIME = 100U;
 static constexpr auto MAX_LOW_COLOR_TYPE_TIME = 1000U;
 
-static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.4F;
+static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.8F;
 static constexpr auto LIGHTER_COLOR_POWER     = 10.0F;
 
 class ShapeColorizer;
@@ -942,9 +942,9 @@ auto ShapeColorizer::UpdateAllTValues() noexcept -> void
 auto ShapeColorizer::GetBrightness(const Shape& shape,
                                    const Point2dInt& shapeCentrePos) const noexcept -> float
 {
-  static constexpr auto MIN_BRIGHTNESS = 0.5F;
+  static constexpr auto MIN_BRIGHTNESS = 1.0F;
   const auto brightness =
-      std::min(3.0F,
+      std::min(5.0F,
                m_data.brightnessFactor *
                    m_brightnessAttenuation.GetPositionBrightness(shapeCentrePos, MIN_BRIGHTNESS));
 
@@ -952,7 +952,7 @@ auto ShapeColorizer::GetBrightness(const Shape& shape,
   if (static constexpr float HALFWAY_T = 0.5F;
       std::fabs(shape.path->GetCurrentT() - HALFWAY_T) < SMALL_T)
   {
-    static constexpr auto SMALL_T_BRIGHTNESS = 0.250F;
+    static constexpr auto SMALL_T_BRIGHTNESS = 0.50F;
     return SMALL_T_BRIGHTNESS * brightness;
   }
   return brightness;

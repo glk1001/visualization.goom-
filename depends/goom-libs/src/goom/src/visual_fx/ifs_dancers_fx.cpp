@@ -128,8 +128,8 @@ private:
   TValue m_tMix{
       {T_MIX_STARTING_VALUE, TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
-  static constexpr auto POINT_BRIGHTNESS  = 4.0F;
-  static constexpr auto BITMAP_BRIGHTNESS = 3.0F;
+  static constexpr auto POINT_BRIGHTNESS  = 8.0F;
+  static constexpr auto BITMAP_BRIGHTNESS = 6.0F;
   auto InitColorMaps() noexcept -> void;
   auto ChangeColorMaps() noexcept -> void;
   auto ChangeSpeed() noexcept -> void;

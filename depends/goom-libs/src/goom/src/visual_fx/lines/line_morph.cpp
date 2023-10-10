@@ -177,8 +177,8 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   if (m_lineLerpParam >= 1.0F)
   {
     m_srceLineParams.lineType            = m_destLineParams.lineType;
-    static constexpr auto MIN_BRIGHTNESS = 2.5F;
-    static constexpr auto MAX_BRIGHTNESS = 4.0F;
+    static constexpr auto MIN_BRIGHTNESS = 5.0F;
+    static constexpr auto MAX_BRIGHTNESS = 8.0F;
     m_currentBrightness = m_goomRand->GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
   }
 
