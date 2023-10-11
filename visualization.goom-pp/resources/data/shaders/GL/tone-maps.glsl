@@ -1,22 +1,22 @@
 #define NO_TONE_MAP 1
 #define EXPOSURE_TONE_MAP 2
 #define REINHARD2_TONE_MAP 3
-#define UCHIMURA_TONE_MAP 4
-#define LOTTES_TONE_MAP 5
+#define LOTTES_TONE_MAP 4
+#define UCHIMURA_TONE_MAP 5
 #define ACES_TONE_MAP 6
-#define UNCHARTED2_TONE_MAP 7
-#define UNREAL_TONE_MAP 8
-#define FILMIC_TONE_MAP 9
+#define FILMIC_TONE_MAP 7
+#define UNCHARTED2_TONE_MAP 8
+#define UNREAL_TONE_MAP 9
 
 //#define toneMapToUse NO_TONE_MAP
 //#define toneMapToUse EXPOSURE_TONE_MAP
 //#define toneMapToUse REINHARD2_TONE_MAP
-//#define toneMapToUse UCHIMURA_TONE_MAP
 //#define toneMapToUse LOTTES_TONE_MAP
+//#define toneMapToUse UCHIMURA_TONE_MAP
 //#define toneMapToUse ACES_TONE_MAP
-//#define toneMapToUse UNCHARTED2_TONE_MAP
+//#define toneMapToUse FILMIC_TONE_MAP
+#define toneMapToUse UNCHARTED2_TONE_MAP
 //#define toneMapToUse UNREAL_TONE_MAP
-#define toneMapToUse FILMIC_TONE_MAP
 
 // Exposure Tone Map
 vec3 ExposureToneMap(vec3 x, float exposure)
@@ -24,54 +24,33 @@ vec3 ExposureToneMap(vec3 x, float exposure)
   return vec3(1.0) - exp(-exposure * x);
 }
 
-// Reinhard
-vec3 reinhard(vec3 x)
+// Reinhard Tone Map
+vec3 Reinhard(vec3 x)
 {
   return x / (1.0 + x);
 }
 
-float reinhard(float x)
+float Reinhard(float x)
 {
   return x / (1.0 + x);
 }
 
-vec3 reinhard2(vec3 x)
+vec3 Reinhard2(vec3 x)
 {
   const float L_white = 4.0;
 
   return (x * (1.0 + x / (L_white * L_white))) / (1.0 + x);
 }
 
-float reinhard2(float x)
+float Reinhard2(float x)
 {
   const float L_white = 4.0;
 
   return (x * (1.0 + x / (L_white * L_white))) / (1.0 + x);
-}
-
-// Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
-vec3 aces(vec3 x)
-{
-  const float a = 2.51;
-  const float b = 0.03;
-  const float c = 2.43;
-  const float d = 0.59;
-  const float e = 0.14;
-  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
-}
-
-float aces(float x)
-{
-  const float a = 2.51;
-  const float b = 0.03;
-  const float c = 2.43;
-  const float d = 0.59;
-  const float e = 0.14;
-  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
 
 // Lottes 2016, "Advanced Techniques and Optimization of HDR Color Pipelines"
-vec3 lottes(vec3 x)
+vec3 Lottes(vec3 x)
 {
   const vec3 a      = vec3(1.6);
   const vec3 d      = vec3(0.977);
@@ -88,7 +67,7 @@ vec3 lottes(vec3 x)
   return pow(x, a) / (pow(x, a * d) * b + c);
 }
 
-float lottes(float x)
+float Lottes(float x)
 {
   const float a      = 1.6;
   const float d      = 0.977;
@@ -108,7 +87,7 @@ float lottes(float x)
 // Uchimura 2017, "HDR theory and practice"
 // Math: https://www.desmos.com/calculator/gslcdxvipg
 // Source: https://www.slideshare.net/nikuque/hdr-theory-and-practicce-jp
-vec3 uchimura(vec3 x, float P, float a, float m, float l, float c, float b)
+vec3 Uchimura(vec3 x, float P, float a, float m, float l, float c, float b)
 {
   float l0 = ((P - m) * l) / a;
   float L0 = m - m / a;
@@ -129,7 +108,7 @@ vec3 uchimura(vec3 x, float P, float a, float m, float l, float c, float b)
   return T * w0 + L * w1 + S * w2;
 }
 
-vec3 uchimura(vec3 x)
+vec3 Uchimura(vec3 x)
 {
   const float P = 1.0; // max display brightness
   const float a = 1.0; // contrast
@@ -138,10 +117,10 @@ vec3 uchimura(vec3 x)
   const float c = 1.03; // black
   const float b = 0.0; // pedestal
 
-  return uchimura(x, P, a, m, l, c, b);
+  return Uchimura(x, P, a, m, l, c, b);
 }
 
-float uchimura(float x, float P, float a, float m, float l, float c, float b)
+float Uchimura(float x, float P, float a, float m, float l, float c, float b)
 {
   float l0 = ((P - m) * l) / a;
   float L0 = m - m / a;
@@ -162,7 +141,7 @@ float uchimura(float x, float P, float a, float m, float l, float c, float b)
   return T * w0 + L * w1 + S * w2;
 }
 
-float uchimura(float x)
+float Uchimura(float x)
 {
   const float P = 1.0; // max display brightness
   const float a = 1.0; // contrast
@@ -171,63 +150,28 @@ float uchimura(float x)
   const float c = 1.03; // black
   const float b = 0.0; // pedestal
 
-  return uchimura(x, P, a, m, l, c, b);
+  return Uchimura(x, P, a, m, l, c, b);
 }
 
-// Uncharted
-vec3 uncharted2Tonemap(vec3 x)
+// Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
+vec3 Aces(vec3 x)
 {
-  float A = 0.15;
-  float B = 0.50;
-  float C = 0.10;
-  float D = 0.20;
-  float E = 0.02;
-  float F = 0.30;
-  float W = 11.2;
-  return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+  const float a = 2.51;
+  const float b = 0.03;
+  const float c = 2.43;
+  const float d = 0.59;
+  const float e = 0.14;
+  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
 
-vec3 uncharted2(vec3 color)
+float Aces(float x)
 {
-  const float W      = 11.2;
-  float exposureBias = 2.0;
-  vec3 curr          = uncharted2Tonemap(exposureBias * color);
-  vec3 whiteScale    = 1.0 / uncharted2Tonemap(vec3(W));
-  return curr * whiteScale;
-}
-
-float uncharted2Tonemap(float x)
-{
-  float A = 0.15;
-  float B = 0.50;
-  float C = 0.10;
-  float D = 0.20;
-  float E = 0.02;
-  float F = 0.30;
-  float W = 11.2;
-  return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
-}
-
-float uncharted2(float color)
-{
-  const float W            = 11.2;
-  const float exposureBias = 2.0;
-  float curr               = uncharted2Tonemap(exposureBias * color);
-  float whiteScale         = 1.0 / uncharted2Tonemap(W);
-  return curr * whiteScale;
-}
-
-// Unreal 3, Documentation: "Color Grading"
-// Adapted to be close to Tonemap_ACES, with similar range
-// Gamma 2.2 correction is baked in, don't use with sRGB conversion!
-vec3 unreal(vec3 x)
-{
-  return x / (x + 0.155) * 1.019;
-}
-
-float unreal(float x)
-{
-  return x / (x + 0.155) * 1.019;
+  const float a = 2.51;
+  const float b = 0.03;
+  const float c = 2.43;
+  const float d = 0.59;
+  const float e = 0.14;
+  return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
 }
 
 // Filmic Tonemapping Operators http://filmicworlds.com/blog/filmic-tonemapping-operators/
@@ -245,10 +189,65 @@ float FilmicToneMap(float x)
   return pow(result, 2.2);
 }
 
-const float gamma = 2.2;
-
-vec3 toGamma(vec3 color)
+// Uncharted Tone Map
+vec3 Uncharted2Tonemap(vec3 x)
 {
+  float A = 0.15;
+  float B = 0.50;
+  float C = 0.10;
+  float D = 0.20;
+  float E = 0.02;
+  float F = 0.30;
+  float W = 11.2;
+  return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+vec3 Uncharted2(vec3 color)
+{
+  const float W      = 11.2;
+  float exposureBias = 2.0;
+  vec3 curr          = Uncharted2Tonemap(exposureBias * color);
+  vec3 whiteScale    = 1.0 / Uncharted2Tonemap(vec3(W));
+  return curr * whiteScale;
+}
+
+float Uncharted2ToneMap(float x)
+{
+  float A = 0.15;
+  float B = 0.50;
+  float C = 0.10;
+  float D = 0.20;
+  float E = 0.02;
+  float F = 0.30;
+  float W = 11.2;
+  return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+
+float Uncharted2(float color)
+{
+  const float W            = 11.2;
+  const float exposureBias = 2.0;
+  float curr               = Uncharted2ToneMap(exposureBias * color);
+  float whiteScale         = 1.0 / Uncharted2ToneMap(W);
+  return curr * whiteScale;
+}
+
+// Unreal 3, Documentation: "Color Grading"
+// Adapted to be close to Tonemap_ACES, with similar range
+// Gamma 2.2 correction is baked in, don't use with sRGB conversion!
+vec3 Unreal(vec3 x)
+{
+  return x / (x + 0.155) * 1.019;
+}
+
+float Unreal(float x)
+{
+  return x / (x + 0.155) * 1.019;
+}
+
+vec3 ToGamma(vec3 color)
+{
+  const float gamma = 2.2;
   return pow(color, vec3(1.0 / gamma));
 }
 
@@ -262,57 +261,57 @@ vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
 {
 #if (toneMapToUse == NO_TONE_MAP)
   {
-    const float extraBrightness = 2.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(finalExposure * color);
+    const float exposureBias = 2.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(finalExposure * color);
   }
 #elif (toneMapToUse == EXPOSURE_TONE_MAP)
   {
-    const float extraBrightness = 4.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(ExposureToneMap(color, finalExposure));
+    const float exposureBias = 4.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(ExposureToneMap(color, finalExposure));
   }
 #elif (toneMapToUse == REINHARD2_TONE_MAP)
   {
-    const float extraBrightness = 7.5;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(reinhard2(finalExposure * color));
-  }
-#elif (toneMapToUse == UCHIMURA_TONE_MAP)
-  {
-    const float extraBrightness = 4.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(uchimura(finalExposure * color));
+    const float exposureBias = 7.5;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(Reinhard2(finalExposure * color));
   }
 #elif (toneMapToUse == LOTTES_TONE_MAP)
   {
-    const float extraBrightness = 4.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(lottes(finalExposure * color));
+    const float exposureBias = 4.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(Lottes(finalExposure * color));
+  }
+#elif (toneMapToUse == UCHIMURA_TONE_MAP)
+  {
+    const float exposureBias = 4.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(Uchimura(finalExposure * color));
   }
 #elif (toneMapToUse == ACES_TONE_MAP)
   {
-    const float extraBrightness = 4.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(aces(finalExposure * color));
-  }
-#elif (toneMapToUse == UNCHARTED2_TONE_MAP)
-  {
-    const float extraBrightness = 20.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return toGamma(uncharted2Tonemap(finalExposure * color));
-  }
-#elif (toneMapToUse == UNREAL_TONE_MAP)
-  {
-    const float extraBrightness = 1.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
-    return unreal(finalExposure * color);
+    const float exposureBias = 4.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(Aces(finalExposure * color));
   }
 #elif (toneMapToUse == FILMIC_TONE_MAP)
   {
-    const float extraBrightness = 10.0;
-    float finalExposure         = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    const float exposureBias = 10.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
     return FilmicToneMap(finalExposure * color);
+  }
+#elif (toneMapToUse == UNCHARTED2_TONE_MAP)
+  {
+    const float exposureBias = 5.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return ToGamma(Uncharted2(finalExposure * color));
+  }
+#elif (toneMapToUse == UNREAL_TONE_MAP)
+  {
+    const float exposureBias = 1.0;
+    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
+    return Unreal(finalExposure * color);
   }
 #endif
 }
