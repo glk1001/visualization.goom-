@@ -1,19 +1,27 @@
-#define NO_TONE_MAP 1
-#define EXPOSURE_TONE_MAP 2
-#define UCHIMURA_TONE_MAP 3
-#define LOTTES_TONE_MAP 4
-#define ACES_TONE_MAP 5
-#define UNCHARTED2_TONE_MAP 6
-#define REINHARD2_TONE_MAP 7
-#define UNREAL_TONE_MAP 8
+#define NO_TONE_MAP         1
+#define EXPOSURE_TONE_MAP   2
+#define REINHARD2_TONE_MAP  3
+#define UCHIMURA_TONE_MAP   4
+#define LOTTES_TONE_MAP     5
+#define ACES_TONE_MAP       6
+#define UNCHARTED2_TONE_MAP 7
+#define UNREAL_TONE_MAP     8
+#define FILMIC_TONE_MAP     9
 
+//#define toneMapToUse NO_TONE_MAP
 //#define toneMapToUse EXPOSURE_TONE_MAP
+//#define toneMapToUse REINHARD2_TONE_MAP
 //#define toneMapToUse UCHIMURA_TONE_MAP
 //#define toneMapToUse LOTTES_TONE_MAP
-#define toneMapToUse ACES_TONE_MAP
+//#define toneMapToUse ACES_TONE_MAP
 //#define toneMapToUse UNCHARTED2_TONE_MAP
-//#define toneMapToUse REINHARD2_TONE_MAP
 //#define toneMapToUse UNREAL_TONE_MAP
+#define toneMapToUse FILMIC_TONE_MAP
+
+// Exposure Tone Map
+vec3 ExposureToneMap(vec3 x, float exposure) {
+  return vec3(1.0) - exp(-exposure * x);
+}
 
 // Reinhard
 vec3 reinhard(vec3 x) {
@@ -53,19 +61,6 @@ float aces(float x) {
   const float d = 0.59;
   const float e = 0.14;
   return clamp((x * (a * x + b)) / (x * (c * x + d) + e), 0.0, 1.0);
-}
-
-// Filmic Tonemapping Operators http://filmicworlds.com/blog/filmic-tonemapping-operators/
-vec3 tonemapFilmic(vec3 x) {
-  vec3 X = max(vec3(0.0), x - 0.004);
-  vec3 result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
-  return pow(result, vec3(2.2));
-}
-
-float tonemapFilmic(float x) {
-  float X = max(0.0, x - 0.004);
-  float result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
-  return pow(result, 2.2);
 }
 
 // Lottes 2016, "Advanced Techniques and Optimization of HDR Color Pipelines"
@@ -218,67 +213,87 @@ float unreal(float x) {
   return x / (x + 0.155) * 1.019;
 }
 
-// The tone map in use.
+// Filmic Tonemapping Operators http://filmicworlds.com/blog/filmic-tonemapping-operators/
+vec3 FilmicToneMap(vec3 x) {
+  vec3 X = max(vec3(0.0), x - 0.004);
+  vec3 result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
+  return pow(result, vec3(2.2));
+}
+
+float FilmicToneMap(float x) {
+  float X = max(0.0, x - 0.004);
+  float result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
+  return pow(result, 2.2);
+}
+
+const float gamma = 2.2;
+
+vec3 toGamma(vec3 color)
+{
+  return pow(color, vec3(1.0 / gamma));
+}
+
+float GetFinalExposure(float brightness, float averageLuminance)
+{
+  const float linearScale = 0.18; // MAYBE brightness ??
+  return brightness * (linearScale / (averageLuminance + 0.0001));
+}
+
 vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
 {
-  float A;
-  float gamma;
-  vec3 mapped = color;
-  //const float exposureMultiplier = 9.6;
-  //float finalExposure = 1.0 / ((exposureMultiplier * averageLuminance) + 0.001);
-  const float linearScale = 0.18; // MAYBE brightness ??
-  float finalExposure = brightness * (linearScale / (averageLuminance + 0.0001));
-
   #if (toneMapToUse == NO_TONE_MAP)
   {
-    A = 5.0;
-    gamma = 2.2;
-  }
-  #elif (toneMapToUse == UCHIMURA_TONE_MAP)
-  {
-    A = 4.0;
-    gamma = 1.7;
-    mapped = uchimura(finalExposure * mapped);
-  }
-  #elif (toneMapToUse == LOTTES_TONE_MAP)
-  {
-    A = 5.0;
-    gamma = 2.2;
-    mapped = lottes(finalExposure * mapped);
-  }
-  #elif (toneMapToUse == ACES_TONE_MAP)
-  {
-    A = 5.0;
-    gamma = 2.3;
-    mapped = aces(finalExposure * mapped);
-  }
-  #elif (toneMapToUse == UNCHARTED2_TONE_MAP)
-  {
-    A = 7.0;
-    gamma = 2.2;
-    mapped = uncharted2Tonemap(finalExposure * mapped);
-  }
-  #elif (toneMapToUse == REINHARD2_TONE_MAP)
-  {
-    A = 7.0;
-    gamma = 1.7;
-    mapped = reinhard2(finalExposure * mapped);
-  }
-  #elif (toneMapToUse == UNREAL_TONE_MAP)
-  {
-    A = 6.0;
-    gamma = 1.1;
-    mapped = unreal(finalExposure * mapped);
+    const float extraBrightness = 2.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(finalExposure * color);
   }
   #elif (toneMapToUse == EXPOSURE_TONE_MAP)
   {
-    A = 5.0;
-    // Exposure tone mapping
-    //const float exposure = 30.0;
-    //mapped = vec3(1.0) - exp(-color * exposure);
-    mapped = vec3(1.0) - exp(-finalExposure * mapped);
+    const float extraBrightness = 4.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(ExposureToneMap(color, finalExposure));
+  }
+  #elif (toneMapToUse == REINHARD2_TONE_MAP)
+  {
+    const float extraBrightness = 7.5;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(reinhard2(finalExposure * color));
+  }
+  #elif (toneMapToUse == UCHIMURA_TONE_MAP)
+  {
+    const float extraBrightness = 4.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(uchimura(finalExposure * color));
+  }
+  #elif (toneMapToUse == LOTTES_TONE_MAP)
+  {
+    const float extraBrightness = 4.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(lottes(finalExposure * color));
+  }
+  #elif (toneMapToUse == ACES_TONE_MAP)
+  {
+    const float extraBrightness = 4.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(aces(finalExposure * color));
+  }
+  #elif (toneMapToUse == UNCHARTED2_TONE_MAP)
+  {
+    const float extraBrightness = 20.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return toGamma(uncharted2Tonemap(finalExposure * color));
+  }
+  #elif (toneMapToUse == UNREAL_TONE_MAP)
+  {
+    const float extraBrightness = 1.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return unreal(finalExposure * color);
+  }
+  #elif (toneMapToUse == FILMIC_TONE_MAP)
+  {
+    const float extraBrightness = 10.0;
+    float finalExposure = GetFinalExposure(extraBrightness * brightness, averageLuminance);
+    return FilmicToneMap(finalExposure * color);
   }
   #endif
-
-  return A * pow(mapped, vec3(1.0 / gamma));
 }
