@@ -10,8 +10,8 @@ uniform sampler2D tex_filterDestPositions;
 uniform sampler2D tex_mainImage;
 uniform sampler2D tex_lowImage;
 
-layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff1;
-layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff3;
+layout(binding = FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff1;
+layout(binding = FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff3;
 
 in vec3 position;
 in vec2 texCoord;
@@ -42,7 +42,7 @@ void main()
 {
   vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord);
 
-  ivec2 xy = ivec2(gl_FragCoord.xy);
+  ivec2 xy          = ivec2(gl_FragCoord.xy);
   vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
 
   vec4 colorMain = texture(tex_mainImage, texCoord);
@@ -84,7 +84,9 @@ float GetBaseColorMultiplier(vec3 color)
   const float LOW_BASE_COLOR_MULTIPLIER = 0.25;
 
   return NotCloseToBlack(color) ? u_baseColorMultiplier
-         : mix(LOW_BASE_COLOR_MULTIPLIER, u_baseColorMultiplier, pow(color.r / BLACK_CUTOFF, 3.0));
+                                : mix(LOW_BASE_COLOR_MULTIPLIER,
+                                      u_baseColorMultiplier,
+                                      pow(color.r / BLACK_CUTOFF, 3.0));
 }
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv)

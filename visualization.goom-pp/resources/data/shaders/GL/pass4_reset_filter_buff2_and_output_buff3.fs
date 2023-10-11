@@ -8,10 +8,12 @@
 layout(location = 0) out vec4 fragColor;
 
 // @formatter:off
+// clang-format off
 layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform readonly image2D img_filterBuff1;
 layout(binding=FILTER_BUFF2_IMAGE_UNIT, rgba16f) uniform          image2D img_filterBuff2;
 layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform readonly image2D img_filterBuff3;
 layout(binding=LUM_AVG_IMAGE_UNIT,         r16f) uniform readonly image2D img_lumAvg;
+// clang-format on
 // @formatter:on
 
 uniform float u_brightness;
@@ -28,7 +30,7 @@ void main()
 
   // Get the hdr color to work with.
   vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
-  vec4 hdrColor = filtBuff3Val;
+  vec4 hdrColor     = filtBuff3Val;
 
   // Copy filter buff1 to filter buff2 ready for the next frame.
   vec4 filtBuff1Val = imageLoad(img_filterBuff1, xy);

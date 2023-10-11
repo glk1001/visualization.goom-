@@ -28,9 +28,9 @@ vec3 xyz_to_rgb(vec3 xyz) {
 /***/
 vec3 xyz_to_rgb(vec3 color)
 {
-  float var_X = color.r / 100.0; //X from 0.0 to  95.047 (Observer = 2.0 degrees, Illuminant = D65);
-  float var_Y = color.g / 100.0; //Y from 0.0 to 100.000;
-  float var_Z = color.b / 100.0; //Z from 0.0 to 108.883;
+  float var_X = color.r / 100.0; // X from 0.0 to  95.047 (Observer = 2.0 degrees, Illuminant = D65);
+  float var_Y = color.g / 100.0; // Y from 0.0 to 100.000;
+  float var_Z = color.b / 100.0; // Z from 0.0 to 108.883;
 
   float var_R = var_X * 3.2406 + var_Y * -1.5372 + var_Z * -0.4986;
   float var_G = var_X * -0.9689 + var_Y * 1.8758 + var_Z * 0.0415;
@@ -69,9 +69,9 @@ vec3 xyz_to_rgb(vec3 color)
 
 vec3 rgb_to_xyz(vec3 color)
 {
-  float var_R = (color.r); //R from 0.0 to 255.0
-  float var_G = (color.g); //G from 0.0 to 255.0
-  float var_B = (color.b); //B from 0.0 to 255.0
+  float var_R = (color.r); // R from 0.0 to 255.0
+  float var_G = (color.g); // G from 0.0 to 255.0
+  float var_B = (color.b); // B from 0.0 to 255.0
 
   if (var_R > 0.04045)
   {
@@ -115,7 +115,7 @@ vec3 lab_to_lch(vec3 color)
 {
   const float MPI = 3.14159265359;
 
-  float var_H = atan(color.b, color.g); //in GLSL this is atan2
+  float var_H = atan(color.b, color.g); // in GLSL this is atan2
 
   if (var_H > 0.0)
   {
@@ -142,7 +142,7 @@ vec3 lch_to_lab(vec3 color)
 
 vec3 xyz_to_lab(vec3 color)
 {
-  float ref_X = 95.047; //Observer= 2.0°, Illuminant= D65
+  float ref_X = 95.047; // Observer= 2.0°, Illuminant= D65
   float ref_Y = 100.000;
   float ref_Z = 108.883;
 
@@ -213,7 +213,7 @@ vec3 lab_to_xyz(vec3 color)
     var_Z = (var_Z - 16.0 / 116.0) / 7.787;
   }
 
-  float ref_X = 95.047; //Observer= 2.0 degrees, Illuminant= D65
+  float ref_X = 95.047; // Observer= 2.0 degrees, Illuminant= D65
   float ref_Y = 100.000;
   float ref_Z = 108.883;
 

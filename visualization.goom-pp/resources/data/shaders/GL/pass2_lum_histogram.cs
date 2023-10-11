@@ -13,14 +13,20 @@
 #define RGB_TO_LUM vec3(0.2125, 0.7154, 0.0721)
 
 uniform vec4 u_params;
+// @formatter:off
+// clang-format off
 #define MIN_LOG_LUM           u_params.x
 #define INVERSE_LOG_LUM_RANGE u_params.y
 #define WIDTH                 u_params.z
 #define HEIGHT                u_params.w
+// clang-format on
+// @formatter:on
 
 // @formatter:off
+// clang-format off
 layout(binding=FILTER_BUFF1_IMAGE_UNIT,    rgba16f) uniform readonly image2D img_input;
 layout(binding=LUM_HISTOGRAM_BUFFER_INDEX,  std430)                  buffer  buff_histogram
+// clang-format on
 // @formatter:on
 {
   uint histogram[];
@@ -29,7 +35,7 @@ layout(binding=LUM_HISTOGRAM_BUFFER_INDEX,  std430)                  buffer  buf
 // Shared histogram buffer used for storing intermediate sums for each work group.
 shared uint histogramShared[GROUP_SIZE];
 
-layout (local_size_x = THREADS_X, local_size_y = THREADS_Y) in;
+layout(local_size_x = THREADS_X, local_size_y = THREADS_Y) in;
 
 uint colorToBin(vec3 hdrColor, float minLogLum, float inverseLogLumRange);
 
