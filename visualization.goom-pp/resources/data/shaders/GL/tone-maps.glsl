@@ -148,73 +148,57 @@ vec3 ToGamma(vec3 color)
   return pow(color, vec3(1.0 / gamma));
 }
 
-float GetFinalExposure(float brightness, float averageLuminance)
-{
-  const float linearScale = 0.18; // MAYBE brightness ??
-  return brightness * (linearScale / (averageLuminance + 0.0001));
-}
-
-vec3 GetToneMappedColor(vec3 color, float averageLuminance, float brightness)
+vec3 GetToneMappedColor(vec3 color)
 {
 #if (toneMapToUse == NO_TONE_MAP)
   {
-    const float exposureBias = 2.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(finalExposure * color);
+    const float exposureBias = 1.0;
+    return ToGamma(exposureBias * color);
   }
 #elif (toneMapToUse == EXPOSURE_TONE_MAP)
   {
-    const float exposureBias = 4.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(ExposureToneMap(color, finalExposure));
+    const float exposureBias = 2.5;
+    return ToGamma(ExposureToneMap(color, exposureBias));
   }
 #elif (toneMapToUse == REINHARD_TONE_MAP)
   {
-    const float exposureBias = 5.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(Reinhard(finalExposure * color));
+    const float exposureBias = 2.0;
+    return ToGamma(Reinhard(exposureBias * color));
   }
 #elif (toneMapToUse == REINHARD2_TONE_MAP)
   {
-    const float exposureBias = 7.5;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(Reinhard2(finalExposure * color));
+    const float exposureBias = 4.0;
+    return ToGamma(Reinhard2(exposureBias * color));
   }
 #elif (toneMapToUse == LOTTES_TONE_MAP)
   {
-    const float exposureBias = 4.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(Lottes(finalExposure * color));
+    const float exposureBias = 2.0;
+    return ToGamma(Lottes(exposureBias * color));
   }
 #elif (toneMapToUse == UCHIMURA_TONE_MAP)
   {
-    const float exposureBias = 4.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(Uchimura(finalExposure * color));
+    const float exposureBias = 2.0;
+    return ToGamma(Uchimura(exposureBias * color));
   }
 #elif (toneMapToUse == ACES_TONE_MAP)
   {
-    const float exposureBias = 3.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(Aces(finalExposure * color));
+    const float exposureBias = 1.5;
+    return ToGamma(Aces(exposureBias * color));
   }
 #elif (toneMapToUse == FILMIC_TONE_MAP)
   {
-    const float exposureBias = 10.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return Filmic(finalExposure * color);
+    const float exposureBias = 5.0;
+    return Filmic(exposureBias * color);
   }
 #elif (toneMapToUse == UNCHARTED2_TONE_MAP)
   {
-    const float exposureBias = 7.5;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return ToGamma(Uncharted2(finalExposure * color));
+    const float exposureBias = 5.0;
+    return ToGamma(Uncharted2(exposureBias * color));
   }
 #elif (toneMapToUse == UNREAL_TONE_MAP)
   {
     const float exposureBias = 1.0;
-    float finalExposure      = GetFinalExposure(exposureBias * brightness, averageLuminance);
-    return Unreal(finalExposure * color);
+    return Unreal(exposureBias * color);
   }
 #endif
 }
