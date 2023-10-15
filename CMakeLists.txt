@@ -121,13 +121,27 @@ endif ()
 
 CPMAddPackage("gh:fmtlib/fmt#10.0.0")
 
+set(ASMJIT_EMBED True)
+set(BLEND2D_STATIC True)
+set(BLEND2D_NO_INSTALL True)
+CPMAddPackage(NAME "asmjit"
+              GITHUB_REPOSITORY "asmjit/asmjit"
+              GIT_TAG "master"
+              FORCE False
+              DOWNLOAD_ONLY True
+)
+set(ASMJIT_DIR "${asmjit_SOURCE_DIR}")
+CPMAddPackage(NAME "blend2d"
+              GITHUB_REPOSITORY "blend2d/blend2d"
+              GIT_TAG "master"
+              FORCE False
+)
 CPMAddPackage(NAME "LSys"
               GITHUB_REPOSITORY "glk1001/LSys"
               GIT_TAG "master"
               FORCE True
 )
 set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
-
 CPMAddPackage(NAME "particles"
               GITHUB_REPOSITORY "glk1001/particles"
               GIT_TAG "public_cleaned"
@@ -231,7 +245,7 @@ set(${GOOM_ADDON_PREFIX}_HEADERS
     src/slot_producer_consumer.h
 )
 
-list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib particles::lib)
+list(APPEND DEPLIBS ${GOOM_BIN_LIBS} LSys::lib particles::lib blend2d::blend2d)
 
 # Let kodi set this:
 set(CMAKE_INSTALL_LIBDIR "")
