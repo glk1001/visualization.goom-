@@ -41,6 +41,8 @@ public:
   [[nodiscard]] auto GetEndBufferNum() const noexcept -> int64_t;
   [[nodiscard]] auto HaveFinishedBufferRange() const noexcept -> bool;
 
+  auto SetMinimalFormat(bool value) noexcept -> void;
+
   using BufferIndexFormatter = std::function<std::string(size_t bufferIndex)>;
   auto SetBufferIndexFormatter(const BufferIndexFormatter& bufferIndexFormatter) noexcept -> void;
 
@@ -71,14 +73,16 @@ public:
       const HeaderT& header,
       // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       std_spn::span<const T> buffer,
-      const BufferIndexFormatter& getBufferIndexString = DefaultGetBufferIndexString) -> void;
+      const BufferIndexFormatter& getBufferIndexString = DefaultGetBufferIndexString,
+      bool minimalFormat                               = false) -> void;
   static auto WriteFormatted(
       const std::string& filename,
       int64_t tag,
       const HeaderT& header,
       // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
       std_spn::span<const T> buffer,
-      const BufferIndexFormatter& getBufferIndexString = DefaultGetBufferIndexString) -> void;
+      const BufferIndexFormatter& getBufferIndexString = DefaultGetBufferIndexString,
+      bool minimalFormat                               = false) -> void;
 
   [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename, HeaderT& header)
       -> bool;
@@ -91,8 +95,13 @@ private:
   int64_t m_startBuffNum;
   int64_t m_endBuffNum;
   int64_t m_currentBuffNum;
+  bool m_minimalFormat                        = false;
   BufferIndexFormatter m_bufferIndexFormatter = DefaultGetBufferIndexString;
   [[nodiscard]] static auto DefaultGetBufferIndexString(size_t bufferIndex) -> std::string;
+  static auto WriteFormattedHeader(std::ostream& file,
+                                   int64_t tag,
+                                   const HeaderT& header,
+                                   size_t bufferSize) -> void;
 };
 
 template<class T, class HeaderT>
@@ -145,6 +154,12 @@ inline auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const noexcept ->
 }
 
 template<class T, class HeaderT>
+inline auto BufferSaver<T, HeaderT>::SetMinimalFormat(const bool value) noexcept -> void
+{
+  m_minimalFormat = value;
+}
+
+template<class T, class HeaderT>
 inline auto BufferSaver<T, HeaderT>::SetBufferIndexFormatter(
     const BufferIndexFormatter& bufferIndexFormatter) noexcept -> void
 {
@@ -185,7 +200,8 @@ auto BufferSaver<T, HeaderT>::Write(const HeaderT& header,
   }
   else
   {
-    WriteFormatted(filename, m_currentBuffNum, header, buffer, m_bufferIndexFormatter);
+    WriteFormatted(
+        filename, m_currentBuffNum, header, buffer, m_bufferIndexFormatter, m_minimalFormat);
   }
 
   ++m_currentBuffNum;
@@ -283,7 +299,8 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(
     const HeaderT& header,
     // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
     const std_spn::span<const T> buffer,
-    const BufferIndexFormatter& getBufferIndexString) -> void
+    const BufferIndexFormatter& getBufferIndexString,
+    const bool minimalFormat) -> void
 {
   auto file = std::ofstream{filename, std::ios::out};
   if (not file.good())
@@ -292,23 +309,50 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(
     throw std::runtime_error(std_fmt::format(
         "Could not open file '{}' for text writing. Error: {}.", filename, strerror(errno)));
   }
-  WriteFormatted(file, tag, header, buffer, getBufferIndexString);
+  WriteFormatted(file, tag, header, buffer, getBufferIndexString, minimalFormat);
 }
 
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
                                              const int64_t tag,
-                                             [[maybe_unused]] const HeaderT& header,
+                                             const HeaderT& header,
                                              // NOLINTNEXTLINE(misc-include-cleaner): Need C++20.
                                              const std_spn::span<const T> buffer,
-                                             const BufferIndexFormatter& getBufferIndexString)
-    -> void
+                                             const BufferIndexFormatter& getBufferIndexString,
+                                             const bool minimalFormat) -> void
+{
+  WriteFormattedHeader(file, tag, header, buffer.size());
+
+  for (auto i = 0U; i < buffer.size(); ++i)
+  {
+    if (minimalFormat)
+    {
+      file << getBufferIndexString(i) << to_string(buffer[i]);
+    }
+    else
+    {
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+      file << std_fmt::format("{}: {}", getBufferIndexString(i), to_string(buffer[i]));
+      if (i < (buffer.size() - 1))
+      {
+        file << ", ";
+      }
+    }
+    file << "\n";
+  }
+}
+
+template<class T, class HeaderT>
+auto BufferSaver<T, HeaderT>::WriteFormattedHeader(std::ostream& file,
+                                                   int64_t tag,
+                                                   const HeaderT& header,
+                                                   const size_t bufferSize) -> void
 {
   static_assert(not std::is_same_v<HeaderT, std::nullptr_t>, "Write formatted header not ready.");
 
   file << std_fmt::format("tag:        {:>8d}\n", tag);
-  file << std_fmt::format("bufferLen:  {:>8d}\n", buffer.size());
-  file << std_fmt::format("bufferSize: {:>8d}\n", buffer.size() * sizeof(T));
+  file << std_fmt::format("bufferLen:  {:>8d}\n", bufferSize);
+  file << std_fmt::format("bufferSize: {:>8d}\n", bufferSize * sizeof(T));
   file << "\n";
 
   if constexpr (not std::is_same_v<HeaderT, std::nullptr_t>)
@@ -319,17 +363,6 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
     file << std_fmt::format("brightness:       {:5.3f}\n", header.shaderValues.brightness);
     file << std_fmt::format("hueShift:         {:5.3f}\n", header.shaderValues.hueShift);
     file << std_fmt::format("chromaFactor:     {:5.3f}\n", header.shaderValues.chromaFactor);
-    file << "\n";
-  }
-
-  for (auto i = 0U; i < buffer.size(); ++i)
-  {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    file << std_fmt::format("{}: {}", getBufferIndexString(i), to_string(buffer[i]));
-    if (i < (buffer.size() - 1))
-    {
-      file << ", ";
-    }
     file << "\n";
   }
 }
