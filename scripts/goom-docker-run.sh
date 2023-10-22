@@ -78,7 +78,7 @@ x11docker -q                                          \
           --name ${KODI_CONTAINER_NAME}               \
           --hostuser=${USER}                          \
           --network                                   \
-          --pulseaudio                                \
+          --pulseaudio=host                           \
           --xauth=trusted                             \
           --hostdisplay                               \
           --gpu                                       \
