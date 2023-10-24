@@ -120,12 +120,20 @@ auto Blend2dToGoom::UpdateGoomBuffer(PixelBuffer& goomBuffer) noexcept -> void
 
   const auto srceBuffer = GetPixelBuffer(m_blend2DBuffer.blend2dImage);
 
+#ifdef __APPLE__
+  std::transform(srceBuffer.begin(),
+                 srceBuffer.end(),
+                 goomBuffer.GetPixelBuffer().begin(),
+                 goomBuffer.GetPixelBuffer().begin(),
+                 blendPixel);
+#else
   std::transform(std::execution::par_unseq,
                  srceBuffer.begin(),
                  srceBuffer.end(),
                  goomBuffer.GetPixelBuffer().begin(),
                  goomBuffer.GetPixelBuffer().begin(),
                  blendPixel);
+#endif
 }
 
 [[nodiscard]] auto Blend2dToGoom::GetBlendedPixel(const uint32_t blend2dColor,
