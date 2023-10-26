@@ -765,6 +765,7 @@ auto DisplacementFilter::InitTextureBuffers() noexcept -> void
 }
 
 #ifdef SAVE_FILTER_BUFFERS
+// TODO(glk) - Use formatted GoomPoint2dBufferSaver
 static constexpr auto SAVE_ROOT_DIR = "/home/greg/.kodi/filter_buffers";
 //static constexpr auto SAVE_ROOT_DIR = "/home/greg/Prj/workdir/filter_buffers";
 

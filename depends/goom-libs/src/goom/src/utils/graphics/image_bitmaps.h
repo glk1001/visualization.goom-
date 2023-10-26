@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span> // NOLINT: Waiting to use C++20.
 #include <string>
 #include <tuple>
 #include <vector>
@@ -28,7 +29,7 @@ public:
 
   auto operator()(size_t x, size_t y) const noexcept -> Pixel;
 
-private:
+protected:
   struct RGB
   {
     uint8_t red   = 0;
@@ -36,10 +37,14 @@ private:
     uint8_t blue  = 0;
     uint8_t alpha = 0;
   };
+
+  // NOLINTNEXTLINE: Waiting to use C++20.
+  [[nodiscard]] auto GetBuffer() const noexcept -> std_spn::span<const RGB>;
+
+private:
   uint32_t m_width{};
   uint32_t m_height{};
-  using Buffer = std::vector<RGB>;
-  Buffer m_buff{};
+  std::vector<RGB> m_owningBuff{};
   std::string m_filename{};
   [[nodiscard]] auto GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>;
   auto SetPixel(size_t x, size_t y, const RGB& pixel) noexcept -> void;
@@ -73,10 +78,16 @@ inline auto ImageBitmap::GetIntHeight() const noexcept -> int32_t
 
 inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexcept -> Pixel
 {
-  const auto& pixel = m_buff.at((y * m_width) + x);
+  const auto& pixel = m_owningBuff.at((y * m_width) + x);
   return Pixel{
       {pixel.red, pixel.green, pixel.blue, ToPixelAlpha(pixel.alpha)}
   };
+}
+
+// NOLINTNEXTLINE: Waiting to use C++20.
+inline auto ImageBitmap::GetBuffer() const noexcept -> std_spn::span<const RGB>
+{
+  return std_spn::span<const RGB>{m_owningBuff};
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

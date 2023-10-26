@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <exception>
 #include <format> // NOLINT(misc-include-cleaner): Waiting for C++20.
+#include <stdexcept>
 #include <string>
 #include <tuple>
 
@@ -20,9 +21,6 @@
 #pragma warning(pop)
 #endif
 
-#include <format> // NOLINT: Waiting to use C++20.
-#include <stdexcept>
-
 namespace GOOM::UTILS::GRAPHICS
 {
 
@@ -30,15 +28,15 @@ auto ImageBitmap::Resize(const Dimensions& dimensions) noexcept -> void
 {
   m_width  = dimensions.GetWidth();
   m_height = dimensions.GetHeight();
-  m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
+  m_owningBuff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
 inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pixel) noexcept -> void
 {
-  m_buff.at((y * m_width) + x) = pixel;
+  m_owningBuff.at((y * m_width) + x) = pixel;
 }
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
@@ -78,7 +76,7 @@ void ImageBitmap::Load(const std::string& imageFilename)
 
   ::stbi_image_free(rgbImage);
 }
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 

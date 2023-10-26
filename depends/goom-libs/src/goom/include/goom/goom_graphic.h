@@ -164,6 +164,7 @@ struct FXBuffSettings
 
 class PixelBuffer
 {
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   using Buffer = std_spn::span<Pixel>;
 
 public:
@@ -400,13 +401,13 @@ inline auto PixelBuffer::GetPixel(const size_t buffPos) noexcept -> Pixel&
   return m_buff[buffPos];
 }
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 

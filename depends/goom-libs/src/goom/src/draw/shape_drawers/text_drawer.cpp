@@ -1,5 +1,5 @@
 // NOLINTBEGIN: Not my code
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
@@ -930,7 +930,7 @@ auto TextDrawer::TextDrawerImpl::GetBoundingRect(const SpanArray& stdSpans,
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 // NOLINTEND: Not my code

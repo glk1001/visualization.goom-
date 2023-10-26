@@ -22,6 +22,7 @@ public:
   [[nodiscard]] auto DataAvailable() const noexcept -> size_t;
   [[nodiscard]] auto FreeSpace() const noexcept -> size_t;
 
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   auto Write(std_spn::span<const T> srce) noexcept -> void;
   auto Read(std::vector<T>& dest) noexcept -> void;
 
@@ -65,13 +66,14 @@ inline auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
   return m_size - m_used;
 }
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
 #endif
 
 template<typename T>
+// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
 auto CircularBuffer<T>::Write(const std_spn::span<const T> srce) noexcept -> void
 {
   Expects(srce.size() <= FreeSpace());
@@ -129,7 +131,7 @@ auto CircularBuffer<T>::Read(std::vector<T>& dest) noexcept -> void
   }
 }
 
-#if __clang_major__ >= 16
+#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
 

@@ -7,8 +7,10 @@ namespace GOOM
 
 [[nodiscard]] inline auto GetCompilerVersion() -> std::string
 {
-#if defined(__clang_major__)
+#if defined(__clang_major__) // NOLINT: Can't include header for this.
+  // NOLINTNEXTLINE: Can't include header for this.
   return std::string("clang ") + std::to_string(__clang_major__) + "." +
+         // NOLINTNEXTLINE: Can't include header for this.
          std::to_string(__clang_minor__) + "-" + std::to_string(__clang_patchlevel__);
 #elif defined(__GNUC__)
   return std::string("gcc ") + std::to_string(__GNUC__) + "." + std::to_string(__GNUC_MINOR__);

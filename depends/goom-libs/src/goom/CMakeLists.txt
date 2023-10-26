@@ -49,6 +49,7 @@ add_library(goom
             STATIC
             include/goom/circular_buffer.h
             include/goom/frame_data.h
+            include/goom/goom_buffer_saver.h
             include/goom/goom_config.h
             include/goom/goom_lerp_data.h
             include/goom/goom_time.h
