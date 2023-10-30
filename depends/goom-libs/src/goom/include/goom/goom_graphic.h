@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <format> // NOLINT: Waiting to use C++20.
 #include <limits>
 #include <span> // NOLINT: Waiting to use C++20.
 #include <vector>
@@ -204,6 +205,8 @@ private:
   Buffer m_buff{};
 };
 
+[[nodiscard]] auto GetBufferValueToString(const Pixel& bufferValue) -> std::string;
+
 class PixelBufferVector : public PixelBuffer
 {
 public:
@@ -398,6 +401,16 @@ inline auto PixelBuffer::GetPixel(const size_t buffPos) const noexcept -> const 
 inline auto PixelBuffer::GetPixel(const size_t buffPos) noexcept -> Pixel&
 {
   return m_buff[buffPos];
+}
+
+inline auto GetBufferValueToString(const Pixel& bufferValue) -> std::string
+{
+  // NOLINTNEXTLINE: Waiting to use C++20.
+  return std_fmt::format("{:6d} {:6d} {:6d} {:6d}",
+                         bufferValue.R(),
+                         bufferValue.G(),
+                         bufferValue.B(),
+                         bufferValue.A());
 }
 
 #if __clang_major__ >= 16

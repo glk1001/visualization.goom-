@@ -107,6 +107,8 @@ private:
 
 template<class HeaderT>
 [[nodiscard]] auto GetFormattedBufferHeader(const HeaderT& nullHeader) -> std::string;
+template<class T>
+[[nodiscard]] auto GetBufferValueToString(const T& bufferValue) -> std::string;
 
 template<class T, class HeaderT>
 inline BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
@@ -341,11 +343,7 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::DefaultBufferToString(const T& bufferValue) -> std::string
 {
-  if constexpr (std::is_floating_point<T>::value or std::is_integral_v<T>)
-  {
-    return std::to_string(bufferValue);
-  }
-  FailFast();
+  return GetBufferValueToString(bufferValue);
 }
 
 template<class T, class HeaderT>
@@ -368,6 +366,12 @@ template<class HeaderT>
 auto GetFormattedBufferHeader([[maybe_unused]] const HeaderT& nullHeader) -> std::string
 {
   return "";
+}
+
+template<class T>
+auto GetBufferValueToString(const T& bufferValue) -> std::string
+{
+  return std::to_string(bufferValue);
 }
 
 } // namespace GOOM::UTILS

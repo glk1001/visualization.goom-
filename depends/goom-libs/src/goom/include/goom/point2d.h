@@ -6,6 +6,8 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <format> // NOLINT(misc-include-cleaner): Waiting for C++20.
+#include <string>
 
 namespace GOOM
 {
@@ -54,6 +56,9 @@ struct Point2dInt
     -> int32_t;
 [[nodiscard]] constexpr auto SqDistanceFromZero(const Point2dInt& point) noexcept -> int32_t;
 [[nodiscard]] auto Distance(const Point2dInt& point1, const Point2dInt& point2) noexcept -> int32_t;
+
+[[nodiscard]] auto GetBufferValueToString(const Point2dInt& bufferValue) -> std::string;
+[[nodiscard]] auto GetBufferValueToString(const Point2dFlt& bufferValue) -> std::string;
 
 struct Vec2dInt
 {
@@ -420,6 +425,18 @@ constexpr auto SqDistanceFromZero(const Point2dInt& point) noexcept -> int32_t
 inline auto Distance(const Point2dFlt& point1, const Point2dFlt& point2) noexcept -> float
 {
   return std::sqrt(SqDistance(point1, point2));
+}
+
+inline auto GetBufferValueToString(const Point2dInt& bufferValue) -> std::string
+{
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+  return std_fmt::format("{:6d} {:6d}", bufferValue.x, bufferValue.y);
+}
+
+inline auto GetBufferValueToString(const Point2dFlt& bufferValue) -> std::string
+{
+  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+  return std_fmt::format("{:6.2f} {:6.2f}", bufferValue.x, bufferValue.y);
 }
 
 } // namespace GOOM
