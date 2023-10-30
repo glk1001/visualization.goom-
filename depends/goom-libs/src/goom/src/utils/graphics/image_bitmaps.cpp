@@ -30,12 +30,12 @@ auto ImageBitmap::Resize(const Dimensions& dimensions) noexcept -> void
 {
   m_width  = dimensions.GetWidth();
   m_height = dimensions.GetHeight();
-  m_buff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
+  m_owningBuff.resize(static_cast<size_t>(m_width) * static_cast<size_t>(m_height));
 }
 
 inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pixel) noexcept -> void
 {
-  m_buff.at((y * m_width) + x) = pixel;
+  m_owningBuff.at((y * m_width) + x) = pixel;
 }
 
 #if __clang_major__ >= 16
