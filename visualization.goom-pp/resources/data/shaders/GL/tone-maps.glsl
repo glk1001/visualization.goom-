@@ -1,3 +1,5 @@
+uniform float u_gamma;
+
 #define NO_TONE_MAP 1
 #define EXPOSURE_TONE_MAP 2
 #define REINHARD_TONE_MAP 3
@@ -144,8 +146,7 @@ vec3 Unreal(vec3 x)
 
 vec3 ToGamma(vec3 color)
 {
-  const float gamma = 2.2;
-  return pow(color, vec3(1.0 / gamma));
+  return pow(color, vec3(1.0 / u_gamma));
 }
 
 vec3 GetToneMappedColor(vec3 color)

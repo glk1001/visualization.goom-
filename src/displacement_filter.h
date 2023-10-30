@@ -55,6 +55,8 @@ public:
       const ReleaseCurrentFrameDataFunc& releaseCurrentFrameDataFunc) noexcept -> void;
 
 protected:
+  static constexpr auto DEFAULT_GAMMA = 1.5F;
+
   static constexpr auto* UNIFORM_LERP_FACTOR           = "u_lerpFactor";
   static constexpr auto* UNIFORM_BRIGHTNESS            = "u_brightness";
   static constexpr auto* UNIFORM_BRIGHTNESS_ADJUST     = "u_brightnessAdjust";
@@ -62,6 +64,7 @@ protected:
   static constexpr auto* UNIFORM_CHROMA_FACTOR         = "u_chromaFactor";
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
+  static constexpr auto* UNIFORM_GAMMA                 = "u_gamma";
   static constexpr auto* UNIFORM_TIME                  = "u_time";
 
   // IMPORTANT - To make proper use of HDR (which is why we're using RGBA16), we

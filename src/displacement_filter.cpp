@@ -160,6 +160,7 @@ auto DisplacementFilter::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
   miscData.brightness                 = 1.0F;
   miscData.chromaFactor               = 1.0F;
   miscData.baseColorMultiplier        = 1.0F;
+  miscData.gamma                      = DEFAULT_GAMMA;
 }
 
 auto DisplacementFilter::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
@@ -623,6 +624,8 @@ auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept
       UNIFORM_HUE_SHIFT, m_frameDataArray.at(pboIndex).miscData.hueShift);
   m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
       UNIFORM_CHROMA_FACTOR, m_frameDataArray.at(pboIndex).miscData.chromaFactor);
+  m_programPass4ResetFilterBuff2AndOutputBuff3.SetUniform(
+      UNIFORM_GAMMA, m_frameDataArray.at(pboIndex).miscData.gamma);
 }
 
 auto DisplacementFilter::UpdateSrceFilterPosBufferToGl(const size_t pboIndex) noexcept -> void

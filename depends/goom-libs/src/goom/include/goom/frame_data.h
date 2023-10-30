@@ -30,6 +30,7 @@ struct MiscData
   float hueShift                   = 0.0F;
   float chromaFactor               = 1.0F;
   float baseColorMultiplier        = 1.0F;
+  float gamma                      = 1.0F;
   uint64_t goomTime                = 0U;
 };
 struct FrameData
