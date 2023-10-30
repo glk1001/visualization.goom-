@@ -114,6 +114,7 @@ add_library(goom
             src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cpp
             src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
             src/filter_fx/filter_effects/adjustment_effects/mobius.cpp
+            src/filter_fx/filter_effects/adjustment_effects/newton.cpp
             src/filter_fx/filter_effects/adjustment_effects/scrunch.cpp
             src/filter_fx/filter_effects/adjustment_effects/speedway.cpp
             src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h

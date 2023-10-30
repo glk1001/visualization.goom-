@@ -58,7 +58,8 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::MOBIUS_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::MOBIUS_MODE;
+constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NEWTON_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
@@ -106,6 +107,7 @@ constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {ZoomFilterMode::HYPERCOS_MODE3, "Hypercos Mode 3"},
     {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
     {ZoomFilterMode::MOBIUS_MODE, "Mobius"},
+    {ZoomFilterMode::NEWTON_MODE, "Newton"},
     {ZoomFilterMode::NORMAL_MODE, "Normal"},
     {ZoomFilterMode::SCRUNCH_MODE, "Scrunch"},
     {ZoomFilterMode::SPEEDWAY_MODE0, "Speedway Mode 0"},
@@ -152,7 +154,7 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[FiltMode::DISTANCE_FIELD_MODE1][EffectType::ROTATION] = PROB_HIGH;
   effectsProbs[FiltMode::DISTANCE_FIELD_MODE2][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::EXP_RECIPROCAL_MODE][EffectType::ROTATION] = PROB_HALF;
+  effectsProbs[FiltMode::EXP_RECIPROCAL_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[FiltMode::HYPERCOS_MODE0][EffectType::ROTATION] = PROB_LOW;
   effectsProbs[FiltMode::HYPERCOS_MODE1][EffectType::ROTATION] = PROB_LOW;
@@ -162,6 +164,8 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[FiltMode::IMAGE_DISPLACEMENT_MODE][EffectType::ROTATION] = PROB_ZERO;
 
   effectsProbs[FiltMode::MOBIUS_MODE][EffectType::ROTATION] = PROB_HIGH;
+
+  effectsProbs[FiltMode::NEWTON_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[FiltMode::NORMAL_MODE][EffectType::ROTATION] = PROB_ZERO;
 
@@ -264,6 +268,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
   static constexpr auto HYPERCOS_MODE3_WEIGHT          = 01.0F;
   static constexpr auto IMAGE_DISPLACEMENT_MODE_WEIGHT = 05.0F;
   static constexpr auto MOBIUS_MODE_WEIGHT             = 10.0F;
+  static constexpr auto NEWTON_MODE_WEIGHT             = 10.0F;
   static constexpr auto NORMAL_MODE_WEIGHT             = 10.0F;
   static constexpr auto SCRUNCH_MODE_WEIGHT            = 06.0F;
   static constexpr auto SPEEDWAY_MODE0_WEIGHT          = 02.0F;
@@ -363,6 +368,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
         {ZoomFilterMode::HYPERCOS_MODE3, HYPERCOS_MODE3_WEIGHT},
         {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_MODE_WEIGHT},
         {ZoomFilterMode::MOBIUS_MODE, MOBIUS_MODE_WEIGHT},
+        {ZoomFilterMode::NEWTON_MODE, NEWTON_MODE_WEIGHT},
         {ZoomFilterMode::NORMAL_MODE, NORMAL_MODE_WEIGHT},
         {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_MODE_WEIGHT},
         {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_MODE0_WEIGHT},
@@ -486,6 +492,13 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
+  constexpr auto NEWTON_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 0.0F}}
+  };
   constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
@@ -564,6 +577,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
       {ZoomFilterMode::HYPERCOS_MODE3, HYPERCOS3_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::MOBIUS_MODE, MOBIUS_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::NEWTON_MODE, NEWTON_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_HYPERCOS_WEIGHTS},
