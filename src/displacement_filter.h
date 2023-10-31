@@ -1,3 +1,5 @@
+//#define SAVE_FILTER_BUFFERS
+
 #pragma once
 
 #include "gl_2d_textures.h"
@@ -65,6 +67,7 @@ protected:
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
   static constexpr auto* UNIFORM_GAMMA                 = "u_gamma";
+  static constexpr auto* UNIFORM_RESET_SRCE_FILTER_POS = "u_resetSrceFilterPosBuffers";
   static constexpr auto* UNIFORM_TIME                  = "u_time";
 
   // IMPORTANT - To make proper use of HDR (which is why we're using RGBA16), we
@@ -101,6 +104,7 @@ private:
   GLuint m_renderTextureName{};
   bool m_receivedFrameData = false;
   GLsync m_renderSync{};
+  auto DoTheDraw() const noexcept -> void;
   auto WaitForRenderSync() noexcept -> void;
 
   size_t m_currentPboIndex = 0U;
@@ -136,9 +140,7 @@ private:
   ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
   auto UpdatePass1MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePass4MiscDataToGl(size_t pboIndex) noexcept -> void;
-  auto UpdateSrceFilterPosBufferToGl(size_t pboIndex) noexcept -> void;
-  auto UpdateSrceFilterPosBufferAndTexture(float lerpFactor, size_t buffIndex) noexcept -> void;
-  auto UpdateDestFilterPosBufferToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateCurrentDestFilterPosBufferToGl() noexcept -> void;
   auto UpdateImageBuffersToGl(size_t pboIndex) noexcept -> void;
 
   GlslProgram m_programPass1UpdateFilterBuff1AndBuff3;
@@ -165,7 +167,7 @@ private:
   static constexpr auto FILTER_BUFF3_TEX_LOCATION =
       FILTER_BUFF2_TEX_LOCATION + NUM_FILTER_BUFF_TEXTURES;
 
-  // FILTER_SRCE_POS and FILTER_DEST_POS have two textures each
+  // NOTE: FILTER_SRCE_POS and FILTER_DEST_POS have two textures each
   static constexpr auto NUM_FILTER_POS_TEXTURES = 2;
   static constexpr auto FILTER_SRCE_POS_TEX_LOCATION =
       FILTER_BUFF3_TEX_LOCATION + NUM_FILTER_BUFF_TEXTURES;
@@ -179,20 +181,18 @@ private:
 
   static constexpr auto LUM_AVG_TEX_LOCATION = LOW_IMAGE_TEX_LOCATION + NUM_IMAGE_TEXTURES;
 
-  static constexpr auto FILTER_BUFF1_TEX_SHADER_NAME = "";
+  static constexpr auto NULL_TEXTURE_NAME            = "";
   static constexpr auto FILTER_BUFF2_TEX_SHADER_NAME = "tex_filterBuff2";
-  static constexpr auto FILTER_BUFF3_TEX_SHADER_NAME = "";
-  static constexpr auto FILTER_SRCE_POS_TEX_SHADER_NAMES =
-      std::array{"tex_filterSrcePositions", "tex_filterSrcePositions2"};
-  static constexpr auto FILTER_DEST_POS_TEX_SHADER_NAMES =
-      std::array{"tex_filterDestPositions", "tex_filterDestPositions2"};
-  static constexpr auto MAIN_IMAGE_TEX_SHADER_NAME = "tex_mainImage";
-  static constexpr auto LOW_IMAGE_TEX_SHADER_NAME  = "tex_lowImage";
+  static constexpr auto MAIN_IMAGE_TEX_SHADER_NAME   = "tex_mainImage";
+  static constexpr auto LOW_IMAGE_TEX_SHADER_NAME    = "tex_lowImage";
 
-  static constexpr auto FILTER_BUFF1_IMAGE_UNIT = 0;
-  static constexpr auto FILTER_BUFF2_IMAGE_UNIT = 1;
-  static constexpr auto FILTER_BUFF3_IMAGE_UNIT = 2;
-  static constexpr auto LUM_AVG_IMAGE_UNIT      = 3;
+  static constexpr auto NULL_IMAGE_UNIT             = -1;
+  static constexpr auto FILTER_BUFF1_IMAGE_UNIT     = 0;
+  static constexpr auto FILTER_BUFF2_IMAGE_UNIT     = 1;
+  static constexpr auto FILTER_BUFF3_IMAGE_UNIT     = 2;
+  static constexpr auto LUM_AVG_IMAGE_UNIT          = 3;
+  static constexpr auto FILTER_SRCE_POS_IMAGE_UNITS = std::array{4, 5};
+  static constexpr auto FILTER_DEST_POS_IMAGE_UNITS = std::array{6, 7};
 
   GLuint m_histogramBufferName{};
   static constexpr auto HISTOGRAM_BUFFER_LENGTH    = 256;
@@ -208,58 +208,49 @@ private:
   struct GlFilterPosBuffers
   {
     Gl2DTexture<FilterPosBuffersXY,
-                -1,
-                FILTER_SRCE_POS_TEX_LOCATION,
                 NUM_FILTER_POS_TEXTURES,
+                FILTER_SRCE_POS_TEX_LOCATION,
                 FILTER_POS_TEX_FORMAT,
                 FILTER_POS_TEX_INTERNAL_FORMAT,
                 FILTER_POS_TEX_PIXEL_TYPE,
-                NUM_FILTER_POS_TEXTURES>
+                0>
         filterSrcePosTexture{};
     Gl2DTexture<FilterPosBuffersXY,
-                -1,
-                FILTER_DEST_POS_TEX_LOCATION,
                 NUM_FILTER_POS_TEXTURES,
+                FILTER_DEST_POS_TEX_LOCATION,
                 FILTER_POS_TEX_FORMAT,
                 FILTER_POS_TEX_INTERNAL_FORMAT,
                 FILTER_POS_TEX_PIXEL_TYPE,
                 NUM_PBOS>
         filterDestPosTexture{};
-    std::array<std::vector<FilterPosBuffersXY>, NUM_FILTER_POS_TEXTURES>
-        activeFilterDestPosBuffers{};
     size_t numActiveTextures         = NUM_FILTER_POS_TEXTURES;
     size_t currentActiveTextureIndex = 0;
   };
-  auto UpdateCurrentFilterPosTextureIndex() noexcept -> void;
   auto RotateCurrentFilterPosTextureIndex() noexcept -> void;
   GlFilterPosBuffers m_glFilterPosBuffers{};
   auto SetupGlFilterPosBuffers() -> void;
-  auto BindGlFilterPosBuffers() noexcept -> void;
 
   struct GlFilterBuffers
   {
     Gl2DTexture<GOOM::PixelIntType,
-                FILTER_BUFF1_IMAGE_UNIT,
-                FILTER_BUFF1_TEX_LOCATION,
                 NUM_FILTER_BUFF_TEXTURES,
+                FILTER_BUFF1_TEX_LOCATION,
                 FILTER_BUFF_TEX_FORMAT,
                 FILTER_BUFF_TEX_INTERNAL_FORMAT,
                 FILTER_BUFF_TEX_PIXEL_TYPE,
                 0>
         filterBuff1Texture{};
     Gl2DTexture<GOOM::PixelIntType,
-                FILTER_BUFF2_IMAGE_UNIT,
-                FILTER_BUFF2_TEX_LOCATION,
                 NUM_FILTER_BUFF_TEXTURES,
+                FILTER_BUFF2_TEX_LOCATION,
                 FILTER_BUFF_TEX_FORMAT,
                 FILTER_BUFF_TEX_INTERNAL_FORMAT,
                 FILTER_BUFF_TEX_PIXEL_TYPE,
                 0>
         filterBuff2Texture{};
     Gl2DTexture<GOOM::PixelIntType,
-                FILTER_BUFF3_IMAGE_UNIT,
+                NUM_FILTER_BUFF_TEXTURES,
                 FILTER_BUFF3_TEX_LOCATION,
-                1,
                 FILTER_BUFF_TEX_FORMAT,
                 FILTER_BUFF_TEX_INTERNAL_FORMAT,
                 FILTER_BUFF_TEX_PIXEL_TYPE,
@@ -273,18 +264,16 @@ private:
   struct GlImageBuffers
   {
     Gl2DTexture<GOOM::Pixel,
-                -1,
-                MAIN_IMAGE_TEX_LOCATION,
                 NUM_IMAGE_TEXTURES,
+                MAIN_IMAGE_TEX_LOCATION,
                 IMAGE_TEX_FORMAT,
                 IMAGE_TEX_INTERNAL_FORMAT,
                 IMAGE_TEX_PIXEL_TYPE,
                 NUM_PBOS>
         mainImageTexture{};
     Gl2DTexture<GOOM::Pixel,
-                -1,
-                LOW_IMAGE_TEX_LOCATION,
                 NUM_IMAGE_TEXTURES,
+                LOW_IMAGE_TEX_LOCATION,
                 IMAGE_TEX_FORMAT,
                 IMAGE_TEX_INTERNAL_FORMAT,
                 IMAGE_TEX_PIXEL_TYPE,
@@ -296,11 +285,23 @@ private:
   auto BindGlImageBuffers() noexcept -> void;
 
 #ifdef SAVE_FILTER_BUFFERS
+  uint32_t m_pass1SaveNum = 0U;
+  uint32_t m_pass4SaveNum = 0U;
+  auto SaveGlBuffersAfterPass1() -> void;
+  auto SaveGlBuffersAfterPass4() -> void;
+
   auto SaveFilterBuffersAfterPass1() -> void;
+  auto SaveFilterPosBuffersAfterPass1() -> void;
   auto SaveFilterBuffersAfterPass4() -> void;
-  auto SaveFilterBuffer(const std::string& filename,
-                        const std::vector<GOOM::Pixel>& buffer,
-                        float lumAverage = 0.0F) -> void;
+
+  auto SavePixelBuffer(const std::string& filename,
+                       // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+                       std_spn::span<GOOM::Pixel> buffer,
+                       float lumAverage = 0.0F) const -> void;
+  auto SaveFilterPosBuffer(const std::string& filename, uint32_t textureIndex) -> void;
+  auto SaveFilterPosBuffer(const std::string& filename,
+                           // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+                           std_spn::span<FilterPosBuffersXY> buffer) const -> void;
 #endif
 };
 
