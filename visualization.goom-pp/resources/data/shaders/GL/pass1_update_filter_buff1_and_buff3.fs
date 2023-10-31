@@ -5,8 +5,6 @@
 //#include "glsl-blend/all.glsl"
 
 uniform sampler2D tex_filterBuff2;
-uniform sampler2D tex_filterSrcePositions;
-uniform sampler2D tex_filterSrcePositions2;
 uniform sampler2D tex_filterDestPositions;
 uniform sampler2D tex_filterDestPositions2;
 uniform sampler2D tex_mainImage;
@@ -15,11 +13,17 @@ uniform sampler2D tex_lowImage;
 layout(binding = FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff1;
 layout(binding = FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff3;
 
+layout(binding = FILTER_SRCE_POS_IMAGE_UNIT1, rg32f) uniform image2D  img_filterSrcePosBuff1;
+layout(binding = FILTER_SRCE_POS_IMAGE_UNIT2, rg32f) uniform image2D  img_filterSrcePosBuff2;
+layout(binding = FILTER_DEST_POS_IMAGE_UNIT1, rg32f) uniform readonly image2D img_filterDestPosBuff1;
+layout(binding = FILTER_DEST_POS_IMAGE_UNIT2, rg32f) uniform readonly image2D img_filterDestPosBuff2;
+
 in vec3 position;
 in vec2 texCoord;
 
 uniform float u_lerpFactor;
 uniform float u_buff2Buff3Mix = 0.1;
+uniform bool u_resetSrceFilterPosBuffers;
 uniform uint u_time;
 
 // For base multiplier, too close to 1, gives washed
@@ -37,14 +41,14 @@ vec3 blend(vec3 base, vec3 blend, float opacity)
 }
 **/
 
-vec4 GetPosMappedFilterBuff2Value(vec2 uv);
+vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy);
 float GetBaseColorMultiplier(vec3 color);
 
 void main()
 {
-  vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord);
+  ivec2 xy = ivec2(gl_FragCoord.xy);
 
-  ivec2 xy          = ivec2(gl_FragCoord.xy);
+  vec4 filtBuff2Val = GetPosMappedFilterBuff2Value(texCoord, xy);
   vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
 
   vec4 colorMain = texture(tex_mainImage, texCoord);
@@ -91,13 +95,15 @@ float GetBaseColorMultiplier(vec3 color)
                                       pow(color.r / BLACK_CUTOFF, 3.0));
 }
 
-vec4 GetPosMappedFilterBuff2Value(vec2 uv)
+vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy)
 {
-  vec2 srceNormalizedPos1 = texture(tex_filterSrcePositions, uv).xy;
-  vec2 destNormalizedPos1 = texture(tex_filterDestPositions, uv).xy;
+  xy = ivec2(xy.x, HEIGHT - 1 - xy.y);
 
-  vec2 srceNormalizedPos2 = texture(tex_filterSrcePositions2, uv).xy;
-  vec2 destNormalizedPos2 = texture(tex_filterDestPositions2, uv).xy;
+  vec2 srceNormalizedPos1 = imageLoad(img_filterSrcePosBuff1, xy).xy;
+  vec2 destNormalizedPos1 = imageLoad(img_filterDestPosBuff1, xy).xy;
+
+  vec2 srceNormalizedPos2 = imageLoad(img_filterSrcePosBuff2, xy).xy;
+  vec2 destNormalizedPos2 = imageLoad(img_filterDestPosBuff2, xy).xy;
 
   // u_time example use 1.
   // vec2 focusPoint = 0.5 * (1.0 + vec2(sin(0.01*u_time), cos(0.01*u_time)));
@@ -112,6 +118,14 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv)
 
   vec2 lerpNormalizedPos1 = mix(srceNormalizedPos1, destNormalizedPos1, u_lerpFactor);
   vec2 lerpNormalizedPos2 = mix(srceNormalizedPos2, destNormalizedPos2, u_lerpFactor);
+
+  if (u_resetSrceFilterPosBuffers)
+  {
+    // Reset the filter srce pos buffers to the current lerped state, ready
+    // for a new filter dest pos buffer.
+    imageStore(img_filterSrcePosBuff1, xy, vec4(lerpNormalizedPos1, 0, 0));
+    imageStore(img_filterSrcePosBuff2, xy, vec4(lerpNormalizedPos2, 0, 0));
+  }
 
   // u_time example use 2.
   // const float FREQ_FACTOR = 0.01;

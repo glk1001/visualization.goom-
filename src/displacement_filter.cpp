@@ -1,4 +1,3 @@
-//#define SAVE_FILTER_BUFFERS
 #undef NO_LOGGING
 
 #include "displacement_filter.h"
@@ -31,6 +30,8 @@
 #include <vector>
 
 #ifdef SAVE_FILTER_BUFFERS
+#include "goom_graphic.h"
+
 #include <fstream>
 #endif
 
@@ -175,26 +176,12 @@ auto DisplacementFilter::InitFilterPosArrays(GOOM::FilterPosArrays& filterPosArr
   filterPosArrays.filterDestPosNeedsUpdating = false;
 
   InitFilterPosBuffer({static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())},
-                      m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(0));
+                      m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(0));
 
-  for (auto i = 1U; i < NUM_FILTER_POS_TEXTURES; ++i)
+  for (auto i = 1U; i < NUM_PBOS; ++i)
   {
-    CopyBuffer(m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(0),
-               m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(i));
-  }
-  for (auto i = 0U; i < NUM_PBOS; ++i)
-  {
-    CopyBuffer(m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(0),
+    CopyBuffer(m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(0),
                m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(i));
-  }
-
-  const auto posBufferLen = static_cast<size_t>(GetWidth()) * static_cast<size_t>(GetHeight());
-  for (auto& previousFilterDestPosBuffer : m_glFilterPosBuffers.activeFilterDestPosBuffers)
-  {
-    previousFilterDestPosBuffer.resize(posBufferLen);
-    previousFilterDestPosBuffer.assign(
-        m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(0).begin(),
-        m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(0).end());
   }
 }
 
@@ -202,8 +189,13 @@ auto DisplacementFilter::InitFrameDataArrayToGl() noexcept -> void
 {
   for (auto i = 0U; i < NUM_FILTER_POS_TEXTURES; ++i)
   {
-    m_glFilterPosBuffers.filterSrcePosTexture.CopyMappedBufferToTexture(i, i);
     m_glFilterPosBuffers.filterDestPosTexture.CopyMappedBufferToTexture(0, i);
+
+    // Make sure copy buffer to texture has completed before using the texture.
+    glFinish();
+
+    CopyTextureData(m_glFilterPosBuffers.filterDestPosTexture.GetTextureName(i),
+                    m_glFilterPosBuffers.filterSrcePosTexture.GetTextureName(i));
   }
 }
 
@@ -311,14 +303,19 @@ auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
 auto DisplacementFilter::CompileAndLinkShaders() -> void
 {
   const auto shaderMacros = std::unordered_map<std::string, std::string>{
-      {   "FILTER_BUFF1_IMAGE_UNIT",       std::to_string(FILTER_BUFF1_IMAGE_UNIT)},
-      {   "FILTER_BUFF2_IMAGE_UNIT",       std::to_string(FILTER_BUFF2_IMAGE_UNIT)},
-      {   "FILTER_BUFF3_IMAGE_UNIT",       std::to_string(FILTER_BUFF3_IMAGE_UNIT)},
-      {        "LUM_AVG_IMAGE_UNIT",            std::to_string(LUM_AVG_IMAGE_UNIT)},
-      {"LUM_HISTOGRAM_BUFFER_INDEX",    std::to_string(LUM_HISTOGRAM_BUFFER_INDEX)},
-      {              "ASPECT_RATIO",                 std::to_string(m_aspectRatio)},
-      {      "FILTER_POS_MIN_COORD",   std::to_string(NormalizedCoords::MIN_COORD)},
-      {    "FILTER_POS_COORD_WIDTH", std::to_string(NormalizedCoords::COORD_WIDTH)},
+      {    "FILTER_BUFF1_IMAGE_UNIT",           std::to_string(FILTER_BUFF1_IMAGE_UNIT)},
+      {    "FILTER_BUFF2_IMAGE_UNIT",           std::to_string(FILTER_BUFF2_IMAGE_UNIT)},
+      {    "FILTER_BUFF3_IMAGE_UNIT",           std::to_string(FILTER_BUFF3_IMAGE_UNIT)},
+      {         "LUM_AVG_IMAGE_UNIT",                std::to_string(LUM_AVG_IMAGE_UNIT)},
+      {"FILTER_SRCE_POS_IMAGE_UNIT1", std::to_string(FILTER_SRCE_POS_IMAGE_UNITS.at(0))},
+      {"FILTER_SRCE_POS_IMAGE_UNIT2", std::to_string(FILTER_SRCE_POS_IMAGE_UNITS.at(1))},
+      {"FILTER_DEST_POS_IMAGE_UNIT1", std::to_string(FILTER_DEST_POS_IMAGE_UNITS.at(0))},
+      {"FILTER_DEST_POS_IMAGE_UNIT2", std::to_string(FILTER_DEST_POS_IMAGE_UNITS.at(1))},
+      { "LUM_HISTOGRAM_BUFFER_INDEX",        std::to_string(LUM_HISTOGRAM_BUFFER_INDEX)},
+      {                     "HEIGHT",                       std::to_string(GetHeight())},
+      {               "ASPECT_RATIO",                     std::to_string(m_aspectRatio)},
+      {       "FILTER_POS_MIN_COORD",       std::to_string(NormalizedCoords::MIN_COORD)},
+      {     "FILTER_POS_COORD_WIDTH",     std::to_string(NormalizedCoords::COORD_WIDTH)},
   };
 
   try
@@ -412,6 +409,8 @@ auto DisplacementFilter::Render() -> void
   WaitForRenderSync();
 
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+
+  UpdateCurrentDestFilterPosBufferToGl();
 }
 
 auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
@@ -427,18 +426,24 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
     m_renderSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
   }
 
-  UpdateSrceFilterPosBufferToGl(m_currentPboIndex);
   UpdateImageBuffersToGl(m_currentPboIndex);
 
   m_programPass1UpdateFilterBuff1AndBuff3.Use();
 
   UpdatePass1MiscDataToGl(m_currentPboIndex);
-  UpdateDestFilterPosBufferToGl(m_currentPboIndex);
 
   BindGlFilterBuffer2();
   BindGlImageBuffers();
-  BindGlFilterPosBuffers();
 
+  DoTheDraw();
+
+#ifdef SAVE_FILTER_BUFFERS
+  SaveGlBuffersAfterPass1();
+#endif
+}
+
+auto DisplacementFilter::DoTheDraw() const noexcept -> void
+{
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
   GlCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
@@ -447,12 +452,6 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
   GlCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, NUM_VERTICES));
 
   GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
-
-#ifdef SAVE_FILTER_BUFFERS
-  SaveFilterBuffersAfterPass1();
-#endif
-
-  UpdateCurrentFilterPosTextureIndex();
 }
 
 auto DisplacementFilter::WaitForRenderSync() noexcept -> void
@@ -494,7 +493,7 @@ auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
   GlCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 
 #ifdef SAVE_FILTER_BUFFERS
-  SaveFilterBuffersAfterPass4();
+  SaveGlBuffersAfterPass4();
 #endif
 }
 
@@ -609,6 +608,9 @@ auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.filterPosBuffersLerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
+      UNIFORM_RESET_SRCE_FILTER_POS,
+      m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating);
+  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_TIME, static_cast<uint32_t>(m_frameDataArray.at(pboIndex).miscData.goomTime));
@@ -628,65 +630,16 @@ auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept
       UNIFORM_GAMMA, m_frameDataArray.at(pboIndex).miscData.gamma);
 }
 
-auto DisplacementFilter::UpdateSrceFilterPosBufferToGl(const size_t pboIndex) noexcept -> void
-{
-  if (not m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
-  {
-    return;
-  }
-
-  const auto lerpFactor = m_frameDataArray.at(pboIndex).miscData.filterPosBuffersLerpFactor;
-
-  for (auto i = 0U; i < m_glFilterPosBuffers.numActiveTextures; ++i)
-  {
-    UpdateSrceFilterPosBufferAndTexture(lerpFactor, i);
-  }
-
-  m_frameDataArray.at(pboIndex).miscData.filterPosBuffersLerpFactor = 0.0;
-}
-
-auto DisplacementFilter::UpdateSrceFilterPosBufferAndTexture(
-    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-    const float lerpFactor,
-    const size_t buffIndex) noexcept -> void
-{
-  auto filterSrcePosBuffer = m_glFilterPosBuffers.filterSrcePosTexture.GetMappedBuffer(buffIndex);
-  const auto& filterDestPosBuffer = m_glFilterPosBuffers.activeFilterDestPosBuffers.at(buffIndex);
-
-  std::transform(filterDestPosBuffer.cbegin(),
-                 filterDestPosBuffer.cend(),
-                 filterSrcePosBuffer.begin(),
-                 filterSrcePosBuffer.begin(),
-                 [&lerpFactor](const Point2dFlt& destPos, const Point2dFlt& srcePos)
-                 { return lerp(srcePos, destPos, lerpFactor); });
-
-  m_glFilterPosBuffers.filterSrcePosTexture.CopyMappedBufferToTexture(buffIndex, buffIndex);
-}
-
-auto DisplacementFilter::UpdateDestFilterPosBufferToGl(const size_t pboIndex) noexcept -> void
-{
-  if (not m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating)
-  {
-    return;
-  }
-
-  auto& activeFilterDestPosBuffer = m_glFilterPosBuffers.activeFilterDestPosBuffers.at(
-      m_glFilterPosBuffers.currentActiveTextureIndex);
-
-  activeFilterDestPosBuffer.assign(
-      m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(pboIndex).begin(),
-      m_glFilterPosBuffers.filterDestPosTexture.GetMappedBuffer(pboIndex).end());
-
-  m_glFilterPosBuffers.filterDestPosTexture.CopyMappedBufferToTexture(
-      pboIndex, m_glFilterPosBuffers.currentActiveTextureIndex);
-}
-
-auto DisplacementFilter::UpdateCurrentFilterPosTextureIndex() noexcept -> void
+auto DisplacementFilter::UpdateCurrentDestFilterPosBufferToGl() noexcept -> void
 {
   if (not m_frameDataArray.at(m_currentPboIndex).filterPosArrays.filterDestPosNeedsUpdating)
   {
     return;
   }
+
+  m_programPass1UpdateFilterBuff1AndBuff3.Use();
+  m_glFilterPosBuffers.filterDestPosTexture.CopyMappedBufferToTexture(
+      m_currentPboIndex, m_glFilterPosBuffers.currentActiveTextureIndex);
 
   RotateCurrentFilterPosTextureIndex();
 }
@@ -732,12 +685,6 @@ auto DisplacementFilter::UpdateImageBuffersToGl(const size_t pboIndex) noexcept 
   }
 }
 
-auto DisplacementFilter::BindGlFilterPosBuffers() noexcept -> void
-{
-  m_glFilterPosBuffers.filterSrcePosTexture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
-  m_glFilterPosBuffers.filterDestPosTexture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
-}
-
 auto DisplacementFilter::BindGlFilterBuffer2() noexcept -> void
 {
   m_glFilterBuffers.filterBuff2Texture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
@@ -752,11 +699,11 @@ auto DisplacementFilter::BindGlImageBuffers() noexcept -> void
 auto DisplacementFilter::SetupGlFilterBuffers() -> void
 {
   m_glFilterBuffers.filterBuff1Texture.Setup(
-      0, FILTER_BUFF1_TEX_SHADER_NAME, GetWidth(), GetHeight());
+      0, NULL_TEXTURE_NAME, FILTER_BUFF1_IMAGE_UNIT, GetWidth(), GetHeight());
   m_glFilterBuffers.filterBuff2Texture.Setup(
-      0, FILTER_BUFF2_TEX_SHADER_NAME, GetWidth(), GetHeight());
+      0, FILTER_BUFF2_TEX_SHADER_NAME, FILTER_BUFF2_IMAGE_UNIT, GetWidth(), GetHeight());
   m_glFilterBuffers.filterBuff3Texture.Setup(
-      0, FILTER_BUFF3_TEX_SHADER_NAME, GetWidth(), GetHeight());
+      0, NULL_TEXTURE_NAME, FILTER_BUFF3_IMAGE_UNIT, GetWidth(), GetHeight());
 }
 
 auto DisplacementFilter::SetupGlFilterPosBuffers() -> void
@@ -764,16 +711,18 @@ auto DisplacementFilter::SetupGlFilterPosBuffers() -> void
   for (auto i = 0U; i < NUM_FILTER_POS_TEXTURES; ++i)
   {
     m_glFilterPosBuffers.filterSrcePosTexture.Setup(
-        i, FILTER_SRCE_POS_TEX_SHADER_NAMES.at(i), GetWidth(), GetHeight());
+        i, NULL_TEXTURE_NAME, FILTER_SRCE_POS_IMAGE_UNITS.at(i), GetWidth(), GetHeight());
     m_glFilterPosBuffers.filterDestPosTexture.Setup(
-        i, FILTER_DEST_POS_TEX_SHADER_NAMES.at(i), GetWidth(), GetHeight());
+        i, NULL_TEXTURE_NAME, FILTER_DEST_POS_IMAGE_UNITS.at(i), GetWidth(), GetHeight());
   }
 }
 
 auto DisplacementFilter::SetupGlImageBuffers() -> void
 {
-  m_glImageBuffers.mainImageTexture.Setup(0, MAIN_IMAGE_TEX_SHADER_NAME, GetWidth(), GetHeight());
-  m_glImageBuffers.lowImageTexture.Setup(0, LOW_IMAGE_TEX_SHADER_NAME, GetWidth(), GetHeight());
+  m_glImageBuffers.mainImageTexture.Setup(
+      0, MAIN_IMAGE_TEX_SHADER_NAME, NULL_IMAGE_UNIT, GetWidth(), GetHeight());
+  m_glImageBuffers.lowImageTexture.Setup(
+      0, LOW_IMAGE_TEX_SHADER_NAME, NULL_IMAGE_UNIT, GetWidth(), GetHeight());
 }
 
 auto DisplacementFilter::SetupGlLumHistogramBuffer() noexcept -> void
@@ -816,18 +765,47 @@ auto DisplacementFilter::InitTextureBuffers() noexcept -> void
 }
 
 #ifdef SAVE_FILTER_BUFFERS
+static constexpr auto SAVE_ROOT_DIR = "/home/greg/.kodi/filter_buffers";
+//static constexpr auto SAVE_ROOT_DIR = "/home/greg/Prj/workdir/filter_buffers";
+
+auto DisplacementFilter::SaveGlBuffersAfterPass1() -> void
+{
+  ++m_pass1SaveNum;
+
+  SaveFilterBuffersAfterPass1();
+  SaveFilterPosBuffersAfterPass1();
+}
+
+auto DisplacementFilter::SaveGlBuffersAfterPass4() -> void
+{
+  ++m_pass4SaveNum;
+
+  SaveFilterBuffersAfterPass4();
+}
+
 auto DisplacementFilter::SaveFilterBuffersAfterPass1() -> void
 {
   auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
-  m_glFilterBuffers.filterBuff1Texture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3);
+  m_glFilterBuffers.filterBuff1Texture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
   GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
 
-  static auto s_saveNum = 1U;
   const auto filename =
-      std_fmt::format("/home/greg/.kodi/filter_buffers/filter_buffer1_{:04d}.txt", s_saveNum);
-  ++s_saveNum;
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+      std_fmt::format("{}/filter_buffer1_{:04d}.txt", SAVE_ROOT_DIR, m_pass1SaveNum);
 
-  SaveFilterBuffer(filename, filterBuffer);
+  SavePixelBuffer(filename, filterBuffer);
+}
+
+auto DisplacementFilter::SaveFilterPosBuffersAfterPass1() -> void
+{
+  for (auto i = 0U; i < NUM_FILTER_POS_TEXTURES; ++i)
+  {
+    const auto filename =
+        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+        std_fmt::format("{}/filter_pos_buffer{}_{:04d}.txt", SAVE_ROOT_DIR, i, m_pass1SaveNum);
+
+    SaveFilterPosBuffer(filename, i);
+  }
 }
 
 auto DisplacementFilter::SaveFilterBuffersAfterPass4() -> void
@@ -835,20 +813,56 @@ auto DisplacementFilter::SaveFilterBuffersAfterPass4() -> void
   const auto lumAverage = GetLumAverage();
 
   auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
-  m_glFilterBuffers.filterBuff3Texture.BindTexture(m_programPass4ResetFilterBuff2AndOutputBuff3);
+  m_glFilterBuffers.filterBuff3Texture.BindTextures(m_programPass4ResetFilterBuff2AndOutputBuff3);
   GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
 
-  static auto s_saveNum = 1U;
   const auto filename =
-      std_fmt::format("/home/greg/.kodi/filter_buffers/filter_buffer3_{:04d}.txt", s_saveNum);
-  ++s_saveNum;
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+      std_fmt::format("{}/filter_buffer3_{:04d}.txt", SAVE_ROOT_DIR, m_pass4SaveNum);
 
-  SaveFilterBuffer(filename, filterBuffer, lumAverage);
+  SavePixelBuffer(filename, filterBuffer, lumAverage);
 }
 
-auto DisplacementFilter::SaveFilterBuffer(const std::string& filename,
-                                          const std::vector<GOOM::Pixel>& buffer,
-                                          const float lumAverage) -> void
+auto DisplacementFilter::SaveFilterPosBuffer(const std::string& filename,
+                                             const uint32_t textureIndex) -> void
+{
+  auto filterBuffer = std::vector<FilterPosBuffersXY>(m_buffSize);
+  m_glFilterPosBuffers.filterSrcePosTexture.BindTexture(m_programPass1UpdateFilterBuff1AndBuff3,
+                                                        textureIndex);
+  GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RG, FILTER_POS_TEX_PIXEL_TYPE, filterBuffer.data()));
+  SaveFilterPosBuffer(filename, filterBuffer);
+}
+
+auto DisplacementFilter::SaveFilterPosBuffer(
+    const std::string& filename,
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+    std_spn::span<FilterPosBuffersXY> buffer) const -> void
+{
+  auto file = std::ofstream{filename};
+  if (not file.good())
+  {
+    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+    std_fmt::println(stderr, "ERROR: Could not open file '{}'.", filename);
+    return;
+  }
+
+  auto index = 0U;
+  for (auto y = 0; y < GetHeight(); ++y)
+  {
+    for (auto x = 0; x < GetWidth(); ++x)
+    {
+      const auto pos = buffer[index];
+      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
+      file << std_fmt::format("[{:4d} {:4d}]  {:6.2f}, {:6.2f}\n", x, y, pos.x, pos.y);
+    }
+    ++index;
+  }
+}
+
+// NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
+auto DisplacementFilter::SavePixelBuffer(const std::string& filename,
+                                         std_spn::span<GOOM::Pixel> buffer,
+                                         const float lumAverage) const -> void
 {
   auto file = std::ofstream{filename};
   if (not file.good())
@@ -867,9 +881,9 @@ auto DisplacementFilter::SaveFilterBuffer(const std::string& filename,
   {
     for (auto x = 0; x < GetWidth(); ++x)
     {
-      const auto pixel              = buffer[index];
-      static constexpr auto CUT_OFF = 256U;
-      if ((pixel.R() > CUT_OFF) or (pixel.G() > CUT_OFF) or (pixel.B() > CUT_OFF))
+      const auto pixel = buffer[index];
+      if (static constexpr auto CUT_OFF = 256U;
+          (pixel.R() > CUT_OFF) or (pixel.G() > CUT_OFF) or (pixel.B() > CUT_OFF))
       {
         file << std_fmt::format("[{:4d} {:4d}]  {:6d}, {:6d}, {:6d}, {:6d}\n",
                                 x,
@@ -883,6 +897,7 @@ auto DisplacementFilter::SaveFilterBuffer(const std::string& filename,
     }
   }
 }
+// NOLINTEND(misc-include-cleaner): Waiting for C++20.
 #endif
 
 } // namespace GOOM::OPENGL
