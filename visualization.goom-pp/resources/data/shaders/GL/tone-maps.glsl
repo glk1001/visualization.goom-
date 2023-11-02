@@ -173,7 +173,7 @@ vec3 GetToneMappedColor(vec3 color)
   }
 #elif (toneMapToUse == LOTTES_TONE_MAP)
   {
-    const float exposureBias = 2.0;
+    const float exposureBias = 3.0;
     return ToGamma(Lottes(exposureBias * color));
   }
 #elif (toneMapToUse == UCHIMURA_TONE_MAP)
