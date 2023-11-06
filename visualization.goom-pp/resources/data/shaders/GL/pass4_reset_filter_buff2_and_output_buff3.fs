@@ -93,11 +93,11 @@ vec3 GetHueShift(vec3 color)
   //  return hueShiftedColor;
 
   // https://gist.github.com/mairod/a75e7b44f68110e1576d77419d608786 - vmedea  comment
-  float cosAngle = cos(u_hueShift);
-  float sinAngle = sin(u_hueShift);
-  const mat3 T   = mat3(vec3(+0.167444, +0.329213, -0.496657),
-                      vec3(-0.327948, +0.035669, +0.292279),
-                      vec3(+1.250268, -1.047561, -0.202707));
+  const float cosAngle = cos(u_hueShift);
+  const float sinAngle = sin(u_hueShift);
+  const mat3 T         = mat3(vec3(+0.167444, +0.329213, -0.496657),
+                            vec3(-0.327948, +0.035669, +0.292279),
+                            vec3(+1.250268, -1.047561, -0.202707));
 
   return (color * cosAngle) + ((color * sinAngle) * T) +
          (dot(vec3(0.299, 0.587, 0.114), color) * (1.0 - cosAngle));

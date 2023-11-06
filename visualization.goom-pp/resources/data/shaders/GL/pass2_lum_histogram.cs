@@ -46,7 +46,7 @@ void main()
 
   barrier();
 
-  uvec2 dim = uvec2(u_params.zw);
+  const uvec2 dim = uvec2(u_params.zw);
   // Ignore threads that map to areas beyond the bounds of our HDR image.
   if ((gl_GlobalInvocationID.x < dim.x) && (gl_GlobalInvocationID.y < dim.y))
   {

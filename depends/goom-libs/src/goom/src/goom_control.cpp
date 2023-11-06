@@ -33,6 +33,7 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
+#include "goom/math20.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
@@ -42,6 +43,8 @@
 #include "utils/parallel_utils.h"
 #include "utils/stopwatch.h"
 #include "utils/strutils.h"
+#include "utils/t_values.h"
+#include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
 
 #include <cstddef>
@@ -80,6 +83,8 @@ using UTILS::GetNumAvailablePoolThreads;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
+using UTILS::Timer;
+using UTILS::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::IsBetween;
@@ -141,6 +146,20 @@ private:
 
   FrameData* m_frameData = nullptr;
   auto UpdateFrameData() -> void;
+  auto UpdateFilterPos() noexcept -> void;
+
+  static constexpr auto MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES = 100U;
+  static constexpr auto MAX_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES = 1000U;
+  Timer m_pos1Pos2MixFreqChangeTimer{
+      m_goomTime, MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES, false};
+  static constexpr auto POS1_POS2_MIX_FREQ_TRANSITION_TIME = 20U;
+  TValue m_pos1Pos2TransitionLerpFactor{
+      TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
+                                 POS1_POS2_MIX_FREQ_TRANSITION_TIME}
+  };
+  float m_previousPos1Pos2MixFreq = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
+  float m_targetPos1Pos2MixFreq   = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
+  auto UpdatePos1Pos2MixFreq() noexcept -> void;
 
   bool m_noZooms    = false;
   PixelBuffer* m_p1 = nullptr;
@@ -348,10 +367,17 @@ auto GoomControl::GoomControlImpl::UpdateFrameData() -> void
   m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
   m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating  = true;
 
+  UpdatePos1Pos2MixFreq();
+
+  UpdateFilterPos();
+}
+
+auto GoomControl::GoomControlImpl::UpdateFilterPos() noexcept -> void
+{
   const auto lerpFactor = std::as_const(m_filterSettingsService)
                               .GetFilterSettings()
                               .transformBufferLerpData.GetLerpFactor();
-  m_frameData->miscData.filterPosBuffersLerpFactor = lerpFactor;
+  m_frameData->filterPosArrays.filterPosBuffersLerpFactor = lerpFactor;
 
   if (not m_filterBuffersService.IsTransformBufferReadyToCopy())
   {
@@ -363,6 +389,26 @@ auto GoomControl::GoomControlImpl::UpdateFrameData() -> void
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating = true;
     m_filterSettingsService.ResetTransformBufferLerpData();
   }
+}
+
+auto GoomControl::GoomControlImpl::UpdatePos1Pos2MixFreq() noexcept -> void
+{
+  if (not m_pos1Pos2MixFreqChangeTimer.Finished())
+  {
+    m_frameData->filterPosArrays.filterPos1Pos2FreqMixFreq = STD20::lerp(
+        m_previousPos1Pos2MixFreq, m_targetPos1Pos2MixFreq, m_pos1Pos2TransitionLerpFactor());
+    m_pos1Pos2TransitionLerpFactor.Increment();
+    return;
+  }
+
+  m_pos1Pos2MixFreqChangeTimer.SetTimeLimit(m_goomRand.GetRandInRange(
+      MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES, MAX_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES));
+  m_pos1Pos2MixFreqChangeTimer.ResetToZero();
+  m_pos1Pos2TransitionLerpFactor.Reset(0.0F);
+
+  m_previousPos1Pos2MixFreq = m_frameData->filterPosArrays.filterPos1Pos2FreqMixFreq;
+  m_targetPos1Pos2MixFreq   = m_goomRand.GetRandInRange(FilterPosArrays::MIN_POS1_POS2_MIX_FREQ,
+                                                      FilterPosArrays::MAX_POS1_POS2_MIX_FREQ);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void
@@ -420,6 +466,10 @@ inline auto GoomControl::GoomControlImpl::Start() -> void
   static constexpr auto START_TIME_DELAY_IN_MS = 457.0F;
   m_runningTimeStopwatch.SetStartDelayAdjustInMs(START_TIME_DELAY_IN_MS);
   m_runningTimeStopwatch.StartNow();
+
+  m_pos1Pos2MixFreqChangeTimer.ResetToZero();
+  m_pos1Pos2TransitionLerpFactor.Reset();
+  m_previousPos1Pos2MixFreq = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
 
   m_numUpdatesBetweenTimeChecks = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
   m_goomTime.ResetTime();

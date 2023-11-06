@@ -24,6 +24,7 @@ in vec2 texCoord;
 uniform float u_lerpFactor;
 uniform float u_buff2Buff3Mix = 0.1;
 uniform bool u_resetSrceFilterPosBuffers;
+uniform float u_pos1Pos2MixFreq;
 uniform uint u_time;
 
 // For base multiplier, too close to 1, gives washed
@@ -150,13 +151,12 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy)
   vec4 filtBuff2Color1 = texture(tex_filterBuff2, vec2(filtBuff2Pos1.x, 1 - (ASPECT_RATIO * filtBuff2Pos1.y)));
   vec4 filtBuff2Color2 = texture(tex_filterBuff2, vec2(filtBuff2Pos2.x, 1 - (ASPECT_RATIO * filtBuff2Pos2.y)));
 
-  const float freq = 0.01;
-  const float t = 0.5 * (1.0 + sin(freq * u_time));
+  const vec3 t = vec3(0.5 * (1.0 + sin(u_pos1Pos2MixFreq * u_time)));
   //const float t = 0.5;
   // const float t = step(100, u_time % 200);
-  vec3 color = mix(filtBuff2Color1.rgb, filtBuff2Color2.rgb, vec3(t));
-  //vec3 color = mix(filtBuff2Color1.rgb, filtBuff2Color1.rgb, vec3(t));
-  //vec3 color = mix(filtBuff2Color2.rgb, filtBuff2Color2.rgb, vec3(t));
+  vec3 color = mix(filtBuff2Color1.rgb, filtBuff2Color2.rgb, t);
+  //vec3 color = mix(filtBuff2Color1.rgb, filtBuff2Color1.rgb, t);
+  //vec3 color = mix(filtBuff2Color2.rgb, filtBuff2Color2.rgb, t);
 
   return vec4(color, filtBuff2Color1.a);
   //return vec4(color, filtBuff2Color2.a);

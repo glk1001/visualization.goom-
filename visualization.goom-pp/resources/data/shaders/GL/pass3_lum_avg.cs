@@ -35,7 +35,7 @@ layout(local_size_x = THREADS_X, local_size_y = THREADS_Y) in;
 void main()
 {
   // Get the count from the histogram buffer.
-  uint countForThisBin                     = histogram[gl_LocalInvocationIndex];
+  const uint countForThisBin               = histogram[gl_LocalInvocationIndex];
   histogramShared[gl_LocalInvocationIndex] = countForThisBin * gl_LocalInvocationIndex;
 
   barrier();
@@ -58,11 +58,11 @@ void main()
     // Here we take our weighted sum and divide it by the number of pixels
     // that had luminance greater than zero (since the index == 0, we can
     // use countForThisBin to find the number of black pixels).
-    float weightedLogAverage =
+    const float weightedLogAverage =
         (histogramShared[0] / max(NUM_PIXELS - float(countForThisBin), 1.0)) - 1.0;
 
     // Map from our histogram space to actual luminance.
-    float weightedAvgLum = exp2(((weightedLogAverage / 254.0) * LOG_LUM_RANGE) + MIN_LOG_LUM);
+    const float weightedAvgLum = exp2(((weightedLogAverage / 254.0) * LOG_LUM_RANGE) + MIN_LOG_LUM);
 
     // The new stored value will be interpolated using the last frames value
     // to prevent sudden shifts in the exposure.

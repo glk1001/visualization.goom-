@@ -157,11 +157,10 @@ auto DisplacementFilter::InitFrameDataArray() noexcept -> void
 
 auto DisplacementFilter::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
 {
-  miscData.filterPosBuffersLerpFactor = 0.0F;
-  miscData.brightness                 = 1.0F;
-  miscData.chromaFactor               = 1.0F;
-  miscData.baseColorMultiplier        = 1.0F;
-  miscData.gamma                      = DEFAULT_GAMMA;
+  miscData.brightness          = 1.0F;
+  miscData.chromaFactor        = 1.0F;
+  miscData.baseColorMultiplier = 1.0F;
+  miscData.gamma               = DEFAULT_GAMMA;
 }
 
 auto DisplacementFilter::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
@@ -173,6 +172,9 @@ auto DisplacementFilter::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcep
 auto DisplacementFilter::InitFilterPosArrays(GOOM::FilterPosArrays& filterPosArrays) noexcept
     -> void
 {
+  filterPosArrays.filterPosBuffersLerpFactor = 0.0F;
+
+  filterPosArrays.filterPos1Pos2FreqMixFreq  = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
   filterPosArrays.filterDestPosNeedsUpdating = false;
 
   InitFilterPosBuffer({static_cast<uint32_t>(GetWidth()), static_cast<uint32_t>(GetHeight())},
@@ -606,10 +608,14 @@ auto DisplacementFilter::InitFrameDataArrayPointers(std::vector<FrameData>& fram
 auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept -> void
 {
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
-      UNIFORM_LERP_FACTOR, m_frameDataArray.at(pboIndex).miscData.filterPosBuffersLerpFactor);
+      UNIFORM_LERP_FACTOR,
+      m_frameDataArray.at(pboIndex).filterPosArrays.filterPosBuffersLerpFactor);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_RESET_SRCE_FILTER_POS,
       m_frameDataArray.at(pboIndex).filterPosArrays.filterDestPosNeedsUpdating);
+  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
+      UNIFORM_POS1_POS2_MIX_FREQ,
+      m_frameDataArray.at(pboIndex).filterPosArrays.filterPos1Pos2FreqMixFreq);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
