@@ -124,6 +124,7 @@ CPMAddPackage("gh:fmtlib/fmt#10.0.0")
 set(ASMJIT_EMBED True)
 set(BLEND2D_STATIC True)
 set(BLEND2D_NO_INSTALL True)
+add_definitions(-DBL_STATIC)
 CPMAddPackage(NAME "asmjit"
               GITHUB_REPOSITORY "asmjit/asmjit"
               GIT_TAG "master"

@@ -15,7 +15,9 @@
 #include <vivid.h>
 #else
 #pragma warning(push)
+#pragma warning(disable : 4201)
 #pragma warning(disable : 4242)
+#pragma warning(disable : 4244)
 #include <vivid.h>
 #pragma warning(pop)
 #endif

@@ -1,0 +1,17 @@
+@ECHO OFF
+
+SETLOCAL
+
+SET SCRIPT_PATH=%~dp0
+SET VIS_GOOM_ROOT_PATH=%SCRIPT_PATH%\..
+
+SET BUILD_TYPE=Release
+SET SUFFIX=master
+SET BUILD_DIR=depends\goom-libs\build-cl-%BUILD_TYPE%-%SUFFIX%
+
+PUSHD %VIS_GOOM_ROOT_PATH%
+IF ErrorLevel 1 Exit /b 1
+
+cmake --build %BUILD_DIR% --config %BUILD_TYPE%
+
+POPD
