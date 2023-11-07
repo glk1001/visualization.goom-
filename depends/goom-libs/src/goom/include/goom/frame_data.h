@@ -15,7 +15,7 @@ struct FilterPosArrays
   std_spn::span<Point2dFlt> filterDestPos{};
   float filterPosBuffersLerpFactor                 = 0.0F;
   static constexpr auto MIN_POS1_POS2_MIX_FREQ     = 0.001F;
-  static constexpr auto MAX_POS1_POS2_MIX_FREQ     = 0.050F;
+  static constexpr auto MAX_POS1_POS2_MIX_FREQ     = 0.010F;
   static constexpr auto DEFAULT_POS1_POS2_MIX_FREQ = 0.01F;
   float filterPos1Pos2FreqMixFreq                  = 0.0F;
   bool filterDestPosNeedsUpdating                  = false;

@@ -152,7 +152,7 @@ private:
   static constexpr auto MAX_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES = 1000U;
   Timer m_pos1Pos2MixFreqChangeTimer{
       m_goomTime, MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES, false};
-  static constexpr auto POS1_POS2_MIX_FREQ_TRANSITION_TIME = 20U;
+  static constexpr auto POS1_POS2_MIX_FREQ_TRANSITION_TIME = 200U;
   TValue m_pos1Pos2TransitionLerpFactor{
       TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
                                  POS1_POS2_MIX_FREQ_TRANSITION_TIME}
