@@ -63,6 +63,7 @@ public:
   Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept;
 
   [[nodiscard]] auto GetNumElements() const noexcept -> size_t;
+  [[nodiscard]] auto GetNumSetWeights() const noexcept -> size_t;
   [[nodiscard]] auto GetWeight(const E& enumClass) const noexcept -> float;
   [[nodiscard]] auto GetSumOfWeights() const noexcept -> float;
 
@@ -75,11 +76,16 @@ private:
 
   const IGoomRand* m_goomRand = nullptr;
   using WeightArray           = std::array<float, NUM<E>>;
-  WeightArray m_weights{};
+  struct WeightData
+  {
+    WeightArray weightArray{0.0F};
+    size_t numSetWeights = 0;
+  };
+  WeightData m_weightData{};
   float m_sumOfWeights = 0.0F;
 
-  [[nodiscard]] static auto GetWeights(const EventWeightPairs& eventWeightPairs) noexcept
-      -> WeightArray;
+  [[nodiscard]] static auto GetWeightData(const EventWeightPairs& eventWeightPairs) noexcept
+      -> WeightData;
   [[nodiscard]] static auto GetSumOfWeights(const EventWeightPairs& eventWeightPairs) noexcept
       -> float;
 };
@@ -108,6 +114,7 @@ public:
     E previousEvent;
     E event;
   };
+  [[nodiscard]] auto GetNumSetWeights() const noexcept -> size_t;
   [[nodiscard]] auto GetWeight(const ConditionalEvents& events) const noexcept -> float;
   [[nodiscard]] auto GetSumOfWeights(const E& given) const noexcept -> float;
 
@@ -153,21 +160,25 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
 
 template<class E>
 Weights<E>::Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept
-  : m_goomRand{&goomRand}, m_weights{GetWeights(weights)}, m_sumOfWeights{GetSumOfWeights(weights)}
+  : m_goomRand{&goomRand},
+    m_weightData{GetWeightData(weights)},
+    m_sumOfWeights{GetSumOfWeights(weights)}
 {
   Expects(m_sumOfWeights > SMALL_FLOAT);
 }
 
 template<class E>
-inline auto Weights<E>::GetWeights(const EventWeightPairs& eventWeightPairs) noexcept -> WeightArray
+inline auto Weights<E>::GetWeightData(const EventWeightPairs& eventWeightPairs) noexcept
+    -> WeightData
 {
-  WeightArray weightArray{0};
+  WeightData weightData{};
   for (const auto& [e, w] : eventWeightPairs)
   {
-    weightArray.at(static_cast<size_t>(e)) = w;
+    weightData.weightArray.at(static_cast<size_t>(e)) = w;
+    ++weightData.numSetWeights;
   }
 
-  return weightArray;
+  return weightData;
 }
 
 template<class E>
@@ -184,17 +195,23 @@ inline auto Weights<E>::GetSumOfWeights(const EventWeightPairs& eventWeightPairs
 template<class E>
 inline auto Weights<E>::GetNumElements() const noexcept -> size_t
 {
-  return m_weights.size();
+  return m_weightData.weightArray.size();
+}
+
+template<class E>
+inline auto Weights<E>::GetNumSetWeights() const noexcept -> size_t
+{
+  return m_weightData.numSetWeights;
 }
 
 template<class E>
 inline auto Weights<E>::GetWeight(const E& enumClass) const noexcept -> float
 {
-  for (auto i = 0U; i < m_weights.size(); ++i)
+  for (auto i = 0U; i < m_weightData.weightArray.size(); ++i)
   {
     if (static_cast<E>(i) == enumClass)
     {
-      return m_weights[i];
+      return m_weightData.weightArray[i];
     }
   }
 
@@ -216,23 +233,23 @@ inline auto Weights<E>::GetRandomWeighted() const noexcept -> E
 template<class E>
 inline auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
 {
-  const auto sumOfWeights = (given == E::_num)
-                                ? m_sumOfWeights
-                                : (m_sumOfWeights - m_weights[static_cast<size_t>(given)]);
+  const auto sumOfWeights =
+      (given == E::_num) ? m_sumOfWeights
+                         : (m_sumOfWeights - m_weightData.weightArray[static_cast<size_t>(given)]);
 
   auto randVal = m_goomRand->GetRandInRange(0.0F, sumOfWeights);
 
-  for (auto i = 0U; i < m_weights.size(); ++i)
+  for (auto i = 0U; i < m_weightData.weightArray.size(); ++i)
   {
     if (static_cast<E>(i) == given)
     {
       continue;
     }
-    if (randVal < m_weights[i])
+    if (randVal < m_weightData.weightArray[i])
     {
       return static_cast<E>(i);
     }
-    randVal -= m_weights[i];
+    randVal -= m_weightData.weightArray[i];
   }
 
   FailFast();
@@ -259,6 +276,12 @@ inline ConditionalWeights<E>::ConditionalWeights(
     m_conditionalWeights{GetConditionalWeightMap(goomRand, weights, weightMultiplierPairs)},
     m_disallowEventsSameAsGiven{disallowEventsSameAsGiven}
 {
+}
+
+template<class E>
+inline auto ConditionalWeights<E>::GetNumSetWeights() const noexcept -> size_t
+{
+  return m_unconditionalWeights.GetNumSetWeights();
 }
 
 template<class E>

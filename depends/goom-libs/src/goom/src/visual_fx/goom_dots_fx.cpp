@@ -60,7 +60,7 @@ using UTILS::MATH::Weights;
 class GoomDotsFx::GoomDotsFxImpl
 {
 public:
-  GoomDotsFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps);
+  GoomDotsFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   auto Start() -> void;
 
@@ -182,7 +182,7 @@ static constexpr auto IMAGE_NAMES_RED_FLOWER_WEIGHT    = 10.0F;
 static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 05.0F;
 
 GoomDotsFx::GoomDotsFxImpl::GoomDotsFxImpl(const FxHelper& fxHelper,
-                                           const SmallImageBitmaps& smallBitmaps)
+                                           const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper},
     m_smallBitmaps{&smallBitmaps},
     m_bitmapDrawer{*fxHelper.draw},

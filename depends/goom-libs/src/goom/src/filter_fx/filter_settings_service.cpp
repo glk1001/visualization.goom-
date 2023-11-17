@@ -8,14 +8,12 @@
 #include "filter_settings.h"
 #include "filter_speed.h"
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <map>
@@ -36,6 +34,7 @@ using FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
 using UTILS::GetFilledEnumMap;
 using UTILS::NUM;
+using UTILS::MATH::ConditionalWeights;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::I_QUARTER;
 using UTILS::MATH::I_THREE_QUARTERS;
@@ -247,8 +246,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 
 // TODO(glk) - Can make this 'constexpr' with C++20.
 
-auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
-    -> UTILS::MATH::ConditionalWeights<ZoomFilterMode>
+auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<ZoomFilterMode>
 {
   static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
   static constexpr auto CRYSTAL_BALL_MODE0_WEIGHT      = 04.0F;
@@ -345,7 +343,7 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
       {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
   };
 
-  return {
+  auto filterWeights = ConditionalWeights<ZoomFilterMode>{
       goomRand,
       {
         {ZoomFilterMode::AMULET_MODE, AMULET_MODE_WEIGHT},
@@ -389,6 +387,10 @@ auto GetWeightedFilterEvents(const UTILS::MATH::IGoomRand& goomRand)
         {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, s_WAVE_ATAN_MOD_E1_MULTIPLIERS},
         }
   };
+
+  Ensures(filterWeights.GetNumSetWeights() == NUM<ZoomFilterMode>);
+
+  return filterWeights;
 }
 
 // TODO(glk) - Can make this 'constexpr' with C++20.
