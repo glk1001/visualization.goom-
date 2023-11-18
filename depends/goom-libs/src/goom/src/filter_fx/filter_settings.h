@@ -4,7 +4,6 @@
 #include "filter_speed.h"
 #include "goom/goom_lerp_data.h"
 #include "goom/point2d.h"
-#include "normalized_coords.h"
 
 #include <memory>
 
@@ -33,7 +32,6 @@ struct FilterEffectsSettings
   std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect;
 
   Point2dInt zoomMidpoint;
-  Viewport filterViewport{};
 
   FilterMultiplierEffectsSettings filterMultiplierEffectsSettings;
   AFTER_EFFECTS::AfterEffectsStates::AfterEffectsSettings afterEffectsSettings;

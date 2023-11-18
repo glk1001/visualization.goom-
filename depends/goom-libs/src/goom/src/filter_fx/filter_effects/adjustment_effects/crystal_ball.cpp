@@ -1,7 +1,6 @@
 #include "crystal_ball.h"
 
 #include "filter_fx/common_types.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "name_value_pairs.h"
 #include "utils/math/goom_rand_base.h"
@@ -103,8 +102,6 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
       {  xSqDistMult,   ySqDistMult},
       {xSqDistOffset, ySqDistOffset}
   });
-
-  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto CrystalBall::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

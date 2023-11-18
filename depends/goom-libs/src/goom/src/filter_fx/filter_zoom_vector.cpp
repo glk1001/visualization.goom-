@@ -34,11 +34,10 @@ auto FilterZoomVector::SetFilterEffectsSettings(
   m_zoomVectorEffects.SetFilterSettings(filterEffectsSettings);
 }
 
-auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords,
-                                    const NormalizedCoords& filterViewportCoords) const noexcept
+auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const noexcept
     -> NormalizedCoords
 {
-  const auto filterEffectsZoomPoint = GetFilterEffectsZoomPoint(coords, filterViewportCoords);
+  const auto filterEffectsZoomPoint = GetFilterEffectsZoomPoint(coords);
   const auto afterEffectsVelocity   = GetAfterEffectsVelocity(coords, filterEffectsZoomPoint);
 
   return filterEffectsZoomPoint - afterEffectsVelocity;
@@ -46,18 +45,16 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords,
 
 inline auto FilterZoomVector::GetFilterEffectsZoomPoint(
     // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-    const NormalizedCoords& coords,
-    const NormalizedCoords& filterViewportCoords) const noexcept -> NormalizedCoords
+    const NormalizedCoords& coords) const noexcept -> NormalizedCoords
 {
-  const auto zoomAdjustment = m_zoomVectorEffects.GetZoomAdjustment(
-      filterViewportCoords, SqDistanceFromZero(filterViewportCoords));
+  const auto zoomAdjustment = m_zoomVectorEffects.GetZoomAdjustment(coords);
 
   const auto& multiplierEffect = m_zoomVectorEffects.GetMultiplierEffect(coords, zoomAdjustment);
 
   const auto zoomFactor = 1.0F - Point2dFlt{multiplierEffect.x * zoomAdjustment.x,
                                             multiplierEffect.y * zoomAdjustment.y};
 
-  return zoomFactor * coords;
+  return {zoomFactor.x * coords.GetX(), zoomFactor.y * coords.GetY()};
 }
 
 inline auto FilterZoomVector::GetAfterEffectsVelocity(

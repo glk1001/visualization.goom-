@@ -218,8 +218,6 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
              spiralRotateBaseAngle,
              useModifiedATanAngle,
              modifiedATanAngleFactor});
-
-  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,

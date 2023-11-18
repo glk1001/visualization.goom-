@@ -18,10 +18,9 @@ public:
   explicit ExpReciprocal(const UTILS::MATH::IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
-  [[nodiscard]] auto GetZoomAdjustmentViewport() const noexcept -> Viewport override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -53,11 +52,6 @@ private:
                                        FltCalcType absSqFz) const noexcept
       -> std::complex<FltCalcType>;
 };
-
-inline auto ExpReciprocal::GetZoomAdjustmentViewport() const noexcept -> Viewport
-{
-  return m_params.viewport;
-}
 
 inline auto ExpReciprocal::GetParams() const noexcept -> const Params&
 {

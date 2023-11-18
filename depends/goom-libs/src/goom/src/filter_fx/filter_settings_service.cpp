@@ -9,7 +9,6 @@
 #include "filter_speed.h"
 #include "goom/goom_config.h"
 #include "goom_plugin_info.h"
-#include "normalized_coords.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -625,7 +624,6 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
            DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
            nullptr,
            {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
-           DEFAULT_FILTER_VIEWPORT,
            {
                DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
                DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
@@ -711,16 +709,9 @@ auto FilterSettingsService::SetDefaultSettings() -> void
 {
   m_filterSettings.filterEffectsSettings.zoomAdjustmentEffect = GetZoomAdjustmentEffect();
   m_filterSettings.filterEffectsSettings.zoomMidpoint         = m_screenCentre;
-  m_filterSettings.filterEffectsSettings.filterViewport       = Viewport{};
   m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
 
   m_randomizedAfterEffects->SetDefaults();
-}
-
-auto FilterSettingsService::SetFilterModeRandomViewport() -> void
-{
-  m_filterSettings.filterEffectsSettings.filterViewport =
-      m_filterModeData[m_filterMode].zoomAdjustmentEffect->GetZoomAdjustmentViewport();
 }
 
 auto FilterSettingsService::SetFilterModeRandomEffects() -> void

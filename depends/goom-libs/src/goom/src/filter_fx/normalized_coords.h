@@ -57,8 +57,6 @@ struct CoordsAndVelocity
     -> NormalizedCoords;
 [[nodiscard]] constexpr auto operator*(float scalar, const NormalizedCoords& coords) noexcept
     -> NormalizedCoords;
-[[nodiscard]] constexpr auto operator*(const Point2dFlt& scalars,
-                                       const NormalizedCoords& coords) noexcept -> NormalizedCoords;
 [[nodiscard]] constexpr auto SqDistance(const NormalizedCoords& coords1,
                                         const NormalizedCoords& coords2) noexcept -> float;
 [[nodiscard]] constexpr auto SqDistanceFromZero(const NormalizedCoords& coords) noexcept -> float;
@@ -260,12 +258,6 @@ constexpr auto operator*(const float scalar, const NormalizedCoords& coords) noe
 {
   auto coords1 = coords;
   return coords1 *= scalar;
-}
-
-constexpr auto operator*(const Point2dFlt& scalars, const NormalizedCoords& coords) noexcept
-    -> NormalizedCoords
-{
-  return {scalars.x * coords.GetX(), scalars.y * coords.GetY()};
 }
 
 constexpr auto SqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept

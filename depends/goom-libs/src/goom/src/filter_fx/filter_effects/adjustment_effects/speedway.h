@@ -28,8 +28,8 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -58,9 +58,10 @@ private:
                                             float sqDistFromZero) const noexcept -> Point2dFlt;
 };
 
-inline auto Speedway::GetZoomAdjustment(const NormalizedCoords& coords,
-                                        const float sqDistFromZero) const noexcept -> Point2dFlt
+inline auto Speedway::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
 {
+  const auto sqDistFromZero = SqDistanceFromZero(coords);
+
   switch (m_mode)
   {
     case Modes::MODE0:

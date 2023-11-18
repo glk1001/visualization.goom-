@@ -142,8 +142,6 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
       cellCentre,
       gridArrays,
   });
-
-  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto DistanceField::GetGridWidth(const GridType gridType,

@@ -23,8 +23,8 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -56,9 +56,11 @@ private:
                                               float sqDistOffset) noexcept -> float;
 };
 
-inline auto CrystalBall::GetZoomAdjustment([[maybe_unused]] const NormalizedCoords& coords,
-                                           const float sqDistFromZero) const noexcept -> Point2dFlt
+inline auto CrystalBall::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+    -> Point2dFlt
 {
+  const auto sqDistFromZero = SqDistanceFromZero(coords);
+
   return {GetZoomAdjustment(GetBaseZoomAdjustment().x,
                             sqDistFromZero,
                             m_params.amplitude.x,

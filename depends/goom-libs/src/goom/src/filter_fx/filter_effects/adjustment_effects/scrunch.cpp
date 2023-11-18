@@ -1,7 +1,6 @@
 #include "scrunch.h"
 
 #include "filter_fx/common_types.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "name_value_pairs.h"
 #include "utils/math/goom_rand_base.h"
@@ -30,8 +29,6 @@ auto Scrunch::SetRandomParams() noexcept -> void
   const auto yAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.yRange);
 
   SetParams({xAmplitude, yAmplitude});
-
-  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto Scrunch::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

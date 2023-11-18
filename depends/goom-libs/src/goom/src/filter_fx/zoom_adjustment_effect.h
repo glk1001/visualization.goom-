@@ -18,12 +18,10 @@ public:
   auto operator=(IZoomAdjustmentEffect&&) -> IZoomAdjustmentEffect&      = default;
 
   virtual auto SetRandomParams() noexcept -> void = 0;
-  [[nodiscard]] virtual auto GetZoomAdjustmentViewport() const noexcept -> Viewport;
 
   auto SetBaseZoomAdjustment(const Point2dFlt& baseZoomAdjustment) noexcept -> void;
 
-  [[nodiscard]] virtual auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                               float sqDistFromZero) const noexcept
+  [[nodiscard]] virtual auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
       -> Point2dFlt = 0;
 
   [[nodiscard]] virtual auto GetZoomAdjustmentEffectNameValueParams() const noexcept
@@ -36,11 +34,6 @@ protected:
 private:
   Point2dFlt m_baseZoomAdjustment{};
 };
-
-inline auto IZoomAdjustmentEffect::GetZoomAdjustmentViewport() const noexcept -> Viewport
-{
-  return Viewport{};
-}
 
 inline auto IZoomAdjustmentEffect::GetBaseZoomAdjustment() const noexcept -> const Point2dFlt&
 {

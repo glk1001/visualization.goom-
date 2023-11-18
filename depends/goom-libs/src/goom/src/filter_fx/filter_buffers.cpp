@@ -110,13 +110,11 @@ auto ZoomFilterBuffers::UpdateTransformBuffer() noexcept -> void
  */
 auto ZoomFilterBuffers::DoNextTransformBuffer() noexcept -> void
 {
-  const auto screenWidth                  = m_dimensions.GetWidth();
-  const auto screenSpan                   = static_cast<float>(screenWidth - 1);
-  const auto sourceCoordsStepSize         = NormalizedCoords::COORD_WIDTH / screenSpan;
-  const auto sourceViewportCoordsStepSize = m_filterViewport.GetViewportWidth() / screenSpan;
+  const auto screenWidth          = m_dimensions.GetWidth();
+  const auto screenSpan           = static_cast<float>(screenWidth - 1);
+  const auto sourceCoordsStepSize = NormalizedCoords::COORD_WIDTH / screenSpan;
 
-  const auto doTransformBufferRow =
-      [this, &screenWidth, &sourceCoordsStepSize, &sourceViewportCoordsStepSize](const size_t y)
+  const auto doTransformBufferRow = [this, &screenWidth, &sourceCoordsStepSize](const size_t y)
   {
     // Y-position of the first stripe pixel to compute in screen coordinates.
     const auto yScreenCoord = static_cast<uint32_t>(y);
@@ -125,17 +123,15 @@ auto ZoomFilterBuffers::DoNextTransformBuffer() noexcept -> void
     auto centredSourceCoords =
         m_normalizedCoordsConverter->OtherToNormalizedCoords(GetPoint2dInt(0U, yScreenCoord)) -
         m_normalizedMidpoint;
-    auto centredSourceViewportCoords = m_filterViewport.GetViewportCoords(centredSourceCoords);
 
     for (auto x = 0U; x < screenWidth; ++x)
     {
-      const auto zoomPoint = m_getZoomPoint(centredSourceCoords, centredSourceViewportCoords);
+      const auto zoomPoint           = m_getZoomPoint(centredSourceCoords);
       const auto uncenteredZoomPoint = m_normalizedMidpoint + zoomPoint;
 
       m_transformBuffer[tranBufferPos] = uncenteredZoomPoint.GetFltCoords();
 
       centredSourceCoords.IncX(sourceCoordsStepSize);
-      centredSourceViewportCoords.IncX(sourceViewportCoordsStepSize);
       ++tranBufferPos;
     }
   };

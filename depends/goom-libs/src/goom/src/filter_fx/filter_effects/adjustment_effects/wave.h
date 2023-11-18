@@ -26,8 +26,8 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -115,11 +115,11 @@ private:
       -> float;
 };
 
-inline auto Wave::GetZoomAdjustment(const NormalizedCoords& coords,
-                                    const float sqDistFromZero) const noexcept -> Point2dFlt
+inline auto Wave::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
 {
-  const auto angle   = GetAngle(sqDistFromZero, coords);
-  const auto reducer = std::exp(-m_params.reducerCoeff * sqDistFromZero);
+  const auto sqDistFromZero = SqDistanceFromZero(coords);
+  const auto angle          = GetAngle(sqDistFromZero, coords);
+  const auto reducer        = std::exp(-m_params.reducerCoeff * sqDistFromZero);
 
   const auto xZoomAdjustment =
       GetBaseZoomAdjustment().x + GetZoomAdjustmentAdd(m_params.xWaveEffect, angle, reducer);

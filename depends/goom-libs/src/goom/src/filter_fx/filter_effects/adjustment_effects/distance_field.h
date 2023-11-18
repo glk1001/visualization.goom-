@@ -27,8 +27,8 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -120,8 +120,7 @@ private:
       -> float;
 };
 
-inline auto DistanceField::GetZoomAdjustment(
-    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
+inline auto DistanceField::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
     -> Point2dFlt
 {
   const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);

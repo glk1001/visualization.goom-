@@ -20,8 +20,8 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs override;
@@ -32,8 +32,7 @@ private:
   auto DoSetRandomParams() noexcept -> void;
 };
 
-inline auto ImageZoomAdjustment::GetZoomAdjustment(
-    const NormalizedCoords& coords, [[maybe_unused]] const float sqDistFromZero) const noexcept
+inline auto ImageZoomAdjustment::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
     -> Point2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);

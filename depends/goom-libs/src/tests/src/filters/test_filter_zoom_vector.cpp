@@ -46,7 +46,6 @@ using Catch::Approx;
 using FILTER_FX::FilterEffectsSettings;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
-using FILTER_FX::Viewport;
 using FILTER_FX::Vitesse;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlayMode;
@@ -116,7 +115,6 @@ const auto GOOM_RAND                = GoomRand{};
       DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
       std::make_shared<UniformZoomAdjustmentEffect>(),
       {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
-      Viewport{},
       {DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
               DEFAULT_MULTIPLIER_EFFECT_X_FREQ, DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
               DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE, DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
@@ -152,7 +150,7 @@ auto TestZoomAdjustment(FilterZoomVector& filterZoomVector,
   UNSCOPED_INFO("zoomFactor = " << zoomFactor);
 
   filterZoomVector.SetFilterEffectsSettings(filterSettings);
-  const auto zoomAdjustment = filterZoomVector.GetZoomPoint(COORDS, COORDS);
+  const auto zoomAdjustment = filterZoomVector.GetZoomPoint(COORDS);
   REQUIRE(zoomAdjustment.GetX() == Approx(expectedZoomAdjustment.GetX()));
   REQUIRE(zoomAdjustment.GetY() == Approx(expectedZoomAdjustment.GetY()));
 }
@@ -176,10 +174,8 @@ TEST_CASE("FilterZoomVector")
     const auto expectedZoomAdjustment = zoomFactor * coords;
 
     filterZoomVector.SetFilterEffectsSettings(filterSettings);
-    REQUIRE(filterZoomVector.GetZoomPoint(coords, coords).GetX() ==
-            Approx(expectedZoomAdjustment.GetX()));
-    REQUIRE(filterZoomVector.GetZoomPoint(coords, coords).GetY() ==
-            Approx(expectedZoomAdjustment.GetY()));
+    REQUIRE(filterZoomVector.GetZoomPoint(coords).GetX() == Approx(expectedZoomAdjustment.GetX()));
+    REQUIRE(filterZoomVector.GetZoomPoint(coords).GetY() == Approx(expectedZoomAdjustment.GetY()));
   }
 
   SECTION("Non-zero Speed")

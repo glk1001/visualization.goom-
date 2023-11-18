@@ -18,8 +18,8 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -57,9 +57,7 @@ private:
       -> float;
 };
 
-inline auto YOnly::GetZoomAdjustment(const NormalizedCoords& coords,
-                                     [[maybe_unused]] const float sqDistFromZero) const noexcept
-    -> Point2dFlt
+inline auto YOnly::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
 {
   const auto xZoomAdjustment = GetBaseZoomAdjustment().x * m_params.amplitude.x *
                                GetYOnlyZoomAdjustmentMultiplier(m_params.xyEffect.xEffect, coords);

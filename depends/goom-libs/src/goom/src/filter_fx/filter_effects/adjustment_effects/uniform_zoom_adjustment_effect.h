@@ -15,16 +15,15 @@ public:
 
   auto SetRandomParams() noexcept -> void override;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt override;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+      -> Point2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs override;
 };
 
 inline auto UniformZoomAdjustmentEffect::GetZoomAdjustment(
-    [[maybe_unused]] const NormalizedCoords& coords,
-    [[maybe_unused]] const float sqDistFromZero) const noexcept -> Point2dFlt
+    [[maybe_unused]] const NormalizedCoords& coords) const noexcept -> Point2dFlt
 {
   return GetBaseZoomAdjustment();
 }

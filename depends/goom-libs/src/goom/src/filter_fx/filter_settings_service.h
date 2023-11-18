@@ -8,7 +8,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "normalized_coords.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -117,7 +116,6 @@ protected:
   [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
-  virtual auto SetFilterModeRandomViewport() -> void;
   virtual auto SetFilterModeRandomEffects() -> void;
   virtual auto SetFilterModeAfterEffects() -> void;
   virtual auto SetRandomizedAfterEffects() -> void;
@@ -140,7 +138,6 @@ private:
 
   static constexpr auto DEFAULT_ZOOM_MID_X                             = 16U;
   static constexpr auto DEFAULT_ZOOM_MID_Y                             = 1U;
-  static constexpr auto DEFAULT_FILTER_VIEWPORT                        = Viewport{};
   static constexpr auto DEFAULT_MAX_ZOOM_ADJUSTMENT                    = 2.01F;
   static constexpr auto DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER = 1.0F;
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION    = 0.5F;
@@ -290,7 +287,6 @@ inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
   SetDefaultSettings();
   SetRandomZoomMidpoint();
   SetFilterModeRandomEffects();
-  SetFilterModeRandomViewport();
   ResetRandomFilterMultiplierEffect();
   SetFilterModeAfterEffects();
   UpdateFilterSettingsFromAfterEffects();

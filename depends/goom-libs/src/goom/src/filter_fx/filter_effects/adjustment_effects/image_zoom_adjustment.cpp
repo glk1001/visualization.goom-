@@ -1,6 +1,5 @@
 #include "image_zoom_adjustment.h"
 
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "name_value_pairs.h"
 #include "utils/math/goom_rand_base.h"
@@ -32,8 +31,6 @@ ImageZoomAdjustment::ImageZoomAdjustment(const std::string& resourcesDirectory,
 auto ImageZoomAdjustment::SetRandomParams() noexcept -> void
 {
   DoSetRandomParams();
-
-  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 inline auto ImageZoomAdjustment::DoSetRandomParams() noexcept -> void

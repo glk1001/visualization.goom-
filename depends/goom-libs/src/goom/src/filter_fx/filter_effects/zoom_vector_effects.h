@@ -4,7 +4,7 @@
 #include "filter_fx/after_effects/zoom_vector_after_effects.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
-#include "filter_fx/zoom_adjustment_effect.h"
+#include "filter_fx/zoom_adjustment_effect.h" // NOLINT: This is used directly!
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
@@ -38,8 +38,7 @@ public:
 
   auto SetFilterSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept -> void;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords,
-                                       float sqDistFromZero) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
 
   [[nodiscard]] auto GetMultiplierEffect(const NormalizedCoords& coords,
                                          const Point2dFlt& zoomAdjustment) const noexcept
@@ -134,15 +133,14 @@ constexpr auto ZoomVectorEffects::GetBaseZoomAdjustment(const float baseZoomAdju
   return baseZoomAdjustmentFactor * (1.0F + relativeSpeed);
 }
 
-inline auto ZoomVectorEffects::GetZoomAdjustment(const NormalizedCoords& coords,
-                                                 const float sqDistFromZero) const noexcept
+inline auto ZoomVectorEffects::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
     -> Point2dFlt
 {
   // Amulet 2
   // vx = X * tan(dist);
   // vy = Y * tan(dist);
   return GetClampedZoomAdjustment(
-      m_filterEffectsSettings->zoomAdjustmentEffect->GetZoomAdjustment(coords, sqDistFromZero));
+      m_filterEffectsSettings->zoomAdjustmentEffect->GetZoomAdjustment(coords));
 }
 
 inline auto ZoomVectorEffects::GetClampedZoomAdjustment(const Point2dFlt& zoomCoeffs) const noexcept

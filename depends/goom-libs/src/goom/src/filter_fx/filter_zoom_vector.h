@@ -28,8 +28,7 @@ public:
   auto SetFilterEffectsSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept
       -> void override;
 
-  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords,
-                                  const NormalizedCoords& filterViewportCoords) const noexcept
+  [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const noexcept
       -> NormalizedCoords override;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
@@ -37,8 +36,7 @@ public:
 
 private:
   FILTER_EFFECTS::ZoomVectorEffects m_zoomVectorEffects;
-  [[nodiscard]] auto GetFilterEffectsZoomPoint(
-      const NormalizedCoords& coords, const NormalizedCoords& filterViewportCoords) const noexcept
+  [[nodiscard]] auto GetFilterEffectsZoomPoint(const NormalizedCoords& coords) const noexcept
       -> NormalizedCoords;
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
                                              const NormalizedCoords& zoomPoint) const noexcept

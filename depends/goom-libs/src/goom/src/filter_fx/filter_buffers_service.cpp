@@ -31,12 +31,10 @@ FilterBuffersService::FilterBuffersService(
     std::unique_ptr<IZoomVector> zoomVector) noexcept
   : m_goomTime{&goomInfo.GetTime()},
     m_zoomVector{std::move(zoomVector)},
-    m_filterBuffers{
-        goomInfo,
-        normalizedCoordsConverter,
-        [this](const NormalizedCoords& normalizedCoords,
-               const NormalizedCoords& normalizedFilterViewportCoords)
-        { return m_zoomVector->GetZoomPoint(normalizedCoords, normalizedFilterViewportCoords); }}
+    m_filterBuffers{goomInfo,
+                    normalizedCoordsConverter,
+                    [this](const NormalizedCoords& normalizedCoords)
+                    { return m_zoomVector->GetZoomPoint(normalizedCoords); }}
 {
 }
 
@@ -81,7 +79,6 @@ auto FilterBuffersService::UpdateAllPendingSettings() noexcept -> void
   m_nextFilterEffectsSettings.afterEffectsSettings.rotationAdjustments.Reset();
   m_zoomVector->SetFilterEffectsSettings(m_nextFilterEffectsSettings);
   m_filterBuffers.SetTransformBufferMidpoint(m_nextFilterEffectsSettings.zoomMidpoint);
-  m_filterBuffers.SetFilterViewport(m_nextFilterEffectsSettings.filterViewport);
   m_pendingFilterEffectsSettings = false;
 }
 

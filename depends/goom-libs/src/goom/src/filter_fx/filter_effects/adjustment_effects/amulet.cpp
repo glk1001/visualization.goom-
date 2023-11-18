@@ -1,6 +1,5 @@
 #include "amulet.h"
 
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "math/goom_rand_base.h"
 #include "name_value_pairs.h"
@@ -29,8 +28,6 @@ auto Amulet::SetRandomParams() noexcept -> void
                               : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
 
   SetParams({xAmplitude, yAmplitude});
-
-  Ensures(GetZoomAdjustmentViewport().GetViewportWidth() == NormalizedCoords::COORD_WIDTH);
 }
 
 auto Amulet::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

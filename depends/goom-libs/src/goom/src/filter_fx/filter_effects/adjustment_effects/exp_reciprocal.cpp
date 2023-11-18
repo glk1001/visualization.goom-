@@ -97,10 +97,12 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
   });
 }
 
-auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords,
-                                      const float sqDistFromZero) const noexcept -> Point2dFlt
+auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
 {
-  Expects(GetZoomAdjustmentViewport().GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
+  Expects(m_params.viewport.GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
+
+  const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
+  const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
 
   if (sqDistFromZero < UTILS::MATH::SMALL_FLOAT)
   {
@@ -109,8 +111,8 @@ auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords,
 
   const auto zOffset = std::complex<FltCalcType>{};
   const auto z       = static_cast<std::complex<FltCalcType>>(m_params.magnifyAndRotate) *
-                 (std::complex<FltCalcType>{static_cast<FltCalcType>(coords.GetX()),
-                                            static_cast<FltCalcType>(coords.GetY())} +
+                 (std::complex<FltCalcType>{static_cast<FltCalcType>(viewportCoords.GetX()),
+                                            static_cast<FltCalcType>(viewportCoords.GetY())} +
                   zOffset);
 
   const auto fz      = std::exp(ONE / std::pow(z, m_params.reciprocalExponent));

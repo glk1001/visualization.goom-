@@ -32,16 +32,13 @@ public:
     HAS_BEEN_COPIED,
   };
 
-  using ZoomPointFunc =
-      std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords,
-                                     const NormalizedCoords& normalizedFilterViewportCoords)>;
+  using ZoomPointFunc = std::function<NormalizedCoords(const NormalizedCoords& normalizedCoords)>;
 
   ZoomFilterBuffers(const PluginInfo& goomInfo,
                     const NormalizedCoordsConverter& normalizedCoordsConverter,
                     const ZoomPointFunc& getZoomPointFunc) noexcept;
 
   auto SetTransformBufferMidpoint(const Point2dInt& midpoint) noexcept -> void;
-  auto SetFilterViewport(const Viewport& viewport) noexcept -> void;
 
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
@@ -73,7 +70,6 @@ private:
   ZoomPointFunc m_getZoomPoint;
   Point2dInt m_midpoint                 = {0, 0};
   NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
-  Viewport m_filterViewport             = Viewport{};
 
   std::vector<Point2dFlt> m_transformBuffer;
 
@@ -97,13 +93,6 @@ inline auto ZoomFilterBuffers::SetTransformBufferMidpoint(const Point2dInt& midp
 
   m_midpoint           = midpoint;
   m_normalizedMidpoint = m_normalizedCoordsConverter->OtherToNormalizedCoords(m_midpoint);
-}
-
-inline auto ZoomFilterBuffers::SetFilterViewport(const Viewport& viewport) noexcept -> void
-{
-  Expects(UpdateStatus::AT_START == m_updateStatus);
-
-  m_filterViewport = viewport;
 }
 
 // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
