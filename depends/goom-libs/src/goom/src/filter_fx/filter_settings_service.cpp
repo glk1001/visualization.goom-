@@ -18,7 +18,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -59,8 +58,9 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::MOBIUS_MODE;
-constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NEWTON_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NEWTON_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
+constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::PERLIN_NOISE_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
@@ -109,6 +109,7 @@ constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {ZoomFilterMode::MOBIUS_MODE, "Mobius"},
     {ZoomFilterMode::NEWTON_MODE, "Newton"},
     {ZoomFilterMode::NORMAL_MODE, "Normal"},
+    {ZoomFilterMode::PERLIN_NOISE_MODE, "Perlin Noise"},
     {ZoomFilterMode::SCRUNCH_MODE, "Scrunch"},
     {ZoomFilterMode::SPEEDWAY_MODE0, "Speedway Mode 0"},
     {ZoomFilterMode::SPEEDWAY_MODE1, "Speedway Mode 1"},
@@ -168,6 +169,8 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[FiltMode::NEWTON_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[FiltMode::NORMAL_MODE][EffectType::ROTATION] = PROB_ZERO;
+
+  effectsProbs[FiltMode::PERLIN_NOISE_MODE][EffectType::ROTATION] = PROB_HALF;
 
   effectsProbs[FiltMode::SCRUNCH_MODE][EffectType::ROTATION] = PROB_HALF;
 
@@ -270,6 +273,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
   static constexpr auto MOBIUS_MODE_WEIGHT             = 10.0F;
   static constexpr auto NEWTON_MODE_WEIGHT             = 10.0F;
   static constexpr auto NORMAL_MODE_WEIGHT             = 10.0F;
+  static constexpr auto PERLIN_NOISE_MODE_WEIGHT       = 10.0F;
   static constexpr auto SCRUNCH_MODE_WEIGHT            = 06.0F;
   static constexpr auto SPEEDWAY_MODE0_WEIGHT          = 02.0F;
   static constexpr auto SPEEDWAY_MODE1_WEIGHT          = 01.0F;
@@ -370,6 +374,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
         {ZoomFilterMode::MOBIUS_MODE, MOBIUS_MODE_WEIGHT},
         {ZoomFilterMode::NEWTON_MODE, NEWTON_MODE_WEIGHT},
         {ZoomFilterMode::NORMAL_MODE, NORMAL_MODE_WEIGHT},
+        {ZoomFilterMode::PERLIN_NOISE_MODE, PERLIN_NOISE_MODE_WEIGHT},
         {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_MODE_WEIGHT},
         {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_MODE0_WEIGHT},
         {ZoomFilterMode::SPEEDWAY_MODE1, SPEEDWAY_MODE1_WEIGHT},
@@ -506,6 +511,13 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
+  constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 0.0F}}
+  };
   constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
@@ -579,6 +591,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
       {ZoomFilterMode::MOBIUS_MODE, MOBIUS_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::NEWTON_MODE, NEWTON_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::PERLIN_NOISE_MODE, PERLIN_NOISE_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::SPEEDWAY_MODE1, SPEEDWAY_HYPERCOS_WEIGHTS},

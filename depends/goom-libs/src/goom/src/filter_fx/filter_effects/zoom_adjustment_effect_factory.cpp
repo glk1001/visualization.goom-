@@ -7,6 +7,7 @@
 #include "filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.h"
 #include "filter_fx/filter_effects/adjustment_effects/mobius.h"
 #include "filter_fx/filter_effects/adjustment_effects/newton.h"
+#include "filter_fx/filter_effects/adjustment_effects/perlin_noise.h"
 #include "filter_fx/filter_effects/adjustment_effects/scrunch.h"
 #include "filter_fx/filter_effects/adjustment_effects/speedway.h"
 #include "filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h"
@@ -59,6 +60,8 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
       return std::make_shared<Newton>(goomRand);
     case ZoomFilterMode::NORMAL_MODE:
       return std::make_shared<UniformZoomAdjustmentEffect>();
+    case ZoomFilterMode::PERLIN_NOISE_MODE:
+      return std::make_shared<PerlinNoise>(goomRand);
     case ZoomFilterMode::SCRUNCH_MODE:
       return std::make_shared<Scrunch>(goomRand);
     case ZoomFilterMode::SPEEDWAY_MODE0:

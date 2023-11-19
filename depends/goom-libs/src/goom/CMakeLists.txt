@@ -115,6 +115,7 @@ add_library(goom
             src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
             src/filter_fx/filter_effects/adjustment_effects/mobius.cpp
             src/filter_fx/filter_effects/adjustment_effects/newton.cpp
+            src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cpp
             src/filter_fx/filter_effects/adjustment_effects/scrunch.cpp
             src/filter_fx/filter_effects/adjustment_effects/speedway.cpp
             src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h
@@ -254,6 +255,7 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/src/bezier/include
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
+                           ${GOOM_LIBS_DIR}/lib/perlin_noise/include
                            ${GOOM_LIBS_DIR}/lib/fmt/include
                            ${GOOM_LIBS_DIR}/lib/span/include
                            ${LSys_SOURCE_DIR}/include

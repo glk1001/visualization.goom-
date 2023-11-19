@@ -42,6 +42,7 @@ enum class ZoomFilterMode : UnderlyingEnumType
   MOBIUS_MODE,
   NEWTON_MODE,
   NORMAL_MODE,
+  PERLIN_NOISE_MODE,
   SCRUNCH_MODE,
   SPEEDWAY_MODE0,
   SPEEDWAY_MODE1,
