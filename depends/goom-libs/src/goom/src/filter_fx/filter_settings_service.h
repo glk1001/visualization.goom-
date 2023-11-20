@@ -28,6 +28,7 @@ namespace GOOM::FILTER_FX
 enum class ZoomFilterMode : UnderlyingEnumType
 {
   AMULET_MODE = 0,
+  COMPLEX_RATIONAL_MODE,
   CRYSTAL_BALL_MODE0,
   CRYSTAL_BALL_MODE1,
   DISTANCE_FIELD_MODE0,

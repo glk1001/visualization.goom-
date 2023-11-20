@@ -1,6 +1,7 @@
 #include "zoom_adjustment_effect_factory.h"
 
 #include "filter_fx/filter_effects/adjustment_effects/amulet.h"
+#include "filter_fx/filter_effects/adjustment_effects/complex_rational.h"
 #include "filter_fx/filter_effects/adjustment_effects/crystal_ball.h"
 #include "filter_fx/filter_effects/adjustment_effects/distance_field.h"
 #include "filter_fx/filter_effects/adjustment_effects/exp_reciprocal.h"
@@ -35,6 +36,8 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
   {
     case ZoomFilterMode::AMULET_MODE:
       return std::make_shared<Amulet>(goomRand);
+    case ZoomFilterMode::COMPLEX_RATIONAL_MODE:
+      return std::make_shared<ComplexRational>(goomRand);
     case ZoomFilterMode::CRYSTAL_BALL_MODE0:
       return std::make_shared<CrystalBall>(CrystalBall::Modes::MODE0, goomRand);
     case ZoomFilterMode::CRYSTAL_BALL_MODE1:

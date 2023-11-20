@@ -18,6 +18,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -46,6 +47,7 @@ namespace
 // For debugging:
 
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
+constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
@@ -60,7 +62,7 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::MOBIUS_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NEWTON_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
-constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::PERLIN_NOISE_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::PERLIN_NOISE_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
@@ -95,6 +97,7 @@ constexpr auto PROB_REVERSE_SPEED          = 0.5F;
 
 constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {ZoomFilterMode::AMULET_MODE, "Amulet"},
+    {ZoomFilterMode::COMPLEX_RATIONAL_MODE, "Complex Rational"},
     {ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
     {ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
     {ZoomFilterMode::DISTANCE_FIELD_MODE0, "Distance Field Mode 0"},
@@ -147,6 +150,8 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
       GetFilledEnumMap<ZoomFilterMode, AfterEffectsProbs>(DEFAULT_AFTER_EFFECTS_PROBS);
 
   effectsProbs[FiltMode::AMULET_MODE][EffectType::ROTATION] = PROB_HIGH;
+
+  effectsProbs[FiltMode::COMPLEX_RATIONAL_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[FiltMode::CRYSTAL_BALL_MODE0][EffectType::ROTATION] = PROB_HIGH;
   effectsProbs[FiltMode::CRYSTAL_BALL_MODE1][EffectType::ROTATION] = PROB_HIGH;
@@ -259,6 +264,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<ZoomFilterMode>
 {
   static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
+  static constexpr auto COMPLEX_RATIONAL_MODE_WEIGHT   = 10.0F;
   static constexpr auto CRYSTAL_BALL_MODE0_WEIGHT      = 04.0F;
   static constexpr auto CRYSTAL_BALL_MODE1_WEIGHT      = 02.0F;
   static constexpr auto DISTANCE_FIELD_MODE0_WEIGHT    = 03.0F;
@@ -360,6 +366,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
       goomRand,
       {
         {ZoomFilterMode::AMULET_MODE, AMULET_MODE_WEIGHT},
+        {ZoomFilterMode::COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_MODE_WEIGHT},
         {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL_MODE0_WEIGHT},
         {ZoomFilterMode::CRYSTAL_BALL_MODE1, CRYSTAL_BALL_MODE1_WEIGHT},
         {ZoomFilterMode::DISTANCE_FIELD_MODE0, DISTANCE_FIELD_MODE0_WEIGHT},
@@ -426,6 +433,13 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
+  };
+  constexpr auto COMPLEX_RATIONAL_HYPERCOS_WEIGHTS = ModeWeights{
+      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {Hyp::MODE0, 5.0F},
+       {Hyp::MODE1, 1.0F},
+       {Hyp::MODE2, 1.0F},
+       {Hyp::MODE3, 0.0F}}
   };
   constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
@@ -577,6 +591,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
 
   constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
       {ZoomFilterMode::AMULET_MODE, AMULET_HYPERCOS_WEIGHTS},
+      {ZoomFilterMode::COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL0_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::CRYSTAL_BALL_MODE1, CRYSTAL_BALL1_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::DISTANCE_FIELD_MODE0, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
