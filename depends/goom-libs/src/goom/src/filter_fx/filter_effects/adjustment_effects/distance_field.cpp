@@ -3,6 +3,7 @@
 #include "distance_field.h"
 
 #include "filter_fx/common_types.h"
+#include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
@@ -21,6 +22,7 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
+using FILTER_UTILS::LerpToOneTs;
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
@@ -61,8 +63,13 @@ static constexpr auto AMPLITUDE_RANGE_MODE2 = AmplitudeRange{
 static constexpr auto FULL_AMPLITUDE_FACTOR            = 2.0F;
 static constexpr auto PARTIAL_DIAMOND_AMPLITUDE_FACTOR = 0.1F;
 
-static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.50F;
-static constexpr auto PROB_RANDOM_CENTRE       = 0.1F;
+static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = IGoomRand::NumberRange<float>{0.0F, 1.0F};
+
+static constexpr auto PROB_AMPLITUDES_EQUAL              = 0.50F;
+static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL         = 0.95F;
+static constexpr auto PROB_USE_DISCONTINUOUS_ZOOM_FACTOR = 0.5F;
+static constexpr auto PROB_RANDOM_CENTRE                 = 0.1F;
 
 static constexpr auto GRID_TYPE_FULL_WEIGHT            = 100.0F;
 static constexpr auto GRID_TYPE_PARTIAL_X_WEIGHT       = 10.0F;
@@ -83,6 +90,8 @@ DistanceField::DistanceField(const Modes mode, const IGoomRand& goomRand) noexce
     },
     m_params{
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        DEFAULT_LERP_TO_ONE_T_S,
+        false,
         DEFAULT_GRID_TYPE,
         DEFAULT_GRID_WIDTH,
         DEFAULT_GRID_SCALE,
@@ -134,8 +143,17 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
 
   const auto amplitude = GetAmplitude(amplitudeRange, gridType, gridWidth, gridArrays);
 
+  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+                               ? xLerpToOneT
+                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+  const auto useDiscontinuousZoomFactor =
+      m_goomRand->ProbabilityOf(PROB_USE_DISCONTINUOUS_ZOOM_FACTOR);
+
   SetParams({
       amplitude,
+      {xLerpToOneT, yLerpToOneT},
+      useDiscontinuousZoomFactor,
       gridType,
       static_cast<int32_t>(gridWidth - 1),
       gridScale,
@@ -316,7 +334,7 @@ inline auto DistanceField::GetAmplitude(const AmplitudeRange& amplitudeRange,
     -> Amplitude
 {
   const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange.xRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
                               ? xAmplitude
                               : m_goomRand->GetRandInRange(amplitudeRange.yRange);
 
@@ -445,6 +463,10 @@ auto DistanceField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> N
                   ? static_cast<size_t>(Sq(gridWidth))
                   : m_params.gridArrays.gridPointsWithCentres.size()),
       GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "lerpToOneTs",
+              Point2dFlt{m_params.lerpToOneTs.xLerpT, m_params.lerpToOneTs.yLerpT}),
+      GetPair(fullParamGroup, "discon zoom", m_params.useDiscontinuousZoomFactor),
   };
 }
 

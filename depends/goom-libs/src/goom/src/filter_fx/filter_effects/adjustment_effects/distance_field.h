@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_fx/common_types.h"
+#include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/goom_types.h"
@@ -47,6 +48,8 @@ public:
   struct Params
   {
     Amplitude amplitude;
+    FILTER_UTILS::LerpToOneTs lerpToOneTs;
+    bool useDiscontinuousZoomFactor;
     GridType gridType;
     int32_t gridMax;
     float gridScale;
@@ -127,15 +130,19 @@ inline auto DistanceField::GetZoomAdjustment(const NormalizedCoords& coords) con
 {
   const auto velocity = GetVelocity(coords);
 
-  return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
+  if (m_params.useDiscontinuousZoomFactor)
+  {
+    return FILTER_UTILS::GetVelocityByZoomLerpedToNegOne(coords, m_params.lerpToOneTs, velocity);
+  }
+  return FILTER_UTILS::GetVelocityByZoomLerpedToOne(coords, m_params.lerpToOneTs, velocity);
 }
 
 inline auto DistanceField::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);
 
-  return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromClosestPoint),
-          GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromClosestPoint)};
+  return {m_params.amplitude.x * sqDistFromClosestPoint,
+          m_params.amplitude.y * sqDistFromClosestPoint};
 }
 
 inline auto DistanceField::GetParams() const noexcept -> const Params&
