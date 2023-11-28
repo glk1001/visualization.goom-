@@ -28,7 +28,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt override;
+      -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -77,7 +77,7 @@ private:
   auto SetRandomParams(const AmplitudeRange& amplitudeRange,
                        const GridWidthRange& gridWidthRange) noexcept -> void;
 
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetGridWidth(GridType gridType,
                                   const GridWidthRange& gridWidthRange) const noexcept -> uint32_t;
   [[nodiscard]] auto GetGridsArray(GridType gridType, uint32_t gridWidth) const noexcept
@@ -123,14 +123,14 @@ private:
 };
 
 inline auto DistanceField::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-    -> Point2dFlt
+    -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
 
-inline auto DistanceField::GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+inline auto DistanceField::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);
 

@@ -20,7 +20,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt override;
+      -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -45,7 +45,7 @@ private:
   Params m_params;
   using FltCalcType         = double;
   static constexpr auto ONE = static_cast<FltCalcType>(1.0F);
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetAdjustedPhase(const std::complex<FltCalcType>& fz,
                                       float sqDistFromZero) const noexcept
       -> std::complex<FltCalcType>;

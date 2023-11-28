@@ -23,7 +23,7 @@ ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
 }
 
 auto ImageDisplacement::GetDisplacementVector(
-    const NormalizedCoords& normalizedCoords) const noexcept -> Point2dFlt
+    const NormalizedCoords& normalizedCoords) const noexcept -> Vec2dFlt
 {
   const auto imagePoint = NormalizedCoordsToImagePoint(normalizedCoords);
 
@@ -50,7 +50,7 @@ inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
 }
 
 inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color) const noexcept
-    -> Point2dFlt
+    -> Vec2dFlt
 {
   const auto normalizedDisplacementX =
       NormalizedCoords::MAX_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);

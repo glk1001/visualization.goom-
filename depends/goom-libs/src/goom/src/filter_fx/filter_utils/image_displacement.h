@@ -31,7 +31,7 @@ public:
   auto SetAmplitude(float value) noexcept -> void;
 
   [[nodiscard]] auto GetDisplacementVector(const NormalizedCoords& normalizedCoords) const noexcept
-      -> Point2dFlt;
+      -> Vec2dFlt;
 
 private:
   std::unique_ptr<UTILS::GRAPHICS::ImageBitmap> m_imageBuffer;
@@ -49,7 +49,7 @@ private:
   float m_yColorCutoff                  = INITIAL_CUTOFF;
   [[nodiscard]] auto NormalizedCoordsToImagePoint(
       const NormalizedCoords& normalizedCoords) const noexcept -> Point2dInt;
-  [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const noexcept -> Vec2dFlt;
 };
 
 inline auto ImageDisplacement::GetImageFilename() const noexcept -> std::string

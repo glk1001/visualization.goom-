@@ -4,6 +4,7 @@
 #include "filter_fx/after_effects/zoom_vector_after_effects.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
+#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "utils/name_value_pairs.h"
 
@@ -52,7 +53,7 @@ auto ZoomVectorEffects::SetFilterSettings(
 }
 
 auto ZoomVectorEffects::GetMultiplierEffect(const NormalizedCoords& coords,
-                                            const Point2dFlt& zoomAdjustment) const noexcept
+                                            const Vec2dFlt& zoomAdjustment) const noexcept
     -> Point2dFlt
 {
   const auto& multiplierSettings = m_filterEffectsSettings->filterMultiplierEffectsSettings;
@@ -62,12 +63,14 @@ auto ZoomVectorEffects::GetMultiplierEffect(const NormalizedCoords& coords,
     return {1.0F, 1.0F};
   }
 
-  const auto targetPoint =
-      lerp(zoomAdjustment, coords.GetFltCoords(), multiplierSettings.lerpZoomAdjustmentToCoords);
+  const auto targetPointX =
+      STD20::lerp(zoomAdjustment.x, coords.GetX(), multiplierSettings.lerpZoomAdjustmentToCoords);
+  const auto targetPointY =
+      STD20::lerp(zoomAdjustment.y, coords.GetY(), multiplierSettings.lerpZoomAdjustmentToCoords);
 
   return {
-      1.0F - (multiplierSettings.xAmplitude * std::sin(multiplierSettings.xFreq * targetPoint.x)),
-      1.0F - (multiplierSettings.yAmplitude * std::cos(multiplierSettings.yFreq * targetPoint.y))};
+      1.0F - (multiplierSettings.xAmplitude * std::sin(multiplierSettings.xFreq * targetPointX)),
+      1.0F - (multiplierSettings.yAmplitude * std::cos(multiplierSettings.yFreq * targetPointY))};
 }
 
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs

@@ -19,29 +19,29 @@ public:
 
   virtual auto SetRandomParams() noexcept -> void = 0;
 
-  auto SetBaseZoomAdjustment(const Point2dFlt& baseZoomAdjustment) noexcept -> void;
+  auto SetBaseZoomAdjustment(const Vec2dFlt& baseZoomAdjustment) noexcept -> void;
 
   [[nodiscard]] virtual auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt = 0;
+      -> Vec2dFlt = 0;
 
   [[nodiscard]] virtual auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs = 0;
 
 protected:
   static constexpr auto* PARAM_GROUP = "Zoom Adj";
-  [[nodiscard]] auto GetBaseZoomAdjustment() const noexcept -> const Point2dFlt&;
+  [[nodiscard]] auto GetBaseZoomAdjustment() const noexcept -> const Vec2dFlt&;
 
 private:
-  Point2dFlt m_baseZoomAdjustment{};
+  Vec2dFlt m_baseZoomAdjustment{};
 };
 
-inline auto IZoomAdjustmentEffect::GetBaseZoomAdjustment() const noexcept -> const Point2dFlt&
+inline auto IZoomAdjustmentEffect::GetBaseZoomAdjustment() const noexcept -> const Vec2dFlt&
 {
   return m_baseZoomAdjustment;
 }
 
 inline auto IZoomAdjustmentEffect::SetBaseZoomAdjustment(
-    const Point2dFlt& baseZoomAdjustment) noexcept -> void
+    const Vec2dFlt& baseZoomAdjustment) noexcept -> void
 {
   m_baseZoomAdjustment = baseZoomAdjustment;
 }

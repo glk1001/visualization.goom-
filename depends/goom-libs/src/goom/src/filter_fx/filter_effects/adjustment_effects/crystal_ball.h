@@ -24,7 +24,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt override;
+      -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -49,7 +49,7 @@ private:
   auto SetRandomParams(const AmplitudeRange& amplitudeRange,
                        const SqDistMultRange& sqDistMultRange,
                        const SqDistOffsetRange& sqDistOffsetRange) noexcept -> void;
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] static auto GetZoomAdjustment(float baseZoomAdjustment,
                                               float sqDistFromZero,
                                               float amplitude,
@@ -58,14 +58,14 @@ private:
 };
 
 inline auto CrystalBall::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-    -> Point2dFlt
+    -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
 
-inline auto CrystalBall::GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+inline auto CrystalBall::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto sqDistFromZero = SqDistanceFromZero(coords);
 

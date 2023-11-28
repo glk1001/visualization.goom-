@@ -21,7 +21,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt override;
+      -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> GOOM::UTILS::NameValuePairs override;
@@ -29,12 +29,12 @@ public:
 private:
   const GOOM::UTILS::MATH::IGoomRand* m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   auto DoSetRandomParams() noexcept -> void;
 };
 
 inline auto ImageZoomAdjustment::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-    -> Point2dFlt
+    -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
@@ -42,7 +42,7 @@ inline auto ImageZoomAdjustment::GetZoomAdjustment(const NormalizedCoords& coord
 }
 
 inline auto ImageZoomAdjustment::GetVelocity(const NormalizedCoords& coords) const noexcept
-    -> Point2dFlt
+    -> Vec2dFlt
 {
   return m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(coords);
 }

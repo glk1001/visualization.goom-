@@ -29,7 +29,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt override;
+      -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -50,23 +50,23 @@ private:
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetMode0ZoomAdjustment(const NormalizedCoords& coords,
-                                            float sqDistFromZero) const noexcept -> Point2dFlt;
+                                            float sqDistFromZero) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetMode1ZoomAdjustment(const NormalizedCoords& coords,
-                                            float sqDistFromZero) const noexcept -> Point2dFlt;
+                                            float sqDistFromZero) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetMode2ZoomAdjustment(const NormalizedCoords& coords,
-                                            float sqDistFromZero) const noexcept -> Point2dFlt;
+                                            float sqDistFromZero) const noexcept -> Vec2dFlt;
 };
 
-inline auto Speedway::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+inline auto Speedway::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
 
-inline auto Speedway::GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+inline auto Speedway::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto sqDistFromZero = SqDistanceFromZero(coords);
 
@@ -82,8 +82,7 @@ inline auto Speedway::GetVelocity(const NormalizedCoords& coords) const noexcept
 }
 
 inline auto Speedway::GetMode0ZoomAdjustment(const NormalizedCoords& coords,
-                                             const float sqDistFromZero) const noexcept
-    -> Point2dFlt
+                                             const float sqDistFromZero) const noexcept -> Vec2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
@@ -101,8 +100,7 @@ inline auto Speedway::GetMode0ZoomAdjustment(const NormalizedCoords& coords,
 }
 
 inline auto Speedway::GetMode1ZoomAdjustment(const NormalizedCoords& coords,
-                                             const float sqDistFromZero) const noexcept
-    -> Point2dFlt
+                                             const float sqDistFromZero) const noexcept -> Vec2dFlt
 {
   auto xAdd = -1.0F;
   if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_RANDOM_X_ADD))
@@ -138,8 +136,7 @@ inline auto Speedway::GetMode1ZoomAdjustment(const NormalizedCoords& coords,
 }
 
 inline auto Speedway::GetMode2ZoomAdjustment(const NormalizedCoords& coords,
-                                             const float sqDistFromZero) const noexcept
-    -> Point2dFlt
+                                             const float sqDistFromZero) const noexcept -> Vec2dFlt
 {
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 

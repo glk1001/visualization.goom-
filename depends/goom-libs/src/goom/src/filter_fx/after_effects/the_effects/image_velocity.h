@@ -31,10 +31,11 @@ private:
 inline auto ImageVelocity::GetVelocity(const CoordsAndVelocity& coordsAndVelocity) const
     -> NormalizedCoords
 {
-  return coordsAndVelocity.velocity +
-         NormalizedCoords{
-             m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(
-                 coordsAndVelocity.coords)};
+  const auto displacementVector =
+      m_imageDisplacementList.GetCurrentImageDisplacement().GetDisplacementVector(
+          coordsAndVelocity.coords);
+
+  return coordsAndVelocity.velocity + NormalizedCoords{displacementVector.x, displacementVector.y};
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

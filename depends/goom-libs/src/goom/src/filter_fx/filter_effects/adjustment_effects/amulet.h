@@ -18,7 +18,7 @@ public:
   auto SetRandomParams() noexcept -> void override;
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-      -> Point2dFlt override;
+      -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
@@ -35,17 +35,17 @@ protected:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
-  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
 
-inline auto Amulet::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+inline auto Amulet::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
 
-inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto sqDistFromZero = SqDistanceFromZero(coords);
 

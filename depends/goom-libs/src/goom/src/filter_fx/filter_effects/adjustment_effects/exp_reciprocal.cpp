@@ -97,14 +97,14 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
   });
 }
 
-auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
 
-auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -> Point2dFlt
+auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   Expects(m_params.viewport.GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
 

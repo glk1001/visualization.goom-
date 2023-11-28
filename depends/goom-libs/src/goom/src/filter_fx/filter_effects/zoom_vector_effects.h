@@ -38,10 +38,10 @@ public:
 
   auto SetFilterSettings(const FilterEffectsSettings& filterEffectsSettings) noexcept -> void;
 
-  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 
   [[nodiscard]] auto GetMultiplierEffect(const NormalizedCoords& coords,
-                                         const Point2dFlt& zoomAdjustment) const noexcept
+                                         const Vec2dFlt& zoomAdjustment) const noexcept
       -> Point2dFlt;
 
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
@@ -67,8 +67,8 @@ private:
   [[nodiscard]] static constexpr auto GetBaseZoomAdjustment(float baseZoomAdjustmentFactor,
                                                             float relativeSpeed) noexcept -> float;
 
-  [[nodiscard]] auto GetClampedZoomAdjustment(const Point2dFlt& zoomCoeffs) const noexcept
-      -> Point2dFlt;
+  [[nodiscard]] auto GetClampedZoomAdjustment(const Vec2dFlt& zoomCoeffs) const noexcept
+      -> Vec2dFlt;
   [[nodiscard]] auto GetClampedZoomAdjustment(float zoomAdjustment) const noexcept -> float;
 
   [[nodiscard]] auto GetZoomAdjustmentNameValueParams() const noexcept -> UTILS::NameValuePairs;
@@ -134,7 +134,7 @@ constexpr auto ZoomVectorEffects::GetBaseZoomAdjustment(const float baseZoomAdju
 }
 
 inline auto ZoomVectorEffects::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
-    -> Point2dFlt
+    -> Vec2dFlt
 {
   // Amulet 2
   // vx = X * tan(dist);
@@ -143,8 +143,8 @@ inline auto ZoomVectorEffects::GetZoomAdjustment(const NormalizedCoords& coords)
       m_filterEffectsSettings->zoomAdjustmentEffect->GetZoomAdjustment(coords));
 }
 
-inline auto ZoomVectorEffects::GetClampedZoomAdjustment(const Point2dFlt& zoomCoeffs) const noexcept
-    -> Point2dFlt
+inline auto ZoomVectorEffects::GetClampedZoomAdjustment(const Vec2dFlt& zoomCoeffs) const noexcept
+    -> Vec2dFlt
 {
   return {GetClampedZoomAdjustment(zoomCoeffs.x), GetClampedZoomAdjustment(zoomCoeffs.y)};
 }
