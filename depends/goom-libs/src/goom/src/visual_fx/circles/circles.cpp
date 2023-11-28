@@ -10,7 +10,6 @@
 #include "helper.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/parametric_functions2d.h"
-#include "utils/math/paths.h"
 #include "visual_fx/fx_helper.h"
 
 #include <algorithm>
