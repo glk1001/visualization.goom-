@@ -7,4 +7,4 @@ function get_docker_build_image()
 }
 
 declare -r DOCKER_BUILD_OS_TYPE=ubuntu
-declare -r DOCKER_BUILD_OS_TAG=kinetic
+declare -r DOCKER_BUILD_OS_TAG=23.04
