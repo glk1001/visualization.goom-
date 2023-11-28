@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_fx/common_types.h"
+#include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/point2d.h"
@@ -29,6 +30,7 @@ public:
   {
     Viewport viewport;
     Amplitude amplitude;
+    FILTER_UTILS::LerpToOneTs lerpToOneTs;
     bool noInverseSquare;
     std::complex<float> magnifyAndRotate;
     bool useNormalizedAmplitude;
