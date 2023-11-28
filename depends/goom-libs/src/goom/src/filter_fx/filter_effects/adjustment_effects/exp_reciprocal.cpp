@@ -2,6 +2,7 @@
 
 #include "exp_reciprocal.h"
 
+#include "complex_utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
@@ -12,7 +13,6 @@
 #include <cmath>
 #include <complex>
 #include <cstdint>
-#include <limits>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -20,8 +20,8 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::GetTriangle;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::TWO_PI;
 
 static constexpr auto DEFAULT_VIEWPORT = Viewport{};
@@ -39,9 +39,10 @@ static constexpr auto RECIPROCAL_EXPONENT_RANGE   = IGoomRand::NumberRange<uint3
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
 static constexpr auto MODULATOR_PERIOD_RANGE   = IGoomRand::NumberRange<float>{1.0F, 100.0F};
 
-static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.95F;
-static constexpr auto PROB_NO_INVERSE_SQUARE      = 0.90F;
-static constexpr auto PROB_USE_MODULATOR_CONTOURS = 0.01F;
+static constexpr auto PROB_AMPLITUDES_EQUAL         = 0.95F;
+static constexpr auto PROB_NO_INVERSE_SQUARE        = 0.50F;
+static constexpr auto PROB_USE_NORMALIZED_AMPLITUDE = 0.50F;
+static constexpr auto PROB_USE_MODULATOR_CONTOURS   = 0.10F;
 
 static constexpr auto VIEWPORT_RECTANGLES = std::array{
     Viewport::Rectangle{{-1.99F, -1.99F}, {1.99F, 1.99F}},
@@ -57,6 +58,7 @@ ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
         true,
         DEFAULT_MAGNIFY_AND_ROTATE,
+        false,
         DEFAULT_RECIPROCAL_EXPONENT,
         false,
         DEFAULT_MODULATOR_PERIOD,
@@ -74,7 +76,8 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
                               ? xAmplitude
                               : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
 
-  const auto noInverseSquare = m_goomRand->ProbabilityOf(PROB_NO_INVERSE_SQUARE);
+  const auto noInverseSquare        = m_goomRand->ProbabilityOf(PROB_NO_INVERSE_SQUARE);
+  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf(PROB_USE_NORMALIZED_AMPLITUDE);
 
   const auto rotate  = std::polar(1.0F, m_goomRand->GetRandInRange(ROTATE_RANGE));
   const auto magnify = m_goomRand->GetRandInRange(MAGNIFY_RANGE);
@@ -91,6 +94,7 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
       {xAmplitude, yAmplitude},
       noInverseSquare,
       magnify * rotate,
+      useNormalizedAmplitude,
       reciprocalExponent,
       useModulatorContours,
       modulatorPeriod,
@@ -113,7 +117,7 @@ auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -
 
   if (sqDistFromZero < UTILS::MATH::SMALL_FLOAT)
   {
-    return GetBaseZoomAdjustment();
+    return {0.0F, 0.0F};
   }
 
   const auto zOffset = std::complex<FltCalcType>{};
@@ -125,58 +129,29 @@ auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -
   const auto fz      = std::exp(ONE / std::pow(z, m_params.reciprocalExponent));
   const auto absSqFz = std::norm(fz);
 
-  if (absSqFz < static_cast<FltCalcType>(UTILS::MATH::SMALL_FLOAT))
+  if (absSqFz < SMALL_FLT)
   {
-    return GetBaseZoomAdjustment();
+    return {0.0F, 0.0F};
+  }
+  if (not m_params.useNormalizedAmplitude)
+  {
+    return {m_params.amplitude.x * static_cast<float>(fz.real()),
+            m_params.amplitude.y * static_cast<float>(fz.imag())};
   }
 
-  const auto phase = GetAdjustedPhase(fz, sqDistFromZero);
+  const auto normalizedAmplitude =
+      GetNormalizedAmplitude(m_params.amplitude, m_params.noInverseSquare, fz, sqDistFromZero);
 
   if (not m_params.useModulatorContours)
   {
-    return {GetBaseZoomAdjustment().x + static_cast<float>(phase.real()),
-            GetBaseZoomAdjustment().y + static_cast<float>(phase.imag())};
+    return {static_cast<float>(normalizedAmplitude.real()),
+            static_cast<float>(normalizedAmplitude.imag())};
   }
 
-  const auto modulatedPhase = GetModulatedPhase(phase, absSqFz);
+  const auto modulatedValue =
+      GetModulatedValue(absSqFz, normalizedAmplitude, m_params.modulatorPeriod);
 
-  return {GetBaseZoomAdjustment().x + static_cast<float>(modulatedPhase.real()),
-          GetBaseZoomAdjustment().y + static_cast<float>(modulatedPhase.imag())};
-}
-
-inline auto ExpReciprocal::GetAdjustedPhase(const std::complex<FltCalcType>& fz,
-                                            const float sqDistFromZero) const noexcept
-    -> std::complex<FltCalcType>
-{
-  const auto phase = std::polar(ONE, std::arg(fz));
-
-  const auto realPhasePart = static_cast<FltCalcType>(m_params.amplitude.x) * phase.real();
-  const auto imagPhasePart = static_cast<FltCalcType>(m_params.amplitude.y) * phase.imag();
-
-  if (m_params.noInverseSquare)
-  {
-    return {realPhasePart, imagPhasePart};
-  }
-
-  static constexpr auto MIN_LOG_ARG = static_cast<FltCalcType>(1.5F);
-  const auto inverseLogSqDistFromZero =
-      ONE / std::log(MIN_LOG_ARG + static_cast<FltCalcType>(sqDistFromZero));
-
-  return {inverseLogSqDistFromZero * realPhasePart, inverseLogSqDistFromZero * imagPhasePart};
-}
-
-inline auto ExpReciprocal::GetModulatedPhase(const std::complex<FltCalcType>& phase,
-                                             const FltCalcType absSqFz) const noexcept
-    -> std::complex<FltCalcType>
-{
-  static constexpr auto MAX_ABS_SQ_FZ = static_cast<FltCalcType>(std::numeric_limits<float>::max());
-  static constexpr auto MAX_LOG_VAL   = static_cast<FltCalcType>(1000.0F);
-  const auto logAbsSqFz               = absSqFz > MAX_ABS_SQ_FZ ? MAX_LOG_VAL : std::log(absSqFz);
-
-  const auto logAbsFzModulator = static_cast<FltCalcType>(
-      GetTriangle(static_cast<float>(logAbsSqFz), m_params.modulatorPeriod));
-
-  return logAbsFzModulator * phase;
+  return {static_cast<float>(modulatedValue.real()), static_cast<float>(modulatedValue.imag())};
 }
 
 auto ExpReciprocal::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

@@ -31,6 +31,7 @@ public:
     Amplitude amplitude;
     bool noInverseSquare;
     std::complex<float> magnifyAndRotate;
+    bool useNormalizedAmplitude;
     float reciprocalExponent;
     bool useModulatorContours;
     float modulatorPeriod;
@@ -43,15 +44,7 @@ protected:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
-  using FltCalcType         = double;
-  static constexpr auto ONE = static_cast<FltCalcType>(1.0F);
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
-  [[nodiscard]] auto GetAdjustedPhase(const std::complex<FltCalcType>& fz,
-                                      float sqDistFromZero) const noexcept
-      -> std::complex<FltCalcType>;
-  [[nodiscard]] auto GetModulatedPhase(const std::complex<FltCalcType>& phase,
-                                       FltCalcType absSqFz) const noexcept
-      -> std::complex<FltCalcType>;
 };
 
 inline auto ExpReciprocal::GetParams() const noexcept -> const Params&
