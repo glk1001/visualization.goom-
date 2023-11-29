@@ -46,6 +46,7 @@ public:
   auto ReleaseAfterConsume(size_t slot) noexcept -> void;
   auto Consume(uint32_t waitMs) noexcept -> void;
 
+  [[nodiscard]] auto GetConsumeRequests() const noexcept -> uint64_t;
   [[nodiscard]] auto GetNumTimesConsumerGaveUpWaiting() const noexcept -> uint64_t;
 
   using ProduceItemFunc = std::function<void(size_t slot, const TResource& resource)>;
@@ -76,6 +77,7 @@ private:
   ProduceItemFunc m_produceItem{};
   ProduceItemWithoutResourceFunc m_produceItemWithoutResource{};
   ConsumeItemFunc m_consumeItem{};
+  uint64_t m_numConsumeRequests            = 0U;
   uint64_t m_numTimesConsumerGaveUpWaiting = 0U;
 };
 
@@ -233,7 +235,14 @@ auto SlotProducerConsumer<TResource>::Consume(const uint32_t waitMs) noexcept ->
 }
 
 template<typename TResource>
-auto SlotProducerConsumer<TResource>::GetNumTimesConsumerGaveUpWaiting() const noexcept -> uint64_t
+inline auto SlotProducerConsumer<TResource>::GetConsumeRequests() const noexcept -> uint64_t
+{
+  return m_numConsumeRequests;
+}
+
+template<typename TResource>
+inline auto SlotProducerConsumer<TResource>::GetNumTimesConsumerGaveUpWaiting() const noexcept
+    -> uint64_t
 {
   return m_numTimesConsumerGaveUpWaiting;
 }
@@ -243,8 +252,12 @@ auto SlotProducerConsumer<TResource>::ConsumeWithoutRelease(const uint32_t waitM
 {
   auto lock = std::unique_lock<std::mutex>{m_mutex};
 
+  ++m_numConsumeRequests;
 #ifdef DEBUG_LOGGING
-  LogInfo(*m_goomLogger, "### Consumer '{}' consuming item.", m_name);
+  LogInfo(*m_goomLogger,
+          "### Consumer '{}' consuming item. Consume request {}.",
+          m_name,
+          m_numConsumeRequests);
 #endif
 
   if (m_inUseSlotsQueue.empty())

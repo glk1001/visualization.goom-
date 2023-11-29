@@ -132,7 +132,7 @@ auto GoomVisualization::SetWindowDimensions(const WindowDimensions& windowDimens
   m_glScene->Resize(windowDimensions);
 }
 
-auto GoomVisualization::SetShowSongTitle(ShowSongTitleType showMusicTitleType) -> void
+auto GoomVisualization::SetShowSongTitle(const ShowSongTitleType showMusicTitleType) -> void
 {
   m_goomControl->SetShowSongTitle(showMusicTitleType);
 }
@@ -207,15 +207,18 @@ auto GoomVisualization::Stop() -> void
 
   m_started = false;
 
-  LogInfo(*m_goomLogger, "Goom visualization stopping.");
+  LogInfo(*m_goomLogger, "Goom visualization stopping...");
 
-  LogInfo(*m_goomLogger, "Slot producer consumer thread stopping.");
+  LogInfo(*m_goomLogger, "Slot producer consumer thread stopping...");
   m_slotProducerConsumer.Stop();
   m_slotProducerConsumerThread.join();
+  LogInfo(*m_goomLogger, "Slot producer consumer thread stopped.");
 
   m_goomControl->Finish();
 
   m_glScene->DestroyScene();
+
+  LogInfo(*m_goomLogger, "Goom visualization stopped.");
 
   LogProducerConsumerSummary();
 }
@@ -224,12 +227,23 @@ auto GoomVisualization::LogProducerConsumerSummary() -> void
 {
   LogInfo(*m_goomLogger, "Number of items produced: {}.", m_numItemsProduced);
   LogInfo(*m_goomLogger,
+          "Number of consume requests: {}.",
+          m_slotProducerConsumer.GetConsumeRequests());
+  LogInfo(*m_goomLogger,
           "Average produce item time = {:.1f}ms.",
           m_totalProductionTimeInMs / static_cast<double>(m_numItemsProduced));
   LogInfo(*m_goomLogger, "Number of dropped audio samples: {}.", m_numberOfDroppedAudioSamples);
+  const auto percentNumConsumerGaveUpWaiting =
+      m_slotProducerConsumer.GetConsumeRequests() == 0
+          ? 0U
+          : static_cast<uint32_t>(
+                100.0F *
+                static_cast<float>(m_slotProducerConsumer.GetNumTimesConsumerGaveUpWaiting()) /
+                static_cast<float>(m_slotProducerConsumer.GetConsumeRequests()));
   LogInfo(*m_goomLogger,
-          "Number of times consumer gave up waiting: {}.",
-          m_slotProducerConsumer.GetNumTimesConsumerGaveUpWaiting());
+          "Number of times consumer gave up waiting: {} ({}%).",
+          m_slotProducerConsumer.GetNumTimesConsumerGaveUpWaiting(),
+          percentNumConsumerGaveUpWaiting);
 }
 
 auto GoomVisualization::InitAudioValues(int32_t numChannels) noexcept -> void
