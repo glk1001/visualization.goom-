@@ -24,6 +24,7 @@ in vec2 texCoord;
 uniform float u_lerpFactor;
 uniform float u_buff2Buff3Mix = 0.1;
 uniform bool u_resetSrceFilterPosBuffers;
+uniform bool u_usePosBlender;
 uniform float u_pos1Pos2MixFreq;
 uniform uint u_time;
 
@@ -107,7 +108,9 @@ LerpedPositions GetLerpedPositions(ivec2 xy);
 TexelPositions GetTexelPositions(LerpedPositions lerpedPositions);
 void ResetImageSrceFilterBuffPositions(ivec2 xy, LerpedPositions lerpedPositions);
 float GetColorBlendTMix(vec2 uv, TexelPositions texelPositions);
+float GetPosBlendTMix();
 vec4 GetColorFromBlendedColors(TexelPositions filterBuff2Positions, float tMix);
+vec4 GetColorFromBlendedPos(TexelPositions filterBuff2Positions, float tMix);
 
 vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy)
 {
@@ -122,6 +125,10 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy)
 
   TexelPositions filterBuff2Positions = GetTexelPositions(lerpedPositions);
 
+  if (u_usePosBlender)
+  {
+    return GetColorFromBlendedPos(filterBuff2Positions, GetPosBlendTMix());
+  }
   return
       GetColorFromBlendedColors(filterBuff2Positions, GetColorBlendTMix(uv, filterBuff2Positions));
 }
@@ -226,6 +233,12 @@ float GetColorBlendTMix(vec2 uv, TexelPositions texelPositions)
   return GetUVDistAdjustedTMix(uv, texelPositions, SIN_T_MIX);
 }
 
+float GetPosBlendTMix()
+{
+  // Multiply by 'u_lerpFactor' to stop flicker.
+  return u_lerpFactor * GetSinTMix();
+}
+
 vec3 GetMixedColor(vec3 tMix, FilterBuffColors filterBuffColors)
 {
   // return mix(filterBuffColors.color1.rgb, filterBuffColors.color1.rgb, tMix);
@@ -240,4 +253,11 @@ vec4 GetColorFromBlendedColors(TexelPositions filterBuff2Positions, float tMix)
   float alpha = filterBuff2Colors.color1.a;
 
   return vec4(GetMixedColor(vec3(tMix), filterBuff2Colors), alpha);
+}
+
+vec4 GetColorFromBlendedPos(TexelPositions filterBuff2Positions, float tMix)
+{
+  vec2 filterBuff2Pos = mix(filterBuff2Positions.uv1, filterBuff2Positions.uv2, vec2(tMix));
+
+  return texture(tex_filterBuff2, filterBuff2Pos);
 }
