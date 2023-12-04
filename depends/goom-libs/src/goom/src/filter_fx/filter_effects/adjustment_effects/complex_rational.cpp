@@ -47,7 +47,10 @@ static constexpr auto PROB_USE_INNER_ZEROES            = 0.25F;
 
 ComplexRational::ComplexRational(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_params{{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+    m_randomViewport{goomRand},
+    m_params{
+        Viewport{},
+        {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
         DEFAULT_LERP_TO_ONE_T_S,
         true,
         false,
@@ -75,15 +78,16 @@ auto ComplexRational::GetZoomAdjustment(const NormalizedCoords& coords) const no
 
 auto ComplexRational::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  const auto sqDistFromZero = SqDistanceFromZero(coords);
+  const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
+  const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
 
   if (sqDistFromZero < SMALL_FLOAT)
   {
     return {0.0F, 0.0F};
   }
 
-  const auto z       = std::complex<FltCalcType>{static_cast<FltCalcType>(coords.GetX()),
-                                                 static_cast<FltCalcType>(coords.GetY())};
+  const auto z       = std::complex<FltCalcType>{static_cast<FltCalcType>(viewportCoords.GetX()),
+                                                 static_cast<FltCalcType>(viewportCoords.GetY())};
   const auto fz      = GetPolyValue(z);
   const auto absSqFz = std::norm(fz);
 
@@ -142,6 +146,8 @@ auto ComplexRational::GetProduct(const std::complex<FltCalcType>& z,
 
 auto ComplexRational::SetRandomParams() noexcept -> void
 {
+  const auto viewport = m_randomViewport.GetRandomViewport();
+
   const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
                               ? xAmplitude
@@ -161,6 +167,7 @@ auto ComplexRational::SetRandomParams() noexcept -> void
 
   const auto zeroesAndPoles = GetNextZeroesAndPoles();
   SetParams({
+      viewport,
       { xAmplitude,  yAmplitude},
       {xLerpToOneT, yLerpToOneT},
       noInverseSquare,
@@ -294,6 +301,16 @@ auto ComplexRational::GetZoomAdjustmentEffectNameValueParams() const noexcept ->
       GetPair(fullParamGroup, "noInverseSquare", m_params.noInverseSquare),
       GetPair(fullParamGroup, "useNormalizedAmp", m_params.useNormalizedAmplitude),
       GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
+      GetPair(PARAM_GROUP,
+              "viewport0",
+              m_params.viewport
+                  .GetViewportCoords({NormalizedCoords::MIN_COORD, NormalizedCoords::MIN_COORD})
+                  .GetFltCoords()),
+      GetPair(PARAM_GROUP,
+              "viewport1",
+              m_params.viewport
+                  .GetViewportCoords({NormalizedCoords::MAX_COORD, NormalizedCoords::MAX_COORD})
+                  .GetFltCoords()),
   };
 }
 

@@ -45,6 +45,7 @@ protected:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
+  FILTER_UTILS::RandomViewport m_randomViewport;
   Params m_params;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };

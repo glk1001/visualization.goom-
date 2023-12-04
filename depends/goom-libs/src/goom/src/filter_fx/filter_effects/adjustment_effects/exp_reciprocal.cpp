@@ -10,7 +10,6 @@
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
 
-#include <array>
 #include <cmath>
 #include <complex>
 #include <cstdint>
@@ -20,14 +19,13 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using FILTER_UTILS::GetVelocityByZoomLerpedToOne;
 using FILTER_UTILS::LerpToOneTs;
+using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::TWO_PI;
-
-static constexpr auto DEFAULT_VIEWPORT = Viewport{};
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.01F, 0.11F};
@@ -45,23 +43,24 @@ static constexpr auto RECIPROCAL_EXPONENT_RANGE   = IGoomRand::NumberRange<uint3
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
 static constexpr auto MODULATOR_PERIOD_RANGE   = IGoomRand::NumberRange<float>{1.0F, 100.0F};
 
+static constexpr auto VIEWPORT_MIN_X_WIDTH  = 0.1F;
+static constexpr auto VIEWPORT_MIN_Y_HEIGHT = 0.1F;
+static constexpr auto VIEWPORT_MAX_X_WIDTH =
+    NormalizedCoords::COORD_WIDTH - RandomViewport::TWO_MARGINS;
+static constexpr auto VIEWPORT_MAX_Y_HEIGHT =
+    NormalizedCoords::COORD_WIDTH - RandomViewport::TWO_MARGINS;
+
 static constexpr auto PROB_AMPLITUDES_EQUAL         = 0.95F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL    = 0.95F;
 static constexpr auto PROB_NO_INVERSE_SQUARE        = 0.50F;
 static constexpr auto PROB_USE_NORMALIZED_AMPLITUDE = 0.50F;
 static constexpr auto PROB_USE_MODULATOR_CONTOURS   = 0.10F;
 
-static constexpr auto VIEWPORT_RECTANGLES = std::array{
-    Viewport::Rectangle{{-1.99F, -1.99F}, {1.99F, 1.99F}},
-    Viewport::Rectangle{{-1.00F, -1.00F}, {1.00F, 1.00F}},
-    Viewport::Rectangle{    {0.5F, 0.5F},   {2.0F, 2.0F}},
-    Viewport::Rectangle{ {0.30F, -0.10F}, {0.70F, 0.10F}},
-};
-
 ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
+    m_randomViewport{goomRand},
     m_params{
-        DEFAULT_VIEWPORT,
+        Viewport{},
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
         DEFAULT_LERP_TO_ONE_T_S,
         true,
@@ -72,12 +71,13 @@ ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
         DEFAULT_MODULATOR_PERIOD,
     }
 {
+  m_randomViewport.SetMinMaxXWidths({VIEWPORT_MIN_X_WIDTH, VIEWPORT_MAX_X_WIDTH});
+  m_randomViewport.SetMinMaxYHeights({VIEWPORT_MIN_Y_HEIGHT, VIEWPORT_MAX_Y_HEIGHT});
 }
 
 auto ExpReciprocal::SetRandomParams() noexcept -> void
 {
-  const auto viewport = Viewport{VIEWPORT_RECTANGLES.at(
-      m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(VIEWPORT_RECTANGLES.size())))};
+  const auto viewport = m_randomViewport.GetRandomViewport();
 
   const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
@@ -133,8 +133,6 @@ auto ExpReciprocal::GetZoomAdjustment(const NormalizedCoords& coords) const noex
 
 auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  Expects(m_params.viewport.GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
-
   const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
   const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
 

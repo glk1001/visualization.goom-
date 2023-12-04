@@ -127,7 +127,7 @@ add_library(goom
             src/filter_fx/filter_effects/zoom_vector_effects.cpp
             src/filter_fx/filter_utils/image_displacement.cpp
             src/filter_fx/filter_utils/image_displacement_list.cpp
-            src/filter_fx/filter_utils/utils.h
+            src/filter_fx/filter_utils/utils.cpp
             src/filter_fx/filter_consts.h
             src/filter_fx/filter_buffers.cpp
             src/filter_fx/filter_buffers_service.cpp

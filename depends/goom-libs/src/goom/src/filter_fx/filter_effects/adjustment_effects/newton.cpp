@@ -7,7 +7,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
-#include <array>
 #include <cmath>
 #include <complex>
 #include <cstdint>
@@ -21,8 +20,6 @@ using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
-
-static constexpr auto DEFAULT_VIEWPORT = Viewport{};
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.01F, 0.11F};
@@ -58,17 +55,11 @@ static constexpr auto PROB_Z_SIN_AMPLITUDES_EQUAL = 0.95F;
 static constexpr auto PROB_POLY_SIN_FUNC          = 0.5F;
 static constexpr auto PROB_USE_SQ_DIST_DENOM      = 0.1F;
 
-static constexpr auto VIEWPORT_RECTANGLES = std::array{
-    Viewport::Rectangle{{-1.99F, -1.99F}, {1.99F, 1.99F}},
-    Viewport::Rectangle{{-1.00F, -1.00F}, {1.00F, 1.00F}},
-    Viewport::Rectangle{    {0.5F, 0.5F},   {2.0F, 2.0F}},
-    Viewport::Rectangle{ {0.30F, -0.10F}, {0.70F, 0.10F}},
-};
-
 Newton::Newton(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
+    m_randomViewport{goomRand},
     m_params{
-        DEFAULT_VIEWPORT,
+        Viewport{},
         DEFAULT_EXPONENT,
         {static_cast<FltCalcType>(DEFAULT_A_REAL),
          static_cast<FltCalcType>(DEFAULT_A_IMAG)},
@@ -86,8 +77,7 @@ Newton::Newton(const IGoomRand& goomRand) noexcept
 
 auto Newton::SetRandomParams() noexcept -> void
 {
-  const auto viewport = Viewport{VIEWPORT_RECTANGLES.at(
-      m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(VIEWPORT_RECTANGLES.size())))};
+  const auto viewport = m_randomViewport.GetRandomViewport();
 
   const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
@@ -146,8 +136,6 @@ auto Newton::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept ->
 
 auto Newton::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  Expects(m_params.viewport.GetViewportWidth() != NormalizedCoords::COORD_WIDTH);
-
   const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
   const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
 
