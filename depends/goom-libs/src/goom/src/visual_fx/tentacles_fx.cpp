@@ -1,34 +1,33 @@
 //#undef NO_LOGGING
+#define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
+
+#include "tentacles_fx.h"
 
 #include "color/color_maps.h"
+#include "color/random_color_maps.h"
+#include "draw/goom_draw.h"
+#include "fx_helper.h"
+#include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
-#include "goom_visual_fx.h"
-
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <string>
-#define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
-
-#include "color/random_color_maps.h"
-#include "draw/goom_draw.h"
-#include "fx_helper.h"
-#include "goom/goom_config.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
+#include "goom_visual_fx.h"
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
-#include "tentacles_fx.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
 #include "visual_fx/fx_utils/random_pixel_blender.h"
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 #include <vector>
 
 namespace GOOM::VISUAL_FX

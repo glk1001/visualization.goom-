@@ -10,7 +10,6 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "helper.h"
@@ -64,8 +63,7 @@ public:
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  const GoomTime* m_goomTime;
+  const FxHelper* m_fxHelper;
   Helper m_helper;
   DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer;
 

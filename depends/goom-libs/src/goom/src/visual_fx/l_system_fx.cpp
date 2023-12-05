@@ -27,12 +27,10 @@
 namespace GOOM::VISUAL_FX
 {
 
-using DRAW::IGoomDraw;
 using FX_UTILS::RandomPixelBlender;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
 
 using ::LSYS::SetRandFunc;
 
@@ -69,9 +67,7 @@ private:
   static inline const std::vector<LSystem::LSystemFile> L_SYS_FILE_LIST = GetLSystemFileList();
   static inline const auto NUM_L_SYSTEMS = static_cast<uint32_t>(L_SYS_FILE_LIST.size());
   std::vector<std::unique_ptr<LSystem>> m_lSystems;
-  [[nodiscard]] static auto GetLSystems(IGoomDraw& draw,
-                                        const PluginInfo& goomInfo,
-                                        const IGoomRand& goomRand,
+  [[nodiscard]] static auto GetLSystems(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory,
                                         PixelChannelType defaultAlpha) noexcept
       -> std::vector<std::unique_ptr<LSystem>>;
@@ -157,11 +153,7 @@ LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
                                         const std::string& resourcesDirectory)
   : m_fxHelper{&fxHelper},
     m_pixelBlender{*fxHelper.goomRand},
-    m_lSystems{GetLSystems(*fxHelper.draw,
-                           *m_fxHelper->goomInfo,
-                           *m_fxHelper->goomRand,
-                           resourcesDirectory,
-                           m_defaultAlpha)}
+    m_lSystems{GetLSystems(fxHelper, resourcesDirectory, m_defaultAlpha)}
 {
 }
 
@@ -289,9 +281,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
   return lSysFileList;
 }
 
-auto LSystemFx::LSystemFxImpl::GetLSystems(IGoomDraw& draw,
-                                           const PluginInfo& goomInfo,
-                                           const IGoomRand& goomRand,
+auto LSystemFx::LSystemFxImpl::GetLSystems(const FxHelper& fxHelper,
                                            const std::string& resourcesDirectory,
                                            const PixelChannelType defaultAlpha) noexcept
     -> std::vector<std::unique_ptr<LSystem>>
@@ -301,7 +291,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystems(IGoomDraw& draw,
   for (const auto& lSysFile : L_SYS_FILE_LIST)
   {
     lSystem.emplace_back(std::make_unique<LSystem>(
-        draw, goomInfo, goomRand, GetLSystemDirectory(resourcesDirectory), lSysFile, defaultAlpha));
+        fxHelper, GetLSystemDirectory(resourcesDirectory), lSysFile, defaultAlpha));
   }
 
   return lSystem;
