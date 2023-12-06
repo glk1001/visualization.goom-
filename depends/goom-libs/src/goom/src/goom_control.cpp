@@ -38,6 +38,8 @@
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
 #include "utils/debugging_logger.h"
+#include "utils/graphics/blend2d_to_goom.h"
+#include "utils/graphics/pixel_blend.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand.h"
 #include "utils/parallel_utils.h"
@@ -85,6 +87,8 @@ using UTILS::Stopwatch;
 using UTILS::StringSplit;
 using UTILS::Timer;
 using UTILS::TValue;
+using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
+using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::IsBetween;
@@ -142,7 +146,12 @@ private:
   GoomControlLogger* m_goomLogger;
   GoomRand m_goomRand{};
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
+  Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers{
+      m_multiBufferDraw, m_goomInfo.GetDimensions(), GetColorAlphaNoAddBlend};
   FxHelper m_fxHelper;
+
+  auto Blend2dClearAll() -> void;
+  auto AddBlend2dImagesToGoomBuffers() -> void;
 
   FrameData* m_frameData = nullptr;
   auto UpdateFrameData() -> void;
@@ -321,7 +330,11 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
   : m_parentGoomControl{&parentGoomControl},
     m_goomInfo{dimensions, m_goomTime, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
-    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, *m_goomLogger},
+    m_fxHelper{m_multiBufferDraw,
+               m_goomInfo,
+               m_goomRand,
+               *m_goomLogger,
+               m_blend2dDoubleGoomBuffers.GetBlend2dContexts()},
     m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
     m_filterBuffersService{m_goomInfo,
                            m_normalizedCoordsConverter,
@@ -334,6 +347,16 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
   UTILS::SetGoomLogger(*m_goomLogger);
+}
+
+inline auto GoomControl::GoomControlImpl::Blend2dClearAll() -> void
+{
+  m_blend2dDoubleGoomBuffers.Blend2dClearAll();
+}
+
+inline auto GoomControl::GoomControlImpl::AddBlend2dImagesToGoomBuffers() -> void
+{
+  m_blend2dDoubleGoomBuffers.UpdateGoomBuffers();
 }
 
 inline auto GoomControl::GoomControlImpl::GetUpdateNum() const -> uint64_t
@@ -569,10 +592,10 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
 
   UpdateTransformBuffer();
 
+  Blend2dClearAll();
+
   ApplyStateToImageBuffers(soundData);
   ApplyEndEffectIfNearEnd();
-
-  UpdateFrameData();
 
   DisplayTitleAndMessages(message);
   DisplayGoomState();
@@ -580,6 +603,10 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
 #ifdef DO_GOOM_STATE_DUMP
   UpdateGoomStateDump();
 #endif
+
+  AddBlend2dImagesToGoomBuffers();
+
+  UpdateFrameData();
 }
 
 inline auto GoomControl::GoomControlImpl::NewCycle() -> void

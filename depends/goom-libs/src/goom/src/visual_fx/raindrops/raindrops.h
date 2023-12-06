@@ -11,11 +11,8 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "raindrop_positions.h"
-#include "utils/graphics/blend2d_to_goom.h"
 #include "utils/t_values.h"
 
-#include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
-#include <blend2d/context.h>
 #include <cstdint>
 #include <vector>
 
@@ -54,16 +51,6 @@ private:
   DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer;
   Pixel m_mainWeightPointColor{};
   Pixel m_lowWeightPointColor{};
-
-  UTILS::GRAPHICS::Blend2dToGoom m_blend2dToMainBuffer;
-  UTILS::GRAPHICS::Blend2dToGoom m_blend2dToLowBuffer;
-  static auto FillCircle(BLContext& blend2dContext,
-                         const Pixel& color,
-                         float brightness,
-                         const Point2dInt& centre,
-                         double radius) noexcept -> void;
-  auto AddBlend2dImagesToGoomBuffers() -> void;
-  auto Blend2dClearAll() -> void;
 
   static constexpr auto RADIUS_TO_RECT_SIDE_FRAC       = 1.0F / 50.0F;
   static constexpr auto MIN_TO_MAX_RADIUS_FRAC         = 1.0F / 50.0F;

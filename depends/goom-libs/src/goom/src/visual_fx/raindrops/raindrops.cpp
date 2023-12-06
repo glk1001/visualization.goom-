@@ -6,24 +6,19 @@
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/goom_draw_to_buffer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/math20.h"
 #include "goom/point2d.h"
 #include "utils/graphics/blend2d_to_goom.h"
-#include "utils/graphics/pixel_blend.h"
+#include "utils/graphics/blend2d_utils.h"
 #include "utils/graphics/point_utils.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "visual_fx/fx_helper.h"
 
 #include <algorithm>
-#include <array>
-#include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
-#include <blend2d/context.h>
-#include <blend2d/rgba.h>
 #include <cstdint>
 #include <vector>
 
@@ -36,8 +31,7 @@ using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using UTILS::IncrementedValue;
 using UTILS::TValue;
-using UTILS::GRAPHICS::Blend2dToGoom;
-using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
+using UTILS::GRAPHICS::FillCircleWithGradient;
 using UTILS::GRAPHICS::GetMinSideLength;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::MATH::U_HALF;
@@ -54,8 +48,6 @@ Raindrops::Raindrops(FxHelper& fxHelper,
     m_randomLowColorMaps{randomLowColorMaps},
     m_circleDrawer{fxHelper.GetDraw()},
     m_lineDrawer{fxHelper.GetDraw()},
-    m_blend2dToMainBuffer{fxHelper.GetDimensions(), GetColorAlphaNoAddBlend},
-    m_blend2dToLowBuffer{fxHelper.GetDimensions(), GetColorAlphaNoAddBlend},
     m_raindropParams{GetNewRaindropParams(rectangle2D)},
     m_raindropPositions{fxHelper,
                         GetAcceptableNumRaindrops(numRaindrops),
@@ -244,15 +236,11 @@ auto Raindrops::SetWeightedColorMaps(const WeightedRandomColorMaps& randomMainCo
 
 auto Raindrops::DrawRaindrops() noexcept -> void
 {
-  Blend2dClearAll();
-
   DrawCircleAroundWeightPoint();
 
   std::for_each(begin(m_raindrops),
                 end(m_raindrops),
                 [this](auto& raindrop) { DrawRaindrop(raindrop, GetRaindropColors(raindrop)); });
-
-  AddBlend2dImagesToGoomBuffers();
 }
 
 auto Raindrops::GetRaindropColors(const Raindrop& raindrop) const noexcept -> DRAW::MultiplePixels
@@ -294,68 +282,17 @@ auto Raindrops::GetRaindropColors(const Raindrop& raindrop) const noexcept -> DR
   return {mainColor, lowColor};
 }
 
-auto Raindrops::FillCircle(BLContext& blend2dContext,
-                           const Pixel& color,
-                           const float brightness,
-                           const Point2dInt& centre,
-                           const double radius) noexcept -> void
-{
-  auto radialGradient = BLGradient{BLRadialGradientValues(static_cast<double>(centre.x),
-                                                          static_cast<double>(centre.y),
-                                                          static_cast<double>(centre.x),
-                                                          static_cast<double>(centre.y),
-                                                          radius)};
-  struct RadialStop
-  {
-    double offset;
-    float brightnessFactor;
-  };
-  static constexpr auto RADIAL_STOPS = std::array{
-      RadialStop{0.0, 0.25F},
-      RadialStop{0.5, 0.50F},
-      RadialStop{1.0, 1.00F},
-  };
-  for (const auto& stop : RADIAL_STOPS)
-  {
-    radialGradient.addStop(stop.offset,
-                           BLRgba32(Blend2dToGoom::GetBlend2dColor(
-                               GetBrighterColor(stop.brightnessFactor * brightness, color))));
-  }
-
-  blend2dContext.fillCircle(
-      static_cast<double>(centre.x), static_cast<double>(centre.y), radius, radialGradient);
-}
-
-auto Raindrops::Blend2dClearAll() -> void
-{
-  m_blend2dToMainBuffer.GetBlend2DBuffer().blend2dContext.clearAll();
-  m_blend2dToLowBuffer.GetBlend2DBuffer().blend2dContext.clearAll();
-}
-
-auto Raindrops::AddBlend2dImagesToGoomBuffers() -> void
-{
-  m_blend2dToMainBuffer.UpdateGoomBuffer(
-      dynamic_cast<DRAW::GoomDrawToTwoBuffers&>(m_fxHelper->GetDraw()).GetBuffer1());
-  m_blend2dToLowBuffer.UpdateGoomBuffer(
-      dynamic_cast<DRAW::GoomDrawToTwoBuffers&>(m_fxHelper->GetDraw()).GetBuffer2());
-}
-
 auto Raindrops::DrawCircleAroundWeightPoint() noexcept -> void
 {
   const auto position = m_raindropPositions.GetCurrentRectangleWeightPoint();
   const auto radius =
       static_cast<double>(WEIGHT_POINT_RADIUS_FRAC * m_raindropPositions.GetEnclosingRadius());
 
-  FillCircle(m_blend2dToMainBuffer.GetBlend2DBuffer().blend2dContext,
-             m_mainWeightPointColor,
-             WEIGHT_POINT_CIRCLE_BRIGHTNESS,
-             position,
-             radius);
-  FillCircle(m_blend2dToLowBuffer.GetBlend2DBuffer().blend2dContext,
-             m_lowWeightPointColor,
-             WEIGHT_POINT_CIRCLE_BRIGHTNESS,
-             position,
-             radius);
+  FillCircleWithGradient(m_fxHelper->GetBlend2dContexts(),
+                         {m_mainWeightPointColor, m_lowWeightPointColor},
+                         WEIGHT_POINT_CIRCLE_BRIGHTNESS,
+                         position,
+                         radius);
 }
 
 auto Raindrops::DrawRaindrop(const Raindrop& raindrop, const MultiplePixels& colors) noexcept
@@ -364,16 +301,7 @@ auto Raindrops::DrawRaindrop(const Raindrop& raindrop, const MultiplePixels& col
   const auto position = m_raindropPositions.GetPosition(raindrop.dropNum);
   const auto radius   = static_cast<double>(raindrop.growthRadius());
 
-  FillCircle(m_blend2dToMainBuffer.GetBlend2DBuffer().blend2dContext,
-             DRAW::GetMainColor(colors),
-             1.0F,
-             position,
-             radius);
-  FillCircle(m_blend2dToLowBuffer.GetBlend2DBuffer().blend2dContext,
-             DRAW::GetLowColor(colors),
-             1.0F,
-             position,
-             radius);
+  FillCircleWithGradient(m_fxHelper->GetBlend2dContexts(), colors, 1.0F, position, radius);
 
   m_lineDrawer.SetLineThickness(raindrop.lineThickness);
   m_lineDrawer.DrawLine(position,

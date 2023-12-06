@@ -1,6 +1,7 @@
 #include "blend2d_to_goom.h"
 
 #include "draw/goom_draw.h"
+#include "draw/goom_draw_to_buffer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -16,6 +17,39 @@
 
 namespace GOOM::UTILS::GRAPHICS
 {
+
+using DRAW::GoomDrawToTwoBuffers;
+
+Blend2dDoubleGoomBuffers::Blend2dDoubleGoomBuffers(
+    GoomDrawToTwoBuffers& draw,
+    const Dimensions& dimensions,
+    const DRAW::IGoomDraw::PixelBlendFunc& func) noexcept
+  : m_draw{&draw},
+    m_mainBuffer{dimensions, func},
+    m_lowBuffer{dimensions, func},
+    m_blend2DContexts{m_mainBuffer.GetBlend2DBuffer().blend2dContext,
+                      m_lowBuffer.GetBlend2DBuffer().blend2dContext,
+                      false}
+{
+}
+
+auto Blend2dDoubleGoomBuffers::Blend2dClearAll() -> void
+{
+  m_mainBuffer.GetBlend2DBuffer().blend2dContext.clearAll();
+  m_lowBuffer.GetBlend2DBuffer().blend2dContext.clearAll();
+  m_blend2DContexts.blend2dBuffersWereUsed = false;
+}
+
+auto Blend2dDoubleGoomBuffers::UpdateGoomBuffers() noexcept -> void
+{
+  if (not m_blend2DContexts.blend2dBuffersWereUsed)
+  {
+    return;
+  }
+
+  m_mainBuffer.UpdateGoomBuffer(m_draw->GetBuffer1());
+  m_lowBuffer.UpdateGoomBuffer(m_draw->GetBuffer2());
+}
 
 Blend2dToGoom::Blend2dToGoom(const Dimensions& dimensions,
                              const DRAW::IGoomDraw::PixelBlendFunc& func) noexcept

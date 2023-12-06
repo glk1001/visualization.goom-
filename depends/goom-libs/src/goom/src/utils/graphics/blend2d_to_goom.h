@@ -1,6 +1,7 @@
 #pragma once
 
 #include "draw/goom_draw.h"
+#include "draw/goom_draw_to_buffer.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 
@@ -72,6 +73,37 @@ private:
   [[nodiscard]] auto GetBlendedPixel(uint32_t blend2dColor, const Pixel& pixel) const noexcept
       -> Pixel;
 };
+
+struct Blend2dContexts
+{
+  BLContext mainBlend2dContext;
+  BLContext lowBlend2dContext;
+  bool blend2dBuffersWereUsed;
+};
+
+class Blend2dDoubleGoomBuffers
+{
+public:
+  Blend2dDoubleGoomBuffers(DRAW::GoomDrawToTwoBuffers& draw,
+                           const Dimensions& dimensions,
+                           const DRAW::IGoomDraw::PixelBlendFunc& func = nullptr) noexcept;
+
+  [[nodiscard]] auto GetBlend2dContexts() noexcept -> Blend2dContexts&;
+
+  auto Blend2dClearAll() -> void;
+  auto UpdateGoomBuffers() noexcept -> void;
+
+private:
+  DRAW::GoomDrawToTwoBuffers* m_draw;
+  Blend2dToGoom m_mainBuffer;
+  Blend2dToGoom m_lowBuffer;
+  Blend2dContexts m_blend2DContexts;
+};
+
+inline auto Blend2dDoubleGoomBuffers::GetBlend2dContexts() noexcept -> Blend2dContexts&
+{
+  return m_blend2DContexts;
+}
 
 inline auto Blend2dToGoom::GetBlend2DBuffer() const noexcept -> const Blend2DBuffer&
 {

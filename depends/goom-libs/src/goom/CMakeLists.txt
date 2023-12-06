@@ -132,6 +132,7 @@ add_library(goom
             src/filter_fx/zoom_adjustment_effect.h
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/blend2d_to_goom.cpp
+            src/utils/graphics/blend2d_utils.cpp
             src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp
             src/utils/graphics/line_clipper.h

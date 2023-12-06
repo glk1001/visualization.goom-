@@ -176,6 +176,8 @@ auto RaindropsFx::RaindropsFxImpl::GetCurrentColorMapsNames() noexcept -> std::v
 
 auto RaindropsFx::RaindropsFxImpl::ApplyToImageBuffers() noexcept -> void
 {
+  m_fxHelper->GetBlend2dContexts().blend2dBuffersWereUsed = true;
+
   m_raindrops->DrawRaindrops();
   m_raindrops->UpdateRaindrops();
 }
