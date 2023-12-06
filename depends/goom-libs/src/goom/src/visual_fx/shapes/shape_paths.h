@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../fx_helper.h"
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
@@ -8,6 +9,7 @@
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "utils/math/paths.h"
+#include "utils/t_values.h"
 
 #include <cstdint>
 #include <memory>
@@ -25,7 +27,7 @@ public:
     COLOR::ColorMapSharedPtr lowColorMapPtr   = nullptr;
     COLOR::ColorMapSharedPtr innerColorMapPtr = nullptr;
   };
-  ShapePath(DRAW::IGoomDraw& draw,
+  ShapePath(FxHelper& fxHelper,
             const std::shared_ptr<UTILS::MATH::IPath>& path,
             const ColorInfo& colorInfo) noexcept;
 
@@ -57,21 +59,24 @@ public:
   auto Draw(const DrawParams& drawParams) noexcept -> void;
 
 private:
+  FxHelper* m_fxHelper;
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
   std::shared_ptr<UTILS::MATH::IPath> m_path;
 
   ColorInfo m_colorInfo;
   [[nodiscard]] static auto GetColorMapTypes() noexcept
       -> const std::set<COLOR::RandomColorMaps::ColorMapTypes>&;
+  static constexpr auto NUM_COLOR_STEPS = 200U;
+  UTILS::TValue m_innerColorT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_COLOR_STEPS}
+  };
 
   [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
   [[nodiscard]] auto GetCurrentShapeColors() const noexcept -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetColors(const DrawParams& drawParams,
-                               int32_t radius,
                                float brightness,
-                               const DRAW::MultiplePixels& shapeColors,
-                               int32_t innerColorCutoffRadius,
-                               const Pixel& innerColor) const noexcept -> DRAW::MultiplePixels;
+                               const DRAW::MultiplePixels& shapeColors) const noexcept
+      -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetColorsWithoutInner(float brightness,
                                            const DRAW::MultiplePixels& shapeColors) const noexcept
       -> DRAW::MultiplePixels;

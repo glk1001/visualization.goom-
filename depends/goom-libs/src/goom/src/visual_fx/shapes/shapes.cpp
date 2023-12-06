@@ -2,6 +2,7 @@
 
 #include "shapes.h"
 
+#include "../fx_helper.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
@@ -9,7 +10,6 @@
 #include "goom/goom_types.h"
 #include "goom/math20.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -22,23 +22,15 @@ namespace GOOM::VISUAL_FX::SHAPES
 {
 
 using COLOR::WeightedRandomColorMaps;
-using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::MATH::IGoomRand;
 
-Shape::Shape(IGoomDraw& draw,
-             const IGoomRand& goomRand,
-             const PluginInfo& goomInfo,
-             const Params& params,
-             const PixelChannelType defaultAlpha) noexcept
-  : m_goomRand{&goomRand},
-    m_shapeParts{GetInitialShapeParts(draw, goomRand, goomInfo, params, defaultAlpha)}
+Shape::Shape(FxHelper& fxHelper, const Params& params, const PixelChannelType defaultAlpha) noexcept
+  : m_goomRand{&fxHelper.GetGoomRand()},
+    m_shapeParts{GetInitialShapeParts(fxHelper, params, defaultAlpha)}
 {
 }
 
-auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
-                                 const IGoomRand& goomRand,
-                                 const PluginInfo& goomInfo,
+auto Shape::GetInitialShapeParts(FxHelper& fxHelper,
                                  const Params& params,
                                  const PixelChannelType defaultAlpha) noexcept
     -> std::vector<ShapePart>
@@ -61,7 +53,7 @@ auto Shape::GetInitialShapeParts(DRAW::IGoomDraw& draw,
         params.minNumShapePathSteps,
         params.maxNumShapePathSteps,
     };
-    shapeParts.emplace_back(draw, goomRand, goomInfo, shapePartParams, defaultAlpha);
+    shapeParts.emplace_back(fxHelper, shapePartParams, defaultAlpha);
   }
 
   return shapeParts;

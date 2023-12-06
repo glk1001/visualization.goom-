@@ -2,16 +2,15 @@
 
 #include "shape_parts.h"
 
+#include "../fx_helper.h"
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/math20.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -33,26 +32,20 @@ namespace GOOM::VISUAL_FX::SHAPES
 
 using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
-using DRAW::IGoomDraw;
 using UTILS::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CircleFunction;
 using UTILS::MATH::CirclePath;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
 using UTILS::MATH::IsOdd;
 using UTILS::MATH::Transform2d;
 using UTILS::MATH::TransformedPath;
 using UTILS::MATH::TWO_PI;
 
-ShapePart::ShapePart(IGoomDraw& draw,
-                     const IGoomRand& goomRand,
-                     const PluginInfo& goomInfo,
+ShapePart::ShapePart(FxHelper& fxHelper,
                      const Params& params,
                      const PixelChannelType defaultAlpha) noexcept
-  : m_draw{&draw},
-    m_goomRand{&goomRand},
-    m_goomInfo{&goomInfo},
+  : m_fxHelper{&fxHelper},
     m_defaultAlpha{defaultAlpha},
     m_currentTMinMaxLerp{params.tMinMaxLerp},
     m_shapePathsStepSpeed{
@@ -81,10 +74,10 @@ ShapePart::ShapePart(IGoomDraw& draw,
 
 auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
 {
-  return {GetUnweightedRandomColorMaps(*m_goomRand, m_defaultAlpha),
-          GetUnweightedRandomColorMaps(*m_goomRand, m_defaultAlpha),
-          GetUnweightedRandomColorMaps(*m_goomRand, m_defaultAlpha),
-          m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
+  return {GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
+          GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
+          GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
+          m_fxHelper->GetGoomRand().GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
 }
 
 auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
@@ -107,6 +100,10 @@ auto ShapePart::SetShapePathsMinMaxNumSteps(
 
 auto ShapePart::UpdateShapePathTargets() noexcept -> void
 {
+  m_radiusFractionT.Increment();
+  m_minRadiusFraction = STD20::lerp(0.2F, 0.05F, m_radiusFractionT());
+  m_maxRadiusFraction = STD20::lerp(0.5F, 0.3F, m_radiusFractionT());
+
   if (not m_needToUpdateTargetPoint)
   {
     return;
@@ -152,18 +149,21 @@ inline auto ShapePart::GetTransform2d(const Vec2dFlt& targetPoint,
 auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
   const auto numShapePaths =
-      m_goomRand->GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
 
   static constexpr auto MIN_MIN_SCALE         = 0.9F;
   static constexpr auto MAX_MIN_SCALE         = 1.0F;
   static constexpr auto MIN_MAX_SCALE         = 1.0F + UTILS::MATH::SMALL_FLOAT;
   static constexpr auto MAX_MAX_SCALE         = 1.5F;
   static constexpr auto PROB_SCALE_EQUALS_ONE = 0.9F;
-  const auto probScaleEqualsOne               = m_goomRand->ProbabilityOf(PROB_SCALE_EQUALS_ONE);
+
+  const auto probScaleEqualsOne = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_SCALE_EQUALS_ONE);
   const auto minScale =
-      probScaleEqualsOne ? 1.0F : m_goomRand->GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
+      probScaleEqualsOne ? 1.0F
+                         : m_fxHelper->GetGoomRand().GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
   const auto maxScale =
-      probScaleEqualsOne ? 1.0F : m_goomRand->GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
+      probScaleEqualsOne ? 1.0F
+                         : m_fxHelper->GetGoomRand().GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
 
   return GetShapePaths(numShapePaths, {minScale, maxScale});
 }
@@ -172,7 +172,6 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
                               const MinMaxValues<float>& minMaxValues) noexcept
     -> std::vector<ShapePath>
 {
-
   const auto targetPointFlt = ToVec2dFlt(m_shapePathsTargetPoint);
 
   static constexpr auto MIN_ANGLE = 0.0F;
@@ -198,25 +197,29 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
     const auto colorInfo = GetShapePathColorInfo();
 
-    shapePaths.emplace_back(*m_draw, basePath, colorInfo);
+    shapePaths.emplace_back(*m_fxHelper, basePath, colorInfo);
 
     static constexpr auto CLOSE_ENOUGH = 4;
     if (SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) >
         CLOSE_ENOUGH)
     {
-      LogError("shapePaths.at({}).GetIPath().GetStartPos() = {}, {}",
-               i,
-               shapePaths.at(i).GetIPath().GetStartPos().x,
-               shapePaths.at(i).GetIPath().GetStartPos().y);
-      LogError(
-          "m_shapesTargetPoint = {}, {}", m_shapePathsTargetPoint.x, m_shapePathsTargetPoint.y);
-      LogError("targetPointFlt = {}, {}", targetPointFlt.x, targetPointFlt.y);
-      LogError("radius = {}", radius);
-      LogError("rotate = {}", rotate);
-      LogError("std::cos(rotate) = {}", std::cos(rotate));
-      LogError("std::sin(rotate) = {}", std::sin(rotate));
-      LogError("scale = {}", scale);
-      LogError("numSteps = {}", numSteps);
+      //      LogError(m_fxHelper->GetGoomLogger(),
+      //               "shapePaths.at({}).GetIPath().GetStartPos() = {}, {}",
+      //               i,
+      //               shapePaths.at(i).GetIPath().GetStartPos().x,
+      //               shapePaths.at(i).GetIPath().GetStartPos().y);
+      //      LogError(m_fxHelper->GetGoomLogger(),
+      //               "m_shapesTargetPoint = {}, {}",
+      //               m_shapePathsTargetPoint.x,
+      //               m_shapePathsTargetPoint.y);
+      //      LogError(
+      //          m_fxHelper->GetGoomLogger(), "targetPointFlt = {}, {}", targetPointFlt.x, targetPointFlt.y);
+      //      LogError(m_fxHelper->GetGoomLogger(), "radius = {}", radius);
+      //      LogError(m_fxHelper->GetGoomLogger(), "rotate = {}", rotate);
+      //      LogError(m_fxHelper->GetGoomLogger(), "std::cos(rotate) = {}", std::cos(rotate));
+      //      LogError(m_fxHelper->GetGoomLogger(), "std::sin(rotate) = {}", std::sin(rotate));
+      //      LogError(m_fxHelper->GetGoomLogger(), "scale = {}", scale);
+      //      LogError(m_fxHelper->GetGoomLogger(), "numSteps = {}", numSteps);
     }
     Ensures(SqDistance(shapePaths.at(i).GetIPath().GetStartPos(), m_shapePathsTargetPoint) <=
             CLOSE_ENOUGH);
@@ -240,8 +243,8 @@ inline auto ShapePart::GetShapePathColorInfo() const noexcept -> ShapePath::Colo
 
 inline auto ShapePart::GetCircleRadius() const noexcept -> float
 {
-  const auto minDimension = std::min(m_goomInfo->GetDimensions().GetFltWidth(),
-                                     m_goomInfo->GetDimensions().GetFltHeight());
+  const auto minDimension = std::min(m_fxHelper->GetDimensions().GetFltWidth(),
+                                     m_fxHelper->GetDimensions().GetFltHeight());
   const auto minRadius    = m_minRadiusFraction * minDimension;
   const auto maxRadius    = m_maxRadiusFraction * minDimension;
   const auto t = static_cast<float>(m_shapePartNum) / static_cast<float>(m_totalNumShapeParts - 1);
@@ -297,7 +300,7 @@ auto ShapePart::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weighte
     -> void
 {
   m_colorInfo.innerColorMix =
-      m_goomRand->GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
 
   m_colorInfo.innerColorMaps = weightedMaps;
 
@@ -378,7 +381,7 @@ auto ShapePart::GetFirstShapePathTDistanceFromClosestBoundary() const noexcept -
 
 auto ShapePart::AreShapePathsCloseToMeeting() const noexcept -> bool
 {
-  static constexpr auto T_MEETING_CUTOFF = 0.1F;
+  static constexpr auto T_MEETING_CUTOFF = 0.05F;
   const auto positionT                   = GetFirstShapePathPositionT();
 
   return (T_MEETING_CUTOFF > positionT) || (positionT > (1.0F - T_MEETING_CUTOFF));
@@ -393,7 +396,7 @@ auto ShapePart::UseFixedShapePathsNumSteps(const float tMinMaxLerp) noexcept -> 
 
 auto ShapePart::UseRandomShapePathsNumSteps() noexcept -> void
 {
-  m_currentTMinMaxLerp = GetNewRandomMinMaxLerpT(*m_goomRand, m_currentTMinMaxLerp);
+  m_currentTMinMaxLerp = GetNewRandomMinMaxLerpT(m_fxHelper->GetGoomRand(), m_currentTMinMaxLerp);
   m_shapePathsStepSpeed.SetSpeed(m_currentTMinMaxLerp);
   m_dotRadiusStepSpeed.SetSpeed(m_currentTMinMaxLerp);
 }
@@ -443,7 +446,7 @@ inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 {
   if (static constexpr auto PROB_MEGA_COLOR_CHANGE_ON = 0.1F;
-      not m_goomRand->ProbabilityOf(PROB_MEGA_COLOR_CHANGE_ON))
+      not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MEGA_COLOR_CHANGE_ON))
   {
     return false;
   }
@@ -454,7 +457,7 @@ inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 inline auto ShapePart::SetMegaColorChangeOff() noexcept -> bool
 {
   if (static constexpr auto PROB_MEGA_COLOR_CHANGE_OFF = 0.9F;
-      not m_goomRand->ProbabilityOf(PROB_MEGA_COLOR_CHANGE_OFF))
+      not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MEGA_COLOR_CHANGE_OFF))
   {
     return false;
   }
@@ -466,8 +469,9 @@ inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void
 {
   ChangeAllShapesColorMapsNow();
 
-  static constexpr auto PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.1F;
-  m_useExtremeMaxShapeDotRadius = m_goomRand->ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
+  static constexpr auto PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.5F;
+  m_useExtremeMaxShapeDotRadius =
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
 }
 
 auto ShapePart::Update() noexcept -> void
@@ -508,7 +512,7 @@ inline auto ShapePart::GetMaxDotRadius(const bool varyRadius) const noexcept -> 
   {
     const auto tDistanceFromOne        = GetFirstShapePathTDistanceFromClosestBoundary();
     static constexpr auto EXTRA_RADIUS = 10.0F;
-    static constexpr auto EXPONENT     = 10.0F;
+    static constexpr auto EXPONENT     = 2.0F;
     maxRadius += static_cast<int32_t>(std::pow(tDistanceFromOne, EXPONENT) * EXTRA_RADIUS);
   }
 

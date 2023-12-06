@@ -1,10 +1,14 @@
+//#undef NO_LOGGING
+
 #include "shape_paths.h"
 
+#include "../fx_helper.h"
 #include "color/color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
+#include "goom/goom_logger.h"
+#include "utils/graphics/blend2d_utils.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 
@@ -18,15 +22,14 @@ namespace GOOM::VISUAL_FX::SHAPES
 using COLOR::ColorMaps;
 using DRAW::GetLowColor;
 using DRAW::GetMainColor;
-using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::TValue;
+using UTILS::GRAPHICS::FillCircleWithGradient;
 using UTILS::MATH::IPath;
 
-ShapePath::ShapePath(IGoomDraw& draw,
+ShapePath::ShapePath(FxHelper& fxHelper,
                      const std::shared_ptr<IPath>& path,
                      const ColorInfo& colorInfo) noexcept
-  : m_circleDrawer{draw}, m_path{path}, m_colorInfo{colorInfo}
+  : m_fxHelper{&fxHelper}, m_circleDrawer{fxHelper.GetDraw()}, m_path{path}, m_colorInfo{colorInfo}
 {
 }
 
@@ -34,35 +37,26 @@ auto ShapePath::Draw(const DrawParams& drawParams) noexcept -> void
 {
   const auto point = GetNextPoint();
 
-  const auto shapeColors    = GetCurrentShapeColors();
-  const auto& innerColorMap = m_colorInfo.innerColorMapPtr;
+  const auto shapeColors = GetCurrentShapeColors();
 
-  auto innerColorT = TValue{
-      {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius - 1)}
-  };
+  static constexpr auto MAX_BRIGHTNESS = 2.0F;
 
-  // clang-format off
-  static constexpr auto MIN_BRIGHTNESS = 2.0F;
-  static constexpr auto MAX_BRIGHTNESS = 10.0F;
-  auto brightnessT = TValue{
-      {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(drawParams.maxRadius)}};
-  // clang-format on
+  const auto radius     = drawParams.maxRadius;
+  const auto brightness = drawParams.brightnessAttenuation * MAX_BRIGHTNESS;
+  const auto colors     = GetColors(drawParams, brightness, shapeColors);
+
+  FillCircleWithGradient(m_fxHelper->GetBlend2dContexts(), colors, 1.0F, point, radius);
 
   const auto innerColorCutoffRadius = GetInnerColorCutoffRadius(drawParams.maxRadius);
+  const auto& innerColorMap         = m_colorInfo.innerColorMapPtr;
+  const auto innerColor             = innerColorMap->GetColor(m_innerColorT());
+  const auto innerColorMixed =
+      GetColorsWithInner(brightness, shapeColors, innerColor, drawParams.innerColorMix);
 
-  for (auto radius = drawParams.maxRadius; radius > 1; --radius)
-  {
-    const auto brightness = drawParams.brightnessAttenuation *
-                            STD20::lerp(MIN_BRIGHTNESS, MAX_BRIGHTNESS, brightnessT());
-    const auto innerColor = innerColorMap->GetColor(innerColorT());
-    const auto colors =
-        GetColors(drawParams, radius, brightness, shapeColors, innerColorCutoffRadius, innerColor);
+  FillCircleWithGradient(
+      m_fxHelper->GetBlend2dContexts(), innerColorMixed, 1.0F, point, innerColorCutoffRadius);
 
-    m_circleDrawer.DrawCircle(point, radius, colors);
-
-    brightnessT.Increment();
-    innerColorT.Increment();
-  }
+  m_innerColorT.Increment();
 }
 
 inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexcept -> int32_t
@@ -81,25 +75,21 @@ inline auto ShapePath::GetCurrentShapeColors() const noexcept -> MultiplePixels
 }
 
 auto ShapePath::GetColors(const DrawParams& drawParams,
-                          const int32_t radius,
                           const float brightness,
-                          const MultiplePixels& shapeColors,
-                          const int32_t innerColorCutoffRadius,
-                          const Pixel& innerColor) const noexcept -> MultiplePixels
+                          const MultiplePixels& shapeColors) const noexcept -> MultiplePixels
 {
   if (drawParams.firstShapePathAtMeetingPoint)
   {
     return GetFinalMeetingPointColors(drawParams.meetingPointColors, brightness);
   }
 
-  return radius <= innerColorCutoffRadius
-             ? GetColorsWithoutInner(brightness, shapeColors)
-             : GetColorsWithInner(brightness, shapeColors, innerColor, drawParams.innerColorMix);
+  return GetColorsWithoutInner(brightness, shapeColors);
 }
 
-static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR              = 0.25F;
-static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR               = 0.5F;
-static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 7.0F;
+static constexpr auto MAIN_COLOR_BRIGHTNESS_FACTOR               = 0.015F;
+static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR                = 1.0F;
+static constexpr auto MAIN_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 0.1F;
+static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR  = 0.1F;
 
 inline auto ShapePath::GetColorsWithoutInner(const float brightness,
                                              const MultiplePixels& shapeColors) const noexcept
@@ -133,7 +123,8 @@ inline auto ShapePath::GetFinalMeetingPointColors(const MultiplePixels& meetingP
                                                   const float brightness) const noexcept
     -> MultiplePixels
 {
-  return {m_colorAdjust.GetAdjustment(brightness, GetMainColor(meetingPointColors)),
+  return {m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
+                                      GetMainColor(meetingPointColors)),
           m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
                                       GetLowColor(meetingPointColors))};
 }

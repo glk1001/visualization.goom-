@@ -1,12 +1,12 @@
 #pragma once
 
+#include "../fx_helper.h"
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
@@ -33,11 +33,7 @@ public:
     uint32_t maxNumShapePathSteps{};
   };
 
-  Shape(DRAW::IGoomDraw& draw,
-        const UTILS::MATH::IGoomRand& goomRand,
-        const PluginInfo& goomInfo,
-        const Params& params,
-        PixelChannelType defaultAlpha) noexcept;
+  Shape(FxHelper& fxHelper, const Params& params, PixelChannelType defaultAlpha) noexcept;
 
   auto SetWeightedMainColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
       -> void;
@@ -73,9 +69,7 @@ private:
 
   static constexpr uint32_t NUM_SHAPE_PARTS = 10;
   std::vector<ShapePart> m_shapeParts;
-  [[nodiscard]] static auto GetInitialShapeParts(DRAW::IGoomDraw& draw,
-                                                 const UTILS::MATH::IGoomRand& goomRand,
-                                                 const PluginInfo& goomInfo,
+  [[nodiscard]] static auto GetInitialShapeParts(FxHelper& fxHelper,
                                                  const Params& params,
                                                  PixelChannelType defaultAlpha) noexcept
       -> std::vector<ShapePart>;
@@ -133,7 +127,7 @@ inline auto Shape::HasFirstShapePathJustHitEndBoundary() const noexcept -> bool
 
 inline auto Shape::FirstShapePathAtMeetingPoint() const noexcept -> bool
 {
-  return HasFirstShapePathJustHitStartBoundary() || HasFirstShapePathJustHitEndBoundary();
+  return HasFirstShapePathJustHitStartBoundary() or HasFirstShapePathJustHitEndBoundary();
 }
 
 inline auto Shape::FirstShapePathsCloseToMeeting() const noexcept -> bool

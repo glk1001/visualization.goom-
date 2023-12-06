@@ -1,11 +1,11 @@
 #pragma once
 
+#include "../fx_helper.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
@@ -42,11 +42,7 @@ public:
     uint32_t shapePathsMaxNumSteps{};
   };
 
-  ShapePart(DRAW::IGoomDraw& draw,
-            const UTILS::MATH::IGoomRand& goomRand,
-            const PluginInfo& goomInfo,
-            const Params& params,
-            PixelChannelType defaultAlpha) noexcept;
+  ShapePart(FxHelper& fxHelper, const Params& params, PixelChannelType defaultAlpha) noexcept;
   ShapePart(const ShapePart&) noexcept           = delete;
   ShapePart(ShapePart&&) noexcept                = default;
   ~ShapePart() noexcept                          = default;
@@ -93,9 +89,7 @@ public:
   [[nodiscard]] auto AreShapePathsCloseToMeeting() const noexcept -> bool;
 
 private:
-  DRAW::IGoomDraw* m_draw;
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  const PluginInfo* m_goomInfo;
+  FxHelper* m_fxHelper;
   PixelChannelType m_defaultAlpha;
 
   float m_currentTMinMaxLerp;
@@ -107,9 +101,9 @@ private:
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
   int32_t m_extremeMaxShapeDotRadius = EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
   bool m_useExtremeMaxShapeDotRadius = false;
-  static constexpr auto MIN_MAX_RADIUS_STEPS      = MinMaxValues<uint32_t>{100U, 200U};
+  static constexpr auto MIN_MAX_DOT_RADIUS_STEPS  = MinMaxValues<uint32_t>{100U, 200U};
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
-  UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
+  UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
   UTILS::TValue m_dotRadiusT{
       {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
   };
@@ -139,10 +133,10 @@ private:
   static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_TIME        = 1000;
   static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_FAILED_TIME = 20;
   UTILS::OnOffTimer m_megaColorChangeOnOffTimer{
-      m_goomInfo->GetTime(),
+      m_fxHelper->GetGoomTime(),
       {MEGA_COLOR_CHANGE_ON_TIME,
-                   MEGA_COLOR_CHANGE_ON_FAILED_TIME, MEGA_COLOR_CHANGE_OFF_TIME,
-                   MEGA_COLOR_CHANGE_OFF_FAILED_TIME}
+                       MEGA_COLOR_CHANGE_ON_FAILED_TIME, MEGA_COLOR_CHANGE_OFF_TIME,
+                       MEGA_COLOR_CHANGE_OFF_FAILED_TIME}
   };
   auto StartMegaColorChangeOnOffTimer() noexcept -> void;
   [[nodiscard]] auto SetMegaColorChangeOn() noexcept -> bool;
@@ -179,6 +173,9 @@ private:
   };
   float m_minRadiusFraction;
   float m_maxRadiusFraction;
+  UTILS::TValue m_radiusFractionT{
+      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, 100U}
+  };
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;
   [[nodiscard]] auto GetShapePathColorInfo() const noexcept -> ShapePath::ColorInfo;

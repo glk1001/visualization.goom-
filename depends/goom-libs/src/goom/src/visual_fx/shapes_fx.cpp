@@ -68,7 +68,7 @@ private:
   static_assert(0 < MIN_NUM_SHAPE_PATH_STEPS);
   static_assert(MIN_NUM_SHAPE_PATH_STEPS < MAX_NUM_SHAPE_PATH_STEPS);
 
-  [[nodiscard]] auto GetShapes() const noexcept -> std::array<Shape, NUM_SHAPES>;
+  [[nodiscard]] auto GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>;
   std::array<Shape, NUM_SHAPES> m_shapes;
   [[nodiscard]] auto GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
       -> std::array<Point2dInt, NUM_SHAPES>;
@@ -82,7 +82,7 @@ private:
   Timer m_synchronisedShapeChangesTimer{m_fxHelper->GetGoomTime(), TIME_BEFORE_SYNCHRONISED_CHANGE};
 
   static constexpr uint32_t MIN_INCREMENTS_PER_UPDATE = 1;
-  static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 10;
+  static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 100;
   static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
   static_assert(MIN_INCREMENTS_PER_UPDATE <= MAX_INCREMENTS_PER_UPDATE);
   uint32_t m_numIncrementsPerUpdate = m_fxHelper->GetGoomRand().GetRandInRange(
@@ -147,7 +147,7 @@ ShapesFx::ShapesFxImpl::ShapesFxImpl(FxHelper& fxHelper) noexcept
   UpdateShapePathMinMaxNumSteps();
 }
 
-auto ShapesFx::ShapesFxImpl::GetShapes() const noexcept -> std::array<Shape, NUM_SHAPES>
+auto ShapesFx::ShapesFxImpl::GetShapes() noexcept -> std::array<Shape, NUM_SHAPES>
 {
   const auto initialShapeZoomMidpoints = GetShapeZoomMidpoints(m_screenCentre);
 
@@ -157,9 +157,7 @@ auto ShapesFx::ShapesFxImpl::GetShapes() const noexcept -> std::array<Shape, NUM
 
   return {
       {
-       Shape{m_fxHelper->GetDraw(),
-       m_fxHelper->GetGoomRand(),
-       m_fxHelper->GetGoomInfo(),
+       Shape{*m_fxHelper,
        {MIN_RADIUS_FRACTION,
        MAX_RADIUS_FRACTION,
        SHAPE0_MIN_DOT_RADIUS,
@@ -212,7 +210,7 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
         MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   }
 
-  static constexpr auto PROB_VARY_DOT_RADIUS = 0.1F;
+  static constexpr auto PROB_VARY_DOT_RADIUS = 0.01F;
   const auto varyDotRadius = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_VARY_DOT_RADIUS);
   std::for_each(begin(m_shapes),
                 end(m_shapes),
@@ -335,6 +333,8 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::ApplyToImageBuffers() noexcept -> void
 {
+  m_fxHelper->GetBlend2dContexts().blend2dBuffersWereUsed = true;
+
   UpdatePixelBlender();
   UpdateShapeSpeeds();
   UpdateShapes();
