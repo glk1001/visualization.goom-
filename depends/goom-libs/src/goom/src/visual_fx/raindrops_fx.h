@@ -8,12 +8,12 @@
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class RaindropsFx : public IVisualFx
 {
 public:
-  explicit RaindropsFx(const FxHelper& fxHelper) noexcept;
+  explicit RaindropsFx(FxHelper& fxHelper) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

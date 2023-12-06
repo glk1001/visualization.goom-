@@ -17,13 +17,12 @@ class SmallImageBitmaps;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class CirclesFx : public IVisualFx
 {
 public:
-  CirclesFx(const FxHelper& fxHelper,
-            const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  CirclesFx(FxHelper& fxHelper, const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

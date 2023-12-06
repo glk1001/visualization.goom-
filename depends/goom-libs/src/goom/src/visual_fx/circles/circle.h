@@ -41,7 +41,7 @@ public:
     OneWayParams fromTargetParams;
   };
 
-  Circle(const FxHelper& fxHelper,
+  Circle(FxHelper& fxHelper,
          const Helper& helper,
          const Params& circleParams,
          const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
@@ -63,7 +63,7 @@ public:
   [[nodiscard]] auto HasPositionTJustHitEndBoundary() const noexcept -> bool;
 
 private:
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
   Helper m_helper;
   DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer;
 

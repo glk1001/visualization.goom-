@@ -31,12 +31,12 @@ using VISUAL_FX::IVisualFx;
 using VISUAL_FX::FX_UTILS::RandomPixelBlender;
 
 GoomAllVisualFx::GoomAllVisualFx(Parallel& parallel,
-                                 const FxHelper& fxHelper,
+                                 FxHelper& fxHelper,
                                  const SmallImageBitmaps& smallBitmaps,
                                  const std::string& resourcesDirectory,
                                  IGoomStateHandler& goomStateHandler) noexcept
-  : m_goomRand{fxHelper.goomRand},
-    m_goomLogger{fxHelper.goomLogger},
+  : m_goomRand{&fxHelper.GetGoomRand()},
+    m_goomLogger{&fxHelper.GetGoomLogger()},
     m_allStandardVisualFx{spimpl::make_unique_impl<AllStandardVisualFx>(
         parallel, fxHelper, smallBitmaps, resourcesDirectory)},
     m_goomStateHandler{&goomStateHandler}

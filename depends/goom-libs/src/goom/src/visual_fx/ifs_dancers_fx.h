@@ -18,7 +18,7 @@ class SmallImageBitmaps;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class IfsDancersFx : public IVisualFx
 {
@@ -38,8 +38,7 @@ public:
   };
 
   IfsDancersFx() noexcept = delete;
-  IfsDancersFx(const FxHelper& fxHelper,
-               const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  IfsDancersFx(FxHelper& fxHelper, const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

@@ -4,8 +4,10 @@
 #include "circle.h"
 #include "color/random_color_maps.h"
 #include "dot_paths.h"
+#include "goom_plugin_info.h"
 #include "helper.h"
 #include "utils/graphics/small_image_bitmaps.h"
+#include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
 #include "visual_fx/fx_helper.h"
 
@@ -18,7 +20,7 @@ namespace GOOM::VISUAL_FX::CIRCLES
 class Circles
 {
 public:
-  Circles(const FxHelper& fxHelper,
+  Circles(FxHelper& fxHelper,
           const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
           uint32_t numCircles,
           const std::vector<UTILS::MATH::OscillatingFunction::Params>& pathParams,
@@ -47,7 +49,7 @@ private:
   uint32_t m_numCircles;
   std::vector<Circle> m_circles;
   [[nodiscard]] static auto GetCircles(
-      const FxHelper& fxHelper,
+      FxHelper& fxHelper,
       const Helper& helper,
       const std::vector<UTILS::MATH::OscillatingFunction::Params>& pathParams,
       uint32_t numCircles,

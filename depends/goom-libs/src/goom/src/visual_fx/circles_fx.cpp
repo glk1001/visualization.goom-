@@ -11,7 +11,6 @@
 #include "goom/goom_time.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_plugin_info.h"
 #include "goom_visual_fx.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/parametric_functions2d.h"
@@ -42,7 +41,7 @@ using UTILS::MATH::Weights;
 class CirclesFx::CirclesFxImpl
 {
 public:
-  CirclesFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
+  CirclesFxImpl(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
@@ -55,9 +54,9 @@ public:
   auto ApplyToImageBuffers() noexcept -> void;
 
 private:
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
   const SmallImageBitmaps* m_smallBitmaps;
-  Point2dInt m_screenCentre       = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  Point2dInt m_screenCentre       = m_fxHelper->GetDimensions().GetCentrePoint();
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   static constexpr uint32_t NUM_CIRCLES = 5;
@@ -86,18 +85,18 @@ private:
 
   static constexpr uint32_t MIN_BLANK_AT_TARGET_TIME = 1;
   static constexpr uint32_t MAX_BLANK_AT_TARGET_TIME = 5;
-  uint32_t m_blankAtTargetTime =
-      m_fxHelper->goomRand->GetRandInRange(MIN_BLANK_AT_TARGET_TIME, MAX_BLANK_AT_TARGET_TIME + 1);
-  Timer m_blankAtTargetTimer{m_fxHelper->goomInfo->GetTime(), m_blankAtTargetTime, true};
+  uint32_t m_blankAtTargetTime                       = m_fxHelper->GetGoomRand().GetRandInRange(
+      MIN_BLANK_AT_TARGET_TIME, MAX_BLANK_AT_TARGET_TIME + 1);
+  Timer m_blankAtTargetTimer{m_fxHelper->GetGoomTime(), m_blankAtTargetTime, true};
 
   static constexpr uint32_t MIN_PAUSE_AT_START_TIME = 0;
   static constexpr uint32_t MAX_PAUSE_AT_START_TIME = 0;
-  uint32_t m_pauseAtStartTime =
-      m_fxHelper->goomRand->GetRandInRange(MIN_PAUSE_AT_START_TIME, MAX_PAUSE_AT_START_TIME + 1);
-  Timer m_pauseAtStartTimer{m_fxHelper->goomInfo->GetTime(), m_pauseAtStartTime, true};
+  uint32_t m_pauseAtStartTime                       = m_fxHelper->GetGoomRand().GetRandInRange(
+      MIN_PAUSE_AT_START_TIME, MAX_PAUSE_AT_START_TIME + 1);
+  Timer m_pauseAtStartTimer{m_fxHelper->GetGoomTime(), m_pauseAtStartTime, true};
 };
 
-CirclesFx::CirclesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+CirclesFx::CirclesFx(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_pimpl{spimpl::make_unique_impl<CirclesFxImpl>(fxHelper, smallBitmaps)}
 {
 }
@@ -151,11 +150,11 @@ static constexpr auto CIRCLE_START_REDUCING_RADIUS_WEIGHT  = 10.0F;
 static constexpr auto CIRCLE_TARGET_SIMILAR_TARGETS_WEIGHT = 10.0F;
 static constexpr auto CIRCLE_TARGET_FOUR_CORNERS_WEIGHT    = 10.0F;
 
-CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelper& fxHelper,
+CirclesFx::CirclesFxImpl::CirclesFxImpl(FxHelper& fxHelper,
                                         const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper}, m_smallBitmaps{&smallBitmaps},
     m_weightedCircleStartModes{
-        *m_fxHelper->goomRand,
+        m_fxHelper->GetGoomRand(),
         {
             {CircleStartModes::SAME_RADIUS, CIRCLE_START_SAME_RADIUS_WEIGHT},
             {CircleStartModes::FOUR_CORNERED_IN_MAIN, CIRCLE_START_FOUR_CORNERED_WEIGHT},
@@ -163,13 +162,13 @@ CirclesFx::CirclesFxImpl::CirclesFxImpl(const FxHelper& fxHelper,
         }
     },
     m_weightedCircleTargetModes{
-        *m_fxHelper->goomRand,
+        m_fxHelper->GetGoomRand(),
         {
             {CircleTargetModes::SIMILAR_TARGETS, CIRCLE_TARGET_SIMILAR_TARGETS_WEIGHT},
             {CircleTargetModes::FOUR_CORNERS, CIRCLE_TARGET_FOUR_CORNERS_WEIGHT},
         }
     },
-    m_pixelBlender{*fxHelper.goomRand}
+    m_pixelBlender{fxHelper.GetGoomRand()}
 {
 }
 
@@ -250,14 +249,13 @@ inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
 {
   static constexpr auto MIN_LERP = 0.0F;
   static constexpr auto MAX_LERP = 1.0F;
-  const auto midLerp             = m_fxHelper->goomRand->GetRandInRange(MIN_LERP, MAX_LERP);
+  const auto midLerp             = m_fxHelper->GetGoomRand().GetRandInRange(MIN_LERP, MAX_LERP);
   const auto newCircleCentre     = lerp(m_screenCentre, zoomMidpoint, midLerp);
 
-  const auto minPoint = Point2dInt{m_fxHelper->goomInfo->GetDimensions().GetIntWidth() / 10,
-                                   m_fxHelper->goomInfo->GetDimensions().GetIntHeight() / 10};
-  const auto maxPoint =
-      Point2dInt{m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - minPoint.x,
-                 m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - minPoint.y};
+  const auto minPoint = Point2dInt{m_fxHelper->GetDimensions().GetIntWidth() / 10,
+                                   m_fxHelper->GetDimensions().GetIntHeight() / 10};
+  const auto maxPoint = Point2dInt{m_fxHelper->GetDimensions().GetIntWidth() - minPoint.x,
+                                   m_fxHelper->GetDimensions().GetIntHeight() - minPoint.y};
 
   // NOLINTNEXTLINE(readability-suspicious-call-argument)
   return clamp(newCircleCentre, minPoint, maxPoint);
@@ -313,15 +311,15 @@ inline auto CirclesFx::CirclesFxImpl::IncrementTs() noexcept -> void
 inline auto CirclesFx::CirclesFxImpl::UpdateStates() noexcept -> void
 {
   if (static constexpr auto NUM_UPDATE_SKIPS = 10U;
-      (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % NUM_UPDATE_SKIPS) != 0)
+      (m_fxHelper->GetGoomTime().GetCurrentTime() % NUM_UPDATE_SKIPS) != 0)
   {
     return;
   }
 
-  m_blankAtTargetTime =
-      m_fxHelper->goomRand->GetRandInRange(MIN_BLANK_AT_TARGET_TIME, MAX_BLANK_AT_TARGET_TIME + 1);
-  m_pauseAtStartTime =
-      m_fxHelper->goomRand->GetRandInRange(MIN_PAUSE_AT_START_TIME, MAX_PAUSE_AT_START_TIME + 1);
+  m_blankAtTargetTime = m_fxHelper->GetGoomRand().GetRandInRange(MIN_BLANK_AT_TARGET_TIME,
+                                                                 MAX_BLANK_AT_TARGET_TIME + 1);
+  m_pauseAtStartTime  = m_fxHelper->GetGoomRand().GetRandInRange(MIN_PAUSE_AT_START_TIME,
+                                                                MAX_PAUSE_AT_START_TIME + 1);
 
   m_circleParamsBuilder.SetCircleStartMode(m_weightedCircleStartModes.GetRandomWeighted());
   m_circleParamsBuilder.SetCircleTargetMode(m_weightedCircleTargetModes.GetRandomWeighted());
@@ -332,13 +330,13 @@ inline auto CirclesFx::CirclesFxImpl::UpdateStates() noexcept -> void
 
 inline auto CirclesFx::CirclesFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 
 inline auto CirclesFx::CirclesFxImpl::UpdateCirclePathParams() noexcept -> void
 {
-  if (m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom() > 0)
+  if (m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom() > 0)
   {
     return;
   }
@@ -357,9 +355,9 @@ inline auto CirclesFx::CirclesFxImpl::GetPathParams() const noexcept
   static constexpr auto MAX_PATH_Y_FREQ    = 2.0F;
 
   const auto params = OscillatingFunction::Params{
-      m_fxHelper->goomRand->GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),
-      m_fxHelper->goomRand->GetRandInRange(MIN_PATH_X_FREQ, MAX_PATH_X_FREQ),
-      m_fxHelper->goomRand->GetRandInRange(MIN_PATH_Y_FREQ, MAX_PATH_Y_FREQ),
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_PATH_X_FREQ, MAX_PATH_X_FREQ),
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_PATH_Y_FREQ, MAX_PATH_Y_FREQ),
   };
 
   auto pathParams = std::vector<OscillatingFunction::Params>(NUM_CIRCLES);

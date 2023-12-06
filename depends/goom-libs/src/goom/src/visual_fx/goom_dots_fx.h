@@ -18,14 +18,13 @@ class SmallImageBitmaps;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class GoomDotsFx : public IVisualFx
 {
 public:
   GoomDotsFx() noexcept = delete;
-  GoomDotsFx(const FxHelper& fxHelper,
-             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  GoomDotsFx(FxHelper& fxHelper, const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

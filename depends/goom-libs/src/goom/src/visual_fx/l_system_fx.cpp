@@ -1,6 +1,6 @@
 //#undef NO_LOGGING
-
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
+
 #include "l_system_fx.h"
 
 #include "draw/goom_draw.h"
@@ -9,7 +9,6 @@
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_plugin_info.h"
 #include "goom_visual_fx.h"
 #include "l_systems/l_system.h"
 #include "utils/graphics/small_image_bitmaps.h"
@@ -37,7 +36,7 @@ using ::LSYS::SetRandFunc;
 class LSystemFx::LSystemFxImpl
 {
 public:
-  LSystemFxImpl(const FxHelper& fxHelper, const std::string& resourcesDirectory);
+  LSystemFxImpl(FxHelper& fxHelper, const std::string& resourcesDirectory);
 
   auto Start() -> void;
   auto Resume() -> void;
@@ -50,8 +49,8 @@ public:
   auto ApplyToImageBuffers() -> void;
 
 private:
-  const FxHelper* m_fxHelper;
-  Point2dInt m_screenCentre       = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  FxHelper* m_fxHelper;
+  Point2dInt m_screenCentre       = m_fxHelper->GetDimensions().GetCentrePoint();
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   static constexpr auto MAX_DOT_SIZE = 17U;
@@ -67,7 +66,7 @@ private:
   static inline const std::vector<LSystem::LSystemFile> L_SYS_FILE_LIST = GetLSystemFileList();
   static inline const auto NUM_L_SYSTEMS = static_cast<uint32_t>(L_SYS_FILE_LIST.size());
   std::vector<std::unique_ptr<LSystem>> m_lSystems;
-  [[nodiscard]] static auto GetLSystems(const FxHelper& fxHelper,
+  [[nodiscard]] static auto GetLSystems(FxHelper& fxHelper,
                                         const std::string& resourcesDirectory,
                                         PixelChannelType defaultAlpha) noexcept
       -> std::vector<std::unique_ptr<LSystem>>;
@@ -79,9 +78,9 @@ private:
   static constexpr auto MIN_TIME_TO_KEEP_ACTIVE_LSYS = 200U;
   static constexpr auto MAX_TIME_TO_KEEP_ACTIVE_LSYS = 1000U;
   Timer m_timeForTheseActiveLSys{
-      m_fxHelper->goomInfo->GetTime(),
-      m_fxHelper->goomRand->GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS,
-                                           MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
+      m_fxHelper->GetGoomTime(),
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS,
+                                               MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
 
   static constexpr auto MIN_NUM_ROTATE_DEGREES_STEPS = 50U;
   static constexpr auto MAX_NUM_ROTATE_DEGREES_STEPS = 500U;
@@ -93,7 +92,7 @@ private:
   auto DrawLSystem() noexcept -> void;
 };
 
-LSystemFx::LSystemFx(const FxHelper& fxHelper, const std::string& resourcesDirectory) noexcept
+LSystemFx::LSystemFx(FxHelper& fxHelper, const std::string& resourcesDirectory) noexcept
   : m_pimpl{spimpl::make_unique_impl<LSystemFxImpl>(fxHelper, resourcesDirectory)}
 {
 }
@@ -149,10 +148,9 @@ auto LSystemFx::ApplyToImageBuffers() noexcept -> void
   m_pimpl->ApplyToImageBuffers();
 }
 
-LSystemFx::LSystemFxImpl::LSystemFxImpl(const FxHelper& fxHelper,
-                                        const std::string& resourcesDirectory)
+LSystemFx::LSystemFxImpl::LSystemFxImpl(FxHelper& fxHelper, const std::string& resourcesDirectory)
   : m_fxHelper{&fxHelper},
-    m_pixelBlender{*fxHelper.goomRand},
+    m_pixelBlender{fxHelper.GetGoomRand()},
     m_lSystems{GetLSystems(fxHelper, resourcesDirectory, m_defaultAlpha)}
 {
 }
@@ -281,7 +279,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
   return lSysFileList;
 }
 
-auto LSystemFx::LSystemFxImpl::GetLSystems(const FxHelper& fxHelper,
+auto LSystemFx::LSystemFxImpl::GetLSystems(FxHelper& fxHelper,
                                            const std::string& resourcesDirectory,
                                            const PixelChannelType defaultAlpha) noexcept
     -> std::vector<std::unique_ptr<LSystem>>
@@ -302,17 +300,17 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
   //LogInfo("Setting new active l-systems.");
 
   m_activeLSystems.clear();
-  const auto lSystemIndex = m_fxHelper->goomRand->GetRandInRange(0U, NUM_L_SYSTEMS);
+  const auto lSystemIndex = m_fxHelper->GetGoomRand().GetRandInRange(0U, NUM_L_SYSTEMS);
   //const auto lSystemIndex = 1U;
   // m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
-  m_timeForTheseActiveLSys.SetTimeLimit(m_fxHelper->goomRand->GetRandInRange(
+  m_timeForTheseActiveLSys.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
       MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
 }
 
 auto LSystemFx::LSystemFxImpl::Start() -> void
 {
-  SetRandFunc([this]() { return m_fxHelper->goomRand->GetRandInRange(0.0, 1.0); });
+  SetRandFunc([this]() { return m_fxHelper->GetGoomRand().GetRandInRange(0.0, 1.0); });
 
   std::for_each(begin(m_lSystems),
                 end(m_lSystems),
@@ -372,8 +370,8 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
   UpdatePixelBlender();
 
   if (static constexpr auto PROB_CHANGE_COLORS = 0.01F;
-      (0 == m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) or
-      m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_COLORS))
+      (0 == m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom()) or
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_COLORS))
   {
     ChangeColors();
   }
@@ -390,7 +388,7 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
 
 inline auto LSystemFx::LSystemFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 

@@ -57,7 +57,7 @@ class LinesFx::LinesImpl
 public:
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
-  LinesImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
+  LinesImpl(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   auto Start() noexcept -> void;
 
@@ -73,7 +73,7 @@ public:
   [[nodiscard]] auto GetRandomLineColors() const noexcept -> std::array<Pixel, NUM_LINES>;
 
 private:
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   Pixel m_blackLineColor          = GetSimpleColor(SimpleColors::BLACK, m_defaultAlpha);
 
@@ -90,15 +90,15 @@ private:
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
-  float m_screenWidth         = m_fxHelper->goomInfo->GetDimensions().GetFltWidth();
-  float m_screenHeight        = m_fxHelper->goomInfo->GetDimensions().GetFltHeight();
+  float m_screenWidth         = m_fxHelper->GetDimensions().GetFltWidth();
+  float m_screenHeight        = m_fxHelper->GetDimensions().GetFltHeight();
   int32_t m_drawLinesDuration = LineMorph::MIN_LINE_DURATION;
   int32_t m_lineMode          = LineMorph::MIN_LINE_DURATION; // l'effet lineaire a dessiner
   uint32_t m_stopLines        = 0;
   Weights<LineType> m_lineTypeWeights;
 
-  bool m_isNearScope = m_fxHelper->goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
-  bool m_isFarScope  = m_fxHelper->goomRand->ProbabilityOf(PROB_FAR_SCOPE);
+  bool m_isNearScope = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NEAR_SCOPE);
+  bool m_isFarScope  = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_FAR_SCOPE);
   auto UpdateScopes() noexcept -> void;
   [[nodiscard]] auto CanDisplayLines() const noexcept -> bool;
   auto ChangeGoomLines() noexcept -> void;
@@ -122,7 +122,7 @@ private:
       -> std::array<Pixel, NUM_LINES>;
 };
 
-LinesFx::LinesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+LinesFx::LinesFx(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_pimpl{spimpl::make_unique_impl<LinesImpl>(fxHelper, smallBitmaps)}
 {
 }
@@ -173,26 +173,26 @@ auto LinesFx::ApplyToImageBuffers() noexcept -> void
   m_pimpl->ApplyToImageBuffers();
 }
 
-LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
+LinesFx::LinesImpl::LinesImpl(FxHelper& fxHelper,
                               const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper},
     m_lineMorphs{
         LineMorph{
-            *fxHelper.draw,
-            *fxHelper.goomInfo,
-            *fxHelper.goomRand,
+            fxHelper.GetDraw(),
+            fxHelper.GetGoomInfo(),
+            fxHelper.GetGoomRand(),
             smallBitmaps,
             {
                 {
                     LineType::H_LINE,
-                    fxHelper.goomInfo->GetDimensions().GetFltHeight(),
+                    fxHelper.GetDimensions().GetFltHeight(),
                     m_blackLineColor,
                     1.0F
                 },
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
-                        fxHelper.goomInfo->GetDimensions().GetFltHeight(),
+                        fxHelper.GetDimensions().GetFltHeight(),
                     GetSimpleColor(SimpleColors::SHAMROCK, m_defaultAlpha),
                     1.0F
                 }
@@ -200,9 +200,9 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             m_defaultAlpha
         },
         LineMorph{
-            *fxHelper.draw,
-            *fxHelper.goomInfo,
-            *fxHelper.goomRand,
+            fxHelper.GetDraw(),
+            fxHelper.GetGoomInfo(),
+            fxHelper.GetGoomRand(),
             smallBitmaps,
             {
                 {
@@ -214,7 +214,7 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
                 {
                     LineType::CIRCLE,
                     INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
-                        fxHelper.goomInfo->GetDimensions().GetFltHeight(),
+                        fxHelper.GetDimensions().GetFltHeight(),
                     GetSimpleColor(SimpleColors::TANGO, m_defaultAlpha),
                     1.0F
                 }
@@ -222,9 +222,9 @@ LinesFx::LinesImpl::LinesImpl(const FxHelper& fxHelper,
             m_defaultAlpha
         }
     },
-    m_pixelBlender{*fxHelper.goomRand},
+    m_pixelBlender{fxHelper.GetGoomRand()},
     m_lineTypeWeights{
-        *m_fxHelper->goomRand,
+        m_fxHelper->GetGoomRand(),
         {
             { LineType::CIRCLE, CIRCLE_LINE_TYPE_WEIGHT },
             { LineType::H_LINE, H_LINE_LINE_TYPE_WEIGHT },
@@ -335,17 +335,17 @@ inline auto LinesFx::LinesImpl::ApplyToImageBuffers() noexcept -> void
 
 inline auto LinesFx::LinesImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 
 inline auto LinesFx::LinesImpl::UpdateScopes() noexcept -> void
 {
   static constexpr auto NUM_UPDATES_BEFORE_SCOPE_CHANGE = 200U;
-  if (0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
+  if (0 == (m_fxHelper->GetGoomTime().GetCurrentTime() % NUM_UPDATES_BEFORE_SCOPE_CHANGE))
   {
-    m_isNearScope = m_fxHelper->goomRand->ProbabilityOf(PROB_NEAR_SCOPE);
-    m_isFarScope  = m_fxHelper->goomRand->ProbabilityOf(PROB_FAR_SCOPE);
+    m_isNearScope = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NEAR_SCOPE);
+    m_isFarScope  = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_FAR_SCOPE);
   }
 }
 
@@ -377,8 +377,8 @@ auto LinesFx::LinesImpl::ChangeGoomLines() noexcept -> void
   static constexpr auto GOOM_CYCLE_MOD_CHANGE   = 9U;
 
   if ((GOOM_CYCLE_MOD_CHANGE ==
-       (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % CHANGE_GOOM_LINE_CYCLES)) and
-      m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
+       (m_fxHelper->GetGoomTime().GetCurrentTime() % CHANGE_GOOM_LINE_CYCLES)) and
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_GOOM_LINE) and
       ((0 == m_lineMode) or (m_lineMode == m_drawLinesDuration)))
   {
     ResetGoomLines();
@@ -390,7 +390,7 @@ inline auto LinesFx::LinesImpl::CanDisplayLines() const noexcept -> bool
   static constexpr auto DISPLAY_LINES_GOOM_NUM = 5U;
 
   return ((m_lineMode != 0) or
-          (m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
+          (m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom() < DISPLAY_LINES_GOOM_NUM));
 }
 
 inline auto LinesFx::LinesImpl::UpdateLineModes() noexcept -> void
@@ -480,13 +480,13 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
     param2    = NEW_FAR_VAL_PARAM2;
     amplitude = NEW_FAR_VAL_AMPLITUDE;
   }
-  else if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
+  else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_AMPLITUDE))
   {
     param1    = 0.0F;
     param2    = 0.0F;
     amplitude = NEW_NON_FAR_VAL_AMPLITUDE;
   }
-  else if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
+  else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_LINE_CIRCLE_PARAMS))
   {
     param1    = NEW_NON_FAR_VAL_PARAM1_FACTOR * m_screenHeight;
     param2    = NEW_NON_FAR_VAL_PARAM2_FACTOR * m_screenHeight;
@@ -522,7 +522,7 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
   float param1; // NOLINT(cppcoreguidelines-init-variables)
   float param2; // NOLINT(cppcoreguidelines-init-variables)
 
-  if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
+  if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_H_LINE_PARAMS) or (farVal != 0))
   {
     param1    = NEW_PARAM1_FACTOR * m_screenHeight;
     param2    = NEW_PARAM2_FACTOR * m_screenHeight;
@@ -558,7 +558,7 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
   float param1; // NOLINT(cppcoreguidelines-init-variables)
   float param2; // NOLINT(cppcoreguidelines-init-variables)
 
-  if (m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
+  if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_V_LINE_PARAMS) or (farVal != 0))
   {
     param1    = NEW_PARAM1_FACTOR * m_screenWidth;
     param2    = NEW_PARAM2_FACTOR * m_screenWidth;
@@ -582,7 +582,7 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
 auto LinesFx::LinesImpl::GetResetLineColors(const uint32_t farVal) const noexcept
     -> std::array<Pixel, NUM_LINES>
 {
-  if ((farVal != 0) and m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
+  if ((farVal != 0) and m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_LINE_TO_BLACK))
   {
     return {m_blackLineColor, m_blackLineColor};
   }
@@ -605,14 +605,14 @@ auto LinesFx::LinesImpl::StopRandomLineChangeMode() noexcept -> void
       m_lineMode = 0;
     }
   }
-  else if ((0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % DEC_LINE_MODE_CYCLES)) and
-           m_fxHelper->goomRand->ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
+  else if ((0 == (m_fxHelper->GetGoomTime().GetCurrentTime() % DEC_LINE_MODE_CYCLES)) and
+           m_fxHelper->GetGoomRand().ProbabilityOf(PROB_REDUCE_LINE_MODE) and (m_lineMode != 0))
   {
     --m_lineMode;
   }
 
-  if ((0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % UPDATE_LINE_MODE_CYCLES)) and
-      m_fxHelper->goomRand->ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
+  if ((0 == (m_fxHelper->GetGoomTime().GetCurrentTime() % UPDATE_LINE_MODE_CYCLES)) and
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_UPDATE_LINE_MODE) and m_isNearScope)
   {
     if (0 == m_lineMode)
     {

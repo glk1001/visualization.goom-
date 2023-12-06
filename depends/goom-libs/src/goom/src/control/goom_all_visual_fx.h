@@ -38,7 +38,7 @@ class IGoomRand;
 
 namespace VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 }
 
 namespace CONTROL
@@ -51,7 +51,7 @@ class GoomAllVisualFx
 public:
   GoomAllVisualFx() noexcept = delete;
   GoomAllVisualFx(UTILS::Parallel& parallel,
-                  const VISUAL_FX::FxHelper& fxHelper,
+                  VISUAL_FX::FxHelper& fxHelper,
                   const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                   const std::string& resourcesDirectory,
                   IGoomStateHandler& goomStateHandler) noexcept;

@@ -3,7 +3,6 @@
 #include "circle.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "visual_fx/fx_helper.h"
 
 #include <cstdint>
@@ -45,8 +44,8 @@ public:
 private:
   uint32_t m_numCircles;
   const FxHelper* m_fxHelper;
-  uint32_t m_screenWidth         = m_fxHelper->goomInfo->GetDimensions().GetWidth();
-  uint32_t m_screenHeight        = m_fxHelper->goomInfo->GetDimensions().GetHeight();
+  uint32_t m_screenWidth         = m_fxHelper->GetDimensions().GetWidth();
+  uint32_t m_screenHeight        = m_fxHelper->GetDimensions().GetHeight();
   Point2dInt m_screenCentre      = MidpointFromOrigin(GetPoint2dInt(m_screenWidth, m_screenHeight));
   Point2dInt m_topLeftCorner     = GetPoint2dInt(0U, 0U);
   Point2dInt m_topRightCorner    = GetPoint2dInt(m_screenWidth - 1, 0U);

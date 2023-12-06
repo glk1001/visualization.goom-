@@ -14,7 +14,6 @@
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "goom_plugin_info.h"
 #include "goom_visual_fx.h"
 #include "tentacles/circles_tentacle_layout.h"
 #include "tentacles/tentacle_driver.h"
@@ -46,7 +45,7 @@ using UTILS::MATH::Weights;
 class TentaclesFx::TentaclesImpl
 {
 public:
-  explicit TentaclesImpl(const FxHelper& fxHelper);
+  explicit TentaclesImpl(FxHelper& fxHelper);
 
   auto Start() -> void;
   auto Resume() -> void;
@@ -60,7 +59,7 @@ public:
   auto ApplyToImageBuffers() -> void;
 
 private:
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
 
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
 
@@ -94,14 +93,14 @@ private:
   auto UpdatePixelBlender() noexcept -> void;
 
   static constexpr uint32_t MAX_TIME_FOR_DOMINANT_COLOR = 100;
-  Timer m_timeWithThisDominantColor{m_fxHelper->goomInfo->GetTime(), MAX_TIME_FOR_DOMINANT_COLOR};
+  Timer m_timeWithThisDominantColor{m_fxHelper->GetGoomTime(), MAX_TIME_FOR_DOMINANT_COLOR};
 
   auto RefreshTentacles() -> void;
   auto DoTentaclesUpdate() -> void;
   auto UpdateTentacleWaveFrequency() -> void;
 };
 
-TentaclesFx::TentaclesFx(const FxHelper& fxHelper) noexcept
+TentaclesFx::TentaclesFx(FxHelper& fxHelper) noexcept
   : m_pimpl{spimpl::make_unique_impl<TentaclesImpl>(fxHelper)}
 {
 }
@@ -176,10 +175,10 @@ static constexpr auto DRIVERS_NUM1_WEIGHT = 30.0F;
 static constexpr auto DRIVERS_NUM2_WEIGHT = 10.0F;
 static constexpr auto DRIVERS_NUM3_WEIGHT = 05.0F;
 
-TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
+TentaclesFx::TentaclesImpl::TentaclesImpl(FxHelper& fxHelper)
   : m_fxHelper{&fxHelper},
     m_driverWeights{
-      *m_fxHelper->goomRand,
+      m_fxHelper->GetGoomRand(),
       {
           {Drivers::NUM0, DRIVERS_NUM0_WEIGHT},
           {Drivers::NUM1, DRIVERS_NUM1_WEIGHT},
@@ -188,9 +187,9 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
       }},
     // clang-format off
     m_tentacleDrivers{GetTentacleDrivers(
-        *fxHelper.draw,
-        *m_fxHelper->goomRand,
-        m_fxHelper->goomInfo->GetTime(),
+        fxHelper.GetDraw(),
+        m_fxHelper->GetGoomRand(),
+        m_fxHelper->GetGoomTime(),
         {{
            CirclesTentacleLayout{{LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES}},
            CirclesTentacleLayout{{LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES}},
@@ -200,7 +199,7 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(const FxHelper& fxHelper)
         m_defaultAlpha
     )},
     // clang-format on
-    m_pixelBlender{*fxHelper.goomRand}
+    m_pixelBlender{fxHelper.GetGoomRand()}
 {
   Expects(NUM_TENTACLE_DRIVERS == m_driverWeights.GetNumElements());
   Ensures(m_currentTentacleDriver != nullptr);
@@ -216,7 +215,7 @@ inline auto TentaclesFx::TentaclesImpl::Start() -> void
 inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 {
   if (static constexpr auto PROB_NEW_DRIVER = 0.5F;
-      m_fxHelper->goomRand->ProbabilityOf(PROB_NEW_DRIVER))
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NEW_DRIVER))
   {
     m_currentTentacleDriver = GetNextDriver();
   }
@@ -335,7 +334,7 @@ inline auto TentaclesFx::TentaclesImpl::ApplyToImageBuffers() -> void
 
 inline auto TentaclesFx::TentaclesImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 
@@ -343,7 +342,7 @@ inline auto TentaclesFx::TentaclesImpl::DoTentaclesUpdate() -> void
 {
   Expects(m_currentTentacleDriver != nullptr);
 
-  if (0 == m_fxHelper->goomInfo->GetSoundEvents().GetTimeSinceLastGoom())
+  if (0 == m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom())
   {
     ChangeDominantColor();
   }
@@ -359,11 +358,10 @@ inline auto TentaclesFx::TentaclesImpl::UpdateTentacleWaveFrequency() -> void
 
   // Higher sound acceleration increases tentacle wave frequency.
   const auto tentacleWaveFreqMultiplier =
-      m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration() <
+      m_fxHelper->GetSoundEvents().GetSoundInfo().GetAcceleration() <
               SoundInfo::ACCELERATION_MIDPOINT
           ? 0.95F
-          : (1.0F /
-             (1.1F - m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration()));
+          : (1.0F / (1.1F - m_fxHelper->GetSoundEvents().GetSoundInfo().GetAcceleration()));
   m_currentTentacleDriver->MultiplyIterZeroYValWaveFreq(tentacleWaveFreqMultiplier);
 }
 

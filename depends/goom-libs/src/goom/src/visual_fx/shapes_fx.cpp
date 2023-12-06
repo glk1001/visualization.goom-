@@ -39,7 +39,7 @@ using UTILS::MATH::TWO_PI;
 class ShapesFx::ShapesFxImpl
 {
 public:
-  explicit ShapesFxImpl(const FxHelper& fxHelper) noexcept;
+  explicit ShapesFxImpl(FxHelper& fxHelper) noexcept;
 
   auto Start() noexcept -> void;
 
@@ -52,8 +52,8 @@ public:
   auto ApplyToImageBuffers() noexcept -> void;
 
 private:
-  const FxHelper* m_fxHelper;
-  Point2dInt m_screenCentre       = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  FxHelper* m_fxHelper;
+  Point2dInt m_screenCentre       = m_fxHelper->GetDimensions().GetCentrePoint();
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
   RandomPixelBlender m_pixelBlender;
@@ -79,14 +79,13 @@ private:
       -> std::array<Point2dInt, NUM_SHAPES>;
 
   static constexpr uint32_t TIME_BEFORE_SYNCHRONISED_CHANGE = 5000;
-  Timer m_synchronisedShapeChangesTimer{m_fxHelper->goomInfo->GetTime(),
-                                        TIME_BEFORE_SYNCHRONISED_CHANGE};
+  Timer m_synchronisedShapeChangesTimer{m_fxHelper->GetGoomTime(), TIME_BEFORE_SYNCHRONISED_CHANGE};
 
   static constexpr uint32_t MIN_INCREMENTS_PER_UPDATE = 1;
   static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 10;
   static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
   static_assert(MIN_INCREMENTS_PER_UPDATE <= MAX_INCREMENTS_PER_UPDATE);
-  uint32_t m_numIncrementsPerUpdate = m_fxHelper->goomRand->GetRandInRange(
+  uint32_t m_numIncrementsPerUpdate = m_fxHelper->GetGoomRand().GetRandInRange(
       MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   auto UpdateShapeEffects() noexcept -> void;
   auto UpdateShapeSpeeds() noexcept -> void;
@@ -97,7 +96,7 @@ private:
   [[nodiscard]] auto GetNextNumIncrements() const noexcept -> size_t;
 };
 
-ShapesFx::ShapesFx(const FxHelper& fxHelper) noexcept
+ShapesFx::ShapesFx(FxHelper& fxHelper) noexcept
   : m_pimpl{spimpl::make_unique_impl<ShapesFxImpl>(fxHelper)}
 {
 }
@@ -142,8 +141,8 @@ auto ShapesFx::ApplyToImageBuffers() noexcept -> void
   m_pimpl->ApplyToImageBuffers();
 }
 
-ShapesFx::ShapesFxImpl::ShapesFxImpl(const FxHelper& fxHelper) noexcept
-  : m_fxHelper{&fxHelper}, m_pixelBlender{*fxHelper.goomRand}, m_shapes{GetShapes()}
+ShapesFx::ShapesFxImpl::ShapesFxImpl(FxHelper& fxHelper) noexcept
+  : m_fxHelper{&fxHelper}, m_pixelBlender{fxHelper.GetGoomRand()}, m_shapes{GetShapes()}
 {
   UpdateShapePathMinMaxNumSteps();
 }
@@ -158,9 +157,9 @@ auto ShapesFx::ShapesFxImpl::GetShapes() const noexcept -> std::array<Shape, NUM
 
   return {
       {
-       Shape{*m_fxHelper->draw,
-       *m_fxHelper->goomRand,
-       *m_fxHelper->goomInfo,
+       Shape{m_fxHelper->GetDraw(),
+       m_fxHelper->GetGoomRand(),
+       m_fxHelper->GetGoomInfo(),
        {MIN_RADIUS_FRACTION,
        MAX_RADIUS_FRACTION,
        SHAPE0_MIN_DOT_RADIUS,
@@ -207,14 +206,14 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 {
   if (static constexpr auto PROB_UPDATE_NUM_INCREMENTS = 0.1F;
-      m_fxHelper->goomRand->ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
   {
-    m_numIncrementsPerUpdate = m_fxHelper->goomRand->GetRandInRange(MIN_INCREMENTS_PER_UPDATE,
-                                                                    MAX_INCREMENTS_PER_UPDATE + 1);
+    m_numIncrementsPerUpdate = m_fxHelper->GetGoomRand().GetRandInRange(
+        MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
   }
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.1F;
-  const auto varyDotRadius = m_fxHelper->goomRand->ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  const auto varyDotRadius = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_VARY_DOT_RADIUS);
   std::for_each(begin(m_shapes),
                 end(m_shapes),
                 [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
@@ -253,15 +252,15 @@ inline auto ShapesFx::ShapesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoi
 auto ShapesFx::ShapesFxImpl::GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
     -> Point2dInt
 {
-  const auto xMax = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - 1;
-  const auto yMax = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - 1;
+  const auto xMax = m_fxHelper->GetDimensions().GetIntWidth() - 1;
+  const auto yMax = m_fxHelper->GetDimensions().GetIntHeight() - 1;
 
   const auto minZoomMidpoint   = Point2dInt{xMax / 5, yMax / 5};
   const auto maxZoomMidpoint   = Point2dInt{xMax - minZoomMidpoint.x, yMax - minZoomMidpoint.y};
   const auto zoomClipRectangle = Rectangle2dInt{minZoomMidpoint, maxZoomMidpoint};
 
   return GetPointClippedToRectangle(
-      zoomMidpoint, zoomClipRectangle, m_fxHelper->goomInfo->GetDimensions().GetCentrePoint());
+      zoomMidpoint, zoomClipRectangle, m_fxHelper->GetDimensions().GetCentrePoint());
 }
 
 auto ShapesFx::ShapesFxImpl::GetShapeZoomMidpoints(const Point2dInt& zoomMidpoint) const noexcept
@@ -309,13 +308,13 @@ auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoi
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
   static constexpr auto MARGIN = 20;
-  const auto width             = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - MARGIN;
-  const auto height            = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - MARGIN;
+  const auto width             = m_fxHelper->GetDimensions().GetIntWidth() - MARGIN;
+  const auto height            = m_fxHelper->GetDimensions().GetIntHeight() - MARGIN;
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
-    shapeZoomMidpoints.at(i) = {m_fxHelper->goomRand->GetRandInRange(MARGIN, width),
-                                m_fxHelper->goomRand->GetRandInRange(MARGIN, height)};
+    shapeZoomMidpoints.at(i) = {m_fxHelper->GetGoomRand().GetRandInRange(MARGIN, width),
+                                m_fxHelper->GetGoomRand().GetRandInRange(MARGIN, height)};
   }
 
   return shapeZoomMidpoints;
@@ -343,7 +342,7 @@ inline auto ShapesFx::ShapesFxImpl::ApplyToImageBuffers() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 

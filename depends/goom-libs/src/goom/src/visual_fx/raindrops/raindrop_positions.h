@@ -2,6 +2,7 @@
 
 #include "../fx_helper.h"
 #include "goom/goom_types.h"
+#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "utils/math/paths.h"
@@ -40,7 +41,7 @@ public:
 private:
   const FxHelper* m_fxHelper;
   Params m_params;
-  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  Point2dInt m_screenCentre = m_fxHelper->GetGoomInfo().GetDimensions().GetCentrePoint();
   static constexpr auto WEIGHT_POINT_CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
   static constexpr auto MIN_WEIGHT_POINT_STEPS                = 10U;
   static constexpr auto MAX_WEIGHT_POINT_STEPS                = 20U;

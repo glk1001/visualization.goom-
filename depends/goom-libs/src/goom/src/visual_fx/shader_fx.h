@@ -10,7 +10,7 @@
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class ShaderFx : public IVisualFx
 {

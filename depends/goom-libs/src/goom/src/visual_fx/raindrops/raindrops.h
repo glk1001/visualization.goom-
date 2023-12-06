@@ -10,7 +10,6 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "raindrop_positions.h"
 #include "utils/graphics/blend2d_to_goom.h"
 #include "utils/t_values.h"
@@ -30,7 +29,7 @@ public:
   static constexpr auto MAX_NUM_RAINDROPS   = 100U;
   static constexpr auto NUM_START_RAINDROPS = 60U;
 
-  Raindrops(const FxHelper& fxHelper,
+  Raindrops(FxHelper& fxHelper,
             uint32_t numRaindrops,
             const COLOR::WeightedRandomColorMaps& randomMainColorMaps,
             const COLOR::WeightedRandomColorMaps& randomLowColorMaps,
@@ -47,8 +46,8 @@ public:
   auto UpdateRaindrops() noexcept -> void;
 
 private:
-  const FxHelper* m_fxHelper;
-  Point2dInt m_screenCentre = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  FxHelper* m_fxHelper;
+  Point2dInt m_screenCentre = m_fxHelper->GetDimensions().GetCentrePoint();
   COLOR::WeightedRandomColorMaps m_randomMainColorMaps;
   COLOR::WeightedRandomColorMaps m_randomLowColorMaps;
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;

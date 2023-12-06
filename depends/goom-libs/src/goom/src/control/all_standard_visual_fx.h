@@ -43,7 +43,7 @@ class AllStandardVisualFx
 {
 public:
   AllStandardVisualFx(UTILS::Parallel& parallel,
-                      const VISUAL_FX::FxHelper& fxHelper,
+                      VISUAL_FX::FxHelper& fxHelper,
                       const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                       const std::string& resourcesDirectory) noexcept;
 
@@ -79,7 +79,7 @@ private:
   std::unique_ptr<VISUAL_FX::ShaderFx> m_shaderFx;
   UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
   [[nodiscard]] static auto GetDrawablesMap(UTILS::Parallel& parallel,
-                                            const VISUAL_FX::FxHelper& fxHelper,
+                                            VISUAL_FX::FxHelper& fxHelper,
                                             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
                                             const std::string& resourcesDirectory)
       -> UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>>;

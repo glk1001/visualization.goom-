@@ -108,9 +108,9 @@ auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) noexcept 
 }
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
-  : m_highContrast{*fxHelper.goomInfo, *fxHelper.goomRand},
-    m_hueShiftLerper{*fxHelper.goomInfo,
-                     *fxHelper.goomRand,
+  : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()},
+    m_hueShiftLerper{fxHelper.GetGoomInfo(),
+                     fxHelper.GetGoomRand(),
                      {
                          HUE_MIN_NUM_LERP_ON_STEPS,
                          HUE_MAX_NUM_LERP_ON_STEPS,
@@ -118,9 +118,9 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
                          HUE_MAX_LERP_OFF_TIME
                      }},
     m_chromaFactorLerper{
-        *fxHelper.goomInfo, *fxHelper.goomRand, MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR},
-    m_baseColorMultiplierLerper{*fxHelper.goomInfo,
-                                *fxHelper.goomRand,
+        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR},
+    m_baseColorMultiplierLerper{fxHelper.GetGoomInfo(),
+                                fxHelper.GetGoomRand(),
                                 MIN_BASE_COLOR_MULTIPLIER,
                                 MAX_BASE_COLOR_MULTIPLIER}
 {

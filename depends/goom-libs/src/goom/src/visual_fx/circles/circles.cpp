@@ -27,14 +27,14 @@ static constexpr auto LINE_DOT_DIAMETER = BitmapGetter::MIN_DOT_DIAMETER;
 static constexpr auto MIN_DOT_DIAMETER  = BitmapGetter::MIN_DOT_DIAMETER + 4;
 static constexpr auto MAX_DOT_DIAMETER  = BitmapGetter::MAX_DOT_DIAMETER;
 
-Circles::Circles(const FxHelper& fxHelper,
+Circles::Circles(FxHelper& fxHelper,
                  const SmallImageBitmaps& smallBitmaps,
                  const uint32_t numCircles,
                  const std::vector<OscillatingFunction::Params>& pathParams,
                  const std::vector<Circle::Params>& circleParams) noexcept
-  : m_goomInfo{fxHelper.goomInfo},
-    m_goomRand{fxHelper.goomRand},
-    m_bitmapGetter{*fxHelper.goomRand, smallBitmaps},
+  : m_goomInfo{&fxHelper.GetGoomInfo()},
+    m_goomRand{&fxHelper.GetGoomRand()},
+    m_bitmapGetter{fxHelper.GetGoomRand(), smallBitmaps},
     m_numCircles{numCircles},
     m_circles{GetCircles(fxHelper,
                          {LINE_DOT_DIAMETER, MIN_DOT_DIAMETER, MAX_DOT_DIAMETER, &m_bitmapGetter},
@@ -44,7 +44,7 @@ Circles::Circles(const FxHelper& fxHelper,
 {
 }
 
-auto Circles::GetCircles(const FxHelper& fxHelper,
+auto Circles::GetCircles(FxHelper& fxHelper,
                          const Helper& helper,
                          const std::vector<OscillatingFunction::Params>& pathParams,
                          const uint32_t numCircles,

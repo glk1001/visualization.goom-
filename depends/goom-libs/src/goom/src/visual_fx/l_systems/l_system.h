@@ -69,7 +69,7 @@ public:
     Overrides overrides;
   };
 
-  LSystem(const FxHelper& fxHelper,
+  LSystem(FxHelper& fxHelper,
           const std::string& lSystemDirectory,
           const LSystemFile& lSystemFile,
           PixelChannelType defaultAlpha) noexcept;
@@ -123,7 +123,7 @@ private:
   LSysGeometry m_lSysGeometry;
   LSysDraw m_lSysDraw;
 
-  LSysPath m_lSysPath{*m_fxHelper->goomRand};
+  LSysPath m_lSysPath{m_fxHelper->GetGoomRand()};
   static constexpr auto MIN_PATH_NUM_STEPS = 50U;
   static constexpr auto MAX_PATH_NUM_STEPS = 200U;
 
@@ -141,10 +141,10 @@ private:
   static constexpr auto ON_BRIGHTNESS              = 2.0F;
   static constexpr auto OFF_BRIGHTNESS             = 1.0F;
   UTILS::OnOffTimer m_brightnessOnOffTimer{
-      m_fxHelper->goomInfo->GetTime(),
+      m_fxHelper->GetGoomTime(),
       {BRIGHTNESS_ON_TIME,
-                             BRIGHTNESS_FAILED_ON_TIME, BRIGHTNESS_OFF_TIME,
-                             BRIGHTNESS_FAILED_OFF_TIME}
+                       BRIGHTNESS_FAILED_ON_TIME, BRIGHTNESS_OFF_TIME,
+                       BRIGHTNESS_FAILED_OFF_TIME}
   };
   auto StartBrightnessTimer() noexcept -> void;
 
@@ -155,8 +155,7 @@ private:
 
   uint32_t m_maxGen                              = 1U;
   static constexpr auto TIME_TO_KEEP_INTERPRETER = 500U;
-  UTILS::Timer m_timeForThisLSysInterpreter{m_fxHelper->goomInfo->GetTime(),
-                                            TIME_TO_KEEP_INTERPRETER};
+  UTILS::Timer m_timeForThisLSysInterpreter{m_fxHelper->GetGoomTime(), TIME_TO_KEEP_INTERPRETER};
   auto UpdateLSysModel() noexcept -> void;
   auto InitNextLSysInterpreter() -> void;
   static constexpr auto DEFAULT_NUM_INTERPRETER_PARAMS_STEPS = 100U;
@@ -183,7 +182,7 @@ inline auto LSystem::ChangeColors() noexcept -> void
 
 inline auto LSystem::SwitchLineDrawers() -> void
 {
-  if (m_fxHelper->goomRand->ProbabilityOf(m_lSysModelSet.lSysOverrides.probabilityOfNoise))
+  if (m_fxHelper->GetGoomRand().ProbabilityOf(m_lSysModelSet.lSysOverrides.probabilityOfNoise))
   {
     m_lineDrawerManager.SwitchLineDrawers();
   }

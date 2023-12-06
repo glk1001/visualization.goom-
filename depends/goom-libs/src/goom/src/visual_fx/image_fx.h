@@ -17,13 +17,13 @@ class Parallel;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class ImageFx : public IVisualFx
 {
 public:
   ImageFx(UTILS::Parallel& parallel,
-          const FxHelper& fxHelper,
+          FxHelper& fxHelper,
           const std::string& resourcesDirectory) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;

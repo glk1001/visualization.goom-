@@ -92,7 +92,7 @@ class ImageFx::ImageFxImpl
 {
 public:
   ImageFxImpl(Parallel& parallel,
-              const FxHelper& fxHelper,
+              FxHelper& fxHelper,
               const std::string& resourcesDirectory) noexcept;
 
   auto Start() -> void;
@@ -107,20 +107,20 @@ public:
 
 private:
   Parallel* m_parallel;
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
   PixelDrawer m_pixelDrawer;
   std::string m_resourcesDirectory;
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
 
-  int32_t m_availableWidth  = m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - CHUNK_WIDTH;
-  int32_t m_availableHeight = m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - CHUNK_HEIGHT;
+  int32_t m_availableWidth  = m_fxHelper->GetDimensions().GetIntWidth() - CHUNK_WIDTH;
+  int32_t m_availableHeight = m_fxHelper->GetDimensions().GetIntHeight() - CHUNK_HEIGHT;
   Point2dInt m_screenCentre{I_HALF * m_availableWidth, I_HALF* m_availableHeight};
   float m_maxRadius = HALF * static_cast<float>(std::min(m_availableWidth, m_availableHeight));
   [[nodiscard]] auto GetNewRandBrightnessFactor() const -> float;
   float m_randBrightnessFactor{GetNewRandBrightnessFactor()};
 
   WeightedRandomColorMaps m_colorMaps{
-      GetUnweightedRandomColorMaps(*m_fxHelper->goomRand, m_defaultAlpha)};
+      GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha)};
   ColorMapPtrWrapper m_currentColorMap{GetRandomColorMap()};
   [[nodiscard]] auto GetRandomColorMap() const -> ColorMapPtrWrapper;
   bool m_pixelColorIsDominant                    = false;
@@ -136,7 +136,7 @@ private:
   static constexpr auto ALPHA_AND_ADD_WEIGHT = 20.0F;
   // clang-format off
   RandomPixelBlender m_pixelBlender{
-      *m_fxHelper->goomRand,
+      m_fxHelper->GetGoomRand(),
       {
           {RandomPixelBlender::PixelBlendType::ADD,           ADD_WEIGHT},
           {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,   DARKEN_ONLY_WEIGHT},
@@ -192,7 +192,7 @@ private:
 };
 
 ImageFx::ImageFx(Parallel& parallel,
-                 const FxHelper& fxHelper,
+                 FxHelper& fxHelper,
                  const std::string& resourcesDirectory) noexcept
   : m_pimpl{spimpl::make_unique_impl<ImageFxImpl>(parallel, fxHelper, resourcesDirectory)}
 {
@@ -239,11 +239,11 @@ auto ImageFx::ApplyToImageBuffers() noexcept -> void
 }
 
 ImageFx::ImageFxImpl::ImageFxImpl(Parallel& parallel,
-                                  const FxHelper& fxHelper,
+                                  FxHelper& fxHelper,
                                   const std::string& resourcesDirectory) noexcept
   : m_parallel{&parallel},
     m_fxHelper{&fxHelper},
-    m_pixelDrawer{*fxHelper.draw},
+    m_pixelDrawer{fxHelper.GetDraw()},
     m_resourcesDirectory{resourcesDirectory}
 {
 }
@@ -284,7 +284,7 @@ inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   m_colorMaps            = WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
-  m_pixelColorIsDominant = m_fxHelper->goomRand->ProbabilityOf(0.0F);
+  m_pixelColorIsDominant = m_fxHelper->GetGoomRand().ProbabilityOf(0.0F);
   m_randBrightnessFactor = GetNewRandBrightnessFactor();
 }
 
@@ -294,15 +294,15 @@ inline auto ImageFx::ImageFxImpl::GetNewRandBrightnessFactor() const -> float
   static constexpr auto MAX_FACTOR = 2.0F;
   const auto maxRadiusSq           = Sq(m_maxRadius);
 
-  return 1.0F /
-         m_fxHelper->goomRand->GetRandInRange(MIN_FACTOR * maxRadiusSq, MAX_FACTOR * maxRadiusSq);
+  return 1.0F / m_fxHelper->GetGoomRand().GetRandInRange(MIN_FACTOR * maxRadiusSq,
+                                                         MAX_FACTOR * maxRadiusSq);
 }
 
 inline auto ImageFx::ImageFxImpl::Resume() -> void
 {
   static constexpr auto MIN_BRIGHTNESS = 0.1F;
   m_brightnessBase =
-      m_fxHelper->goomRand->GetRandInRange(MIN_BRIGHTNESS, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_BRIGHTNESS, 1.0F) * DEFAULT_BRIGHTNESS_BASE;
 }
 
 inline auto ImageFx::ImageFxImpl::Start() -> void
@@ -332,7 +332,7 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
   };
   auto randImageIndexes = std::array<size_t, s_IMAGE_FILENAMES.size()>{};
   std::iota(begin(randImageIndexes), end(randImageIndexes), 0);
-  m_fxHelper->goomRand->Shuffle(begin(randImageIndexes), end(randImageIndexes));
+  m_fxHelper->GetGoomRand().Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
   const auto imageDir              = m_resourcesDirectory + PATH_SEP + IMAGE_FX_DIR;
   static constexpr auto MAX_IMAGES = 5U;
@@ -340,14 +340,14 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
   {
     const auto imageFilename = imageDir + PATH_SEP + s_IMAGE_FILENAMES.at(randImageIndexes.at(i));
     m_images.emplace_back(std::make_unique<ChunkedImage>(
-        std::make_shared<ImageBitmap>(imageFilename), *m_fxHelper->goomInfo));
+        std::make_shared<ImageBitmap>(imageFilename), m_fxHelper->GetGoomInfo()));
   }
 }
 
 inline auto ImageFx::ImageFxImpl::ResetCurrentImage() -> void
 {
   m_currentImage =
-      m_images[m_fxHelper->goomRand->GetRandInRange(0U, static_cast<uint32_t>(m_images.size()))]
+      m_images[m_fxHelper->GetGoomRand().GetRandInRange(0U, static_cast<uint32_t>(m_images.size()))]
           .get();
 }
 
@@ -355,7 +355,7 @@ auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
   static constexpr auto MIN_RADIUS_FRACTION = 0.7F;
   const auto randMaxRadius =
-      m_fxHelper->goomRand->GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_RADIUS_FRACTION, 1.0F) * m_maxRadius;
 
   const auto numChunks       = m_currentImage->GetNumChunks();
   auto radiusTheta           = 0.0F;
@@ -366,8 +366,8 @@ auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
     static constexpr auto SMALL_OFFSET = 0.4F;
     const auto maxRadiusAdj =
         (1.0F - (SMALL_OFFSET * (1.0F + std::sin(radiusTheta)))) * randMaxRadius;
-    const auto radius = m_fxHelper->goomRand->GetRandInRange(10.0F, maxRadiusAdj);
-    const auto theta  = m_fxHelper->goomRand->GetRandInRange(0.0F, TWO_PI);
+    const auto radius = m_fxHelper->GetGoomRand().GetRandInRange(10.0F, maxRadiusAdj);
+    const auto theta  = m_fxHelper->GetGoomRand().GetRandInRange(0.0F, TWO_PI);
     const auto startPos =
         m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
                                   static_cast<int32_t>((std::sin(theta) * radius))};
@@ -382,12 +382,14 @@ inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) 
   static constexpr auto MARGIN            = 20.0F;
   static constexpr auto MIN_RADIUS_FACTOR = 0.025F;
   static constexpr auto MAX_RADIUS_FACTOR = 0.5F;
-  const auto aRadius = (m_fxHelper->goomRand->GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
-                        static_cast<float>(m_availableWidth)) -
-                       MARGIN;
-  const auto bRadius = (m_fxHelper->goomRand->GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
-                        static_cast<float>(m_availableHeight)) -
-                       MARGIN;
+  const auto aRadius =
+      (m_fxHelper->GetGoomRand().GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
+       static_cast<float>(m_availableWidth)) -
+      MARGIN;
+  const auto bRadius =
+      (m_fxHelper->GetGoomRand().GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR) *
+       static_cast<float>(m_availableHeight)) -
+      MARGIN;
   const auto theta =
       (TWO_PI * static_cast<float>(i)) / static_cast<float>(m_currentImage->GetNumChunks());
   const auto floatingStartPosition =
@@ -400,8 +402,8 @@ inline auto ImageFx::ImageFxImpl::SetNewFloatingStartPosition() -> void
 {
   m_floatingStartPosition =
       m_screenCentre -
-      Vec2dInt{m_fxHelper->goomRand->GetRandInRange(CHUNK_WIDTH, m_availableWidth),
-               m_fxHelper->goomRand->GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
+      Vec2dInt{m_fxHelper->GetGoomRand().GetRandInRange(CHUNK_WIDTH, m_availableWidth),
+               m_fxHelper->GetGoomRand().GetRandInRange(CHUNK_HEIGHT, m_availableHeight)};
 }
 
 inline auto ImageFx::ImageFxImpl::ApplyToImageBuffers() -> void
@@ -417,7 +419,7 @@ inline auto ImageFx::ImageFxImpl::ApplyToImageBuffers() -> void
 
 inline auto ImageFx::ImageFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 

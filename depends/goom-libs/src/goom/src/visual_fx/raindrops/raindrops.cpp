@@ -1,4 +1,4 @@
-#undef NO_LOGGING
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "raindrops.h"
 
@@ -42,7 +42,7 @@ using UTILS::GRAPHICS::GetMinSideLength;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::MATH::U_HALF;
 
-Raindrops::Raindrops(const FxHelper& fxHelper,
+Raindrops::Raindrops(FxHelper& fxHelper,
                      const uint32_t numRaindrops,
                      // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                      const WeightedRandomColorMaps& randomMainColorMaps,
@@ -52,10 +52,10 @@ Raindrops::Raindrops(const FxHelper& fxHelper,
   : m_fxHelper{&fxHelper},
     m_randomMainColorMaps{randomMainColorMaps},
     m_randomLowColorMaps{randomLowColorMaps},
-    m_circleDrawer{*fxHelper.draw},
-    m_lineDrawer{*fxHelper.draw},
-    m_blend2dToMainBuffer{fxHelper.goomInfo->GetDimensions(), GetColorAlphaNoAddBlend},
-    m_blend2dToLowBuffer{fxHelper.goomInfo->GetDimensions(), GetColorAlphaNoAddBlend},
+    m_circleDrawer{fxHelper.GetDraw()},
+    m_lineDrawer{fxHelper.GetDraw()},
+    m_blend2dToMainBuffer{fxHelper.GetDimensions(), GetColorAlphaNoAddBlend},
+    m_blend2dToLowBuffer{fxHelper.GetDimensions(), GetColorAlphaNoAddBlend},
     m_raindropParams{GetNewRaindropParams(rectangle2D)},
     m_raindropPositions{fxHelper,
                         GetAcceptableNumRaindrops(numRaindrops),
@@ -87,14 +87,14 @@ auto Raindrops::GetNewSourceRectangleWeightPoint(const Point2dInt& focusPoint) c
 {
   if (focusPoint != m_screenCentre)
   {
-    return {m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - focusPoint.x,
-            m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - focusPoint.y};
+    return {m_fxHelper->GetDimensions().GetIntWidth() - focusPoint.x,
+            m_fxHelper->GetDimensions().GetIntHeight() - focusPoint.y};
   }
 
-  const auto xSign = m_fxHelper->goomRand->ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
-  const auto ySign = m_fxHelper->goomRand->ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
-  return {m_screenCentre.x + xSign * (m_fxHelper->goomInfo->GetDimensions().GetIntWidth() / 4),
-          m_screenCentre.y + ySign * (m_fxHelper->goomInfo->GetDimensions().GetIntHeight() / 4)};
+  const auto xSign = m_fxHelper->GetGoomRand().ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
+  const auto ySign = m_fxHelper->GetGoomRand().ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
+  return {m_screenCentre.x + xSign * (m_fxHelper->GetDimensions().GetIntWidth() / 4),
+          m_screenCentre.y + ySign * (m_fxHelper->GetDimensions().GetIntHeight() / 4)};
 }
 
 auto Raindrops::GetNewRaindropParams(const Rectangle2dInt& rectangle2D) const noexcept
@@ -104,7 +104,7 @@ auto Raindrops::GetNewRaindropParams(const Rectangle2dInt& rectangle2D) const no
 
   const auto maxEnclosingRadius = static_cast<float>(U_HALF * GetMinSideLength(rectangle2D));
 
-  raindropParams.numConcentricCircles = m_fxHelper->goomRand->GetRandInRange(
+  raindropParams.numConcentricCircles = m_fxHelper->GetGoomRand().GetRandInRange(
       MIN_NUM_CONCENTRIC_CIRCLES, MAX_NUM_CONCENTRIC_CIRCLES + 1);
   raindropParams.maxStartingRadius = RADIUS_TO_RECT_SIDE_FRAC * maxEnclosingRadius;
   raindropParams.minStartingRadius = MIN_TO_MAX_RADIUS_FRAC * raindropParams.maxStartingRadius;
@@ -147,18 +147,18 @@ auto Raindrops::GetNewRaindrop(const uint32_t dropNum) const noexcept -> Raindro
   const auto fracFromWeightPoint = GetFracFromWeightPoint(dropCentrePoint);
 
   const auto numGrowthSteps =
-      m_fxHelper->goomRand->GetRandInRange(MIN_GROWTH_STEPS, MAX_GROWTH_STEPS + 1);
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_GROWTH_STEPS, MAX_GROWTH_STEPS + 1);
 
-  const auto startingRadius = m_fxHelper->goomRand->GetRandInRange(
+  const auto startingRadius = m_fxHelper->GetGoomRand().GetRandInRange(
       m_raindropParams.minStartingRadius, m_raindropParams.maxStartingRadius);
   const auto maxGrowthRadius =
-      m_fxHelper->goomRand->GetRandInRange(startingRadius, m_raindropParams.maxGrowthRadius);
+      m_fxHelper->GetGoomRand().GetRandInRange(startingRadius, m_raindropParams.maxGrowthRadius);
 
   static constexpr auto STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
 
   return {
       dropNum,
-      static_cast<uint8_t>(m_fxHelper->goomRand->GetRandInRange(1U, MAX_LINE_THICKNESS + 1U)),
+      static_cast<uint8_t>(m_fxHelper->GetGoomRand().GetRandInRange(1U, MAX_LINE_THICKNESS + 1U)),
       fracFromWeightPoint,
       IncrementedValue<float>{startingRadius, maxGrowthRadius, STEP_TYPE, numGrowthSteps},
       m_randomMainColorMaps.GetRandomColorMap(),
@@ -181,7 +181,7 @@ auto Raindrops::UpdateAnyPendingNumRaindrops() noexcept -> void
     return;
   }
 
-  m_raindropParams.numConcentricCircles = m_fxHelper->goomRand->GetRandInRange(
+  m_raindropParams.numConcentricCircles = m_fxHelper->GetGoomRand().GetRandInRange(
       MIN_NUM_CONCENTRIC_CIRCLES, MAX_NUM_CONCENTRIC_CIRCLES + 1);
 
   const auto acceptableNumRaindrops = GetAcceptableNumRaindrops(m_pendingNewNumRaindrops);
@@ -218,7 +218,7 @@ auto Raindrops::SetRectangleWeightPoint(const Point2dInt& targetRectangleWeightP
   const auto clippedTargetPoint =
       GetPointClippedToRectangle(targetRectangleWeightPoint,
                                  m_raindropParams.rectangle2D,
-                                 m_fxHelper->goomInfo->GetDimensions().GetCentrePoint());
+                                 m_fxHelper->GetDimensions().GetCentrePoint());
 
   m_raindropPositions.SetTargetRectangleWeightPoint(clippedTargetPoint);
 }
@@ -335,9 +335,9 @@ auto Raindrops::Blend2dClearAll() -> void
 auto Raindrops::AddBlend2dImagesToGoomBuffers() -> void
 {
   m_blend2dToMainBuffer.UpdateGoomBuffer(
-      dynamic_cast<DRAW::GoomDrawToTwoBuffers&>(*m_fxHelper->draw).GetBuffer1());
+      dynamic_cast<DRAW::GoomDrawToTwoBuffers&>(m_fxHelper->GetDraw()).GetBuffer1());
   m_blend2dToLowBuffer.UpdateGoomBuffer(
-      dynamic_cast<DRAW::GoomDrawToTwoBuffers&>(*m_fxHelper->draw).GetBuffer2());
+      dynamic_cast<DRAW::GoomDrawToTwoBuffers&>(m_fxHelper->GetDraw()).GetBuffer2());
 }
 
 auto Raindrops::DrawCircleAroundWeightPoint() noexcept -> void

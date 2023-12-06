@@ -57,19 +57,18 @@ using VISUAL_FX::TubesFx;
 using VISUAL_FX::FLYING_STARS::StarTypesContainer;
 
 AllStandardVisualFx::AllStandardVisualFx(Parallel& parallel,
-                                         const FxHelper& fxHelper,
+                                         FxHelper& fxHelper,
                                          const SmallImageBitmaps& smallBitmaps,
                                          const std::string& resourcesDirectory) noexcept
   : m_shaderFx{std::make_unique<ShaderFx>(fxHelper)},
     m_drawablesMap{GetDrawablesMap(parallel, fxHelper, smallBitmaps, resourcesDirectory)},
-    m_visualFxColorMaps{*fxHelper.goomRand}
+    m_visualFxColorMaps{fxHelper.GetGoomRand()}
 {
-  Expects(fxHelper.goomRand != nullptr);
   Expects(NUM<GoomDrawables> == m_drawablesMap.size());
 }
 
 auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
-                                          const FxHelper& fxHelper,
+                                          FxHelper& fxHelper,
                                           const SmallImageBitmaps& smallBitmaps,
                                           const std::string& resourcesDirectory)
     -> UTILS::EnumMap<GoomDrawables, std::unique_ptr<IVisualFx>>

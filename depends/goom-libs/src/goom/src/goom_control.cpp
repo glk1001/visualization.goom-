@@ -321,7 +321,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
   : m_parentGoomControl{&parentGoomControl},
     m_goomInfo{dimensions, m_goomTime, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
-    m_fxHelper{&m_multiBufferDraw, &m_goomInfo, &m_goomRand, m_goomLogger},
+    m_fxHelper{m_multiBufferDraw, m_goomInfo, m_goomRand, *m_goomLogger},
     m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
     m_filterBuffersService{m_goomInfo,
                            m_normalizedCoordsConverter,

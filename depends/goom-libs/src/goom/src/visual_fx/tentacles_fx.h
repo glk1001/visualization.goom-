@@ -14,7 +14,7 @@ class RandomColorMaps;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class TentaclesFx : public IVisualFx
 {
@@ -25,7 +25,7 @@ public:
   static constexpr uint32_t NUM_TENTACLE_COLOR_TYPES = NORMAL_COLOR_TYPE + 1;
 
   TentaclesFx() noexcept = delete;
-  explicit TentaclesFx(const FxHelper& fxHelper) noexcept;
+  explicit TentaclesFx(FxHelper& fxHelper) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

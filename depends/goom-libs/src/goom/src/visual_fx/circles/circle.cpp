@@ -15,7 +15,6 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "helper.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
@@ -182,24 +181,25 @@ inline auto Circle::CircleDots::GetDotStartingPositions(const uint32_t numDots,
   return dotStartingPositions;
 }
 
-Circle::Circle(const FxHelper& fxHelper,
+Circle::Circle(FxHelper& fxHelper,
                const Helper& helper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams) noexcept
   : m_fxHelper{&fxHelper},
     m_helper{helper},
-    m_lineDrawer{*fxHelper.draw, *fxHelper.goomRand,
+    m_lineDrawer{fxHelper.GetDraw(), fxHelper.GetGoomRand(),
                  {CIRCLE_NOISE_RADIUS, NUM_CIRCLE_NOISE_PIXELS}},
-    m_circleDots{std::make_unique<CircleDots>(*m_fxHelper->goomRand,
+    m_circleDots{std::make_unique<CircleDots>(m_fxHelper->GetGoomRand(),
                                               m_helper,
                                               circleParams,
                                               pathParams,
                                               GetNewNumDots())},
-    m_dotDrawer{std::make_unique<DotDrawer>(*fxHelper.draw, *m_fxHelper->goomRand, m_helper)},
-    m_mainColorMaps{GetUnweightedRandomColorMaps(*m_fxHelper->goomRand, MAX_ALPHA)},
-    m_lowColorMaps{GetUnweightedRandomColorMaps(*m_fxHelper->goomRand, MAX_ALPHA)},
+    m_dotDrawer{
+        std::make_unique<DotDrawer>(fxHelper.GetDraw(), m_fxHelper->GetGoomRand(), m_helper)},
+    m_mainColorMaps{GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), MAX_ALPHA)},
+    m_lowColorMaps{GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), MAX_ALPHA)},
     m_weightedGridColorRanges{
-        *m_fxHelper->goomRand,
+        m_fxHelper->GetGoomRand(),
         {
             {GridColorRange::ONE, GRID_COLOR_RANGE_ONE_WEIGHT},
             {GridColorRange::LOW, GRID_COLOR_RANGE_LOW_WEIGHT},
@@ -216,7 +216,7 @@ inline auto Circle::GetNewNumDots() const noexcept -> uint32_t
   static_assert(UTILS::MATH::IsEven(MIN_NUM_DOTS));
   static_assert(UTILS::MATH::IsEven(MAX_NUM_DOTS));
 
-  auto numDots = m_fxHelper->goomRand->GetRandInRange(MIN_NUM_DOTS, MAX_NUM_DOTS + 1);
+  auto numDots = m_fxHelper->GetGoomRand().GetRandInRange(MIN_NUM_DOTS, MAX_NUM_DOTS + 1);
   if (not UTILS::MATH::IsEven(numDots))
   {
     numDots += 1;
@@ -255,7 +255,7 @@ inline auto Circle::GetColorMixT([[maybe_unused]] const float tX,
 inline auto Circle::UpdateNumDifferentGridMaps() noexcept -> void
 {
   if (static constexpr auto NUM_UPDATE_SKIPS = 5U;
-      (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % NUM_UPDATE_SKIPS) != 0)
+      (m_fxHelper->GetGoomTime().GetCurrentTime() % NUM_UPDATE_SKIPS) != 0)
   {
     return;
   }
@@ -302,9 +302,9 @@ inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<Colo
 
 auto Circle::UpdateRotatingColorMaps() noexcept -> void
 {
-  const auto newNumRotatingColors = m_fxHelper->goomRand->ProbabilityOf(PROB_NO_ROTATING_COLORS)
+  const auto newNumRotatingColors = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NO_ROTATING_COLORS)
                                         ? 0U
-                                        : m_fxHelper->goomRand->GetRandInRange(
+                                        : m_fxHelper->GetGoomRand().GetRandInRange(
                                               MIN_NUM_ROTATING_COLORS, MAX_NUM_ROTATING_COLORS + 1);
 
   if (m_numRotatingColors == newNumRotatingColors)
@@ -313,12 +313,12 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   }
   m_numRotatingColors = newNumRotatingColors;
 
-  m_dotRotateIncrement = m_fxHelper->goomRand->ProbabilityOf(PROB_DOT_ROTATE_INCREMENT);
+  m_dotRotateIncrement = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_DOT_ROTATE_INCREMENT);
 
   m_rotatingDotNums.resize(m_numRotatingColors);
   for (auto& dotNum : m_rotatingDotNums)
   {
-    dotNum = m_fxHelper->goomRand->GetRandInRange(0U, m_circleDots->GetNumDots());
+    dotNum = m_fxHelper->GetGoomRand().GetRandInRange(0U, m_circleDots->GetNumDots());
   }
 
   m_rotatingMainColorMaps.resize(m_numRotatingColors, ColorMapPtrWrapper{nullptr});
@@ -370,18 +370,18 @@ auto Circle::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainMap
 
   UpdateNumDifferentGridMaps();
   m_currentColorGridMixT =
-      m_fxHelper->goomRand->GetRandInRange(MIN_COLOR_GRID_MIX_T, MAX_COLOR_GRID_MIX_T);
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_COLOR_GRID_MIX_T, MAX_COLOR_GRID_MIX_T);
   m_mainColorMapsGrid.SetColorMaps(GetHorizontalMainColorMaps(), GetVerticalMainColorMaps());
   m_lowColorMapsGrid.SetColorMaps(GetHorizontalLowColorMaps(), GetVerticalLowColorMaps());
 
   m_linesMainColorMap = GetHorizontalMainColorMaps().at(0);
   m_linesLowColorMap  = GetHorizontalLowColorMaps().at(0);
 
-  m_showLine = m_fxHelper->goomRand->ProbabilityOf(PROB_SHOW_LINE);
+  m_showLine = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_SHOW_LINE);
 
   m_circleDots->GetDotDiameters().ChangeDiameters();
   m_alternateMainLowDotColors =
-      m_fxHelper->goomRand->ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
   m_dotDrawer->SetWeightedColorMaps(weightedMainMaps);
 }
 
@@ -523,7 +523,7 @@ inline auto Circle::GetDotBrightness(const float brightness) const noexcept -> f
 inline auto Circle::IsSpecialUpdateNum() const noexcept -> bool
 {
   static constexpr auto SPECIAL_UPDATE_MULTIPLE = 5U;
-  return 0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % SPECIAL_UPDATE_MULTIPLE);
+  return 0 == (m_fxHelper->GetGoomTime().GetCurrentTime() % SPECIAL_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
@@ -533,7 +533,7 @@ inline auto Circle::IsSpecialLineUpdateNum() const noexcept -> bool
     return true;
   }
   static constexpr auto LINE_UPDATE_MULTIPLE = 8U;
-  return 0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % LINE_UPDATE_MULTIPLE);
+  return 0 == (m_fxHelper->GetGoomTime().GetCurrentTime() % LINE_UPDATE_MULTIPLE);
 }
 
 inline auto Circle::GetLineBrightness(const float brightness) const noexcept -> float

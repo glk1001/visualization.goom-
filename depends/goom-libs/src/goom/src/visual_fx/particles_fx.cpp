@@ -16,7 +16,6 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_plugin_info.h"
 #include "particles/effects/attractor_effect.h"
 #include "particles/effects/effect.h"
 #include "utils/graphics/camera.h"
@@ -242,7 +241,7 @@ inline auto Renderer::GetScreenPos(const glm::vec4& pos) const -> Point2dInt
 class ParticlesFx::ParticlesFxImpl
 {
 public:
-  ParticlesFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
+  ParticlesFxImpl(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::vector<std::string>;
   auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
@@ -255,7 +254,7 @@ public:
   auto ApplyToImageBuffers() noexcept -> void;
 
 private:
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
   //const SmallImageBitmaps* m_smallBitmaps;
   static constexpr auto DEFAULT_PARTICLES_FX_ALPHA = MAX_ALPHA / 20U;
   PixelChannelType m_defaultAlpha                  = DEFAULT_PARTICLES_FX_ALPHA;
@@ -269,7 +268,7 @@ private:
   static constexpr auto ALPHA_WEIGHT        = 100.0F;
   // clang-format off
   RandomPixelBlender m_pixelBlender{
-      *m_fxHelper->goomRand,
+      m_fxHelper->GetGoomRand(),
       {
           {RandomPixelBlender::PixelBlendType::ADD,          ADD_WEIGHT},
           {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DARKEN_ONLY_WEIGHT},
@@ -324,7 +323,7 @@ private:
   auto IncrementTs() noexcept -> void;
 };
 
-ParticlesFx::ParticlesFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+ParticlesFx::ParticlesFx(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_pimpl{spimpl::make_unique_impl<ParticlesFxImpl>(fxHelper, smallBitmaps)}
 {
 }
@@ -370,16 +369,16 @@ auto ParticlesFx::ApplyToImageBuffers() noexcept -> void
 }
 
 ParticlesFx::ParticlesFxImpl::ParticlesFxImpl(
-    const FxHelper& fxHelper, [[maybe_unused]] const SmallImageBitmaps& smallBitmaps) noexcept
+    FxHelper& fxHelper, [[maybe_unused]] const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper},
     //m_smallBitmaps{&smallBitmaps},
     m_effectData{EffectFactory::Create("attractor")},
-    m_numUpdatesBeforeReset{fxHelper.goomRand->GetRandInRange(
+    m_numUpdatesBeforeReset{fxHelper.GetGoomRand().GetRandInRange(
         m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset + 1)},
-    m_deltaTime{
-        m_fxHelper->goomRand->GetRandInRange(m_effectData.minDeltaTime, m_effectData.maxDeltaTime)},
-    m_camera{m_effectData.cameraProperties, fxHelper.draw->GetDimensions()},
-    m_renderer{*fxHelper.draw, *fxHelper.goomLogger, m_effectData.brightness, m_camera}
+    m_deltaTime{m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.minDeltaTime,
+                                                         m_effectData.maxDeltaTime)},
+    m_camera{m_effectData.cameraProperties, fxHelper.GetDimensions()},
+    m_renderer{fxHelper.GetDraw(), fxHelper.GetGoomLogger(), m_effectData.brightness, m_camera}
 {
 }
 
@@ -387,12 +386,12 @@ inline auto ParticlesFx::ParticlesFxImpl::ResetEffect() noexcept -> void
 {
   m_effectData.effect->Reset();
 
-  m_effectData.effect->SetMaxNumAliveParticles(m_fxHelper->goomRand->GetRandInRange(
+  m_effectData.effect->SetMaxNumAliveParticles(m_fxHelper->GetGoomRand().GetRandInRange(
       m_effectData.minMaxNumAliveParticles, m_effectData.maxMaxNumAliveParticles + 1U));
-  m_effectData.effect->SetTintMixAmount(
-      m_fxHelper->goomRand->GetRandInRange(m_effectData.minMixAmount, m_effectData.maxMixAmount));
+  m_effectData.effect->SetTintMixAmount(m_fxHelper->GetGoomRand().GetRandInRange(
+      m_effectData.minMixAmount, m_effectData.maxMixAmount));
 
-  m_numUpdatesBeforeReset = m_fxHelper->goomRand->GetRandInRange(
+  m_numUpdatesBeforeReset = m_fxHelper->GetGoomRand().GetRandInRange(
       m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset + 1U);
 
   ChangeEffectSpeed();
@@ -400,18 +399,18 @@ inline auto ParticlesFx::ParticlesFxImpl::ResetEffect() noexcept -> void
 
 inline auto ParticlesFx::ParticlesFxImpl::ChangeEffectSpeed() noexcept -> void
 {
-  if (not m_fxHelper->goomRand->ProbabilityOf(PROB_CHANGE_SPEED))
+  if (not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_SPEED))
   {
     return;
   }
 
-  if (not m_fxHelper->goomRand->ProbabilityOf(PROB_INCREASE_SPEED))
+  if (not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_INCREASE_SPEED))
   {
-    m_deltaTime = m_fxHelper->goomRand->GetRandInRange(m_deltaTime, m_effectData.maxDeltaTime);
+    m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(m_deltaTime, m_effectData.maxDeltaTime);
   }
   else
   {
-    m_deltaTime = m_fxHelper->goomRand->GetRandInRange(m_effectData.minDeltaTime, m_deltaTime);
+    m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.minDeltaTime, m_deltaTime);
   }
 }
 
@@ -429,7 +428,7 @@ inline auto ParticlesFx::ParticlesFxImpl::SetWeightedColorMaps(
   m_tintLowColorMap =
       WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha}.GetRandomColorMap();
 
-  m_renderer.SetDrawCircleFrequency(m_fxHelper->goomRand->GetRandInRange(
+  m_renderer.SetDrawCircleFrequency(m_fxHelper->GetGoomRand().GetRandInRange(
       MIN_DRAW_CIRCLE_FREQUENCY, MAX_DRAW_CIRCLE_FREQUENCY + 1));
 }
 
@@ -441,7 +440,7 @@ inline auto ParticlesFx::ParticlesFxImpl::ChangePixelBlender(
 
 inline auto ParticlesFx::ParticlesFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 
@@ -451,27 +450,27 @@ inline auto ParticlesFx::ParticlesFxImpl::SetZoomMidpoint(
   const auto clippedZoomMidpoint = GetAdjustedZoomMidpoint(zoomMidpoint);
   m_previousScreenPositionOffset = GetScreenPositionOffset();
   m_screenPositionOffset =
-      clippedZoomMidpoint - ToVec2dInt(m_fxHelper->draw->GetDimensions().GetCentrePoint());
+      clippedZoomMidpoint - ToVec2dInt(m_fxHelper->GetDimensions().GetCentrePoint());
   m_screenPositionOffsetT.Reset();
 }
 
 auto ParticlesFx::ParticlesFxImpl::GetAdjustedZoomMidpoint(
     const Point2dInt& zoomMidpoint) const noexcept -> Point2dInt
 {
-  if (m_fxHelper->draw->GetDimensions().GetCentrePoint() == zoomMidpoint)
+  if (m_fxHelper->GetDimensions().GetCentrePoint() == zoomMidpoint)
   {
     return zoomMidpoint;
   }
 
-  const auto xMax = m_fxHelper->draw->GetDimensions().GetIntWidth() - 1;
-  const auto yMax = m_fxHelper->draw->GetDimensions().GetIntHeight() - 1;
+  const auto xMax = m_fxHelper->GetDimensions().GetIntWidth() - 1;
+  const auto yMax = m_fxHelper->GetDimensions().GetIntHeight() - 1;
 
   const auto minZoomMidpoint   = Point2dInt{xMax / 10, yMax / 10};
   const auto maxZoomMidpoint   = Point2dInt{xMax - minZoomMidpoint.x, yMax - minZoomMidpoint.y};
   const auto zoomClipRectangle = Rectangle2dInt{minZoomMidpoint, maxZoomMidpoint};
 
   return GetPointClippedToRectangle(
-      zoomMidpoint, zoomClipRectangle, m_fxHelper->draw->GetDimensions().GetCentrePoint());
+      zoomMidpoint, zoomClipRectangle, m_fxHelper->GetDimensions().GetCentrePoint());
 }
 
 inline auto ParticlesFx::ParticlesFxImpl::GetScreenPositionOffset() const noexcept -> Point2dInt
@@ -507,7 +506,7 @@ inline auto ParticlesFx::ParticlesFxImpl::UpdateEffect() noexcept -> void
 
 inline auto ParticlesFx::ParticlesFxImpl::UpdateCounter() noexcept -> void
 {
-  if (0 == (m_fxHelper->goomInfo->GetTime().GetCurrentTime() % m_numUpdatesBeforeReset))
+  if (0 == (m_fxHelper->GetGoomTime().GetCurrentTime() % m_numUpdatesBeforeReset))
   {
     ResetEffect();
   }

@@ -11,7 +11,6 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
-#include "visual_fx/fx_helper.h"
 
 #include <cstdint>
 

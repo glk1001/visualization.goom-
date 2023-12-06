@@ -1,10 +1,9 @@
-#undef NO_LOGGING
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "raindrop_positions.h"
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -60,7 +59,7 @@ auto RaindropPositions::SetNewTargetRectangleWeightPoint(
   m_params.targetRectangleWeightPoint =
       GetAcceptableTargetRectangleWeightPoint(targetRectangleWeightPoint);
   m_rectangleWeightPointT.SetNumSteps(
-      m_fxHelper->goomRand->GetRandInRange(MIN_WEIGHT_POINT_STEPS, MAX_WEIGHT_POINT_STEPS + 1));
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_WEIGHT_POINT_STEPS, MAX_WEIGHT_POINT_STEPS + 1));
   m_rectangleWeightPointT.Reset();
 }
 

@@ -24,7 +24,7 @@ class SmallImageBitmaps;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class LinesFx : public IVisualFx
 {
@@ -33,8 +33,7 @@ public:
 
   // construit un effet de line (une ligne horitontale pour commencer)
   LinesFx() noexcept = delete;
-  LinesFx(const FxHelper& fxHelper,
-          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  LinesFx(FxHelper& fxHelper, const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 

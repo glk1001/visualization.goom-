@@ -43,7 +43,6 @@
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_plugin_info.h"
 #include "goom_visual_fx.h"
 #include "ifs/colorizer.h"
 #include "ifs/fractal.h"
@@ -80,7 +79,7 @@ using UTILS::MATH::Weights;
 class IfsDancersFx::IfsDancersFxImpl
 {
 public:
-  IfsDancersFxImpl(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
+  IfsDancersFxImpl(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept;
 
   auto Start() noexcept -> void;
 
@@ -100,7 +99,7 @@ private:
   static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
   int32_t m_cycleLength                     = MIN_CYCLE_LENGTH;
 
-  const FxHelper* m_fxHelper;
+  FxHelper* m_fxHelper;
   BitmapDrawer m_bitmapDrawer;
   PixelDrawer m_pixelDrawer;
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
@@ -162,7 +161,7 @@ private:
   Weights<BlurrerColorMode> m_blurrerColorModeWeights;
 };
 
-IfsDancersFx::IfsDancersFx(const FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
+IfsDancersFx::IfsDancersFx(FxHelper& fxHelper, const SmallImageBitmaps& smallBitmaps) noexcept
   : m_pimpl{spimpl::make_unique_impl<IfsDancersFxImpl>(fxHelper, smallBitmaps)}
 {
 }
@@ -224,19 +223,19 @@ static constexpr auto BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WGT     = 005.0F;
 static constexpr auto BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WGT = 001.0F;
 static constexpr auto BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT   = 005.0F;
 
-IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
+IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(FxHelper& fxHelper,
                                                  const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper},
-    m_bitmapDrawer{*fxHelper.draw},
-    m_pixelDrawer{*fxHelper.draw},
-    m_colorizer{*fxHelper.goomRand, m_defaultAlpha},
-    m_pixelBlender{*fxHelper.goomRand},
-    m_fractal{std::make_unique<Fractal>(fxHelper.draw->GetDimensions(),
-                                        *fxHelper.goomRand,
+    m_bitmapDrawer{fxHelper.GetDraw()},
+    m_pixelDrawer{fxHelper.GetDraw()},
+    m_colorizer{fxHelper.GetGoomRand(), m_defaultAlpha},
+    m_pixelBlender{fxHelper.GetGoomRand()},
+    m_fractal{std::make_unique<Fractal>(fxHelper.GetDimensions(),
+                                        fxHelper.GetGoomRand(),
                                         smallBitmaps)},
-    m_blurrer{*fxHelper.draw, *fxHelper.goomRand, BLUR_WIDTH, m_colorizer, smallBitmaps},
+    m_blurrer{fxHelper.GetDraw(), fxHelper.GetGoomRand(), BLUR_WIDTH, m_colorizer, smallBitmaps},
     m_blurrerColorModeWeights{
-      *fxHelper.goomRand,
+      fxHelper.GetGoomRand(),
       {
         {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WGT},
         {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WGT},
@@ -251,13 +250,13 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(const FxHelper& fxHelper,
 inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() const noexcept -> bool
 {
   static constexpr auto PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
-  return m_fxHelper->goomRand->ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
+  return m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() const noexcept -> bool
 {
   static constexpr auto PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
-  return m_fxHelper->goomRand->ProbabilityOf(PROB_IFS_RENEW_EVENT);
+  return m_fxHelper->GetGoomRand().ProbabilityOf(PROB_IFS_RENEW_EVENT);
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::InitFractal() noexcept -> void
@@ -325,9 +324,9 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() noexcept -> void
   static constexpr auto MAX_SPEED_AMP    = 5.1F;
   static constexpr auto MAX_SPEED_WEIGHT = 10.0F;
   const auto speedAmp                    = std::min(
-      m_fxHelper->goomRand->GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
   const auto accelFactor =
-      1.0F / (1.1F - m_fxHelper->goomInfo->GetSoundEvents().GetSoundInfo().GetAcceleration());
+      1.0F / (1.1F - m_fxHelper->GetSoundEvents().GetSoundInfo().GetAcceleration());
 
   m_fractal->SetSpeed(std::max(1U, static_cast<uint32_t>(speedAmp * accelFactor)));
 }
@@ -341,7 +340,7 @@ auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() noexcept -> void
 {
   m_colorizer.ChangeColorMaps();
 
-  m_drawLowDensityPoints = m_fxHelper->goomRand->ProbabilityOf(PROB_DRAW_LOW_DENSITY_POINTS);
+  m_drawLowDensityPoints = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_DRAW_LOW_DENSITY_POINTS);
 
   if (m_drawLowDensityPoints)
   {
@@ -369,7 +368,7 @@ auto IfsDancersFx::IfsDancersFxImpl::ApplyToImageBuffers() noexcept -> void
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 
@@ -425,7 +424,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() noexcept -> void
   }
 
   m_cycle       = 0;
-  m_cycleLength = m_fxHelper->goomRand->GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
+  m_cycleLength = m_fxHelper->GetGoomRand().GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
 
   UpdateLowDensityBlurThreshold();
 
@@ -439,7 +438,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() noex
   static constexpr auto PROB_HIGH_BLUR_THRESHOLD = 0.75F;
   static constexpr auto HIGH_BLUR_THRESHOLD      = 0.99F;
   static constexpr auto LOW_BLUR_THRESHOLD       = 0.40F;
-  m_lowDensityBlurThreshold = m_fxHelper->goomRand->ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD)
+  m_lowDensityBlurThreshold = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD)
                                   ? HIGH_BLUR_THRESHOLD
                                   : LOW_BLUR_THRESHOLD;
 }
@@ -485,8 +484,8 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   const auto point =
       Point2dInt{static_cast<int32_t>(ifsPoint.GetX()), static_cast<int32_t>(ifsPoint.GetY())};
 
-  const auto tX = static_cast<float>(point.x) / m_fxHelper->draw->GetDimensions().GetFltWidth();
-  const auto tY = static_cast<float>(point.y) / m_fxHelper->draw->GetDimensions().GetFltHeight();
+  const auto tX = static_cast<float>(point.x) / m_fxHelper->GetDimensions().GetFltWidth();
+  const auto tY = static_cast<float>(point.y) / m_fxHelper->GetDimensions().GetFltHeight();
 
   if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap().GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
@@ -582,7 +581,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
     std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) noexcept -> void
 {
   if (static constexpr auto PROB_FIXED_MIX_FACTOR = 0.8F;
-      m_fxHelper->goomRand->ProbabilityOf(PROB_FIXED_MIX_FACTOR))
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_FIXED_MIX_FACTOR))
   {
     static constexpr auto FIXED_MIX_FACTOR = 0.98F;
     m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
@@ -592,7 +591,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
     static constexpr auto MIN_MIX_FACTOR = 0.9F;
     static constexpr auto MAX_MIX_FACTOR = 1.0F;
     m_blurrer.SetNeighbourMixFactor(
-        m_fxHelper->goomRand->GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
+        m_fxHelper->GetGoomRand().GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
   }
 
   m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
@@ -600,7 +599,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() noexcept -> void
 {
-  m_lowDensityCount = m_fxHelper->goomRand->GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
+  m_lowDensityCount =
+      m_fxHelper->GetGoomRand().GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
 
   m_blurrer.SetWidth(GetNewBlurWidth());
 }

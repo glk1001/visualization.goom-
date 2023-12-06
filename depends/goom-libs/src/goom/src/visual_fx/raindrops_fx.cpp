@@ -20,7 +20,7 @@ using RAINDROPS::Raindrops;
 class RaindropsFx::RaindropsFxImpl
 {
 public:
-  explicit RaindropsFxImpl(const FxHelper& fxHelper) noexcept;
+  explicit RaindropsFxImpl(FxHelper& fxHelper) noexcept;
 
   auto Start() noexcept -> void;
 
@@ -33,8 +33,8 @@ public:
   auto ApplyToImageBuffers() noexcept -> void;
 
 private:
-  const FxHelper* m_fxHelper;
-  Point2dInt m_zoomMidpoint = m_fxHelper->goomInfo->GetDimensions().GetCentrePoint();
+  FxHelper* m_fxHelper;
+  Point2dInt m_zoomMidpoint = m_fxHelper->GetDimensions().GetCentrePoint();
 
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
@@ -45,7 +45,7 @@ private:
   auto SetRaindropsWeightedColorMaps() noexcept -> void;
 };
 
-RaindropsFx::RaindropsFx(const FxHelper& fxHelper) noexcept
+RaindropsFx::RaindropsFx(FxHelper& fxHelper) noexcept
   : m_pimpl{spimpl::make_unique_impl<RaindropsFxImpl>(fxHelper)}
 {
 }
@@ -90,8 +90,8 @@ auto RaindropsFx::ApplyToImageBuffers() noexcept -> void
   m_pimpl->ApplyToImageBuffers();
 }
 
-RaindropsFx::RaindropsFxImpl::RaindropsFxImpl(const FxHelper& fxHelper) noexcept
-  : m_fxHelper{&fxHelper}, m_pixelBlender{*fxHelper.goomRand}
+RaindropsFx::RaindropsFxImpl::RaindropsFxImpl(FxHelper& fxHelper) noexcept
+  : m_fxHelper{&fxHelper}, m_pixelBlender{fxHelper.GetGoomRand()}
 {
 }
 
@@ -100,8 +100,8 @@ auto RaindropsFx::RaindropsFxImpl::Start() noexcept -> void
   // clang-format off
   const auto raindropRectangle = Rectangle2dInt{
       Point2dInt{0, 0},
-      Point2dInt{m_fxHelper->goomInfo->GetDimensions().GetIntWidth() - 1,
-                 m_fxHelper->goomInfo->GetDimensions().GetIntHeight() - 1}
+      Point2dInt{m_fxHelper->GetDimensions().GetIntWidth() - 1,
+                 m_fxHelper->GetDimensions().GetIntHeight() - 1}
   };
   // clang-format on
 
@@ -123,7 +123,7 @@ auto RaindropsFx::RaindropsFxImpl::ChangePixelBlender(
 
 inline auto RaindropsFx::RaindropsFxImpl::UpdatePixelBlender() noexcept -> void
 {
-  m_fxHelper->draw->SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
+  m_fxHelper->GetDraw().SetPixelBlendFunc(m_pixelBlender.GetCurrentPixelBlendFunc());
   m_pixelBlender.Update();
 }
 
@@ -154,7 +154,7 @@ auto RaindropsFx::RaindropsFxImpl::SetNumRaindrops() noexcept -> void
     return;
   }
 
-  m_raindrops->SetNumRaindrops(m_fxHelper->goomRand->GetRandInRange(
+  m_raindrops->SetNumRaindrops(m_fxHelper->GetGoomRand().GetRandInRange(
       Raindrops::MIN_NUM_RAINDROPS, Raindrops::MAX_NUM_RAINDROPS + 1));
 }
 

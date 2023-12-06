@@ -14,14 +14,14 @@ class RandomColorMaps;
 
 namespace GOOM::VISUAL_FX
 {
-struct FxHelper;
+class FxHelper;
 
 class ShapesFx : public IVisualFx
 {
 public:
   static constexpr uint32_t NUM_SHAPES = 1;
 
-  explicit ShapesFx(const FxHelper& fxHelper) noexcept;
+  explicit ShapesFx(FxHelper& fxHelper) noexcept;
 
   [[nodiscard]] auto GetFxName() const noexcept -> std::string override;
 
