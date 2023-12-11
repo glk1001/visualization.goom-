@@ -209,10 +209,21 @@ float GetSinTMix()
   return 0.5 * (1.0 + sin(u_pos1Pos2MixFreq * u_time));
 }
 
+float GetUVDistAdjustedTMix(vec2 uv, TexelPositions texelPositions, float tMix)
+{
+  const float MAX_UV = sqrt(2.0);
+  //vec2 posUv = mix(texelPositions.uv1, texelPositions.uv2, vec2(tMix.x));
+  //float distUv = min(distance(uv, posUv), MAX_UV) / MAX_UV;
+  float uvDist = min(distance(uv, texelPositions.uv2), MAX_UV) / MAX_UV;
+
+  return tMix * (1.0 - uvDist);
+}
+
 float GetColorBlendTMix(vec2 uv, TexelPositions texelPositions)
 {
   const float SIN_T_MIX = GetSinTMix();
-  return SIN_T_MIX;
+  // return SIN_T_MIX;
+  return GetUVDistAdjustedTMix(uv, texelPositions, SIN_T_MIX);
 }
 
 vec3 GetMixedColor(vec3 tMix, FilterBuffColors filterBuffColors)
