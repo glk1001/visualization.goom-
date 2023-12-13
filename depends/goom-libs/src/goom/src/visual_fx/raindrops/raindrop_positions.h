@@ -50,8 +50,8 @@ private:
   };
 
   static constexpr auto NUM_RAINDROP_POSITION_INCREMENTS = 100U;
-  static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_START = 10U;
-  static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_END   = 10U;
+  static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_START = 1U;
+  static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_END   = 15U; // where they meet
   std::vector<UTILS::TValue::DelayPoint> m_raindropDelayPoints{
       {0.0F, RAINDROP_MOVEMENT_DELAY_AT_START},
       {1.0F,   RAINDROP_MOVEMENT_DELAY_AT_END}
