@@ -47,7 +47,7 @@ namespace
 // For debugging:
 
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
-constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
@@ -58,7 +58,7 @@ constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE1;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
+constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::MOBIUS_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NEWTON_MODE;
 //constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;

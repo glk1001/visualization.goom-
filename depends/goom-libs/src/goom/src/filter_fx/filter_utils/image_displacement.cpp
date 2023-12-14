@@ -45,7 +45,8 @@ auto ImageDisplacement::GetDisplacementVector(
 inline auto ImageDisplacement::NormalizedCoordsToImagePoint(
     const NormalizedCoords& normalizedCoords) const noexcept -> Point2dInt
 {
-  const auto normalizedZoom = m_zoomFactor * normalizedCoords;
+  const auto normalizedZoom = NormalizedCoords{m_xZoomFactor * normalizedCoords.GetX(),
+                                               m_yZoomFactor * normalizedCoords.GetY()};
   return ToPoint2dInt(m_normalizedCoordsConverter.NormalizedToOtherCoordsFlt(normalizedZoom));
 }
 
@@ -53,9 +54,9 @@ inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color)
     -> Vec2dFlt
 {
   const auto normalizedDisplacementX =
-      NormalizedCoords::MAX_COORD * m_amplitude * (color.RFlt() - m_xColorCutoff);
+      NormalizedCoords::MAX_COORD * (m_amplitude.x * (color.RFlt() - m_xColorCutoff));
   const auto normalizedDisplacementY =
-      NormalizedCoords::MAX_COORD * m_amplitude * (color.GFlt() - m_yColorCutoff);
+      NormalizedCoords::MAX_COORD * (m_amplitude.y * (color.GFlt() - m_yColorCutoff));
   //const auto normalizedDisplacementY =
   //         (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
 

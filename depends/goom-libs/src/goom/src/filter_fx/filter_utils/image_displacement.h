@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
@@ -24,11 +25,12 @@ public:
   [[nodiscard]] auto GetYColorCutoff() const noexcept -> float;
   auto SetXyColorCutoffs(float xColorCutoff, float yColorCutoff) noexcept -> void;
 
-  [[nodiscard]] auto GetZoomFactor() const noexcept -> float;
-  auto SetZoomFactor(float value) noexcept -> void;
+  [[nodiscard]] auto GetXZoomFactor() const noexcept -> float;
+  [[nodiscard]] auto GetYZoomFactor() const noexcept -> float;
+  auto SetZoomFactor(float xZoomFactor, float yZoomFactor) noexcept -> void;
 
-  [[nodiscard]] auto GetAmplitude() const noexcept -> float;
-  auto SetAmplitude(float value) noexcept -> void;
+  [[nodiscard]] auto GetAmplitude() const noexcept -> const Amplitude&;
+  auto SetAmplitude(const Amplitude& value) noexcept -> void;
 
   [[nodiscard]] auto GetDisplacementVector(const NormalizedCoords& normalizedCoords) const noexcept
       -> Vec2dFlt;
@@ -42,8 +44,9 @@ private:
       {m_imageBuffer->GetWidth(), m_imageBuffer->GetHeight()},
       false
   };
-  float m_zoomFactor                    = 1.0F;
-  float m_amplitude                     = 1.0F;
+  float m_xZoomFactor                   = 1.0F;
+  float m_yZoomFactor                   = 1.0F;
+  Amplitude m_amplitude                 = {1.0F, 1.0F};
   static constexpr float INITIAL_CUTOFF = 0.5F;
   float m_xColorCutoff                  = INITIAL_CUTOFF;
   float m_yColorCutoff                  = INITIAL_CUTOFF;
@@ -74,25 +77,34 @@ inline auto ImageDisplacement::SetXyColorCutoffs(const float xColorCutoff,
   m_yColorCutoff = yColorCutoff;
 }
 
-inline auto ImageDisplacement::GetZoomFactor() const noexcept -> float
+inline auto ImageDisplacement::GetXZoomFactor() const noexcept -> float
 {
-  return m_zoomFactor;
+  return m_xZoomFactor;
 }
 
-inline auto ImageDisplacement::SetZoomFactor(const float value) noexcept -> void
+inline auto ImageDisplacement::GetYZoomFactor() const noexcept -> float
 {
-  Expects(value > 0.0F);
-  m_zoomFactor = value;
+  return m_yZoomFactor;
 }
 
-inline auto ImageDisplacement::GetAmplitude() const noexcept -> float
+inline auto ImageDisplacement::SetZoomFactor(const float xZoomFactor,
+                                             const float yZoomFactor) noexcept -> void
+{
+  Expects(xZoomFactor > 0.0F);
+  Expects(yZoomFactor > 0.0F);
+  m_xZoomFactor = xZoomFactor;
+  m_yZoomFactor = yZoomFactor;
+}
+
+inline auto ImageDisplacement::GetAmplitude() const noexcept -> const Amplitude&
 {
   return m_amplitude;
 }
 
-inline auto ImageDisplacement::SetAmplitude(const float value) noexcept -> void
+inline auto ImageDisplacement::SetAmplitude(const Amplitude& value) noexcept -> void
 {
-  Expects(value > 0.0F);
+  Expects(value.x > 0.0F);
+  Expects(value.y > 0.0F);
   m_amplitude = value;
 }
 

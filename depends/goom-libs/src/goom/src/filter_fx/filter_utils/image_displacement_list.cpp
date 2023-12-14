@@ -18,11 +18,17 @@ using UTILS::MATH::IGoomRand;
 
 // NOLINTNEXTLINE(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
 const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
+    "checkerboard.jpg",
+    "dark-patterns-maze.jpg",
+    "concentric.png",
     "pattern1.jpg",
     "pattern2.jpg",
     "pattern3.jpg",
     "pattern4.jpg",
     "pattern5.jpg",
+    "pattern6.jpg",
+    "pattern7.jpg",
+    "pattern8.jpg",
     "chameleon-tail.jpg",
     "mountain_sunset.png",
 };
@@ -58,14 +64,15 @@ auto ImageDisplacementList::GetParams() const -> Params
   return {GetCurrentImageDisplacement().GetAmplitude(),
           GetCurrentImageDisplacement().GetXColorCutoff(),
           GetCurrentImageDisplacement().GetYColorCutoff(),
-          GetCurrentImageDisplacement().GetZoomFactor()};
+          GetCurrentImageDisplacement().GetXZoomFactor(),
+          GetCurrentImageDisplacement().GetYZoomFactor()};
 }
 
 auto ImageDisplacementList::SetParams(const Params& params) -> void
 {
   GetCurrentImageDisplacement().SetAmplitude(params.amplitude);
   GetCurrentImageDisplacement().SetXyColorCutoffs(params.xColorCutoff, params.yColorCutoff);
-  GetCurrentImageDisplacement().SetZoomFactor(params.zoomFactor);
+  GetCurrentImageDisplacement().SetZoomFactor(params.xZoomFactor, params.yZoomFactor);
 }
 
 auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) const
@@ -73,8 +80,14 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
 {
   return {
       GetPair(paramGroup, "filename", IMAGE_FILENAMES[m_currentImageDisplacementIndex]),
-      GetPair(paramGroup, "zoom factor", GetCurrentImageDisplacement().GetZoomFactor()),
-      GetPair(paramGroup, "amplitude", GetCurrentImageDisplacement().GetAmplitude()),
+      GetPair(paramGroup,
+              "zoom factor",
+              Point2dFlt{GetCurrentImageDisplacement().GetXZoomFactor(),
+                         GetCurrentImageDisplacement().GetYZoomFactor()}),
+      GetPair(paramGroup,
+              "amplitude",
+              Point2dFlt{GetCurrentImageDisplacement().GetAmplitude().x,
+                         GetCurrentImageDisplacement().GetAmplitude().y}),
       GetPair(paramGroup,
               "cutoff",
               Point2dFlt{GetCurrentImageDisplacement().GetXColorCutoff(),

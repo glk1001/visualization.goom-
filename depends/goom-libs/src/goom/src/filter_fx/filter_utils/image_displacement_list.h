@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/common_types.h"
 #include "image_displacement.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -19,10 +20,11 @@ public:
 
   struct Params
   {
-    float amplitude;
+    Amplitude amplitude;
     float xColorCutoff;
     float yColorCutoff;
-    float zoomFactor;
+    float xZoomFactor;
+    float yZoomFactor;
   };
   [[nodiscard]] auto GetParams() const -> Params;
   auto SetParams(const Params& params) -> void;
