@@ -120,6 +120,12 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy)
     ResetImageSrceFilterBuffPositions(xy, lerpedPositions);
   }
 
+  const float deltaAmp = 0.01;
+  const float deltaFreq = 0.05;
+  const vec2 delta = vec2(cos(deltaFreq * u_time), sin(deltaFreq * u_time));
+  lerpedPositions.pos1 += deltaAmp * delta;
+  lerpedPositions.pos2 -= deltaAmp * delta;
+
   TexelPositions filterBuff2Positions = GetTexelPositions(lerpedPositions);
 
   return
