@@ -195,8 +195,8 @@ auto Similitudes::IterateSimis() -> void
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 auto Similitudes::RandomizeSimiGroup(SimiGroup& simiGroup) const -> void
 {
-// NOLINTBEGIN(readability-identifier-naming)
-#if __cplusplus <= 201703L // NOLINT: Can't include header for this.
+  // NOLINTBEGIN(readability-identifier-naming)
+#if __cplusplus <= 202303L // NOLINT: Can't include header for this.
   static const auto c_factor             = 0.8F * Get_1_minus_exp_neg_S(4.0);
   static const auto r1_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(3.0);
   static const auto r2_1_minus_exp_neg_S = Get_1_minus_exp_neg_S(2.0);
@@ -267,25 +267,25 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitma
 }
 
 // NOLINTBEGIN(readability-identifier-length,readability-identifier-naming)
-inline auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
+constexpr auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
 {
   return 1.0F - std::exp(-S);
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-inline auto Similitudes::GaussRand(const Dbl c,
-                                   const Dbl S,
-                                   const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
+constexpr auto Similitudes::GaussRand(const Dbl c,
+                                      const Dbl S,
+                                      const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
 {
   const auto x                    = m_goomRand->GetRandInRange(0.0F, 1.0F);
   const auto y                    = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
-  static constexpr auto PROB_HALF = 0.5F;
+  constexpr auto PROB_HALF        = 0.5F;
   return m_goomRand->ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
 }
 
-inline auto Similitudes::HalfGaussRand(const Dbl c,
-                                       const Dbl S,
-                                       const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
+constexpr auto Similitudes::HalfGaussRand(const Dbl c,
+                                          const Dbl S,
+                                          const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
 {
   const auto x = m_goomRand->GetRandInRange(0.0F, 1.0F);
   const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));

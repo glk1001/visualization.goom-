@@ -248,8 +248,24 @@ private:
   [[nodiscard]] static constexpr auto ToStdPixelCoord(int32_t freeTypeCoord) noexcept -> int;
   [[nodiscard]] static constexpr auto ToFreeTypeCoord(int32_t stdPixelCoord) noexcept -> int;
   [[nodiscard]] static auto ToFreeTypeCoord(float stdPixelCoord) noexcept -> int;
+
   struct Vec2;
-  struct Span;
+
+  struct Span
+  {
+    Span(const int32_t xVal,
+         const int32_t yVal,
+         const int32_t widthVal,
+         const int32_t coverageVal) noexcept
+      : x{xVal}, y{yVal}, width{widthVal}, coverage{coverageVal}
+    {
+    }
+
+    int32_t x;
+    int32_t y;
+    int32_t width;
+    int32_t coverage;
+  };
   using SpanArray = std::vector<Span>;
 
   struct RectImpl : public Rect
@@ -669,22 +685,6 @@ inline auto TextDrawer::TextDrawerImpl::RectImpl::Include(const Vec2& span) noex
   xMax = std::max(xMax, span.x);
   yMax = std::max(yMax, span.y);
 }
-
-struct TextDrawer::TextDrawerImpl::Span
-{
-  Span(const int32_t xVal,
-       const int32_t yVal,
-       const int32_t widthVal,
-       const int32_t coverageVal) noexcept
-    : x{xVal}, y{yVal}, width{widthVal}, coverage{coverageVal}
-  {
-  }
-
-  int32_t x;
-  int32_t y;
-  int32_t width;
-  int32_t coverage;
-};
 
 // Render the specified character as a colored glyph with a colored outline.
 inline auto TextDrawer::TextDrawerImpl::WriteGlyph(const Spans& spans,

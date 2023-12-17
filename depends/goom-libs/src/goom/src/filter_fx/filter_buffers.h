@@ -49,8 +49,7 @@ public:
   auto ResetTransformBufferToStart() noexcept -> void;
   auto StartTransformBufferUpdates() noexcept -> void;
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  auto CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept -> void;
+  auto CopyTransformBuffer(std::span<Point2dFlt> destBuff) noexcept -> void;
 
 protected:
   // For testing only.
@@ -95,9 +94,7 @@ inline auto ZoomFilterBuffers::SetTransformBufferMidpoint(const Point2dInt& midp
   m_normalizedMidpoint = m_normalizedCoordsConverter->OtherToNormalizedCoords(m_midpoint);
 }
 
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-inline auto ZoomFilterBuffers::CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept
-    -> void
+inline auto ZoomFilterBuffers::CopyTransformBuffer(std::span<Point2dFlt> destBuff) noexcept -> void
 {
   Expects(UpdateStatus::AT_END == m_updateStatus);
 

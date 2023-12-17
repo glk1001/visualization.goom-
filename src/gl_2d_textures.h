@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <format> // NOLINT: Waiting to use C++20.
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <stdexcept>
 
 namespace GOOM::OPENGL
@@ -38,8 +38,7 @@ public:
 
   auto DeleteBuffers() -> void;
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> std_spn::span<CppTextureType>;
+  [[nodiscard]] auto GetMappedBuffer(size_t pboIndex) noexcept -> std::span<CppTextureType>;
 
   [[nodiscard]] auto GetTextureName(size_t textureIndex) const noexcept -> GLuint;
 
@@ -251,11 +250,9 @@ inline auto Gl2DTexture<CppTextureType,
                         TextureInternalFormat,
                         TexturePixelType,
                         NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    -> std_spn::span<CppTextureType>
+    -> std::span<CppTextureType>
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_spn::span<CppTextureType>{m_pboBuffers.mappedBuffers.at(pboIndex), m_buffSize};
+  return std::span<CppTextureType>{m_pboBuffers.mappedBuffers.at(pboIndex), m_buffSize};
 }
 
 template<typename CppTextureType,

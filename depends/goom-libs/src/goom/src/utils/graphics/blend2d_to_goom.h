@@ -49,7 +49,7 @@ private:
   static auto GetNewBlend2DBuffer(const Dimensions& dimensions) noexcept -> Blend2DBuffer;
   [[nodiscard]] static auto GetImageData(const BLImage& blImage) noexcept -> BLImageData;
   [[nodiscard]] static auto GetPixelBuffer(const BLImage& blImage) noexcept
-      -> std_spn::span<const uint32_t>; // NOLINT(misc-include-cleaner): Waiting for C++20.
+      -> std::span<const uint32_t>;
 
   struct ShiftsAndMasks
   {

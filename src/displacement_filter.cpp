@@ -48,17 +48,14 @@ using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
 {
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-auto CopyBuffer(const std_spn::span<const Point2dFlt> srce, std_spn::span<Point2dFlt> dest) noexcept
-    -> void
+auto CopyBuffer(const std::span<const Point2dFlt> srce, std::span<Point2dFlt> dest) noexcept -> void
 {
   std::copy(srce.begin(), srce.end(), dest.begin());
 }
 
 // TODO(glk) - Move this into goom filters?
-auto InitFilterPosBuffer(const Dimensions& dimensions,
-                         // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                         std_spn::span<Point2dFlt> tranBufferFlt) noexcept -> void
+auto InitFilterPosBuffer(const Dimensions& dimensions, std::span<Point2dFlt> tranBufferFlt) noexcept
+    -> void
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
 

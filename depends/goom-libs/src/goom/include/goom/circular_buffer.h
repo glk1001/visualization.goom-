@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <vector>
 
 namespace GOOM
@@ -22,8 +22,7 @@ public:
   [[nodiscard]] auto DataAvailable() const noexcept -> size_t;
   [[nodiscard]] auto FreeSpace() const noexcept -> size_t;
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  auto Write(std_spn::span<const T> srce) noexcept -> void;
+  auto Write(std::span<const T> srce) noexcept -> void;
   auto Read(std::vector<T>& dest) noexcept -> void;
 
 private:
@@ -73,8 +72,7 @@ inline auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
 #endif
 
 template<typename T>
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-auto CircularBuffer<T>::Write(const std_spn::span<const T> srce) noexcept -> void
+auto CircularBuffer<T>::Write(const std::span<const T> srce) noexcept -> void
 {
   Expects(srce.size() <= FreeSpace());
 

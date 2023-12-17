@@ -353,8 +353,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
 #endif
   }
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  AddAudioDataToBuffer(std_spn::span<const float>{audioData, audioDataLength});
+  AddAudioDataToBuffer(std::span<const float>{audioData, audioDataLength});
 
   if (m_audioBuffer.DataAvailable() >= m_audioSampleLen)
   {
@@ -362,8 +361,7 @@ auto CVisualizationGoom::AudioData(const float* const audioData, const size_t au
   }
 }
 
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-auto CVisualizationGoom::AddAudioDataToBuffer(const std_spn::span<const float> audioData) noexcept
+auto CVisualizationGoom::AddAudioDataToBuffer(const std::span<const float> audioData) noexcept
     -> void
 {
   if (m_audioBuffer.FreeSpace() < audioData.size())

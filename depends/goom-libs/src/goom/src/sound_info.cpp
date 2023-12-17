@@ -11,15 +11,13 @@ namespace GOOM
 {
 
 AudioSamples::AudioSamples(const size_t numSampleChannels,
-                           // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                           const std_spn::span<const float> rawAudioData)
+                           const std::span<const float> rawAudioData)
   : m_numDistinctChannels{numSampleChannels}, m_sampleArrays{GetSampleArrays(rawAudioData)}
 {
   Expects((0 < numSampleChannels) && (numSampleChannels <= NUM_AUDIO_SAMPLES));
 }
 
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-auto AudioSamples::GetSampleArrays(const std_spn::span<const float> rawAudioData)
+auto AudioSamples::GetSampleArrays(const std::span<const float> rawAudioData)
     -> std::array<SampleArray, NUM_AUDIO_SAMPLES>
 {
   Expects((NUM_AUDIO_SAMPLES * AUDIO_SAMPLE_LEN) == rawAudioData.size());

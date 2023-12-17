@@ -277,12 +277,7 @@ auto FlyingStarsFx::FlyingStarsImpl::DrawStars() noexcept -> void
 auto FlyingStarsFx::FlyingStarsImpl::RemoveDeadStars() noexcept -> void
 {
   const auto isDead = [this](const Star& star) { return IsStarDead(star); };
-#if __cplusplus <= 201703L // NOLINT: Clang-tidy issue: what includes this??
-  m_activeStars.erase(std::remove_if(begin(m_activeStars), end(m_activeStars), isDead),
-                      end(m_activeStars));
-#else
-  const auto numRemoved = std::erase_if(m_activeStars, isDead);
-#endif
+  std::erase_if(m_activeStars, isDead);
 }
 
 auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept -> bool

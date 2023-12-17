@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <vector>
 
 namespace GOOM
@@ -164,8 +164,7 @@ struct FXBuffSettings
 
 class PixelBuffer
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  using Buffer = std_spn::span<Pixel>;
+  using Buffer = std::span<Pixel>;
 
 public:
   PixelBuffer() = default;
@@ -210,7 +209,7 @@ class PixelBufferVector : public PixelBuffer
 public:
   explicit PixelBufferVector(const Dimensions& dimensions) noexcept;
 
-  [[nodiscard]] auto GetBuffer() noexcept -> std_spn::span<Pixel>;
+  [[nodiscard]] auto GetBuffer() noexcept -> std::span<Pixel>;
 
 private:
   std::vector<Pixel> m_owningBuff;
@@ -222,9 +221,9 @@ inline PixelBufferVector::PixelBufferVector(const Dimensions& dimensions) noexce
   SetPixelBuffer(GetBuffer());
 }
 
-inline auto PixelBufferVector::GetBuffer() noexcept -> std_spn::span<Pixel>
+inline auto PixelBufferVector::GetBuffer() noexcept -> std::span<Pixel>
 {
-  return std_spn::span<Pixel>{m_owningBuff};
+  return std::span<Pixel>{m_owningBuff};
 }
 
 constexpr Pixel::Pixel(const RGB& color) noexcept

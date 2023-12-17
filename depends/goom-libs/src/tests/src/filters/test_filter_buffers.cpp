@@ -242,8 +242,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
   REQUIRE(MID_PT == filterBuffers.GetBufferBuffMidpoint());
 
   std::vector<Point2dFlt> destBuffVec((GOOM_INFO.GetDimensions().GetSize()));
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  const std_spn::span<Point2dFlt> destBuff{destBuffVec};
+  const std::span<Point2dFlt> destBuff{destBuffVec};
   filterBuffers.CopyTransformBuffer(destBuff);
   REQUIRE(ZoomFilterBuffers::UpdateStatus::HAS_BEEN_COPIED == filterBuffers.GetUpdateStatus());
 

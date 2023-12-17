@@ -258,7 +258,6 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/perlin_noise/include
                            ${GOOM_LIBS_DIR}/lib/fmt/include
-                           ${GOOM_LIBS_DIR}/lib/span/include
                            ${LSys_SOURCE_DIR}/include
                            ${particles_SOURCE_DIR}/include
                            ${blend2d_SOURCE_DIR}/src
@@ -296,4 +295,3 @@ message(STATUS "Goom: particles_SOURCE_DIR       = \"${particles_SOURCE_DIR}\"."
 message(STATUS "Goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom: magic_enum_INCLUDE_DIR     = \"${magic_enum_INCLUDE_DIR}\".")
-message(STATUS "Goom: fmt_SOURCE_DIR             = \"${fmt_SOURCE_DIR}\".")

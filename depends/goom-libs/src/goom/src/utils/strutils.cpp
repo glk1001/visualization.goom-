@@ -1,8 +1,5 @@
 #include "strutils.h"
 
-#if __cplusplus > 201703L // NOLINT: Can't include header for this.
-#include <ranges>
-#endif
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -12,6 +9,7 @@
 #include <istream>
 #include <iterator>
 #include <ostream>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -217,28 +215,9 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string_view&
 
 auto StringSplit(const std::string& str, const std::string_view& delim) -> std::vector<std::string>
 {
-#if __cplusplus <= 201703L // NOLINT: Can't include header for this.
-  auto vec       = std::vector<std::string>{};
-  auto copyOfStr = str;
-  while (true)
-  {
-    const auto pos = copyOfStr.find(delim);
-    if (pos == std::string::npos)
-    {
-      break;
-    }
-    const auto token = copyOfStr.substr(0, pos);
-    copyOfStr.erase(0, pos + delim.length());
-    vec.emplace_back(token);
-  }
-  if (not copyOfStr.empty())
-  {
-    vec.emplace_back(copyOfStr);
-  }
-  return vec;
-#else
   auto parts = str | std::ranges::views::split(delim);
   std::vector<std::string> vec;
+
   for (auto part : parts)
   {
     std::string s = "";
@@ -248,8 +227,8 @@ auto StringSplit(const std::string& str, const std::string_view& delim) -> std::
     }
     vec.emplace_back(s);
   }
+
   return vec;
-#endif
 }
 
 } // namespace GOOM::UTILS

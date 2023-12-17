@@ -90,7 +90,7 @@ if (IS_THIS_MAIN_CMAKE_SCRIPT)
 endif ()
 
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -106,7 +106,6 @@ include(${CMAKE_SCRIPTS_PATH}/Hardening.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Sanitizers.cmake)
 include(${CMAKE_SCRIPTS_PATH}/StaticAnalyzers.cmake)
-include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
@@ -152,6 +151,8 @@ CPMAddPackage(NAME "particles"
 set_target_properties(cpuTest PROPERTIES EXCLUDE_FROM_ALL True)
 
 find_package(Kodi REQUIRED)
+# Override Kodi's C++ standard setting.
+set(CMAKE_CXX_STANDARD 20)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
     find_package(OpenGl REQUIRED)
@@ -214,8 +215,6 @@ include_directories(BEFORE
 )
 include_directories(BEFORE
                     SYSTEM
-                    ${GOOM_LIBS_DIR}/lib/span/include
-                    ${GOOM_LIBS_DIR}/lib/span/include/tcb
                     ${GOOM_LIBS_DIR}/src/vivid/include
                     ${GOOM_LIBS_DIR}/lib/fmt/include
                     ${fmt_SOURCE_DIR}/include
@@ -271,6 +270,8 @@ add_custom_command(TARGET goom_build_time
 
 
 include(CPack)
+
+include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 get_target_property(goom_addon_compile_options ${GOOM_TARGET_NAME} COMPILE_OPTIONS)

@@ -262,8 +262,7 @@ auto GoomVisualization::InitGoomControl() noexcept -> void
   m_goomControl->SetFrameData(m_glScene->GetFrameData(0));
 }
 
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-auto GoomVisualization::AddAudioSample(const std_spn::span<const float> audioSample) -> bool
+auto GoomVisualization::AddAudioSample(const std::span<const float> audioSample) -> bool
 {
   Expects(m_started);
   Expects(m_audioSampleLen == audioSample.size());

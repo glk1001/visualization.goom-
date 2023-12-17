@@ -10,7 +10,7 @@
 
 #include <cstdint>
 #include <memory>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <string>
 #include <thread>
 
@@ -36,8 +36,7 @@ public:
   auto Finish() noexcept -> void;
 
   [[nodiscard]] auto IsTransformBufferReadyToCopy() const noexcept -> bool;
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  auto CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept -> void;
+  auto CopyTransformBuffer(std::span<Point2dFlt> destBuff) noexcept -> void;
 
   auto UpdateTransformBuffer() noexcept -> void;
 
@@ -74,8 +73,7 @@ inline auto FilterBuffersService::IsTransformBufferReadyToCopy() const noexcept 
   return ZoomFilterBuffers::UpdateStatus::AT_END == m_filterBuffers.GetUpdateStatus();
 }
 
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-inline auto FilterBuffersService::CopyTransformBuffer(std_spn::span<Point2dFlt> destBuff) noexcept
+inline auto FilterBuffersService::CopyTransformBuffer(std::span<Point2dFlt> destBuff) noexcept
     -> void
 {
   m_filterBuffers.CopyTransformBuffer(destBuff);

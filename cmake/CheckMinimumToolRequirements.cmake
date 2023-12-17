@@ -17,7 +17,7 @@ if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS ${MIN_COMPILER_VERSION})
 endif ()
 
 # Check the minimum standard.
-set(MIN_CXX_STANDARD 17)
+set(MIN_CXX_STANDARD 20)
 if (CMAKE_CXX_STANDARD VERSION_LESS ${MIN_CXX_STANDARD})
     message(FATAL_ERROR "CMAKE_CXX_STANDARD = '${CMAKE_CXX_STANDARD}'. Minimum acceptable standard is '${MIN_CXX_STANDARD}'.")
 endif ()

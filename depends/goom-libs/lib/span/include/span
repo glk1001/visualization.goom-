@@ -1,6 +1,0 @@
-#pragma once
-
-#include "tcb/span.h"
-
-// NOLINTNEXTLINE(misc-unused-alias-decls): Waiting for C++20
-namespace std_spn = ::tcb;

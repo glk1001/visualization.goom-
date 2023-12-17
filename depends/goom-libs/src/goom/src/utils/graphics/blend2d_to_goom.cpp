@@ -191,13 +191,12 @@ auto Blend2dToGoom::UpdateGoomBuffer(PixelBuffer& goomBuffer) noexcept -> void
 }
 
 [[nodiscard]] auto Blend2dToGoom::GetPixelBuffer(const BLImage& blImage) noexcept
-    -> std_spn::span<const uint32_t> // NOLINT(misc-include-cleaner): Waiting for C++20.
+    -> std::span<const uint32_t>
 {
   const auto bufferSize =
       static_cast<size_t>(blImage.size().w) * static_cast<size_t>(blImage.size().h);
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_spn::span{static_cast<const uint32_t*>(GetImageData(blImage).pixelData), bufferSize};
+  return std::span{static_cast<const uint32_t*>(GetImageData(blImage).pixelData), bufferSize};
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

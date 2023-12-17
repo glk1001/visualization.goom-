@@ -43,7 +43,8 @@ function(vis_goom_pp_get_project_warnings WARNINGS_AS_ERRORS compiler_warnings)
         # NOT USEFUL
         -Wno-c++98-compat
         -Wno-c++98-compat-pedantic
-        -Wno-pre-c++17-compat
+        -Wno-pre-c++20-compat
+        -Wno-c++20-compat
         -Wno-global-constructors
         -Wno-exit-time-destructors
         -Wno-switch-enum

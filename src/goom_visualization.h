@@ -52,7 +52,7 @@ public:
   auto StartThread() -> void;
   auto Stop() -> void;
 
-  auto AddAudioSample(std_spn::span<const float> audioSample) -> bool;
+  auto AddAudioSample(std::span<const float> audioSample) -> bool;
 
   struct TrackInfo
   {

@@ -70,7 +70,7 @@ constexpr auto EXPECTED_X_MAX1 = X_MAX1;
 TEST_CASE("Test AudioSamples MinMax")
 {
   const auto audioData    = GetAudioData();
-  const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, GetConstSpan<float>(audioData)};
+  const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, std::span<const float>(audioData)};
 
   REQUIRE(AudioSamples::NUM_AUDIO_SAMPLES == 2);
   REQUIRE(AudioSamples::AUDIO_SAMPLE_LEN == 512);
@@ -90,7 +90,7 @@ TEST_CASE("Test AudioSamples MinMax")
 TEST_CASE("Test AudioSamples Arrays")
 {
   const auto audioData    = GetAudioData();
-  const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, GetConstSpan<float>(audioData)};
+  const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, std::span<const float>(audioData)};
 
   REQUIRE(audioData.at(0) == Approx(X_MIN0));
 
@@ -125,7 +125,7 @@ TEST_CASE("Test SoundInfo ProcessSample Defaults")
   REQUIRE(goomSoundEvents.GetTotalGoomsInCurrentCycle() == 0);
 
   const auto audioData    = GetAudioData();
-  const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, GetConstSpan<float>(audioData)};
+  const auto audioSamples = AudioSamples{NUM_SAMPLE_CHANNELS, std::span<const float>(audioData)};
 
   soundInfo.ProcessSample(audioSamples);
   goomSoundEvents.Update();

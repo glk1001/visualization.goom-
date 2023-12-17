@@ -11,8 +11,7 @@ namespace GOOM
 
 struct FilterPosArrays
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  std_spn::span<Point2dFlt> filterDestPos{};
+  std::span<Point2dFlt> filterDestPos{};
   float filterPosBuffersLerpFactor                 = 0.0F;
   static constexpr auto MIN_POS1_POS2_MIX_FREQ     = 0.001F;
   static constexpr auto MAX_POS1_POS2_MIX_FREQ     = 0.010F;

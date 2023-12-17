@@ -38,8 +38,7 @@ protected:
     uint8_t alpha = 0;
   };
 
-  // NOLINTNEXTLINE: Waiting to use C++20.
-  [[nodiscard]] auto GetBuffer() const noexcept -> std_spn::span<const RGB>;
+  [[nodiscard]] auto GetBuffer() const noexcept -> std::span<const RGB>;
 
 private:
   uint32_t m_width{};
@@ -84,10 +83,9 @@ inline auto ImageBitmap::operator()(const size_t x, const size_t y) const noexce
   };
 }
 
-// NOLINTNEXTLINE: Waiting to use C++20.
-inline auto ImageBitmap::GetBuffer() const noexcept -> std_spn::span<const RGB>
+inline auto ImageBitmap::GetBuffer() const noexcept -> std::span<const RGB>
 {
-  return std_spn::span<const RGB>{m_owningBuff};
+  return std::span<const RGB>{m_owningBuff};
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

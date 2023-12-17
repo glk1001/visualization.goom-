@@ -96,8 +96,7 @@ private:
                                                  GOOM::AudioSamples::AUDIO_SAMPLE_LEN;
   GOOM::CircularBuffer<float> m_audioBuffer{CIRCULAR_BUFFER_SIZE};
   auto InitAudioData(int32_t numChannels) noexcept -> void;
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  auto AddAudioDataToBuffer(std_spn::span<const float> audioData) noexcept -> void;
+  auto AddAudioDataToBuffer(std::span<const float> audioData) noexcept -> void;
   auto MoveNextAudioSampleToProducer() noexcept -> void;
 
   [[nodiscard]] auto ReadyToRender() const -> bool;
