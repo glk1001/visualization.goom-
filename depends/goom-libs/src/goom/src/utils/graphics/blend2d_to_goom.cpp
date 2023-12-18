@@ -79,14 +79,14 @@ auto Blend2dToGoom::GetNewBlend2DBuffer(const Dimensions& dimensions) noexcept -
   const auto aShift = static_cast<uint32_t>(formatInfo.aShift); // NOLINT: union hard to fix
 
   return {
-      /*.rShift = */ rShift,
-      /*.gShift = */ gShift,
-      /*.bShift = */ bShift,
-      /*.aShift = */ aShift,
-      /*.rMask  = */ (MAX_BLEND2D_CHANNEL - 1) << rShift,
-      /*.gMask  = */ (MAX_BLEND2D_CHANNEL - 1) << gShift,
-      /*.bMask  = */ (MAX_BLEND2D_CHANNEL - 1) << bShift,
-      /*.aMask  = */ (MAX_BLEND2D_CHANNEL - 1) << aShift,
+      .rShift = rShift,
+      .gShift = gShift,
+      .bShift = bShift,
+      .aShift = aShift,
+      .rMask  = (MAX_BLEND2D_CHANNEL - 1) << rShift,
+      .gMask  = (MAX_BLEND2D_CHANNEL - 1) << gShift,
+      .bMask  = (MAX_BLEND2D_CHANNEL - 1) << bShift,
+      .aMask  = (MAX_BLEND2D_CHANNEL - 1) << aShift,
   };
 }
 

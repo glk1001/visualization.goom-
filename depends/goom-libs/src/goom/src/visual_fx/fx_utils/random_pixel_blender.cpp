@@ -23,7 +23,7 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::Weights;
 
 const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
-    // NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
+    // NOLINTNEXTLINE(cert-err58-cpp): How to fix this?
     RandomPixelBlender::DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS{
         {          RandomPixelBlender::PixelBlendType::ADD,           DEFAULT_ADD_WEIGHT},
         {  RandomPixelBlender::PixelBlendType::DARKEN_ONLY,   DEFAULT_DARKEN_ONLY_WEIGHT},

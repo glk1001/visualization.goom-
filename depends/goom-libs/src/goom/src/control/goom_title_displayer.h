@@ -12,7 +12,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace GOOM
 {
@@ -61,13 +60,7 @@ private:
   int32_t m_screenWidth;
   int32_t m_screenHeight;
   std::string m_fontDirectory;
-  struct FontInfo
-  {
-    std::string fontFilename;
-    float fontSizeNormalizeFactor;
-  };
-  static const std::vector<FontInfo> FONT_INFO;
-  size_t m_fontInfoIndex{m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(FONT_INFO.size()))};
+  size_t m_fontInfoIndex;
   [[nodiscard]] auto GetSelectedFontPath() const -> std::string;
   [[nodiscard]] auto GetSelectedFontSize() const -> int32_t;
 

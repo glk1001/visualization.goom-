@@ -54,7 +54,6 @@ add_library(goom
             include/goom/goom_lerp_data.h
             include/goom/goom_time.h
             include/goom/goom_types.h
-            include/goom/math20.h
             include/goom/point2d.h
             src/color/color_data/color_data_maps.cpp
             src/color/color_data/extra_color_groups.cpp

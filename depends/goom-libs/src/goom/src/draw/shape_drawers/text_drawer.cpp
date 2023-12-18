@@ -755,7 +755,7 @@ auto TextDrawer::TextDrawerImpl::WriteXSpan(const Span& span,
     const auto pen       = Point2dInt{xf0 + width, IntHeight(rect) - (span.y - rect.yMin)};
     const auto color     = getColor(textIndexOfChar, pen, {Width(rect), Height(rect)});
     const auto fgndColor = Pixel{
-        {/*.r = */ color.R(), /*.g = */ color.G(), /*.b = */ color.B(), /*.a = */ coverage}
+        {.red = color.R(), .green = color.G(), .blue = color.B(), .alpha = coverage}
     };
     const auto bgndColor = m_draw->GetPixel({xPos, yPos});
 
@@ -818,25 +818,25 @@ auto TextDrawer::TextDrawerImpl::GetSpans(const size_t textIndexOfChar) const ->
   if (stdSpans.empty())
   {
     return Spans{
-        /*.stdSpans = */ stdSpans,
-        /*.outlineSpans = */ SpanArray{},
-        /*.textIndexOfChar = */ textIndexOfChar,
-        /*.rect = */ RectImpl{},
-        /*.advance = */ advance,
-        /*.bearingX = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingX)),
-        /*.bearingY = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingY)),
+        .stdSpans        = stdSpans,
+        .outlineSpans    = SpanArray{},
+        .textIndexOfChar = textIndexOfChar,
+        .rect            = RectImpl{},
+        .advance         = advance,
+        .bearingX        = ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingX)),
+        .bearingY        = ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingY)),
     };
   }
 
   const auto outlineSpans = GetOutlineSpans();
   return Spans{
-      /*.stdSpans = */ stdSpans,
-      /*.outlineSpans = */ outlineSpans,
-      /*.textIndexOfChar = */ textIndexOfChar,
-      /*.rect = */ GetBoundingRect(stdSpans, outlineSpans),
-      /*.advance = */ advance,
-      /*.bearingX = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingX)),
-      /*.bearingY = */ ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingY)),
+      .stdSpans        = stdSpans,
+      .outlineSpans    = outlineSpans,
+      .textIndexOfChar = textIndexOfChar,
+      .rect            = GetBoundingRect(stdSpans, outlineSpans),
+      .advance         = advance,
+      .bearingX        = ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingX)),
+      .bearingY        = ToStdPixelCoord(static_cast<int32_t>(metrics.horiBearingY)),
   };
 }
 

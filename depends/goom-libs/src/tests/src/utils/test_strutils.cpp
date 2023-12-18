@@ -49,38 +49,45 @@ TEST_CASE("StringJoin")
 TEST_CASE("StringSplit")
 {
   const auto testString1 = std::string{"line1: word1, word2\nline2: word3, word4\n"};
-
   const auto test1 = StringSplit(testString1, ",");
   UNSCOPED_INFO("testString1 = \"" << testString1 + "\"");
-  for (const auto& str : test1)
-  {
-    UNSCOPED_INFO("str = " << str);
-  }
   REQUIRE(test1.size() == 3);
   REQUIRE(test1[0] == "line1: word1");
   REQUIRE(test1[1] == " word2\nline2: word3");
   REQUIRE(test1[2] == " word4\n");
 
-  const auto test2 = StringSplit(testString1, "\n");
+  const auto& testString2 = testString1;
+  const auto test2        = StringSplit(testString2, "\n");
+  UNSCOPED_INFO("testString2 = \"" << testString2 + "\"");
   REQUIRE(test2.size() == 2);
   REQUIRE(test2[0] == "line1: word1, word2");
   REQUIRE(test2[1] == "line2: word3, word4");
 
-  const auto testString2 = std::string{"word1; word2; word3; word4"};
-  const auto test3       = StringSplit(testString2, "; ");
+  const auto testString3 = std::string{"word1; word2; word3; word4"};
+  const auto test3       = StringSplit(testString3, "; ");
+  UNSCOPED_INFO("testString3 = \"" << testString3 + "\"");
   REQUIRE(test3.size() == 4);
   REQUIRE(test3[0] == "word1");
   REQUIRE(test3[1] == "word2");
   REQUIRE(test3[2] == "word3");
   REQUIRE(test3[3] == "word4");
 
-  const auto testString3 = std::string{"word1 \nword2\nword3 \nword4 "};
-  const auto test4       = StringSplit(testString3, "\n");
+  const auto testString4 = std::string{"word1 \nword2\nword3 \nword4 "};
+  const auto test4       = StringSplit(testString4, "\n");
+  UNSCOPED_INFO("testString4 = \"" << testString4 + "\"");
   REQUIRE(test4.size() == 4);
   REQUIRE(test4[0] == "word1 ");
   REQUIRE(test4[1] == "word2");
   REQUIRE(test4[2] == "word3 ");
   REQUIRE(test4[3] == "word4 ");
+
+  const auto testString5 = std::string{"word1\n\nword2\n"};
+  const auto test5       = StringSplit(testString5, "\n");
+  UNSCOPED_INFO("testString5 = \"" << testString5 + "\"");
+  REQUIRE(test5.size() == 3);
+  REQUIRE(test5[0] == "word1");
+  REQUIRE(test5[1].empty());
+  REQUIRE(test5[2] == "word2");
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 

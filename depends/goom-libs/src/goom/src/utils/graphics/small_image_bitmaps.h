@@ -1,10 +1,8 @@
 #pragma once
 
 #include "goom/goom_types.h"
-#include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
 
-#include <array>
 #include <cstddef>
 #include <functional>
 #include <map>
@@ -41,7 +39,6 @@ public:
   // void AddImageBitmap(const std::string& name, size_t res);
 
 private:
-  static const std::array<std::string, NUM<ImageNames>> IMAGE_NAMES;
   std::string m_resourcesDirectory;
   std::map<std::string, std::unique_ptr<const ImageBitmap>, std::less<>> m_bitmapImages{};
   auto GetImageBitmapPtr(ImageNames name, size_t sizeOfImageSquare) const

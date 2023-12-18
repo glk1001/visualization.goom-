@@ -5,9 +5,9 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
+#include <array>
 #include <cstdint>
 #include <string>
-#include <vector>
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {
@@ -16,8 +16,7 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-// NOLINTNEXTLINE(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
-const std::vector<std::string> ImageDisplacementList::IMAGE_FILENAMES{
+static constexpr auto IMAGE_FILENAMES = std::array{
     "checkerboard.jpg",
     "dark-patterns-maze.jpg",
     "concentric.png",
@@ -79,7 +78,8 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
     -> NameValuePairs
 {
   return {
-      GetPair(paramGroup, "filename", IMAGE_FILENAMES[m_currentImageDisplacementIndex]),
+      GetPair(
+          paramGroup, "filename", std::string{IMAGE_FILENAMES[m_currentImageDisplacementIndex]}),
       GetPair(paramGroup,
               "zoom factor",
               Point2dFlt{GetCurrentImageDisplacement().GetXZoomFactor(),

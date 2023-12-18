@@ -36,8 +36,6 @@ public:
   [[nodiscard]] auto GetCurrentImageDisplacement() -> ImageDisplacement&;
 
 private:
-  static const std::vector<std::string> IMAGE_FILENAMES;
-
   std::vector<ImageDisplacement> m_imageDisplacements{};
   std::string m_resourcesDirectory;
   const UTILS::MATH::IGoomRand* m_goomRand;

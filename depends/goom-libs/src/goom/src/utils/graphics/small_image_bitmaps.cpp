@@ -19,8 +19,7 @@ namespace GOOM::UTILS::GRAPHICS
 
 using MATH::IsEven;
 
-// NOLINTNEXTLINE(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
-const std::array<std::string, NUM<SmallImageBitmaps::ImageNames>> SmallImageBitmaps::IMAGE_NAMES{
+static constexpr auto IMAGE_NAMES = std::array{
     "circle",
     "sphere",
     "pink-flower",

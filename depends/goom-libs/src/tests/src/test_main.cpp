@@ -25,7 +25,7 @@ auto main(int argc, char* argv[]) -> int
 {
   // global setup...
   auto goomLogger        = GoomControl::MakeGoomLogger();
-  const auto fConsoleLog = [](GoomLogger::LogLevel, const std::string& str)
+  const auto fConsoleLog = [](const GoomLogger::LogLevel, const std::string& str)
   { std::clog << str << "\n"; };
   AddLogHandler(*goomLogger, "console-log", fConsoleLog);
   SetLogLevel(*goomLogger, GoomLogger::LogLevel::INFO);

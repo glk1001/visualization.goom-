@@ -14,12 +14,12 @@
 #include "utils/math/misc.h"
 #include "utils/text/drawable_text.h"
 
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace GOOM::CONTROL
 {
@@ -48,18 +48,23 @@ static constexpr auto OUTLINE_FONT_WIDTH                  = 4;
 // sample text for each font, then normalize with 'verdana' as 1.0.
 //
 
-// NOLINTNEXTLINE(cert-err58-cpp): Will be fixed with C++20 and 'constexpr'.
-const std::vector<GoomTitleDisplayer::FontInfo> GoomTitleDisplayer::FONT_INFO = {
-    {  "AeroviasBrasilNF.ttf", 1.34F},
-    { "AlexBrush-Regular.ttf", 1.25F},
-    {   "AvenueX-Regular.otf", 1.01F},
-    {        "CelticHand.ttf", 0.99F},
-    {         "CheapSign.ttf", 1.26F},
-    {         "EatAtJoes.ttf", 0.90F},
-    {"GreatVibes-Regular.ttf", 1.29F},
-    {          "KellsFLF.ttf", 1.23F},
-    {     "Rubik-Regular.ttf",  1.1F},
-    {           "verdana.ttf",  1.0F},
+struct FontInfo
+{
+  const char* fontFilename;
+  float fontSizeNormalizeFactor;
+};
+
+static constexpr auto FONT_INFO = std::array{
+    FontInfo{  "AeroviasBrasilNF.ttf", 1.34F},
+    FontInfo{ "AlexBrush-Regular.ttf", 1.25F},
+    FontInfo{   "AvenueX-Regular.otf", 1.01F},
+    FontInfo{        "CelticHand.ttf", 0.99F},
+    FontInfo{         "CheapSign.ttf", 1.26F},
+    FontInfo{         "EatAtJoes.ttf", 0.90F},
+    FontInfo{"GreatVibes-Regular.ttf", 1.29F},
+    FontInfo{          "KellsFLF.ttf", 1.23F},
+    FontInfo{     "Rubik-Regular.ttf",  1.1F},
+    FontInfo{           "verdana.ttf",  1.0F},
 };
 
 inline auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
@@ -83,7 +88,8 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_textDrawer{std::make_unique<TextDrawer>(draw)},
     m_screenWidth{draw.GetDimensions().GetIntWidth()},
     m_screenHeight{draw.GetDimensions().GetIntHeight()},
-    m_fontDirectory{fontDirectory}
+    m_fontDirectory{fontDirectory},
+    m_fontInfoIndex{m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(FONT_INFO.size()))}
 {
   m_textDrawer->SetFontFile(GetSelectedFontPath());
   m_textDrawer->SetFontSize(GetSelectedFontSize());

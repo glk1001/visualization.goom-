@@ -137,27 +137,26 @@ auto EffectFactory::Create(const char* const name) -> EffectData
   static constexpr auto BRIGHTNESS    = 2.50F;
   const auto effect                   = std::make_shared<AttractorEffect>(NUM_PARTICLES);
   return {
-  /*.effect                   = */ effect,
- /*.name                     = */ name,
- /*.numParticles             = */ NUM_PARTICLES,
- /*.minMaxNumAliveParticles  = */ U_HALF * NUM_PARTICLES,
- /*.maxMaxNumAliveParticles  = */ NUM_PARTICLES,
- /*.minMixAmount             = */ DEFAULT_MIN_MIX_AMOUNT,
- /*.maxMixAmount             = */ DEFAULT_MAX_MIX_AMOUNT,
- /*.brightness               = */ BRIGHTNESS,
- /*.minDeltaTime             = */ DEFAULT_MIN_DELTA_TIME,
- /*.maxDeltaTime             = */ DEFAULT_MAX_DELTA_TIME,
- /*.minNumUpdatesBeforeReset = */ DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET,
- /*.maxNumUpdatesBeforeReset = */ DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET,
- /*.cameraProperties = */
-      {
-       /*.scale              = */ WORLD_SCALE,
-       /*.fieldOfViewDegrees = */ DEFAULT_FIELD_OF_VIEW_DEGREES,
-       /*.nearZClipPlane     = */ DEFAULT_NEAR_Z_CLIP_PLANE,
-       /*.farZClipPlane      = */ DEFAULT_FAR_Z_CLIP_PLANE,
-       /*.eyePosition        = */ DEFAULT_EYE_POSITION,
-       /*.targetPosition     = */ DEFAULT_TARGET_POSITION,
-       }
+      .effect                   = effect,
+      .name                     = name,
+      .numParticles             = NUM_PARTICLES,
+      .minMaxNumAliveParticles  = U_HALF * NUM_PARTICLES,
+      .maxMaxNumAliveParticles  = NUM_PARTICLES,
+      .minMixAmount             = DEFAULT_MIN_MIX_AMOUNT,
+      .maxMixAmount             = DEFAULT_MAX_MIX_AMOUNT,
+      .brightness               = BRIGHTNESS,
+      .minDeltaTime             = DEFAULT_MIN_DELTA_TIME,
+      .maxDeltaTime             = DEFAULT_MAX_DELTA_TIME,
+      .minNumUpdatesBeforeReset = DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET,
+      .maxNumUpdatesBeforeReset = DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET,
+      .cameraProperties         = {
+                                   .scale              = WORLD_SCALE,
+                                   .fieldOfViewDegrees = DEFAULT_FIELD_OF_VIEW_DEGREES,
+                                   .nearZClipPlane     = DEFAULT_NEAR_Z_CLIP_PLANE,
+                                   .farZClipPlane      = DEFAULT_FAR_Z_CLIP_PLANE,
+                                   .eyePosition        = DEFAULT_EYE_POSITION,
+                                   .targetPosition     = DEFAULT_TARGET_POSITION,
+                                   }
   };
 }
 

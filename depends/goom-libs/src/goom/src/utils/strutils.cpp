@@ -86,7 +86,7 @@ auto GetExpandedFileLines(const std::string& includeDir,
     const auto trimmedLine = RTrimAndCopy(line);
 
     if (static constexpr auto INCLUDE = std::string_view{"#include"};
-        trimmedLine.substr(0, INCLUDE.size()) != INCLUDE)
+        not trimmedLine.starts_with(INCLUDE))
     {
       outLines.push_back(line);
     }
@@ -210,14 +210,19 @@ auto StringSplit(const std::string& str, const std::string_view& delim) -> std::
   auto parts = str | std::ranges::views::split(delim);
   auto vec   = std::vector<std::string>{};
 
-  for (auto part : parts)
+  for (const auto part : parts)
   {
     auto partStr = std::string{};
-    for (auto c : part)
+    for (const auto c : part)
     {
       partStr += c;
     }
     vec.emplace_back(partStr);
+  }
+
+  if (vec.back().empty())
+  {
+    vec.pop_back();
   }
 
   return vec;

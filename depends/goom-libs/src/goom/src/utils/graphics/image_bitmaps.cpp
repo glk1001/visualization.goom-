@@ -69,7 +69,7 @@ void ImageBitmap::Load(const std::string& imageFilename)
       }
       else
       {
-        SetPixel(x, y, RGB{/*.r = */ red, /*.g = */ green, /*.b = */ blue, /*.a = */ alpha});
+        SetPixel(x, y, RGB{.red = red, .green = green, .blue = blue, .alpha = alpha});
       }
     }
   }

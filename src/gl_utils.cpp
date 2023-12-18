@@ -188,8 +188,7 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
     glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
     for (auto i = 0; i < nExtensions; i++)
     {
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      //      std::print("{}\n",
+      //      std_fmt::print("{}\n",
       //                     ptr_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(i))));
     }
   }

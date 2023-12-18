@@ -259,9 +259,8 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   return DEFAULT_AFTER_EFFECTS_OFF_TIMES;
 }
 
-// TODO(glk) - Can make this 'constexpr' with C++20.
-
-auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<ZoomFilterMode>
+[[nodiscard]] auto GetWeightedFilterEvents(const IGoomRand& goomRand)
+    -> ConditionalWeights<ZoomFilterMode>
 {
   static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
   static constexpr auto COMPLEX_RATIONAL_MODE_WEIGHT   = 10.0F;
@@ -291,7 +290,6 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
   static constexpr auto WATER_MODE_WEIGHT              = 00.0F;
   static constexpr auto Y_ONLY_MODE_WEIGHT             = 05.0F;
 
-  // TODO(glk) - When we get to use C++20, replace the below 'inline consts' with 'constexpr'.
   static const auto s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
       {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
       {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
@@ -416,46 +414,44 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
   return filterWeights;
 }
 
-// TODO(glk) - Can make this 'constexpr' with C++20.
-
 [[nodiscard]] auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
     -> std::vector<Weights<HypercosOverlayMode>::KeyValue>
 {
-  constexpr auto FORCED_HYPERCOS =
+  static constexpr auto FORCED_HYPERCOS =
       USE_FORCED_AFTER_EFFECT and (FORCED_AFTER_EFFECTS_TYPE == AfterEffectsTypes::HYPERCOS);
 
   using Hyp         = HypercosOverlayMode;
   using ModeWeights = std::array<Weights<HypercosOverlayMode>::KeyValue, NUM<HypercosOverlayMode>>;
 
-  constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 20.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto COMPLEX_RATIONAL_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto COMPLEX_RATIONAL_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
        {Hyp::MODE0, 10.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto CRYSTAL_BALL1_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto CRYSTAL_BALL1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 99.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto DISTANCE_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto DISTANCE_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
        {Hyp::MODE0, 10.0F},
        {Hyp::MODE1, 1.0F},
@@ -469,119 +465,119 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 2.0F},
        {Hyp::MODE2, 2.0F},
        {Hyp::MODE3, 2.0F}}
   };
-  constexpr auto HYPERCOS1_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto HYPERCOS1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 2.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 2.0F},
        {Hyp::MODE3, 2.0F}}
   };
-  constexpr auto HYPERCOS2_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto HYPERCOS2_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 2.0F},
        {Hyp::MODE1, 2.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 2.0F}}
   };
-  constexpr auto HYPERCOS3_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto HYPERCOS3_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 2.0F},
        {Hyp::MODE1, 2.0F},
        {Hyp::MODE2, 2.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  constexpr auto NEWTON_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto NEWTON_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto SPEEDWAY_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto SPEEDWAY_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto WATER_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto WATER_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto Y_ONLY_HYPERCOS_WEIGHTS = ModeWeights{
+  static constexpr auto Y_ONLY_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
@@ -589,7 +585,7 @@ auto GetWeightedFilterEvents(const IGoomRand& goomRand) -> ConditionalWeights<Zo
        {Hyp::MODE3, 1.0F}}
   };
 
-  constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
+  static constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
       {ZoomFilterMode::AMULET_MODE, AMULET_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_HYPERCOS_WEIGHTS},
       {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL0_HYPERCOS_WEIGHTS},
