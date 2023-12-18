@@ -7,6 +7,7 @@
 #include "goom/goom_control.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
+#include "goom/goom_utils.h"
 #include "goom_visualization.h"
 
 #include <algorithm>

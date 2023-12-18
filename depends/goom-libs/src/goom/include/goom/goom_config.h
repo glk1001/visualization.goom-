@@ -1,18 +1,14 @@
+#pragma once
+
 #if defined(REQUIRE_ASSERTS_FOR_ALL_BUILDS) or defined(GOOM_DEBUG)
 #undef NDEBUG // NOLINT: Can't include header for this.
 //#define DO_GOOM_STATE_DUMP
 #endif
 
-// *** Put the header guard here to disable CLion's
-// *** 'unused include directive' inspection.
-#ifndef HDR_GOOM_CONFIG
-#define HDR_GOOM_CONFIG
-
 #include "goom_utils.h"
 
 #include <cassert>
 #include <exception>
-#include <string>
 
 namespace GOOM
 {
@@ -23,33 +19,6 @@ namespace GOOM
 [[noreturn]] inline auto FailFast() noexcept -> void
 {
   std::terminate();
-}
-
-#ifdef _WIN32PC
-inline constexpr auto PATH_SEP = "\\"_cts;
-#else
-inline constexpr auto PATH_SEP = "/"_cts;
-#endif
-
-template<DETAIL::string_literal Base>
-consteval decltype(auto) join_paths() noexcept
-{
-  return Base;
-}
-template<DETAIL::string_literal Base, DETAIL::string_literal... Others>
-  requires(sizeof...(Others) != 0)
-consteval decltype(auto) join_paths() noexcept
-{
-  return static_concat<static_concat<Base, PATH_SEP>(), join_paths<Others...>()>();
-}
-constexpr auto join_paths(const std::string& base) noexcept -> std::string
-{
-  return base;
-}
-template<typename... Types>
-constexpr auto join_paths(const std::string& base, Types... paths) noexcept -> std::string
-{
-  return base + PATH_SEP + join_paths(paths...);
 }
 
 inline constexpr auto DATA_DIR               = "data"_cts;
@@ -70,5 +39,3 @@ inline constexpr auto SHADERS_DIR   = join_paths<RESOURCES_DIR, DATA_DIR, "shade
 #endif
 
 } // namespace GOOM
-
-#endif // HDR_GOOM_CONFIG

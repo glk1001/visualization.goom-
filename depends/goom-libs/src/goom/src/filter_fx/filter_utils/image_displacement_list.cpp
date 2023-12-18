@@ -1,6 +1,7 @@
 #include "image_displacement_list.h"
 
 #include "goom/goom_config.h"
+#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
@@ -79,7 +80,7 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
 {
   return {
       GetPair(
-          paramGroup, "filename", std::string{IMAGE_FILENAMES[m_currentImageDisplacementIndex]}),
+          paramGroup, "filename", std::string{IMAGE_FILENAMES.at(m_currentImageDisplacementIndex)}),
       GetPair(paramGroup,
               "zoom factor",
               Point2dFlt{GetCurrentImageDisplacement().GetXZoomFactor(),

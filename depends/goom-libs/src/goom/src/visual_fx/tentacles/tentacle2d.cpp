@@ -2,7 +2,6 @@
 
 #include "goom/goom_config.h"
 #include "utils/math/damping_functions.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstddef>

@@ -4,6 +4,7 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_utils.h"
 #include "image_bitmaps.h"
 #include "utils/enum_utils.h"
 #include "utils/math/misc.h"
