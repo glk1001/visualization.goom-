@@ -12,6 +12,7 @@
 #include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
@@ -334,11 +335,11 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
   std::iota(begin(randImageIndexes), end(randImageIndexes), 0);
   m_fxHelper->GetGoomRand().Shuffle(begin(randImageIndexes), end(randImageIndexes));
 
-  const auto imageDir              = m_resourcesDirectory + PATH_SEP + IMAGE_FX_DIR;
+  const auto imageDir              = join_paths(m_resourcesDirectory, IMAGE_FX_DIR);
   static constexpr auto MAX_IMAGES = 5U;
   for (auto i = 0U; i < MAX_IMAGES; ++i)
   {
-    const auto imageFilename = imageDir + PATH_SEP + s_IMAGE_FILENAMES.at(randImageIndexes.at(i));
+    const auto imageFilename = join_paths(imageDir, s_IMAGE_FILENAMES.at(randImageIndexes.at(i)));
     m_images.emplace_back(std::make_unique<ChunkedImage>(
         std::make_shared<ImageBitmap>(imageFilename), m_fxHelper->GetGoomInfo()));
   }

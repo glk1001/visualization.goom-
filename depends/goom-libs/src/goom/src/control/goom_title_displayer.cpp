@@ -69,7 +69,7 @@ static constexpr auto FONT_INFO = std::array{
 
 inline auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
 {
-  return m_fontDirectory + PATH_SEP + FONT_INFO.at(m_fontInfoIndex).fontFilename;
+  return join_paths(m_fontDirectory, FONT_INFO.at(m_fontInfoIndex).fontFilename);
 }
 
 inline auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t

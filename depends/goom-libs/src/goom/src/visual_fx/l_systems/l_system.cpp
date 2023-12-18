@@ -5,6 +5,7 @@
 #include "../fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "lsys_draw.h"
@@ -383,13 +384,13 @@ inline auto LSystem::ResetLSysParams() noexcept -> void
 inline auto LSystem::GetLSystemFilename(const std::string& lSystemDirectory,
                                         const LSystemFile& lSystemFile) noexcept -> std::string
 {
-  return lSystemDirectory + PATH_SEP + lSystemFile.filename + ".in";
+  return join_paths(lSystemDirectory, std::string{lSystemFile.filename} + ".in");
 }
 
 inline auto LSystem::GetBoundsFilename(const std::string& lSystemDirectory,
                                        const LSystemFile& lSystemFile) noexcept -> std::string
 {
-  return lSystemDirectory + PATH_SEP + lSystemFile.filename + ".bnds";
+  return join_paths(lSystemDirectory, std::string{lSystemFile.filename} + ".bnds");
 }
 
 inline auto LSystem::ResetModelNamedArgs() -> void

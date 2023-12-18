@@ -33,6 +33,7 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
+#include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
@@ -571,13 +572,13 @@ inline auto GoomControl::GoomControlImpl::FinishGoomStateDump() -> void
 inline auto GoomControl::GoomControlImpl::GetFontDirectory(const std::string& resourcesDirectory)
     -> std::string
 {
-  return resourcesDirectory + PATH_SEP + FONTS_DIR;
+  return join_paths(resourcesDirectory, FONTS_DIR);
 }
 
 inline auto GoomControl::GoomControlImpl::GetMessagesFontFile(const std::string& resourcesDirectory)
     -> std::string
 {
-  return GetFontDirectory(resourcesDirectory) + PATH_SEP + "verdana.ttf";
+  return join_paths(GetFontDirectory(resourcesDirectory), "verdana.ttf");
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& soundData,

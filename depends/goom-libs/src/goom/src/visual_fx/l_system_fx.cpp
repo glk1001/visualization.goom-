@@ -7,6 +7,7 @@
 #include "fx_helper.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
@@ -403,7 +404,7 @@ inline auto LSystemFx::LSystemFxImpl::DrawLSystem() noexcept -> void
 inline auto LSystemFx::LSystemFxImpl::GetLSystemDirectory(
     const std::string& resourcesDirectory) noexcept -> std::string
 {
-  return resourcesDirectory + PATH_SEP + L_SYSTEMS_DIR;
+  return join_paths(resourcesDirectory, L_SYSTEMS_DIR);
 }
 
 } // namespace GOOM::VISUAL_FX

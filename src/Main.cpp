@@ -31,6 +31,9 @@
 using GOOM::AudioSamples;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
+using GOOM::join_paths;
+using GOOM::RESOURCES_DIR;
+using GOOM::SHADERS_DIR;
 using GOOM::ShowSongTitleType;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;
@@ -141,7 +144,7 @@ CVisualizationGoom::CVisualizationGoom()
         KODI_ADDON::GetAddonPath(RESOURCES_DIR),
         CONSUME_WAIT_FOR_PRODUCER_MS,
         // NOLINTNEXTLINE(misc-include-cleaner): Hard to include the right gl header.
-        KODI_ADDON::GetAddonPath(std::string{SHADERS_DIR} + PATH_SEP + GL_TYPE_STRING),
+        KODI_ADDON::GetAddonPath(join_paths(SHADERS_DIR, GL_TYPE_STRING)),
         GetTextureBufferDimensions()}
 {
   StartLogging();
@@ -174,8 +177,8 @@ auto CVisualizationGoom::PassSettings() noexcept -> void
   GoomVisualization::SetRandomSeed(std::random_device{}());
 
   m_goomVisualization.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
-  m_goomVisualization.SetDumpDirectory(kodi::vfs::TranslateSpecialProtocol(
-      std::string(GOOM_ADDON_DATA_DIR) + PATH_SEP + GOOM_DUMPS_SETTING));
+  m_goomVisualization.SetDumpDirectory(
+      kodi::vfs::TranslateSpecialProtocol(join_paths(GOOM_ADDON_DATA_DIR, GOOM_DUMPS_SETTING)));
   m_goomVisualization.SetShowSongTitle(
       static_cast<ShowSongTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)));
 

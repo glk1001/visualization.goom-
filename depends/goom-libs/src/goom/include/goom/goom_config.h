@@ -8,8 +8,11 @@
 #ifndef HDR_GOOM_CONFIG
 #define HDR_GOOM_CONFIG
 
+#include "goom_utils.h"
+
 #include <cassert>
 #include <exception>
+#include <string>
 
 namespace GOOM
 {
@@ -22,24 +25,43 @@ namespace GOOM
   std::terminate();
 }
 
-// NOLINTBEGIN: Convert these macros to constexpr std::string with C++20.
 #ifdef _WIN32PC
-#define PATH_SEP "\\"
+inline constexpr auto PATH_SEP = "\\"_cts;
 #else
-#define PATH_SEP "/"
+inline constexpr auto PATH_SEP = "/"_cts;
 #endif
 
-#define DATA_DIR "data"
-#define MEDIA_DIR "media"
-#define FONTS_DIR DATA_DIR PATH_SEP "fonts"
-#define L_SYSTEMS_DIR DATA_DIR PATH_SEP "l-systems"
-#define IMAGES_DIR MEDIA_DIR PATH_SEP "images"
-#define IMAGE_FX_DIR IMAGES_DIR PATH_SEP "image_fx"
-#define IMAGE_DISPLACEMENT_DIR IMAGES_DIR PATH_SEP "displacements"
+template<DETAIL::string_literal Base>
+consteval decltype(auto) join_paths() noexcept
+{
+  return Base;
+}
+template<DETAIL::string_literal Base, DETAIL::string_literal... Others>
+  requires(sizeof...(Others) != 0)
+consteval decltype(auto) join_paths() noexcept
+{
+  return static_concat<static_concat<Base, PATH_SEP>(), join_paths<Others...>()>();
+}
+constexpr auto join_paths(const std::string& base) noexcept -> std::string
+{
+  return base;
+}
+template<typename... Types>
+constexpr auto join_paths(const std::string& base, Types... paths) noexcept -> std::string
+{
+  return base + PATH_SEP + join_paths(paths...);
+}
 
-#define RESOURCES_DIR "resources"
-#define SHADERS_DIR RESOURCES_DIR PATH_SEP DATA_DIR PATH_SEP "shaders"
-// NOLINTEND: Convert these macros to constexpr with C++20.
+inline constexpr auto DATA_DIR               = "data"_cts;
+inline constexpr auto MEDIA_DIR              = "media"_cts;
+inline constexpr auto FONTS_DIR              = join_paths<DATA_DIR, "fonts">();
+inline constexpr auto L_SYSTEMS_DIR          = join_paths<DATA_DIR, "l-systems">();
+inline constexpr auto IMAGES_DIR             = join_paths<MEDIA_DIR, "images">();
+inline constexpr auto IMAGE_FX_DIR           = join_paths<IMAGES_DIR, "image_fx">();
+inline constexpr auto IMAGE_DISPLACEMENT_DIR = join_paths<IMAGES_DIR, "displacements">();
+
+inline constexpr auto RESOURCES_DIR = "resources"_cts;
+inline constexpr auto SHADERS_DIR   = join_paths<RESOURCES_DIR, DATA_DIR, "shaders">();
 
 #ifdef WORDS_BIGENDIAN
 #define COLOR_ARGB
