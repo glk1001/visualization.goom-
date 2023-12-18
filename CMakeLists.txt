@@ -214,6 +214,7 @@ include_directories(BEFORE
 include_directories(BEFORE
                     SYSTEM
                     ${GOOM_LIBS_DIR}/src/vivid/include
+                    ${GOOM_LIBS_DIR}/lib/std_fmt/include
                     ${GLM_INCLUDE_DIR}
                     ${KODI_INCLUDE_DIR}
                     ${KODI_FIXED_INCLUDE_DIR}

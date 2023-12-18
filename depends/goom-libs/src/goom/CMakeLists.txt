@@ -257,6 +257,7 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/perlin_noise/include
+                           ${GOOM_LIBS_DIR}/lib/std_fmt/include
                            ${LSys_SOURCE_DIR}/include
                            ${particles_SOURCE_DIR}/include
                            ${blend2d_SOURCE_DIR}/src

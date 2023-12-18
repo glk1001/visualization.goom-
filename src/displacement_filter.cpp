@@ -32,13 +32,14 @@
 #ifdef SAVE_FILTER_BUFFERS
 #include "goom_graphic.h"
 
+#include <format_23>
 #include <fstream>
 #endif
 
 namespace fs = std::filesystem;
 
 // TODO(glk) - Need to pass goomLogger
-//std::println("{}", __LINE__);
+//std_fmt::println("{}", __LINE__);
 
 namespace GOOM::OPENGL
 {
@@ -837,7 +838,7 @@ auto DisplacementFilter::SaveFilterPosBuffer(const std::string& filename,
   auto file = std::ofstream{filename};
   if (not file.good())
   {
-    std::println(stderr, "ERROR: Could not open file '{}'.", filename);
+    std_fmt::println(stderr, "ERROR: Could not open file '{}'.", filename);
     return;
   }
 
@@ -860,7 +861,7 @@ auto DisplacementFilter::SavePixelBuffer(const std::string& filename,
   auto file = std::ofstream{filename};
   if (not file.good())
   {
-    std::println(stderr, "ERROR: Could not open file '{}'.", filename);
+    std_fmt::println(stderr, "ERROR: Could not open file '{}'.", filename);
     return;
   }
 

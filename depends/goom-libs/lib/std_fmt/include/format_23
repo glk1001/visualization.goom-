@@ -1,0 +1,32 @@
+#pragma once
+
+#include <cstdio>
+#include <format>
+
+namespace std_fmt
+{
+
+inline auto println(std::FILE* file, const std::string& str) -> void
+{
+  [[maybe_unused]] const auto retIgnored = std::fputs((str + "\n").c_str(), file);
+}
+
+inline auto println(const std::string& str) -> void
+{
+  [[maybe_unused]] const auto retIgnored = std::fputs((str + "\n").c_str(), stdout);
+}
+
+template<typename... T>
+inline auto println(std::FILE* file, std::format_string<T...> fmt, T&&... args) -> void
+{
+  const auto formattedStr = std::format(fmt, std::forward<T>(args)...) + "\n";
+  [[maybe_unused]] const auto retIgnored = std::fputs(formattedStr.c_str(), file);
+}
+
+template<typename... T>
+inline auto println(std::format_string<T...> fmt, T&&... args) -> void
+{
+  println(stdout, fmt, std::forward<T>(args)...);
+}
+
+} // namespace std_fmt

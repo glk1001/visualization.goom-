@@ -3,6 +3,7 @@
 #include "goom/goom_utils.h"
 
 #include <format>
+#include <format_23>
 #include <string>
 
 namespace GOOM::OPENGL
@@ -97,8 +98,7 @@ auto APIENTRY DebugCallback(const GLenum source,
       sevStr = "UNK";
   }
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  //  std::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
+  std_fmt::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
 }
 
 auto GlClearError() -> void
@@ -146,8 +146,7 @@ auto CheckForOpenGLError([[maybe_unused]] const char* const file, [[maybe_unused
         message = std::format("Unknown error: {}", glError);
     }
 
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    //    std::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
+    std_fmt::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
     result = false;
 
     glError = glGetError();
@@ -173,17 +172,15 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
   auto sampleBuffers = GLint{};
   glGetIntegerv(GL_SAMPLE_BUFFERS, &sampleBuffers);
 
-  // NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
-  //  std::println("-------------------------------------------------------------");
-  //  std::println("GL Vendor    : {}", vendor);
-  //  std::println("GL Renderer  : {}", renderer);
-  //  std::println("GL Version   : {}", version);
-  //  std::println("GL Version   : {}.{}", major, minor);
-  //  std::println("GLSL Version : {}", glslVersion);
-  //  std::println("MSAA samples : {}", samples);
-  //  std::println("MSAA buffers : {}", sampleBuffers);
-  //  std::println("-------------------------------------------------------------");
-  // NOLINTEND(misc-include-cleaner)
+  std_fmt::println("-------------------------------------------------------------");
+  std_fmt::println("GL Vendor    : {}", vendor);
+  std_fmt::println("GL Renderer  : {}", renderer);
+  std_fmt::println("GL Version   : {}", version);
+  std_fmt::println("GL Version   : {}.{}", major, minor);
+  std_fmt::println("GLSL Version : {}", glslVersion);
+  std_fmt::println("MSAA samples : {}", samples);
+  std_fmt::println("MSAA buffers : {}", sampleBuffers);
+  std_fmt::println("-------------------------------------------------------------");
 
   if (dumpExtensions)
   {
