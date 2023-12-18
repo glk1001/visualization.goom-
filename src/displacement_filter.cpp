@@ -21,9 +21,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <glm/ext/vector_float4.hpp>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -38,7 +38,7 @@
 namespace fs = std::filesystem;
 
 // TODO(glk) - Need to pass goomLogger
-//std_fmt::println("{}", __LINE__);
+//std::println("{}", __LINE__);
 
 namespace GOOM::OPENGL
 {
@@ -369,8 +369,7 @@ auto DisplacementFilter::CompileShaderFile(GlslProgram& program,
   shaderFile.WriteToFile(tempShaderFile);
   if (not fs::exists(tempShaderFile))
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error(std_fmt::format("Could not find output file '{}'", tempShaderFile));
+    throw std::runtime_error(std::format("Could not find output file '{}'", tempShaderFile));
   }
 
   program.CompileShader(tempShaderFile);
@@ -793,9 +792,7 @@ auto DisplacementFilter::SaveFilterBuffersAfterPass1() -> void
   m_glFilterBuffers.filterBuff1Texture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
   GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
 
-  const auto filename =
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      std_fmt::format("{}/filter_buffer1_{:04d}.txt", SAVE_ROOT_DIR, m_pass1SaveNum);
+  const auto filename = std::format("{}/filter_buffer1_{:04d}.txt", SAVE_ROOT_DIR, m_pass1SaveNum);
 
   SavePixelBuffer(filename, filterBuffer);
 }
@@ -805,8 +802,7 @@ auto DisplacementFilter::SaveFilterPosBuffersAfterPass1() -> void
   for (auto i = 0U; i < NUM_FILTER_POS_TEXTURES; ++i)
   {
     const auto filename =
-        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format("{}/filter_pos_buffer{}_{:04d}.txt", SAVE_ROOT_DIR, i, m_pass1SaveNum);
+        std::format("{}/filter_pos_buffer{}_{:04d}.txt", SAVE_ROOT_DIR, i, m_pass1SaveNum);
 
     SaveFilterPosBuffer(filename, i);
   }
@@ -820,9 +816,7 @@ auto DisplacementFilter::SaveFilterBuffersAfterPass4() -> void
   m_glFilterBuffers.filterBuff3Texture.BindTextures(m_programPass4ResetFilterBuff2AndOutputBuff3);
   GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
 
-  const auto filename =
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      std_fmt::format("{}/filter_buffer3_{:04d}.txt", SAVE_ROOT_DIR, m_pass4SaveNum);
+  const auto filename = std::format("{}/filter_buffer3_{:04d}.txt", SAVE_ROOT_DIR, m_pass4SaveNum);
 
   SavePixelBuffer(filename, filterBuffer, lumAverage);
 }
@@ -837,16 +831,13 @@ auto DisplacementFilter::SaveFilterPosBuffer(const std::string& filename,
   SaveFilterPosBuffer(filename, filterBuffer);
 }
 
-auto DisplacementFilter::SaveFilterPosBuffer(
-    const std::string& filename,
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    std_spn::span<FilterPosBuffersXY> buffer) const -> void
+auto DisplacementFilter::SaveFilterPosBuffer(const std::string& filename,
+                                             std::span<FilterPosBuffersXY> buffer) const -> void
 {
   auto file = std::ofstream{filename};
   if (not file.good())
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    std_fmt::println(stderr, "ERROR: Could not open file '{}'.", filename);
+    std::println(stderr, "ERROR: Could not open file '{}'.", filename);
     return;
   }
 
@@ -856,29 +847,27 @@ auto DisplacementFilter::SaveFilterPosBuffer(
     for (auto x = 0; x < GetWidth(); ++x)
     {
       const auto pos = buffer[index];
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      file << std_fmt::format("[{:4d} {:4d}]  {:6.2f}, {:6.2f}\n", x, y, pos.x, pos.y);
+      file << std::format("[{:4d} {:4d}]  {:6.2f}, {:6.2f}\n", x, y, pos.x, pos.y);
     }
     ++index;
   }
 }
 
-// NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
 auto DisplacementFilter::SavePixelBuffer(const std::string& filename,
-                                         std_spn::span<GOOM::Pixel> buffer,
+                                         std::span<GOOM::Pixel> buffer,
                                          const float lumAverage) const -> void
 {
   auto file = std::ofstream{filename};
   if (not file.good())
   {
-    std_fmt::println(stderr, "ERROR: Could not open file '{}'.", filename);
+    std::println(stderr, "ERROR: Could not open file '{}'.", filename);
     return;
   }
 
   const auto linearScale   = 0.18F; // MAYBE brightness ??
   const auto finalExposure = linearScale / (lumAverage + 0.0001F);
-  file << std_fmt::format("LumAverage    = {:.3f}.\n", lumAverage);
-  file << std_fmt::format("FinalExposure = {:.3f}.\n\n", finalExposure);
+  file << std::format("LumAverage    = {:.3f}.\n", lumAverage);
+  file << std::format("FinalExposure = {:.3f}.\n\n", finalExposure);
 
   auto index = 0U;
   for (auto y = 0; y < GetHeight(); ++y)
@@ -889,19 +878,18 @@ auto DisplacementFilter::SavePixelBuffer(const std::string& filename,
       if (static constexpr auto CUT_OFF = 256U;
           (pixel.R() > CUT_OFF) or (pixel.G() > CUT_OFF) or (pixel.B() > CUT_OFF))
       {
-        file << std_fmt::format("[{:4d} {:4d}]  {:6d}, {:6d}, {:6d}, {:6d}\n",
-                                x,
-                                y,
-                                pixel.R(),
-                                pixel.G(),
-                                pixel.B(),
-                                pixel.A());
+        file << std::format("[{:4d} {:4d}]  {:6d}, {:6d}, {:6d}, {:6d}\n",
+                            x,
+                            y,
+                            pixel.R(),
+                            pixel.G(),
+                            pixel.B(),
+                            pixel.A());
       }
       ++index;
     }
   }
 }
-// NOLINTEND(misc-include-cleaner): Waiting for C++20.
 #endif
 
 } // namespace GOOM::OPENGL

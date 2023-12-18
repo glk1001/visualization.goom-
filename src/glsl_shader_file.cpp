@@ -3,7 +3,7 @@
 #include "goom/goom_utils.h"
 #include "utils/strutils.h"
 
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -29,8 +29,7 @@ auto GlslShaderFile::WriteToFile(const std::string& outputFilepath) const -> voi
   auto outStream = std::ofstream{outputFilepath};
   if (not outStream)
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error{std_fmt::format("Could not open output file \"{}\"", outputFilepath)};
+    throw std::runtime_error{std::format("Could not open output file \"{}\"", outputFilepath)};
   }
 
   PutFileLines(outStream, lines);

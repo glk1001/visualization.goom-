@@ -2,7 +2,7 @@
 
 #include "goom/goom_utils.h"
 
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <string>
 
 namespace GOOM::OPENGL
@@ -13,10 +13,10 @@ using GOOM::ptr_cast;
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto APIENTRY DebugCallback(const GLenum source,
                             const GLenum type,
-                            const GLuint id,
+                            [[maybe_unused]] const GLuint id,
                             const GLenum severity,
                             [[maybe_unused]] const GLsizei length,
-                            const GLchar* const msg,
+                            [[maybe_unused]] const GLchar* const msg,
                             [[maybe_unused]] const void* const param) -> void
 {
   std::string sourceStr;
@@ -98,7 +98,7 @@ auto APIENTRY DebugCallback(const GLenum source,
   }
 
   // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  std_fmt::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
+  //  std::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
 }
 
 auto GlClearError() -> void
@@ -108,7 +108,8 @@ auto GlClearError() -> void
   }
 }
 
-auto CheckForOpenGLError(const char* const file, const int line) -> bool
+auto CheckForOpenGLError([[maybe_unused]] const char* const file, [[maybe_unused]] const int line)
+    -> bool
 {
   auto result  = true;
   auto glError = glGetError();
@@ -142,12 +143,11 @@ auto CheckForOpenGLError(const char* const file, const int line) -> bool
                   " cause an internal stack to overflow";
         break;
       default:
-        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        message = std_fmt::format("Unknown error: {}", glError);
+        message = std::format("Unknown error: {}", glError);
     }
 
     // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    std_fmt::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
+    //    std::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
     result = false;
 
     glError = glGetError();
@@ -158,10 +158,11 @@ auto CheckForOpenGLError(const char* const file, const int line) -> bool
 
 auto DumpGLInfo(const bool dumpExtensions) -> void
 {
-  const auto* const renderer    = ptr_cast<const char*>(glGetString(GL_RENDERER));
-  const auto* const vendor      = ptr_cast<const char*>(glGetString(GL_VENDOR));
-  const auto* const version     = ptr_cast<const char*>(glGetString(GL_VERSION));
-  const auto* const glslVersion = ptr_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+  [[maybe_unused]] const auto* const renderer = ptr_cast<const char*>(glGetString(GL_RENDERER));
+  [[maybe_unused]] const auto* const vendor   = ptr_cast<const char*>(glGetString(GL_VENDOR));
+  [[maybe_unused]] const auto* const version  = ptr_cast<const char*>(glGetString(GL_VERSION));
+  [[maybe_unused]] const auto* const glslVersion =
+      ptr_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
 
   auto major = GLint{};
   glGetIntegerv(GL_MAJOR_VERSION, &major);
@@ -173,15 +174,15 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
   glGetIntegerv(GL_SAMPLE_BUFFERS, &sampleBuffers);
 
   // NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
-  std_fmt::println("-------------------------------------------------------------");
-  std_fmt::println("GL Vendor    : {}", vendor);
-  std_fmt::println("GL Renderer  : {}", renderer);
-  std_fmt::println("GL Version   : {}", version);
-  std_fmt::println("GL Version   : {}.{}", major, minor);
-  std_fmt::println("GLSL Version : {}", glslVersion);
-  std_fmt::println("MSAA samples : {}", samples);
-  std_fmt::println("MSAA buffers : {}", sampleBuffers);
-  std_fmt::println("-------------------------------------------------------------");
+  //  std::println("-------------------------------------------------------------");
+  //  std::println("GL Vendor    : {}", vendor);
+  //  std::println("GL Renderer  : {}", renderer);
+  //  std::println("GL Version   : {}", version);
+  //  std::println("GL Version   : {}.{}", major, minor);
+  //  std::println("GLSL Version : {}", glslVersion);
+  //  std::println("MSAA samples : {}", samples);
+  //  std::println("MSAA buffers : {}", sampleBuffers);
+  //  std::println("-------------------------------------------------------------");
   // NOLINTEND(misc-include-cleaner)
 
   if (dumpExtensions)
@@ -191,8 +192,8 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
     for (auto i = 0; i < nExtensions; i++)
     {
       // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      std_fmt::print("{}\n",
-                     ptr_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(i))));
+      //      std::print("{}\n",
+      //                     ptr_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(i))));
     }
   }
 }

@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <execution>
-#include <span> // NOLINT(misc-include-cleaner): Waiting to use C++20.
+#include <span>
 
 namespace GOOM::UTILS::GRAPHICS
 {

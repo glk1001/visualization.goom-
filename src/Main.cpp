@@ -16,14 +16,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <exception>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <fstream>
 #include <ios>
 #include <kodi/AddonBase.h>
 #include <kodi/Filesystem.h>
 #include <kodi/addon-instance/Visualization.h>
 #include <random>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
@@ -160,8 +160,7 @@ CVisualizationGoom::~CVisualizationGoom()
 
 auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  const auto fullMsg = std_fmt::format("CVisualizationGoom: {}", errorMsg);
+  const auto fullMsg = std::format("CVisualizationGoom: {}", errorMsg);
 
   LogError(*m_goomLogger, fullMsg);
 
@@ -224,8 +223,7 @@ auto CVisualizationGoom::StartWithCatch(const int numChannels) -> void
   }
   catch (const std::exception& e)
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    HandleError(std_fmt::format("CVisualizationGoom start failed: {}", e.what()));
+    HandleError(std::format("CVisualizationGoom start failed: {}", e.what()));
   }
 }
 
@@ -264,8 +262,7 @@ auto CVisualizationGoom::StopWithCatch() -> void
   }
   catch (const std::exception& e)
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    HandleError(std_fmt::format("Goom stop failed: {}", e.what()));
+    HandleError(std::format("Goom stop failed: {}", e.what()));
   }
 }
 

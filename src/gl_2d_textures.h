@@ -8,10 +8,11 @@
 #include "glsl_program.h"
 #include "goom/goom_utils.h"
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <span>
 #include <stdexcept>
 
@@ -362,8 +363,7 @@ auto Gl2DTexture<CppTextureType,
                          GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT));
     if (nullptr == m_pboBuffers.mappedBuffers.at(i))
     {
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      throw std::runtime_error(std_fmt::format("Could not allocate mapped buffer for pbo {}.", i));
+      throw std::runtime_error(std::format("Could not allocate mapped buffer for pbo {}.", i));
     }
 
     GlCall(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0));

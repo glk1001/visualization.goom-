@@ -7,13 +7,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <fstream>
 #include <functional>
 #include <ios>
 #include <istream>
 #include <ostream>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -51,23 +51,19 @@ public:
   };
   auto SetFormatters(const Formatters& formatters) noexcept -> void;
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  auto Write(std_spn::span<const T> buffer, bool binaryFormat) -> void;
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  auto Write(const HeaderT& header, std_spn::span<const T> buffer, bool binaryFormat) -> void;
+  auto Write(std::span<const T> buffer, bool binaryFormat) -> void;
+  auto Write(const HeaderT& header, std::span<const T> buffer, bool binaryFormat) -> void;
 
   [[nodiscard]] auto PeekHeader(HeaderT& header, bool binaryFormat) const -> bool;
 
   static auto WriteBinary(const std::string& filename,
                           int64_t tag,
                           const HeaderT& header,
-                          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                          std_spn::span<const T> buffer) -> void;
+                          std::span<const T> buffer) -> void;
   static auto WriteBinary(std::ostream& file,
                           int64_t tag,
                           const HeaderT& header,
-                          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                          std_spn::span<const T> buffer) -> void;
+                          std::span<const T> buffer) -> void;
 
   [[nodiscard]] static auto PeekHeaderBinary(const std::string& filename, HeaderT& header) -> bool;
   [[nodiscard]] static auto PeekHeaderBinary(std::istream& file, HeaderT& header) -> bool;
@@ -75,14 +71,12 @@ public:
   static auto WriteFormatted(std::ostream& file,
                              int64_t tag,
                              const HeaderT& header,
-                             // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                             std_spn::span<const T> buffer,
+                             std::span<const T> buffer,
                              const Formatters& formatters = Formatters{}) -> void;
   static auto WriteFormatted(const std::string& filename,
                              int64_t tag,
                              const HeaderT& header,
-                             // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                             std_spn::span<const T> buffer,
+                             std::span<const T> buffer,
                              const Formatters& formatters = Formatters{}) -> void;
 
   [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename, HeaderT& header)
@@ -125,8 +119,7 @@ inline BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::GetCurrentFilename() const -> std::string
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_fmt::format("{}_{:05}", m_filenamePrefix, m_currentBuffNum);
+  return std::format("{}_{:05}", m_filenamePrefix, m_currentBuffNum);
 }
 
 template<class T, class HeaderT>
@@ -168,13 +161,11 @@ inline auto BufferSaver<T, HeaderT>::SetFormatters(const Formatters& formatters)
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::DefaultGetBufferIndexString(const size_t bufferIndex) -> std::string
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_fmt::format("{:8d}", bufferIndex);
+  return std::format("{:8d}", bufferIndex);
 }
 
 template<class T, class HeaderT>
-// NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-auto BufferSaver<T, HeaderT>::Write(const std_spn::span<const T> buffer, const bool binaryFormat)
+auto BufferSaver<T, HeaderT>::Write(const std::span<const T> buffer, const bool binaryFormat)
     -> void
 {
   const auto ignore = HeaderT{};
@@ -183,8 +174,7 @@ auto BufferSaver<T, HeaderT>::Write(const std_spn::span<const T> buffer, const b
 
 template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::Write(const HeaderT& header,
-                                    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                                    const std_spn::span<const T> buffer,
+                                    const std::span<const T> buffer,
                                     const bool binaryFormat) -> void
 {
   if ((m_currentBuffNum < m_startBuffNum) or (m_currentBuffNum > m_endBuffNum))
@@ -221,30 +211,25 @@ auto BufferSaver<T, HeaderT>::PeekHeader(HeaderT& header, bool binaryFormat) con
 }
 
 template<class T, class HeaderT>
-auto BufferSaver<T, HeaderT>::WriteBinary(
-    const std::string& filename,
-    const int64_t tag,
-    const HeaderT& header,
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    const std_spn::span<const T> buffer) -> void
+auto BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
+                                          const int64_t tag,
+                                          const HeaderT& header,
+                                          const std::span<const T> buffer) -> void
 {
   auto file = std::ofstream{filename, std::ios::out | std::ios::binary};
   if (not file.good())
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error(std_fmt::format(
+    throw std::runtime_error(std::format(
         "Could not open file '{}' for binary writing. Error: {}.", filename, strerror(errno)));
   }
   WriteBinary(file, tag, header, buffer);
 }
 
 template<class T, class HeaderT>
-auto BufferSaver<T, HeaderT>::WriteBinary(
-    std::ostream& file,
-    const int64_t tag,
-    const HeaderT& header,
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    const std_spn::span<const T> buffer) -> void
+auto BufferSaver<T, HeaderT>::WriteBinary(std::ostream& file,
+                                          const int64_t tag,
+                                          const HeaderT& header,
+                                          const std::span<const T> buffer) -> void
 {
   if constexpr (not std::is_same_v<HeaderT, std::nullptr_t>)
   {
@@ -291,19 +276,16 @@ auto BufferSaver<T, HeaderT>::PeekHeaderFormatted(const std::string& filename,
 }
 
 template<class T, class HeaderT>
-auto BufferSaver<T, HeaderT>::WriteFormatted(
-    const std::string& filename,
-    const int64_t tag,
-    const HeaderT& header,
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    const std_spn::span<const T> buffer,
-    const Formatters& formatters) -> void
+auto BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
+                                             const int64_t tag,
+                                             const HeaderT& header,
+                                             const std::span<const T> buffer,
+                                             const Formatters& formatters) -> void
 {
   auto file = std::ofstream{filename, std::ios::out};
   if (not file.good())
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error(std_fmt::format(
+    throw std::runtime_error(std::format(
         "Could not open file '{}' for text writing. Error: {}.", filename, strerror(errno)));
   }
   WriteFormatted(file, tag, header, buffer, formatters);
@@ -313,8 +295,7 @@ template<class T, class HeaderT>
 auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
                                              const int64_t tag,
                                              const HeaderT& header,
-                                             // NOLINTNEXTLINE(misc-include-cleaner): Need C++20.
-                                             const std_spn::span<const T> buffer,
+                                             const std::span<const T> buffer,
                                              const Formatters& formatters) -> void
 {
   WriteFormattedHeader(file, tag, header, buffer.size());
@@ -327,10 +308,9 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(std::ostream& file,
     }
     else
     {
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      file << std_fmt::format("{}: {}",
-                              formatters.bufferIndexFormatter(i),
-                              formatters.bufferToStringFormatter(buffer[i]));
+      file << std::format("{}: {}",
+                          formatters.bufferIndexFormatter(i),
+                          formatters.bufferToStringFormatter(buffer[i]));
       if (i < (buffer.size() - 1))
       {
         file << ", ";
@@ -354,9 +334,9 @@ auto BufferSaver<T, HeaderT>::WriteFormattedHeader(std::ostream& file,
 {
   static_assert(not std::is_same_v<HeaderT, std::nullptr_t>, "Write formatted header not ready.");
 
-  file << std_fmt::format("tag:        {:>8d}\n", tag);
-  file << std_fmt::format("bufferLen:  {:>8d}\n", bufferSize);
-  file << std_fmt::format("bufferSize: {:>8d}\n", bufferSize * sizeof(T));
+  file << std::format("tag:        {:>8d}\n", tag);
+  file << std::format("bufferLen:  {:>8d}\n", bufferSize);
+  file << std::format("bufferSize: {:>8d}\n", bufferSize * sizeof(T));
   file << "\n";
 
   file << GetFormattedBufferHeader(header);

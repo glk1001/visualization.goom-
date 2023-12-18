@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -296,13 +296,11 @@ private:
   auto SaveFilterBuffersAfterPass4() -> void;
 
   auto SavePixelBuffer(const std::string& filename,
-                       // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                       std_spn::span<GOOM::Pixel> buffer,
+                       std::span<GOOM::Pixel> buffer,
                        float lumAverage = 0.0F) const -> void;
   auto SaveFilterPosBuffer(const std::string& filename, uint32_t textureIndex) -> void;
-  auto SaveFilterPosBuffer(const std::string& filename,
-                           // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-                           std_spn::span<FilterPosBuffersXY> buffer) const -> void;
+  auto SaveFilterPosBuffer(const std::string& filename, std::span<FilterPosBuffersXY> buffer) const
+      -> void;
 #endif
 };
 

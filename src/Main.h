@@ -33,7 +33,7 @@
 #include <kodi/addon-instance/Visualization.h>
 #include <kodi/gui/gl/Shader.h>
 #include <memory>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <string>
 #include <vector>
 

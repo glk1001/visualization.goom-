@@ -20,7 +20,7 @@
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
-#include <format> // NOLINT(misc-include-cleaner): Waiting for C++20.
+#include <format>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -229,18 +229,16 @@ auto GoomStateDump::DumpSummary() const -> void
   static constexpr auto* SUMMARY_FILENAME = "summary.dat";
   auto out = std::ofstream{m_datedDirectory + "/" + SUMMARY_FILENAME, std::ofstream::out};
 
-  // NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
-  out << fmt::format("Song:       {}\n", m_songTitle);
-  out << fmt::format("Date:       {}\n", m_dateTime);
-  out << fmt::format("Seed:       {}\n", m_goomSeed);
-  out << fmt::format("Width:      {}\n", m_goomInfo->GetDimensions().GetWidth());
-  out << fmt::format("Height:     {}\n", m_goomInfo->GetDimensions().GetHeight());
-  out << fmt::format("Start Time: {}\n", m_stopwatch->GetStartTimeAsStr());
-  out << fmt::format("Stop Time:  {}\n", m_stopwatch->GetLastMarkedTimeAsStr());
-  out << fmt::format("Act Dur:    {}\n", m_stopwatch->GetActualDurationInMs());
-  out << fmt::format("Given Dur:  {}\n", m_stopwatch->GetDurationInMs());
-  out << fmt::format("Time Left:  {}\n", m_stopwatch->GetTimeValues().timeRemainingInMs);
-  // NOLINTEND(misc-include-cleaner)
+  out << std::format("Song:       {}\n", m_songTitle);
+  out << std::format("Date:       {}\n", m_dateTime);
+  out << std::format("Seed:       {}\n", m_goomSeed);
+  out << std::format("Width:      {}\n", m_goomInfo->GetDimensions().GetWidth());
+  out << std::format("Height:     {}\n", m_goomInfo->GetDimensions().GetHeight());
+  out << std::format("Start Time: {}\n", m_stopwatch->GetStartTimeAsStr());
+  out << std::format("Stop Time:  {}\n", m_stopwatch->GetLastMarkedTimeAsStr());
+  out << std::format("Act Dur:    {}\n", m_stopwatch->GetActualDurationInMs());
+  out << std::format("Given Dur:  {}\n", m_stopwatch->GetDurationInMs());
+  out << std::format("Time Left:  {}\n", m_stopwatch->GetTimeValues().timeRemainingInMs);
 }
 
 template<typename T>
@@ -262,15 +260,13 @@ auto GoomStateDump::DumpDataArray(const std::string& filename,
 template<typename T>
 auto GoomStateDump::GetFormattedRowStr(const uint64_t value1, const T value2) -> std::string
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return fmt::format("{:6} {:7}\n", value1, value2);
+  return std::format("{:6} {:7}\n", value1, value2);
 }
 
 template<>
 auto GoomStateDump::GetFormattedRowStr(const uint64_t value1, const float value2) -> std::string
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return fmt::format("{:6} {:7.3f}\n", value1, value2);
+  return std::format("{:6} {:7.3f}\n", value1, value2);
 }
 
 inline auto GoomStateDump::CumulativeState::Reset() noexcept -> void

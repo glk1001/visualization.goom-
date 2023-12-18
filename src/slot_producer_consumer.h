@@ -9,7 +9,7 @@
 #include <condition_variable>
 #include <cstddef>
 #include <cstdint>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <functional>
 #include <mutex>
 #include <queue>

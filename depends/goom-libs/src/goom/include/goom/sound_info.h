@@ -24,7 +24,6 @@ public:
   //   If numSampleChannels = 2, then the 'rawAudioData' must interleave the two channels,
   //   one after the other. So 'rawAudioData[0]' is channel 0, 'rawAudioData[1]' is
   //   channel 1, 'rawAudioData[2]' is channel 0, 'rawAudioData[3]' is channel 1, etc.
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
   AudioSamples(size_t numSampleChannels, std::span<const float> rawAudioData);
 
   [[nodiscard]] auto GetNumDistinctChannels() const -> size_t;

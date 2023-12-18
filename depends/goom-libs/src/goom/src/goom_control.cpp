@@ -51,7 +51,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <memory>
 #include <string>
 #include <utility>
@@ -814,13 +814,11 @@ inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() const -> std::string
   const auto timeLeftStr =
       not m_runningTimeStopwatch.AreTimesValid()
           ? "Time left: not valid!"
-          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-          : std_fmt::format("Time left: {}  ({}%)",
-                            m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
-                            m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
+          : std::format("Time left: {}  ({}%)",
+                        m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
+                        m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return timeLeftStr + "\n" + std_fmt::format("Update Num: {}", m_goomTime.GetCurrentTime());
+  return timeLeftStr + std::format("\nUpdate Num: {}", m_goomTime.GetCurrentTime());
 }
 
 } // namespace GOOM

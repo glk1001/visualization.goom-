@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <exception>
-#include <format> // NOLINT(misc-include-cleaner): Waiting for C++20.
+#include <format>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -92,27 +92,24 @@ auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, 
     auto* rgbImage = ::stbi_load(m_filename.c_str(), &width, &height, &bpp, DESIRED_CHANNELS);
     if (!rgbImage)
     {
-      // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-      throw std::runtime_error(std_fmt::format(R"(Could not load image file "{}".)", m_filename));
+      throw std::runtime_error(std::format(R"(Could not load image file "{}".)", m_filename));
     }
     if ((0 == width) or (0 == height) or (0 == bpp))
     {
       throw std::runtime_error(
-          // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-          std_fmt::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.",
-                          m_filename,
-                          width,
-                          height,
-                          bpp));
+          std::format("Error loading image \"{}\". width = {}, height = {}, bpp = {}.",
+                      m_filename,
+                      width,
+                      height,
+                      bpp));
     }
 
     return {rgbImage, width, height, bpp};
   }
   catch (const std::exception& e)
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error(std_fmt::format(
-        R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));
+    throw std::runtime_error(
+        std::format(R"(Could not load image file "{}". Exception: "{}".)", m_filename, e.what()));
   }
 }
 

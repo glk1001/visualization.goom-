@@ -4,7 +4,7 @@
 #include "goom/goom_config.h"
 #include "utils/enum_utils.h"
 
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <fstream>
 #include <ios>
 #include <mutex>
@@ -36,16 +36,15 @@ GoomLogger::~GoomLogger() noexcept
   Expects(not m_doLogging);
 }
 
-// NOLINTBEGIN(misc-include-cleaner): Waiting for C++20.
 auto GoomLogger::VLog(const LogLevel lvl,
                       const std::string& funcName,
                       const int lineNum,
                       const std::string& formatStr,
-                      const std_fmt::format_args args) -> void
+                      const std::format_args args) -> void
 {
-  std_fmt::memory_buffer buffer;
+  std::string buffer;
   // Pass custom argument formatter as a template arg to pass further down.
-  std_fmt::vformat_to(std_fmt::detail::buffer_appender<char>(buffer), formatStr, args);
+  std::vformat_to(std::back_inserter(buffer), formatStr, args);
   Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
 }
 // NOLINTEND(misc-include-cleaner)
@@ -82,8 +81,7 @@ auto GoomLogger::GetLogPrefix(const LogLevel lvl,
                               const int lineNum,
                               const std::string& funcName) const -> std::string
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_fmt::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
+  return std::format("{}:{}:{}", funcName, lineNum, LOG_LEVEL_STR[lvl]);
 }
 
 auto GoomLogger::DoFlush() -> void

@@ -10,7 +10,7 @@
 #include <blend2d/format.h>
 #include <blend2d/image.h>
 #include <cstdint>
-#include <span> // NOLINT(misc-include-cleaner): Waiting to use C++20.
+#include <span>
 
 namespace GOOM::UTILS::GRAPHICS
 {

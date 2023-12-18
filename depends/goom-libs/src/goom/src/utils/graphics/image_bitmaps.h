@@ -5,7 +5,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <string>
 #include <tuple>
 #include <vector>

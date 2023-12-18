@@ -10,7 +10,7 @@
 
 #include <array>
 #include <cstddef>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <memory>
 #include <string>
 
@@ -68,20 +68,18 @@ auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name,
 inline auto SmallImageBitmaps::GetImageKey(const ImageNames name, const size_t sizeOfImageSquare)
     -> std::string
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_fmt::format("{}_{:02}", IMAGE_NAMES.at(static_cast<size_t>(name)), sizeOfImageSquare);
+  return std::format("{}_{:02}", IMAGE_NAMES.at(static_cast<size_t>(name)), sizeOfImageSquare);
 }
 
 auto SmallImageBitmaps::GetImageFilename(const ImageNames name,
                                          const size_t sizeOfImageSquare) const -> std::string
 {
   const auto imagesDir = m_resourcesDirectory + PATH_SEP + IMAGES_DIR;
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_fmt::format("{}/{}{:02}x{:02}.png",
-                         imagesDir,
-                         IMAGE_NAMES.at(static_cast<size_t>(name)),
-                         sizeOfImageSquare,
-                         sizeOfImageSquare);
+  return std::format("{}/{}{:02}x{:02}.png",
+                     imagesDir,
+                     IMAGE_NAMES.at(static_cast<size_t>(name)),
+                     sizeOfImageSquare,
+                     sizeOfImageSquare);
 }
 
 } // namespace GOOM::UTILS::GRAPHICS

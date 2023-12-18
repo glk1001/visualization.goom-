@@ -6,7 +6,7 @@
 #include "strutils.h"
 
 #include <algorithm>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <string>
 #include <string_view>
 #include <utility>

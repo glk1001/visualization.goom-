@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 
 namespace GOOM
 {

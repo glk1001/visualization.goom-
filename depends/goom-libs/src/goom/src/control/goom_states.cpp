@@ -6,7 +6,7 @@
 #include "utils/enum_utils.h"
 
 #include <algorithm>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <string_view>
 #include <utility>
 #include <vector>

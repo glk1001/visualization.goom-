@@ -4,7 +4,7 @@
 #include "point2d.h"
 
 #include <cstdint>
-#include <span> // NOLINT(misc-include-cleaner): Waiting for C++20.
+#include <span>
 
 namespace GOOM
 {

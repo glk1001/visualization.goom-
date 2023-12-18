@@ -153,10 +153,6 @@ else ()
     endif ()
 endif ()
 
-if (NOT DEFINED fmt_SOURCE_DIR)
-    CPMAddPackage("gh:fmtlib/fmt#9.1.0")
-endif ()
-
 # CPMAddPackage has trouble with 'magic_enum' on Windows. So turn off by default.
 if (NOT USE_MAGIC_ENUM)
     set(magic_enum_SOURCE_DIR "")
@@ -198,7 +194,6 @@ message(STATUS "Goom-libs: particles_SOURCE_DIR           = \"${particles_SOURCE
 message(STATUS "Goom-libs: GLM_INCLUDE_DIR                = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS          = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR         = \"${magic_enum_INCLUDE_DIR}\".")
-message(STATUS "Goom-libs: fmt_SOURCE_DIR                 = \"${fmt_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: NO_SAN                         = \"${NO_SAN}\".")
 message(STATUS "Goom-libs: ENABLE_SANITIZER_ADDRESS       = \"${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}\".")
 message(STATUS "Goom-libs: ENABLE_SANITIZER_LEAK          = \"${vis_goom_pp_ENABLE_SANITIZER_LEAK}\".")

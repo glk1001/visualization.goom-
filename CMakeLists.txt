@@ -118,8 +118,6 @@ if (CORE_SYSTEM_NAME STREQUAL "osx")
 endif ()
 
 
-CPMAddPackage("gh:fmtlib/fmt#10.0.0")
-
 set(ASMJIT_EMBED True)
 set(BLEND2D_STATIC True)
 set(BLEND2D_NO_INSTALL True)
@@ -216,8 +214,6 @@ include_directories(BEFORE
 include_directories(BEFORE
                     SYSTEM
                     ${GOOM_LIBS_DIR}/src/vivid/include
-                    ${GOOM_LIBS_DIR}/lib/fmt/include
-                    ${fmt_SOURCE_DIR}/include
                     ${GLM_INCLUDE_DIR}
                     ${KODI_INCLUDE_DIR}
                     ${KODI_FIXED_INCLUDE_DIR}
@@ -313,7 +309,6 @@ message(STATUS "Visualization.goom: particles_SOURCE_DIR       = \"${particles_S
 message(STATUS "Visualization.goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Visualization.goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Visualization.goom: magic_enum_SOURCE_DIR      = \"${magic_enum_SOURCE_DIR}\".")
-message(STATUS "Visualization.goom: fmt_SOURCE_DIR             = \"${fmt_SOURCE_DIR}\".")
 message(STATUS "Visualization.goom: KODI_ROOT_DIR              = \"${KODI_ROOT_DIR}\".")
 message(STATUS "Visualization.goom: KODI_CONFIG_DIR            = \"${KODI_CONFIG_DIR}\".")
 message(STATUS "Visualization.goom: KODI_INCLUDE_DIR           = \"${KODI_INCLUDE_DIR}\".")

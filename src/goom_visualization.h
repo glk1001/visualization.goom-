@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <string>
 #include <thread>
 

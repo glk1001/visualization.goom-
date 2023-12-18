@@ -302,13 +302,13 @@ auto GoomVisualization::UpdateTrack(const TrackInfo& track) -> void
 auto GoomVisualization::ConsumeItem(const size_t slot) noexcept -> void
 {
 #ifdef DEBUG_LOGGING
-  LogInfo(*m_goomLogger, std_fmt::format("Consumer consuming slot {}.", slot));
+  LogInfo(*m_goomLogger, std::format("Consumer consuming slot {}.", slot));
 #endif
 
   m_glScene->UpdateFrameData(slot);
 
 #ifdef DEBUG_LOGGING
-  LogInfo(*m_goomLogger, std_fmt::format("Consumer consumed slot {}.", slot));
+  LogInfo(*m_goomLogger, std::format("Consumer consumed slot {}.", slot));
 #endif
 }
 
@@ -316,7 +316,7 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
     -> void
 {
 #ifdef DEBUG_LOGGING
-  LogInfo(*m_goomLogger, std_fmt::format("Producer producing slot {}.", slot));
+  LogInfo(*m_goomLogger, std::format("Producer producing slot {}.", slot));
 #endif
 
   ++m_numItemsProduced;
@@ -332,7 +332,7 @@ auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audio
       static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
 #ifdef DEBUG_LOGGING
-  LogInfo(*m_goomLogger, std_fmt::format("Producer produced slot {}.", slot));
+  LogInfo(*m_goomLogger, std::format("Producer produced slot {}.", slot));
 #endif
 }
 

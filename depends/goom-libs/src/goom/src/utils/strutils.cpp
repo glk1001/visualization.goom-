@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <fstream>
 #include <istream>
 #include <iterator>
@@ -39,14 +39,12 @@ auto GetIncludeFileName(const std::string& includeDir,
   if (filename[0] != '\"')
   {
     throw std::runtime_error(
-        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format(R"(Expected #include filename '{}' to start with ")", filename));
+        std::format(R"(Expected #include filename '{}' to start with ")", filename));
   }
   if (filename[filename.size() - 1] != '\"')
   {
     throw std::runtime_error(
-        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format(R"(Expected #include filename '{}' to end with ")", filename));
+        std::format(R"(Expected #include filename '{}' to end with ")", filename));
   }
   if (filename.size() <= 2)
   {
@@ -67,8 +65,7 @@ auto GetIncludeFileName(const std::string& includeDir,
   if (not std::filesystem::exists(inclFilename))
   {
     throw std::runtime_error{
-        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format(R"(Could not open file "{}" or "{}")", theFilename, inclFilename)};
+        std::format(R"(Could not open file "{}" or "{}")", theFilename, inclFilename)};
   }
   return inclFilename;
 }
@@ -80,9 +77,7 @@ auto GetExpandedFileLines(const std::string& includeDir,
 {
   if (not std::filesystem::exists(includeDir))
   {
-    throw std::runtime_error{
-        // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-        std_fmt::format(R"(Could not find include directory "{}")", includeDir)};
+    throw std::runtime_error{std::format(R"(Could not find include directory "{}")", includeDir)};
   }
 
   auto outLines = std::vector<std::string>{};
@@ -113,8 +108,7 @@ auto GetFileLines(const std::string& filepath) -> std::vector<std::string>
   auto inStream = std::ifstream{filepath};
   if (not inStream)
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error{std_fmt::format("Could not open file \"{}\"", filepath)};
+    throw std::runtime_error{std::format("Could not open file \"{}\"", filepath)};
   }
 
   return GetFileLines(inStream);
@@ -141,8 +135,7 @@ auto PutFileLines(const std::string& filepath, const std::vector<std::string>& l
   auto outStream = std::ofstream{filepath};
   if (not outStream)
   {
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    throw std::runtime_error{std_fmt::format(R"(Could not open file "{}")", filepath)};
+    throw std::runtime_error{std::format(R"(Could not open file "{}")", filepath)};
   }
 
   PutFileLines(outStream, lines);
@@ -192,8 +185,7 @@ auto ImageBufferIndexToString(const int32_t imageWidth, const size_t bufferIndex
 {
   const auto y = bufferIndex / static_cast<size_t>(imageWidth);
   const auto x = bufferIndex % static_cast<size_t>(imageWidth);
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  return std_fmt::format("{:5d}, {:5d}", x, y);
+  return std::format("{:5d}, {:5d}", x, y);
 }
 
 auto StringJoin(const std::vector<std::string>& strings, const std::string_view& delim)

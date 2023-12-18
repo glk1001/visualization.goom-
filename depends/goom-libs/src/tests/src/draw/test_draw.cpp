@@ -5,7 +5,7 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <vector>
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
@@ -52,28 +52,26 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
 
     const auto& coords = changedPixels[i];
 
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    INFO(std_fmt::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})",
-                         i,
-                         coords.point.x,
-                         coords.point.y,
-                         point.x,
-                         point.y));
+    INFO(std::format("i = {}, coords = ({}, {}), (x, y) = ({}, {})",
+                     i,
+                     coords.point.x,
+                     coords.point.y,
+                     point.x,
+                     point.y));
     REQUIRE(coords.point.x == point.x);
     REQUIRE(coords.point.y == point.y);
 
-    // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-    INFO(std_fmt::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})",
-                         0,
-                         coords.colors.color1.R(),
-                         coords.colors.color1.G(),
-                         coords.colors.color1.B(),
-                         coords.colors.color1.A(),
-                         0,
-                         colors.color1.R(),
-                         colors.color1.G(),
-                         colors.color1.B(),
-                         colors.color1.A()));
+    INFO(std::format("coords.colors[{}] = ({}, {}, {}, {}), colors[{}] = ({}, {}, {}, {})",
+                     0,
+                     coords.colors.color1.R(),
+                     coords.colors.color1.G(),
+                     coords.colors.color1.B(),
+                     coords.colors.color1.A(),
+                     0,
+                     colors.color1.R(),
+                     colors.color1.G(),
+                     colors.color1.B(),
+                     colors.color1.A()));
     REQUIRE(coords.colors.color1 == colors.color1);
     REQUIRE(coords.colors.color2 == BLACK_PIXEL);
   }
@@ -81,8 +79,7 @@ void CheckPixels(const std::vector<PixelInfo>& changedPixels,
 
 void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo>& expectedPixels)
 {
-  // NOLINTNEXTLINE(misc-include-cleaner): Waiting for C++20.
-  INFO(std_fmt::format("draw.GetNumChangedCoords() = {}", draw.GetNumChangedCoords()));
+  INFO(std::format("draw.GetNumChangedCoords() = {}", draw.GetNumChangedCoords()));
   REQUIRE(draw.GetNumChangedCoords() == expectedPixels.size());
 
   auto changedPixels       = std::vector<PixelInfo>{};

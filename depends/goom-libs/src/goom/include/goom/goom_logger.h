@@ -1,6 +1,6 @@
 #include "goom/goom_types.h"
 
-#include <format> // NOLINT: Waiting to use C++20.
+#include <format>
 #include <functional>
 #include <mutex>
 #include <string>
@@ -80,7 +80,7 @@ private:
             const std::string& funcName,
             int lineNum,
             const std::string& formatStr,
-            std_fmt::format_args args) -> void;
+            std::format_args args) -> void;
 };
 
 inline auto GoomLogger::SetLogFile(const std::string_view& logF) -> void
@@ -174,7 +174,7 @@ auto GoomLogger::Log(const LogLevel lvl,
                      const std::string& formatStr,
                      const Args&... args) -> void
 {
-  VLog(lvl, funcName, lineNum, formatStr, std_fmt::make_format_args(args...));
+  VLog(lvl, funcName, lineNum, formatStr, std::make_format_args(args...));
 }
 
 } // namespace GOOM

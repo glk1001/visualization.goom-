@@ -10,7 +10,7 @@
 #include <condition_variable>
 #include <functional>
 #include <mutex>
-#include <span> // NOLINT: Waiting to use C++20.
+#include <span>
 #include <vector>
 
 namespace GOOM
