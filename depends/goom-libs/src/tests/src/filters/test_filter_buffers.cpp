@@ -24,6 +24,7 @@
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand.h"
 
+#include <span>
 #include <vector>
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.

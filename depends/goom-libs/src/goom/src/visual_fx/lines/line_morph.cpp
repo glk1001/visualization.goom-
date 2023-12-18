@@ -8,7 +8,6 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
 #include "goom_plugin_info.h"
@@ -172,7 +171,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   for (auto i = 0U; i < AudioSamples::AUDIO_SAMPLE_LEN; ++i)
   {
     m_srcePoints[i].point = lerp(m_srcePointsCopy[i].point, m_destPoints[i].point, t);
-    m_srcePoints[i].angle = STD20::lerp(m_srcePointsCopy[i].angle, m_destPoints[i].angle, t);
+    m_srcePoints[i].angle = std::lerp(m_srcePointsCopy[i].angle, m_destPoints[i].angle, t);
   }
   if (m_lineLerpParam >= 1.0F)
   {
@@ -210,7 +209,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
 
   static constexpr auto AMP_MIX_AMOUNT = 0.01F;
   m_srceLineParams.amplitude =
-      STD20::lerp(m_srceLineParams.amplitude, m_destLineParams.amplitude, AMP_MIX_AMOUNT);
+      std::lerp(m_srceLineParams.amplitude, m_destLineParams.amplitude, AMP_MIX_AMOUNT);
 }
 
 auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void

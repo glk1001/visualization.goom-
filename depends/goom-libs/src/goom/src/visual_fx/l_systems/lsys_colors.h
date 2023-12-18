@@ -6,7 +6,6 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
@@ -134,7 +133,7 @@ inline ColorShadesAndTints::ColorShadesAndTints(const Pixel& baseColor) noexcept
 
 inline auto ColorShadesAndTints::GetShade(const float t) const noexcept -> Pixel
 {
-  const auto brightness = STD20::lerp(DEFAULT_MIN_SHADE, DEFAULT_MAX_SHADE, t);
+  const auto brightness = std::lerp(DEFAULT_MIN_SHADE, DEFAULT_MAX_SHADE, t);
   return COLOR::GetBrighterColor(brightness, m_baseColor);
 }
 
@@ -144,7 +143,7 @@ inline auto ColorShadesAndTints::GetTint(const float t) const noexcept -> Pixel
                                static_cast<PixelChannelType>(WHITE_PIXEL.B() - m_baseColor.G()),
                                static_cast<PixelChannelType>(WHITE_PIXEL.B() - m_baseColor.B()),
                                MAX_ALPHA};
-  const auto brightness = STD20::lerp(DEFAULT_MIN_TINT, DEFAULT_MAX_TINT, t);
+  const auto brightness = std::lerp(DEFAULT_MIN_TINT, DEFAULT_MAX_TINT, t);
   return UTILS::GRAPHICS::GetColorAdd(
       m_baseColor, COLOR::GetBrighterColor(brightness, fromWhite), m_baseColor.A());
 }

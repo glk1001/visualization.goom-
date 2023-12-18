@@ -4,7 +4,6 @@
 #include "filter_fx/after_effects/zoom_vector_after_effects.h"
 #include "filter_fx/filter_settings.h"
 #include "filter_fx/normalized_coords.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "utils/name_value_pairs.h"
 
@@ -64,9 +63,9 @@ auto ZoomVectorEffects::GetMultiplierEffect(const NormalizedCoords& coords,
   }
 
   const auto targetPointX =
-      STD20::lerp(zoomAdjustment.x, coords.GetX(), multiplierSettings.lerpZoomAdjustmentToCoords);
+      std::lerp(zoomAdjustment.x, coords.GetX(), multiplierSettings.lerpZoomAdjustmentToCoords);
   const auto targetPointY =
-      STD20::lerp(zoomAdjustment.y, coords.GetY(), multiplierSettings.lerpZoomAdjustmentToCoords);
+      std::lerp(zoomAdjustment.y, coords.GetY(), multiplierSettings.lerpZoomAdjustmentToCoords);
 
   return {
       1.0F - (multiplierSettings.xAmplitude * std::sin(multiplierSettings.xFreq * targetPointX)),

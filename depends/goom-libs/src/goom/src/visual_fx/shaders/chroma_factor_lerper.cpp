@@ -1,7 +1,6 @@
 #include "chroma_factor_lerper.h"
 
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -31,7 +30,7 @@ auto ChromaFactorLerper::Update() noexcept -> void
     return;
   }
 
-  m_currentChromaFactor = STD20::lerp(m_srceChromaFactor, m_destChromaFactor, m_lerpT());
+  m_currentChromaFactor = std::lerp(m_srceChromaFactor, m_destChromaFactor, m_lerpT());
 
   m_lerpConstTimer.ResetToZero();
   m_lerpT.Increment();

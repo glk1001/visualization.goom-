@@ -4,7 +4,6 @@
 #include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "star_colors.h"
@@ -488,8 +487,8 @@ auto RainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const 
   static constexpr auto MAX_ANGLE     = PI - MIN_ANGLE;
 
   const auto tLerp    = std::fabs((0.5F * GetXMax()) - static_cast<float>(startPos.x)) / GetXMax();
-  const auto minAngle = STD20::lerp(MIN_ANGLE, MAX_MIN_ANGLE, tLerp);
-  const auto maxAngle = STD20::lerp(MIN_MAX_ANGLE, MAX_ANGLE, 1.0F - tLerp);
+  const auto minAngle = std::lerp(MIN_ANGLE, MAX_MIN_ANGLE, tLerp);
+  const auto maxAngle = std::lerp(MIN_MAX_ANGLE, MAX_ANGLE, 1.0F - tLerp);
 
   return GetGoomRand().GetRandInRange(minAngle, maxAngle);
 }
@@ -503,8 +502,8 @@ auto FountainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) co
   static constexpr auto MAX_ANGLE     = TWO_PI - (MIN_ANGLE - PI);
 
   const auto tLerp    = std::fabs((0.5F * GetXMax()) - static_cast<float>(startPos.x)) / GetXMax();
-  const auto minAngle = STD20::lerp(MIN_ANGLE, MAX_MIN_ANGLE, tLerp);
-  const auto maxAngle = STD20::lerp(MIN_MAX_ANGLE, MAX_ANGLE, 1.0F - tLerp);
+  const auto minAngle = std::lerp(MIN_ANGLE, MAX_MIN_ANGLE, tLerp);
+  const auto maxAngle = std::lerp(MIN_MAX_ANGLE, MAX_ANGLE, 1.0F - tLerp);
 
   return GetGoomRand().GetRandInRange(minAngle, maxAngle);
 }

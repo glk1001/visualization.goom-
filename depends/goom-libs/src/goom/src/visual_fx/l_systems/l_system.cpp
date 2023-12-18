@@ -5,7 +5,6 @@
 #include "../fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "lsys_draw.h"
@@ -39,9 +38,9 @@ inline auto IncrementedValue<DefaultParams>::LerpValues(const DefaultParams& val
                                                         const float t) noexcept -> DefaultParams
 {
   return {
-      STD20::lerp(val1.turnAngleInDegrees, val2.turnAngleInDegrees, t),
-      STD20::lerp(val1.width, val2.width, t),
-      STD20::lerp(val1.distance, val2.distance, t),
+      std::lerp(val1.turnAngleInDegrees, val2.turnAngleInDegrees, t),
+      std::lerp(val1.width, val2.width, t),
+      std::lerp(val1.distance, val2.distance, t),
   };
 }
 

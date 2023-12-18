@@ -9,7 +9,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -157,7 +156,7 @@ inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTi
   const auto fractionOfTimeLeft =
       GetFltFraction<int32_t>({timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE});
   const auto t                  = 1.0F - std::pow(fractionOfTimeLeft, 0.7F);
-  const auto fontSizeMultiplier = STD20::lerp(1.0F, MAX_FONT_SIZE_MULTIPLIER, t);
+  const auto fontSizeMultiplier = std::lerp(1.0F, MAX_FONT_SIZE_MULTIPLIER, t);
   return static_cast<int32_t>(fontSizeMultiplier * static_cast<float>(GetSelectedFontSize()));
 }
 

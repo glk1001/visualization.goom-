@@ -2,7 +2,6 @@
 
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -64,8 +63,8 @@ inline auto XYLerpEffect::GetVelocity([[maybe_unused]] const float sqDistFromZer
 {
   const auto t = GetT(sqDistFromZero, velocity);
 
-  const auto xVelocity = STD20::lerp(velocity.GetX(), velocity.GetY(), t);
-  const auto yVelocity = STD20::lerp(velocity.GetY(), velocity.GetX(), t);
+  const auto xVelocity = std::lerp(velocity.GetX(), velocity.GetY(), t);
+  const auto yVelocity = std::lerp(velocity.GetY(), velocity.GetX(), t);
 
   if (m_params.flipXY)
   {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "tentacle2d.h"
 
@@ -109,9 +108,9 @@ constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept ->
 constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, const float t) noexcept -> V3dFlt
 {
   return {
-      STD20::lerp(point1.x, point2.x, t),
-      STD20::lerp(point1.y, point2.y, t),
-      STD20::lerp(point1.z, point2.z, t),
+      std::lerp(point1.x, point2.x, t),
+      std::lerp(point1.y, point2.y, t),
+      std::lerp(point1.z, point2.z, t),
   };
 }
 

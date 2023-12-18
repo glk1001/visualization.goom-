@@ -9,6 +9,7 @@
 #include <array>
 #include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
 #include <blend2d/context.h>
+#include <blend2d/gradient.h>
 #include <blend2d/rgba.h>
 
 namespace GOOM::UTILS::GRAPHICS

@@ -1,7 +1,6 @@
 #include "color_multiplier_lerper.h"
 
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -31,7 +30,7 @@ auto ColorMultiplierLerper::Update() noexcept -> void
     return;
   }
 
-  m_currentColorMultiplier = STD20::lerp(m_srceColorMultiplier, m_destColorMultiplier, m_lerpT());
+  m_currentColorMultiplier = std::lerp(m_srceColorMultiplier, m_destColorMultiplier, m_lerpT());
 
   m_lerpConstTimer.ResetToZero();
   m_lerpT.Increment();

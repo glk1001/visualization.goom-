@@ -14,7 +14,6 @@
 #include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
@@ -91,9 +90,9 @@ constexpr auto COMMON_CIRCLE_PATH_PARAMS   = OscillatingFunction::Params{10.0F, 
                                const float t) -> OscillatingFunction::Params
 {
   return {
-      STD20::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
-      STD20::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
-      STD20::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
+      std::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
+      std::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
+      std::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
   };
 }
 
@@ -841,8 +840,8 @@ auto TubesFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube) -> void
   }
   else
   {
-    const auto maxJitter = static_cast<int32_t>(std::round(
-        STD20::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
+    const auto maxJitter = static_cast<int32_t>(
+        std::round(std::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
     tube.SetMaxJitterOffset(maxJitter);
     m_shapeJitterT.Increment();
     m_jitterTimer.SetTimeLimit(

@@ -7,6 +7,7 @@
 #include <format>
 #include <fstream>
 #include <ios>
+#include <iterator>
 #include <mutex>
 #include <ostream>
 #include <stdexcept>
@@ -47,7 +48,6 @@ auto GoomLogger::VLog(const LogLevel lvl,
   std::vformat_to(std::back_inserter(buffer), formatStr, args);
   Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
 }
-// NOLINTEND(misc-include-cleaner)
 
 auto GoomLogger::Log(const LogLevel lvl,
                      const int lineNum,

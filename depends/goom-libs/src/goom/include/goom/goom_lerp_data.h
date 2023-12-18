@@ -1,7 +1,6 @@
 #pragma once
 
 #include "goom_config.h"
-#include "math20.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 
@@ -120,7 +119,7 @@ inline auto GoomLerpData::Update() noexcept -> void
   if (m_useSFunction)
   {
     m_sFuncTVal.Increment();
-    m_funcLerpFactor = STD20::lerp(0.0F, 1.0F, GetNextSFuncValue());
+    m_funcLerpFactor = std::lerp(0.0F, 1.0F, GetNextSFuncValue());
   }
 
   m_incLerpFactor.Increment();

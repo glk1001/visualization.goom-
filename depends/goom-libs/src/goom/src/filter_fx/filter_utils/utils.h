@@ -3,7 +3,6 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 
@@ -143,16 +142,16 @@ inline auto GetXyZoomFactor(const NormalizedCoords& coords, const LerpToOneTs& l
     -> XyZoomFactor
 {
   return {
-      STD20::lerp(coords.GetX(), 1.0F, lerpToOneTs.xLerpT),
-      STD20::lerp(coords.GetY(), 1.0F, lerpToOneTs.yLerpT),
+      std::lerp(coords.GetX(), 1.0F, lerpToOneTs.xLerpT),
+      std::lerp(coords.GetY(), 1.0F, lerpToOneTs.yLerpT),
   };
 }
 
 inline auto GetDiscontinuousXyZoomFactor(const NormalizedCoords& coords,
                                          const LerpToOneTs& lerpToOneTs) noexcept -> XyZoomFactor
 {
-  const auto xAbsZoomFactor = STD20::lerp(std::abs(coords.GetX()), 1.0F, lerpToOneTs.xLerpT);
-  const auto yAbsZoomFactor = STD20::lerp(std::abs(coords.GetY()), 1.0F, lerpToOneTs.yLerpT);
+  const auto xAbsZoomFactor = std::lerp(std::abs(coords.GetX()), 1.0F, lerpToOneTs.xLerpT);
+  const auto yAbsZoomFactor = std::lerp(std::abs(coords.GetY()), 1.0F, lerpToOneTs.yLerpT);
 
   return {
       coords.GetX() < 0.0F ? -xAbsZoomFactor : +xAbsZoomFactor,

@@ -9,9 +9,7 @@
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
-#include "utils/graphics/blend2d_to_goom.h"
 #include "utils/graphics/blend2d_utils.h"
 #include "utils/graphics/point_utils.h"
 #include "utils/math/misc.h"
@@ -19,7 +17,9 @@
 #include "visual_fx/fx_helper.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 namespace GOOM::VISUAL_FX::RAINDROPS
@@ -250,7 +250,7 @@ auto Raindrops::GetRaindropColors(const Raindrop& raindrop) const noexcept -> DR
   const auto sameLowColorMap  = m_raindropParams.sameLowColorMap;
 
   const auto colorT         = raindrop.colorT();
-  const auto mainBrightness = STD20::lerp(MAX_DROP_BRIGHTNESS, MIN_DROP_BRIGHTNESS, colorT);
+  const auto mainBrightness = std::lerp(MAX_DROP_BRIGHTNESS, MIN_DROP_BRIGHTNESS, colorT);
   const auto lowBrightness  = LOW_BRIGHTNESS_INCREASE * mainBrightness;
 
   const auto mainColor = m_colorAdjustment.GetAdjustment(

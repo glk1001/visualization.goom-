@@ -1,11 +1,11 @@
 #include "control/goom_sound_events.h"
 #include "goom/goom_time.h"
-#include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 #include "utils/math/misc.h"
 
 #include <algorithm>
 #include <memory>
+#include <span>
 #include <vector>
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.

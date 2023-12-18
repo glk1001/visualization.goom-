@@ -3,7 +3,6 @@
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 #include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
@@ -141,7 +140,7 @@ constexpr auto GetSameLumaMixPixelBlend(const float lumaMixT,
       static_cast<float>(fgndIntBuffIntensity) / channel_limits<float>::max();
 
   const auto brightness = std::min((bgndColorLuma + (buffIntensity * fgndColorLuma)) /
-                                       STD20::lerp(bgndColorLuma, fgndColorLuma, lumaMixT),
+                                       std::lerp(bgndColorLuma, fgndColorLuma, lumaMixT),
                                    COLOR::MAX_BRIGHTNESS);
 
   const auto finalFgndColor = COLOR::ColorMaps::GetColorMix(bgndColor, fgndColor, lumaMixT);

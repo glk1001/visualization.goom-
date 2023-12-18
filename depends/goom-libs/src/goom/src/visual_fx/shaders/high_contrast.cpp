@@ -1,9 +1,9 @@
 #include "high_contrast.h"
 
-#include "goom/math20.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
 
+#include <cmath>
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
@@ -68,11 +68,11 @@ void HighContrast::UpdateHighContrast()
   if (!m_highContrastOnTimer.Finished())
   {
     static constexpr auto HIGH_CONTRAST = 1.01F;
-    m_currentContrast = STD20::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
+    m_currentContrast = std::lerp(DEFAULT_CONTRAST, HIGH_CONTRAST, m_highContrastT());
     m_currentContrastMinChannelValue =
-        STD20::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
+        std::lerp(0.0F, m_maxContrastMinChannelValue, m_highContrastT());
     static constexpr auto CONTRAST_BRIGHTNESS = 1.1F;
-    m_currentBrightness = STD20::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
+    m_currentBrightness = std::lerp(DEFAULT_BRIGHTNESS, CONTRAST_BRIGHTNESS, m_highContrastT());
 
     return;
   }

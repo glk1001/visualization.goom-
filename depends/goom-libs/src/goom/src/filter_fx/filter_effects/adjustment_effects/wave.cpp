@@ -2,7 +2,6 @@
 
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/name_value_pairs.h"
@@ -237,9 +236,9 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
     case WaveEffect::WAVE_TAN_COS_EFFECT:
     case WaveEffect::WAVE_COT_SIN_EFFECT:
     case WaveEffect::WAVE_COT_COS_EFFECT:
-      return STD20::lerp(m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE),
-                         m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE),
-                         periodicFactor);
+      return std::lerp(m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE),
+                       m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE),
+                       periodicFactor);
     default:
       FailFast();
   }
@@ -279,21 +278,21 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
     case WaveEffect::WAVE_COS_EFFECT:
       return periodicFactor * std::cos(angle);
     case WaveEffect::WAVE_SIN_COS_EFFECT:
-      return periodicFactor * STD20::lerp(std::sin(angle), std::cos(angle), periodicFactor);
+      return periodicFactor * std::lerp(std::sin(angle), std::cos(angle), periodicFactor);
     case WaveEffect::WAVE_TAN_EFFECT:
       return periodicFactor * std::tan(angle);
     case WaveEffect::WAVE_TAN_SIN_EFFECT:
-      return periodicFactor * STD20::lerp(std::tan(angle), std::sin(angle), periodicFactor);
+      return periodicFactor * std::lerp(std::tan(angle), std::sin(angle), periodicFactor);
     case WaveEffect::WAVE_TAN_COS_EFFECT:
-      return periodicFactor * STD20::lerp(std::tan(angle), std::cos(angle), periodicFactor);
+      return periodicFactor * std::lerp(std::tan(angle), std::cos(angle), periodicFactor);
     case WaveEffect::WAVE_COT_EFFECT:
       return periodicFactor * std::tan(UTILS::MATH::HALF_PI - angle);
     case WaveEffect::WAVE_COT_SIN_EFFECT:
       return periodicFactor *
-             STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::sin(angle), periodicFactor);
+             std::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::sin(angle), periodicFactor);
     case WaveEffect::WAVE_COT_COS_EFFECT:
       return periodicFactor *
-             STD20::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
+             std::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
     default:
       FailFast();
   }
@@ -343,7 +342,7 @@ auto Wave::GetSqDistSpiralRotateAngle(const float sqDistFromZero,
   const auto y = (coords.GetY() * cosSpiralRotateAngle) + (coords.GetX() * sinSpiralRotateAngle);
 
   const auto t     = (UTILS::MATH::PI + std::atan2(y, x)) / UTILS::MATH::TWO_PI;
-  const auto angle = STD20::lerp(MIN_SPIRAL_ROTATE_LERP, MAX_SPIRAL_ROTATE_LERP, t);
+  const auto angle = std::lerp(MIN_SPIRAL_ROTATE_LERP, MAX_SPIRAL_ROTATE_LERP, t);
 
   return std::pow(sqDistFromZero, m_params.sqDistPower) * angle;
 }

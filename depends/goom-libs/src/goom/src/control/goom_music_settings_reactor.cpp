@@ -4,12 +4,13 @@
 
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_speed.h"
-#include "goom/math20.h"
 #include "goom/sound_info.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstdint>
 #include <utility>
 
 namespace GOOM::CONTROL
@@ -252,7 +253,8 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
       (MAX_USABLE_SOUND_SPEED - MIN_USABLE_SOUND_SPEED);
 
   static constexpr auto MAX_SPEED_CHANGE = 10U;
-  const auto newSpeedVal = STD20::lerp(0U, MAX_SPEED_CHANGE, usableRelativeSoundSpeed);
+  const auto newSpeedVal =
+      static_cast<uint32_t>(std::lerp(0U, MAX_SPEED_CHANGE, usableRelativeSoundSpeed));
 
   auto& filterVitesse = m_filterSettingsService->GetRWVitesse();
 
@@ -277,7 +279,8 @@ auto GoomMusicSettingsReactor::ChangeVitesse() -> void
   else
   {
     static constexpr auto OLD_TO_NEW_SPEED_MIX = 0.4F;
-    filterVitesse.SetVitesse(STD20::lerp(currentVitesse, newVitesse, OLD_TO_NEW_SPEED_MIX));
+    filterVitesse.SetVitesse(
+        static_cast<uint32_t>(std::lerp(currentVitesse, newVitesse, OLD_TO_NEW_SPEED_MIX)));
   }
 
   m_lock.IncreaseLockTime(CHANGE_VITESSE_LOCK_TIME_INCREASE);

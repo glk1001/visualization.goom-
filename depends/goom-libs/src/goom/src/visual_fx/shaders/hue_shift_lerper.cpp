@@ -4,7 +4,6 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/math20.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
@@ -40,7 +39,7 @@ auto HueShiftLerper::Update() noexcept -> void
     RestartLerpWithNewDestHue();
   }
 
-  m_currentHueShift = STD20::lerp(m_srceHueShift, m_destHueShift, m_lerpT());
+  m_currentHueShift = std::lerp(m_srceHueShift, m_destHueShift, m_lerpT());
 
   m_lerpT.Increment();
   if (m_lerpT.IsStopped())

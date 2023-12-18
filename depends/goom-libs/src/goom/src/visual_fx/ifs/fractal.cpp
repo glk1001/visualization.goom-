@@ -2,13 +2,13 @@
 
 #include "color/random_color_maps.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "ifs_types.h"
 #include "similitudes.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <utility>
@@ -62,7 +62,7 @@ auto Fractal::GetSpeed() const -> uint32_t
   {
     return m_speed;
   }
-  return STD20::lerp(m_prevSpeed, m_speed, m_speedTransitionT());
+  return static_cast<uint32_t>(std::lerp(m_prevSpeed, m_speed, m_speedTransitionT()));
 }
 
 auto Fractal::SetSpeed(const uint32_t val) -> void

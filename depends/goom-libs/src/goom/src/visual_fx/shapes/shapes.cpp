@@ -8,7 +8,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "shape_parts.h"
 #include "utils/math/goom_rand_base.h"
@@ -156,7 +155,7 @@ inline auto Shape::GetBrightnessAttenuation() const noexcept -> float
 
   const auto minBrightness       = 2.0F / static_cast<float>(GetTotalNumShapePaths());
   static constexpr auto EXPONENT = 25.0F;
-  return STD20::lerp(1.0F, minBrightness, std::pow(distanceFromOne, EXPONENT));
+  return std::lerp(1.0F, minBrightness, std::pow(distanceFromOne, EXPONENT));
 }
 
 auto Shape::Update() noexcept -> void

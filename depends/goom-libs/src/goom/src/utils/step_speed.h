@@ -2,7 +2,6 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 
 #include <cstdint>
 
@@ -61,7 +60,7 @@ inline auto StepSpeed::SetSpeed(const float val) -> void
 
 inline auto StepSpeed::SetCurrentNumSteps() -> void
 {
-  m_currentNumSteps = STD20::lerp(m_maxNumSteps, m_minNumSteps, m_tMinMaxLerp);
+  m_currentNumSteps = static_cast<uint32_t>(std::lerp(m_maxNumSteps, m_minNumSteps, m_tMinMaxLerp));
 }
 
 inline auto StepSpeed::GetCurrentNumSteps() const -> uint32_t

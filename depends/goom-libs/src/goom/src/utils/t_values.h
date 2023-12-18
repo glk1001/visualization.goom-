@@ -2,12 +2,12 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "math/misc.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 namespace GOOM::UTILS
@@ -366,8 +366,13 @@ inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
 template<typename T>
 inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, float t) noexcept -> T
 {
-  using STD20::lerp; // Include STD20 for candidate lerps.
-  return lerp(val1, val2, t);
+  if constexpr (std::is_integral<T>::value)
+  {
+    return static_cast<T>(std::lerp(static_cast<float>(val1), static_cast<float>(val2), t));
+  }
+
+  using std::lerp;
+  return static_cast<T>(lerp(val1, val2, t));
 }
 
 template<typename T>

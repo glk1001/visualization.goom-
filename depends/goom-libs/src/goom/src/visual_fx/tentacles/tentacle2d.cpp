@@ -1,10 +1,10 @@
 #include "tentacle2d.h"
 
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 #include "utils/math/damping_functions.h"
 #include "utils/math/misc.h"
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -54,7 +54,7 @@ inline auto Tentacle2D::ValidateSettings() const -> void
 
 inline auto Tentacle2D::GetFirstY() -> float
 {
-  return static_cast<float>(STD20::lerp(m_yVec[0], m_iterZeroYVal, m_iterZeroLerpFactor));
+  return static_cast<float>(std::lerp(m_yVec[0], m_iterZeroYVal, m_iterZeroLerpFactor));
 }
 
 inline auto Tentacle2D::GetNextY(const size_t nodeNum) -> float

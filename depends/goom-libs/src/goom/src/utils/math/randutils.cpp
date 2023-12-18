@@ -4,9 +4,9 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/math20.h"
 #include "xoshiro.hpp"
 
+#include <cmath>
 #include <cstdint>
 #include <istream>
 #include <limits>
@@ -102,7 +102,7 @@ auto GetRandInRange(const float x0, const float x1) noexcept -> float
 
   static const auto s_ENG_MAX = static_cast<float>(G_RAND_MAX);
   const auto t                = static_cast<float>(RandXoshiroFunc(0, G_RAND_MAX)) / s_ENG_MAX;
-  return STD20::lerp(x0, x1, t);
+  return std::lerp(x0, x1, t);
   //  thread_local std::uniform_real_distribution<> dis(0, 1);
   //  return std::lerp(x0, x1, static_cast<float>(dis(eng)));
 }
@@ -113,7 +113,7 @@ auto GetRandInRange(const double x0, const double x1) noexcept -> double
 
   static const auto s_ENG_MAX = static_cast<double>(G_RAND_MAX);
   const auto t                = static_cast<double>(RandXoshiroFunc(0, G_RAND_MAX)) / s_ENG_MAX;
-  return STD20::lerp(x0, x1, t);
+  return std::lerp(x0, x1, t);
   //  thread_local std::uniform_real_distribution<> dis(0, 1);
   //  return std::lerp(x0, x1, static_cast<float>(dis(eng)));
 }

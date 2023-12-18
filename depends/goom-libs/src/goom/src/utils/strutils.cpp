@@ -208,16 +208,16 @@ auto StringJoin(const std::vector<std::string>& strings, const std::string_view&
 auto StringSplit(const std::string& str, const std::string_view& delim) -> std::vector<std::string>
 {
   auto parts = str | std::ranges::views::split(delim);
-  std::vector<std::string> vec;
+  auto vec   = std::vector<std::string>{};
 
   for (auto part : parts)
   {
-    std::string s = "";
+    auto partStr = std::string{};
     for (auto c : part)
     {
-      s += c;
+      partStr += c;
     }
-    vec.emplace_back(s);
+    vec.emplace_back(partStr);
   }
 
   return vec;

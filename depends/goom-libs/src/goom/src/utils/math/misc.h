@@ -1,12 +1,12 @@
 #pragma once
 
 #include "goom/goom_config.h"
-#include "goom/math20.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <numbers>
 #include <numeric>
 
 namespace GOOM::UTILS::MATH
@@ -14,7 +14,7 @@ namespace GOOM::UTILS::MATH
 inline constexpr auto HALF = 1.0F / 2.0F;
 
 // NOLINTNEXTLINE: problem with 'readability-identifier-naming.ConstexprVariableIgnoredRegexp'
-inline constexpr auto PI       = STD20::pi_v<float>;
+inline constexpr auto PI       = std::numbers::pi_v<float>;
 inline constexpr auto TWO_PI   = 2.0F * PI;
 inline constexpr auto HALF_PI  = 0.5F * PI;
 inline constexpr auto THIRD_PI = PI / 3.0F;
@@ -292,7 +292,7 @@ constexpr auto RangeMapper::operator()(const double x0,
                                        const double x1,
                                        const double x) const noexcept -> double
 {
-  return STD20::lerp(x0, x1, (x - m_xMin) / m_xWidth);
+  return std::lerp(x0, x1, (x - m_xMin) / m_xWidth);
 }
 
 template<typename T>

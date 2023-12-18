@@ -10,7 +10,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "tube_data.h"
@@ -666,7 +665,7 @@ auto Tube::TubeImpl::DrawShapes() noexcept -> void
 inline auto Tube::TubeImpl::GetHexLen() const noexcept -> float
 {
   const auto hexSizeT = std::fabs(m_shapes[0].path->GetCurrentT() - T_AT_CENTRE) / T_AT_CENTRE;
-  return STD20::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
+  return std::lerp(MIN_HEX_SIZE, MAX_HEX_SIZE, hexSizeT);
 }
 
 inline auto Tube::TubeImpl::UpdateTValues() noexcept -> void

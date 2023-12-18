@@ -33,7 +33,6 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
@@ -49,6 +48,7 @@
 #include "utils/timer.h"
 #include "visual_fx/fx_helper.h"
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <format>
@@ -418,7 +418,7 @@ auto GoomControl::GoomControlImpl::UpdatePos1Pos2MixFreq() noexcept -> void
 {
   if (not m_pos1Pos2MixFreqChangeTimer.Finished())
   {
-    m_frameData->filterPosArrays.filterPos1Pos2FreqMixFreq = STD20::lerp(
+    m_frameData->filterPosArrays.filterPos1Pos2FreqMixFreq = std::lerp(
         m_previousPos1Pos2MixFreq, m_targetPos1Pos2MixFreq, m_pos1Pos2TransitionLerpFactor());
     m_pos1Pos2TransitionLerpFactor.Increment();
     return;

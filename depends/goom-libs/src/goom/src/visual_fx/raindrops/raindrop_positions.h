@@ -2,7 +2,6 @@
 
 #include "../fx_helper.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "utils/math/paths.h"
@@ -86,8 +85,7 @@ private:
 
 inline auto RaindropPositions::GetPosition(const uint32_t dropNum) const noexcept -> Point2dInt
 {
-  const auto t =
-      STD20::lerp(MIN_RAINDROP_POSITION_T, MAX_RAINDROP_POSITION_T, m_raindropPositionT());
+  const auto t = std::lerp(MIN_RAINDROP_POSITION_T, MAX_RAINDROP_POSITION_T, m_raindropPositionT());
 
   return lerp(m_raindropPaths.at(dropNum)->GetNextPoint(), GetCurrentRectangleWeightPoint(), t);
 }

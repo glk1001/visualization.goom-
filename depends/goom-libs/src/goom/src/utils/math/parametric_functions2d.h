@@ -1,7 +1,6 @@
 #pragma once
 
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "misc.h"
 #include "utils/t_values.h"
@@ -286,20 +285,20 @@ inline auto LineFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 inline auto CircleFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto currentAngle =
-      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
+      std::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(currentAngle);
 }
 
 inline auto SpiralFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
-  const auto radius = STD20::lerp(m_minRadius, m_maxRadius, t);
+  const auto radius = std::lerp(m_minRadius, m_maxRadius, t);
   const auto angle  = m_angleFactor * t;
   return GetSpiralPoint(radius, angle) + m_centrePos;
 }
 
 inline auto SpiralFunction::GetPointData(const float t) const noexcept -> PointData
 {
-  const auto radius = STD20::lerp(m_minRadius, m_maxRadius, t);
+  const auto radius = std::lerp(m_minRadius, m_maxRadius, t);
   const auto angle  = m_angleFactor * t;
   const auto point  = GetSpiralPoint(radius, angle) + m_centrePos;
 
@@ -315,21 +314,21 @@ inline auto SpiralFunction::GetSpiralPoint(const float radius, const float angle
 inline auto LissajousFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto currentAngle =
-      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
+      std::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(currentAngle);
 }
 
 inline auto HypotrochoidFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto currentAngle =
-      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
+      std::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(m_numCusps * currentAngle);
 }
 
 inline auto EpicycloidFunction::GetPoint(const float t) const noexcept -> Point2dFlt
 {
   const auto currentAngle =
-      STD20::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
+      std::lerp(m_angleParams.startAngleInRadians, m_angleParams.endAngleInRadians, t);
   return GetPointAtAngle(m_numCusps * currentAngle);
 }
 

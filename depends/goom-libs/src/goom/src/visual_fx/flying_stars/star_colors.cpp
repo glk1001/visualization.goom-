@@ -5,7 +5,6 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/math20.h"
 
 #include <cmath>
 #include <memory>
@@ -83,7 +82,7 @@ inline auto StarColors::GetFinalTMix(const float lengthT) const noexcept -> floa
 {
   static constexpr auto MIN_MIX = 0.2F;
   static constexpr auto MAX_MIX = 0.8F;
-  const auto tMix               = STD20::lerp(MIN_MIX, MAX_MIX, lengthT);
+  const auto tMix               = std::lerp(MIN_MIX, MAX_MIX, lengthT);
 
   if (m_colorProperties->reverseWithinClusterMix)
   {

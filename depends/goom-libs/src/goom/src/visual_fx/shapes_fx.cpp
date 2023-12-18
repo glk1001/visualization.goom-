@@ -6,7 +6,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_visual_fx.h"
@@ -383,7 +382,7 @@ inline auto ShapesFx::ShapesFxImpl::GetNextNumIncrements() const noexcept -> siz
 
   tDistanceFromBoundary /= T_CUTOFF;
 
-  return STD20::lerp(1U, m_numIncrementsPerUpdate, tDistanceFromBoundary);
+  return static_cast<size_t>(std::lerp(1U, m_numIncrementsPerUpdate, tDistanceFromBoundary));
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShape(Shape& shape) noexcept -> void

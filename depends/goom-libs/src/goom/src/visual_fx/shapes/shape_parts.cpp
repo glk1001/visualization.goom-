@@ -9,7 +9,6 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
-#include "goom/math20.h"
 #include "goom/point2d.h"
 #include "shape_paths.h"
 #include "utils/math/goom_rand_base.h"
@@ -101,8 +100,15 @@ auto ShapePart::SetShapePathsMinMaxNumSteps(
 auto ShapePart::UpdateShapePathTargets() noexcept -> void
 {
   m_radiusFractionT.Increment();
-  m_minRadiusFraction = STD20::lerp(0.2F, 0.05F, m_radiusFractionT());
-  m_maxRadiusFraction = STD20::lerp(0.5F, 0.3F, m_radiusFractionT());
+
+  static constexpr auto MIN_MIN_RADIUS_FRACTION = 0.05F;
+  static constexpr auto MAX_MIN_RADIUS_FRACTION = 0.2F;
+  static constexpr auto MIN_MAX_RADIUS_FRACTION = 0.3F;
+  static constexpr auto MAX_MAX_RADIUS_FRACTION = 0.5F;
+  m_minRadiusFraction =
+      std::lerp(MAX_MIN_RADIUS_FRACTION, MIN_MIN_RADIUS_FRACTION, m_radiusFractionT());
+  m_maxRadiusFraction =
+      std::lerp(MAX_MAX_RADIUS_FRACTION, MIN_MAX_RADIUS_FRACTION, m_radiusFractionT());
 
   if (not m_needToUpdateTargetPoint)
   {
@@ -188,8 +194,8 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
 
   for (auto i = 0U; i < numShapePaths; ++i)
   {
-    const auto rotate = STD20::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
-    const auto scale  = STD20::lerp(minMaxValues.minValue, minMaxValues.maxValue, stepFraction());
+    const auto rotate     = std::lerp(MIN_ANGLE, MAX_ANGLE, stepFraction());
+    const auto scale      = std::lerp(minMaxValues.minValue, minMaxValues.maxValue, stepFraction());
     const auto circlePath = GetCirclePath(radius, direction, numSteps);
 
     const auto newTransform = GetTransform2d(targetPointFlt, radius, scale, rotate);
@@ -249,7 +255,7 @@ inline auto ShapePart::GetCircleRadius() const noexcept -> float
   const auto maxRadius    = m_maxRadiusFraction * minDimension;
   const auto t = static_cast<float>(m_shapePartNum) / static_cast<float>(m_totalNumShapeParts - 1);
 
-  return STD20::lerp(minRadius, maxRadius, t);
+  return std::lerp(minRadius, maxRadius, t);
 }
 
 inline auto ShapePart::GetCircleDirection() const noexcept -> CircleFunction::Direction
@@ -354,7 +360,7 @@ auto ShapePart::GetCurrentShapeDotRadius(const bool varyRadius) const noexcept -
   const auto maxShapeDotRadius =
       m_useExtremeMaxShapeDotRadius ? m_extremeMaxShapeDotRadius : m_maxShapeDotRadius;
 
-  return STD20::lerp(m_minShapeDotRadius, maxShapeDotRadius, m_dotRadiusT());
+  return static_cast<int32_t>(std::lerp(m_minShapeDotRadius, maxShapeDotRadius, m_dotRadiusT()));
 }
 
 auto ShapePart::GetFirstShapePathPositionT() const noexcept -> float

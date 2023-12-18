@@ -5,7 +5,6 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_lerp_data.h"
-#include "goom/math20.h"
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
@@ -69,14 +68,14 @@ TEST_CASE("LerpData More Complicated")
   REQUIRE(lerpData.GetIncrement() == Approx(GoomLerpData::DEFAULT_INCREMENT));
 
   UNSCOPED_INFO("GetSFuncValue = " << GoomLerpData::GetSFuncValue(0.0F));
-  UNSCOPED_INFO("lerpFactor = " << STD20::lerp(0.0F, 1.0F, GoomLerpData::GetSFuncValue(0.0F)));
+  UNSCOPED_INFO("lerpFactor = " << std::lerp(0.0F, 1.0F, GoomLerpData::GetSFuncValue(0.0F)));
 
   lerpData.Update();
   const auto sFunctionTIncrement = lerpData.GetSFunctionTIncrement();
   UNSCOPED_INFO("sFunctionTIncrement = " << sFunctionTIncrement);
   UNSCOPED_INFO("GetSFuncValue = " << GoomLerpData::GetSFuncValue(sFunctionTIncrement));
   UNSCOPED_INFO(
-      "lerpFactor = " << STD20::lerp(0.0F, 1.0F, GoomLerpData::GetSFuncValue(sFunctionTIncrement)));
+      "lerpFactor = " << std::lerp(0.0F, 1.0F, GoomLerpData::GetSFuncValue(sFunctionTIncrement)));
   REQUIRE(lerpData.GetLerpFactor() == Approx(GoomLerpData::GetSFuncValue(sFunctionTIncrement)));
   REQUIRE(lerpData.GetUseSFunction());
 
