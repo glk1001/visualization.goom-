@@ -4,15 +4,16 @@
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 
+#include <algorithm>
+
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {
 
 using UTILS::MATH::HALF;
+using UTILS::MATH::IGoomRand;
 
-RandomViewport::RandomViewport(const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_minMaxXWidths{MIN_X_WIDTH, MAX_X_WIDTH},
-    m_minMaxYHeights{MIN_Y_HEIGHT, MAX_Y_HEIGHT}
+RandomViewport::RandomViewport(const IGoomRand& goomRand, const Bounds& bounds) noexcept
+  : m_goomRand{&goomRand}, m_bounds{bounds}
 {
 }
 
@@ -23,29 +24,56 @@ auto RandomViewport::GetRandomViewport() const noexcept -> Viewport
     return Viewport{};
   }
 
-  const auto xHalfWidth =
-      HALF * m_goomRand->GetRandInRange(m_minMaxXWidths.minValue, m_minMaxXWidths.maxValue);
-  const auto yHalfHeight =
-      m_goomRand->ProbabilityOf(m_probSquareViewport)
-          ? xHalfWidth
-          : HALF * m_goomRand->GetRandInRange(m_minMaxYHeights.minValue, m_minMaxYHeights.maxValue);
+  if (m_goomRand->ProbabilityOf(m_bounds.probUseCentredSides))
+  {
+    return GetRandomCentredViewport();
+  }
 
-  const auto xCentre =
-      m_goomRand->GetRandInRange((NormalizedCoords::MIN_COORD + MARGIN) + xHalfWidth,
-                                 (NormalizedCoords::MAX_COORD - MARGIN) - xHalfWidth);
-  const auto yCentre =
-      m_goomRand->GetRandInRange((NormalizedCoords::MIN_COORD + MARGIN) + yHalfHeight,
-                                 (NormalizedCoords::MAX_COORD - MARGIN) - yHalfHeight);
+  return GetRandomUncentredViewport();
+}
 
-  const auto xMin = xCentre - xHalfWidth;
-  const auto xMax = xCentre + xHalfWidth;
-  const auto yMin = yCentre - yHalfHeight;
-  const auto yMax = yCentre + yHalfHeight;
+auto RandomViewport::GetRandomUncentredViewport() const noexcept -> Viewport
+{
+  const auto useSquareViewport = m_goomRand->ProbabilityOf(m_probSquareViewport);
 
-  Ensures(xMin >= NormalizedCoords::MIN_COORD + MARGIN);
-  Ensures(yMin >= NormalizedCoords::MIN_COORD + MARGIN);
-  Ensures(xMax <= NormalizedCoords::MAX_COORD - MARGIN);
-  Ensures(yMax <= NormalizedCoords::MAX_COORD - MARGIN);
+  const auto xMin = m_goomRand->GetRandInRange(m_bounds.rect.minMaxXMin.minValue,
+                                               m_bounds.rect.minMaxXMin.maxValue);
+  const auto xMax = std::max(xMin + m_bounds.minSideLength,
+                             m_goomRand->GetRandInRange(m_bounds.rect.minMaxXMax.minValue,
+                                                        m_bounds.rect.minMaxXMax.maxValue));
+  const auto yMin = useSquareViewport
+                        ? xMin
+                        : m_goomRand->GetRandInRange(m_bounds.rect.minMaxYMin.minValue,
+                                                     m_bounds.rect.minMaxYMin.maxValue);
+  const auto yMax = useSquareViewport
+                        ? xMax
+                        : std::max(yMin + m_bounds.minSideLength,
+                                   m_goomRand->GetRandInRange(m_bounds.rect.minMaxYMax.minValue,
+                                                              m_bounds.rect.minMaxYMax.maxValue));
+
+  return Viewport{
+      Viewport::Rectangle{{xMin, yMin}, {xMax, yMax}}
+  };
+}
+
+auto RandomViewport::GetRandomCentredViewport() const noexcept -> Viewport
+{
+  const auto useSquareViewport = m_goomRand->ProbabilityOf(m_probSquareViewport);
+
+  const auto width  = m_goomRand->GetRandInRange(m_bounds.sides.minMaxWidth.minValue,
+                                                m_bounds.sides.minMaxWidth.maxValue);
+  const auto height = useSquareViewport
+                          ? width
+                          : m_goomRand->GetRandInRange(m_bounds.sides.minMaxHeight.minValue,
+                                                       m_bounds.sides.minMaxHeight.maxValue);
+
+  const auto halfWidth  = HALF * width;
+  const auto halfHeight = HALF * height;
+
+  const auto xMin = -halfWidth;
+  const auto xMax = +halfWidth;
+  const auto yMin = -halfHeight;
+  const auto yMax = +halfHeight;
 
   return Viewport{
       Viewport::Rectangle{{xMin, yMin}, {xMax, yMax}}

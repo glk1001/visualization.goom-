@@ -5,6 +5,7 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
+#include "utils/math/misc.h"
 
 #include <cmath>
 
@@ -39,10 +40,37 @@ struct XyZoomFactor
 class RandomViewport
 {
 public:
+  struct Bounds
+  {
+    static constexpr auto DEFAULT_MIN_SIDE_LENGTH = 0.1F;
+    float minSideLength                           = DEFAULT_MIN_SIDE_LENGTH;
+    float probUseCentredSides                     = UTILS::MATH::HALF;
+
+    static constexpr auto EPSILON = UTILS::MATH::SMALL_FLOAT;
+    struct Rect
+    {
+      static constexpr auto DEFAULT_MIN_X_MIN = NormalizedCoords::MIN_COORD;
+      static constexpr auto DEFAULT_MIN_X_MAX = NormalizedCoords::MAX_COORD;
+      static constexpr auto DEFAULT_MIN_Y_MIN = NormalizedCoords::MIN_COORD;
+      static constexpr auto DEFAULT_MIN_Y_MAX = NormalizedCoords::MAX_COORD;
+      MinMaxValues<float> minMaxXMin{DEFAULT_MIN_X_MIN, DEFAULT_MIN_X_MIN + EPSILON};
+      MinMaxValues<float> minMaxYMin{DEFAULT_MIN_Y_MIN, DEFAULT_MIN_Y_MIN + EPSILON};
+      MinMaxValues<float> minMaxXMax{DEFAULT_MIN_X_MAX - EPSILON, DEFAULT_MIN_X_MAX};
+      MinMaxValues<float> minMaxYMax{DEFAULT_MIN_Y_MAX - EPSILON, DEFAULT_MIN_Y_MAX};
+    } rect;
+    struct Sides
+    {
+      static constexpr auto DEFAULT_MIN_LENGTH = NormalizedCoords::COORD_WIDTH - EPSILON;
+      static constexpr auto DEFAULT_MAX_LENGTH = NormalizedCoords::COORD_WIDTH - EPSILON;
+      MinMaxValues<float> minMaxWidth{DEFAULT_MIN_LENGTH, DEFAULT_MAX_LENGTH + EPSILON};
+      MinMaxValues<float> minMaxHeight{DEFAULT_MIN_LENGTH, DEFAULT_MAX_LENGTH + EPSILON};
+    } sides;
+  };
+
   static constexpr auto DEFAULT_PROB_NO_VIEWPORT     = 0.1F;
   static constexpr auto DEFAULT_PROB_SQUARE_VIEWPORT = 0.8F;
 
-  explicit RandomViewport(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  RandomViewport(const UTILS::MATH::IGoomRand& goomRand, const Bounds& bounds) noexcept;
 
   [[nodiscard]] auto GetProbNoViewport() const noexcept -> float;
   auto SetProbNoViewport(float probNoViewport) noexcept -> void;
@@ -50,12 +78,18 @@ public:
   [[nodiscard]] auto GetProbSquareViewport() const noexcept -> float;
   auto SetProbSquareViewport(float probSquareViewport) noexcept -> void;
 
-  static constexpr auto MARGIN      = 0.05F;
-  static constexpr auto TWO_MARGINS = 2.0F * MARGIN;
-  [[nodiscard]] auto GetMinMaxXWidths() const noexcept -> MinMaxValues<float>;
-  auto SetMinMaxXWidths(const MinMaxValues<float>& minMaxXWidths) noexcept -> void;
-  [[nodiscard]] auto GetMinMaxYHeights() const noexcept -> MinMaxValues<float>;
-  auto SetMinMaxYHeights(const MinMaxValues<float>& minMaxYHeights) noexcept -> void;
+  [[nodiscard]] auto GetMinSideLength() const noexcept -> float;
+  auto SetMinSideLength(float minSideLength) noexcept -> void;
+
+  [[nodiscard]] auto GetMinMaxXMin() const noexcept -> MinMaxValues<float>;
+  [[nodiscard]] auto GetMinMaxXMax() const noexcept -> MinMaxValues<float>;
+  [[nodiscard]] auto GetMinMaxYMin() const noexcept -> MinMaxValues<float>;
+  [[nodiscard]] auto GetMinMaxYMax() const noexcept -> MinMaxValues<float>;
+  auto SetBoundsRect(const Bounds::Rect& rect) noexcept -> void;
+
+  [[nodiscard]] auto GetMinMaxWidth() const noexcept -> MinMaxValues<float>;
+  [[nodiscard]] auto GetMinMaxHeight() const noexcept -> MinMaxValues<float>;
+  auto SetBoundsSides(const Bounds::Sides& sides) noexcept -> void;
 
   [[nodiscard]] auto GetRandomViewport() const noexcept -> Viewport;
 
@@ -64,14 +98,9 @@ private:
   float m_probNoViewport     = DEFAULT_PROB_NO_VIEWPORT;
   float m_probSquareViewport = DEFAULT_PROB_SQUARE_VIEWPORT;
 
-  MinMaxValues<float> m_minMaxXWidths;
-  MinMaxValues<float> m_minMaxYHeights;
-  static constexpr auto MIN_X_WIDTH  = 1.5F;
-  static constexpr auto MAX_X_WIDTH  = NormalizedCoords::COORD_WIDTH - TWO_MARGINS;
-  static constexpr auto MIN_Y_HEIGHT = 1.5F;
-  static constexpr auto MAX_Y_HEIGHT = NormalizedCoords::COORD_WIDTH - TWO_MARGINS;
-  static_assert(MARGIN <= MIN_X_WIDTH);
-  static_assert(MARGIN <= MIN_Y_HEIGHT);
+  Bounds m_bounds;
+  [[nodiscard]] auto GetRandomUncentredViewport() const noexcept -> Viewport;
+  [[nodiscard]] auto GetRandomCentredViewport() const noexcept -> Viewport;
 };
 
 inline auto RandomViewport::GetProbNoViewport() const noexcept -> float
@@ -94,28 +123,62 @@ inline auto RandomViewport::SetProbSquareViewport(const float probSquareViewport
   m_probSquareViewport = probSquareViewport;
 }
 
-inline auto RandomViewport::GetMinMaxXWidths() const noexcept -> MinMaxValues<float>
+inline auto RandomViewport::GetMinSideLength() const noexcept -> float
 {
-  return m_minMaxXWidths;
+  return m_bounds.minSideLength;
 }
 
-inline auto RandomViewport::SetMinMaxXWidths(const MinMaxValues<float>& minMaxXWidths) noexcept
-    -> void
+inline auto RandomViewport::SetMinSideLength(float minSideLength) noexcept -> void
 {
-  Expects(minMaxXWidths.minValue < minMaxXWidths.maxValue);
-  m_minMaxXWidths = minMaxXWidths;
+  m_bounds.minSideLength = minSideLength;
 }
 
-inline auto RandomViewport::GetMinMaxYHeights() const noexcept -> MinMaxValues<float>
+inline auto RandomViewport::GetMinMaxXMin() const noexcept -> MinMaxValues<float>
 {
-  return m_minMaxYHeights;
+  return m_bounds.rect.minMaxXMin;
 }
 
-inline auto RandomViewport::SetMinMaxYHeights(const MinMaxValues<float>& minMaxYHeights) noexcept
-    -> void
+inline auto RandomViewport::GetMinMaxXMax() const noexcept -> MinMaxValues<float>
 {
-  Expects(minMaxYHeights.minValue < minMaxYHeights.maxValue);
-  m_minMaxYHeights = minMaxYHeights;
+  return m_bounds.rect.minMaxXMax;
+}
+
+inline auto RandomViewport::GetMinMaxYMin() const noexcept -> MinMaxValues<float>
+{
+  return m_bounds.rect.minMaxYMin;
+}
+
+inline auto RandomViewport::GetMinMaxYMax() const noexcept -> MinMaxValues<float>
+{
+  return m_bounds.rect.minMaxYMax;
+}
+
+inline auto RandomViewport::SetBoundsRect(const Bounds::Rect& rect) noexcept -> void
+{
+  Expects(rect.minMaxXMin.minValue < rect.minMaxXMin.maxValue);
+  Expects(rect.minMaxXMax.minValue < rect.minMaxXMax.maxValue);
+  Expects(rect.minMaxYMin.minValue < rect.minMaxYMin.maxValue);
+  Expects(rect.minMaxYMax.minValue < rect.minMaxYMax.maxValue);
+  m_bounds.rect = rect;
+}
+
+inline auto RandomViewport::GetMinMaxWidth() const noexcept -> MinMaxValues<float>
+{
+  return m_bounds.sides.minMaxWidth;
+}
+
+inline auto RandomViewport::GetMinMaxHeight() const noexcept -> MinMaxValues<float>
+{
+  return m_bounds.sides.minMaxHeight;
+}
+
+inline auto RandomViewport::SetBoundsSides(const Bounds::Sides& sides) noexcept -> void
+{
+  Expects(sides.minMaxWidth.minValue > 0.0F);
+  Expects(sides.minMaxHeight.minValue > 0.0F);
+  Expects(sides.minMaxWidth.minValue < sides.minMaxWidth.maxValue);
+  Expects(sides.minMaxHeight.minValue < sides.minMaxHeight.maxValue);
+  m_bounds.sides = sides;
 }
 
 inline auto GetVelocityByZoomLerpedToOne(const NormalizedCoords& coords,
