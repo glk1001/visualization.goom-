@@ -43,12 +43,15 @@ static constexpr auto RECIPROCAL_EXPONENT_RANGE   = IGoomRand::NumberRange<uint3
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
 static constexpr auto MODULATOR_PERIOD_RANGE   = IGoomRand::NumberRange<float>{1.0F, 100.0F};
 
-static constexpr auto VIEWPORT_MIN_X_WIDTH  = 0.1F;
-static constexpr auto VIEWPORT_MIN_Y_HEIGHT = 0.1F;
-static constexpr auto VIEWPORT_MAX_X_WIDTH =
-    NormalizedCoords::COORD_WIDTH - RandomViewport::TWO_MARGINS;
-static constexpr auto VIEWPORT_MAX_Y_HEIGHT =
-    NormalizedCoords::COORD_WIDTH - RandomViewport::TWO_MARGINS;
+static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
+    .minSideLength       = 0.1F,
+    .probUseCentredSides = 0.5F,
+    .rect                = {.minMaxXMin = {-10.0F, +1.0F},
+                            .minMaxYMin = {-10.0F, +1.0F},
+                            .minMaxXMax = {-10.0F + 0.1F, +10.0F},
+                            .minMaxYMax = {-10.0F + 0.1F, +10.0F}},
+    .sides               = {.minMaxWidth = {0.1F, 20.0F}, .minMaxHeight = {0.1F, 20.0F}}
+};
 
 static constexpr auto PROB_AMPLITUDES_EQUAL         = 0.95F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL    = 0.95F;
@@ -58,7 +61,7 @@ static constexpr auto PROB_USE_MODULATOR_CONTOURS   = 0.10F;
 
 ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_randomViewport{goomRand},
+    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{
         Viewport{},
         {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
@@ -71,8 +74,6 @@ ExpReciprocal::ExpReciprocal(const IGoomRand& goomRand) noexcept
         DEFAULT_MODULATOR_PERIOD,
     }
 {
-  m_randomViewport.SetMinMaxXWidths({VIEWPORT_MIN_X_WIDTH, VIEWPORT_MAX_X_WIDTH});
-  m_randomViewport.SetMinMaxYHeights({VIEWPORT_MIN_Y_HEIGHT, VIEWPORT_MAX_Y_HEIGHT});
 }
 
 auto ExpReciprocal::SetRandomParams() noexcept -> void
