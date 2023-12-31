@@ -1,5 +1,6 @@
 #pragma once
 
+#include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/goom_types.h"
@@ -52,6 +53,7 @@ public:
   };
   struct Params
   {
+    Viewport viewport;
     WaveEffect xWaveEffect;
     WaveEffect yWaveEffect;
     AngleEffect angleEffect;
@@ -72,6 +74,7 @@ protected:
 private:
   Modes m_mode;
   const UTILS::MATH::IGoomRand* m_goomRand;
+  FILTER_UTILS::RandomViewport m_randomViewport;
   UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
   Params m_params;
   auto SetSqDistAngleEffectMode0RandomParams() noexcept -> void;
@@ -124,8 +127,10 @@ inline auto Wave::GetZoomAdjustment(const NormalizedCoords& coords) const noexce
 
 inline auto Wave::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  const auto sqDistFromZero = SqDistanceFromZero(coords);
-  const auto angle          = GetAngle(sqDistFromZero, coords);
+  const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
+
+  const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
+  const auto angle          = GetAngle(sqDistFromZero, viewportCoords);
   const auto reducer        = std::exp(-m_params.reducerCoeff * sqDistFromZero);
 
   const auto xZoomAdjustment =

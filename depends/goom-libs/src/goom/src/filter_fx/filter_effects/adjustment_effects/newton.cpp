@@ -16,6 +16,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using FILTER_UTILS::GetVelocityByZoomLerpedToOne;
 using FILTER_UTILS::LerpToOneTs;
+using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
@@ -48,16 +49,27 @@ static constexpr auto DEFAULT_C_IMAG = 0.0F;
 static constexpr auto C_REAL_RANGE   = IGoomRand::NumberRange<float>{-1.0F, +1.0F};
 static constexpr auto C_IMAG_RANGE   = IGoomRand::NumberRange<float>{-1.0F, +1.0F};
 
+static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
+    .minSideLength       = 0.1F,
+    .probUseCentredSides = 0.5F,
+    .rect                = {.minMaxXMin = {-10.0F, +1.0F},
+                            .minMaxYMin = {-10.0F, +1.0F},
+                            .minMaxXMax = {-10.0F + 0.1F, +10.0F},
+                            .minMaxYMax = {-10.0F + 0.1F, +10.0F}},
+    .sides               = {.minMaxWidth = {0.1F, 20.0F}, .minMaxHeight = {0.1F, 20.0F}}
+};
+
 static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.95F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL  = 0.95F;
 static constexpr auto PROB_Z_SIN                  = 0.80F;
 static constexpr auto PROB_Z_SIN_AMPLITUDES_EQUAL = 0.95F;
 static constexpr auto PROB_POLY_SIN_FUNC          = 0.5F;
 static constexpr auto PROB_USE_SQ_DIST_DENOM      = 0.1F;
+static constexpr auto PROB_NO_VIEWPORT            = 0.8F;
 
 Newton::Newton(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_randomViewport{goomRand},
+    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{
         Viewport{},
         DEFAULT_EXPONENT,
@@ -73,6 +85,7 @@ Newton::Newton(const IGoomRand& goomRand) noexcept
         {DEFAULT_Z_SIN_AMPLITUDE, DEFAULT_Z_SIN_AMPLITUDE},
     }
 {
+  m_randomViewport.SetProbNoViewport(PROB_NO_VIEWPORT);
 }
 
 auto Newton::SetRandomParams() noexcept -> void

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "filter_fx/common_types.h"
+#include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/point2d.h"
@@ -25,6 +26,7 @@ public:
 
   struct Params
   {
+    Viewport viewport;
     Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
@@ -34,6 +36,7 @@ protected:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
+  FILTER_UTILS::RandomViewport m_randomViewport;
   Params m_params;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
@@ -47,7 +50,9 @@ inline auto Amulet::GetZoomAdjustment(const NormalizedCoords& coords) const noex
 
 inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  const auto sqDistFromZero = SqDistanceFromZero(coords);
+  const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
+
+  const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
 
   return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero),
           GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromZero)};

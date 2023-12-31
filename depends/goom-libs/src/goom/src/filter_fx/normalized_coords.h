@@ -291,12 +291,8 @@ constexpr Viewport::Viewport(const Rectangle& viewportRectangle) noexcept
              WORLD_HEIGHT},
     m_viewportWidth{m_xScale * WORLD_WIDTH}
 {
-  Expects(NormalizedCoords::MIN_COORD <= viewportRectangle.bottomLeft.GetX());
-  Expects(NormalizedCoords::MIN_COORD <= viewportRectangle.bottomLeft.GetY());
   Expects(viewportRectangle.bottomLeft.GetX() < viewportRectangle.topRight.GetX());
   Expects(viewportRectangle.bottomLeft.GetY() < viewportRectangle.topRight.GetY());
-  Expects(viewportRectangle.topRight.GetX() <= NormalizedCoords::MAX_COORD);
-  Expects(viewportRectangle.topRight.GetY() <= NormalizedCoords::MAX_COORD);
 }
 
 constexpr auto Viewport::GetViewportCoords(const NormalizedCoords& coords) const noexcept

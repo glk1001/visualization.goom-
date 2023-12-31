@@ -1,5 +1,6 @@
 #include "wave.h"
 
+#include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "utils/math/goom_rand_base.h"
@@ -11,6 +12,7 @@
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
+using FILTER_UTILS::RandomViewport;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
@@ -46,6 +48,13 @@ static constexpr auto DEFAULT_USE_MODIFIED_ATAN_ANGLE    = false;
 static constexpr auto DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR = 1.0F;
 static constexpr auto MODIFIED_ATAN_ANGLE_FACTOR_RANGE = IGoomRand::NumberRange<float>{0.1F, 10.0F};
 
+static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
+    .minSideLength       = 0.1F,
+    .probUseCentredSides = 1.0F,
+    .rect                = {},
+    .sides               = {.minMaxWidth = {2.0F, 10.0F}, .minMaxHeight = {2.0F, 10.0F}}
+};
+
 
 // These give weird but interesting wave results
 static constexpr auto SMALL_FREQ_FACTOR_RANGE   = IGoomRand::NumberRange<float>{0.001F, 0.1F};
@@ -60,6 +69,7 @@ static constexpr auto PROB_NO_PERIODIC_FACTOR                 = 0.2F;
 static constexpr auto PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT = 0.9F;
 static constexpr auto PROB_SPIRAL_SQ_DIST_EFFECT              = 0.0F;
 static constexpr auto PROB_USE_MODIFIED_ATAN_ANGLE            = 0.5F;
+static constexpr auto PROB_NO_VIEWPORT                        = 0.5F;
 
 static constexpr auto WAVE_SIN_EFFECT_WEIGHT      = 200.0F;
 static constexpr auto WAVE_COS_EFFECT_WEIGHT      = 200.0F;
@@ -83,6 +93,7 @@ inline auto Wave::GetSqDistEffect() const noexcept -> Wave::AngleEffect
 Wave::Wave(const Modes mode, const IGoomRand& goomRand)
   : m_mode{mode},
     m_goomRand{&goomRand},
+    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_weightedEffects{
       *m_goomRand,
       {
@@ -97,7 +108,8 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
         {WAVE_COT_COS_EFFECT,  WAVE_COT_COS_EFFECT_WEIGHT},
       }
     },
-    m_params{DEFAULT_WAVE_EFFECT,
+    m_params{Viewport{},
+             DEFAULT_WAVE_EFFECT,
              DEFAULT_WAVE_EFFECT,
              DEFAULT_ANGLE_EFFECT,
              DEFAULT_SQ_DIST_POWER,
@@ -109,6 +121,7 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
              DEFAULT_USE_MODIFIED_ATAN_ANGLE,
              DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR}
 {
+  m_randomViewport.SetProbNoViewport(PROB_NO_VIEWPORT);
 }
 
 auto Wave::SetRandomParams() noexcept -> void
@@ -190,6 +203,8 @@ auto Wave::SetAtanAngleEffectMode1RandomParams() noexcept -> void
 
 auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcept -> void
 {
+  const auto viewport = m_randomViewport.GetRandomViewport();
+
   const auto waveEffectsEqual = m_goomRand->ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
 
   const auto xWaveEffect = m_weightedEffects.GetRandomWeighted();
@@ -208,7 +223,8 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
   const auto useModifiedATanAngle    = m_goomRand->ProbabilityOf(PROB_USE_MODIFIED_ATAN_ANGLE);
   const auto modifiedATanAngleFactor = m_goomRand->GetRandInRange(MODIFIED_ATAN_ANGLE_FACTOR_RANGE);
 
-  SetParams({.xWaveEffect             = xWaveEffect,
+  SetParams({.viewport                = viewport,
+             .xWaveEffect             = xWaveEffect,
              .yWaveEffect             = yWaveEffect,
              .angleEffect             = waveModeSettings.angleEffect,
              .sqDistPower             = sqDistPower,
