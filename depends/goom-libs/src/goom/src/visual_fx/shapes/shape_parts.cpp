@@ -7,7 +7,6 @@
 #include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "shape_paths.h"
@@ -219,7 +218,8 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
       //               m_shapePathsTargetPoint.x,
       //               m_shapePathsTargetPoint.y);
       //      LogError(
-      //          m_fxHelper->GetGoomLogger(), "targetPointFlt = {}, {}", targetPointFlt.x, targetPointFlt.y);
+      //          m_fxHelper->GetGoomLogger(),
+      //          "targetPointFlt = {}, {}", targetPointFlt.x, targetPointFlt.y);
       //      LogError(m_fxHelper->GetGoomLogger(), "radius = {}", radius);
       //      LogError(m_fxHelper->GetGoomLogger(), "rotate = {}", rotate);
       //      LogError(m_fxHelper->GetGoomLogger(), "std::cos(rotate) = {}", std::cos(rotate));

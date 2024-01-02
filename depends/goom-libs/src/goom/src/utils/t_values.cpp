@@ -4,7 +4,6 @@
 
 #include "goom/goom_config.h"
 
-#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -58,14 +57,14 @@ TValue::TValue(const NumStepsProperties& numStepsProperties,
 
 auto TValue::ValidateDelayPoints() const noexcept -> void
 {
-#ifndef NDEBUG
+#ifdef GOOM_DEBUG
   auto prevT0 = -1.0F;
 
   for (const auto& delayPoint : m_delayPoints)
   {
-    assert(prevT0 < delayPoint.t0);
-    assert(0.0F <= delayPoint.t0);
-    assert(delayPoint.t0 <= 1.0F);
+    Expects(prevT0 < delayPoint.t0);
+    Expects(0.0F <= delayPoint.t0);
+    Expects(delayPoint.t0 <= 1.0F);
 
     prevT0 = delayPoint.t0;
   }
@@ -97,6 +96,7 @@ inline auto TValue::SingleCycleIncrement() noexcept -> void
   }
   m_t += m_currentStep;
 
+  USED_FOR_DEBUGGING(std::isnan(m_t));
   Ensures(not std::isnan(m_t));
   Ensures(m_t >= MIN_T_VALUE);
 }

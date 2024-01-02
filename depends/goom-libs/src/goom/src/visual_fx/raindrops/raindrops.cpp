@@ -7,9 +7,9 @@
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
-#include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
+#include "raindrop_positions.h"
 #include "utils/graphics/blend2d_utils.h"
 #include "utils/graphics/point_utils.h"
 #include "utils/math/misc.h"
@@ -309,7 +309,8 @@ auto Raindrops::DrawRaindrop(const Raindrop& raindrop, const MultiplePixels& col
                         {GetBrighterColor(LINE_TO_TARGET_BRIGHTNESS, DRAW::GetMainColor(colors)),
                          GetBrighterColor(LINE_TO_TARGET_BRIGHTNESS, DRAW::GetLowColor(colors))});
 
-  //  const auto nextDropNum = raindrop.dropNum == m_raindrops.size() - 1 ? 0 : raindrop.dropNum + 1;
+  //  const auto nextDropNum = raindrop.dropNum ==
+  //                               m_raindrops.size() - 1 ? 0 : raindrop.dropNum + 1;
   //  m_lineDrawer.DrawLine(
   //      position,
   //      m_raindropPositions.GetPosition(nextDropNum),

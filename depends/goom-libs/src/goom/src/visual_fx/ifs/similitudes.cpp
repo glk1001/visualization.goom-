@@ -22,6 +22,7 @@ using COLOR::WeightedRandomColorMaps;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::DEGREES_180;
+using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::PI;
 
@@ -267,25 +268,24 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitma
 }
 
 // NOLINTBEGIN(readability-identifier-length,readability-identifier-naming)
-constexpr auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
+// TODO(glk) - Make this constexpr with C++23.
+auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
 {
   return 1.0F - std::exp(-S);
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-constexpr auto Similitudes::GaussRand(const Dbl c,
-                                      const Dbl S,
-                                      const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
+auto Similitudes::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) const
+    -> Dbl
 {
-  const auto x                    = m_goomRand->GetRandInRange(0.0F, 1.0F);
-  const auto y                    = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
-  constexpr auto PROB_HALF        = 0.5F;
-  return m_goomRand->ProbabilityOf(PROB_HALF) ? (c + y) : (c - y);
+  const auto x = m_goomRand->GetRandInRange(0.0F, 1.0F);
+  const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
+
+  return m_goomRand->ProbabilityOf(HALF) ? (c + y) : (c - y);
 }
 
-constexpr auto Similitudes::HalfGaussRand(const Dbl c,
-                                          const Dbl S,
-                                          const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
+auto Similitudes::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) const
+    -> Dbl
 {
   const auto x = m_goomRand->GetRandInRange(0.0F, 1.0F);
   const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));

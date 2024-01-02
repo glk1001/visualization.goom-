@@ -25,16 +25,21 @@
 #include <kodi/addon-instance/Visualization.h>
 #include <random>
 #include <span>
-#include <stdexcept>
 #include <string>
 #include <unistd.h>
+
+#ifdef GOOM_DEBUG // TODO(glk) - clang-tidy needs this. A better way?
+#include <stdexcept>
+#endif
 
 using GOOM::AudioSamples;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
 using GOOM::join_paths;
+#ifndef __APPLE__
 using GOOM::RESOURCES_DIR;
 using GOOM::SHADERS_DIR;
+#endif
 using GOOM::ShowSongTitleType;
 using GOOM::TextureBufferDimensions;
 using GOOM::WindowDimensions;

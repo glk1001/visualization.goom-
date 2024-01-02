@@ -49,7 +49,7 @@ TEST_CASE("StringJoin")
 TEST_CASE("StringSplit")
 {
   const auto testString1 = std::string{"line1: word1, word2\nline2: word3, word4\n"};
-  const auto test1 = StringSplit(testString1, ",");
+  const auto test1       = StringSplit(testString1, ",");
   UNSCOPED_INFO("testString1 = \"" << testString1 + "\"");
   REQUIRE(test1.size() == 3);
   REQUIRE(test1[0] == "line1: word1");

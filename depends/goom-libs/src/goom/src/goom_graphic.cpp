@@ -3,7 +3,9 @@
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 
+#ifdef GOOM_DEBUG // TODO(glk) - clang-tidy needs this. A better way?
 #include <cstddef>
+#endif
 
 namespace GOOM
 {

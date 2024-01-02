@@ -136,10 +136,9 @@ private:
   auto InitCentre() -> void;
 
   // NOLINTBEGIN(readability-identifier-length,readability-identifier-naming)
-  [[nodiscard]] constexpr auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
-  [[nodiscard]] constexpr auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const
-      -> Dbl;
-  [[nodiscard]] static constexpr auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
+  [[nodiscard]] auto GaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
+  [[nodiscard]] auto HalfGaussRand(Dbl c, Dbl S, Dbl A_mult_1_minus_exp_neg_S) const -> Dbl;
+  [[nodiscard]] static auto Get_1_minus_exp_neg_S(Dbl S) -> Dbl;
   // NOLINTEND(readability-identifier-length,readability-identifier-naming)
 };
 

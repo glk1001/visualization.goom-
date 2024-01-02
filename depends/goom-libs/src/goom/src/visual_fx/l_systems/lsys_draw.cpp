@@ -107,7 +107,7 @@ inline auto LSysDraw::GetPerspectiveProjection(const std::vector<Point3dFlt>& po
 
 auto LSysDraw::GetPerspectivePoint(const Point3dFlt& point3d) noexcept -> Point2dFlt
 {
-  //TODO(glk) Why does this look better?
+  // TODO(glk) Why does this look better?
   return {point3d.x, point3d.y};
 
   /**
