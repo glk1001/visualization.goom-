@@ -9,8 +9,9 @@
 #include "utils/name_value_pairs.h"
 
 #include <PerlinNoise.hpp>
-#include <cmath>
 #include <cstdint>
+#include <limits>
+#include <type_traits>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -55,9 +56,26 @@ PerlinNoise::PerlinNoise(const IGoomRand& goomRand) noexcept
              {DEFAULT_ANGLE_FREQUENCY_FACTOR, DEFAULT_ANGLE_FREQUENCY_FACTOR},
              DEFAULT_OCTAVES,
              DEFAULT_PERSISTENCE},
-    m_perlinNoise{GetRandSeed()},
-    m_perlinNoise2{GetRandSeed()}
+    m_perlinNoise{GetRandSeedForPerlinNoise()},
+    m_perlinNoise2{GetRandSeedForPerlinNoise()}
 {
+}
+
+auto PerlinNoise::GetRandSeedForPerlinNoise() -> PerlinSeedType
+{
+  if constexpr (std::is_same_v<PerlinSeedType, decltype(GetRandSeed())>)
+  {
+    return GetRandSeed();
+  }
+
+#if defined(__GNUC__) and not defined(__clang_major__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#endif
+  return static_cast<PerlinSeedType>(GetRandSeed() % std::numeric_limits<PerlinSeedType>::max());
+#if defined(__GNUC__) and not defined(__clang_major__)
+#pragma GCC diagnostic pop
+#endif
 }
 
 auto PerlinNoise::SetRandomParams() noexcept -> void

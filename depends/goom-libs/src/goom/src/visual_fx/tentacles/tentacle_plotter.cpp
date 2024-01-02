@@ -143,7 +143,7 @@ inline auto TentaclePlotter::GetLine2D(const Point2dFlt& point1Flt,
     return line2D;
   }
 
-  //TODO(glk) - What about the last line??
+  // TODO(glk) - What about the last line??
   // We are drawing joined lines and we don't want to re-plot the last
   // point of the previous line. So back up one pixel from 'point2'.
   const auto dx = std::clamp(line2D.point2.x - line2D.point1.x, -1, +1);

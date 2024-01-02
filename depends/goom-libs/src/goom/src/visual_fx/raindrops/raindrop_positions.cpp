@@ -3,7 +3,6 @@
 #include "raindrop_positions.h"
 
 #include "goom/goom_config.h"
-#include "goom/goom_logger.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"

@@ -128,7 +128,8 @@ jobs:
         shell: bash
         run: |
           python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_VER }}" \
-                                              -i -r -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" \
+                                              -i -r \
+                                              -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" -e "*perlin_noise*" \
                                               "${PWD}"
           if [[ "$(git diff --name-only)" != "" ]]; then
             echo "ERROR: clang-format problem."

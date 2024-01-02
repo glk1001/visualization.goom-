@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
+#include <blend2d/context.h>
 #include <blend2d/format.h>
 #include <blend2d/image.h>
 #include <cstddef>

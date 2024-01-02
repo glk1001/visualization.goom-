@@ -44,6 +44,44 @@ auto PutFileWithExpandedIncludes(const std::string& includeDir,
                                                const std::string& filepath)
     -> std::vector<std::string>;
 
+#ifdef __APPLE__
+// TODO(glk) - Remove this when Apple clang gets it's act together.
+namespace DETAIL
+{
+template<std::size_t N>
+struct compile_time_string
+{
+};
+}
+
+template<DETAIL::compile_time_string Base>
+inline auto join_paths() noexcept -> decltype(auto)
+{
+#pragma message("APPLE ISSUE - Don't run this.")
+  return "";
+}
+template<DETAIL::compile_time_string Base, DETAIL::compile_time_string... Others>
+  requires(sizeof...(Others) != 0)
+inline auto join_paths() noexcept -> decltype(auto)
+{
+#pragma message("APPLE ISSUE - Don't run this.")
+  return "";
+}
+
+inline auto join_paths([[maybe_unused]] const std::string& base) noexcept -> std::string
+{
+#pragma message("APPLE ISSUE - Don't run this.")
+  return "";
+}
+template<typename... Types>
+  requires(sizeof...(Types) != 0)
+inline auto join_paths([[maybe_unused]] const std::string& base,
+                       [[maybe_unused]] Types... paths) noexcept -> std::string
+{
+#pragma message("APPLE ISSUE - Don't run this.")
+  return "";
+}
+#else
 // NOLINTBEGIN: Tricky template stuff here.
 namespace DETAIL
 {
@@ -130,26 +168,28 @@ namespace DETAIL
 } // namespace DETAIL
 
 template<DETAIL::compile_time_string Base>
-consteval auto join_paths() noexcept -> decltype(auto)
+[[nodiscard]] consteval auto join_paths() noexcept -> decltype(auto)
 {
   return Base;
 }
 template<DETAIL::compile_time_string Base, DETAIL::compile_time_string... Others>
   requires(sizeof...(Others) != 0)
-consteval auto join_paths() noexcept -> decltype(auto)
+[[nodiscard]] consteval auto join_paths() noexcept -> decltype(auto)
 {
   return static_concat<static_concat<Base, DETAIL::GetPathSep()>(), join_paths<Others...>()>();
 }
 
-constexpr auto join_paths(const std::string& base) noexcept -> std::string
+[[nodiscard]] constexpr auto join_paths(const std::string& base) noexcept -> std::string
 {
   return base;
 }
 template<typename... Types>
   requires(sizeof...(Types) != 0)
-constexpr auto join_paths(const std::string& base, Types... paths) noexcept -> std::string
+[[nodiscard]] constexpr auto join_paths(const std::string& base, Types... paths) noexcept
+    -> std::string
 {
   return base + DETAIL::GetPathSep() + join_paths(paths...);
 }
+#endif
 
 } // namespace GOOM

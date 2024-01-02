@@ -8,6 +8,7 @@
 #include "filter_settings.h"
 #include "filter_speed.h"
 #include "goom/goom_config.h"
+#include "goom/goom_lerp_data.h"
 #include "goom_plugin_info.h"
 #include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"

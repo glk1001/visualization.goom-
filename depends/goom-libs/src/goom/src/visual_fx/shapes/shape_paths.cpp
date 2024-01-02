@@ -1,5 +1,3 @@
-//#undef NO_LOGGING
-
 #include "shape_paths.h"
 
 #include "../fx_helper.h"
@@ -7,7 +5,6 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_logger.h"
 #include "utils/graphics/blend2d_utils.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "goom/goom_types.h"
 
 #include <format>
@@ -7,11 +9,6 @@
 #include <string_view>
 #include <utility>
 #include <vector>
-
-// *** Put the header guard here to disable CLion's
-// *** 'unused include directive' inspection.
-#ifndef HDR_GOOM_LOGGER
-#define HDR_GOOM_LOGGER
 
 namespace GOOM
 {
@@ -76,11 +73,13 @@ private:
   std::vector<std::string> m_logEntries{};
   std::mutex m_mutex{};
   auto DoFlush() -> void;
+#ifndef __APPLE__
   auto VLog(LogLevel lvl,
             const std::string& funcName,
             int lineNum,
             const std::string& formatStr,
             std::format_args args) -> void;
+#endif
 };
 
 inline auto GoomLogger::SetLogFile(const std::string_view& logF) -> void
@@ -168,6 +167,15 @@ inline auto GoomLogger::CanLog() const -> bool
 
 template<typename... Args>
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+#ifdef __APPLE__
+auto GoomLogger::Log([[maybe_unused]] const LogLevel lvl,
+                     [[maybe_unused]] const int lineNum,
+                     [[maybe_unused]] const std::string& funcName,
+                     [[maybe_unused]] const std::string& formatStr,
+                     [[maybe_unused]] const Args&... args) -> void
+{
+  FailFast();
+#else
 auto GoomLogger::Log(const LogLevel lvl,
                      const int lineNum,
                      const std::string& funcName,
@@ -175,6 +183,7 @@ auto GoomLogger::Log(const LogLevel lvl,
                      const Args&... args) -> void
 {
   VLog(lvl, funcName, lineNum, formatStr, std::make_format_args(args...));
+#endif
 }
 
 } // namespace GOOM
@@ -334,5 +343,3 @@ inline auto SetLogLevelForFiles(GOOM::GoomLogger& logger, const GOOM::GoomLogger
   (logger).Log(GOOM::GoomLogger::LogLevel::ERR, __LINE__, __func__, __VA_ARGS__)
 // NOLINTEND: Remove these macros with C++20.
 #endif
-
-#endif // HDR_GOOM_LOGGER

@@ -11,7 +11,10 @@
 #include "goom/goom_graphic.h"
 #include "utils/enum_utils.h"
 
+#ifdef GOOM_DEBUG // TODO(glk) - clang-tidy needs this. A better way?
 #include <algorithm>
+#endif
+
 #include <array>
 #include <cstddef>
 #include <cstdint>

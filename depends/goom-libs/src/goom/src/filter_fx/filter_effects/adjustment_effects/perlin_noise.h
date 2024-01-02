@@ -47,6 +47,8 @@ private:
   siv::BasicPerlinNoise<float> m_perlinNoise;
   siv::BasicPerlinNoise<float> m_perlinNoise2;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
+  using PerlinSeedType = siv::BasicPerlinNoise<float>::seed_type;
+  [[nodiscard]] static auto GetRandSeedForPerlinNoise() -> PerlinSeedType;
 };
 
 inline auto PerlinNoise::GetParams() const noexcept -> const Params&
