@@ -5,6 +5,7 @@
 #include "filter_fx/filter_effects/adjustment_effects/crystal_ball.h"
 #include "filter_fx/filter_effects/adjustment_effects/distance_field.h"
 #include "filter_fx/filter_effects/adjustment_effects/exp_reciprocal.h"
+#include "filter_fx/filter_effects/adjustment_effects/func_of_func.h"
 #include "filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.h"
 #include "filter_fx/filter_effects/adjustment_effects/mobius.h"
 #include "filter_fx/filter_effects/adjustment_effects/newton.h"
@@ -57,6 +58,9 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
       return std::make_shared<UniformZoomAdjustmentEffect>();
     case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
       return std::make_shared<ImageZoomAdjustment>(resourcesDirectory, goomRand);
+    case ZoomFilterMode::IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0:
+      return std::make_shared<FunctionOfFunction<ImageZoomAdjustment, Wave>>(
+          resourcesDirectory, Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, goomRand);
     case ZoomFilterMode::MOBIUS_MODE:
       return std::make_shared<Mobius>(goomRand);
     case ZoomFilterMode::NEWTON_MODE:
@@ -65,6 +69,9 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
       return std::make_shared<UniformZoomAdjustmentEffect>();
     case ZoomFilterMode::PERLIN_NOISE_MODE:
       return std::make_shared<PerlinNoise>(goomRand);
+    case ZoomFilterMode::PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0:
+      return std::make_shared<FunctionOfFunction<PerlinNoise, Wave>>(
+          Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, goomRand);
     case ZoomFilterMode::SCRUNCH_MODE:
       return std::make_shared<Scrunch>(goomRand);
     case ZoomFilterMode::SPEEDWAY_MODE0:

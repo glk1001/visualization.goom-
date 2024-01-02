@@ -112,6 +112,7 @@ add_library(goom
             src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cpp
             src/filter_fx/filter_effects/adjustment_effects/distance_field.cpp
             src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cpp
+            src/filter_fx/filter_effects/adjustment_effects/func_of_func.h
             src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
             src/filter_fx/filter_effects/adjustment_effects/mobius.cpp
             src/filter_fx/filter_effects/adjustment_effects/newton.cpp

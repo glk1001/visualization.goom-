@@ -14,9 +14,9 @@ class IGoomRand;
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-[[nodiscard]] extern auto CreateZoomAdjustmentEffect(ZoomFilterMode filterMode,
-                                                     const UTILS::MATH::IGoomRand& goomRand,
-                                                     const std::string& resourcesDirectory)
+[[nodiscard]] auto CreateZoomAdjustmentEffect(ZoomFilterMode filterMode,
+                                              const UTILS::MATH::IGoomRand& goomRand,
+                                              const std::string& resourcesDirectory)
     -> std::shared_ptr<IZoomAdjustmentEffect>;
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS
