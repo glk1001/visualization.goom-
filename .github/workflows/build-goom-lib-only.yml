@@ -40,13 +40,6 @@ jobs:
             build_type: 'Release',
           }
         - {
-            name: 'MacOS Latest Clang - Release',
-            os: 'macos-latest',
-            cc: 'clang',
-            cxx: 'clang++',
-            build_type: 'Release',
-          }
-        - {
             name: 'Windows Latest MSVC - Release',
             os: 'windows-latest',
             cc: 'cl',

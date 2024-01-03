@@ -110,15 +110,6 @@ jobs:
           cat ${{ env.BINARY_ADDONS_FILE }}
 
       - name: Change Kodi Binary Repo for ${{ runner.os }}
-        if: ${{ runner.os == 'macOS' }}
-        shell: bash
-        run: |
-          cd ${{ vars.KODI_ROOT_DIR }}
-          sed -i '' 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
-          sed -i '' 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
-          cat ${{ env.BINARY_ADDONS_FILE }}
-
-      - name: Change Kodi Binary Repo for ${{ runner.os }}
         if: ${{ runner.os == 'Windows' }}
         shell: powershell
         run: |
@@ -154,11 +145,6 @@ jobs:
         run:  |
           sudo apt-get update
           sudo apt-get install mesa-common-dev
-
-      - name: Install Necessary MacOS Packages
-        if: ${{ runner.os == 'macOS' }}
-        run:  |
-          brew install coreutils
 
       - name: Configure Goom++ for ${{ runner.os }}
         if: ${{ runner.os != 'Windows' }}
@@ -295,12 +281,6 @@ jobs:
       - if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/download-artifact@v3
         with:
-          name: 'kodi-${{ vars.KODI_BRANCH }}-goom++-macos-latest-clang-Release-master'
-          path: 'artifacts/macos/${{ vars.VIS_GOOM_ROOT_DIR }}'
-
-      - if: ${{ github.event_name == 'workflow_dispatch' }}
-        uses: actions/download-artifact@v3
-        with:
           name: 'kodi-${{ vars.KODI_BRANCH }}-goom++-windows-latest-cl-Release-master'
           path: 'artifacts/windows/${{ vars.VIS_GOOM_ROOT_DIR }}'
 
@@ -310,15 +290,10 @@ jobs:
             declare -r UPPER_KODI_BRANCH="${{ vars.KODI_BRANCH }}"
             declare -r LOWER_KODI_BRANCH="${UPPER_KODI_BRANCH,,}"
             declare -r LINUX_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-linux-x86_64.zip
-            declare -r MACOS_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-macos.zip
             declare -r WINDOWS_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-windows-x86_64.zip
 
             cd artifacts/linux
             zip -m -r "${LINUX_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
-            cd -
-
-            cd artifacts/macos
-            zip -m -r "${MACOS_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
             cd -
 
             cd artifacts/windows
@@ -334,11 +309,9 @@ jobs:
             git config --global user.name '${{ github.repository_owner }}'
 
             mv "../artifacts/linux/${LINUX_ZIP_NAME}" .
-            mv "../artifacts/macos/${MACOS_ZIP_NAME}" .
             mv "../artifacts/windows/${WINDOWS_ZIP_NAME}" .
 
             git add "${LINUX_ZIP_NAME}"
-            git add "${MACOS_ZIP_NAME}"
             git add "${WINDOWS_ZIP_NAME}"
 
             git commit -m "Latest Goom++ Build"

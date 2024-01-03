@@ -36,12 +36,10 @@ TEST_CASE("Paths")
   REQUIRE(join_paths(MEDIA_DIR, "images", "image_fx") ==
           std::string{"media"} + pathSep + "images" + pathSep + "image_fx");
 
-#ifndef __APPLE__
   REQUIRE(DATA_DIR.to_string() == std::string{"data"});
   REQUIRE(FONTS_DIR.to_string() == join_paths("data", "fonts"));
   REQUIRE(IMAGE_FX_DIR.to_string() == join_paths("media", "images", "image_fx"));
   REQUIRE(SHADERS_DIR.to_string() == join_paths("resources", "data", "shaders"));
-#endif
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 

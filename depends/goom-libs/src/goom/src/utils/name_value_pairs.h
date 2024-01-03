@@ -1,7 +1,6 @@
 #pragma once
 
 #include "format_utils.h"
-#include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "strutils.h"
@@ -95,47 +94,23 @@ inline auto to_string(const bool& value) -> std::string
   return bool_to_string(value);
 }
 
-#ifdef __APPLE__
-template<>
-inline auto to_string([[maybe_unused]] const Pixel& value) -> std::string
-{
-  FailFast();
-}
-#else
 template<>
 inline auto to_string(const Pixel& value) -> std::string
 {
   return FMT::Rgba("{}", value);
 }
-#endif
 
-#ifdef __APPLE__
-template<>
-inline auto to_string([[maybe_unused]] const Point2dInt& value) -> std::string
-{
-  FailFast();
-}
-#else
 template<>
 inline auto to_string(const Point2dInt& value) -> std::string
 {
   return FMT::Pt("{}", value);
 }
-#endif
 
-#ifdef __APPLE__
-template<>
-inline auto to_string([[maybe_unused]] const Point2dFlt& value) -> std::string
-{
-  FailFast();
-}
-#else
 template<>
 inline auto to_string(const Point2dFlt& value) -> std::string
 {
   return FMT::Pt("{:.2f}", value);
 }
-#endif
 // NOLINTEND(readability-identifier-naming)
 
 } // namespace GOOM::UTILS

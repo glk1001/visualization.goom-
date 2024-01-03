@@ -69,15 +69,6 @@ jobs:
           sed -i 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
           cat ${{ env.BINARY_ADDONS_FILE }}
 
-      - name: Change Kodi Binary Repo for ${{ runner.os }}
-        if: ${{ runner.os == 'macOS' }}
-        shell: bash
-        run: |
-          cd ${{ vars.KODI_ROOT_DIR }}
-          sed -i '' 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
-          sed -i '' 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
-          cat ${{ env.BINARY_ADDONS_FILE }}
-
       - name: Install Clang-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         uses: egor-tensin/setup-clang@v1
