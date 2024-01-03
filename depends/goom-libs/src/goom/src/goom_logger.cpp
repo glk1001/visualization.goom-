@@ -37,8 +37,6 @@ GoomLogger::~GoomLogger() noexcept
   Expects(not m_doLogging);
 }
 
-#ifndef __APPLE__
-// TODO(glk) - Fix this when Apple clang get it's act together.
 auto GoomLogger::VLog(const LogLevel lvl,
                       const std::string& funcName,
                       const int lineNum,
@@ -50,7 +48,6 @@ auto GoomLogger::VLog(const LogLevel lvl,
   std::vformat_to(std::back_inserter(buffer), formatStr, args);
   Log(lvl, lineNum, funcName, std::string(buffer.data(), buffer.size()));
 }
-#endif
 
 auto GoomLogger::Log(const LogLevel lvl,
                      const int lineNum,
