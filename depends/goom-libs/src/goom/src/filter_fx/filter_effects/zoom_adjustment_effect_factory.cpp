@@ -59,8 +59,10 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
     case ZoomFilterMode::IMAGE_DISPLACEMENT_MODE:
       return std::make_shared<ImageZoomAdjustment>(resourcesDirectory, goomRand);
     case ZoomFilterMode::IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0:
-      return std::make_shared<FunctionOfFunction<ImageZoomAdjustment, Wave>>(
-          resourcesDirectory, Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, goomRand);
+      return std::make_shared<FunctionOfFunction<Wave, ImageZoomAdjustment>>(
+          Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, resourcesDirectory, goomRand);
+      //      return std::make_shared<FunctionOfFunction<ImageZoomAdjustment, Wave>>(
+      //          resourcesDirectory, Wave::Modes::SQ_DIST_ANGLE_EFFECT_MODE0, goomRand);
     case ZoomFilterMode::MOBIUS_MODE:
       return std::make_shared<Mobius>(goomRand);
     case ZoomFilterMode::NEWTON_MODE:
