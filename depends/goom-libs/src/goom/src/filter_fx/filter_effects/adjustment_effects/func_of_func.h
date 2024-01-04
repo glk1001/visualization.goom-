@@ -3,23 +3,20 @@
 #include "filter_fx/normalized_coords.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 #include "utils/name_value_pairs.h"
+
+#include <memory>
+#include <utility>
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-template<class T, class U>
 class FunctionOfFunction : public IZoomAdjustmentEffect
 {
+  using FuncEffect = std::unique_ptr<IZoomAdjustmentEffect>;
+
 public:
-  explicit FunctionOfFunction(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  template<typename FuncArg>
-  FunctionOfFunction(const FuncArg& funcArg, const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  template<typename FuncOfArg, typename FuncArg>
-  FunctionOfFunction(const FuncOfArg& funcOfArg,
-                     const FuncArg& funcArg,
-                     const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit FunctionOfFunction(FuncEffect&& funcOf, FuncEffect&& func) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -30,54 +27,33 @@ public:
       -> UTILS::NameValuePairs override;
 
 private:
-  T m_funcOf;
-  U m_func;
+  FuncEffect m_funcOf;
+  FuncEffect m_func;
 };
 
-template<class T, class U>
-inline FunctionOfFunction<T, U>::FunctionOfFunction(const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_funcOf{goomRand}, m_func{goomRand}
+inline FunctionOfFunction::FunctionOfFunction(FuncEffect&& funcOf, FuncEffect&& func) noexcept
+  : m_funcOf{std::move(funcOf)}, m_func{std::move(func)}
 {
 }
 
-template<class T, class U>
-template<typename FuncArg>
-inline FunctionOfFunction<T, U>::FunctionOfFunction(const FuncArg& funcArg,
-                                                    const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_funcOf{goomRand}, m_func{funcArg, goomRand}
+inline auto FunctionOfFunction::SetRandomParams() noexcept -> void
 {
+  m_func->SetRandomParams();
+  m_funcOf->SetRandomParams();
 }
 
-template<class T, class U>
-template<typename FuncOfArg, typename FuncArg>
-inline FunctionOfFunction<T, U>::FunctionOfFunction(const FuncOfArg& funcOfArg,
-                                                    const FuncArg& funcArg,
-                                                    const UTILS::MATH::IGoomRand& goomRand) noexcept
-  : m_funcOf{funcOfArg, goomRand}, m_func{funcArg, goomRand}
+inline auto FunctionOfFunction::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
+    -> Vec2dFlt
 {
+  const auto funcCoords = m_func->GetZoomAdjustment(coords);
+  return m_funcOf->GetZoomAdjustment({funcCoords.x, funcCoords.y});
 }
 
-template<class T, class U>
-inline auto FunctionOfFunction<T, U>::SetRandomParams() noexcept -> void
-{
-  m_func.SetRandomParams();
-  m_funcOf.SetRandomParams();
-}
-
-template<class T, class U>
-inline auto FunctionOfFunction<T, U>::GetZoomAdjustment(
-    const NormalizedCoords& coords) const noexcept -> Vec2dFlt
-{
-  const auto funcCoords = m_func.GetZoomAdjustment(coords);
-  return m_funcOf.GetZoomAdjustment({funcCoords.x, funcCoords.y});
-}
-
-template<class T, class U>
-inline auto FunctionOfFunction<T, U>::GetZoomAdjustmentEffectNameValueParams() const noexcept
+inline auto FunctionOfFunction::GetZoomAdjustmentEffectNameValueParams() const noexcept
     -> UTILS::NameValuePairs
 {
   // TODO(glk) - Incorporate m_funcOf.
-  return m_func.GetZoomAdjustmentEffectNameValueParams();
+  return m_func->GetZoomAdjustmentEffectNameValueParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS
