@@ -222,8 +222,6 @@ auto Hypercos::GetVelocity(const NormalizedCoords& coords,
       xVal = std::cos(PI * std::sin(frequencyFactorToUse.y * coords.GetY()));
       yVal = std::sin(PI * std::cos(frequencyFactorToUse.x * coords.GetX()));
       break;
-    default:
-      FailFast();
   }
 
   //  xVal = std::clamp(std::tan(hypercosFreqY * xVal), -1.0, 1.0);

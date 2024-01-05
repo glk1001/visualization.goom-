@@ -6,10 +6,12 @@
 //
 // DO NOT EDIT!!
 
+#include <cstdint>
+
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-enum class ColorMapName
+enum class ColorMapName : int16_t
 {
   _NULL = -1, // NOLINT: Need special name here
   ACCENT, // = Accent_8
@@ -1699,7 +1701,8 @@ enum class ColorMapName
   YLORRD_8,
   YLORRD_9,
   ZISSOU_5,
-  _num,
 };
+
+inline constexpr auto NUM_COLOR_MAP_ENUMS = 1687;
 
 } // namespace GOOM::COLOR::COLOR_DATA

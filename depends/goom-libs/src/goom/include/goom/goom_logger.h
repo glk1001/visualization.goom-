@@ -22,7 +22,6 @@ public:
     INFO,
     WARN,
     ERR, // would 'ERROR' but MSVC 17.5 chokes
-    _num // unused, and marks the enum end
   };
   using HandlerFunc = std::function<void(const LogLevel, const std::string&)>;
 

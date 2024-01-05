@@ -49,7 +49,6 @@ public:
     WAVE_COT_EFFECT,
     WAVE_COT_SIN_EFFECT,
     WAVE_COT_COS_EFFECT,
-    _num // unused, and marks the enum end
   };
   struct Params
   {

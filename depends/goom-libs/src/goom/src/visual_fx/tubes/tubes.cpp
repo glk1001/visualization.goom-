@@ -87,7 +87,6 @@ enum class LowColorTypes : UnderlyingEnumType
   TRUE_LOW_COLOR,
   MAIN_COLOR,
   LIGHTENED_LOW_COLOR,
-  _num // unused, and marks the enum end
 };
 static constexpr auto MIN_LOW_COLOR_TYPE_TIME = 100U;
 static constexpr auto MAX_LOW_COLOR_TYPE_TIME = 1000U;
@@ -974,8 +973,6 @@ auto ShapeColorizer::GetColors(const LowColorTypes lowColorType,
     case ColorMapMixMode::STRIPED_SHAPES_AND_CIRCLES:
     case ColorMapMixMode::SHAPES_AND_CIRCLES:
       return GetShapesAndCirclesColors(lowColorType, circleNum, shape, brightness);
-    default:
-      FailFast();
   }
 }
 

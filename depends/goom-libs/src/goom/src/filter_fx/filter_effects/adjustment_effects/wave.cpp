@@ -14,7 +14,9 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 
-static constexpr auto DEFAULT_WAVE_EFFECT  = Wave::WaveEffect::WAVE_SIN_EFFECT;
+using enum Wave::WaveEffect;
+
+static constexpr auto DEFAULT_WAVE_EFFECT  = WAVE_SIN_EFFECT;
 static constexpr auto DEFAULT_ANGLE_EFFECT = Wave::AngleEffect::SQ_DIST;
 
 static constexpr auto DEFAULT_SQ_DIST_POWER = 1.0F;
@@ -84,15 +86,15 @@ Wave::Wave(const Modes mode, const IGoomRand& goomRand)
     m_weightedEffects{
       *m_goomRand,
       {
-        {    WaveEffect::WAVE_SIN_EFFECT,      WAVE_SIN_EFFECT_WEIGHT},
-        {    WaveEffect::WAVE_COS_EFFECT,      WAVE_COS_EFFECT_WEIGHT},
-        {WaveEffect::WAVE_SIN_COS_EFFECT,  WAVE_SIN_COS_EFFECT_WEIGHT},
-        {    WaveEffect::WAVE_TAN_EFFECT,      WAVE_TAN_EFFECT_WEIGHT},
-        {WaveEffect::WAVE_TAN_SIN_EFFECT,  WAVE_TAN_SIN_EFFECT_WEIGHT},
-        {WaveEffect::WAVE_TAN_COS_EFFECT, CWAVE_TAN_COS_EFFECT_WEIGHT},
-        {    WaveEffect::WAVE_COT_EFFECT,      WAVE_COT_EFFECT_WEIGHT},
-        {WaveEffect::WAVE_COT_SIN_EFFECT,  WAVE_COT_SIN_EFFECT_WEIGHT},
-        {WaveEffect::WAVE_COT_COS_EFFECT,  WAVE_COT_COS_EFFECT_WEIGHT},
+        {    WAVE_SIN_EFFECT,      WAVE_SIN_EFFECT_WEIGHT},
+        {    WAVE_COS_EFFECT,      WAVE_COS_EFFECT_WEIGHT},
+        {WAVE_SIN_COS_EFFECT,  WAVE_SIN_COS_EFFECT_WEIGHT},
+        {    WAVE_TAN_EFFECT,      WAVE_TAN_EFFECT_WEIGHT},
+        {WAVE_TAN_SIN_EFFECT,  WAVE_TAN_SIN_EFFECT_WEIGHT},
+        {WAVE_TAN_COS_EFFECT, CWAVE_TAN_COS_EFFECT_WEIGHT},
+        {    WAVE_COT_EFFECT,      WAVE_COT_EFFECT_WEIGHT},
+        {WAVE_COT_SIN_EFFECT,  WAVE_COT_SIN_EFFECT_WEIGHT},
+        {WAVE_COT_COS_EFFECT,  WAVE_COT_COS_EFFECT_WEIGHT},
       }
     },
     m_params{DEFAULT_WAVE_EFFECT,
@@ -206,17 +208,17 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
   const auto useModifiedATanAngle    = m_goomRand->ProbabilityOf(PROB_USE_MODIFIED_ATAN_ANGLE);
   const auto modifiedATanAngleFactor = m_goomRand->GetRandInRange(MODIFIED_ATAN_ANGLE_FACTOR_RANGE);
 
-  SetParams({xWaveEffect,
-             yWaveEffect,
-             waveModeSettings.angleEffect,
-             sqDistPower,
-             freqFactor,
-             amplitude,
-             periodicFactor,
-             reducerCoeff,
-             spiralRotateBaseAngle,
-             useModifiedATanAngle,
-             modifiedATanAngleFactor});
+  SetParams({.xWaveEffect             = xWaveEffect,
+             .yWaveEffect             = yWaveEffect,
+             .angleEffect             = waveModeSettings.angleEffect,
+             .sqDistPower             = sqDistPower,
+             .freqFactor              = freqFactor,
+             .amplitude               = amplitude,
+             .periodicFactor          = periodicFactor,
+             .reducerCoeff            = reducerCoeff,
+             .spiralRotateBaseAngle   = spiralRotateBaseAngle,
+             .useModifiedATanAngle    = useModifiedATanAngle,
+             .modifiedATanAngleFactor = modifiedATanAngleFactor});
 }
 
 inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
@@ -225,22 +227,20 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
 {
   switch (xWaveEffect)
   {
-    case WaveEffect::WAVE_SIN_EFFECT:
-    case WaveEffect::WAVE_COS_EFFECT:
-    case WaveEffect::WAVE_SIN_COS_EFFECT:
+    case WAVE_SIN_EFFECT:
+    case WAVE_COS_EFFECT:
+    case WAVE_SIN_COS_EFFECT:
       return m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE);
-    case WaveEffect::WAVE_TAN_EFFECT:
-    case WaveEffect::WAVE_COT_EFFECT:
+    case WAVE_TAN_EFFECT:
+    case WAVE_COT_EFFECT:
       return m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE);
-    case WaveEffect::WAVE_TAN_SIN_EFFECT:
-    case WaveEffect::WAVE_TAN_COS_EFFECT:
-    case WaveEffect::WAVE_COT_SIN_EFFECT:
-    case WaveEffect::WAVE_COT_COS_EFFECT:
+    case WAVE_TAN_SIN_EFFECT:
+    case WAVE_TAN_COS_EFFECT:
+    case WAVE_COT_SIN_EFFECT:
+    case WAVE_COT_COS_EFFECT:
       return std::lerp(m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE),
                        m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE),
                        periodicFactor);
-    default:
-      FailFast();
   }
 }
 
@@ -252,19 +252,17 @@ inline auto Wave::GetPeriodicFactor(
 {
   if (m_goomRand->ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
   {
-    return xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT ? DEFAULT_SIN_COS_PERIODIC_FACTOR
-                                                          : DEFAULT_PERIODIC_FACTOR;
+    return xWaveEffect == WAVE_SIN_COS_EFFECT ? DEFAULT_SIN_COS_PERIODIC_FACTOR
+                                              : DEFAULT_PERIODIC_FACTOR;
   }
   if (m_goomRand->ProbabilityOf(PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT))
   {
-    return m_goomRand->GetRandInRange(xWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                          ? sinCosPeriodicFactorRange
-                                          : periodicFactorRange);
+    return m_goomRand->GetRandInRange(xWaveEffect == WAVE_SIN_COS_EFFECT ? sinCosPeriodicFactorRange
+                                                                         : periodicFactorRange);
   }
 
-  return m_goomRand->GetRandInRange(yWaveEffect == WaveEffect::WAVE_SIN_COS_EFFECT
-                                        ? sinCosPeriodicFactorRange
-                                        : periodicFactorRange);
+  return m_goomRand->GetRandInRange(yWaveEffect == WAVE_SIN_COS_EFFECT ? sinCosPeriodicFactorRange
+                                                                       : periodicFactorRange);
 }
 
 auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
@@ -273,28 +271,26 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
 {
   switch (waveEffect)
   {
-    case WaveEffect::WAVE_SIN_EFFECT:
+    case WAVE_SIN_EFFECT:
       return periodicFactor * std::sin(angle);
-    case WaveEffect::WAVE_COS_EFFECT:
+    case WAVE_COS_EFFECT:
       return periodicFactor * std::cos(angle);
-    case WaveEffect::WAVE_SIN_COS_EFFECT:
+    case WAVE_SIN_COS_EFFECT:
       return periodicFactor * std::lerp(std::sin(angle), std::cos(angle), periodicFactor);
-    case WaveEffect::WAVE_TAN_EFFECT:
+    case WAVE_TAN_EFFECT:
       return periodicFactor * std::tan(angle);
-    case WaveEffect::WAVE_TAN_SIN_EFFECT:
+    case WAVE_TAN_SIN_EFFECT:
       return periodicFactor * std::lerp(std::tan(angle), std::sin(angle), periodicFactor);
-    case WaveEffect::WAVE_TAN_COS_EFFECT:
+    case WAVE_TAN_COS_EFFECT:
       return periodicFactor * std::lerp(std::tan(angle), std::cos(angle), periodicFactor);
-    case WaveEffect::WAVE_COT_EFFECT:
+    case WAVE_COT_EFFECT:
       return periodicFactor * std::tan(UTILS::MATH::HALF_PI - angle);
-    case WaveEffect::WAVE_COT_SIN_EFFECT:
+    case WAVE_COT_SIN_EFFECT:
       return periodicFactor *
              std::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::sin(angle), periodicFactor);
-    case WaveEffect::WAVE_COT_COS_EFFECT:
+    case WAVE_COT_COS_EFFECT:
       return periodicFactor *
              std::lerp(std::tan(UTILS::MATH::HALF_PI - angle), std::cos(angle), periodicFactor);
-    default:
-      FailFast();
   }
 }
 

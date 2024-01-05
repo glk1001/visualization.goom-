@@ -330,8 +330,6 @@ inline auto StarType::GetMainColorMapName() const noexcept -> ColorMapName
       return GetFixedMainColorMapName();
     case ColorMapMode::ALL_MAPS_RANDOM:
       return ColorMapName::_NULL;
-    default:
-      FailFast();
   }
 }
 
@@ -345,8 +343,6 @@ inline auto StarType::GetLowColorMapName() const noexcept -> ColorMapName
       return GetFixedLowColorMapName();
     case ColorMapMode::ALL_MAPS_RANDOM:
       return ColorMapName::_NULL;
-    default:
-      FailFast();
   }
 }
 

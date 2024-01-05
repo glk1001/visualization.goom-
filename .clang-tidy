@@ -65,7 +65,6 @@ CheckOptions:
   - { key: readability-identifier-naming.PublicMemberPrefix,                value: '' }
   - { key: readability-identifier-naming.ScopedEnumConstantCase,            value: UPPER_CASE }
   - { key: readability-identifier-naming.ScopedEnumConstantPrefix,          value: '' }
-  - { key: readability-identifier-naming.ScopedEnumConstantIgnoredRegexp,   value: '\_num' }
   - { key: readability-identifier-naming.StaticConstantCase,                value: UPPER_CASE }
   - { key: readability-identifier-naming.StaticConstantPrefix,              value: 's_' }
   - { key: readability-identifier-naming.StaticVariableCase,                value: camelBack }

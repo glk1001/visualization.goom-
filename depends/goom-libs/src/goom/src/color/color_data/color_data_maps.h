@@ -22,7 +22,7 @@ struct ColorNamePair
   const std::vector<vivid::srgb_t>* vividArray;
 };
 
-extern const std::array<ColorNamePair, 1687> ALL_MAPS;
+extern const std::array<ColorNamePair, NUM_COLOR_MAP_ENUMS> ALL_MAPS;
 
 extern const std::vector<ColorMapName> PERC_UNIF_SEQUENTIAL_MAPS;
 extern const std::vector<ColorMapName> SEQUENTIAL_MAPS;

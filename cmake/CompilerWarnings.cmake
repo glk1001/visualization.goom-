@@ -35,6 +35,7 @@ function(vis_goom_pp_get_project_warnings WARNINGS_AS_ERRORS compiler_warnings)
         # Disabled:
         /wd4715 # turn off: not all control paths return a value. Not good with switches
         /wd4646 # turn off: function declared with 'noreturn' has non-void return type
+        /wd4701 # turn off: potentially uninitialized local variable. Seems broken
         )
 
     set(CLANG_WARNINGS

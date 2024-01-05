@@ -34,7 +34,6 @@ public:
     SINGLE_COLORS,
     SINE_MIX_COLORS,
     SINE_MAP_COLORS,
-    _num // unused, and marks the enum end
   };
 
   IfsDancersFx() noexcept = delete;

@@ -183,17 +183,19 @@ auto LowDensityBlurrer::GetPointColor(const IfsPoint& point,
   Pixel pointColor{};
   switch (m_colorMode)
   {
-    case BlurrerColorMode::SINGLE_NO_NEIGHBOURS:
+    using enum BlurrerColorMode;
+
+    case SINGLE_NO_NEIGHBOURS:
       pointColor = m_singleColor;
       break;
-    case BlurrerColorMode::SINGLE_WITH_NEIGHBOURS:
+    case SINGLE_WITH_NEIGHBOURS:
       pointColor = ColorMaps::GetColorMix(
           m_singleColor, GetColorAverage(neighbours.size(), neighbours), m_neighbourMixFactor);
       break;
-    case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
+    case SIMI_NO_NEIGHBOURS:
       pointColor = point.GetSimi()->GetColor();
       break;
-    case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
+    case SIMI_WITH_NEIGHBOURS:
     {
       const auto simiColor = point.GetSimi()->GetColor();
       const auto mixedPointColor =
@@ -201,10 +203,10 @@ auto LowDensityBlurrer::GetPointColor(const IfsPoint& point,
       pointColor = mixedPointColor;
       break;
     }
-    case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
+    case SMOOTH_NO_NEIGHBOURS:
       pointColor = point.GetSimi()->GetColorMap().GetColor(t);
       break;
-    case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
+    case SMOOTH_WITH_NEIGHBOURS:
     {
       const auto simiSmoothColor = point.GetSimi()->GetColorMap().GetColor(t);
       const auto mixedPointColor =
@@ -212,8 +214,6 @@ auto LowDensityBlurrer::GetPointColor(const IfsPoint& point,
       pointColor = mixedPointColor;
       break;
     }
-    default:
-      break;
   }
 
   return m_colorAdjust.GetAdjustment(brightness * logAlpha, pointColor);
@@ -223,31 +223,23 @@ inline auto LowDensityBlurrer::GetBrightness() const noexcept -> float
 {
   static constexpr auto NO_NEIGHBOUR_BRIGHTNESS = 1.5F;
   static constexpr auto NEIGHBOUR_BRIGHTNESS    = 3.1F;
+  static constexpr auto BITMAP_BRIGHTNESS_CUT   = 0.5F;
 
-  float brightness; // NOLINT(cppcoreguidelines-init-variables)
+  const auto brightness = m_currentImageBitmap == nullptr ? 1.0F : BITMAP_BRIGHTNESS_CUT;
+
   switch (m_colorMode)
   {
-    case BlurrerColorMode::SINGLE_NO_NEIGHBOURS:
-    case BlurrerColorMode::SIMI_NO_NEIGHBOURS:
-      brightness = NO_NEIGHBOUR_BRIGHTNESS;
-      break;
-    case BlurrerColorMode::SINGLE_WITH_NEIGHBOURS:
-    case BlurrerColorMode::SIMI_WITH_NEIGHBOURS:
-    case BlurrerColorMode::SMOOTH_NO_NEIGHBOURS:
-    case BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS:
-      brightness = NEIGHBOUR_BRIGHTNESS;
-      break;
-    default:
-      FailFast();
-  }
+    using enum BlurrerColorMode;
 
-  if (nullptr != m_currentImageBitmap)
-  {
-    static constexpr auto BITMAP_BRIGHTNESS_CUT = 0.5F;
-    brightness *= BITMAP_BRIGHTNESS_CUT;
+    case SINGLE_NO_NEIGHBOURS:
+    case SIMI_NO_NEIGHBOURS:
+      return brightness * NO_NEIGHBOUR_BRIGHTNESS;
+    case SINGLE_WITH_NEIGHBOURS:
+    case SIMI_WITH_NEIGHBOURS:
+    case SMOOTH_NO_NEIGHBOURS:
+    case SMOOTH_WITH_NEIGHBOURS:
+      return brightness * NEIGHBOUR_BRIGHTNESS;
   }
-
-  return brightness;
 }
 
 inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,

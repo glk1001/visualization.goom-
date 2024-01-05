@@ -129,7 +129,6 @@ private:
     NUM1,
     NUM2,
     NUM3,
-    _num // unused, and marks the enum end
   };
   UTILS::MATH::Weights<CentreNums> m_centreWeights;
   CentreType m_centreAttributes{};

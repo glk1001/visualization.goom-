@@ -69,7 +69,6 @@ private:
     NUM1,
     NUM2,
     NUM3,
-    _num // unused, and marks the enum end
   };
   static constexpr size_t NUM_TENTACLE_DRIVERS = NUM<Drivers>;
   Weights<Drivers> m_driverWeights;

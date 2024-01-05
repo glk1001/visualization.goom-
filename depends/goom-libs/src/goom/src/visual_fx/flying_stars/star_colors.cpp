@@ -44,8 +44,6 @@ auto StarColors::GetMixedColors(const MixedColorsParams& mixedColorsParams) cons
     case ColorMode::REVERSE_MIX_COLORS:
       starColors = GetReversedMixColors(mixedColorsParams.lengthT);
       break;
-    default:
-      FailFast();
   }
 
   return GetFinalMixedColors(mixedColorsParams, starColors);

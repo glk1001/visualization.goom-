@@ -227,15 +227,29 @@ inline auto Weights<E>::GetSumOfWeights() const noexcept -> float
 template<class E>
 inline auto Weights<E>::GetRandomWeighted() const noexcept -> E
 {
-  return GetRandomWeighted(E::_num);
+  Expects(NUM<E> == m_weightData.weightArray.size());
+
+  auto randVal = m_goomRand->GetRandInRange(0.0F, m_sumOfWeights);
+
+  for (auto i = 0U; i < m_weightData.weightArray.size(); ++i)
+  {
+    if (randVal < m_weightData.weightArray[i])
+    {
+      // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange): Seems broken
+      return static_cast<E>(i);
+    }
+    randVal -= m_weightData.weightArray[i];
+  }
+
+  FailFast();
 }
 
 template<class E>
 inline auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
 {
-  const auto sumOfWeights =
-      (given == E::_num) ? m_sumOfWeights
-                         : (m_sumOfWeights - m_weightData.weightArray[static_cast<size_t>(given)]);
+  Expects(NUM<E> == m_weightData.weightArray.size());
+
+  const auto sumOfWeights = m_sumOfWeights - m_weightData.weightArray[static_cast<size_t>(given)];
 
   auto randVal = m_goomRand->GetRandInRange(0.0F, sumOfWeights);
 

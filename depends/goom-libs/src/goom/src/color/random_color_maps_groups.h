@@ -35,7 +35,6 @@ public:
     COLD_STANDARD_MAPS,
     PASTEL_STANDARD_MAPS,
     WES_ANDERSON_MAPS,
-    _num // unused, and marks the enum end
   };
 
   [[nodiscard]] auto GetWeightedRandomColorMapsForGroup(Groups randomColorMapsGroup) const noexcept

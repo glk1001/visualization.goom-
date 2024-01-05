@@ -36,7 +36,6 @@ public:
     ONE_MAP_PER_ANGLE,
     ONE_MAP_FOR_ALL_ANGLES,
     ALL_MAPS_RANDOM,
-    _num // unused, and marks the enum end
   };
 
   [[nodiscard]] virtual auto GetStarColorsMaker() const noexcept -> const StarColorsMaker& = 0;

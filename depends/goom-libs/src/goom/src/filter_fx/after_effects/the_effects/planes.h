@@ -46,7 +46,6 @@ public:
     //    COS_TAN_CURL_SWIRL,
     SIN_OF_COS_SWIRL,
     COS_OF_SIN_SWIRL,
-    _num // unused, and marks the enum end
   };
   struct PlaneEffects
   {
@@ -82,7 +81,6 @@ private:
     VERY_LARGE_EFFECTS,
     POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS,
     POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS,
-    _num // unused, and marks the enum end
   };
   UTILS::MATH::Weights<PlaneEffectEvents> m_planeEffectWeights;
 

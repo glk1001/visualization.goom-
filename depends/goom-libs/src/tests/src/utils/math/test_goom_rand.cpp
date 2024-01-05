@@ -40,7 +40,6 @@ enum class Events : UnderlyingEnumType
   EVENT2,
   EVENT3,
   EVENT4,
-  _num // unused, and marks the enum end
 };
 using EventCounts             = std::array<uint32_t, NUM<Events>>;
 constexpr auto PREVIOUS_EVENT = Events::EVENT3;

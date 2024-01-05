@@ -46,7 +46,6 @@ private:
     COLOR_MATCHED_SET6,
     COLOR_MATCHED_SET7,
     COLOR_MATCHED_SET8,
-    _num // unused, and marks the enum end
   };
   using ColorMatchedSetsMap = UTILS::EnumMap<ColorMatchedSets, ColorMatchedSet>;
   [[nodiscard]] static auto MakeColorMatchedSetsMap(const UTILS::MATH::IGoomRand& goomRand) noexcept

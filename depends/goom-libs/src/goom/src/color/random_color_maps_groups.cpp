@@ -477,8 +477,6 @@ auto RandomColorMapsGroups::GetWeightedRandomColorMapsForGroup(
       return IMPL::GetPastelStandardMaps(*m_goomRand);
     case Groups::WES_ANDERSON_MAPS:
       return IMPL::GetWesAndersonMaps(*m_goomRand);
-    default:
-      FailFast();
   }
 }
 

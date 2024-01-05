@@ -131,8 +131,6 @@ auto GoomAllVisualFx::GetNextPixelBlenderParams() const noexcept -> IVisualFx::P
       return {true};
     case GlobalBlendType::SYNC_RANDOM:
       return {false, RandomPixelBlender::GetRandomPixelBlendType(*m_goomRand)};
-    default:
-      FailFast();
   }
 }
 

@@ -14,7 +14,6 @@ enum class AfterEffectsTypes : UnderlyingEnumType
   ROTATION,
   TAN_EFFECT,
   XY_LERP_EFFECT,
-  _num // unused, and marks the enum end
 };
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

@@ -31,7 +31,7 @@ cmake -DADDONS_TO_BUILD=visualization.goom-pp ^
       -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
       -DCMAKE_INSTALL_PREFIX=%VIS_GOOM_PARENT%\kodi\kodi-build\addons ^
       -DPACKAGE_ZIP=1 ^
-      -DBUILD_ARGS_ext="-DENABLE_TESTING=1;-DUSE_MAGIC_ENUM=0" ^
+      -DBUILD_ARGS_ext="-DENABLE_TESTING=1" ^
       %VIS_GOOM_PARENT%\kodi\cmake\addons
 
 POPD

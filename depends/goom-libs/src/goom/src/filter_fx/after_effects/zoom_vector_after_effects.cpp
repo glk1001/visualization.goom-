@@ -126,8 +126,6 @@ auto ZoomVectorAfterEffects::SetRandomHypercosOverlayEffects() noexcept -> void
     case HypercosOverlayMode::MODE3:
       m_afterEffects.GetHypercos().SetMode3RandomParams();
       break;
-    default:
-      FailFast();
   }
 }
 

@@ -47,7 +47,6 @@ public:
     COS_RECTANGULAR,
     SIN_OF_COS_SWIRL,
     COS_OF_SIN_SWIRL,
-    _num // unused, and marks the enum end
   };
 
   struct Params

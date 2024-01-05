@@ -148,8 +148,6 @@ inline auto CircleParamsBuilder::GetCircleCentreStarts(const float mainCircleRad
       return GetReducingRadiusCircleCentreStarts(mainCircleRadius);
     case CircleStartModes::FOUR_CORNERED_IN_MAIN:
       return GetFourCornersCircleCentreStarts(mainCircleRadius);
-    default:
-      FailFast();
   }
 }
 

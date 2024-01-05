@@ -27,7 +27,6 @@ public:
     MIX_COLORS,
     REVERSE_MIX_COLORS,
     SINE_MIX_COLORS,
-    _num // unused, and marks the enum end
   };
   struct ColorProperties
   {

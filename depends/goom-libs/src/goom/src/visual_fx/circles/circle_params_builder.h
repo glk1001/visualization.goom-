@@ -21,7 +21,6 @@ public:
     SAME_RADIUS,
     REDUCING_RADIUS,
     FOUR_CORNERED_IN_MAIN,
-    _num // unused, and marks the enum end
   };
   auto SetCircleStartMode(CircleStartModes mode) noexcept -> void;
 
@@ -29,7 +28,6 @@ public:
   {
     FOUR_CORNERS,
     SIMILAR_TARGETS,
-    _num // unused, and marks the enum end
   };
   auto SetCircleTargetMode(CircleTargetModes mode) noexcept -> void;
 

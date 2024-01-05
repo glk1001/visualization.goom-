@@ -159,8 +159,6 @@ inline auto LineMorph::GetFreshLine(const LineType lineType, const float linePar
           AudioSamples::AUDIO_SAMPLE_LEN,
           {m_goomInfo->GetDimensions().GetWidth(), m_goomInfo->GetDimensions().GetHeight()},
           lineParam);
-    default:
-      FailFast();
   }
 }
 

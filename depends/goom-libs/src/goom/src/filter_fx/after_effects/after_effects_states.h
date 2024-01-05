@@ -20,7 +20,6 @@ enum class HypercosOverlayMode : UnderlyingEnumType
   MODE1,
   MODE2,
   MODE3,
-  _num // unused, and marks the enum end
 };
 
 class AfterEffectsStates

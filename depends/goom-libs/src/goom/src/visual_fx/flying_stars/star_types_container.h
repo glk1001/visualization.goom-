@@ -58,7 +58,6 @@ private:
     FIREWORKS,
     RAIN,
     FOUNTAIN,
-    _num // unused, and marks the enum end
   };
   static_assert(NUM_STAR_TYPES == UTILS::NUM<AvailableStarTypes>);
   std::array<std::unique_ptr<StarType>, NUM_STAR_TYPES> m_starTypesList;
