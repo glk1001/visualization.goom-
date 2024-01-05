@@ -85,8 +85,6 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
       return std::make_shared<Wave>(Wave::Modes::ATAN_ANGLE_EFFECT_MODE1, goomRand);
     case ZoomFilterMode::Y_ONLY_MODE:
       return std::make_shared<YOnly>(goomRand);
-    default:
-      FailFast();
   }
 }
 

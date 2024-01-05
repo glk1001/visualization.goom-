@@ -73,8 +73,6 @@ auto LineDrawerManager::SwitchLineDrawers(const SwitchLineDrawerType forceType) 
           MIN_MAX_MOVING_NOISE_RADIUS, MIN_MAX_NUM_MOVING_NOISE_PIXELS);
       break;
     }
-    default:
-      FailFast();
   }
 }
 

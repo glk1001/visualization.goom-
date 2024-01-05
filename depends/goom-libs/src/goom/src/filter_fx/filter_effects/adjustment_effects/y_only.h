@@ -31,7 +31,6 @@ public:
     X_SIN_Y_COS,
     X_COS_Y_SIN,
     X_COS_Y_COS,
-    _num // unused, and marks the enum end
   };
   struct YOnlyXYEffect
   {

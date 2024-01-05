@@ -49,7 +49,6 @@ private:
     BLACK_LINES,
     BRIGHT_LINES,
     DIFFERENT_COLORS,
-    _num // unused, and marks the enum end
   };
   DecorationType m_decorationType;
   Pixel m_differentColor = BLACK_PIXEL;

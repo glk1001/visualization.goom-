@@ -37,6 +37,7 @@ namespace GOOM::COLOR
 {
 
 using COLOR_DATA::ColorMapName;
+using COLOR_DATA::NUM_COLOR_MAP_ENUMS;
 using UTILS::NUM;
 
 class ColorMapSharedPtrWrapper : public IColorMap
@@ -228,7 +229,7 @@ inline auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMa
 
 auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>
 {
-  static_assert(NUM<ColorMapName> == COLOR_DATA::ALL_MAPS.size(), "Invalid allMaps size.");
+  static_assert(NUM_COLOR_MAP_ENUMS == COLOR_DATA::ALL_MAPS.size(), "Invalid allMaps size.");
 
   auto preBuiltColorMaps = std::vector<PrebuiltColorMap>{};
   preBuiltColorMaps.reserve(COLOR_DATA::ALL_MAPS.size());

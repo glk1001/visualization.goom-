@@ -4,26 +4,11 @@
 #include "color_maps_base.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "utils/enum_utils.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <vector>
-
-#ifndef NO_MAGIC_ENUM_AVAILABLE
-#include <magic_enum.hpp>
-#endif
-
-#ifndef NO_MAGIC_ENUM_AVAILABLE
-template<>
-struct magic_enum::customize::enum_range<GOOM::COLOR::COLOR_DATA::ColorMapName>
-{
-  static constexpr int32_t min = -1; // NOLINT(readability-identifier-naming)
-  // NOLINTNEXTLINE(readability-identifier-naming)
-  static constexpr int32_t max = GOOM::UTILS::NUM<GOOM::COLOR::COLOR_DATA::ColorMapName>;
-};
-#endif
 
 namespace GOOM::COLOR
 {
@@ -85,7 +70,6 @@ enum class ColorMapGroup : UnderlyingEnumType
   HEAT,
   COLD,
   PASTEL,
-  _num // unused, and marks the enum end
 };
 
 using ColorMapSharedPtr = std::shared_ptr<const IColorMap>;

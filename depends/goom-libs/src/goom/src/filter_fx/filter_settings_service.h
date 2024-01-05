@@ -54,7 +54,6 @@ enum class ZoomFilterMode : UnderlyingEnumType
   WAVE_ATAN_ANGLE_EFFECT_MODE0,
   WAVE_ATAN_ANGLE_EFFECT_MODE1,
   Y_ONLY_MODE,
-  _num // unused, and marks the enum end
 };
 
 class FilterSettingsService
@@ -178,7 +177,6 @@ private:
     TOP_LEFT_QUARTER_MID_POINT,
     BOTTOM_RIGHT_QUARTER_MID_POINT,
     TOP_RIGHT_QUARTER_MID_POINT,
-    _num // unused, and marks the enum end
   };
   static constexpr auto BOTTOM_MID_POINT_WEIGHT               = 03.0F;
   static constexpr auto TOP_MID_POINT_WEIGHT                  = 03.0F;

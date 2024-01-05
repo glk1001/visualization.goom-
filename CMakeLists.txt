@@ -9,7 +9,6 @@ set(GOOM_TARGET_NAME "visualization.goom-pp")
 set(GOOM_ADDON_PREFIX "GOOM")
 
 option(ENABLE_TESTING "Enable unit testing" OFF)
-option(USE_MAGIC_ENUM "Use magic enum" OFF)
 option(NO_SAN "Don't use sanitizers" ON)
 
 set(GOOM_LIBS_TARGET_NAME "goom")

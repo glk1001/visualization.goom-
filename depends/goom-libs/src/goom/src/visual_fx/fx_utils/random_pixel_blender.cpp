@@ -114,8 +114,6 @@ auto RandomPixelBlender::GetNextPixelBlendFunc() const noexcept -> PixelBlendFun
       return GetAlphaPixelBlendFunc();
     case PixelBlendType::ALPHA_AND_ADD:
       return GetAlphaAndAddPixelBlendFunc();
-    default:
-      FailFast();
   }
 }
 

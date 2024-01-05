@@ -178,8 +178,6 @@ inline auto DotDrawer::GetDotMixedColor(const Point2dInt& bitmapPoint,
                               m_differentColor);
     case DecorationType::BRIGHT_LINES:
       return GetBrighterColor(m_globalBrightnessFactor * DECORATION_SPECIAL_BRIGHTNESS, mixedColor);
-    default:
-      FailFast();
   }
 }
 

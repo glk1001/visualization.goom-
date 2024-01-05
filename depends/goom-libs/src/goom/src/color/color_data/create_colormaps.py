@@ -236,20 +236,23 @@ def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
         f.write('\n')
         f.write(f'{GENERATED_CODE_WARNING}\n')
         f.write('\n')
+        f.write('#include <cstdint>\n')
+        f.write('\n')
         write_namespace_begin(f)
         f.write('\n')
-        f.write(f'enum class {MAPS_ENUM_NAME}\n')
+        f.write(f'enum class {MAPS_ENUM_NAME} : int16_t\n')
         f.write('{\n')
         f.write('  _NULL = -1, // NOLINT: Need special name here\n')
         for m in maps:
             f.write(f'  {get_upper_cpp_name(m)},' + get_enum_line_end(m, dupl))
-        f.write('  _num,\n')
         f.write('};\n')
+        f.write('\n')
+        f.write(f'inline constexpr auto NUM_COLOR_MAP_ENUMS = {len(maps)};\n')
         f.write('\n')
         write_namespace_end(f)
 
 
-def write_color_data_maps_header(color_map_grps: Dict[str, List[str]], num_maps: int):
+def write_color_data_maps_header(color_map_grps: Dict[str, List[str]]):
     with open(f'{INCLUDE_DIR}/{COLOR_DATA_MAPS_H}', 'w') as f:
         f.write('#pragma once\n')
         f.write('\n')
@@ -270,7 +273,7 @@ def write_color_data_maps_header(color_map_grps: Dict[str, List[str]], num_maps:
         f.write('  const std::vector<vivid::srgb_t>* vividArray;\n')
         f.write('};\n')
         f.write('\n')
-        f.write(f'extern const std::array<ColorNamePair, {num_maps}> ALL_MAPS;\n')
+        f.write(f'extern const std::array<ColorNamePair, NUM_COLOR_MAP_ENUMS> ALL_MAPS;\n')
         f.write('\n')
         for map_nm in color_map_grps:
             f.write(f'extern const std::vector<{MAPS_ENUM_NAME}>'
@@ -302,7 +305,7 @@ def write_color_data_maps_cpp(color_map_grps: Dict[str, List[str]], used_mps: Li
         write_namespace_begin(f)
         f.write('\n')
         f.write('// clang-format off\n')
-        f.write(f'const std::array<ColorNamePair, {len(used_mps)}> ALL_MAPS{{{{\n')
+        f.write(f'const std::array<ColorNamePair, NUM_COLOR_MAP_ENUMS> ALL_MAPS{{{{\n')
         for m in used_mps:
             f.write(f'  {{{MAPS_ENUM_NAME}::{get_upper_cpp_name(m)},'
                     f' &{COLOR_DATA_NAMESPACE}::{get_upper_cpp_name(m)}}},'
@@ -474,7 +477,7 @@ if __name__ == '__main__':
     write_cpp_headers(used_maps)
     write_color_maps_enums_header(used_maps, duplicate_maps)
 
-    write_color_data_maps_header(color_map_groups, len(used_maps))
+    write_color_data_maps_header(color_map_groups)
     write_color_data_maps_cpp(color_map_groups, used_maps, duplicate_maps)
 
     print(f'Wrote generated files to "{SRCE_DIR}".')

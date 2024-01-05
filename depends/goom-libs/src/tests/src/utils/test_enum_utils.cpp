@@ -32,7 +32,6 @@ TEST_CASE("EnumMap")
     ENUM1,
     ENUM2,
     ENUM3,
-    _num // unused, and marks the enum end
   };
   REQUIRE(NUM<EnumClass> == 3);
 
@@ -106,7 +105,6 @@ TEST_CASE("ForRange")
     ENUM1,
     ENUM2,
     ENUM3,
-    _num // unused, and marks the enum end
   };
   static constexpr auto NUM_ENUMS = 3U;
   REQUIRE(NUM<EnumClass> == NUM_ENUMS);
@@ -140,7 +138,6 @@ TEST_CASE("EnumMapValidation")
     ENUM1,
     ENUM2,
     ENUM3,
-    _num // unused, and marks the enum end
   };
 
   static constexpr auto CONST_ENUM_MAP_WILL_COMPILE = EnumMap<EnumClass, int>{{{
@@ -159,15 +156,11 @@ TEST_CASE("EnumMapValidation")
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("EnumToString/StringToEnum")
 {
-#ifdef NO_MAGIC_ENUM_AVAILABLE
-  return;
-#else
   enum class EnumClass : UnderlyingEnumType
   {
     ENUM1,
     ENUM2,
     ENUM3,
-    _num // unused, and marks the enum end
   };
   static constexpr auto NUM_ENUMS = 3U;
   REQUIRE(NUM<EnumClass> == NUM_ENUMS);
@@ -178,7 +171,6 @@ TEST_CASE("EnumToString/StringToEnum")
   REQUIRE(StringToEnum<EnumClass>("ENUM2") == EnumClass::ENUM2);
   REQUIRE(EnumToString(EnumClass::ENUM3) == "ENUM3");
   REQUIRE(StringToEnum<EnumClass>("ENUM3") == EnumClass::ENUM3);
-#endif
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 

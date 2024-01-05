@@ -451,8 +451,6 @@ auto LinesFx::LinesImpl::GetGoomLineResetSettings(const uint32_t farVal) const n
       return GetResetHorizontalLineSettings(farVal);
     case LineType::V_LINE:
       return GetResetVerticalLineSettings(farVal);
-    default:
-      FailFast();
   }
 }
 

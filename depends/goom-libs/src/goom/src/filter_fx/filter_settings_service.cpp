@@ -1024,8 +1024,6 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
           I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
           I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
-    default:
-      FailFast();
   }
 }
 

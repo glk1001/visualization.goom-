@@ -104,7 +104,6 @@ private:
     NONRANDOM,
     ASYNC_RANDOM,
     SYNC_RANDOM,
-    _num // unused, and marks the enum end
   };
   static constexpr auto NONRANDOM_WEIGHT    = 50.0F;
   static constexpr auto SYNC_RANDOM_WEIGHT  = 50.0F;

@@ -57,7 +57,6 @@ enum class SimpleColors : UnderlyingEnumType
   LIGHT_ORCHID,
   GOLDEN_BELL,
   BLACK,
-  _num // unused, and marks the enum end
 };
 [[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor, PixelChannelType alpha)
     -> Pixel;

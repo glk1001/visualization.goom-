@@ -216,8 +216,6 @@ auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand,
       intAmplitude.x = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
       intAmplitude.y = -intAmplitude.x + 1;
       break;
-    default:
-      FailFast();
   }
 
   return intAmplitude;
@@ -348,8 +346,6 @@ auto Planes::GetHorizontalSwirlOffsetFactor(const float coordValue) const -> flo
     case PlaneSwirlType::COS_OF_SIN_SWIRL:
       // 'cos' is for horizontal
       return std::cos(PI * std::sin(swirlFreq * coordValue));
-    default:
-      FailFast();
   }
 }
 
@@ -375,8 +371,6 @@ auto Planes::GetVerticalSwirlOffsetFactor(const float coordValue) const -> float
     case PlaneSwirlType::COS_OF_SIN_SWIRL:
       // 'sin' is for vertical
       return std::sin(PI * std::sin(swirlFreq * coordValue));
-    default:
-      FailFast();
   }
 }
 

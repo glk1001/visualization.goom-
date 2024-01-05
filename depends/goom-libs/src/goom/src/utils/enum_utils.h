@@ -1,25 +1,20 @@
 #pragma once
 
-//#define NO_MAGIC_ENUM_AVAILABLE
-
 #include "goom/goom_config.h"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <magic_enum.hpp>
 #include <string>
 #include <type_traits>
 #include <vector>
-
-#ifndef NO_MAGIC_ENUM_AVAILABLE
-#include <magic_enum.hpp>
-#endif
 
 namespace GOOM::UTILS
 {
 
 template<class E>
-static constexpr auto NUM = static_cast<uint32_t>(E::_num);
+static constexpr auto NUM = static_cast<uint32_t>(magic_enum::enum_count<E>());
 
 template<class E>
 auto EnumToString(E value) -> std::string;
@@ -221,14 +216,6 @@ inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(const V& keyValues) noexc
   return sortedValuesArray;
 }
 
-#ifdef NO_MAGIC_ENUM_AVAILABLE
-template<class E>
-auto EnumToString(const E value) -> std::string
-{
-  static_assert(std::is_enum_v<E>);
-  return std::to_string(static_cast<int>(value));
-}
-#else
 template<class E>
 auto EnumToString(const E value) -> std::string
 {
@@ -248,6 +235,5 @@ auto StringToEnum(const std::string& eStr) -> E
 
   FailFast();
 }
-#endif
 
 } // namespace GOOM::UTILS

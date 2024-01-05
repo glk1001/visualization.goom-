@@ -93,16 +93,12 @@ TEST_CASE("StringSplit")
 
 TEST_CASE("EnumToString")
 {
-#ifdef NO_MAGIC_ENUM_AVAILABLE
-  return;
-#else
   enum class EnumTester : UnderlyingEnumType
   {
     _NULL = -1, // NOLINT: Need special name here
     TEST1,
     TEST2,
     TEST3,
-    _num // unused, and marks the enum end
   };
 
   auto test = EnumTester::_NULL;
@@ -111,11 +107,8 @@ TEST_CASE("EnumToString")
   REQUIRE(EnumToString(test) == "TEST1");
   test = EnumTester::TEST2;
   REQUIRE(EnumToString(test) == "TEST2");
-  test = EnumTester::_num;
-  REQUIRE(EnumToString(test) == "_num");
 
   REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
-#endif
 }
 
 } // namespace GOOM::UNIT_TESTS

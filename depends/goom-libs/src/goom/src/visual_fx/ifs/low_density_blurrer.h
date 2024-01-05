@@ -39,7 +39,6 @@ enum class BlurrerColorMode : UnderlyingEnumType
   SIMI_NO_NEIGHBOURS,
   SINGLE_WITH_NEIGHBOURS,
   SINGLE_NO_NEIGHBOURS,
-  _num // unused, and marks the enum end
 };
 
 class LowDensityBlurrer

@@ -40,7 +40,6 @@ public:
     PARTIAL_X,
     PARTIAL_DIAMOND,
     PARTIAL_RANDOM,
-    _num // unused, and marks the enum end
   };
   using GridPointsWithCentres = std::vector<Point2dInt>;
   using GridCentresList       = std::vector<Point2dInt>;

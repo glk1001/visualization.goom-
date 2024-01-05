@@ -136,7 +136,6 @@ private:
     LOW,
     MEDIUM,
     HIGH,
-    _num // unused, and marks the enum end
   };
   GridColorRange m_currentGridColorRange = GridColorRange::ONE;
   GOOM::UTILS::MATH::Weights<GridColorRange> m_weightedGridColorRanges;

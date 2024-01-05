@@ -36,7 +36,6 @@ public:
     MODE1,
     MODE2,
     MODE3,
-    _num // unused, and marks the enum end
   };
   struct Params
   {
@@ -58,7 +57,7 @@ private:
   [[nodiscard]] static auto GetFlipYProbability(Modes mode) -> float;
 };
 
-inline auto XYLerpEffect::GetVelocity([[maybe_unused]] const float sqDistFromZero,
+inline auto XYLerpEffect::GetVelocity(const float sqDistFromZero,
                                       const NormalizedCoords& velocity) const -> NormalizedCoords
 {
   const auto t = GetT(sqDistFromZero, velocity);
@@ -95,8 +94,6 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
     case Modes::MODE3:
       return (1.0F / UTILS::MATH::HALF_PI) * std::abs(std::atan2(velocity.GetY(), velocity.GetX()));
-    default:
-      FailFast();
   }
 }
 

@@ -26,7 +26,6 @@ public:
     CONST,
     MOVING,
     NONE,
-    _num // must be last - gives number of enums
   };
   auto SwitchLineDrawers() noexcept -> void;
   auto SwitchLineDrawers(SwitchLineDrawerType forceType) noexcept -> void;

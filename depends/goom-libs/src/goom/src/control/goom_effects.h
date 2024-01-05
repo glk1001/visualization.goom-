@@ -39,7 +39,6 @@ enum class GoomEffect : UnderlyingEnumType
   TENTACLES_LOW,
   TUBE_MAIN,
   TUBE_LOW,
-  _num // unused, and marks the enum end
 };
 
 } // namespace GOOM::CONTROL

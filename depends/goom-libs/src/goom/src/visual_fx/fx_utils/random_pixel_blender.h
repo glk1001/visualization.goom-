@@ -21,7 +21,6 @@ public:
     MULTIPLY,
     ALPHA,
     ALPHA_AND_ADD,
-    _num // unused, and marks the enum end
   };
   static constexpr auto DEFAULT_ADD_WEIGHT           = 0.0F;
   static constexpr auto DEFAULT_DARKEN_ONLY_WEIGHT   = 0.0F;

@@ -38,7 +38,6 @@ public:
     TAN_ONLY,
     COT_ONLY,
     COT_MIX,
-    _num // unused, and marks the enum end
   };
   struct Params
   {
@@ -80,8 +79,6 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
       return std::tan(HALF_PI - tanArg);
     case TanType::COT_MIX:
       return std::tan((m_params.cotMix * HALF_PI) - tanArg);
-    default:
-      FailFast();
   }
 }
 

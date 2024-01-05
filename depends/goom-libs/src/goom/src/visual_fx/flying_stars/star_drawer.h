@@ -42,7 +42,6 @@ private:
     LINES,
     DOTS,
     CIRCLES_AND_LINES,
-    _num // unused, and marks the enum end
   };
   static constexpr float DRAW_ELEMENT_TYPES_DOTS_WEIGHT              = 30.0F;
   static constexpr float DRAW_ELEMENT_TYPES_CIRCLES_WEIGHT           = 20.0F;
