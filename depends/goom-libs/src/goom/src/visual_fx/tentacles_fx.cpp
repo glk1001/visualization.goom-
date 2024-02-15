@@ -82,8 +82,8 @@ private:
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
   [[nodiscard]] auto GetNextDriver() -> TentacleDriver*;
 
-  WeightedRandomColorMaps m_weightedDominantMainColorMaps{};
-  WeightedRandomColorMaps m_weightedDominantLowColorMaps{};
+  WeightedRandomColorMaps m_weightedDominantMainColorMaps;
+  WeightedRandomColorMaps m_weightedDominantLowColorMaps;
   COLOR::ColorMapSharedPtr m_dominantMainColorMapPtr = nullptr;
   COLOR::ColorMapSharedPtr m_dominantLowColorMapPtr  = nullptr;
   auto ChangeDominantColor() -> void;

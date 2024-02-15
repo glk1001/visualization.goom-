@@ -138,7 +138,7 @@ auto TubeParametricPath::GetNextPoint() const noexcept -> Point2dInt
 struct Shape
 {
   uint32_t shapeNum{};
-  std::unique_ptr<OscillatingPath> path{};
+  std::unique_ptr<OscillatingPath> path;
   uint8_t lineThickness{1};
 };
 
@@ -193,7 +193,7 @@ private:
   std::unique_ptr<TubeParametricPath> m_centrePath{
       std::make_unique<TubeParametricPath>(std::make_unique<TValue>(
           TValue::StepSizeProperties{PATH_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}))};
-  TransformCentreFunc m_getTransformedCentre{};
+  TransformCentreFunc m_getTransformedCentre;
   std::vector<Shape> m_shapes;
   [[nodiscard]] static auto GetInitialShapes(const TubeData& data,
                                              const OscillatingFunction::Params& pathParams) noexcept

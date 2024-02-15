@@ -34,6 +34,7 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
 
 } // namespace
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Normalized Coords Values")
 {
@@ -170,5 +171,6 @@ TEST_CASE("Normalized Coords Operations", )
   }
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

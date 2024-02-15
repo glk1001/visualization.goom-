@@ -70,7 +70,7 @@ private:
 
   static constexpr uint32_t MAX_TOTAL_NUM_ACTIVE_STARS = 1024;
   static constexpr uint32_t MIN_TOTAL_NUM_ACTIVE_STARS = 100;
-  std::vector<Star> m_activeStars{};
+  std::vector<Star> m_activeStars;
   auto CheckForStarEvents() noexcept -> void;
   auto SoundEventOccurred() noexcept -> void;
   auto ChangeColorMapMode() noexcept -> void;

@@ -25,6 +25,7 @@ static constexpr PixelChannelType TEST_R = 200;
 static constexpr PixelChannelType TEST_G = 100;
 static constexpr PixelChannelType TEST_B = 50;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Pixels")
 {
@@ -84,5 +85,6 @@ TEST_CASE("Pixels")
   }
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

@@ -161,6 +161,7 @@ constexpr auto DUMMY_NML_COORDS = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedC
 
 } // namespace
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("ZoomFilterBuffers Basic")
 {
@@ -381,5 +382,6 @@ TEST_CASE("ZoomFilterBuffers Clipping")
   }
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

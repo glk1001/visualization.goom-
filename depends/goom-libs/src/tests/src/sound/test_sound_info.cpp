@@ -66,6 +66,7 @@ constexpr auto EXPECTED_X_MAX1 = X_MAX1;
 
 } // namespace
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Test AudioSamples MinMax")
 {
@@ -181,5 +182,6 @@ TEST_CASE("Test SoundInfo Volume")
   REQUIRE(soundInfo.GetAllTimesMinVolume() == Approx(ALL_TIMES_MIN));
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

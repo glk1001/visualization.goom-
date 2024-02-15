@@ -25,6 +25,7 @@ using COLOR::GetLightenedColor;
 using COLOR::GetRgbColorLerp;
 using GOOM::UTILS::GRAPHICS::CHANNEL_COLOR_SCALAR_DIVISOR;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Test max channels")
 {
@@ -168,5 +169,6 @@ TEST_CASE("Lightened color")
   // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

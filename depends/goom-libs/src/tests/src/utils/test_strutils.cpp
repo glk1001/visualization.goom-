@@ -25,6 +25,8 @@ using UTILS::FindAndReplaceAll;
 using UTILS::StringJoin;
 using UTILS::StringSplit;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
+
 TEST_CASE("FindAndReplaceAll")
 {
   auto str               = std::string{"hello Everyone out there. hello again and Hello again."};
@@ -110,5 +112,7 @@ TEST_CASE("EnumToString")
 
   REQUIRE(EnumToString(EnumTester::TEST3) == "TEST3");
 }
+
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

@@ -59,7 +59,7 @@ using UTILS::MATH::U_HALF;
 
 struct EffectData
 {
-  std::shared_ptr<IEffect> effect{};
+  std::shared_ptr<IEffect> effect;
   const char* name{};
   uint32_t numParticles             = 1U;
   uint32_t minMaxNumAliveParticles  = 1U;
@@ -129,8 +129,6 @@ auto EffectFactory::Create(const char* const name) -> EffectData
   static constexpr auto DEFAULT_FAR_Z_CLIP_PLANE  = Camera::Properties::DEFAULT_FAR_Z_CLIP_PLANE;
   static constexpr auto DEFAULT_EYE_POSITION      = glm::vec3{0.0F, 0.0F, -100.0F};
   static constexpr auto DEFAULT_TARGET_POSITION   = glm::vec3{0.0F, 0.0F, 0.0F};
-
-  const auto effectName = std::string{name};
 
   static constexpr auto NUM_PARTICLES = 20000U;
   static constexpr auto WORLD_SCALE   = 0.5F;

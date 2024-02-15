@@ -126,6 +126,8 @@ const auto GOOM_RAND                = GoomRand{};
   };
 }
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
+
 auto TestZoomAdjustment(FilterZoomVector& filterZoomVector,
                         FilterEffectsSettings& filterSettings,
                         const bool reverseSpeed,
@@ -194,5 +196,7 @@ TEST_CASE("FilterZoomVector")
     }
   }
 }
+
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

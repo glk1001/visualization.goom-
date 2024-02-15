@@ -23,6 +23,8 @@ using UTILS::GRAPHICS::GetColorChannelMultiply;
 using UTILS::GRAPHICS::GetColorMultiply;
 using UTILS::GRAPHICS::MakePixel;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
+
 TEST_CASE("Make Pixel")
 {
   static constexpr auto RED   = 299U;
@@ -107,5 +109,7 @@ TEST_CASE("Pixel Multiply")
           (COLOR1.B() * COLOR2.B()) / static_cast<uint32_t>(MAX_COLOR_VAL));
   REQUIRE(static_cast<uint32_t>(COLOR3.A()) == ALPHA);
 }
+
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

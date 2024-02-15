@@ -135,6 +135,8 @@ constexpr auto NUM_VERTICAL_COLORS = 3U;
 
 constexpr auto COLOR_MIX_T = 0.5F;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
+
 auto TestColorElement(const Pixel& gridColor,
                       const float tHorizontal,
                       const Pixel& verticalBaseColor,
@@ -185,5 +187,7 @@ TEST_CASE("Test GetCurrentHorizontalLineColors")
     verticalT.Increment();
   }
 }
+
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

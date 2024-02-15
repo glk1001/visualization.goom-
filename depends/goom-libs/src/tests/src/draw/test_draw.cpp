@@ -35,6 +35,7 @@ struct PixelInfo
   MultiplePixels colors{};
 };
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(misc-const-correctness)
 
 namespace
@@ -258,5 +259,6 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 }
 
 // NOLINTEND(misc-const-correctness)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

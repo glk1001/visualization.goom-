@@ -21,6 +21,7 @@
 namespace GOOM::UNIT_TESTS
 {
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Paths")
 {
@@ -42,5 +43,6 @@ TEST_CASE("Paths")
   REQUIRE(SHADERS_DIR.to_string() == join_paths("resources", "data", "shaders"));
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
