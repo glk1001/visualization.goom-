@@ -13,6 +13,9 @@ if [[ "${USING_CLION}" == "yes" ]]; then
   CLION_ARG="--clion"
 fi
 
+echo "Running clang-tidy from container \"${DOCKER_BUILD_IMAGE}\"..."
+echo
+
 docker run --rm                                                        \
            -e TZ=${HOST_TIME_ZONE}                                     \
            -e CCACHE_DIR=${DOCKER_CCACHE_DIR}                          \
