@@ -26,6 +26,7 @@ using UTILS::MATH::SMALL_FLOAT;
 
 static constexpr auto TWO = 2.0F;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(misc-const-correctness)
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("TValue SINGLE_CYCLE")
@@ -535,5 +536,6 @@ TEST_CASE("IncrementedValue CONTINUOUS_REVERSIBLE")
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 // NOLINTEND(misc-const-correctness)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

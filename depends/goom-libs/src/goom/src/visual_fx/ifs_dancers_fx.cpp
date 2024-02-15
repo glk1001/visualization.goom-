@@ -109,7 +109,7 @@ private:
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
-  std::unique_ptr<Fractal> m_fractal{};
+  std::unique_ptr<Fractal> m_fractal;
 
   auto InitFractal() noexcept -> void;
 

@@ -38,6 +38,7 @@ auto UpdateLerpData(GoomLerpData& lerpData, const uint32_t num)
 
 } // namespace
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 
 TEST_CASE("LerpData Simple")
@@ -151,5 +152,6 @@ TEST_CASE("LerpData Negative Increment")
 }
 
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

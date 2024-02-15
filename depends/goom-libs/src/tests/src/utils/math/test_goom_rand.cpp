@@ -74,6 +74,7 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 } // namespace
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Weighted Events")
 {
@@ -205,6 +206,7 @@ TEST_CASE("Weighted Events Corner Cases")
   }
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 /*** Catch2 can't catch 'assert' calls.
 TEST_CASE("Weighted Events Exceptions")

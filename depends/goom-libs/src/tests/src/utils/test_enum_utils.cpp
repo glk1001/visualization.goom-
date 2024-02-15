@@ -24,6 +24,7 @@ using UTILS::NUM;
 using UTILS::RuntimeEnumMap;
 using UTILS::StringToEnum;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("EnumMap")
 {
@@ -173,5 +174,6 @@ TEST_CASE("EnumToString/StringToEnum")
   REQUIRE(StringToEnum<EnumClass>("ENUM3") == EnumClass::ENUM3);
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

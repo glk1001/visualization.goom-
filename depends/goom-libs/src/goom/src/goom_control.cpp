@@ -140,8 +140,8 @@ public:
 private:
   [[maybe_unused]] const GoomControl* m_parentGoomControl;
   Parallel m_parallel{GetNumAvailablePoolThreads()};
-  GoomTime m_goomTime{};
-  SoundInfo m_soundInfo{};
+  GoomTime m_goomTime;
+  SoundInfo m_soundInfo;
   GoomSoundEvents m_goomSoundEvents{m_goomTime, m_soundInfo};
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
@@ -200,7 +200,7 @@ private:
   auto UpdateTransformBuffer() -> void;
   auto ApplyEndEffectIfNearEnd() -> void;
 
-  Stopwatch m_runningTimeStopwatch{};
+  Stopwatch m_runningTimeStopwatch;
   static constexpr auto DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS = 8U;
   uint32_t m_numUpdatesBetweenTimeChecks            = DEFAULT_NUM_UPDATES_BETWEEN_TIME_CHECKS;
   static constexpr float UPDATE_TIME_ESTIMATE_IN_MS = 40.0F;

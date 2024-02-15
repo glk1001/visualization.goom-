@@ -23,6 +23,7 @@ namespace GOOM::UNIT_TESTS
 
 using UTILS::Parallel;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 TEST_CASE("Test Parallel Utils", "[ParallelFor]")
 {
   const auto numSupportedConcurrentThreads = std::thread::hardware_concurrency();
@@ -76,5 +77,6 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
   parallel->ForLoop(ARRAY_LEN, assignFunc);
   checkResults(*parallel, expectedNumThreadsUsed);
 }
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

@@ -37,6 +37,7 @@ using UTILS::MATH::RAND::SetRandSeed;
 
 static constexpr auto SMALL_VAL = 0.0002F;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("save/restore random state")
 {
@@ -251,5 +252,6 @@ TEST_CASE("float min max get random")
 #endif
 }
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

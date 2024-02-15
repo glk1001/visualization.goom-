@@ -94,7 +94,7 @@ private:
   PixelChannelType m_defaultAlpha = DEFAULT_VISUAL_FX_ALPHA;
   RandomColorMaps m_randomColorMaps{m_defaultAlpha, m_fxHelper->GetGoomRand()};
   std::array<bool, NUM_DOT_TYPES> m_usePrimaryColors{};
-  Pixel m_middleColor{};
+  Pixel m_middleColor;
   bool m_useMiddleColor = true;
   [[nodiscard]] auto GetDotColor(size_t dotNum, float t) const -> Pixel;
   [[nodiscard]] auto GetDotPrimaryColor(size_t dotNum) const noexcept -> Pixel;

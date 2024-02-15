@@ -165,8 +165,8 @@ private:
   LineDrawerClippedEndPoints m_lineToManyDrawer{m_drawToMany};
   PixelDrawer m_pixelDrawer{m_fxHelper->GetDraw()};
 
-  WeightedRandomColorMaps m_mainColorMaps{};
-  WeightedRandomColorMaps m_lowColorMaps{};
+  WeightedRandomColorMaps m_mainColorMaps;
+  WeightedRandomColorMaps m_lowColorMaps;
   bool m_allowMovingAwayFromCentre = false;
   bool m_oscillatingShapePath{m_fxHelper->GetGoomRand().ProbabilityOf(PROB_OSCILLATING_SHAPE_PATH)};
   uint32_t m_numCapturedPrevShapesGroups              = 0;
@@ -181,7 +181,7 @@ private:
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
-  std::vector<Tube> m_tubes{};
+  std::vector<Tube> m_tubes;
   static constexpr auto ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{
       {ALL_JOIN_CENTRE_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}

@@ -19,6 +19,7 @@ namespace GOOM::UNIT_TESTS
 using UTILS::OnOffTimer;
 using UTILS::Timer;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 
 namespace
@@ -376,5 +377,6 @@ TEST_CASE("OnOffTimer with fails")
 }
 
 // NOLINTEND(readability-function-cognitive-complexity)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS

@@ -39,8 +39,8 @@ private:
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
-  WeightedColorMaps m_weightedColorMaps{};
-  std::unique_ptr<Raindrops> m_raindrops{};
+  WeightedColorMaps m_weightedColorMaps;
+  std::unique_ptr<Raindrops> m_raindrops;
   auto SetNumRaindrops() noexcept -> void;
   auto SetRaindropsWeightedColorMaps() noexcept -> void;
 };

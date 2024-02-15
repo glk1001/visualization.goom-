@@ -153,7 +153,7 @@ private:
       const PixelBlenderParams& pixelBlenderParams) noexcept -> PixelBlenderParams;
   auto UpdatePixelBlender() noexcept -> void;
 
-  std::vector<std::unique_ptr<ChunkedImage>> m_images{};
+  std::vector<std::unique_ptr<ChunkedImage>> m_images;
   ChunkedImage* m_currentImage{};
   static constexpr uint32_t NUM_STEPS    = 400;
   static constexpr uint32_t T_DELAY_TIME = 15;

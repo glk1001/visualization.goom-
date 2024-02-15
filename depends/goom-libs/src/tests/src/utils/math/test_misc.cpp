@@ -23,6 +23,7 @@ using UTILS::MATH::Log2;
 using UTILS::MATH::PowerOf2;
 using UTILS::MATH::RationalNumber;
 
+// NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 
@@ -122,5 +123,6 @@ TEST_CASE("Frac")
 
 // NOLINTEND(readability-function-cognitive-complexity)
 // NOLINTEND(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)
+// NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
