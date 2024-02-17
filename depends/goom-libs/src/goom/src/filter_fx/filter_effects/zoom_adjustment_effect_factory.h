@@ -17,6 +17,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 [[nodiscard]] auto CreateZoomAdjustmentEffect(ZoomFilterMode filterMode,
                                               const UTILS::MATH::IGoomRand& goomRand,
                                               const std::string& resourcesDirectory)
-    -> std::shared_ptr<IZoomAdjustmentEffect>;
+    -> std::unique_ptr<IZoomAdjustmentEffect>;
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

@@ -128,7 +128,8 @@ struct Vec2dFlt
 
 [[nodiscard]] constexpr auto ToVec2dFlt(const Point2dInt& point) noexcept -> Vec2dFlt;
 [[nodiscard]] constexpr auto ToVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt;
-[[nodiscard]] auto ToVec2dInt(const Vec2dFlt& vec2DFlt) noexcept -> Vec2dInt;
+[[nodiscard]] auto ToVec2dInt(const Vec2dFlt& vec2dFlt) noexcept -> Vec2dInt;
+[[nodiscard]] constexpr auto ToPoint2dFlt(const Vec2dFlt& point) noexcept -> Point2dFlt;
 
 [[nodiscard]] constexpr auto operator+(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept
     -> Vec2dFlt;
@@ -317,10 +318,15 @@ constexpr auto ToVec2dFlt(const Point2dFlt& point) noexcept -> Vec2dFlt
   return {point.x, point.y};
 }
 
-inline auto ToVec2dInt(const Vec2dFlt& vec2DFlt) noexcept -> Vec2dInt
+inline auto ToVec2dInt(const Vec2dFlt& vec2dFlt) noexcept -> Vec2dInt
 {
-  return {static_cast<int32_t>(std::round(vec2DFlt.x)),
-          static_cast<int32_t>(std::round(vec2DFlt.y))};
+  return {static_cast<int32_t>(std::round(vec2dFlt.x)),
+          static_cast<int32_t>(std::round(vec2dFlt.y))};
+}
+
+constexpr auto ToPoint2dFlt(const Vec2dFlt& vec2dFlt) noexcept -> Point2dFlt
+{
+  return {vec2dFlt.x, vec2dFlt.y};
 }
 
 constexpr auto operator+(const Vec2dFlt& vec1, const Vec2dFlt& vec2) noexcept -> Vec2dFlt

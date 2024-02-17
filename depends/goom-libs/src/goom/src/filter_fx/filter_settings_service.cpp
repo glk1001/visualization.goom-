@@ -684,6 +684,11 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 
 } // namespace
 
+auto GetFilterModeName(const ZoomFilterMode filterMode) noexcept -> std::string_view
+{
+  return FILTER_MODE_NAMES[filterMode];
+}
+
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
                                              const std::string& resourcesDirectory,

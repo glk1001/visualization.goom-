@@ -64,13 +64,13 @@ public:
   struct ZoomFilterModeInfo
   {
     std::string_view name;
-    std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect{};
+    std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect;
     AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
   using FilterModeEnumMap =
       UTILS::RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
   using CreateZoomAdjustmentEffectFunc =
-      std::function<std::shared_ptr<IZoomAdjustmentEffect>(ZoomFilterMode filterMode,
+      std::function<std::unique_ptr<IZoomAdjustmentEffect>(ZoomFilterMode filterMode,
                                                            const UTILS::MATH::IGoomRand& goomRand,
                                                            const std::string& resourcesDirectory)>;
   // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
@@ -196,6 +196,8 @@ private:
   [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
   [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) -> bool;
 };
+
+auto GetFilterModeName(ZoomFilterMode filterMode) noexcept -> std::string_view;
 
 inline auto FilterSettingsService::GetFilterSettings() const -> const FilterSettings&
 {
