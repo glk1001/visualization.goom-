@@ -107,22 +107,22 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
                                 const std::string& resourcesDirectory)
     -> std::unique_ptr<IZoomAdjustmentEffect>
 {
-  static constexpr auto PROB_FUNC_OF_FUNC = 1.0F;
+  static constexpr auto PROB_FUNC_OF_FUNC = 0.5F;
   if (goomRand.ProbabilityOf(PROB_FUNC_OF_FUNC))
   {
-    const auto filtMode = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
+    //const auto filtMode = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
     auto zoomAdjustmentEffect =
-        CreateFuncZoomAdjustmentEffect(filtMode, goomRand, resourcesDirectory);
+        CreateFuncZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory);
     if (zoomAdjustmentEffect != nullptr)
     {
-      //      const auto funcOfMode =
-      //          static_cast<ZoomFilterMode>(goomRand.GetRandInRange(0U, NUM<ZoomFilterMode>));
-      const auto funcOfMode = ZoomFilterMode::AMULET_MODE;
+      const auto funcOfMode =
+          static_cast<ZoomFilterMode>(goomRand.GetRandInRange(0U, NUM<ZoomFilterMode>));
+      //const auto funcOfMode = ZoomFilterMode::AMULET_MODE;
       auto funcOf = CreateFuncZoomAdjustmentEffect(funcOfMode, goomRand, resourcesDirectory);
       if (funcOf != nullptr)
       {
         const auto fofName =
-            std::format("{}({})", GetFilterModeName(funcOfMode), GetFilterModeName(filtMode));
+            std::format("{}({})", GetFilterModeName(funcOfMode), GetFilterModeName(filterMode));
         return std::make_unique<FunctionOfFunction>(
             fofName, std::move(funcOf), std::move(zoomAdjustmentEffect));
       }
