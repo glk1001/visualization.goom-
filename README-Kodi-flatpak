@@ -1,0 +1,34 @@
+Install Kodi flatpak:
+    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak install --user tv.kodi.Kodi
+
+Install latest flatpak runtime (with gcc 13 support)
+    flatpak install --user org.freedesktop.Platform
+        (Choose 23.08)
+
+rsync -avh "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/23.08/.../files/lib/"
+  to "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/22.08/.../files/lib/"
+
+  Ignore locale errors.
+
+To use g++14, copy "/lib/x86_64-linux-gnu/libstdc++.so.6.*" to
+    "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/22.08/.../files/lib/x86_64-linux-gnu"
+
+To run Kodi flatpak for first time:
+    flatpak --filesystem=home run tv.kodi.Kodi
+
+Kodi data is in "/home/greg/.var/app/tv.kodi.Kodi/data"
+    Copy "userdata/Lircmap.xml" and "userdata/keymaps/gen.xml"
+    Install/Copy plugin.audio.spotify to "/home/greg/.var/app/tv.kodi.Kodi/data/addons/plugin.audio.spotify"
+    Copy Spotify settings to "/home/greg/.var/app/tv.kodi.Kodi/data/userdata/addon_data/plugin.audio.spotify"
+    Copy goom++ setings to "/home/greg/.var/app/tv.kodi.Kodi/data/userdata/addon_data/visualization.goom-pp"
+    Install Aeon Nox Silvo skin
+        Point backgrounds to "/home/greg/Kodi-Extras/backgrounds"
+        Hide album and CD
+        Set visualization starts on play and CD to right
+        Remove unused menus
+    Setup video and music sources
+
+To run with goom++:
+    bash scripts/goom-flatpak-install-to.sh
+    flatpak --filesystem=home run tv.kodi.Kodi
