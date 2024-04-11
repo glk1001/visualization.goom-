@@ -13,6 +13,8 @@
 
 #include "text_drawer.h"
 
+//#include "debugging_logger.h"
+
 //#define NO_FREETYPE_INSTALLED
 
 #include "draw/goom_draw.h"
@@ -470,7 +472,7 @@ inline auto TextDrawer::TextDrawerImpl::GetFontFile() const noexcept -> const st
 auto TextDrawer::TextDrawerImpl::SetFontFile(const std::string& filename) -> void
 {
   m_fontFilename = filename;
-  LogInfo("Setting font file '{}'.", m_fontFilename); // NOLINT
+  //LogInfo(UTILS::GetGoomLogger(), "Setting font file '{}'.", m_fontFilename); // NOLINT
 
   auto fontFile = std::ifstream{m_fontFilename, std::ios::binary};
   if (!fontFile)
@@ -514,7 +516,7 @@ inline auto TextDrawer::TextDrawerImpl::SetFontSize(const int32_t val) -> void
   Expects(val > 0);
 
   m_fontSize = val;
-  LogInfo("Setting font size {}.", m_fontSize); // NOLINT
+  // LogInfo(UTILS::GetGoomLogger(), "Setting font size {}.", m_fontSize); // NOLINT
   if (m_face != nullptr)
   {
     SetFaceFontSize();
@@ -555,7 +557,7 @@ inline auto TextDrawer::TextDrawerImpl::SetText(const std::string& str) noexcept
   Expects(not str.empty());
 
   m_theText = str;
-  LogInfo("Setting font text '{}'.", m_theText); // NOLINT
+  LogInfo(UTILS::GetGoomLogger(), "Setting font text '{}'.", m_theText); // NOLINT
 }
 
 inline auto TextDrawer::TextDrawerImpl::SetFontColorFunc(const FontColorFunc& func) noexcept -> void
@@ -580,7 +582,16 @@ auto TextDrawer::TextDrawerImpl::Prepare() -> void
   auto yMax = 0;
 
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv{};
-  const std::u32string utf32Text = conv.from_bytes(m_theText);
+  std::u32string utf32Text = conv.from_bytes(m_theText);
+  if (utf32Text.empty())
+  {
+    LogError(UTILS::GetGoomLogger(),
+             "TextDrawerImpl::Prepare: utf32 text is empty - m_theText = '{}'.",
+             m_theText);
+    //throw std::runtime_error(
+    //    std::format("TextDrawerImpl::Prepare: utf32 text is empty - '{}'.", m_theText));
+    utf32Text = conv.from_bytes(" ");
+  }
 
   for (auto i = 0U; i < utf32Text.size(); ++i)
   {
@@ -612,7 +623,8 @@ auto TextDrawer::TextDrawerImpl::Prepare() -> void
   m_textBoundingRect.yMin = yMin;
   m_textBoundingRect.yMax = yMax;
 
-  LogInfo("Font bounding rectangle: {}, {}, {}, {}, m_textSpans.size = {}.",
+  LogInfo(UTILS::GetGoomLogger(),
+          "Font bounding rectangle: {}, {}, {}, {}, m_textSpans.size = {}.",
           m_textBoundingRect.xMin,
           m_textBoundingRect.xMax,
           m_textBoundingRect.yMin,
