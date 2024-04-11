@@ -6,6 +6,7 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <excludeRoots>
+      <file path="$PROJECT_DIR$/SPOTIFY_ERROR" />
       <file path="$PROJECT_DIR$/build-clion-clang-17-Debug-nexus" />
       <file path="$PROJECT_DIR$/build-clion-clang-17-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-RelWithDebInfo-nexus" />
