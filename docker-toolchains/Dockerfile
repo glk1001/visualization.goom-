@@ -28,8 +28,9 @@ RUN apt-get update    && \
       catch2             \
       ccache             \
       build-essential    \
-      gcc-13             \
-      g++-13             \
+      gcc-14             \
+      g++-14             \
+      libboost-all-dev   \
       gdb             && \
     apt-get clean -y
 
