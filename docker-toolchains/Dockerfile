@@ -30,6 +30,10 @@ RUN apt-get update    && \
       build-essential    \
       gcc-14             \
       g++-14             \
+      clang-18           \
+      clang-tools-18     \
+      clang-tidy-18      \
+      clang-format-18    \
       libboost-all-dev   \
       gdb             && \
     apt-get clean -y
