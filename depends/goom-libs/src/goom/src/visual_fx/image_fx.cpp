@@ -17,8 +17,6 @@ module;
 #include "goom_plugin_info.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/math/misc.h"
-#include "utils/parallel_utils.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <array>
@@ -33,6 +31,7 @@ module;
 
 module Goom.VisualFx.ImageFx;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 

@@ -2,11 +2,12 @@
 
 #include "filter_effects/zoom_vector_effects.h"
 #include "normalized_coords.h"
-#include "utils/name_value_pairs.h"
 #include "zoom_vector.h"
 
 #include <cstdint>
 #include <string>
+
+import Goom.Utils;
 
 namespace GOOM::UTILS::MATH
 {

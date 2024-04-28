@@ -6,11 +6,12 @@
 #include "filter_settings.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "name_value_pairs.h"
 #include "normalized_coords.h"
 
 #include <cstdint>
 #include <string>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX
 {

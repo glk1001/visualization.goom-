@@ -13,12 +13,10 @@ module;
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
 
 #include <cstdint>
 #include <memory>
@@ -27,6 +25,7 @@ module;
 
 module Goom.VisualFx.CirclesFx:Circle;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import :Helper;
 import :DotDiameters;

@@ -2,13 +2,13 @@ module;
 
 #include "goom/frame_data.h"
 #include "goom/spimpl.h"
-#include "utils/stopwatch.h"
 
 #include <string>
 #include <vector>
 
 export module Goom.VisualFx.ShaderFx;
 
+import Goom.Utils;
 import Goom.VisualFx.VisualFxBase;
 
 export namespace GOOM::VISUAL_FX

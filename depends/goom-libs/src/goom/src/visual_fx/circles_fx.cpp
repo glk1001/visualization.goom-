@@ -11,7 +11,6 @@ module;
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
-#include "utils/timer.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -21,6 +20,7 @@ module;
 
 module Goom.VisualFx.CirclesFx;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :Circle;

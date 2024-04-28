@@ -4,7 +4,8 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "math/goom_rand_base.h"
-#include "name_value_pairs.h"
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

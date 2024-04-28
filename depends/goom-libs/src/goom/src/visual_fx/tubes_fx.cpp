@@ -19,8 +19,6 @@ module;
 #include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <algorithm>
 #include <array>
@@ -32,6 +30,7 @@ module;
 
 module Goom.VisualFx.TubesFx;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :TubeData;

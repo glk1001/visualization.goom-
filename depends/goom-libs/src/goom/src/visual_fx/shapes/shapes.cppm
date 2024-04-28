@@ -8,7 +8,6 @@ module;
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <cmath>
@@ -18,6 +17,7 @@ module;
 
 module Goom.VisualFx.ShapesFx:Shapes;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import :ShapeParts;
 

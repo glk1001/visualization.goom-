@@ -4,7 +4,6 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "normalized_coords.h"
-#include "utils/parallel_utils.h"
 
 #include <algorithm>
 #include <condition_variable>
@@ -12,6 +11,8 @@
 #include <mutex>
 #include <span>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM
 {

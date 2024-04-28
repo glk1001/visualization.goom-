@@ -1,5 +1,4 @@
 #include "goom/goom_types.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 
 #include <array>
@@ -19,6 +18,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils;
 
 namespace GOOM::UNIT_TESTS
 {

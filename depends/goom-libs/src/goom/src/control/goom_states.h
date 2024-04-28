@@ -2,12 +2,13 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <cstddef>
 #include <string_view>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

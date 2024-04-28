@@ -3,13 +3,14 @@
 #include "goom/point2d.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/transform2d.h"
-#include "utils/t_values.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::UTILS::MATH
 {

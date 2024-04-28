@@ -6,11 +6,12 @@
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
 #include "utils/math/misc.h"
-#include "utils/strutils.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::UTILS::TEXT
 {

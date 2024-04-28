@@ -2,12 +2,13 @@
 
 #include "color_maps.h"
 #include "goom/goom_graphic.h"
-#include "utils/t_values.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::COLOR
 {

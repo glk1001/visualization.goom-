@@ -1,6 +1,5 @@
-#pragma once
+module;
 
-#include "date_utils.h"
 #include "goom/goom_config.h"
 
 #include <chrono>
@@ -8,7 +7,11 @@
 #include <limits>
 #include <string>
 
-namespace GOOM::UTILS
+export module Goom.Utils:StopWatch;
+
+import :DateUtils;
+
+export namespace GOOM::UTILS
 {
 
 class Stopwatch

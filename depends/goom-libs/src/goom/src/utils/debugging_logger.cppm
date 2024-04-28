@@ -1,11 +1,21 @@
+module;
+
 #undef NO_LOGGING
 
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
 
-#include "debugging_logger.h"
-
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
+
+export module Goom.Utils:DebuggingLogger;
+
+export namespace GOOM::UTILS
+{
+
+auto SetGoomLogger(GoomLogger& goomLogger) noexcept -> void;
+[[nodiscard]] auto GetGoomLogger() noexcept -> GoomLogger&;
+
+} // namespace GOOM::UTILS
 
 namespace GOOM::UTILS
 {

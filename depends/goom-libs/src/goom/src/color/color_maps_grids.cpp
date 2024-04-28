@@ -5,11 +5,12 @@
 #include "color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "utils/t_values.h"
 
 #include <cmath>
 #include <cstddef>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::COLOR
 {

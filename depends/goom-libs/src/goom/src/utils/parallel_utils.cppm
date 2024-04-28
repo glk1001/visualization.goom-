@@ -1,10 +1,9 @@
+module;
+
 // clang-format off
 // NOLINTBEGIN: Not my code
 
-#pragma once
-
 #include "goom/goom_config.h"
-#include "thread_pool.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -12,9 +11,11 @@
 #include <thread>
 #include <vector>
 
-// clang-format off
+export module Goom.Utils:ParallelUtils;
 
-namespace GOOM::UTILS
+import :ThreadPool;
+
+export namespace GOOM::UTILS
 {
 
 auto GetNumAvailablePoolThreads() noexcept -> int32_t;

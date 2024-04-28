@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
@@ -6,7 +6,9 @@
 #include <format>
 #include <string>
 
-namespace GOOM::UTILS::FMT
+export module Goom.Utils:FormatUtils;
+
+export namespace GOOM::UTILS::FMT
 {
 
 template<typename TPoint>

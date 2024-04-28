@@ -8,11 +8,12 @@ module;
 #include "utils/graphics/pixel_blend.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <cstdint>
 
 export module Goom.VisualFx.FxUtils:RandomPixelBlender;
+
+import Goom.Utils;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {

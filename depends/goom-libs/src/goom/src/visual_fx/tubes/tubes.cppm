@@ -15,8 +15,6 @@ module;
 #include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <algorithm>
 #include <array>
@@ -26,6 +24,8 @@ module;
 #include <memory>
 #include <utility>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::COLOR
 {

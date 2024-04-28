@@ -3,11 +3,12 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "misc.h"
-#include "utils/t_values.h"
 
 #include <cmath>
 #include <cstdint>
 #include <functional>
+
+import Goom.Utils;
 
 namespace GOOM::UTILS::MATH
 {

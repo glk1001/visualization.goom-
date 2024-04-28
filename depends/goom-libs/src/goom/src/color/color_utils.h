@@ -3,13 +3,14 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "utils/enum_utils.h"
 #include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+
+import Goom.Utils;
 
 namespace GOOM::COLOR
 {

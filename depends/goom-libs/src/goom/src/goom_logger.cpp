@@ -1,8 +1,6 @@
 #include "goom/goom_logger.h"
 
-#include "date_utils.h"
 #include "goom/goom_config.h"
-#include "utils/enum_utils.h"
 
 #include <format>
 #include <fstream>
@@ -12,6 +10,8 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+
+import Goom.Utils;
 
 namespace GOOM
 {

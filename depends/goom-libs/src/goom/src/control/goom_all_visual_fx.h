@@ -8,7 +8,6 @@
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/stopwatch.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
@@ -16,6 +15,7 @@
 #include <string_view>
 #include <unordered_set>
 
+import Goom.Utils;
 import Goom.VisualFx.VisualFxBase;
 
 namespace GOOM
@@ -25,8 +25,6 @@ class GoomLogger;
 
 namespace UTILS
 {
-class Parallel;
-
 namespace GRAPHICS
 {
 class SmallImageBitmaps;

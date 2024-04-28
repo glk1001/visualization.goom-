@@ -10,7 +10,6 @@ module;
 #include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <array>
@@ -21,6 +20,7 @@ module;
 
 module Goom.VisualFx.RaindropsFx:RaindropPositions;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 
 namespace GOOM::VISUAL_FX::RAINDROPS

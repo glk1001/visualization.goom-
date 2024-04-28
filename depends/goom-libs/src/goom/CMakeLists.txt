@@ -140,19 +140,7 @@ add_library(goom
             src/utils/math/randutils.cpp
             src/utils/math/transform2d.h
             src/utils/text/drawable_text.cpp
-            src/utils/array_utils.h
-            src/utils/build_time.cpp
-            src/utils/buffer_saver.h
-            src/utils/date_utils.cpp
-            src/utils/debugging_logger.cpp
-            src/utils/enum_utils.h
-            src/utils/format_utils.h
-            src/utils/name_value_pairs.cpp
-            src/utils/step_speed.h
-            src/utils/stopwatch.h
-            src/utils/strutils.cpp
-            src/utils/t_values.cpp
-            src/utils/thread_pool.cpp
+            src/utils/stb_image.h
             src/visual_fx/circles_fx.cpp
             src/visual_fx/flying_stars_fx.cpp
             src/visual_fx/goom_dots_fx.cpp
@@ -180,6 +168,21 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               src/utils/array_utils.cppm
+               src/utils/buffer_saver.cppm
+               src/utils/build_time.cppm
+               src/utils/date_utils.cppm
+               src/utils/debugging_logger.cppm
+               src/utils/enum_utils.cppm
+               src/utils/format_utils.cppm
+               src/utils/name_value_pairs.cppm
+               src/utils/parallel_utils.cppm
+               src/utils/step_speed.cppm
+               src/utils/stopwatch.cppm
+               src/utils/strutils.cppm
+               src/utils/t_values.cppm
+               src/utils/thread_pool.cppm
+               src/utils/timer.cppm
                src/visual_fx/circles/bitmap_getter.cppm
                src/visual_fx/circles/circle.cppm
                src/visual_fx/circles/circle_params_builder.cppm
@@ -210,6 +213,7 @@ target_sources(goom
                src/visual_fx/l_systems/lsys_draw.cppm
                src/visual_fx/l_systems/lsys_geom.cppm
                src/visual_fx/l_systems/lsys_paths.cppm
+               src/visual_fx/l_systems/t_values_bug_fix.cppm
                src/visual_fx/l_systems/line_drawer_manager.cppm
                src/visual_fx/lines/line_morph.cppm
                src/visual_fx/lines/line_types.cppm
@@ -246,6 +250,7 @@ target_sources(goom
                src/visual_fx/shapes_fx.cppm
                src/visual_fx/tentacles_fx.cppm
                src/visual_fx/tubes_fx.cppm
+               src/utils.cppm
 )
 
 

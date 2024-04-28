@@ -6,7 +6,8 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/name_value_pairs.h"
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

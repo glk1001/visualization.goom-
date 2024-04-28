@@ -1,7 +1,6 @@
 #include "glsl_shader_file.h"
 
 #include "goom/goom_utils.h"
-#include "utils/strutils.h"
 
 #include <format>
 #include <fstream>
@@ -11,9 +10,6 @@
 
 namespace GOOM::OPENGL
 {
-
-using UTILS::FindAndReplaceAll;
-using UTILS::PutFileLines;
 
 GlslShaderFile::GlslShaderFile(const std::string& shaderFilepath,
                                const ShaderMacros& shaderMacros,

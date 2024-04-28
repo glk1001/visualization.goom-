@@ -6,9 +6,10 @@
 #include "goom/point2d.h"
 #include "line_drawer_noisy_pixels.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <cstdint>
+
+import Goom.Utils;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

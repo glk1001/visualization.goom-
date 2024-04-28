@@ -5,10 +5,11 @@
 #include "goom/point2d.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
-#include "utils/name_value_pairs.h"
 
 #include <string>
 #include <unordered_set>
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

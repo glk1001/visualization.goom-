@@ -44,7 +44,6 @@ module;
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <cmath>
@@ -56,6 +55,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :Colorizer;

@@ -9,8 +9,6 @@ module;
 #include "goom/spimpl.h"
 #include "utils/graphics/point_utils.h"
 #include "utils/math/misc.h"
-#include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <algorithm>
 #include <array>
@@ -22,6 +20,7 @@ module;
 
 module Goom.VisualFx.ShapesFx;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :Shapes;

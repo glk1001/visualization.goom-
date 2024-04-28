@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_time.h"
@@ -8,7 +8,9 @@
 #include <cstdint>
 #include <functional>
 
-namespace GOOM::UTILS
+export module Goom.Utils:Timer;
+
+export namespace GOOM::UTILS
 {
 
 class Timer

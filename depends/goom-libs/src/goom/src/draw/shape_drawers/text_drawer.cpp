@@ -27,8 +27,6 @@
 #include "utils/math/misc.h"
 
 #ifndef NO_FREETYPE_INSTALLED
-#include "utils/parallel_utils.h"
-
 #include <codecvt>
 #include <format>
 #include <fstream>
@@ -36,6 +34,8 @@
 #include <locale>
 #include FT_FREETYPE_H
 #include FT_STROKER_H
+
+import Goom.Utils;
 #endif
 
 namespace GOOM::DRAW::SHAPE_DRAWERS

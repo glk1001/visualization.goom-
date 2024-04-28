@@ -4,6 +4,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <ostream>
 #include <ranges>
 #include <string>
 #include <type_traits>
@@ -11,6 +12,11 @@
 
 namespace GOOM
 {
+
+auto FindAndReplaceAll(std::string& dataStr,
+                       const std::string& searchStr,
+                       const std::string& replaceStr) -> void;
+auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines) -> void;
 
 [[nodiscard]] auto GetRandSeed() noexcept -> uint64_t;
 auto SetRandSeed(uint64_t seed) noexcept -> void;

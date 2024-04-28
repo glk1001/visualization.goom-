@@ -5,13 +5,14 @@ module;
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
 
 #include <cstdint>
 #include <memory>
 #include <utility>
 
 module Goom.VisualFx.LSystemFx:LSysPaths;
+
+import Goom.Utils;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

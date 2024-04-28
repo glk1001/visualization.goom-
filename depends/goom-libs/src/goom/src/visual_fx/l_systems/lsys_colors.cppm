@@ -7,11 +7,9 @@ module;
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "utils/enum_utils.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -19,6 +17,8 @@ module;
 #include <vector>
 
 module Goom.VisualFx.LSystemFx:LSysColors;
+
+import Goom.Utils;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

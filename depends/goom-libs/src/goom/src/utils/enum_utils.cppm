@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 
@@ -10,11 +10,13 @@
 #include <type_traits>
 #include <vector>
 
-namespace GOOM::UTILS
+export module Goom.Utils:EnumUtils;
+
+export namespace GOOM::UTILS
 {
 
 template<class E>
-static constexpr auto NUM = static_cast<uint32_t>(magic_enum::enum_count<E>());
+inline constexpr auto NUM = static_cast<uint32_t>(magic_enum::enum_count<E>());
 
 template<class E>
 auto EnumToString(E value) -> std::string;

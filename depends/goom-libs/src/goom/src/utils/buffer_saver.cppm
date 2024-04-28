@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_utils.h"
@@ -18,7 +18,9 @@
 #include <string>
 #include <type_traits>
 
-namespace GOOM::UTILS
+export module Goom.Utils:BufferSaver;
+
+export namespace GOOM::UTILS
 {
 
 template<class T, class HeaderT = std::nullptr_t>

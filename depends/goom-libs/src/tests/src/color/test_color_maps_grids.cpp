@@ -4,7 +4,6 @@
 #include "color/color_maps_grids.h"
 #include "color/color_utils.h"
 #include "goom/goom_graphic.h"
-#include "utils/t_values.h"
 
 #include <cstddef>
 #include <string>
@@ -32,6 +31,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils;
 
 namespace GOOM::UNIT_TESTS
 {

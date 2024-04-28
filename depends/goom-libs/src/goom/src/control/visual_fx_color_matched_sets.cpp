@@ -2,13 +2,15 @@
 
 #include "color/random_color_maps_groups.h"
 #include "goom_effects.h"
-#include "utils/array_utils.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 
 #include <array>
 #include <cstddef>
 #include <numeric>
+
+import Goom.Utils;
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

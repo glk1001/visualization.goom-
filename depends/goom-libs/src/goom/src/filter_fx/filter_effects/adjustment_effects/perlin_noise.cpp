@@ -6,12 +6,13 @@
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/randutils.h"
-#include "utils/name_value_pairs.h"
 
 #include <PerlinNoise.hpp>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

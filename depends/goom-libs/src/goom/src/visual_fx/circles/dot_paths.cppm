@@ -6,7 +6,6 @@ module;
 #include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -15,6 +14,8 @@ module;
 #include <vector>
 
 module Goom.VisualFx.CirclesFx:DotPaths;
+
+import Goom.Utils;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

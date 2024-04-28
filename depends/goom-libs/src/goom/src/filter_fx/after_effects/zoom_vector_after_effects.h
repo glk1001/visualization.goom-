@@ -5,9 +5,10 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
 #include "the_effects/rotation.h"
-#include "utils/name_value_pairs.h"
 
 #include <cstdint>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

@@ -2,7 +2,6 @@
 
 #include "goom/goom_config.h"
 #include "misc.h"
-#include "utils/enum_utils.h"
 
 #include <array>
 #include <cstddef>
@@ -10,6 +9,8 @@
 #include <map>
 #include <type_traits>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::UTILS::MATH
 {

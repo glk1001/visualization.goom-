@@ -5,7 +5,6 @@ module;
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/t_values.h"
 
 #include <cmath>
 #include <cstdint>
@@ -15,6 +14,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Fractal;
 
+import Goom.Utils;
 import :FractalHits;
 import :IfsTypes;
 import :Similitudes;

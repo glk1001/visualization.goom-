@@ -8,7 +8,6 @@
 #include "goom/goom_time.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "utils/name_value_pairs.h"
 #include "zoom_vector.h"
 
 #include <cmath>
@@ -17,6 +16,8 @@
 #include <string>
 #include <thread>
 #include <utility>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX
 {

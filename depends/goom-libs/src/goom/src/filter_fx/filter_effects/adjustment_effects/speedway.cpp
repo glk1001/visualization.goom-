@@ -2,8 +2,9 @@
 
 #include "filter_fx/common_types.h"
 #include "goom/goom_config.h"
-#include "name_value_pairs.h"
 #include "utils/math/goom_rand_base.h"
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

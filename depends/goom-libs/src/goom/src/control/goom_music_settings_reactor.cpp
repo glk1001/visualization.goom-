@@ -6,12 +6,13 @@
 #include "filter_fx/filter_speed.h"
 #include "goom/sound_info.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/name_value_pairs.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <utility>
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

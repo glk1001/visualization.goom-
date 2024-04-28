@@ -10,11 +10,11 @@
 #include "goom/spimpl.h"
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "utils/stopwatch.h"
 
 #include <string>
 #include <unordered_set>
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 

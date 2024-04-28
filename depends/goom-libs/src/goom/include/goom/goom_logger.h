@@ -178,70 +178,69 @@ auto GoomLogger::Log(const LogLevel lvl,
 #ifdef NO_LOGGING
 //#pragma message("Compiling " __FILE__ " with 'NO_LOGGING' = 'ON' - So there will be NO logging.")
 
-constexpr auto SetLogFile([[maybe_unused]] const GOOM::GoomLogger& logger,
-                          [[maybe_unused]] const std::string_view& logF) -> void
+inline auto SetLogFile([[maybe_unused]] const GOOM::GoomLogger& logger,
+                       [[maybe_unused]] const std::string_view& logF) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto AddLogHandler([[maybe_unused]] const GOOM::GoomLogger& logger,
-                             [[maybe_unused]] const std::string_view& name,
-                             [[maybe_unused]] const GOOM::GoomLogger::HandlerFunc& handlerFunc)
-    -> void
+inline auto AddLogHandler([[maybe_unused]] const GOOM::GoomLogger& logger,
+                          [[maybe_unused]] const std::string_view& name,
+                          [[maybe_unused]] const GOOM::GoomLogger::HandlerFunc& handlerFunc) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto SetShowDateTime([[maybe_unused]] const GOOM::GoomLogger& logger,
-                               [[maybe_unused]] const bool val) -> void
+inline auto SetShowDateTime([[maybe_unused]] const GOOM::GoomLogger& logger,
+                            [[maybe_unused]] const bool val) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto LogStart([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+inline auto LogStart([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto LogStop([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+inline auto LogStop([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto LogFlush([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+inline auto LogFlush([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto LogSuspend([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+inline auto LogSuspend([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto LogResume([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
+inline auto LogResume([[maybe_unused]] const GOOM::GoomLogger& logger) -> void
 {
   // No logging for Release.
 }
 
-[[nodiscard]] constexpr auto IsLogging([[maybe_unused]] const GOOM::GoomLogger& logger) -> bool
+[[nodiscard]] inline auto IsLogging([[maybe_unused]] const GOOM::GoomLogger& logger) -> bool
 {
   return false;
 }
 
-[[nodiscard]] constexpr auto GetLogLevel([[maybe_unused]] const GOOM::GoomLogger& logger)
+[[nodiscard]] inline auto GetLogLevel([[maybe_unused]] const GOOM::GoomLogger& logger)
     -> GOOM::GoomLogger::LogLevel
 {
   return GOOM::GoomLogger::LogLevel{};
 }
 
-constexpr auto SetLogLevel([[maybe_unused]] const GOOM::GoomLogger& logger,
-                           [[maybe_unused]] const GOOM::GoomLogger::LogLevel lvl) -> void
+inline auto SetLogLevel([[maybe_unused]] const GOOM::GoomLogger& logger,
+                        [[maybe_unused]] const GOOM::GoomLogger::LogLevel lvl) -> void
 {
   // No logging for Release.
 }
 
-constexpr auto SetLogLevelForFiles([[maybe_unused]] const GOOM::GoomLogger& logger,
-                                   [[maybe_unused]] const GOOM::GoomLogger::LogLevel lvl) -> void
+inline auto SetLogLevelForFiles([[maybe_unused]] const GOOM::GoomLogger& logger,
+                                [[maybe_unused]] const GOOM::GoomLogger::LogLevel lvl) -> void
 {
   // No logging for Release.
 }

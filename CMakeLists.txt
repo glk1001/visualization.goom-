@@ -175,7 +175,7 @@ add_dependencies(${VIS_GOOM_TARGET_NAME} goom::lib)
 
 # Force the build time into the compiled binaries.
 set(GOOM_BUILD_TIME_FILES
-    ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cpp
+    ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cppm
     ${PROJECT_SOURCE_DIR}/src/build_time.cpp
 )
 add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})

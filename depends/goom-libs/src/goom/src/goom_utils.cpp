@@ -2,20 +2,31 @@
 
 #include "goom/compiler_versions.h"
 #include "goom/goom_version.h"
-#include "utils/build_time.h"
 #include "utils/math/randutils.h"
-#include "utils/strutils.h"
 
 #include <cstdint>
 #include <filesystem>
+#include <ostream>
 #include <string>
 #include <vector>
+
+import Goom.Utils;
+import Goom.Utils.BuildTime;
 
 namespace GOOM
 {
 
-using UTILS::GetFileLinesWithExpandedIncludes;
-using UTILS::PutFileLines;
+auto FindAndReplaceAll(std::string& dataStr,
+                       const std::string& searchStr,
+                       const std::string& replaceStr) -> void
+{
+  UTILS::FindAndReplaceAll(dataStr, searchStr, replaceStr);
+}
+
+auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines) -> void
+{
+  UTILS::PutFileLines(outStream, lines);
+}
 
 auto GetRandSeed() noexcept -> uint64_t
 {
@@ -64,7 +75,8 @@ auto PutFileWithExpandedIncludes(const std::string& includeDir,
 {
   const auto absoluteIncludeDir = GetAbsoluteIncludeDir(includeDir, inFilepath);
 
-  PutFileLines(outFilepath, GetFileLinesWithExpandedIncludes(absoluteIncludeDir, inFilepath));
+  UTILS::PutFileLines(outFilepath,
+                      UTILS::GetFileLinesWithExpandedIncludes(absoluteIncludeDir, inFilepath));
 }
 
 auto GetFileWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
@@ -72,7 +84,7 @@ auto GetFileWithExpandedIncludes(const std::string& includeDir, const std::strin
 {
   const auto absoluteIncludeDir = GetAbsoluteIncludeDir(includeDir, filepath);
 
-  return GetFileLinesWithExpandedIncludes(absoluteIncludeDir, filepath);
+  return UTILS::GetFileLinesWithExpandedIncludes(absoluteIncludeDir, filepath);
 }
 
 } // namespace GOOM

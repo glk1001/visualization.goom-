@@ -12,9 +12,6 @@ module;
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/math/transform2d.h"
-#include "utils/step_speed.h"
-#include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <algorithm>
 #include <cmath>
@@ -27,6 +24,7 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapeParts;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import :ShapePaths;
 

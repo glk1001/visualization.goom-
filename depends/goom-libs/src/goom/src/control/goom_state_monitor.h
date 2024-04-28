@@ -4,9 +4,10 @@
 #include "filter_fx/filter_settings_service.h"
 #include "goom_all_visual_fx.h"
 #include "goom_music_settings_reactor.h"
-#include "utils/name_value_pairs.h"
 
 #include <string>
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

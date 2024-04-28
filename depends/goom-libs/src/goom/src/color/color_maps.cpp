@@ -9,7 +9,6 @@
 #include "color_utils.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "utils/enum_utils.h"
 
 #ifdef GOOM_DEBUG // TODO(glk) - clang-tidy needs this. A better way?
 #include <algorithm>
@@ -32,6 +31,8 @@
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+
+import Goom.Utils;
 
 namespace GOOM::COLOR
 {

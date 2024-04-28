@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 
 #include <cstdint>
 
-namespace GOOM::UTILS
+export module Goom.Utils:StepSpeed;
+
+export namespace GOOM::UTILS
 {
 
 class StepSpeed

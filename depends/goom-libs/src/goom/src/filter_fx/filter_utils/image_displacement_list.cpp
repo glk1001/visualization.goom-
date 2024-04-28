@@ -4,11 +4,12 @@
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/name_value_pairs.h"
 
 #include <array>
 #include <cstdint>
 #include <string>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

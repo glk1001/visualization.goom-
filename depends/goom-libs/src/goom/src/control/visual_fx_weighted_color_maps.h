@@ -3,8 +3,9 @@
 #include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom_effects.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

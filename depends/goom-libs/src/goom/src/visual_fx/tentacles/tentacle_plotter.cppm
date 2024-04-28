@@ -8,7 +8,6 @@ module;
 #include "goom/point2d.h"
 #include "utils/graphics/line_clipper.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -17,6 +16,7 @@ module;
 
 module Goom.VisualFx.TentaclesFx:TentaclePlotter;
 
+import Goom.Utils;
 import :Tentacle3d;
 
 namespace GOOM::VISUAL_FX::TENTACLES

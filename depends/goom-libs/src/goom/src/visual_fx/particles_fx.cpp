@@ -22,7 +22,6 @@ module;
 #include "utils/graphics/point_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
-#include "utils/t_values.h"
 
 #include <cmath>
 #include <cstdint>
@@ -34,6 +33,7 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
+import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 

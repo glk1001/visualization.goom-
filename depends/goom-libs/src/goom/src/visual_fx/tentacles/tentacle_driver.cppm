@@ -9,7 +9,6 @@ module;
 #include "goom/point2d.h"
 #include "utils/math/damping_functions.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <array>
@@ -21,6 +20,7 @@ module;
 
 module Goom.VisualFx.TentaclesFx:TentacleDriver;
 
+import Goom.Utils;
 import Goom.VisualFx.VisualFxBase;
 import :CirclesTentacleLayout;
 import :Tentacle2d;

@@ -21,7 +21,6 @@
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand.h"
 
 #include <cstdint>
@@ -38,6 +37,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils;
 
 namespace GOOM::UNIT_TESTS
 {

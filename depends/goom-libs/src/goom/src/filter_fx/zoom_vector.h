@@ -1,8 +1,8 @@
 #pragma once
 
-#include "utils/name_value_pairs.h"
-
 #include <string>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX
 {

@@ -4,11 +4,12 @@
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
 #include "normalized_coords.h"
-#include "utils/parallel_utils.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
+
+import Goom.Utils;
 
 namespace GOOM::FILTER_FX
 {

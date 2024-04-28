@@ -2,13 +2,13 @@ module;
 
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <cmath>
 #include <cstdint>
 
 module Goom.VisualFx.ShaderFx:HighContrast;
+
+import Goom.Utils;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {

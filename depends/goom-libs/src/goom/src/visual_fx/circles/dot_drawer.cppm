@@ -10,15 +10,14 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/enum_utils.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/t_values.h"
 
 #include <cstdint>
 
 module Goom.VisualFx.CirclesFx:DotDrawer;
 
+import Goom.Utils;
 import :Helper;
 
 namespace GOOM::VISUAL_FX::CIRCLES

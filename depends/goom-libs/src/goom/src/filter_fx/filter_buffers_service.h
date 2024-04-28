@@ -5,7 +5,6 @@
 #include "goom/goom_time.h"
 #include "goom/point2d.h"
 #include "normalized_coords.h"
-#include "utils/name_value_pairs.h"
 #include "zoom_vector.h"
 
 #include <cstdint>
@@ -13,6 +12,8 @@
 #include <span>
 #include <string>
 #include <thread>
+
+import Goom.Utils;
 
 namespace GOOM
 {

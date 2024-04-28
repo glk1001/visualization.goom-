@@ -1,17 +1,21 @@
-#pragma once
+module;
 
-#include "format_utils.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "strutils.h"
 
 #include <algorithm>
+#include <iterator>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-namespace GOOM::UTILS
+export module Goom.Utils:NameValuePairs;
+
+import :FormatUtils;
+import :StrUtils;
+
+export namespace GOOM::UTILS
 {
 
 using NameValuePair  = std::pair<std::string, std::string>;
@@ -112,5 +116,20 @@ inline auto to_string(const Point2dFlt& value) -> std::string
   return FMT::Pt("{:.2f}", value);
 }
 // NOLINTEND(readability-identifier-naming)
+
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
+[[nodiscard]] auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string
+{
+  auto nameValueStrings = std::vector<std::string>{};
+  std::transform(cbegin(nameValuePairs),
+                 cend(nameValuePairs),
+                 std::back_inserter(nameValueStrings),
+                 [](const NameValuePair& pair) { return GetNameValueString(pair); });
+  return StringJoin(nameValueStrings, "\n");
+}
 
 } // namespace GOOM::UTILS

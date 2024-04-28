@@ -3,12 +3,13 @@
 #include "goom_states.h"
 
 #include "goom/goom_config.h"
-#include "utils/enum_utils.h"
 
 #include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
+
+import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

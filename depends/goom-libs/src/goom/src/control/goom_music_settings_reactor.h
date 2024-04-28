@@ -6,9 +6,10 @@
 #include "goom_lock.h"
 #include "goom_plugin_info.h"
 #include "utils/math/goom_rand_base.h"
-#include "utils/name_value_pairs.h"
 
 #include <cstdint>
+
+import Goom.Utils;
 
 namespace GOOM
 {

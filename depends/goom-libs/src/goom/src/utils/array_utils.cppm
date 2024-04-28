@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <array>
 #include <cstddef>
 #include <utility>
+
+export module Goom.Utils:ArrayUtils;
 
 namespace GOOM::UTILS
 {
@@ -20,7 +22,7 @@ constexpr std::array<T, sizeof...(Is)> CreateArrayImpl(
 
 } // namespace DETAIL
 
-template<typename T, std::size_t N>
+export template<typename T, std::size_t N>
 constexpr std::array<T, N> CreateArray(const T& value)
 {
   return DETAIL::CreateArrayImpl(value, std::make_index_sequence<N>());

@@ -8,13 +8,11 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/enum_utils.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/math/misc.h"
-#include "utils/t_values.h"
 
 #include <algorithm>
 #include <cmath>
@@ -25,6 +23,7 @@ module;
 
 export module Goom.VisualFx.FlyingStarsFx:StarDrawer;
 
+import Goom.Utils;
 import :StarColors;
 import :Stars;
 

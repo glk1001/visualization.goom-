@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
@@ -10,7 +10,9 @@
 #include <type_traits>
 #include <vector>
 
-namespace GOOM::UTILS
+export module Goom.Utils:TValues;
+
+export namespace GOOM::UTILS
 {
 
 class TValue
@@ -153,6 +155,11 @@ private:
   [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
       -> float;
 };
+
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
 
 inline auto TValue::GetStepType() const noexcept -> StepType
 {
@@ -411,6 +418,276 @@ auto IncrementedValue<T>::ResetCurrentValue(const T& newValue) noexcept -> void
 {
   const auto newClampedValue = Clamp(newValue, m_value1, m_value2);
   ResetT(GetMatchingT(newClampedValue, m_value1, m_value2));
+}
+
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
+TValue::TValue(const StepSizeProperties& stepSizeProperties) noexcept
+  : m_stepType{stepSizeProperties.stepType},
+    m_stepSize{stepSizeProperties.stepSize},
+    m_t{stepSizeProperties.startingT}
+{
+  Expects(stepSizeProperties.startingT >= MIN_T_VALUE);
+  Expects(stepSizeProperties.startingT <= MAX_T_VALUE);
+}
+
+TValue::TValue(const StepSizeProperties& stepSizeProperties,
+               const std::vector<DelayPoint>& delayPoints) noexcept
+  : m_stepType{stepSizeProperties.stepType},
+    m_stepSize{stepSizeProperties.stepSize},
+    m_t{stepSizeProperties.startingT},
+    m_delayPoints{delayPoints}
+{
+  Expects(stepSizeProperties.startingT >= MIN_T_VALUE);
+  Expects(stepSizeProperties.startingT <= MAX_T_VALUE);
+  ValidateDelayPoints();
+}
+
+TValue::TValue(const NumStepsProperties& numStepsProperties) noexcept
+  : m_stepType{numStepsProperties.stepType},
+    m_stepSize{1.0F / static_cast<float>(numStepsProperties.numSteps)},
+    m_t{numStepsProperties.startingT}
+{
+  Expects(numStepsProperties.numSteps > 0U);
+  Expects(numStepsProperties.startingT >= MIN_T_VALUE);
+  Expects(numStepsProperties.startingT <= MAX_T_VALUE);
+}
+
+TValue::TValue(const NumStepsProperties& numStepsProperties,
+               const std::vector<DelayPoint>& delayPoints) noexcept
+  : m_stepType{numStepsProperties.stepType},
+    m_stepSize{1.0F / static_cast<float>(numStepsProperties.numSteps)},
+    m_t{numStepsProperties.startingT},
+    m_delayPoints{delayPoints}
+{
+  Expects(numStepsProperties.numSteps > 0U);
+  Expects(numStepsProperties.startingT >= MIN_T_VALUE);
+  Expects(numStepsProperties.startingT <= MAX_T_VALUE);
+  ValidateDelayPoints();
+}
+
+auto TValue::ValidateDelayPoints() const noexcept -> void
+{
+#ifdef GOOM_DEBUG
+  auto prevT0 = -1.0F;
+
+  for (const auto& delayPoint : m_delayPoints)
+  {
+    Expects(prevT0 < delayPoint.t0);
+    Expects(0.0F <= delayPoint.t0);
+    Expects(delayPoint.t0 <= 1.0F);
+
+    prevT0 = delayPoint.t0;
+  }
+#endif
+}
+
+auto TValue::Increment() noexcept -> void
+{
+  switch (m_stepType)
+  {
+    case StepType::SINGLE_CYCLE:
+      SingleCycleIncrement();
+      break;
+    case StepType::CONTINUOUS_REPEATABLE:
+      ContinuousRepeatableIncrement();
+      break;
+    case StepType::CONTINUOUS_REVERSIBLE:
+      ContinuousReversibleIncrement();
+      break;
+  }
+}
+
+inline auto TValue::SingleCycleIncrement() noexcept -> void
+{
+  if (m_t >= MAX_T_VALUE)
+  {
+    m_t = MAX_T_VALUE;
+    return;
+  }
+  m_t += m_currentStep;
+
+  USED_FOR_DEBUGGING(std::isnan(m_t));
+  Ensures(not std::isnan(m_t));
+  Ensures(m_t >= MIN_T_VALUE);
+}
+
+inline auto TValue::ContinuousRepeatableIncrement() noexcept -> void
+{
+  if (IsInDelayZone())
+  {
+    return;
+  }
+
+  if (Boundaries::END == m_currentPosition)
+  {
+    HandleBoundary(MIN_T_VALUE, FloatSign::POSITIVE);
+    m_currentPosition = Boundaries::START;
+  }
+  else
+  {
+    m_t += m_currentStep;
+
+    if (m_t >= MAX_T_VALUE)
+    {
+      m_currentPosition = Boundaries::END;
+      m_t               = MAX_T_VALUE;
+    }
+    else
+    {
+      m_currentPosition = Boundaries::INSIDE;
+    }
+  }
+
+  Ensures(not std::isnan(m_t));
+  Ensures(m_t >= MIN_T_VALUE);
+  Ensures(m_t <= MAX_T_VALUE);
+}
+
+inline auto TValue::ContinuousReversibleIncrement() noexcept -> void
+{
+  if (IsInDelayZone())
+  {
+    return;
+  }
+
+  m_t += m_currentStep;
+
+  if ((m_t <= MIN_T_VALUE) or (m_t >= MAX_T_VALUE))
+  {
+    m_currentDelayPoints = m_delayPoints;
+  }
+
+  CheckContinuousReversibleBoundary();
+
+  Ensures(not std::isnan(m_t));
+  Ensures(m_t >= MIN_T_VALUE);
+  Ensures(m_t <= MAX_T_VALUE);
+}
+
+inline auto TValue::CheckContinuousReversibleBoundary() noexcept -> void
+{
+  if (Boundaries::END == m_currentPosition)
+  {
+    HandleBoundary(MAX_T_VALUE - m_stepSize, FloatSign::NEGATIVE);
+    m_currentPosition = Boundaries::INSIDE;
+  }
+  else if (Boundaries::START == m_currentPosition)
+  {
+    HandleBoundary(MIN_T_VALUE + m_stepSize, FloatSign::POSITIVE);
+    m_currentPosition = Boundaries::INSIDE;
+  }
+  else if (m_t >= MAX_T_VALUE)
+  {
+    m_t               = MAX_T_VALUE;
+    m_currentPosition = Boundaries::END;
+  }
+  else if (m_t <= MIN_T_VALUE)
+  {
+    m_t               = MIN_T_VALUE;
+    m_currentPosition = Boundaries::START;
+  }
+}
+
+inline auto TValue::IsInDelayZone() noexcept -> bool
+{
+  if (m_justFinishedDelay)
+  {
+    m_justFinishedDelay = false;
+    return false;
+  }
+
+  if ((not m_startedDelay) and WeAreStartingDelayPoint())
+  {
+    m_startedDelay = true;
+  }
+
+  if (m_delayPointCount > 0)
+  {
+    --m_delayPointCount;
+    if (0 == m_delayPointCount)
+    {
+      m_startedDelay      = false;
+      m_justFinishedDelay = true;
+    }
+    return true;
+  }
+
+  return false;
+}
+
+inline auto TValue::WeAreStartingDelayPoint() noexcept -> bool
+{
+  // NOLINTBEGIN(readability-use-anyofallof)
+  for (const auto& delayZone : m_currentDelayPoints)
+  {
+    if (IsInThisDelayZone(delayZone))
+    {
+      m_delayPointCount = delayZone.delayTime;
+      m_currentDelayPoints.erase(begin(m_currentDelayPoints));
+      return true;
+    }
+  }
+  return false;
+  // NOLINTEND(readability-use-anyofallof)
+}
+
+auto TValue::SetStepSize(const float stepSize) noexcept -> void
+{
+  Expects(stepSize > 0.0F);
+  Expects((m_stepType != StepType::SINGLE_CYCLE) or (m_currentStep >= 0.0F));
+
+  const auto oldCurrentStep = m_currentStep;
+
+  m_stepSize    = stepSize;
+  m_currentStep = m_currentStep < 0.0F ? -m_stepSize : +m_stepSize;
+
+  if (((oldCurrentStep < 0.0F) and (m_currentStep > 0.0F)) or
+      ((oldCurrentStep > 0.0F) and (m_currentStep < 0.0F)))
+  {
+    m_currentDelayPoints = m_delayPoints;
+  }
+}
+
+auto TValue::GetNumSteps() const noexcept -> uint32_t
+{
+  Expects(m_stepSize > 0.0F);
+
+  return static_cast<uint32_t>(1.0F / m_stepSize);
+}
+
+auto TValue::SetNumSteps(const uint32_t numSteps) noexcept -> void
+{
+  Expects(numSteps > 0U);
+
+  SetStepSize(1.0F / static_cast<float>(numSteps));
+}
+
+
+inline auto TValue::HandleBoundary(const float continueValue, const FloatSign floatSign) noexcept
+    -> void
+{
+  m_t = continueValue;
+
+  if (FloatSign::NEGATIVE == floatSign)
+  {
+    m_currentStep = -m_stepSize;
+    Ensures(m_currentStep < 0.0F);
+  }
+  else if (FloatSign::POSITIVE == floatSign)
+  {
+    m_currentStep = +m_stepSize;
+    Ensures(m_currentStep > 0.0F);
+  }
+  else
+  {
+    FailFast();
+  }
+
+  m_currentDelayPoints = m_delayPoints;
 }
 
 } // namespace GOOM::UTILS
