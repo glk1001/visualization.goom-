@@ -1,10 +1,37 @@
-#include "gl_utils.h"
+module;
 
 #include "goom/goom_utils.h"
+
+#ifdef IS_KODI_BUILD
+#include <kodi/gui/gl/GL.h> // NOLINT: Too tricky with Kodi GL.
+#else
+#include "glad/glad.h"
+#endif
 
 #include <format>
 #include <format_23>
 #include <string>
+
+export module Goom.GoomVisualization.GlUtils;
+
+export namespace GOOM::OPENGL
+{
+
+auto CheckForOpenGLError(const char* file, int line) -> bool;
+
+auto DumpGLInfo(bool dumpExtensions = false) -> void;
+
+auto APIENTRY DebugCallback(GLenum source,
+                            GLenum type,
+                            GLuint id,
+                            GLenum severity,
+                            GLsizei length,
+                            const GLchar* msg,
+                            const void* param) -> void;
+
+auto GlClearError() -> void;
+
+} // namespace GOOM::OPENGL
 
 namespace GOOM::OPENGL
 {

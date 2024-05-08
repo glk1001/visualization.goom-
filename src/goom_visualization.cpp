@@ -2,16 +2,12 @@ module;
 
 #undef NO_LOGGING
 
-#include "build_time.h"
-#include "displacement_filter.h"
-#include "gl_render_types.h"
 #include "goom/compiler_versions.h"
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/goom_utils.h"
-#include "slot_producer_consumer.h"
 
 #include <chrono>
 #include <cstddef>
@@ -23,6 +19,11 @@ module;
 #include <utility>
 
 module Goom.GoomVisualization;
+
+import Goom.GoomVisualization.BuildTime;
+import :DisplacementFilter;
+import :GlRenderTypes;
+import :SlotProducerConsumer;
 
 namespace GOOM::VIS
 {

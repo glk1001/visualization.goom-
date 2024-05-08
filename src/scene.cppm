@@ -1,10 +1,12 @@
-#pragma once
-
-#include "gl_render_types.h"
+module;
 
 #include <cstdint>
 
-namespace GOOM::OPENGL
+export module Goom.GoomVisualization:Scene;
+
+import :GlRenderTypes;
+
+export namespace GOOM::OPENGL
 {
 
 class IScene

@@ -1,6 +1,8 @@
-#include "build_time.h"
+module;
 
 #include <string>
+
+module Goom.GoomVisualization.BuildTime;
 
 auto GetBuildTime() -> std::string
 {

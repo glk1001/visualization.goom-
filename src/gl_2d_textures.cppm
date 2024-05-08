@@ -1,12 +1,17 @@
-#pragma once
+module;
 
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
 #endif
 
-#include "gl_utils.h"
-#include "glsl_program.h"
+#include "gl_call.h"
 #include "goom/goom_utils.h"
+
+#ifdef IS_KODI_BUILD
+#include <kodi/gui/gl/GL.h> // NOLINT: Too tricky with Kodi GL.
+#else
+#include "glad/glad.h"
+#endif
 
 #include <algorithm>
 #include <array>
@@ -16,7 +21,12 @@
 #include <span>
 #include <stdexcept>
 
-namespace GOOM::OPENGL
+export module Goom.GoomVisualization:Gl2dTextures;
+
+import Goom.GoomVisualization.GlUtils;
+import :GlslProgram;
+
+export namespace GOOM::OPENGL
 {
 
 template<typename CppTextureType,

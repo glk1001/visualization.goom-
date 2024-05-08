@@ -2,11 +2,10 @@
 
 #include "Main.h"
 
-#include "gl_render_types.h"
 #include "goom/goom_config.h"
 #include "goom/goom_control.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
+//#include "goom/goom_types.h"
 #include "goom/goom_utils.h"
 
 #include <algorithm>

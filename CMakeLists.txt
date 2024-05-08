@@ -144,24 +144,11 @@ include_directories(BEFORE
 set(${VIS_GOOM_ADDON_PREFIX}_SOURCES
     src/Main.cpp
     src/build_time.cpp
-    src/displacement_filter.cpp
     src/goom_visualization.cpp
-    src/gl_utils.cpp
-    src/glsl_program.cpp
-    src/glsl_shader_file.cpp
 )
 set(${VIS_GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
-    src/build_time.h
-    src/displacement_filter.h
-    src/goom_visualization.cppm
-    src/gl_2d_textures.h
-    src/gl_render_types.h
-    src/gl_utils.h
-    src/glsl_program.h
-    src/glsl_shader_file.h
-    src/scene.h
-    src/slot_producer_consumer.h
+    src/gl_call.h
 )
 
 list(APPEND DEPLIBS goom::lib libs::vivid LSys::lib particles::lib blend2d::blend2d)
@@ -175,7 +162,16 @@ add_dependencies(${VIS_GOOM_TARGET_NAME} goom::lib)
 target_sources(${VIS_GOOM_TARGET_NAME}
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               src/build_time.cppm
+               src/gl_render_types.cppm
+               src/displacement_filter.cppm
                src/goom_visualization.cppm
+               src/gl_2d_textures.cppm
+               src/gl_utils.cppm
+               src/glsl_program.cppm
+               src/glsl_shader_file.cppm
+               src/scene.cppm
+               src/slot_producer_consumer.cppm
 )
 
 

@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <cstdint>
 
-namespace GOOM
+export module Goom.GoomVisualization:GlRenderTypes;
+
+export namespace GOOM
 {
 
 struct TextureBufferDimensions

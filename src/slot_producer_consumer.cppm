@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #ifdef DEBUG_LOGGING
@@ -15,7 +15,9 @@
 #include <queue>
 #include <string>
 
-namespace GOOM
+export module Goom.GoomVisualization:SlotProducerConsumer;
+
+export namespace GOOM
 {
 
 class GoomLogger;

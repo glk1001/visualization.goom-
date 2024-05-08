@@ -1,10 +1,7 @@
 module;
 
-#include "displacement_filter.h"
-#include "gl_render_types.h"
 #include "goom/goom_types.h"
 #include "goom/sound_info.h"
-#include "slot_producer_consumer.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -20,6 +17,10 @@ class GoomControl;
 }
 
 export module Goom.GoomVisualization;
+
+export import :GlRenderTypes;
+import :DisplacementFilter;
+import :SlotProducerConsumer;
 
 export namespace GOOM::VIS
 {
