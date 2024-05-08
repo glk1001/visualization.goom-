@@ -8,7 +8,6 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/goom_utils.h"
-#include "goom_visualization.h"
 
 #include <algorithm>
 #include <array>
@@ -31,6 +30,8 @@
 #ifdef GOOM_DEBUG // TODO(glk) - clang-tidy needs this. A better way?
 #include <stdexcept>
 #endif
+
+import Goom.GoomVisualization;
 
 using GOOM::AudioSamples;
 using GOOM::GoomControl;
@@ -178,7 +179,7 @@ auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 
 auto CVisualizationGoom::PassSettings() noexcept -> void
 {
-  GoomVisualization::SetRandomSeed(std::random_device{}());
+  m_goomVisualization.SetRandomSeed(std::random_device{}());
 
   m_goomVisualization.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
   m_goomVisualization.SetDumpDirectory(

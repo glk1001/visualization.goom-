@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "displacement_filter.h"
 #include "gl_render_types.h"
@@ -19,7 +19,9 @@ class GoomLogger;
 class GoomControl;
 }
 
-namespace GOOM::VIS
+export module Goom.GoomVisualization;
+
+export namespace GOOM::VIS
 {
 
 class GoomVisualization

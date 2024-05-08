@@ -11,7 +11,6 @@
 #include "goom/circular_buffer.h"
 #include "goom/goom_config.h" // NOLINT: Always want this
 #include "goom/sound_info.h"
-#include "goom_visualization.h"
 
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
@@ -45,6 +44,8 @@ namespace GOOM
 {
 class GoomLogger;
 }
+
+import Goom.GoomVisualization;
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,
                                             public kodi::addon::CInstanceVisualization,

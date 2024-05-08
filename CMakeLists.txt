@@ -154,7 +154,7 @@ set(${VIS_GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
     src/build_time.h
     src/displacement_filter.h
-    src/goom_visualization.h
+    src/goom_visualization.cppm
     src/gl_2d_textures.h
     src/gl_render_types.h
     src/gl_utils.h
@@ -171,6 +171,12 @@ set(CMAKE_INSTALL_LIBDIR "")
 
 build_addon(${VIS_GOOM_TARGET_NAME} ${VIS_GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${VIS_GOOM_TARGET_NAME} goom::lib)
+
+target_sources(${VIS_GOOM_TARGET_NAME}
+               PUBLIC
+               FILE_SET CXX_MODULES FILES
+               src/goom_visualization.cppm
+)
 
 
 # Force the build time into the compiled binaries.

@@ -1,6 +1,6 @@
-#undef NO_LOGGING
+module;
 
-#include "goom_visualization.h"
+#undef NO_LOGGING
 
 #include "build_time.h"
 #include "displacement_filter.h"
@@ -21,6 +21,8 @@
 #include <string>
 #include <thread>
 #include <utility>
+
+module Goom.GoomVisualization;
 
 namespace GOOM::VIS
 {
