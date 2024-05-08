@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom_plugin_info.h"
 
 #include <cmath>
 #include <cstdint>
@@ -13,6 +12,7 @@ import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.PluginInfo;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {

@@ -1,13 +1,6 @@
 module;
 
-#include "goom_plugin_info.h"
-
 #include <cstdint>
-
-namespace GOOM
-{
-class PluginInfo;
-}
 
 namespace GOOM::CONTROL
 {
@@ -21,6 +14,7 @@ import Goom.FilterFx.FilterSettingsService;
 import Goom.FilterFx.FilterSpeed;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.PluginInfo;
 import :GoomLock;
 
 export namespace GOOM::CONTROL

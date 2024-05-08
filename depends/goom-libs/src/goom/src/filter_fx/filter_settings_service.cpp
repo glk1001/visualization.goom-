@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_lerp_data.h"
-#include "goom_plugin_info.h"
 
 #include <array>
 #include <cstdint>
@@ -25,6 +24,7 @@ import Goom.FilterFx.FilterSpeed;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.PluginInfo;
 
 namespace GOOM::FILTER_FX
 {

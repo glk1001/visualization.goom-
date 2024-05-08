@@ -5,7 +5,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -22,6 +21,7 @@ import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
+import Goom.PluginInfo;
 
 namespace GOOM::VISUAL_FX::RAINDROPS
 {

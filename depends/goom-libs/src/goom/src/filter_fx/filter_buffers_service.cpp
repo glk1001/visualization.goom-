@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_time.h"
-#include "goom_plugin_info.h"
 
 #include <cmath>
 #include <cstdint>
@@ -20,6 +19,7 @@ import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomVector;
 import Goom.Utils.NameValuePairs;
+import Goom.PluginInfo;
 
 namespace GOOM::FILTER_FX
 {

@@ -5,7 +5,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 
 #include <array>
 #include <cmath>
@@ -15,11 +14,6 @@ module;
 #include <string>
 #include <vector>
 
-namespace GOOM
-{
-class PluginInfo;
-}
-
 export module Goom.VisualFx.FlyingStarsFx:StarTypesContainer;
 
 import Goom.Color.RandomColorMaps;
@@ -27,6 +21,7 @@ import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.PluginInfo;
 import :StarColorsMaker;
 
 export namespace GOOM::VISUAL_FX::FLYING_STARS

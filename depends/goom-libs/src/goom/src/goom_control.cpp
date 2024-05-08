@@ -23,7 +23,6 @@
 #include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "goom_plugin_info.h"
 
 #include <cmath>
 #include <cstddef>
@@ -64,6 +63,7 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
+import Goom.PluginInfo;
 
 namespace GOOM
 {

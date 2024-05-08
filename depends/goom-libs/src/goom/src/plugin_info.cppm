@@ -1,12 +1,14 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
 
+export module Goom.PluginInfo;
+
 import Goom.Control.GoomSoundEvents;
 
-namespace GOOM
+export namespace GOOM
 {
 
 class PluginInfo

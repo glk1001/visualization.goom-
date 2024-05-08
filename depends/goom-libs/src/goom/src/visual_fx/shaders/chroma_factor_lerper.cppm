@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom_plugin_info.h"
 
 #include <cmath>
 #include <cstdint>
@@ -11,6 +10,7 @@ module Goom.VisualFx.ShaderFx:ChromaFactorLerper;
 import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.PluginInfo;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {

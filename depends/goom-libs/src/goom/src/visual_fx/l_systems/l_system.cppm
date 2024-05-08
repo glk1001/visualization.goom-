@@ -4,7 +4,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
-#include "goom_plugin_info.h"
 
 #include <cmath>
 #include <cstdint>
@@ -28,6 +27,7 @@ import Goom.Utils.Math.Misc;
 import :IncrementedValuesBugFix;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
+import Goom.PluginInfo;
 import :LineDrawerManager;
 import :LSysColors;
 import :LSysDraw;

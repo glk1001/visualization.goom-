@@ -1,6 +1,5 @@
 module;
 
-#include "goom_plugin_info.h"
 #include "utils/math/parametric_functions2d.h"
 
 #include <cstdint>
@@ -16,6 +15,7 @@ import Goom.VisualFx.CirclesFx.Circle;
 import Goom.VisualFx.CirclesFx.Helper;
 import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
+import Goom.PluginInfo;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {

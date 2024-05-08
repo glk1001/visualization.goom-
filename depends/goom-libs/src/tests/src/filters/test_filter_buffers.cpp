@@ -15,7 +15,6 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
-#include "goom_plugin_info.h"
 
 #include <span>
 #include <vector>
@@ -37,6 +36,7 @@ import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.GoomRand;
+import Goom.PluginInfo;
 
 namespace GOOM::UNIT_TESTS
 {

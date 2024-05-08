@@ -3,7 +3,6 @@ module;
 #include "goom/goom_logger.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
-#include "goom_plugin_info.h"
 
 export module Goom.VisualFx.FxHelper;
 
@@ -11,6 +10,7 @@ import Goom.Control.GoomSoundEvents;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.PluginInfo;
 
 export namespace GOOM::VISUAL_FX
 {

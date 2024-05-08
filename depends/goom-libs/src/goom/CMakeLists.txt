@@ -128,7 +128,6 @@ add_library(goom
             src/goom_control.cpp
             src/goom_graphic.cpp
             src/goom_logger.cpp
-            src/goom_plugin_info.h
             src/goom_utils.cpp
             src/goom_version.cpp
             src/sound_info.cpp
@@ -320,6 +319,7 @@ target_sources(goom
                src/visual_fx/shapes_fx.cppm
                src/visual_fx/tentacles_fx.cppm
                src/visual_fx/tubes_fx.cppm
+               src/plugin_info.cppm
 )
 
 
