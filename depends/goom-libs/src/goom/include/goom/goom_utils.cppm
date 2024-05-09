@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include <algorithm>
 #include <array>
@@ -10,7 +10,9 @@
 #include <type_traits>
 #include <vector>
 
-namespace GOOM
+export module Goom.Lib.GoomUtils;
+
+export namespace GOOM
 {
 
 auto FindAndReplaceAll(std::string& dataStr,
@@ -94,12 +96,6 @@ compile_time_string(compile_time_string<LhsSize>, compile_time_string<RhsSize>)
 } // namespace DETAIL
 // NOLINTEND: Tricky template stuff here.
 
-template<DETAIL::compile_time_string Cts>
-consteval auto operator""_cts()
-{
-  return Cts;
-}
-
 template<DETAIL::compile_time_string Lhs, DETAIL::compile_time_string Rhs>
 consteval auto static_concat() noexcept -> DETAIL::compile_time_string<(Lhs.size + Rhs.size) - 1>
 {
@@ -115,48 +111,54 @@ consteval auto static_concat() noexcept -> decltype(auto)
   return static_concat<DETAIL::compile_time_string{Lhs, Rhs}, Others...>();
 }
 
-template<std::size_t N>
-auto operator+(const std::string& str1, const DETAIL::compile_time_string<N>& str2)
+export
 {
-  return str1 + str2.to_string();
-}
+  template<DETAIL::compile_time_string Cts>
+  consteval auto operator""_cts()
+  {
+    return Cts;
+  }
 
-namespace DETAIL
-{
+  template<std::size_t N>
+  auto operator+(const std::string& str1, const DETAIL::compile_time_string<N>& str2)
+  {
+    return str1 + str2.to_string();
+  }
 
-[[nodiscard]] consteval auto GetPathSep() noexcept -> decltype(auto)
-{
+  [[nodiscard]] consteval auto GetPathSep() noexcept -> decltype(auto)
+  {
 #ifdef _WIN32PC
-  return "\\"_cts;
+    return "\\"_cts;
 #else
-  return "/"_cts;
+    return "/"_cts;
 #endif
-}
+  }
 
-} // namespace DETAIL
+  template<DETAIL::compile_time_string Base>
+  [[nodiscard]] consteval auto join_paths() noexcept -> decltype(auto)
+  {
+    return Base;
+  }
 
-template<DETAIL::compile_time_string Base>
-[[nodiscard]] consteval auto join_paths() noexcept -> decltype(auto)
-{
-  return Base;
-}
-template<DETAIL::compile_time_string Base, DETAIL::compile_time_string... Others>
-  requires(sizeof...(Others) != 0)
-[[nodiscard]] consteval auto join_paths() noexcept -> decltype(auto)
-{
-  return static_concat<static_concat<Base, DETAIL::GetPathSep()>(), join_paths<Others...>()>();
-}
+  template<DETAIL::compile_time_string Base, DETAIL::compile_time_string... Others>
+    requires(sizeof...(Others) != 0)
+  [[nodiscard]] consteval auto join_paths() noexcept -> decltype(auto)
+  {
+    return static_concat<static_concat<Base, GetPathSep()>(), join_paths<Others...>()>();
+  }
 
-[[nodiscard]] constexpr auto join_paths(const std::string& base) noexcept -> std::string
-{
-  return base;
-}
-template<typename... Types>
-  requires(sizeof...(Types) != 0)
-[[nodiscard]] constexpr auto join_paths(const std::string& base, Types... paths) noexcept
-    -> std::string
-{
-  return base + DETAIL::GetPathSep() + join_paths(paths...);
-}
+  [[nodiscard]] constexpr auto join_paths(const std::string& base) noexcept -> std::string
+  {
+    return base;
+  }
+
+  template<typename... Types>
+    requires(sizeof...(Types) != 0)
+  [[nodiscard]] constexpr auto join_paths(const std::string& base, Types... paths) noexcept
+      -> std::string
+  {
+    return base + GetPathSep() + join_paths(paths...);
+  }
+} // export
 
 } // namespace GOOM

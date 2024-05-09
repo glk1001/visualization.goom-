@@ -5,10 +5,10 @@
 //#define DO_GOOM_STATE_DUMP
 #endif
 
-#include "goom_utils.h"
-
 #include <cassert>
 #include <exception>
+
+import Goom.Lib.GoomUtils;
 
 namespace GOOM
 {

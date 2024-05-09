@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 
@@ -34,6 +33,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.GoomUtils;
 import Goom.PluginInfo;
 
 namespace GOOM::VISUAL_FX

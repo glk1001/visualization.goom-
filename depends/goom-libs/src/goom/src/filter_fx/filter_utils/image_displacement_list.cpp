@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 
 #include <array>
@@ -12,6 +11,7 @@ module Goom.FilterFx.FilterUtils.ImageDisplacementList;
 
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomUtils;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

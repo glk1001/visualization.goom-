@@ -3,7 +3,6 @@
 #endif
 
 #include "goom/goom_config.h"
-#include "goom/goom_utils.h"
 
 #include <array>
 #include <string>
@@ -18,6 +17,8 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.Lib.GoomUtils;
+
 namespace GOOM::UNIT_TESTS
 {
 
@@ -30,7 +31,7 @@ TEST_CASE("Paths")
   static constexpr auto EXPECTED_STR_ARRAY = std::to_array({'t', 'e', 's', 't', '\0'});
   REQUIRE(TEST_STR_ARRAY == EXPECTED_STR_ARRAY);
 
-  const auto pathSep = DETAIL::GetPathSep().to_string();
+  const auto pathSep = GetPathSep().to_string();
   REQUIRE(not pathSep.empty());
 
   REQUIRE(join_paths(DATA_DIR, "fonts") == std::string{"data"} + pathSep + "fonts");

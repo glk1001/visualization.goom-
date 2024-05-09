@@ -1,13 +1,16 @@
-#pragma once
+module;
 
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "utils/buffer_saver.h"
 
 #include <format>
 #include <string>
 
-namespace GOOM
+export module Goom.Lib.GoomBufferSaver;
+
+import Goom.Utils.BufferSaver;
+
+export namespace GOOM
 {
 
 template<class HeaderT>

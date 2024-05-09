@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_utils.h"
-
 #ifdef IS_KODI_BUILD
 #include <kodi/gui/gl/GL.h> // NOLINT: Too tricky with Kodi GL.
 #else
@@ -13,6 +11,8 @@ module;
 #include <string>
 
 export module Goom.GoomVisualization.GlUtils;
+
+import Goom.Lib.GoomUtils;
 
 export namespace GOOM::OPENGL
 {

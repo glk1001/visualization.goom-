@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_lerp_data.h"
 
 #include <array>
 #include <cstdint>
@@ -18,6 +17,7 @@ import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
+import Goom.FilterFx.FilterUtils.GoomLerpData;
 import Goom.FilterFx.FilterConsts;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;

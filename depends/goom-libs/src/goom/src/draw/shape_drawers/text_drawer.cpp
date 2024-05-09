@@ -20,7 +20,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_utils.h"
 #include "goom/spimpl.h"
 
 #ifndef NO_FREETYPE_INSTALLED
@@ -37,6 +36,7 @@ import Goom.Utils.Parallel;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomUtils;
 #endif
 
 module Goom.Draw.ShaperDrawers.TextDrawer;

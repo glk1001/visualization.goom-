@@ -1,4 +1,4 @@
-#include "goom/goom_utils.h"
+module;
 
 #include "goom/compiler_versions.h"
 #include "goom/goom_version.h"
@@ -8,6 +8,8 @@
 #include <ostream>
 #include <string>
 #include <vector>
+
+module Goom.Lib.GoomUtils;
 
 import Goom.Utils.StrUtils;
 import Goom.Utils.BuildTime;

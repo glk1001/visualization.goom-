@@ -5,7 +5,6 @@ module;
 
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 
@@ -23,6 +22,7 @@ import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.GoomUtils;
 import :LSystem;
 
 namespace GOOM::VISUAL_FX

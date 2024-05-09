@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_utils.h"
 
 #include <array>
 #include <cstddef>
@@ -17,6 +16,7 @@ module Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomUtils;
 
 namespace GOOM::UTILS::GRAPHICS
 {

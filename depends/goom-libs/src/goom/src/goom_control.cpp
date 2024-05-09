@@ -19,7 +19,6 @@ module;
 #include "goom/goom_logger.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
-#include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
@@ -64,8 +63,9 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
-import Goom.PluginInfo;
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomUtils;
+import Goom.PluginInfo;
 
 namespace GOOM
 {

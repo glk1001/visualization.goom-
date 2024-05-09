@@ -32,9 +32,7 @@ endif ()
 
 add_library(goom
             STATIC
-            include/goom/goom_buffer_saver.h
             include/goom/goom_config.h
-            include/goom/goom_lerp_data.h
             include/goom/goom_time.h
             include/goom/goom_types.h
             include/goom/point2d.h
@@ -138,7 +136,9 @@ target_sources(goom
                FILE_SET CXX_MODULES FILES
                include/goom/circular_buffer.cppm
                include/goom/frame_data.cppm
+               include/goom/goom_buffer_saver.cppm
                include/goom/goom_control.cppm
+               include/goom/goom_utils.cppm
                src/color/color_adjustment.cppm
                src/color/color_maps_base.cppm
                src/color/color_maps.cppm
@@ -206,6 +206,7 @@ target_sources(goom
                src/filter_fx/filter_effects/adjustment_effects/y_only.cppm
                src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cppm
                src/filter_fx/filter_effects/zoom_vector_effects.cppm
+               src/filter_fx/filter_utils/goom_lerp_data.cppm
                src/filter_fx/filter_utils/image_displacement.cppm
                src/filter_fx/filter_utils/image_displacement_list.cppm
                src/filter_fx/filter_utils/utils.cppm

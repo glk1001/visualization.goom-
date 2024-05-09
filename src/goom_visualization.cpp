@@ -6,7 +6,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
-#include "goom/goom_utils.h"
 #include "goom/sound_info.h"
 
 #include <chrono>
@@ -22,6 +21,7 @@ module Goom.GoomVisualization;
 
 import Goom.GoomVisualization.BuildTime;
 import Goom.Lib.GoomControl;
+import Goom.Lib.GoomUtils;
 import :DisplacementFilter;
 import :GlRenderTypes;
 import :SlotProducerConsumer;

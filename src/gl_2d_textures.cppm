@@ -5,7 +5,6 @@ module;
 #endif
 
 #include "gl_call.h"
-#include "goom/goom_utils.h"
 
 #ifdef IS_KODI_BUILD
 #include <kodi/gui/gl/GL.h> // NOLINT: Too tricky with Kodi GL.
@@ -24,6 +23,7 @@ module;
 export module Goom.GoomVisualization:Gl2dTextures;
 
 import Goom.GoomVisualization.GlUtils;
+import Goom.Lib.GoomUtils;
 import :GlslProgram;
 
 export namespace GOOM::OPENGL

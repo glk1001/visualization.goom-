@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_utils.h"
-
 #include <format>
 #include <fstream>
 #include <stdexcept>
@@ -10,6 +8,8 @@ module;
 #include <vector>
 
 export module Goom.GoomVisualization:GlslShaderFile;
+
+import Goom.Lib.GoomUtils;
 
 export namespace GOOM::OPENGL
 {

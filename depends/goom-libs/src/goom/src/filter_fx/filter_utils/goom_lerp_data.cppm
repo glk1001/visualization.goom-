@@ -1,14 +1,16 @@
-#pragma once
+module;
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <algorithm>
 #include <cmath>
 
+export module Goom.FilterFx.FilterUtils.GoomLerpData;
+
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 
-namespace GOOM
+export namespace GOOM
 {
 
 class GoomLerpData

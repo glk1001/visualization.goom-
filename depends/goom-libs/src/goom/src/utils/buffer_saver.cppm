@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_utils.h"
 
 #include <cerrno>
 #include <cstddef>
@@ -19,6 +18,8 @@ module;
 #include <type_traits>
 
 export module Goom.Utils.BufferSaver;
+
+import Goom.Lib.GoomUtils;
 
 export namespace GOOM::UTILS
 {

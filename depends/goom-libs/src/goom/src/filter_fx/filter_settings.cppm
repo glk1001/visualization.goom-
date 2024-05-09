@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_lerp_data.h"
 #include "goom/point2d.h"
 
 #include <memory>
@@ -8,6 +7,7 @@ module;
 export module Goom.FilterFx.FilterSettings;
 
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
+import Goom.FilterFx.FilterUtils.GoomLerpData;
 import Goom.FilterFx.FilterSpeed;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 

@@ -4,8 +4,6 @@
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-//#include "goom/goom_types.h"
-#include "goom/goom_utils.h"
 
 #include <algorithm>
 #include <array>
@@ -31,6 +29,7 @@
 
 import Goom.GoomVisualization;
 import Goom.Lib.GoomControl;
+import Goom.Lib.GoomUtils;
 
 using GOOM::AudioSamples;
 using GOOM::GoomControl;
