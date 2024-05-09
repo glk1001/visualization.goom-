@@ -10,9 +10,9 @@
  *
  */
 
-#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
+module;
 
-#include "goom/goom_control.h"
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
@@ -36,6 +36,8 @@
 #include "control/goom_state_dump.h"
 #include "utils/math/randutils.h"
 #endif
+
+module Goom.Lib.GoomControl;
 
 import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomMessageDisplayer;

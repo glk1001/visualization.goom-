@@ -6,7 +6,6 @@ module;
 
 #include "goom/goom_config.h"
 
-#include "goom/goom_control.h"
 #include "goom/goom_logger.h"
 
 #include <chrono>
@@ -29,6 +28,7 @@ import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.DateUtils;
+import Goom.Lib.GoomControl;
 
 namespace GOOM::CONTROL
 {

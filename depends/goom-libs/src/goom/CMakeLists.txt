@@ -32,7 +32,6 @@ endif ()
 
 add_library(goom
             STATIC
-            include/goom/circular_buffer.h
             include/goom/frame_data.h
             include/goom/goom_buffer_saver.h
             include/goom/goom_config.h
@@ -138,6 +137,8 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               include/goom/circular_buffer.cppm
+               include/goom/goom_control.cppm
                src/color/color_adjustment.cppm
                src/color/color_maps_base.cppm
                src/color/color_maps.cppm

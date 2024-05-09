@@ -1,6 +1,5 @@
 #undef NO_LOGGING
 
-#include "goom/goom_control.h"
 #include "goom/goom_logger.h"
 
 #include <iostream>
@@ -16,6 +15,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Lib.GoomControl;
 
 using Catch::Session;
 using GOOM::GoomControl;

@@ -1,7 +1,10 @@
-#pragma once
+module;
 
 #include "frame_data.h"
+#include "goom_graphic.h"
+#include "goom_logger.h"
 #include "goom_types.h"
+#include "sound_info.h"
 #include "spimpl.h"
 
 #include <cstddef>
@@ -9,12 +12,10 @@
 #include <memory>
 #include <string>
 
-namespace GOOM
-{
+export module Goom.Lib.GoomControl;
 
-class AudioSamples;
-class GoomLogger;
-class PixelBuffer;
+export namespace GOOM
+{
 
 class GoomControl
 {

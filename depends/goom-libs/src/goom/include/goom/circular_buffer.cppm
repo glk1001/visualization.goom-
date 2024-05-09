@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom_config.h"
 
@@ -7,7 +7,9 @@
 #include <span>
 #include <vector>
 
-namespace GOOM
+export module Goom.Lib.CircularBuffer;
+
+export namespace GOOM
 {
 
 template<typename T>

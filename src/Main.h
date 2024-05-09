@@ -8,7 +8,6 @@
  *  See LICENSE.md for more information.
  */
 
-#include "goom/circular_buffer.h"
 #include "goom/goom_config.h" // NOLINT: Always want this
 #include "goom/sound_info.h"
 
@@ -45,6 +44,7 @@ namespace GOOM
 class GoomLogger;
 }
 
+import Goom.Lib.CircularBuffer;
 import Goom.GoomVisualization;
 
 class ATTRIBUTE_HIDDEN CVisualizationGoom : public kodi::addon::CAddonBase,

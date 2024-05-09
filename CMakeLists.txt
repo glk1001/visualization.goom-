@@ -9,11 +9,7 @@ option(ENABLE_TESTING "Enable unit testing" OFF)
 
 set(GOOM_LIBS_RELDIR depends/goom-libs)
 set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
-set(GOOM_INCLUDE_DIRS
-    "${GOOM_LIBS_DIR}/src/goom/include"
-    "${GOOM_LIBS_DIR}/src/goom/src"
-    "${GOOM_LIBS_DIR}/src/goom/include/goom"
-)
+set(GOOM_INCLUDE_DIR "${GOOM_LIBS_DIR}/src/goom/include")
 
 if (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
@@ -131,7 +127,7 @@ endif ()
 
 # Setup the includes and other dependencies the addon builder needs.
 include_directories(BEFORE
-                    ${GOOM_INCLUDE_DIRS}
+                    ${GOOM_INCLUDE_DIR}
 )
 include_directories(BEFORE
                     SYSTEM
@@ -160,16 +156,16 @@ build_addon(${VIS_GOOM_TARGET_NAME} ${VIS_GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${VIS_GOOM_TARGET_NAME} goom::lib)
 
 target_sources(${VIS_GOOM_TARGET_NAME}
-               PUBLIC
+               PRIVATE
                FILE_SET CXX_MODULES FILES
                src/build_time.cppm
-               src/gl_render_types.cppm
                src/displacement_filter.cppm
-               src/goom_visualization.cppm
+               src/gl_render_types.cppm
                src/gl_2d_textures.cppm
                src/gl_utils.cppm
                src/glsl_program.cppm
                src/glsl_shader_file.cppm
+               src/goom_visualization.cppm
                src/scene.cppm
                src/slot_producer_consumer.cppm
 )
@@ -223,7 +219,7 @@ message(STATUS "Vis.goom: C++ compile features       = \"${goom_addon_compile_fe
 message(STATUS "Vis.goom: C++ compile options        = \"${goom_addon_compile_options}\".")
 message(STATUS "Vis.goom: ENABLE_TESTING             = \"${ENABLE_TESTING}\".")
 message(STATUS "Vis.goom: GOOM_BUILD_DIR             = \"${GOOM_BUILD_DIR}\".")
-message(STATUS "Vis.goom: GOOM_INCLUDE_DIRS          = \"${GOOM_INCLUDE_DIRS}\".")
+message(STATUS "Vis.goom: GOOM_INCLUDE_DIR           = \"${GOOM_INCLUDE_DIR}\".")
 message(STATUS "Vis.goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Vis.goom: KODI_ROOT_DIR              = \"${KODI_ROOT_DIR}\".")
 message(STATUS "Vis.goom: KODI_CONFIG_DIR            = \"${KODI_CONFIG_DIR}\".")
