@@ -1,6 +1,5 @@
 module;
 
-#include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
@@ -37,6 +36,7 @@ import Goom.VisualFx.ShapesFx;
 import Goom.VisualFx.TentaclesFx;
 import Goom.VisualFx.TubesFx;
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.FrameData;
 import :VisualFxColorMaps;
 
 export namespace GOOM::CONTROL

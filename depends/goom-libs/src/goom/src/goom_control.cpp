@@ -14,7 +14,6 @@ module;
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
-#include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -66,6 +65,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.PluginInfo;
+import Goom.Lib.FrameData;
 
 namespace GOOM
 {

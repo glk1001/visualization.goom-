@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom_graphic.h"
 #include "point2d.h"
@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <span>
 
-namespace GOOM
+export module Goom.Lib.FrameData;
+
+export namespace GOOM
 {
 
 struct FilterPosArrays

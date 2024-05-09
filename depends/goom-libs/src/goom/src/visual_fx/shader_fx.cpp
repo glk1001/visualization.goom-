@@ -2,7 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/spimpl.h"
 
@@ -14,6 +13,7 @@ module Goom.VisualFx.ShaderFx;
 
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.FrameData;
 import :ChromaFactorLerper;
 import :ColorMultiplierLerper;
 import :HighContrast;

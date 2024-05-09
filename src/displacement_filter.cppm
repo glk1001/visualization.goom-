@@ -3,7 +3,6 @@ module;
 //#define SAVE_FILTER_BUFFERS
 
 #include "gl_call.h"
-#include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -46,6 +45,7 @@ class GoomLogger;
 
 export module Goom.GoomVisualization:DisplacementFilter;
 
+import Goom.Lib.FrameData;
 import :Gl2dTextures;
 import :GlRenderTypes;
 import :GlslProgram;

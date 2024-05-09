@@ -1,6 +1,5 @@
 module;
 
-#include "goom/frame_data.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
@@ -18,6 +17,7 @@ export module Goom.VisualFx.VisualFxBase;
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.FrameData;
 
 export namespace GOOM::VISUAL_FX
 {

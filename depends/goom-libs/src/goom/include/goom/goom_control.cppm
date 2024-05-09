@@ -1,6 +1,5 @@
 module;
 
-#include "frame_data.h"
 #include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_types.h"
@@ -13,6 +12,8 @@ module;
 #include <string>
 
 export module Goom.Lib.GoomControl;
+
+import Goom.Lib.FrameData;
 
 export namespace GOOM
 {

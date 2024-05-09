@@ -1,6 +1,5 @@
 module;
 
-#include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -23,6 +22,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.FrameData;
 import :VisualFxColorMaps;
 
 export namespace GOOM::CONTROL
