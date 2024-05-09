@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <string>
 
-namespace GOOM
+export module Goom.Lib.CompilerVersions;
+
+export namespace GOOM
 {
 
 [[nodiscard]] inline auto GetCompilerVersion() -> std::string

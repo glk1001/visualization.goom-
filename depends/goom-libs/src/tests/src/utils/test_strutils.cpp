@@ -1,5 +1,3 @@
-#include "goom/goom_types.h"
-
 #include <string>
 #include <vector>
 
@@ -16,6 +14,7 @@
 
 import Goom.Utils.StrUtils;
 import Goom.Utils.EnumUtils;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::UNIT_TESTS
 {

@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <cmath>
@@ -13,6 +12,7 @@ export module Goom.Draw.GoomDrawBase;
 import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.PixelUtils;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::DRAW
 {

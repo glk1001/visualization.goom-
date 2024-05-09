@@ -1,5 +1,3 @@
-#include "goom/goom_types.h"
-
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -21,6 +19,7 @@
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.GoomRand;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::UNIT_TESTS
 {

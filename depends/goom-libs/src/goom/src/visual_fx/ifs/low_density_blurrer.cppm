@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <algorithm>
@@ -23,6 +22,7 @@ import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomTypes;
 import :Colorizer;
 import :IfsTypes;
 import :Similitudes;

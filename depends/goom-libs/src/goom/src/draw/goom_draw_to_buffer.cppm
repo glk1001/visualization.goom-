@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 namespace GOOM
@@ -13,6 +12,7 @@ class GoomLogger;
 export module Goom.Draw.GoomDrawToBuffer;
 
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::DRAW
 {

@@ -1,9 +1,11 @@
-#pragma once
+module;
 
 #include <cstdint>
 #include <string>
 
-namespace GOOM
+export module Goom.Lib.GoomVersion;
+
+export namespace GOOM
 {
 
 inline constexpr auto* GOOM_VER_NAME        = "Goom++ Library";

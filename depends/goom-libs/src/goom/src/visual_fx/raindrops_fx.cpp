@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 
@@ -12,6 +11,7 @@ module Goom.VisualFx.RaindropsFx;
 
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.GoomTypes;
 import :Raindrops;
 
 namespace GOOM::VISUAL_FX

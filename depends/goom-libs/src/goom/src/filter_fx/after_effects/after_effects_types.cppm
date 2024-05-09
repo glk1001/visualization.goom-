@@ -1,8 +1,8 @@
 module;
 
-#include "goom/goom_types.h"
-
 export module Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

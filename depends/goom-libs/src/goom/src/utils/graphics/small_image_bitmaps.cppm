@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
-
 #include <cstddef>
 #include <functional>
 #include <map>
@@ -11,6 +9,7 @@ module;
 export module Goom.Utils.Graphics.SmallImageBitmaps;
 
 import Goom.Utils.Graphics.ImageBitmaps;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

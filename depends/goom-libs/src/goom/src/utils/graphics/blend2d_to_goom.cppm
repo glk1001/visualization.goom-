@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 
 #include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
 #include <blend2d/context.h>
@@ -14,6 +13,7 @@ export module Goom.Utils.Graphics.Blend2dToGoom;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.GoomDrawToBuffer;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

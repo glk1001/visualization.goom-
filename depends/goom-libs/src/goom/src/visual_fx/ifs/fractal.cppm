@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
-
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
@@ -15,6 +13,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomTypes;
 import :FractalHits;
 import :IfsTypes;
 import :Similitudes;

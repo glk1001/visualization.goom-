@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
-
 #include <cmath>
 #include <string>
 
@@ -11,6 +9,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

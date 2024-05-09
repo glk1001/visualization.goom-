@@ -6,7 +6,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #ifdef IS_KODI_BUILD
@@ -46,6 +45,7 @@ class GoomLogger;
 export module Goom.GoomVisualization:DisplacementFilter;
 
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomTypes;
 import :Gl2dTextures;
 import :GlRenderTypes;
 import :GlslProgram;

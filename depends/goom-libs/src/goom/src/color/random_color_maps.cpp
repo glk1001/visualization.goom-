@@ -4,7 +4,6 @@ module;
 
 #include "color_data/color_map_enums.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 
 #include <cstdint>
 #include <memory>
@@ -17,6 +16,7 @@ import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::COLOR
 {

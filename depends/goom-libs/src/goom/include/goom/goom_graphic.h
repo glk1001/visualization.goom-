@@ -1,7 +1,6 @@
 #pragma once
 
 #include "goom_config.h"
-#include "goom_types.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -9,6 +8,8 @@
 #include <limits>
 #include <span>
 #include <vector>
+
+import Goom.Lib.GoomTypes;
 
 namespace GOOM
 {

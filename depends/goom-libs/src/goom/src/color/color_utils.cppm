@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,6 +12,7 @@ export module Goom.Color.ColorUtils;
 
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.PixelUtils;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::COLOR
 {

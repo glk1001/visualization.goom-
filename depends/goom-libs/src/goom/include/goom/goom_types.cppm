@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "goom_config.h"
 #include "point2d.h"
 
 #include <cstdint>
 
-namespace GOOM
+export module Goom.Lib.GoomTypes;
+
+export namespace GOOM
 {
 
 using UnderlyingEnumType = std::int8_t;

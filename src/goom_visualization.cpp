@@ -2,10 +2,8 @@ module;
 
 #undef NO_LOGGING
 
-#include "goom/compiler_versions.h"
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
 
 #include <chrono>
 #include <cstddef>
@@ -19,7 +17,9 @@ module;
 module Goom.GoomVisualization;
 
 import Goom.GoomVisualization.BuildTime;
+import Goom.Lib.CompilerVersions;
 import Goom.Lib.GoomControl;
+import Goom.Lib.GoomTypes;
 import Goom.Lib.GoomUtils;
 import Goom.Lib.SoundInfo;
 import :DisplacementFilter;

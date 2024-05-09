@@ -3,7 +3,7 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "goom/spimpl.h"
 
 #include <functional>
@@ -22,6 +22,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomTypes;
 import Goom.Lib.SoundInfo;
 import :VisualFxColorMaps;
 

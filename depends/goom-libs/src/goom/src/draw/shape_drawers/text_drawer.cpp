@@ -20,6 +20,7 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
+#include "goom/point2d.h"
 #include "goom/spimpl.h"
 
 #ifndef NO_FREETYPE_INSTALLED

@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
-
 #include <string>
 
 export module Goom.FilterFx.AfterEffects.TheEffects.Rotation;
@@ -9,6 +7,7 @@ export module Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

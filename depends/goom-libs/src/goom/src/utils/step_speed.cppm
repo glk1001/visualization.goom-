@@ -1,11 +1,13 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
+#include <cmath>
 #include <cstdint>
 
 export module Goom.Utils.StepSpeed;
+
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS
 {

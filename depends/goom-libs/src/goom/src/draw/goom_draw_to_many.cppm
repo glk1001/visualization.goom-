@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <vector>
@@ -9,6 +8,7 @@ module;
 export module Goom.Draw.GoomDrawToMany;
 
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::DRAW
 {

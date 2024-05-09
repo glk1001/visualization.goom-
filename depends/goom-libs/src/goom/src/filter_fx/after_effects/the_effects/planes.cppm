@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
@@ -12,6 +11,7 @@ import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

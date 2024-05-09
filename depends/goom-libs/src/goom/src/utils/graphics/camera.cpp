@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
@@ -9,6 +8,8 @@ module;
 #include <glm/trigonometric.hpp>
 
 module Goom.Utils.Graphics.Camera;
+
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::UTILS::GRAPHICS
 {

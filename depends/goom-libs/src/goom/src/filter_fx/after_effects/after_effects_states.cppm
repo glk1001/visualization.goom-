@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
-
 #include <cstdint>
 #include <memory>
 
@@ -12,6 +10,7 @@ import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

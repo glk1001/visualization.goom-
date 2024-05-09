@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,6 +12,7 @@ export module Goom.Utils.Math.IncrementedValues;
 
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::MATH
 {

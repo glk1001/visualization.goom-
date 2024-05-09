@@ -1,6 +1,5 @@
 #pragma once
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <cmath>
@@ -9,6 +8,7 @@
 
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::UTILS::MATH
 {

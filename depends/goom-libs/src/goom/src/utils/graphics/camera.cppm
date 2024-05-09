@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <glm/ext/matrix_float4x4.hpp>
@@ -10,6 +9,7 @@ module;
 export module Goom.Utils.Graphics.Camera;
 
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

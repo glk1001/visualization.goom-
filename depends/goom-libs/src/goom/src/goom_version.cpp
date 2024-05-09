@@ -1,6 +1,8 @@
-#include "goom/goom_version.h"
+module;
 
 #include <string>
+
+module Goom.Lib.GoomVersion;
 
 namespace GOOM
 {

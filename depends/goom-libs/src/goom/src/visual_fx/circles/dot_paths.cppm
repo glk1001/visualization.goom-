@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
@@ -16,6 +15,7 @@ export module Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {

@@ -5,6 +5,7 @@ module;
 #include "goom/goom_graphic.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <vector>

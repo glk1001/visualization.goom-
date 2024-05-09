@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <algorithm>
@@ -17,6 +16,7 @@ import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.LineClipper;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 import :Tentacle3d;
 
 namespace GOOM::VISUAL_FX::TENTACLES

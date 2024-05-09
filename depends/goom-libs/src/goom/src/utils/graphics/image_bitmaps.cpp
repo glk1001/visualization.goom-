@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <exception>
@@ -22,6 +20,8 @@ module;
 #endif
 
 module Goom.Utils.Graphics.ImageBitmaps;
+
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::UTILS::GRAPHICS
 {

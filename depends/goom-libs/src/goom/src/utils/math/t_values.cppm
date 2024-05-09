@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,6 +9,8 @@ module;
 #include <vector>
 
 export module Goom.Utils.Math.TValues;
+
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::MATH
 {

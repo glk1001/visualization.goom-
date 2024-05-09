@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
@@ -10,6 +9,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

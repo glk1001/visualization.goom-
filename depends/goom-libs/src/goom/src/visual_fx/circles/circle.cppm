@@ -3,7 +3,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
@@ -30,6 +29,7 @@ import Goom.VisualFx.CirclesFx.DotDiameters;
 import Goom.VisualFx.CirclesFx.DotDrawer;
 import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {

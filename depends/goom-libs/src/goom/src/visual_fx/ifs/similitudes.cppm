@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 
 #include <array>
 #include <cmath>
@@ -20,6 +19,7 @@ import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomTypes;
 import :IfsTypes;
 
 namespace GOOM::VISUAL_FX::IFS

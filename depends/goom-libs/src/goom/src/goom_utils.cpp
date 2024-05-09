@@ -1,8 +1,5 @@
 module;
 
-#include "goom/compiler_versions.h"
-#include "goom/goom_version.h"
-
 #include <cstdint>
 #include <filesystem>
 #include <ostream>
@@ -14,6 +11,8 @@ module Goom.Lib.GoomUtils;
 import Goom.Utils.StrUtils;
 import Goom.Utils.BuildTime;
 import Goom.Utils.Math.RandUtils;
+import Goom.Lib.CompilerVersions;
+import Goom.Lib.GoomVersion;
 
 namespace GOOM
 {

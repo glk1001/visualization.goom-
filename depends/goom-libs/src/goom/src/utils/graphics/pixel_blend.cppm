@@ -3,6 +3,7 @@ module;
 #include "goom/goom_graphic.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 
 export module Goom.Utils.Graphics.PixelBlend;

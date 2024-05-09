@@ -1,7 +1,5 @@
 #pragma once
 
-#include "goom/goom_types.h"
-
 #include <format>
 #include <functional>
 #include <mutex>
@@ -9,6 +7,8 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+
+import Goom.Lib.GoomTypes;
 
 namespace GOOM
 {

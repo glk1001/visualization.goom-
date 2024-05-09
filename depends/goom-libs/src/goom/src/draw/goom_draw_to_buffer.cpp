@@ -4,11 +4,11 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
 
 module Goom.Draw.GoomDrawToBuffer;
 
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::DRAW
 {

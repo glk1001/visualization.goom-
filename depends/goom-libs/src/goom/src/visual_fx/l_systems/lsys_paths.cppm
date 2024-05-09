@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
@@ -13,6 +12,7 @@ module Goom.VisualFx.LSystemFx:LSysPaths;
 
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

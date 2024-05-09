@@ -1,20 +1,16 @@
 module;
 
-#include "goom/goom_types.h"
 #include "goom/spimpl.h"
 
 #include <string>
 #include <vector>
 
-namespace GOOM::COLOR
-{
-class RandomColorMaps;
-}
-
 export module Goom.VisualFx.IfsDancersFx;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::VISUAL_FX
 {

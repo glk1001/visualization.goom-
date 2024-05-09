@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
 #include <cstdint>
 
@@ -11,6 +10,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
 import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

@@ -1,8 +1,8 @@
 module;
 
-#include "goom/goom_types.h"
-
 export module Goom.Control.GoomEffects;
+
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::CONTROL
 {

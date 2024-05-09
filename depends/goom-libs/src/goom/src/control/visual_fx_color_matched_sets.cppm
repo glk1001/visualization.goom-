@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
 #include <array>
 #include <cstddef>
@@ -14,6 +13,7 @@ import Goom.Control.GoomEffects;
 import Goom.Utils.ArrayUtils;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::CONTROL
 {

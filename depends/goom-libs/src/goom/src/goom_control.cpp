@@ -17,7 +17,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_types.h"
 #include "goom/spimpl.h"
 
 #include <cmath>
@@ -63,6 +62,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomTypes;
 import Goom.Lib.GoomUtils;
 import Goom.PluginInfo;
 

@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <cstddef>
@@ -12,6 +11,7 @@ module Goom.Draw.GoomDrawToContainer;
 
 import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::DRAW
 {

@@ -3,7 +3,6 @@ module;
 #include "color_data/color_map_enums.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 
 #include <set>
 #include <string>
@@ -13,6 +12,7 @@ export module Goom.Color.RandomColorMaps;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 export namespace GOOM::COLOR
 {

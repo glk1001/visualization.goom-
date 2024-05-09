@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 
 #include <cmath>
 
@@ -12,6 +11,7 @@ import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {

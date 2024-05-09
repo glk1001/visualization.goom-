@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_types.h"
 
 #include <cstdint>
 
@@ -11,6 +10,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomTypes;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

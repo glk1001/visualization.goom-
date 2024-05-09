@@ -3,7 +3,6 @@ module;
 #include "color/color_data/color_map_enums.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 #include <array>
@@ -21,6 +20,7 @@ import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomTypes;
 import Goom.PluginInfo;
 import :StarColorsMaker;
 
