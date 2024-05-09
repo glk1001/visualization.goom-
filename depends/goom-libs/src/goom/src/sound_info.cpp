@@ -1,4 +1,4 @@
-#include "goom/sound_info.h"
+module;
 
 #include "goom/goom_config.h"
 
@@ -6,6 +6,8 @@
 #include <array>
 #include <cstddef>
 #include <span>
+
+module Goom.Lib.SoundInfo;
 
 namespace GOOM
 {

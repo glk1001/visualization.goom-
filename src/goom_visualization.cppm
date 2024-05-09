@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_types.h"
-#include "goom/sound_info.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -18,6 +17,7 @@ class GoomControl;
 
 export module Goom.GoomVisualization;
 
+import Goom.Lib.SoundInfo;
 export import :GlRenderTypes;
 import :DisplacementFilter;
 import :SlotProducerConsumer;

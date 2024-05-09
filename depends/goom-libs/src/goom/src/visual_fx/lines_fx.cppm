@@ -1,6 +1,5 @@
 module;
 
-#include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
 #include <cstdint>
@@ -16,6 +15,7 @@ export module Goom.VisualFx.LinesFx;
 
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.SoundInfo;
 
 export namespace GOOM::VISUAL_FX
 {

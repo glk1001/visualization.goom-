@@ -1,13 +1,13 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/sound_info.h"
 
 #include <algorithm>
 
 module Goom.Control.GoomSoundEvents;
 
 import Goom.Utils.GoomTime;
+import Goom.Lib.SoundInfo;
 
 namespace GOOM::CONTROL
 {

@@ -138,6 +138,7 @@ target_sources(goom
                include/goom/goom_buffer_saver.cppm
                include/goom/goom_control.cppm
                include/goom/goom_utils.cppm
+               include/goom/sound_info.cppm
                src/color/color_adjustment.cppm
                src/color/color_maps_base.cppm
                src/color/color_maps.cppm

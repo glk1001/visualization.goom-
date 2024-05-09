@@ -3,7 +3,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "goom/sound_info.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,6 +23,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.SoundInfo;
 import Goom.PluginInfo;
 import :LineTypes;
 

@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
 #include <algorithm>
@@ -23,6 +22,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.GoomTime;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.SoundInfo;
 import :LineMorph;
 import :LineTypes;
 

@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom_config.h"
 
@@ -8,7 +8,9 @@
 #include <limits>
 #include <span>
 
-namespace GOOM
+export module Goom.Lib.SoundInfo;
+
+export namespace GOOM
 {
 
 class AudioSamples

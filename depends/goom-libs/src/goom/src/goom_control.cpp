@@ -18,7 +18,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
-#include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
 #include <cmath>

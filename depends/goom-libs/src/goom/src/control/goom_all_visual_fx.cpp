@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
 #include <string>
@@ -17,6 +16,7 @@ import Goom.Control.GoomStates;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.FrameData;
+import Goom.Lib.SoundInfo;
 import :AllStandardVisualFx;
 
 namespace GOOM::CONTROL

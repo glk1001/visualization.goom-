@@ -3,7 +3,6 @@ module;
 #include "goom_graphic.h"
 #include "goom_logger.h"
 #include "goom_types.h"
-#include "sound_info.h"
 #include "spimpl.h"
 
 #include <cstddef>
@@ -14,6 +13,7 @@ module;
 export module Goom.Lib.GoomControl;
 
 import Goom.Lib.FrameData;
+import Goom.Lib.SoundInfo;
 
 export namespace GOOM
 {

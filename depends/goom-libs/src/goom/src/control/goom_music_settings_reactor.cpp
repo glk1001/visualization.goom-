@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/sound_info.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -14,6 +12,7 @@ module Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomAllVisualFx;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.FilterFx.FilterSpeed;
+import Goom.Lib.SoundInfo;
 import Goom.PluginInfo;
 
 namespace GOOM::CONTROL
