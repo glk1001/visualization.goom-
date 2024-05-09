@@ -1,5 +1,3 @@
-#include "goom/goom_time.h"
-
 #include <cstdint>
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
@@ -12,6 +10,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
 
 namespace GOOM::UNIT_TESTS

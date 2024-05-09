@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_time.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
@@ -9,18 +8,15 @@ module;
 #include <string>
 #include <thread>
 
-namespace GOOM
-{
-class PluginInfo;
-} // namespace GOOM
-
 export module Goom.FilterFx.FilterBuffersService;
 
 import Goom.FilterFx.FilterBuffers;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomVector;
+import Goom.Utils.GoomTime;
 import Goom.Utils.NameValuePairs;
+import Goom.PluginInfo;
 
 export namespace GOOM::FILTER_FX
 {

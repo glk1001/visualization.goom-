@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "goom/goom_time.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
@@ -21,6 +20,7 @@ import Goom.Color.RandomColorMaps;
 import Goom.Control.GoomSoundEvents;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.GoomTime;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :LineMorph;

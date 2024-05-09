@@ -5,7 +5,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_time.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/math/parametric_functions2d.h"
@@ -18,6 +17,7 @@ module;
 
 module Goom.VisualFx.CirclesFx;
 
+import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;

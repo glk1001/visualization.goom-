@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_time.h"
-
 #include <cstdint>
 #include <memory>
 
@@ -9,6 +7,7 @@ module Goom.FilterFx.AfterEffects.AfterEffectsStates;
 
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterConsts;
+import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
 import Goom.Utils.Math.GoomRandBase;
 

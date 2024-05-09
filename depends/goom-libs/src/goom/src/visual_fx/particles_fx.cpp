@@ -5,7 +5,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
@@ -35,6 +34,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
+import Goom.Utils.GoomTime;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 

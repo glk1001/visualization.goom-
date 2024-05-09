@@ -1,12 +1,12 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 
 export module Goom.PluginInfo;
 
 import Goom.Control.GoomSoundEvents;
+import Goom.Utils.GoomTime;
 
 export namespace GOOM
 {

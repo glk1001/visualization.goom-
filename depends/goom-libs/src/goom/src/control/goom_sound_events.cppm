@@ -1,11 +1,12 @@
 module;
 
-#include "goom/goom_time.h"
 #include "goom/sound_info.h"
 
 #include <cstdint>
 
 export module Goom.Control.GoomSoundEvents;
+
+import Goom.Utils.GoomTime;
 
 export namespace GOOM::CONTROL
 {

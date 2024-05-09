@@ -17,7 +17,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
-#include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
@@ -52,6 +51,7 @@ import Goom.FilterFx.FilterSettingsService;
 import Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.DebuggingLogger;
+import Goom.Utils.GoomTime;
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
 import Goom.Utils.StrUtils;

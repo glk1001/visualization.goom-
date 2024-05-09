@@ -1,4 +1,3 @@
-#include "goom/goom_time.h"
 #include "goom/sound_info.h"
 
 #include <algorithm>
@@ -19,6 +18,7 @@
 
 import Goom.Control.GoomSoundEvents;
 import Goom.Utils.Math.Misc;
+import Goom.Utils.GoomTime;
 
 namespace GOOM::UNIT_TESTS
 {

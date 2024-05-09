@@ -33,7 +33,6 @@ endif ()
 add_library(goom
             STATIC
             include/goom/goom_config.h
-            include/goom/goom_time.h
             include/goom/goom_types.h
             include/goom/point2d.h
             src/color/color_data/color_data_maps.cpp
@@ -247,6 +246,7 @@ target_sources(goom
                src/utils/debugging_logger.cppm
                src/utils/enum_utils.cppm
                src/utils/format_utils.cppm
+               src/utils/goom_time.cppm
                src/utils/name_value_pairs.cppm
                src/utils/parallel_utils.cppm
                src/utils/step_speed.cppm

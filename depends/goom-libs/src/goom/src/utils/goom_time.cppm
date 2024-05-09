@@ -1,11 +1,13 @@
-#pragma once
+module;
 
-#include "goom_config.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <limits>
 
-namespace GOOM
+export module Goom.Utils.GoomTime;
+
+export namespace GOOM
 {
 
 class GoomTime

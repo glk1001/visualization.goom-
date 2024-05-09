@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/goom_time.h"
 
 #include <cmath>
 #include <cstdint>
@@ -18,6 +17,7 @@ import Goom.FilterFx.FilterBuffers;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomVector;
+import Goom.Utils.GoomTime;
 import Goom.Utils.NameValuePairs;
 import Goom.PluginInfo;
 
