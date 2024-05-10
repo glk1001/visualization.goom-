@@ -115,8 +115,8 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using DRAW::IGoomDraw;
-using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::TValue;
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
   : m_draw{&draw}, m_goomRand{&goomRand}

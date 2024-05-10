@@ -77,11 +77,11 @@ inline auto LSysPath::GetPathTarget() const noexcept -> const Point2dInt&
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
-using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::StartAndEndPos;
+using UTILS::MATH::TValue;
 
 LSysPath::LSysPath(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {

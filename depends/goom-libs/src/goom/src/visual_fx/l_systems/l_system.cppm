@@ -168,8 +168,9 @@ private:
   auto UpdateLSysModel() noexcept -> void;
   auto InitNextLSysInterpreter() -> void;
   static constexpr auto DEFAULT_NUM_INTERPRETER_PARAMS_STEPS = 100U;
-  UTILS::MATH::IncrementedValueBugFix<::LSYS::Interpreter::DefaultParams> m_defaultInterpreterParams{
-      UTILS::MATH::TValue::StepType::SINGLE_CYCLE, DEFAULT_NUM_INTERPRETER_PARAMS_STEPS};
+  UTILS::MATH::IncrementedValueBugFix<::LSYS::Interpreter::DefaultParams>
+      m_defaultInterpreterParams{UTILS::MATH::TValue::StepType::SINGLE_CYCLE,
+                                 DEFAULT_NUM_INTERPRETER_PARAMS_STEPS};
   auto UpdateInterpreterParams() noexcept -> void;
   auto SetNewDefaultInterpreterParams() noexcept -> void;
   [[nodiscard]] auto GetRandomDefaultInterpreterParams() const noexcept

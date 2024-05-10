@@ -50,12 +50,12 @@ using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
 using PARTICLES::EFFECTS::AttractorEffect;
 using PARTICLES::EFFECTS::IEffect;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
 

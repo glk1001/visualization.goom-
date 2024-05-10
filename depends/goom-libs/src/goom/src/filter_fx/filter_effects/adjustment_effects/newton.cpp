@@ -8,7 +8,7 @@ module;
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.Newton;
 
-import  Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;

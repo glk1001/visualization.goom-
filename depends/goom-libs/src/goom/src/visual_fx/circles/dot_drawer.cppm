@@ -122,10 +122,10 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 
 static constexpr auto PROB_CIRCLES                          = 0.5F;
 static constexpr auto DOT_INSIDE_MIN_BRIGHTNESS_FACTOR      = 1.0F;

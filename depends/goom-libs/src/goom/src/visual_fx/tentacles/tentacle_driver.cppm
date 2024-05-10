@@ -165,10 +165,10 @@ using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IncrementedValue;
 using UTILS::MATH::SineWaveMultiplier;
+using UTILS::MATH::TValue;
 
 namespace
 {

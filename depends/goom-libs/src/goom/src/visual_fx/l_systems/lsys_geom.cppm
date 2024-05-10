@@ -37,7 +37,8 @@ public:
       -> Point2dFlt;
   auto IncrementTs() noexcept -> void;
 
-  [[nodiscard]] auto GetVerticalMove() const noexcept -> const UTILS::MATH::IncrementedValue<float>&;
+  [[nodiscard]] auto GetVerticalMove() const noexcept
+      -> const UTILS::MATH::IncrementedValue<float>&;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -79,27 +80,30 @@ private:
   float m_rotateSign = +1.0F;
 
   static constexpr auto DEFAULT_NUM_SPIN_DEGREES_STEPS = 100U;
-  UTILS::MATH::IncrementedValue<float> m_spinDegreesAdjust{0.0F,
-                                                     UTILS::MATH::DEGREES_360,
-                                                     UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                                     DEFAULT_NUM_SPIN_DEGREES_STEPS};
+  UTILS::MATH::IncrementedValue<float> m_spinDegreesAdjust{
+      0.0F,
+      UTILS::MATH::DEGREES_360,
+      UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
+      DEFAULT_NUM_SPIN_DEGREES_STEPS};
   float m_spinSign = -1.0F;
 
   static constexpr auto MIN_Y_SCALE_ADJUST           = 1.0F;
   static constexpr auto MAX_Y_SCALE_ADJUST           = 1.9F;
   static constexpr auto DEFAULT_Y_SCALE_ADJUST_STEPS = 300U;
-  UTILS::MATH::IncrementedValue<float> m_yScaleAdjust{MIN_Y_SCALE_ADJUST,
-                                                MAX_Y_SCALE_ADJUST,
-                                                UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                                DEFAULT_Y_SCALE_ADJUST_STEPS};
+  UTILS::MATH::IncrementedValue<float> m_yScaleAdjust{
+      MIN_Y_SCALE_ADJUST,
+      MAX_Y_SCALE_ADJUST,
+      UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
+      DEFAULT_Y_SCALE_ADJUST_STEPS};
 
   static constexpr auto MIN_VERTICAL_MOVE           = -100.0F;
   static constexpr auto MAX_VERTICAL_MOVE           = +100.0F;
   static constexpr auto DEFAULT_VERTICAL_MOVE_STEPS = 150U;
-  UTILS::MATH::IncrementedValue<float> m_verticalMove{MIN_VERTICAL_MOVE,
-                                                MAX_VERTICAL_MOVE,
-                                                UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                                DEFAULT_VERTICAL_MOVE_STEPS};
+  UTILS::MATH::IncrementedValue<float> m_verticalMove{
+      MIN_VERTICAL_MOVE,
+      MAX_VERTICAL_MOVE,
+      UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
+      DEFAULT_VERTICAL_MOVE_STEPS};
 };
 
 inline auto LSysGeometry::ReverseRotateDirection() noexcept -> void
@@ -143,7 +147,8 @@ inline auto LSysGeometry::SetYScaleNumSteps(const uint32_t numSteps) noexcept ->
   m_yScaleAdjust.SetNumSteps(numSteps);
 }
 
-inline auto LSysGeometry::GetVerticalMove() const noexcept -> const UTILS::MATH::IncrementedValue<float>&
+inline auto LSysGeometry::GetVerticalMove() const noexcept
+    -> const UTILS::MATH::IncrementedValue<float>&
 {
   return m_verticalMove;
 }
@@ -153,9 +158,9 @@ inline auto LSysGeometry::GetVerticalMove() const noexcept -> const UTILS::MATH:
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
-using UTILS::MATH::TValue;
 using UTILS::MATH::DEGREES_360;
 using UTILS::MATH::ToRadians;
+using UTILS::MATH::TValue;
 
 LSysGeometry::LSysGeometry(const UTILS::MATH::IGoomRand& goomRand,
                            const float xScale,

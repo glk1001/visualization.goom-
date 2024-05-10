@@ -86,9 +86,9 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::WeightedRandomColorMaps;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::TValue;
 using UTILS::MATH::U_HALF;
 
 Fractal::Fractal(const Dimensions& dimensions,

@@ -154,7 +154,7 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
   const auto n = last - first;
   for (auto i = n - 1; i > 0; --i)
   {
-//HELP!!    std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
+    //HELP!!    std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
   }
 }
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.

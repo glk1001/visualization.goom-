@@ -32,10 +32,10 @@ namespace GOOM::VISUAL_FX
 
 using FX_UTILS::RandomPixelBlender;
 using SHAPES::Shape;
-using UTILS::MATH::IncrementedValue;
 using UTILS::Timer;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
 class ShapesFx::ShapesFxImpl

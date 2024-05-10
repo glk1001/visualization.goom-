@@ -15,8 +15,8 @@ import Goom.Lib.GoomTypes;
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
-using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::TValue;
 
 LineDrawerMovingNoise::LineDrawerMovingNoise(IGoomDraw& draw,
                                              const IGoomRand& goomRand,

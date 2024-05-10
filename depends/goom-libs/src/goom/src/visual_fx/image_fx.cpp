@@ -49,11 +49,11 @@ using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
 using UTILS::Parallel;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::MATH::HALF;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::Sq;
+using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
 static constexpr auto CHUNK_WIDTH  = 2;

@@ -9,7 +9,7 @@ module;
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexRational;
 
-import  Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
@@ -27,9 +27,9 @@ using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;

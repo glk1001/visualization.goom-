@@ -43,14 +43,14 @@ private:
   static constexpr auto A_VAL         = 1.5F;
   static constexpr auto DEFAULT_T_INC = 0.007F;
   UTILS::MATH::TValue m_sFuncTVal{
-      UTILS::MATH::TValue::StepSizeProperties{DEFAULT_T_INC,
-                                        UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
+      UTILS::MATH::TValue::StepSizeProperties{
+                                              DEFAULT_T_INC, UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   [[nodiscard]] auto GetNextSFuncValue() const noexcept -> float;
 
   UTILS::MATH::TValue m_incLerpFactor{
-      UTILS::MATH::TValue::StepSizeProperties{DEFAULT_INCREMENT,
-                                        UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
+      UTILS::MATH::TValue::StepSizeProperties{
+                                              DEFAULT_INCREMENT, UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   float m_funcLerpFactor = 0.0F;
   float m_lerpFactor     = 0.0F;

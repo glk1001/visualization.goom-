@@ -147,11 +147,11 @@ using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::FillCircleWithGradient;
 using UTILS::GRAPHICS::GetMinSideLength;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::U_HALF;
 
 Raindrops::Raindrops(FxHelper& fxHelper,

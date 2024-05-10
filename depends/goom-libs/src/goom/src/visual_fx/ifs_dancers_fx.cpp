@@ -75,8 +75,8 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::TValue;
 using UTILS::MATH::Weights;
 
 class IfsDancersFx::IfsDancersFxImpl

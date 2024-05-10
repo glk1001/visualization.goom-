@@ -129,7 +129,8 @@ inline auto LSysColors::SetLineWidth(const uint8_t lineWidth) noexcept -> void
   m_lineWidth = lineWidth;
 }
 
-inline auto LSysColors::GetCurrentColorTs() const noexcept -> const std::vector<UTILS::MATH::TValue>&
+inline auto LSysColors::GetCurrentColorTs() const noexcept
+    -> const std::vector<UTILS::MATH::TValue>&
 {
   return m_currentColorTs;
 }
@@ -167,9 +168,9 @@ using COLOR::SimpleColors;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::MakePixels;
 using DRAW::MultiplePixels;
-using UTILS::MATH::TValue;
 using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::TValue;
 
 using TintProperties = ColorMaps::TintProperties;
 

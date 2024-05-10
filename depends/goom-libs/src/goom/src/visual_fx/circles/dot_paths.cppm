@@ -304,10 +304,10 @@ module :private;
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::StartAndEndPos;
+using UTILS::MATH::TValue;
 
 DotPaths::DotPaths(const IGoomRand& goomRand,
                    const uint32_t numDots,

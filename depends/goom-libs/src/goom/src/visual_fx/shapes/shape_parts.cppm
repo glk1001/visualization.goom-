@@ -113,7 +113,8 @@ private:
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
   UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
   UTILS::MATH::TValue m_dotRadiusT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
+       m_dotRadiusStepSpeed.GetCurrentNumSteps()}
   };
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
 
@@ -237,7 +238,6 @@ namespace GOOM::VISUAL_FX::SHAPES
 
 using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
-using UTILS::MATH::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CircleFunction;
 using UTILS::MATH::CirclePath;
@@ -245,6 +245,7 @@ using UTILS::MATH::IsEven;
 using UTILS::MATH::IsOdd;
 using UTILS::MATH::Transform2d;
 using UTILS::MATH::TransformedPath;
+using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
 ShapePart::ShapePart(FxHelper& fxHelper,

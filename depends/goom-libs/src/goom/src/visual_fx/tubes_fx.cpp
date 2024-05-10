@@ -56,12 +56,12 @@ using TUBES::Tube;
 using TUBES::TubeData;
 using TUBES::TubeDrawFuncs;
 using UTILS::Timer;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::TValue;
 
 namespace
 {

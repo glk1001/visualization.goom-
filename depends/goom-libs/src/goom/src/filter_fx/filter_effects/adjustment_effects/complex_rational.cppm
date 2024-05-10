@@ -8,7 +8,7 @@ module;
 
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexRational;
 
-import  Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;

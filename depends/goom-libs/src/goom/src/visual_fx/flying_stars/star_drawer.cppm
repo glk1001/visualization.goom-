@@ -178,12 +178,12 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::GetColorMultiply;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 
 StarDrawer::StarDrawer(IGoomDraw& draw,
                        const IGoomRand& goomRand,

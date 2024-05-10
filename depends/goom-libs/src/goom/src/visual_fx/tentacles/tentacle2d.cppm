@@ -13,7 +13,8 @@ module;
 
 module Goom.VisualFx.TentaclesFx:Tentacle2d;
 
-import Goom.Utils.Math.DampingFunctions;;
+import Goom.Utils.Math.DampingFunctions;
+;
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
