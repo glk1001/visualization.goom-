@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom_config.h"
 
@@ -9,9 +9,11 @@
 #include <span>
 #include <vector>
 
+export module Goom.Lib.GoomGraphic;
+
 import Goom.Lib.GoomTypes;
 
-namespace GOOM
+export namespace GOOM
 {
 
 template<class T>
@@ -240,10 +242,9 @@ constexpr Pixel::Pixel(const PixelChannelType red,
 {
 }
 
-static inline constexpr auto ZERO_PIXEL  = Pixel{0U, 0U, 0U, 0U};
-static inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
-static inline constexpr auto WHITE_PIXEL =
-    Pixel{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
+inline constexpr auto ZERO_PIXEL  = Pixel{0U, 0U, 0U, 0U};
+inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
+inline constexpr auto WHITE_PIXEL = Pixel{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
 
 constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {

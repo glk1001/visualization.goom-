@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <cstddef>
@@ -10,6 +9,7 @@ module;
 module Goom.VisualFx.IfsDancersFx:FractalHits;
 
 import Goom.Color.ColorUtils;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import :IfsTypes;
 import :Similitudes;

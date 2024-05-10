@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 
@@ -24,6 +23,7 @@ import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import :Shapes;
 

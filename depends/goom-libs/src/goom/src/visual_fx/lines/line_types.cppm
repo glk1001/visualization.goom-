@@ -1,9 +1,8 @@
 module;
 
-#include "goom/goom_graphic.h"
-
 module Goom.VisualFx.LinesFx:LineTypes;
 
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::VISUAL_FX::LINES

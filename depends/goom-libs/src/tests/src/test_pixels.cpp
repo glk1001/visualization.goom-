@@ -3,7 +3,6 @@
 #endif
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
@@ -16,6 +15,7 @@
 #endif
 
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UNIT_TESTS
 {

@@ -1,4 +1,3 @@
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <algorithm>
@@ -19,6 +18,7 @@
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.GoomDrawToContainer;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UNIT_TESTS
 {

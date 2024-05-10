@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
@@ -27,6 +26,7 @@ import Goom.VisualFx.CirclesFx.Circles;
 import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::VISUAL_FX
 {

@@ -1,11 +1,11 @@
 module;
 
-#include "goom/goom_graphic.h"
-
 #include <algorithm>
 #include <cmath>
 
 module Goom.Color.ColorUtils;
+
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR
 {

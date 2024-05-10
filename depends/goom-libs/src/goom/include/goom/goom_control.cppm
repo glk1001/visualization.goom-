@@ -1,6 +1,5 @@
 module;
 
-#include "goom_graphic.h"
 #include "goom_logger.h"
 #include "spimpl.h"
 
@@ -12,6 +11,7 @@ module;
 export module Goom.Lib.GoomControl;
 
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.SoundInfo;
 

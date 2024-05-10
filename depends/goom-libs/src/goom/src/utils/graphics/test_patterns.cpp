@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 module Goom.Utils.Graphics.TestPatterns;
@@ -8,6 +7,7 @@ module Goom.Utils.Graphics.TestPatterns;
 import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::UTILS::GRAPHICS

@@ -1,5 +1,4 @@
 #include "color/color_data/color_map_enums.h"
-#include "goom/goom_graphic.h"
 
 #include <cstddef>
 #include <string>
@@ -33,6 +32,7 @@ import Goom.Color.ColorMapsGrid;
 import Goom.Color.ColorUtils;
 import Goom.Color.ColorMaps;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UNIT_TESTS
 {

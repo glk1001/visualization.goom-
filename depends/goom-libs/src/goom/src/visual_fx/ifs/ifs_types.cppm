@@ -1,12 +1,13 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
 
 module Goom.VisualFx.IfsDancersFx:IfsTypes;
+
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::VISUAL_FX::IFS
 {

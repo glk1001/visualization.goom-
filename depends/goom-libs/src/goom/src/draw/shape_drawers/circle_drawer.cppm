@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
@@ -11,6 +10,7 @@ module;
 export module Goom.Draw.ShaperDrawers.CircleDrawer;
 
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS
 {

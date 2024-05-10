@@ -1,16 +1,10 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
-
-namespace GOOM
-{
-class AudioSamples;
-}
 
 export module Goom.VisualFx.VisualFxBase;
 
@@ -18,6 +12,8 @@ import Goom.Color.RandomColorMaps;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomGraphic;
+import Goom.Lib.SoundInfo;
 
 export namespace GOOM::VISUAL_FX
 {

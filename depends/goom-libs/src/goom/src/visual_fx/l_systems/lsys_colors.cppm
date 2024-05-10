@@ -2,7 +2,6 @@ module;
 
 #include "color/color_data/color_map_enums.h"
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,6 +20,7 @@ import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

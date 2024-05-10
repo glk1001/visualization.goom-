@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -23,6 +22,7 @@ module Goom.Color.ColorAdjustment;
 import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR
 {

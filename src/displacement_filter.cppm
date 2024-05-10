@@ -4,7 +4,6 @@ module;
 
 #include "gl_call.h"
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
 
@@ -31,8 +30,6 @@ module;
 #include <vector>
 
 #ifdef SAVE_FILTER_BUFFERS
-#include "goom_graphic.h"
-
 #include <format_23>
 #include <fstream>
 #endif
@@ -45,6 +42,7 @@ class GoomLogger;
 export module Goom.GoomVisualization:DisplacementFilter;
 
 import Goom.Lib.FrameData;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import :Gl2dTextures;
 import :GlRenderTypes;

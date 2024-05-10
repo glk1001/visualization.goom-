@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <cstddef>
@@ -17,6 +16,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::CONTROL

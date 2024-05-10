@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <algorithm>
@@ -19,6 +18,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import :ShapeParts;
 

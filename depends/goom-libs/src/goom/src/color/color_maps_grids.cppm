@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -11,6 +9,7 @@ export module Goom.Color.ColorMapsGrid;
 
 import Goom.Color.ColorMaps;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM::COLOR
 {

@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <cstddef>
@@ -12,6 +11,7 @@ module Goom.FilterFx.FilterUtils.ImageDisplacement;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

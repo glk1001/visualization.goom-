@@ -2,7 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
 
@@ -16,6 +15,7 @@ module Goom.Control.GoomMessageDisplayer;
 import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::CONTROL

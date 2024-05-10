@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <format>
@@ -9,6 +8,7 @@ module;
 export module Goom.Lib.GoomBufferSaver;
 
 import Goom.Utils.BufferSaver;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM
 {

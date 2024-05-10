@@ -1,13 +1,13 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 module Goom.Color.RandomColorMapsGroups;
 
 import Goom.Color.ColorMaps;
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR
 {

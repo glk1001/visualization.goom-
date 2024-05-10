@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "utils/math/paths.h"
 
@@ -20,6 +19,7 @@ import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Utils.Graphics.Blend2dUtils;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::VISUAL_FX::SHAPES
 {

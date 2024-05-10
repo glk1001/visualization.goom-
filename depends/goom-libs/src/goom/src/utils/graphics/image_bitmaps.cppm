@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -11,6 +9,7 @@ module;
 
 export module Goom.Utils.Graphics.ImageBitmaps;
 
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::GRAPHICS

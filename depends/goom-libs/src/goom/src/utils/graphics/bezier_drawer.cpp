@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <algorithm>
@@ -14,6 +13,7 @@ import Goom.Color.ColorUtils;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UTILS::GRAPHICS
 {

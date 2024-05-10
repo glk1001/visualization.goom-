@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 #include <algorithm>
 #include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
@@ -17,6 +16,7 @@ module Goom.Utils.Graphics.Blend2dToGoom;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.GoomDrawToBuffer;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::UTILS::GRAPHICS
@@ -151,7 +151,7 @@ auto Blend2dToGoom::GetNewBlend2DBuffer(const Dimensions& dimensions) noexcept -
 
 auto Blend2dToGoom::UpdateGoomBuffer(PixelBuffer& goomBuffer) noexcept -> void
 {
-  Expects(m_pixelBlendFunc != nullptr);
+  Expects(m_pixelBlendFunc);
 
   const auto blendPixel = [this](const uint32_t color, const Pixel& pixel) -> Pixel
   { return GetBlendedPixel(color, pixel); };

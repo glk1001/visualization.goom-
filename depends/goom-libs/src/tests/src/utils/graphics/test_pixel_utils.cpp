@@ -1,5 +1,3 @@
-#include "goom/goom_graphic.h"
-
 #include <cstdint>
 
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
@@ -13,6 +11,7 @@
 #endif
 
 import Goom.Utils.Graphics.PixelUtils;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UNIT_TESTS
 {

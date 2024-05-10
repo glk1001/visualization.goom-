@@ -4,7 +4,6 @@ module;
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 
@@ -26,6 +25,7 @@ import Goom.Utils.Timer;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.SoundInfo;
 import :CirclesTentacleLayout;

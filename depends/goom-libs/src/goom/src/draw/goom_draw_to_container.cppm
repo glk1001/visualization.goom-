@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <array>
@@ -12,6 +11,7 @@ module;
 export module Goom.Draw.GoomDrawToContainer;
 
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::DRAW

@@ -6,7 +6,6 @@ module;
 #include "color_data/color_map_enums.h"
 #include "color_data/extra_color_groups.h"
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 #ifdef GOOM_DEBUG // TODO(glk) - clang-tidy needs this. A better way?
 #include <algorithm>
@@ -35,6 +34,7 @@ module Goom.Color.ColorMaps;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorUtils;
 import Goom.Utils.EnumUtils;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR
 {

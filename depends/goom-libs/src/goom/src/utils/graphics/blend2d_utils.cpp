@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <array>
@@ -14,6 +13,7 @@ module Goom.Utils.Graphics.Blend2dUtils;
 import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.Blend2dToGoom;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UTILS::GRAPHICS
 {

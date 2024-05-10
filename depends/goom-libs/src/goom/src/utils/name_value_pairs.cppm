@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 #include <algorithm>
@@ -14,6 +13,7 @@ export module Goom.Utils.NameValuePairs;
 
 import Goom.Utils.FormatUtils;
 import Goom.Utils.StrUtils;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM::UTILS
 {

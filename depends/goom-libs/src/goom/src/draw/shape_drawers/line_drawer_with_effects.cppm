@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
 export module Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
@@ -10,6 +9,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
 import Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS
 {

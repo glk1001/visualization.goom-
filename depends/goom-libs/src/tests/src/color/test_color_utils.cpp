@@ -1,5 +1,3 @@
-#include "goom/goom_graphic.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -16,6 +14,7 @@
 
 import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelUtils;
+import Goom.Lib.GoomGraphic;
 
 namespace GOOM::UNIT_TESTS
 {

@@ -1,10 +1,9 @@
 module;
 
-#include "goom/goom_graphic.h"
-
 export module Goom.Color.ColorAdjustment;
 
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM::COLOR
 {

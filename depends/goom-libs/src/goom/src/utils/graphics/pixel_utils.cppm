@@ -1,13 +1,12 @@
 module;
 
-#include "goom/goom_graphic.h"
-
 #include <algorithm>
 #include <cstdint>
 
 export module Goom.Utils.Graphics.PixelUtils;
 
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomGraphic;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/goom_graphic.h"
 
 #include <cstdint>
 
@@ -13,6 +12,7 @@ import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS
