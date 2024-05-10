@@ -1,13 +1,15 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "drawable_text.h"
-
-#include "goom/goom_logger.h"
 #include "goom/goom_config.h"
+#include "goom/goom_logger.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
+
+module Goom.Utils.Text.DrawableText;
 
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.StrUtils;

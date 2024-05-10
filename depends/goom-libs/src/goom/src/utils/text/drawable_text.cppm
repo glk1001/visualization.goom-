@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 
@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
+export module Goom.Utils.Text.DrawableText;
+
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Lib.Point2d;
 
-namespace GOOM::UTILS::TEXT
+export namespace GOOM::UTILS::TEXT
 {
 
 [[nodiscard]] auto GetLinesOfWords(const std::string& text, uint32_t maxLineLength)

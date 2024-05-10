@@ -244,6 +244,7 @@ target_sources(goom
                src/utils/math/randutils.cppm
                src/utils/math/t_values.cppm
                src/utils/math/transform2d.cppm
+               src/utils/text/drawable_text.cppm
                src/utils/array_utils.cppm
                src/utils/buffer_saver.cppm
                src/utils/build_time.cppm
