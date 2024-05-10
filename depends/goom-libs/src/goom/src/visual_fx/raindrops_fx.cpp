@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 
 #include <memory>
 #include <string>
@@ -13,6 +12,7 @@ import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
+import Goom.Lib.SPimpl;
 import :Raindrops;
 
 namespace GOOM::VISUAL_FX

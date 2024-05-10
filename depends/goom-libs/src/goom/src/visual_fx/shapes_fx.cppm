@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 
 #include <cstdint>
 #include <string>
@@ -16,6 +15,7 @@ export module Goom.VisualFx.ShapesFx;
 
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.Point2d;
+import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {

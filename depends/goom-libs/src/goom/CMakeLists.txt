@@ -142,6 +142,7 @@ target_sources(goom
                include/goom/goom_version.cppm
                include/goom/point2d.cppm
                include/goom/sound_info.cppm
+               include/goom/spimpl.cppm
                src/color/color_adjustment.cppm
                src/color/color_maps_base.cppm
                src/color/color_maps.cppm

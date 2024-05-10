@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 
 #include <algorithm>
 #include <array>
@@ -23,6 +22,7 @@ import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.SPimpl;
 import :LineMorph;
 import :LineTypes;
 

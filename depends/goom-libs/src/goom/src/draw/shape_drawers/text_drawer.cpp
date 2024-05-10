@@ -19,7 +19,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/spimpl.h"
 
 #ifndef NO_FREETYPE_INSTALLED
 #include <cmath>
@@ -39,6 +38,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomUtils;
 import Goom.Lib.Point2d;
+import Goom.Lib.SPimpl;
 #endif
 
 module Goom.Draw.ShaperDrawers.TextDrawer;

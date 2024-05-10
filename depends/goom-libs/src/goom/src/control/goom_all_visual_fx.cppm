@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/spimpl.h"
 
 #include <functional>
 #include <string>
@@ -24,6 +23,7 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.SPimpl;
 import :VisualFxColorMaps;
 
 export namespace GOOM::CONTROL

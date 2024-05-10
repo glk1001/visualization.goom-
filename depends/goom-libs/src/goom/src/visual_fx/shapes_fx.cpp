@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 
 #include <algorithm>
 #include <array>
@@ -25,6 +24,7 @@ import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
+import Goom.Lib.SPimpl;
 import :Shapes;
 
 namespace GOOM::VISUAL_FX

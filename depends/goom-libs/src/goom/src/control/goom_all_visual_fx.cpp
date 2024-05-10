@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 
 #include <string>
 #include <unordered_set>
@@ -18,6 +17,7 @@ import Goom.Lib.FrameData;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.SPimpl;
 import :AllStandardVisualFx;
 
 namespace GOOM::CONTROL

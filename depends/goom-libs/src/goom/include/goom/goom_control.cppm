@@ -1,7 +1,6 @@
 module;
 
 #include "goom_logger.h"
-#include "spimpl.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -14,6 +13,7 @@ import Goom.Lib.FrameData;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.SPimpl;
 
 export namespace GOOM
 {

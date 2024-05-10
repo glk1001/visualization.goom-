@@ -1,6 +1,6 @@
 module;
 
-#include "goom/spimpl.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <string>
@@ -16,6 +16,7 @@ export module Goom.VisualFx.LinesFx;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {

@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -14,6 +13,8 @@ module;
 #include <utility>
 #include <vector>
 
+module Goom.VisualFx.TubesFx:Tubes;
+
 import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;
@@ -21,15 +22,12 @@ import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
-
-module Goom.VisualFx.TubesFx:Tubes;
-
-import Goom.Color.RandomColorMaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.SPimpl;
 import :TubeData;
 
 namespace GOOM::VISUAL_FX::TUBES

@@ -16,7 +16,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/spimpl.h"
 
 #include <cmath>
 #include <cstddef>
@@ -64,6 +63,7 @@ import Goom.Lib.FrameData;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.GoomUtils;
+import Goom.Lib.SPimpl;
 import Goom.PluginInfo;
 
 namespace GOOM

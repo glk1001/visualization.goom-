@@ -28,7 +28,7 @@
         - Released
  */
 
-#pragma once
+module;
 
 #include <memory>
 #include <type_traits>
@@ -56,8 +56,9 @@
 // define SPIMPL_HAS_AUTO_PTR to enable constructor and assignment operator that accept std::auto_ptr
 // TODO: auto detect std::auto_ptr support
 
+export module Goom.Lib.SPimpl;
 
-namespace spimpl {
+export namespace spimpl {
     namespace details {
         template<class T>
         T *default_copy(T *src)

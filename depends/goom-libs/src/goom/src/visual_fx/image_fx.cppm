@@ -1,6 +1,6 @@
 module;
 
-#include "goom/spimpl.h"
+#include "goom/goom_config.h"
 
 #include <string>
 #include <vector>
@@ -10,6 +10,7 @@ export module Goom.VisualFx.ImageFx;
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Parallel;
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {

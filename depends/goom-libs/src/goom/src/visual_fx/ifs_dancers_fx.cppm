@@ -1,6 +1,6 @@
 module;
 
-#include "goom/spimpl.h"
+#include "goom/goom_config.h"
 
 #include <string>
 #include <vector>
@@ -11,6 +11,7 @@ import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {

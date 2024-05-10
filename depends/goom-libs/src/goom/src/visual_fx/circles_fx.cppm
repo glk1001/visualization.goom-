@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/spimpl.h"
 
 #include <string>
 #include <vector>
@@ -11,6 +10,7 @@ export module Goom.VisualFx.CirclesFx;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.Point2d;
+import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {

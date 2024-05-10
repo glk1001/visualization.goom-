@@ -2,8 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 
-#include "goom/spimpl.h"
-
 #include <chrono>
 #include <cstdint>
 #include <string>
@@ -25,6 +23,7 @@ import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomStateHandler;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.Stopwatch;
+import Goom.Lib.SoundInfo;
 
 export namespace GOOM::CONTROL
 {
