@@ -1,6 +1,6 @@
 #pragma once
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 #include "utils/math/parametric_functions2d.h"
 
 #include <cstddef>
@@ -10,6 +10,7 @@
 #include <vector>
 
 import Goom.Utils.Math.Transform2d;
+import Goom.Lib.Point2d;
 
 namespace GOOM::UTILS::MATH
 {

@@ -1,10 +1,12 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <functional>
 
 export module Goom.Draw.ShaperDrawers.LineDrawWu;
+
+import Goom.Lib.Point2d;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS::WU_LINES
 {

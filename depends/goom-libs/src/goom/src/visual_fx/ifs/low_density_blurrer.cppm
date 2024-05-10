@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <algorithm>
 #include <array>
@@ -24,6 +23,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 import :Colorizer;
 import :IfsTypes;
 import :Similitudes;

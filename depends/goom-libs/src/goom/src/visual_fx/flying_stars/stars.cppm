@@ -1,12 +1,12 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <memory>
 
 module Goom.VisualFx.FlyingStarsFx:Stars;
 
+import Goom.Lib.Point2d;
 import :StarColors;
 
 namespace GOOM::VISUAL_FX::FLYING_STARS

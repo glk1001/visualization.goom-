@@ -2,7 +2,6 @@ module;
 
 #include "bezier/bezier.h"
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cstdint>
 #include <vector>
@@ -16,6 +15,7 @@ import Goom.Utils.Graphics.BezierDrawer;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.Point2d;
 
 namespace GOOM::VISUAL_FX::SHAPES
 {

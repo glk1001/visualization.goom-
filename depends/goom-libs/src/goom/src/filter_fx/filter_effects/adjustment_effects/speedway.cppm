@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cmath>
 
@@ -14,6 +13,7 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

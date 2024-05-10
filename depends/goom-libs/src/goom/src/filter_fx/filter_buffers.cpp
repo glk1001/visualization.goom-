@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -10,6 +9,7 @@ module;
 module Goom.FilterFx.FilterBuffers;
 
 import Goom.FilterFx.NormalizedCoords;
+import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
 namespace GOOM::FILTER_FX

@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 #include "utils/text/drawable_text.h"
 
 #include <array>
@@ -23,6 +22,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.GoomUtils;
+import Goom.Lib.Point2d;
 
 namespace GOOM::CONTROL
 {

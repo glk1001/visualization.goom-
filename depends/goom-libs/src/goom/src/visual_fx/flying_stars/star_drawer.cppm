@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <algorithm>
 #include <cmath>
@@ -26,6 +25,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.EnumUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 import :StarColors;
 import :Stars;
 

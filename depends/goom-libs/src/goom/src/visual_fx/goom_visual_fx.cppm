@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <string>
@@ -13,6 +13,7 @@ import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
 
 export namespace GOOM::VISUAL_FX

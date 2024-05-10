@@ -1,14 +1,15 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
+#include <cmath>
 #include <memory>
 #include <utility>
 #include <vector>
 
 module Goom.VisualFx.TentaclesFx:Tentacle3d;
 
+import Goom.Lib.Point2d;
 import :Tentacle2d;
 
 namespace GOOM::VISUAL_FX::TENTACLES

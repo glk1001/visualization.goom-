@@ -33,7 +33,6 @@ endif ()
 add_library(goom
             STATIC
             include/goom/goom_config.h
-            include/goom/point2d.h
             src/color/color_data/color_data_maps.cpp
             src/color/color_data/extra_color_groups.cpp
             src/color/color_adjustment.cpp
@@ -141,6 +140,7 @@ target_sources(goom
                include/goom/goom_types.cppm
                include/goom/goom_utils.cppm
                include/goom/goom_version.cppm
+               include/goom/point2d.cppm
                include/goom/sound_info.cppm
                src/color/color_adjustment.cppm
                src/color/color_maps_base.cppm

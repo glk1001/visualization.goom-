@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 
@@ -21,6 +21,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.CirclesFx.Helper;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {

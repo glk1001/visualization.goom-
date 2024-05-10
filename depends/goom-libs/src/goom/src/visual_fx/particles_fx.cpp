@@ -4,7 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "particles/effects/attractor_effect.h"
 #include "particles/effects/effect.h"
@@ -37,6 +36,7 @@ import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 namespace GOOM::VISUAL_FX
 {

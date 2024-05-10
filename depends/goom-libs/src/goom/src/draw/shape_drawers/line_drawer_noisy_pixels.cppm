@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <array>
 #include <cstdint>
@@ -10,6 +9,7 @@ module;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.Point2d;
 
 export module Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 

@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
 #include <blend2d/context.h>
@@ -9,6 +9,7 @@ export module Goom.Utils.Graphics.Blend2dUtils;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.Blend2dToGoom;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

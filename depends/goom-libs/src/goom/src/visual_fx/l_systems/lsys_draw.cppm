@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -12,6 +11,7 @@ module;
 module Goom.VisualFx.LSystemFx:LSysDraw;
 
 import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
+import Goom.Lib.Point2d;
 import :LSysColors;
 import :LSysGeom;
 

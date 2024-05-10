@@ -1,13 +1,12 @@
 module;
 
-#include "point2d.h"
-
 #include <cstdint>
 #include <span>
 
 export module Goom.Lib.FrameData;
 
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.Point2d;
 
 export namespace GOOM
 {

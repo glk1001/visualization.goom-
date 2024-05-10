@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cmath>
 #include <cstdint>
@@ -10,6 +9,7 @@ export module Goom.VisualFx.FlyingStarsFx:StarMaker;
 
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.Point2d;
 import :StarTypesContainer;
 import :StarColorsMaker;
 import :Stars;

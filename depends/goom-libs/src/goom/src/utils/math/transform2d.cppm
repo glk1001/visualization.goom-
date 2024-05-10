@@ -1,12 +1,13 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cmath>
 
 export module Goom.Utils.Math.Transform2d;
 
 import Goom.Utils.Math.Misc;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::UTILS::MATH
 {

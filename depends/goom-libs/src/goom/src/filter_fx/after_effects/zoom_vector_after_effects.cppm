@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 
@@ -11,6 +11,7 @@ import Goom.FilterFx.AfterEffects.AfterEffects;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

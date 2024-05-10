@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -18,6 +18,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {

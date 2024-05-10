@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_logger.h"
-#include "goom/point2d.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -17,6 +16,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 namespace GOOM::CONTROL
 {

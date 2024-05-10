@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 #include "goom/spimpl.h"
 
 #include <string>
@@ -9,6 +9,7 @@ module;
 export module Goom.VisualFx.RaindropsFx;
 
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::VISUAL_FX
 {

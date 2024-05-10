@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <bezier/bezier.h>
 #include <cstddef>
@@ -13,6 +13,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

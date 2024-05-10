@@ -36,7 +36,7 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 #include "goom/spimpl.h"
 
 #include <algorithm>
@@ -58,6 +58,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.Point2d;
 import :Colorizer;
 import :Fractal;
 import :LowDensityBlurrer;

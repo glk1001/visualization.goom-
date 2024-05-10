@@ -2,7 +2,7 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstddef>
 
@@ -12,6 +12,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.DrawerUtils;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.Point2d;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
@@ -40,9 +41,9 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoisePerPixel() noexcept -> voi
   for (auto& noiseList : m_noisePerPixelList)
   {
     noiseList.resize(static_cast<size_t>(m_numNoisePixelsPerPixel));
-    for (auto& noise : noiseList)
+    for (auto i = 0U; i < noiseList.size(); ++i)
     {
-      noise = m_goomRand->GetRandInRange(-m_noiseRadius, m_noiseRadius + 1);
+      noiseList[i] = m_goomRand->GetRandInRange(-m_noiseRadius, m_noiseRadius + 1);
     }
   }
 }
@@ -108,9 +109,10 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPureNoisePoints(
 inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPatternedNoisePoints(
     const Point2dInt& point, const MultiplePixels& colors) noexcept -> void
 {
-  for (const auto& noise : m_noisePerPixelList.at(m_currentNoisePerPixelIndex))
+  const auto& noiseList = m_noisePerPixelList.at(m_currentNoisePerPixelIndex);
+  for (auto i = 0U; i < noiseList.size(); ++i)
   {
-    m_draw->DrawClippedPixels(point + noise, colors);
+    m_draw->DrawClippedPixels(point + noiseList[i], colors);
   }
 
   IncrementCurrentNoisePerPixelIndex();

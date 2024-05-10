@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,6 +23,7 @@ import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 import :LineTypes;
 

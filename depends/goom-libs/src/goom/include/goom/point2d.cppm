@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include <algorithm>
 #include <cmath>
@@ -6,7 +6,9 @@
 #include <cstdint>
 #include <numeric>
 
-namespace GOOM
+export module Goom.Lib.Point2d;
+
+export namespace GOOM
 {
 
 struct Point2dFlt;

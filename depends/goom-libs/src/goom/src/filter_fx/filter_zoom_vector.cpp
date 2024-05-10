@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cstdint>
 #include <string>
@@ -14,6 +13,7 @@ import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
+import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX
 {

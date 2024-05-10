@@ -1,4 +1,4 @@
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 
@@ -15,6 +15,7 @@
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.Point2d;
 
 namespace GOOM::UNIT_TESTS
 {

@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
@@ -25,6 +24,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 module Goom.VisualFx.TubesFx:Tubes;
 

@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <memory>
@@ -16,6 +16,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomVector;
 import Goom.Utils.GoomTime;
 import Goom.Utils.NameValuePairs;
+import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
 export namespace GOOM::FILTER_FX

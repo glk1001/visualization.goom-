@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cstdint>
 #include <memory>
@@ -14,6 +13,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::FILTER_FX::FILTER_UTILS
 {

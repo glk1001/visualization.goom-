@@ -1,17 +1,11 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
-
-namespace GOOM
-{
-class Pixel;
-}
 
 export module Goom.FilterFx.FilterSettingsService;
 
@@ -23,7 +17,9 @@ import Goom.FilterFx.FilterSpeed;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
 export namespace GOOM::FILTER_FX

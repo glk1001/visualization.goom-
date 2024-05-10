@@ -3,7 +3,7 @@
 #include "drawable_text.h"
 
 #include "goom/goom_logger.h"
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <string>
@@ -12,6 +12,7 @@
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.Point2d;
 
 namespace GOOM::UTILS::TEXT
 {

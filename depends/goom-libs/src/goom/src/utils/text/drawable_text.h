@@ -1,12 +1,13 @@
 #pragma once
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
 import Goom.Draw.ShaperDrawers.TextDrawer;
+import Goom.Lib.Point2d;
 
 namespace GOOM::UTILS::TEXT
 {

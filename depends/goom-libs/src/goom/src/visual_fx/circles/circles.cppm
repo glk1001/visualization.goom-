@@ -2,6 +2,7 @@ module;
 
 #include "utils/math/parametric_functions2d.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <vector>
 

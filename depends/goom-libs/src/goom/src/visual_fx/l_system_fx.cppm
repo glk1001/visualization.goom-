@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 #include "goom/spimpl.h"
 
 #include <string>
@@ -14,6 +14,7 @@ class RandomColorMaps;
 export module Goom.VisualFx.LSystemFx;
 
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::VISUAL_FX
 {

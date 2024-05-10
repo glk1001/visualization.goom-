@@ -5,7 +5,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/point2d.h"
 #include "goom/spimpl.h"
 
 #include <algorithm>
@@ -24,6 +23,7 @@ import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomUtils;
+import Goom.Lib.Point2d;
 import :LSystem;
 
 namespace GOOM::VISUAL_FX

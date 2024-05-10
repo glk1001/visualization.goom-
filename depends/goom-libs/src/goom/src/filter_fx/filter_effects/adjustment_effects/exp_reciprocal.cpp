@@ -2,7 +2,7 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <cmath>
 #include <complex>
@@ -16,6 +16,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

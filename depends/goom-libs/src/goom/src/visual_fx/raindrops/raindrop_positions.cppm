@@ -3,7 +3,6 @@ module;
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -21,6 +20,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
 namespace GOOM::VISUAL_FX::RAINDROPS

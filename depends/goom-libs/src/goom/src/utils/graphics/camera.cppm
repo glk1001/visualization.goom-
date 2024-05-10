@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -10,6 +10,7 @@ export module Goom.Utils.Graphics.Camera;
 
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

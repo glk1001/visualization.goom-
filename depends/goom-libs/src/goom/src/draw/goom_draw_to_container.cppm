@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <array>
 #include <cstddef>
@@ -13,6 +13,7 @@ export module Goom.Draw.GoomDrawToContainer;
 import Goom.Draw.GoomDrawBase;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 
 export namespace GOOM::DRAW
 {

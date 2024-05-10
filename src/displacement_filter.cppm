@@ -5,7 +5,6 @@ module;
 #include "gl_call.h"
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "goom/point2d.h"
 
 #ifdef IS_KODI_BUILD
 #include <kodi/gui/gl/GL.h> // NOLINT: False positive??
@@ -44,6 +43,7 @@ export module Goom.GoomVisualization:DisplacementFilter;
 import Goom.Lib.FrameData;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 import :Gl2dTextures;
 import :GlRenderTypes;
 import :GlslProgram;

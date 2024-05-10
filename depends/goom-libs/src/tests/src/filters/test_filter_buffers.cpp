@@ -11,7 +11,6 @@
 #endif
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <span>
 #include <vector>
@@ -35,6 +34,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.GoomRand;
 import Goom.Utils.GoomTime;
 import Goom.Lib.GoomTypes;
+import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
 import Goom.PluginInfo;
 

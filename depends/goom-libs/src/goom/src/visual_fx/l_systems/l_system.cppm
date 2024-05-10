@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "goom/point2d.h"
 
 #include <cmath>
 #include <cstdint>
@@ -27,6 +26,7 @@ import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomUtils;
+import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 import :LineDrawerManager;
 import :LSysColors;

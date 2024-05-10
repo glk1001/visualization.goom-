@@ -1,6 +1,6 @@
 module;
 
-#include "goom/point2d.h"
+#include "goom/goom_config.h"
 
 #include <string>
 #include <unordered_set>
@@ -11,6 +11,7 @@ import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.FilterFx.FilterBuffersService;
 import Goom.FilterFx.FilterSettingsService;
+import Goom.Lib.Point2d;
 
 namespace GOOM::CONTROL
 {
