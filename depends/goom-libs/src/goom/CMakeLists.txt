@@ -100,11 +100,11 @@ add_library(goom
             src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp
             src/utils/graphics/small_image_bitmaps.cpp
+            src/utils/graphics/stb_image.h
             src/utils/graphics/test_patterns.cpp
             src/utils/math/parametric_functions2d.cpp
             src/utils/math/paths.cpp
             src/utils/text/drawable_text.cpp
-            src/utils/stb_image.h
             src/visual_fx/circles_fx.cpp
             src/visual_fx/flying_stars_fx.cpp
             src/visual_fx/goom_dots_fx.cpp
