@@ -1,8 +1,10 @@
-#include "extra_color_groups.h"
+module;
 
 #include "color_map_enums.h"
 
 #include <vector>
+
+module Goom.Color.ColorData.ExtraColorGroups;
 
 namespace GOOM::COLOR::COLOR_DATA
 {

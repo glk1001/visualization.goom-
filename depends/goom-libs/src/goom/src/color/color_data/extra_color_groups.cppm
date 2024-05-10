@@ -1,10 +1,12 @@
-#pragma once
+module;
 
 #include "color_map_enums.h"
 
 #include <vector>
 
-namespace GOOM::COLOR::COLOR_DATA
+export module Goom.Color.ColorData.ExtraColorGroups;
+
+export namespace GOOM::COLOR::COLOR_DATA
 {
 
 extern const std::vector<ColorMapName> WES_ANDERSON_MAPS;
