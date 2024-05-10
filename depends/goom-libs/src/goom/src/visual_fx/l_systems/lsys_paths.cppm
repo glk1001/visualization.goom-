@@ -1,8 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "utils/math/parametric_functions2d.h"
-#include "utils/math/paths.h"
 
 #include <cstdint>
 #include <memory>
@@ -11,6 +9,8 @@ module;
 module Goom.VisualFx.LSystemFx:LSysPaths;
 
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.ParametricFunctions2d;
+import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;

@@ -1,8 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "utils/math/parametric_functions2d.h"
-#include "utils/math/paths.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,6 +19,9 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.StepSpeed;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.ParametricFunctions2d;
+import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.Transform2d;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;

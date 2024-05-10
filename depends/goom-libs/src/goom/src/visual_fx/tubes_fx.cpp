@@ -3,8 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "goom/goom_config.h"
-#include "utils/math/parametric_functions2d.h"
-#include "utils/math/paths.h"
 
 #include <algorithm>
 #include <array>
@@ -28,6 +26,9 @@ import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.ParametricFunctions2d;
+import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;

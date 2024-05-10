@@ -1,7 +1,5 @@
 module;
 
-#include "utils/math/parametric_functions2d.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <vector>
@@ -11,6 +9,7 @@ export module Goom.VisualFx.CirclesFx.Circles;
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.VisualFx.CirclesFx.BitmapGetter;
 import Goom.VisualFx.CirclesFx.Circle;
 import Goom.VisualFx.CirclesFx.Helper;

@@ -2,8 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "utils/math/parametric_functions2d.h"
-#include "utils/math/paths.h"
 
 #include <cstdint>
 #include <memory>
@@ -22,6 +20,10 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.ParametricFunctions2d;
+import Goom.Utils.Math.Paths;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.CirclesFx.Helper;
 import Goom.VisualFx.CirclesFx.DotDiameters;
 import Goom.VisualFx.CirclesFx.DotDrawer;

@@ -1,4 +1,4 @@
-#include "paths.h"
+module;
 
 #include "goom/goom_config.h"
 
@@ -7,6 +7,9 @@
 #include <utility>
 #include <vector>
 
+module Goom.Utils.Math.Paths;
+
+import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.Transform2d;
 
 namespace GOOM::UTILS::MATH

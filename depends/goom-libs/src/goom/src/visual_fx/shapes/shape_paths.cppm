@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "utils/math/paths.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -16,6 +15,7 @@ import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Utils.Graphics.Blend2dUtils;
+import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.GoomGraphic;

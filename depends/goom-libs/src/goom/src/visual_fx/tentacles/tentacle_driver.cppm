@@ -1,10 +1,10 @@
 module;
 
 #include "goom/goom_config.h"
-#include "utils/math/paths.h"
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -19,6 +19,8 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Math.DampingFunctions;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.GoomTime;
 import Goom.VisualFx.VisualFxBase;

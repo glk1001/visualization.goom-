@@ -1,9 +1,11 @@
-#include "parametric_functions2d.h"
+module;
 
 #include "goom/goom_config.h"
 
 #include <cmath>
 #include <cstdint>
+
+module Goom.Utils.Math.ParametricFunctions2d;
 
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;

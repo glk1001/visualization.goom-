@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 
@@ -6,12 +6,14 @@
 #include <cstdint>
 #include <functional>
 
+export module Goom.Utils.Math.ParametricFunctions2d;
+
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
-namespace GOOM::UTILS::MATH
+export namespace GOOM::UTILS::MATH
 {
 
 struct StartAndEndPos

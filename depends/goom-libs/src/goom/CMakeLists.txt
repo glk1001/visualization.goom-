@@ -242,6 +242,8 @@ target_sources(goom
                src/utils/math/goom_rand_base.cppm
                src/utils/math/incremented_values.cppm
                src/utils/math/misc.cppm
+               src/utils/math/parametric_functions2d.cppm
+               src/utils/math/paths.cppm
                src/utils/math/randutils.cppm
                src/utils/math/t_values.cppm
                src/utils/math/transform2d.cppm

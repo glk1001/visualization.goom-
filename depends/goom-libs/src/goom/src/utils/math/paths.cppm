@@ -1,7 +1,6 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
-#include "utils/math/parametric_functions2d.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -9,10 +8,14 @@
 #include <utility>
 #include <vector>
 
+export module Goom.Utils.Math.Paths;
+
+import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Transform2d;
+import Goom.Utils.Math.TValues;
 import Goom.Lib.Point2d;
 
-namespace GOOM::UTILS::MATH
+export namespace GOOM::UTILS::MATH
 {
 
 class IPath
