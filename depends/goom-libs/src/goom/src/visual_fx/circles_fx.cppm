@@ -8,13 +8,13 @@ module;
 export module Goom.VisualFx.CirclesFx;
 
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.Point2d;
 import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {
-class FxHelper;
 
 class CirclesFx : public IVisualFx
 {

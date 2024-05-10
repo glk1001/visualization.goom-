@@ -9,13 +9,13 @@ export module Goom.VisualFx.IfsDancersFx;
 
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {
-class FxHelper;
 
 class IfsDancersFx : public IVisualFx
 {

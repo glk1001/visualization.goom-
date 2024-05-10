@@ -8,13 +8,13 @@ module;
 export module Goom.VisualFx.ShaderFx;
 
 import Goom.Utils.Stopwatch;
+import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.FrameData;
 import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {
-class FxHelper;
 
 class ShaderFx : public IVisualFx
 {

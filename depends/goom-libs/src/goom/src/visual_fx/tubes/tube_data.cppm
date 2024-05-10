@@ -5,17 +5,13 @@ module;
 #include <cstdint>
 #include <functional>
 
-namespace GOOM
-{
-class GoomTime;
-}
-
 module Goom.VisualFx.TubesFx:TubeData;
 
 import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.GoomTime;
 import Goom.Lib.Point2d;
 
 namespace GOOM::VISUAL_FX::TUBES

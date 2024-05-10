@@ -9,12 +9,12 @@ export module Goom.VisualFx.ImageFx;
 
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Parallel;
+import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {
-class FxHelper;
 
 class ImageFx : public IVisualFx
 {

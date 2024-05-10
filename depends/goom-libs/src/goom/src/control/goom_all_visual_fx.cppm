@@ -24,12 +24,11 @@ import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
 import Goom.Lib.SPimpl;
+import :AllStandardVisualFx;
 import :VisualFxColorMaps;
 
 export namespace GOOM::CONTROL
 {
-
-class AllStandardVisualFx;
 
 class GoomAllVisualFx
 {

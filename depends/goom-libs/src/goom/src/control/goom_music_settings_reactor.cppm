@@ -2,11 +2,6 @@ module;
 
 #include <cstdint>
 
-namespace GOOM::CONTROL
-{
-class GoomAllVisualFx;
-}
-
 export module Goom.Control.GoomMusicSettingsReactor;
 
 import Goom.Control.GoomAllVisualFx;

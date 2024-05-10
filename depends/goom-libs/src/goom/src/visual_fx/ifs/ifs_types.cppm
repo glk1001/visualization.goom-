@@ -23,7 +23,7 @@ struct FltPoint
 
 inline constexpr auto FIX = 12U;
 
-class Similitude;
+class Similitude;  // to avoid module circular dependency
 
 class IfsPoint
 {

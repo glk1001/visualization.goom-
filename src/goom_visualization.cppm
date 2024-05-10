@@ -10,11 +10,11 @@ module;
 namespace GOOM
 {
 class GoomLogger;
-class GoomControl;
 }
 
 export module Goom.GoomVisualization;
 
+import Goom.Lib.GoomControl;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.SoundInfo;
 export import :GlRenderTypes;

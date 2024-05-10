@@ -1,11 +1,7 @@
 module;
 
 #include "goom/goom_config.h"
-
-namespace GOOM
-{
-class GoomLogger;
-}
+#include "goom/goom_logger.h"
 
 export module Goom.Draw.GoomDrawToBuffer;
 

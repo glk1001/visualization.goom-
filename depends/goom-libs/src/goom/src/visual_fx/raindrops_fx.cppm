@@ -7,13 +7,13 @@ module;
 
 export module Goom.VisualFx.RaindropsFx;
 
+import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.Point2d;
 import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {
-class FxHelper;
 
 class RaindropsFx : public IVisualFx
 {

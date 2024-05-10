@@ -5,21 +5,17 @@ module;
 #include <string>
 #include <vector>
 
-namespace GOOM::COLOR
-{
-class RandomColorMaps;
-}
-
 export module Goom.VisualFx.TubesFx;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.Point2d;
 import Goom.Lib.SPimpl;
 
 export namespace GOOM::VISUAL_FX
 {
-class FxHelper;
 
 class TubesFx : public IVisualFx
 {
