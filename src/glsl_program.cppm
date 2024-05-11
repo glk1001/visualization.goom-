@@ -4,11 +4,7 @@ module;
 #pragma warning(disable : 4290)
 #endif
 
-#ifdef IS_KODI_BUILD
-#include <kodi/gui/gl/GL.h> // NOLINT: False positive??
-#else
-#include "glad/glad.h"
-#endif
+#include "goom_gl.h"
 
 #include <array>
 #include <cstddef>

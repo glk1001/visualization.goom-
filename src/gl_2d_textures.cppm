@@ -5,12 +5,7 @@ module;
 #endif
 
 #include "gl_call.h"
-
-#ifdef IS_KODI_BUILD
-#include <kodi/gui/gl/GL.h> // NOLINT: Too tricky with Kodi GL.
-#else
-#include "glad/glad.h"
-#endif
+#include "goom_gl.h"
 
 #include <algorithm>
 #include <array>

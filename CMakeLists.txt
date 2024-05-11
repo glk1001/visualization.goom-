@@ -143,8 +143,9 @@ set(${VIS_GOOM_ADDON_PREFIX}_SOURCES
     src/goom_visualization.cpp
 )
 set(${VIS_GOOM_ADDON_PREFIX}_HEADERS
-    src/Main.h
     src/gl_call.h
+    src/goom_gl.h
+    src/Main.h
 )
 
 list(APPEND DEPLIBS goom::lib libs::vivid LSys::lib particles::lib blend2d::blend2d)

@@ -5,13 +5,7 @@ module;
 #include "gl_call.h"
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-
-#ifdef IS_KODI_BUILD
-#include <kodi/gui/gl/GL.h> // NOLINT: False positive??
-#else
-#include "glad/glad.h"
-#endif
-#include <GL/glext.h>
+#include "goom_gl.h"
 
 #include <algorithm>
 #include <array>
