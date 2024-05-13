@@ -45,16 +45,16 @@ public:
   [[nodiscard]] static auto GetAllColorMapsTypes() noexcept -> const std::set<ColorMapTypes>&;
 
   [[nodiscard]] auto GetRandomColorMapSharedPtr(const std::set<ColorMapTypes>& types) const noexcept
-      -> ColorMapSharedPtr;
+      -> ConstColorMapSharedPtr;
   [[nodiscard]] auto GetRandomColorMapSharedPtr(COLOR_DATA::ColorMapName colorMapName,
                                                 const std::set<ColorMapTypes>& types) const noexcept
-      -> ColorMapSharedPtr;
+      -> ConstColorMapSharedPtr;
   [[nodiscard]] auto GetRandomColorMapSharedPtr(ColorMapGroup colorMapGroup,
                                                 const std::set<ColorMapTypes>& types) const noexcept
-      -> ColorMapSharedPtr;
-  [[nodiscard]] auto GetRandomColorMapSharedPtr(const ColorMapSharedPtr& colorMapPtr,
+      -> ConstColorMapSharedPtr;
+  [[nodiscard]] auto GetRandomColorMapSharedPtr(const ConstColorMapSharedPtr& colorMapPtr,
                                                 const std::set<ColorMapTypes>& types) const noexcept
-      -> ColorMapSharedPtr;
+      -> ConstColorMapSharedPtr;
 
   [[nodiscard]] auto GetMinRotationPoint() const noexcept -> float;
   [[nodiscard]] auto GetMaxRotationPoint() const noexcept -> float;
@@ -96,9 +96,9 @@ private:
   float m_maxLightness                  = MAX_LIGHTNESS;
 
   [[nodiscard]] auto GetRandomRotatedColorSharedMapPtr(
-      const ColorMapSharedPtr& colorMapPtr) const noexcept -> ColorMapSharedPtr;
+      const ConstColorMapSharedPtr& colorMapPtr) const noexcept -> ConstColorMapSharedPtr;
   [[nodiscard]] auto GetRandomTintedColorMapSharedPtr(
-      const ColorMapSharedPtr& colorMapPtr) const noexcept -> ColorMapSharedPtr;
+      const ConstColorMapSharedPtr& colorMapPtr) const noexcept -> ConstColorMapSharedPtr;
 };
 
 class WeightedRandomColorMaps : public RandomColorMaps

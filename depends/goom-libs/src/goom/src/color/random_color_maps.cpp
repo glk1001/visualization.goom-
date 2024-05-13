@@ -55,7 +55,7 @@ auto RandomColorMaps::GetRandomColorMap(const ColorMapGroup colorMapGroup) const
 }
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
-    const std::set<ColorMapTypes>& types) const noexcept -> ColorMapSharedPtr
+    const std::set<ColorMapTypes>& types) const noexcept -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 
@@ -64,7 +64,7 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
     const COLOR_DATA::ColorMapName colorMapName,
-    const std::set<ColorMapTypes>& types) const noexcept -> ColorMapSharedPtr
+    const std::set<ColorMapTypes>& types) const noexcept -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 
@@ -77,7 +77,7 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
     const ColorMapGroup colorMapGroup, const std::set<ColorMapTypes>& types) const noexcept
-    -> ColorMapSharedPtr
+    -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 
@@ -86,8 +86,8 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 }
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
-    const ColorMapSharedPtr& colorMapPtr, const std::set<ColorMapTypes>& types) const noexcept
-    -> ColorMapSharedPtr
+    const ConstColorMapSharedPtr& colorMapPtr, const std::set<ColorMapTypes>& types) const noexcept
+    -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 
@@ -119,7 +119,7 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 }
 
 auto RandomColorMaps::GetRandomRotatedColorSharedMapPtr(
-    const ColorMapSharedPtr& colorMapPtr) const noexcept -> ColorMapSharedPtr
+    const ConstColorMapSharedPtr& colorMapPtr) const noexcept -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 
@@ -128,7 +128,7 @@ auto RandomColorMaps::GetRandomRotatedColorSharedMapPtr(
 }
 
 auto RandomColorMaps::GetRandomTintedColorMapSharedPtr(
-    const ColorMapSharedPtr& colorMapPtr) const noexcept -> ColorMapSharedPtr
+    const ConstColorMapSharedPtr& colorMapPtr) const noexcept -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 

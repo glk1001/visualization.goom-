@@ -1,26 +1,28 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "flying_stars_fx.h"
-
-#include "flying_stars/star_drawer.h"
-#include "flying_stars/star_maker.h"
-#include "flying_stars/star_types_base.h"
-#include "flying_stars/star_types_container.h"
-#include "flying_stars/stars.h"
-#include "fx_helper.h"
+#include "control/goom_sound_events.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.FlyingStarsFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :StarDrawer;
+import :StarMaker;
+import :Stars;
+import :StarTypesContainer;
 
 namespace GOOM::VISUAL_FX
 {

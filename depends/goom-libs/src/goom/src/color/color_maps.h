@@ -72,7 +72,7 @@ enum class ColorMapGroup : UnderlyingEnumType
   PASTEL,
 };
 
-using ColorMapSharedPtr = std::shared_ptr<const IColorMap>;
+using ConstColorMapSharedPtr = std::shared_ptr<const IColorMap>;
 
 class ColorMaps
 {
@@ -92,9 +92,11 @@ public:
       -> ColorMapPtrWrapper;
 
   [[nodiscard]] auto GetRotatedColorMapPtr(COLOR_DATA::ColorMapName colorMapName,
-                                           float tRotatePoint) const noexcept -> ColorMapSharedPtr;
-  [[nodiscard]] auto GetRotatedColorMapPtr(const ColorMapSharedPtr& colorMapPtr,
-                                           float tRotatePoint) const noexcept -> ColorMapSharedPtr;
+                                           float tRotatePoint) const noexcept
+      -> ConstColorMapSharedPtr;
+  [[nodiscard]] auto GetRotatedColorMapPtr(const ConstColorMapSharedPtr& colorMapPtr,
+                                           float tRotatePoint) const noexcept
+      -> ConstColorMapSharedPtr;
 
   struct TintProperties
   {
@@ -103,17 +105,17 @@ public:
   };
   [[nodiscard]] auto GetTintedColorMapPtr(COLOR_DATA::ColorMapName colorMapName,
                                           const TintProperties& tintProperties) const noexcept
-      -> ColorMapSharedPtr;
-  [[nodiscard]] auto GetTintedColorMapPtr(const ColorMapSharedPtr& colorMapPtr,
+      -> ConstColorMapSharedPtr;
+  [[nodiscard]] auto GetTintedColorMapPtr(const ConstColorMapSharedPtr& colorMapPtr,
                                           const TintProperties& tintProperties) const noexcept
-      -> ColorMapSharedPtr;
+      -> ConstColorMapSharedPtr;
 
 private:
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
 
   friend class RandomColorMaps;
   [[nodiscard]] static auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName colorMapName) noexcept
-      -> ColorMapSharedPtr;
+      -> ConstColorMapSharedPtr;
 };
 
 inline ColorMapPtrWrapper::ColorMapPtrWrapper(const IColorMap* const colorMap,

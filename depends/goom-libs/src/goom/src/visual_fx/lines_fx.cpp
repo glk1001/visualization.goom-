@@ -1,26 +1,29 @@
-//#undef NO_LOGGING
+module;
 
-#include "lines_fx.h"
+//#undef NO_LOGGING
 
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
-#include "fx_helper.h"
+#include "control/goom_sound_events.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_time.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
-#include "lines/line_morph.h"
-#include "lines/line_types.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.LinesFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :LineMorph;
+import :LineTypes;
 
 namespace GOOM::VISUAL_FX
 {

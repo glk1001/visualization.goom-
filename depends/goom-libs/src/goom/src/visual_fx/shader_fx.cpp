@@ -1,21 +1,24 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "shader_fx.h"
-
-#include "fx_helper.h"
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/spimpl.h"
-#include "shaders/chroma_factor_lerper.h"
-#include "shaders/color_multiplier_lerper.h"
-#include "shaders/high_contrast.h"
-#include "shaders/hue_shift_lerper.h"
 #include "utils/math/misc.h"
 #include "utils/stopwatch.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <string>
+
+module Goom.VisualFx.ShaderFx;
+
+import Goom.VisualFx.FxHelper;
+import :ChromaFactorLerper;
+import :ColorMultiplierLerper;
+import :HighContrast;
+import :HueShifterLerper;
 
 namespace GOOM::VISUAL_FX
 {

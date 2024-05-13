@@ -1,6 +1,6 @@
-//#undef NO_LOGGING
+module;
 
-#include "image_fx.h"
+//#undef NO_LOGGING
 
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
@@ -9,19 +9,16 @@
 #include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/pixel_drawer.h"
-#include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
-#include "goom_visual_fx.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/math/misc.h"
 #include "utils/parallel_utils.h"
 #include "utils/t_values.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <array>
@@ -33,6 +30,11 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+module Goom.VisualFx.ImageFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
 
 namespace GOOM::VISUAL_FX
 {

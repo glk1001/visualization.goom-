@@ -1,15 +1,18 @@
-#include "raindrops_fx.h"
+module;
 
-#include "fx_helper.h"
 #include "goom/goom_types.h"
+#include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
-#include "raindrops/raindrops.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <memory>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.RaindropsFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :Raindrops;
 
 namespace GOOM::VISUAL_FX
 {

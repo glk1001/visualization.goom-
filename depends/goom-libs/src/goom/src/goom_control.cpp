@@ -47,7 +47,6 @@
 #include "utils/strutils.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
-#include "visual_fx/fx_helper.h"
 
 #include <cmath>
 #include <cstddef>
@@ -61,6 +60,8 @@
 #include "control/goom_state_dump.h"
 #include "utils/math/randutils.h"
 #endif
+
+import Goom.VisualFx.FxHelper;
 
 namespace GOOM
 {

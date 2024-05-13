@@ -1,21 +1,17 @@
+module;
+
 //#undef NO_LOGGING
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
 
-#include "l_system_fx.h"
-
 #include "draw/goom_draw.h"
-#include "fx_helper.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
-#include "l_systems/l_system.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/timer.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -23,6 +19,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.LSystemFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :LSystem;
 
 namespace GOOM::VISUAL_FX
 {

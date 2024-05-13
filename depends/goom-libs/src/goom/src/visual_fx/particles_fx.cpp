@@ -1,6 +1,6 @@
-#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
+module;
 
-#include "particles_fx.h"
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "color/color_maps.h"
 #include "color/color_utils.h"
@@ -8,7 +8,6 @@
 #include "draw/goom_draw.h"
 #include "draw/shape_drawers/circle_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
-#include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -24,7 +23,6 @@
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <cmath>
 #include <cstdint>
@@ -33,6 +31,11 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.ParticlesFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
 
 namespace GOOM::VISUAL_FX
 {

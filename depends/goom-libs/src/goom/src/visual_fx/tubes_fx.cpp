@@ -1,6 +1,6 @@
-//#undef NO_LOGGING
+module;
 
-#include "tubes_fx.h"
+//#undef NO_LOGGING
 
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
@@ -11,21 +11,16 @@
 #include "draw/shape_drawers/circle_drawer.h"
 #include "draw/shape_drawers/line_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
-#include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
-#include "tubes/tube_data.h"
-#include "tubes/tubes.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <array>
@@ -34,6 +29,13 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.TubesFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :TubeData;
+import :Tubes;
 
 namespace GOOM::VISUAL_FX
 {

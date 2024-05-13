@@ -11,13 +11,12 @@
 #include "goom_state_handler.h"
 #include "goom_states.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/fx_helper.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
-#include "visual_fx/goom_visual_fx.h"
-#include "visual_fx/lines_fx.h"
 
 #include <string>
 #include <unordered_set>
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
 
 namespace GOOM::CONTROL
 {

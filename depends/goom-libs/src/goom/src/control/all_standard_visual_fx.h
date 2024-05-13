@@ -7,13 +7,16 @@
 #include "goom_states.h"
 #include "utils/enum_utils.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/shader_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <functional>
 #include <memory>
 #include <string>
 #include <unordered_set>
+
+import Goom.VisualFx.VisualFxBase;
+import Goom.VisualFx.LinesFx;
+import Goom.VisualFx.ShaderFx;
 
 namespace GOOM
 {
@@ -27,13 +30,6 @@ namespace GRAPHICS
 {
 class SmallImageBitmaps;
 }
-}
-
-namespace VISUAL_FX
-{
-class IVisualFx;
-class LinesFx;
-class ShaderFx;
 }
 
 namespace CONTROL

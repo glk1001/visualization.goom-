@@ -153,61 +153,9 @@ add_library(goom
             src/utils/strutils.cpp
             src/utils/t_values.cpp
             src/utils/thread_pool.cpp
-            src/visual_fx/circles/bitmap_getter_base.h
-            src/visual_fx/circles/bitmap_getter.cpp
-            src/visual_fx/circles/circle.cpp
-            src/visual_fx/circles/circle_params_builder.cpp
-            src/visual_fx/circles/circles.cpp
-            src/visual_fx/circles/dot_diameters.cpp
-            src/visual_fx/circles/dot_drawer.cpp
-            src/visual_fx/circles/dot_paths.cpp
-            src/visual_fx/circles/helper.h
-            src/visual_fx/flying_stars/star_colors.cpp
-            src/visual_fx/flying_stars/star_colors_maker.h
-            src/visual_fx/flying_stars/star_drawer.cpp
-            src/visual_fx/flying_stars/star_maker.cpp
-            src/visual_fx/flying_stars/star_types_base.h
-            src/visual_fx/flying_stars/star_types_container.cpp
-            src/visual_fx/flying_stars/stars.cpp
-            src/visual_fx/fx_utils/dot_drawer.cpp
-            src/visual_fx/fx_utils/lines.cpp
-            src/visual_fx/fx_utils/random_pixel_blender.cpp
-            src/visual_fx/ifs/colorizer.cpp
-            src/visual_fx/ifs/fractal.cpp
-            src/visual_fx/ifs/fractal_hits.cpp
-            src/visual_fx/ifs/ifs_types.h
-            src/visual_fx/ifs/low_density_blurrer.cpp
-            src/visual_fx/ifs/similitudes.cpp
-            src/visual_fx/lines/line_morph.cpp
-            src/visual_fx/lines/line_types.h
-            src/visual_fx/l_systems/l_system.cpp
-            src/visual_fx/l_systems/lsys_colors.cpp
-            src/visual_fx/l_systems/lsys_draw.cpp
-            src/visual_fx/l_systems/lsys_geom.cpp
-            src/visual_fx/l_systems/lsys_paths.cpp
-            src/visual_fx/l_systems/line_drawer_manager.cpp
-            src/visual_fx/raindrops/raindrop_positions.cpp
-            src/visual_fx/raindrops/raindrops.cpp
-            src/visual_fx/shaders/chroma_factor_lerper.cpp
-            src/visual_fx/shaders/color_multiplier_lerper.cpp
-            src/visual_fx/shaders/high_contrast.cpp
-            src/visual_fx/shaders/hue_shift_lerper.cpp
-            src/visual_fx/shapes/bezier_flower.cpp
-            src/visual_fx/shapes/shape_parts.cpp
-            src/visual_fx/shapes/shape_paths.cpp
-            src/visual_fx/shapes/shapes.cpp
-            src/visual_fx/tentacles/circles_tentacle_layout.cpp
-            src/visual_fx/tentacles/tentacle_driver.cpp
-            src/visual_fx/tentacles/tentacle_plotter.cpp
-            src/visual_fx/tentacles/tentacle2d.cpp
-            src/visual_fx/tentacles/tentacle3d.cpp
-            src/visual_fx/tubes/tube_data.h
-            src/visual_fx/tubes/tubes.cpp
             src/visual_fx/circles_fx.cpp
             src/visual_fx/flying_stars_fx.cpp
-            src/visual_fx/fx_helper.h
             src/visual_fx/goom_dots_fx.cpp
-            src/visual_fx/goom_visual_fx.h
             src/visual_fx/ifs_dancers_fx.cpp
             src/visual_fx/image_fx.cpp
             src/visual_fx/l_system_fx.cpp
@@ -229,8 +177,79 @@ add_library(goom
 
 add_library(goom::lib ALIAS goom)
 
+target_sources(goom
+               PUBLIC
+               FILE_SET CXX_MODULES FILES
+               src/visual_fx/circles/bitmap_getter.cppm
+               src/visual_fx/circles/circle.cppm
+               src/visual_fx/circles/circle_params_builder.cppm
+               src/visual_fx/circles/circles.cppm
+               src/visual_fx/circles/dot_diameters.cppm
+               src/visual_fx/circles/dot_drawer.cppm
+               src/visual_fx/circles/dot_paths.cppm
+               src/visual_fx/circles/helper.cppm
+               src/visual_fx/circles_fx.cppm
+               src/visual_fx/flying_stars/star_colors.cppm
+               src/visual_fx/flying_stars/star_colors_maker.cppm
+               src/visual_fx/flying_stars/star_drawer.cppm
+               src/visual_fx/flying_stars/star_maker.cppm
+               src/visual_fx/flying_stars/star_types_container.cppm
+               src/visual_fx/flying_stars/stars.cppm
+               src/visual_fx/flying_stars_fx.cppm
+               src/visual_fx/fx_utils/dot_drawer.cppm
+               src/visual_fx/fx_utils/lines.cppm
+               src/visual_fx/fx_utils/random_pixel_blender.cppm
+               src/visual_fx/ifs/colorizer.cppm
+               src/visual_fx/ifs/fractal.cppm
+               src/visual_fx/ifs/fractal_hits.cppm
+               src/visual_fx/ifs/ifs_types.cppm
+               src/visual_fx/ifs/low_density_blurrer.cppm
+               src/visual_fx/ifs/similitudes.cppm
+               src/visual_fx/l_systems/l_system.cppm
+               src/visual_fx/l_systems/lsys_colors.cppm
+               src/visual_fx/l_systems/lsys_draw.cppm
+               src/visual_fx/l_systems/lsys_geom.cppm
+               src/visual_fx/l_systems/lsys_paths.cppm
+               src/visual_fx/l_systems/line_drawer_manager.cppm
+               src/visual_fx/lines/line_morph.cppm
+               src/visual_fx/lines/line_types.cppm
+               src/visual_fx/raindrops/raindrops.cppm
+               src/visual_fx/raindrops/raindrop_positions.cppm
+               src/visual_fx/shaders/chroma_factor_lerper.cppm
+               src/visual_fx/shaders/color_multiplier_lerper.cppm
+               src/visual_fx/shaders/high_contrast.cppm
+               src/visual_fx/shaders/hue_shift_lerper.cppm
+               src/visual_fx/shapes/bezier_flower.cppm
+               src/visual_fx/shapes/shape_parts.cppm
+               src/visual_fx/shapes/shape_paths.cppm
+               src/visual_fx/shapes/shapes.cppm
+               src/visual_fx/tentacles/circles_tentacle_layout.cppm
+               src/visual_fx/tentacles/tentacle_driver.cppm
+               src/visual_fx/tentacles/tentacle_plotter.cppm
+               src/visual_fx/tentacles/tentacle2d.cppm
+               src/visual_fx/tentacles/tentacle3d.cppm
+               src/visual_fx/tubes/tube_data.cppm
+               src/visual_fx/tubes/tubes.cppm
+               src/visual_fx/circles_fx.cppm
+               src/visual_fx/flying_stars_fx.cppm
+               src/visual_fx/fx_helper.cppm
+               src/visual_fx/fx_utils.cppm
+               src/visual_fx/goom_dots_fx.cppm
+               src/visual_fx/goom_visual_fx.cppm
+               src/visual_fx/ifs_dancers_fx.cppm
+               src/visual_fx/image_fx.cppm
+               src/visual_fx/l_system_fx.cppm
+               src/visual_fx/lines_fx.cppm
+               src/visual_fx/particles_fx.cppm
+               src/visual_fx/raindrops_fx.cppm
+               src/visual_fx/shader_fx.cppm
+               src/visual_fx/shapes_fx.cppm
+               src/visual_fx/tentacles_fx.cppm
+               src/visual_fx/tubes_fx.cppm
+)
+
+
 target_include_directories(goom
-                           PUBLIC
                            PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/include
                            ${GOOM_LIBS_DIR}/src/goom/src/utils

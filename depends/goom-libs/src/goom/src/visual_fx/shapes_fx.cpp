@@ -1,20 +1,16 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "shapes_fx.h"
-
-#include "fx_helper.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
-#include "shapes/shapes.h"
 #include "utils/graphics/point_utils.h"
 #include "utils/math/misc.h"
 #include "utils/t_values.h"
 #include "utils/timer.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <array>
@@ -23,6 +19,12 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.ShapesFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :Shapes;
 
 namespace GOOM::VISUAL_FX
 {

@@ -7,22 +7,6 @@
 #include "utils/enum_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/stopwatch.h"
-#include "visual_fx/circles_fx.h"
-#include "visual_fx/flying_stars/star_types_container.h"
-#include "visual_fx/flying_stars_fx.h"
-#include "visual_fx/fx_helper.h"
-#include "visual_fx/goom_dots_fx.h"
-#include "visual_fx/goom_visual_fx.h"
-#include "visual_fx/ifs_dancers_fx.h"
-#include "visual_fx/image_fx.h"
-#include "visual_fx/l_system_fx.h"
-#include "visual_fx/lines_fx.h"
-#include "visual_fx/particles_fx.h"
-#include "visual_fx/raindrops_fx.h"
-#include "visual_fx/shader_fx.h"
-#include "visual_fx/shapes_fx.h"
-#include "visual_fx/tentacles_fx.h"
-#include "visual_fx/tubes_fx.h"
 #include "visual_fx_color_maps.h"
 
 #include <algorithm>
@@ -30,6 +14,22 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.CirclesFx;
+import Goom.VisualFx.FlyingStarsFx;
+import Goom.VisualFx.GoomDotsFx;
+import Goom.VisualFx.IfsDancersFx;
+import Goom.VisualFx.ImageFx;
+import Goom.VisualFx.LinesFx;
+import Goom.VisualFx.LSystemFx;
+import Goom.VisualFx.ParticlesFx;
+import Goom.VisualFx.RaindropsFx;
+import Goom.VisualFx.ShaderFx;
+import Goom.VisualFx.ShapesFx;
+import Goom.VisualFx.TentaclesFx;
+import Goom.VisualFx.TubesFx;
+import Goom.VisualFx.VisualFxBase;
 
 namespace GOOM::CONTROL
 {

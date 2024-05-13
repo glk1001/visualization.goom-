@@ -1,3 +1,5 @@
+module;
+
 /*
  * ifs.c --- modified iterated functions system for goom.
  */
@@ -34,23 +36,15 @@
 
 //#undef NO_LOGGING
 
-#include "ifs_dancers_fx.h"
-
 #include "color/random_color_maps.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/pixel_drawer.h"
-#include "fx_helper.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "goom_visual_fx.h"
-#include "ifs/colorizer.h"
-#include "ifs/fractal.h"
-#include "ifs/low_density_blurrer.h"
 #include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/goom_rand_base.h"
 #include "utils/t_values.h"
-#include "visual_fx/fx_utils/random_pixel_blender.h"
 
 #include <algorithm>
 #include <cmath>
@@ -59,6 +53,14 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+module Goom.VisualFx.IfsDancersFx;
+
+import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.FxUtils;
+import :Colorizer;
+import :Fractal;
+import :LowDensityBlurrer;
 
 namespace GOOM::VISUAL_FX
 {
