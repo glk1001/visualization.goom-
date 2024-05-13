@@ -148,13 +148,18 @@ set(${VIS_GOOM_ADDON_PREFIX}_HEADERS
     src/Main.h
 )
 
-list(APPEND DEPLIBS goom::lib libs::vivid LSys::lib particles::lib blend2d::blend2d)
-
 # Let kodi set this:
 set(CMAKE_INSTALL_LIBDIR "")
 
+list(APPEND DEPLIBS goom::lib libs::vivid LSys::lib particles::lib blend2d::blend2d)
 build_addon(${VIS_GOOM_TARGET_NAME} ${VIS_GOOM_ADDON_PREFIX} DEPLIBS)
-add_dependencies(${VIS_GOOM_TARGET_NAME} goom::lib)
+add_dependencies(${VIS_GOOM_TARGET_NAME}
+                 goom::lib
+                 libs::vivid
+                 LSys::lib
+                 particles::lib
+                 blend2d::blend2d
+)
 
 target_sources(${VIS_GOOM_TARGET_NAME}
                PRIVATE

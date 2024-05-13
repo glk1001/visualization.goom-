@@ -10,7 +10,6 @@ source "${THIS_SCRIPT_PATH}/goom-get-vars.sh"
 
 
 declare KODI_ROOT_DIR=""
-declare NO_SAN=0
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -20,10 +19,6 @@ while [[ $# -gt 0 ]]; do
       declare KODI_ROOT_DIR=${2}
       shift # past argument
       shift # past value
-      ;;
-    --no-san)
-      declare NO_SAN=1
-      shift # past argument
       ;;
     *)
       echo "Unknown option \"${key}\"."
@@ -66,11 +61,9 @@ else
   declare -r KODI_ROOT_DIR_OPTION="-DKODI_ROOT_DIR=${KODI_ROOT_DIR}"
 fi
 
-cmake -DIS_THIS_MAIN_CMAKE_SCRIPT=1    \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DENABLE_TESTING=1               \
       -DOVERRIDE_PATHS=1               \
-      -DNO_SAN=${NO_SAN}               \
       ${KODI_ROOT_DIR_OPTION}          \
       ..
 
