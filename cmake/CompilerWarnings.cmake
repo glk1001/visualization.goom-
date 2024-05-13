@@ -58,6 +58,8 @@ function(vis_goom_pp_get_project_warnings WARNINGS_AS_ERRORS compiler_warnings)
         -Wno-reserved-identifier
         -Wno-float-equal
         -Wno-date-time
+        -Wno-pch-date-time
+        -Wno-deprecated-declarations  # Problem with std::unary_function called in ",,,include/c++/14/bits/refwrap.h"
         )
 
     if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")

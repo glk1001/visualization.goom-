@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.28)
 
 project(Goom LANGUAGES CXX)
 
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g -O2 -Wno-disabled-optimization")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g -O2 -Wno-disabled-optimization")
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 if (NOT GLM_INCLUDE_DIR)
     message(FATAL_ERROR "\"GLM_INCLUDE_DIR\" must be defined.")
@@ -26,22 +27,6 @@ if (DEFINED GOOM_LOGGING)
 else ()
     add_definitions(-DNO_LOGGING)
     MESSAGE(STATUS "Goom: Logging turned off.")
-endif ()
-
-if (NO_SAN)
-    set(vis_goom_pp_ENABLE_SANITIZER_ADDRESS OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_LEAK OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_UNDEFINED OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_THREAD OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_MEMORY OFF)
-    set(ENABLE_UBSAN_MINIMAL_RUNTIME FALSE)
-else ()
-    set(vis_goom_pp_ENABLE_SANITIZER_ADDRESS OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_LEAK OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_UNDEFINED OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_THREAD OFF)
-    set(vis_goom_pp_ENABLE_SANITIZER_MEMORY OFF)
-    set(ENABLE_UBSAN_MINIMAL_RUNTIME FALSE)
 endif ()
 
 
@@ -242,11 +227,13 @@ add_library(goom
             src/sound_info.cpp
 )
 
+add_library(goom::lib ALIAS goom)
+
 target_include_directories(goom
                            PUBLIC
+                           PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/include
                            ${GOOM_LIBS_DIR}/src/goom/src/utils
-                           PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/src
 )
 
@@ -266,13 +253,6 @@ target_include_directories(goom
 )
 
 vis_goom_pp_set_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS goom)
-vis_goom_pp_enable_sanitizers(
-        goom
-        ${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}
-        ${vis_goom_pp_ENABLE_SANITIZER_LEAK}
-        ${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}
-        ${vis_goom_pp_ENABLE_SANITIZER_THREAD}
-        ${vis_goom_pp_ENABLE_SANITIZER_MEMORY})
 
 set_target_properties(goom
                       PROPERTIES

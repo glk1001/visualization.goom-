@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
 project(vivid
         VERSION 2.2.2
@@ -69,15 +69,6 @@ target_include_directories(${PROJECT_NAME}
                            PRIVATE
                            ${CMAKE_CURRENT_SOURCE_DIR}/include
                            ${GLM_INCLUDE_DIR}
-)
-
-vis_goom_pp_enable_sanitizers(
-        ${PROJECT_NAME}
-        ${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}
-        ${vis_goom_pp_ENABLE_SANITIZER_LEAK}
-        ${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}
-        ${vis_goom_pp_ENABLE_SANITIZER_THREAD}
-        ${vis_goom_pp_ENABLE_SANITIZER_MEMORY}
 )
 
 set_target_properties(${PROJECT_NAME}

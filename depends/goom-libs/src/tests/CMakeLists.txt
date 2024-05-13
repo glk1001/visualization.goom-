@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.28)
 
 project(GoomTests LANGUAGES CXX)
 
@@ -12,6 +12,8 @@ find_package(Threads)
 
 CPMAddPackage(NAME Catch2 GITHUB_REPOSITORY catchorg/Catch2 VERSION 3.3.2)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/_deps/catch2-src/extras")
+
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 
 add_executable(${GOOM_LIB_TESTS_NAME}
@@ -79,13 +81,6 @@ if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 endif ()
 
 vis_goom_pp_set_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS ${GOOM_LIB_TESTS_NAME})
-vis_goom_pp_enable_sanitizers(${GOOM_LIB_TESTS_NAME}
-                              ${vis_goom_pp_ENABLE_SANITIZER_ADDRESS}
-                              ${vis_goom_pp_ENABLE_SANITIZER_LEAK}
-                              ${vis_goom_pp_ENABLE_SANITIZER_UNDEFINED}
-                              ${vis_goom_pp_ENABLE_SANITIZER_THREAD}
-                              ${vis_goom_pp_ENABLE_SANITIZER_MEMORY}
-)
 vis_goom_pp_configure_linker(${GOOM_LIB_TESTS_NAME})
 
 include(Catch)
