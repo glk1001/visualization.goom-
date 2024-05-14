@@ -23,7 +23,6 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/pixel_blend.h"
 
 #ifndef NO_FREETYPE_INSTALLED
 #include <codecvt>
@@ -36,6 +35,8 @@
 
 import Goom.Utils.Parallel;
 import Goom.Utils.StrUtils;
+import Goom.Utils.Graphics.PixelBlend;
+import Goom.Utils.Math.Misc;
 #endif
 
 namespace GOOM::DRAW::SHAPE_DRAWERS

@@ -1,14 +1,17 @@
-#pragma once
+module;
 
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "goom/goom_graphic.h"
-#include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
 #include <cstdint>
 
-namespace GOOM::UTILS::GRAPHICS
+export module Goom.Utils.Graphics.PixelBlend;
+
+import Goom.Utils.Graphics.PixelUtils;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 // NOTE: Tried reverse add color (where oldColor is multiplied by intensity),

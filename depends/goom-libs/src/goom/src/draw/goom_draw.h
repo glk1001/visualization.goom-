@@ -4,12 +4,13 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/graphics/pixel_blend.h"
-#include "utils/graphics/pixel_utils.h"
 
 #include <cmath>
 #include <cstdint>
 #include <functional>
+
+import Goom.Utils.Graphics.PixelBlend;
+import Goom.Utils.Graphics.PixelUtils;
 
 namespace GOOM::DRAW
 {

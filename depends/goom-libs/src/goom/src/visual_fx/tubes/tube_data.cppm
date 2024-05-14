@@ -3,7 +3,6 @@ module;
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
 #include "goom/point2d.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <cstdint>
 #include <functional>
@@ -14,6 +13,8 @@ class GoomTime;
 }
 
 module Goom.VisualFx.TubesFx:TubeData;
+
+import Goom.Utils.Graphics.SmallImageBitmaps;
 
 namespace GOOM::VISUAL_FX::TUBES
 {

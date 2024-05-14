@@ -13,8 +13,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/graphics/blend2d_utils.h"
-#include "utils/graphics/point_utils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,6 +22,8 @@ module;
 
 module Goom.VisualFx.RaindropsFx:Raindrops;
 
+import Goom.Utils.Graphics.Blend2dUtils;
+import Goom.Utils.Graphics.PointUtils;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;

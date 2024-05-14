@@ -1,4 +1,4 @@
-#include "image_bitmaps.h"
+module;
 
 #include "goom/goom_types.h"
 
@@ -20,6 +20,8 @@
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+
+module Goom.Utils.Graphics.ImageBitmaps;
 
 namespace GOOM::UTILS::GRAPHICS
 {

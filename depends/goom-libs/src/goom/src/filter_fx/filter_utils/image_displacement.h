@@ -5,12 +5,12 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "utils/graphics/image_bitmaps.h"
 
 #include <cstdint>
 #include <memory>
 #include <string>
 
+import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS

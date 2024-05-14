@@ -1,17 +1,20 @@
-#pragma once
+module;
 
 #include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "image_bitmaps.h"
-#include "small_image_bitmaps.h"
 
 #include <bezier/bezier.h>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 
-namespace GOOM::UTILS::GRAPHICS
+export module Goom.Utils.Graphics.BezierDrawer;
+
+import Goom.Utils.Graphics.ImageBitmaps;
+import Goom.Utils.Graphics.SmallImageBitmaps;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 class BezierDrawer

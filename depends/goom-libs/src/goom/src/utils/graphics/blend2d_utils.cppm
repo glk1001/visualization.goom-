@@ -1,10 +1,16 @@
-#pragma once
+module;
 
-#include "blend2d_to_goom.h"
 #include "draw/goom_draw.h"
 #include "goom/point2d.h"
 
-namespace GOOM::UTILS::GRAPHICS
+#include <blend2d.h> // NOLINT(misc-include-cleaner): Blend2d insists on this.
+#include <blend2d/context.h>
+
+export module Goom.Utils.Graphics.Blend2dUtils;
+
+import Goom.Utils.Graphics.Blend2dToGoom;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 auto FillCircleWithGradient(Blend2dContexts& blend2DContexts,

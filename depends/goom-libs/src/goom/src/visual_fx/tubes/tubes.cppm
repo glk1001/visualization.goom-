@@ -10,7 +10,6 @@ module;
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/small_image_bitmaps.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -24,6 +23,7 @@ module;
 #include <vector>
 
 import Goom.Utils.Timer;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
 
 namespace GOOM::COLOR

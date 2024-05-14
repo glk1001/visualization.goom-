@@ -16,25 +16,14 @@
 
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
+import Goom.VisualFx.FxHelper;
 
 namespace GOOM
 {
 class AudioSamples;
 class GoomLogger;
-
-namespace UTILS
-{
-namespace GRAPHICS
-{
-class SmallImageBitmaps;
-}
-} // namespace UTILS
-
-namespace VISUAL_FX
-{
-class FxHelper;
-}
 
 namespace CONTROL
 {

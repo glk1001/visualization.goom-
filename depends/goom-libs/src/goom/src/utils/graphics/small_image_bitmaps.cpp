@@ -1,11 +1,10 @@
-//#undef NO_LOGGING
+module;
 
-#include "small_image_bitmaps.h"
+//#undef NO_LOGGING
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
-#include "image_bitmaps.h"
 
 #include <array>
 #include <cstddef>
@@ -13,6 +12,9 @@
 #include <memory>
 #include <string>
 
+module Goom.Utils.Graphics.SmallImageBitmaps;
+
+import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.Misc;
 

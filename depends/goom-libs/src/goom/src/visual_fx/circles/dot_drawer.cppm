@@ -16,6 +16,7 @@ module;
 module Goom.VisualFx.CirclesFx:DotDrawer;
 
 import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import :Helper;

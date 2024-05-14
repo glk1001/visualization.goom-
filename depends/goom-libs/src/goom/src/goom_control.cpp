@@ -37,9 +37,6 @@
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
-#include "utils/graphics/blend2d_to_goom.h"
-#include "utils/graphics/pixel_blend.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <cmath>
 #include <cstddef>
@@ -57,6 +54,9 @@
 import Goom.Utils.DebuggingLogger;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Timer;
+import Goom.Utils.Graphics.Blend2dToGoom;
+import Goom.Utils.Graphics.PixelBlend;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.FxHelper;
 

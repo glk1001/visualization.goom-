@@ -42,7 +42,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <algorithm>
 #include <cmath>
@@ -54,6 +53,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx;
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;

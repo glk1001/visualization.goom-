@@ -7,7 +7,6 @@ module;
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/point_utils.h"
 
 #include <algorithm>
 #include <array>
@@ -20,6 +19,7 @@ module;
 module Goom.VisualFx.ShapesFx;
 
 import Goom.Utils.Timer;
+import Goom.Utils.Graphics.PointUtils;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;

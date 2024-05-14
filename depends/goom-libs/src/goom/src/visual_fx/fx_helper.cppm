@@ -6,10 +6,10 @@ module;
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "goom_plugin_info.h"
-#include "utils/graphics/blend2d_to_goom.h"
 
 export module Goom.VisualFx.FxHelper;
 
+import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Math.GoomRandBase;
 
 export namespace GOOM::VISUAL_FX

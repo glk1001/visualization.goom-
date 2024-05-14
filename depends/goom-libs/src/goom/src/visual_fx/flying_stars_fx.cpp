@@ -3,20 +3,20 @@ module;
 //#undef NO_LOGGING
 
 #include "control/goom_sound_events.h"
+#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <algorithm>
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
 module Goom.VisualFx.FlyingStarsFx;
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;

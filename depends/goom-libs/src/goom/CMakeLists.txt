@@ -125,10 +125,6 @@ add_library(goom
             src/utils/graphics/blend2d_utils.cpp
             src/utils/graphics/camera.cpp
             src/utils/graphics/image_bitmaps.cpp
-            src/utils/graphics/line_clipper.h
-            src/utils/graphics/pixel_blend.h
-            src/utils/graphics/pixel_utils.h
-            src/utils/graphics/point_utils.h
             src/utils/graphics/small_image_bitmaps.cpp
             src/utils/graphics/test_patterns.cpp
             src/utils/math/parametric_functions2d.cpp
@@ -162,6 +158,17 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               src/utils/graphics/bezier_drawer.cppm
+               src/utils/graphics/blend2d_to_goom.cppm
+               src/utils/graphics/blend2d_utils.cppm
+               src/utils/graphics/camera.cppm
+               src/utils/graphics/image_bitmaps.cppm
+               src/utils/graphics/line_clipper.cppm
+               src/utils/graphics/pixel_blend.cppm
+               src/utils/graphics/pixel_utils.cppm
+               src/utils/graphics/point_utils.cppm
+               src/utils/graphics/small_image_bitmaps.cppm
+               src/utils/graphics/test_patterns.cppm
                src/utils/math/damping_functions.cppm
                src/utils/math/goom_rand.cppm
                src/utils/math/goom_rand_base.cppm

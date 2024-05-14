@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
@@ -6,7 +6,9 @@
 
 #include <cstdint>
 
-namespace GOOM::UTILS::GRAPHICS
+export module Goom.Utils.Graphics.LineClipper;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 struct LineFlt

@@ -1,13 +1,15 @@
-#pragma once
+module;
 
 #include "goom/goom_graphic.h"
 
 #include <algorithm>
 #include <cstdint>
 
+export module Goom.Utils.Graphics.PixelUtils;
+
 import Goom.Utils.Math.Misc;
 
-namespace GOOM::UTILS::GRAPHICS
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 [[nodiscard]] constexpr auto MakePixel(uint32_t red,
@@ -121,7 +123,7 @@ constexpr auto GetColorChannelMultiply(const PixelChannelType ch1,
          channel_limits<uint32_t>::max();
 }
 
-static inline constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR = channel_limits<uint32_t>::max() + 1U;
+inline constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR = channel_limits<uint32_t>::max() + 1U;
 
 constexpr auto GetChannelColorMultiplyByScalar(const uint32_t scalar,
                                                const PixelChannelType channelVal) noexcept

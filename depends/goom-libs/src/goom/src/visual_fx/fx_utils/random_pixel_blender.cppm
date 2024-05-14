@@ -5,13 +5,13 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "utils/graphics/pixel_blend.h"
-#include "utils/graphics/pixel_utils.h"
 
 #include <cstdint>
 
 export module Goom.VisualFx.FxUtils:RandomPixelBlender;
 
+import Goom.Utils.Graphics.PixelBlend;
+import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 

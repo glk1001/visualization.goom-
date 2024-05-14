@@ -1,6 +1,5 @@
-#include "blend2d_utils.h"
+module;
 
-#include "blend2d_to_goom.h"
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
@@ -11,6 +10,10 @@
 #include <blend2d/context.h>
 #include <blend2d/gradient.h>
 #include <blend2d/rgba.h>
+
+module Goom.Utils.Graphics.Blend2dUtils;
+
+import Goom.Utils.Graphics.Blend2dToGoom;
 
 namespace GOOM::UTILS::GRAPHICS
 {

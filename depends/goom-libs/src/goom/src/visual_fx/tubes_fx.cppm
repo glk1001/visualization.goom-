@@ -10,13 +10,10 @@ namespace GOOM::COLOR
 {
 class RandomColorMaps;
 }
-namespace GOOM::UTILS::GRAPHICS
-{
-class SmallImageBitmaps;
-}
 
 export module Goom.VisualFx.TubesFx;
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 
 export namespace GOOM::VISUAL_FX

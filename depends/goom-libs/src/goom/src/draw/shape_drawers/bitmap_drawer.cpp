@@ -3,10 +3,11 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "utils/graphics/image_bitmaps.h"
 
 #include <cstdint>
 #include <vector>
+
+import Goom.Utils.Graphics.ImageBitmaps;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

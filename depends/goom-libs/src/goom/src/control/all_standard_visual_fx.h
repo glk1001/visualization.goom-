@@ -14,6 +14,7 @@
 
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.LinesFx;
 import Goom.VisualFx.ShaderFx;
@@ -21,15 +22,6 @@ import Goom.VisualFx.ShaderFx;
 namespace GOOM
 {
 class AudioSamples;
-
-namespace UTILS
-{
-
-namespace GRAPHICS
-{
-class SmallImageBitmaps;
-}
-}
 
 namespace CONTROL
 {

@@ -1,16 +1,18 @@
-#include "bezier_drawer.h"
+module;
 
 #include "color/color_utils.h"
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "draw/shape_drawers/line_drawer.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "image_bitmaps.h"
 
 #include <algorithm>
 #include <bezier/bezier.h>
 #include <cstddef>
 #include <cstdint>
+
+module Goom.Utils.Graphics.BezierDrawer;
+import Goom.Utils.Graphics.ImageBitmaps;
 
 namespace GOOM::UTILS::GRAPHICS
 {

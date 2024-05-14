@@ -14,15 +14,11 @@ namespace COLOR
 {
 class RandomColorMaps;
 }
-
-namespace UTILS::GRAPHICS
-{
-class SmallImageBitmaps;
-}
 } // namespace GOOM
 
 export module Goom.VisualFx.LinesFx;
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 
 export namespace GOOM::VISUAL_FX

@@ -15,7 +15,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
-#include "utils/graphics/image_bitmaps.h"
 
 #include <algorithm>
 #include <array>
@@ -30,6 +29,7 @@ module;
 
 module Goom.VisualFx.ImageFx;
 
+import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;

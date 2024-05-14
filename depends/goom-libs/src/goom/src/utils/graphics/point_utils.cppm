@@ -1,17 +1,19 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "line_clipper.h"
 
 #include <algorithm>
 #include <cstdint>
 
+export module Goom.Utils.Graphics.PointUtils;
+
+import Goom.Utils.Graphics.LineClipper;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 
-namespace GOOM::UTILS::GRAPHICS
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 [[nodiscard]] constexpr auto IsZero(const Point2dInt& point) noexcept -> bool;

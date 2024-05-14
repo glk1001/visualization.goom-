@@ -10,7 +10,6 @@ module;
 #include "goom/goom_time.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <algorithm>
 #include <array>
@@ -20,6 +19,7 @@ module;
 
 module Goom.VisualFx.LinesFx;
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :LineMorph;

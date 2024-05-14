@@ -9,7 +9,6 @@ module;
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -21,6 +20,7 @@ module;
 module Goom.VisualFx.LSystemFx;
 
 import Goom.Utils.Timer;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :LSystem;

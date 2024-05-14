@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
@@ -7,9 +7,11 @@
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
 
+export module Goom.Utils.Graphics.Camera;
+
 import Goom.Utils.Math.Misc;
 
-namespace GOOM::UTILS::GRAPHICS
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 class Camera

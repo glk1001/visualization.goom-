@@ -1,5 +1,4 @@
 #include "goom/goom_graphic.h"
-#include "utils/graphics/pixel_utils.h"
 
 #include <cstdint>
 
@@ -12,6 +11,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils.Graphics.PixelUtils;
 
 namespace GOOM::UNIT_TESTS
 {

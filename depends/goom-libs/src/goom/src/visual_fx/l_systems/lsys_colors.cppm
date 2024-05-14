@@ -7,7 +7,6 @@ module;
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "utils/graphics/pixel_utils.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -16,6 +15,7 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysColors;
 
+import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.GoomRandBase;

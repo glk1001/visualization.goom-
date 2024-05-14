@@ -1,4 +1,4 @@
-#include "blend2d_to_goom.h"
+module;
 
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_buffer.h"
@@ -15,6 +15,8 @@
 #include <cstdint>
 #include <execution>
 #include <span>
+
+module Goom.Utils.Graphics.Blend2dToGoom;
 
 namespace GOOM::UTILS::GRAPHICS
 {

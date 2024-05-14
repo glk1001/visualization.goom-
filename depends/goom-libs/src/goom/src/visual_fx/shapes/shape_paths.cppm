@@ -8,7 +8,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "utils/graphics/blend2d_utils.h"
 #include "utils/math/paths.h"
 
 #include <algorithm>
@@ -18,6 +17,7 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapePaths;
 
+import Goom.Utils.Graphics.Blend2dUtils;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 

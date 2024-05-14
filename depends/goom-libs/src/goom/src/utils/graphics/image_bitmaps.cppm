@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -10,7 +10,9 @@
 #include <tuple>
 #include <vector>
 
-namespace GOOM::UTILS::GRAPHICS
+export module Goom.Utils.Graphics.ImageBitmaps;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 class ImageBitmap

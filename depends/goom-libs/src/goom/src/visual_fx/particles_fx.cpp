@@ -17,10 +17,6 @@ module;
 #include "goom/spimpl.h"
 #include "particles/effects/attractor_effect.h"
 #include "particles/effects/effect.h"
-#include "utils/graphics/camera.h"
-#include "utils/graphics/pixel_utils.h"
-#include "utils/graphics/point_utils.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <cmath>
 #include <cstdint>
@@ -32,6 +28,10 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
+import Goom.Utils.Graphics.Camera;
+import Goom.Utils.Graphics.PixelUtils;
+import Goom.Utils.Graphics.PointUtils;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;

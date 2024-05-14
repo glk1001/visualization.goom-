@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_buffer.h"
@@ -12,7 +12,9 @@
 #include <cstdint>
 #include <span>
 
-namespace GOOM::UTILS::GRAPHICS
+export module Goom.Utils.Graphics.Blend2dToGoom;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 class Blend2dToGoom

@@ -4,7 +4,6 @@
 #include "goom/point2d.h"
 #include "goom_effects.h"
 #include "goom_states.h"
-#include "utils/graphics/small_image_bitmaps.h"
 #include "visual_fx_color_maps.h"
 
 #include <algorithm>
@@ -13,6 +12,7 @@
 #include <string>
 #include <unordered_set>
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.CirclesFx;
 import Goom.VisualFx.FlyingStarsFx;

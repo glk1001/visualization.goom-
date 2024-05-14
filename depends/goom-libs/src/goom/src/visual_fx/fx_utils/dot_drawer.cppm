@@ -5,9 +5,6 @@ module;
 #include "draw/shape_drawers/bitmap_drawer.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/graphics/image_bitmaps.h"
-#include "utils/graphics/pixel_utils.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -15,6 +12,9 @@ module;
 
 export module Goom.VisualFx.FxUtils:DotDrawer;
 
+import Goom.Utils.Graphics.ImageBitmaps;
+import Goom.Utils.Graphics.PixelUtils;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS

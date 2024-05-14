@@ -6,7 +6,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <array>
 #include <cmath>
@@ -17,6 +16,8 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Similitudes;
 
+import Goom.Utils.Graphics.ImageBitmaps;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import :IfsTypes;

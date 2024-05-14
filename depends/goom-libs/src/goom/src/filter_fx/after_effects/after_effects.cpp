@@ -12,6 +12,8 @@
 #include <string>
 #include <utility>
 
+import Goom.Utils.Math.GoomRandBase;
+
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 

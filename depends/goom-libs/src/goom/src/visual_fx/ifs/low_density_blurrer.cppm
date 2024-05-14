@@ -8,8 +8,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/graphics/image_bitmaps.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <algorithm>
 #include <array>
@@ -20,6 +18,8 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:LowDensityBlurrer;
 
+import Goom.Utils.Graphics.ImageBitmaps;
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import :Colorizer;
 import :IfsTypes;

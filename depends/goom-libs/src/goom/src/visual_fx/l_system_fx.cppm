@@ -10,10 +10,6 @@ namespace GOOM::COLOR
 {
 class RandomColorMaps;
 }
-namespace GOOM::UTILS::GRAPHICS
-{
-class SmallImageBitmaps;
-}
 
 export module Goom.VisualFx.LSystemFx;
 

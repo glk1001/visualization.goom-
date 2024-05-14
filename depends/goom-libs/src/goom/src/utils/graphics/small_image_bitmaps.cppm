@@ -1,7 +1,6 @@
-#pragma once
+module;
 
 #include "goom/goom_types.h"
-#include "utils/graphics/image_bitmaps.h"
 
 #include <cstddef>
 #include <functional>
@@ -9,7 +8,11 @@
 #include <memory>
 #include <string>
 
-namespace GOOM::UTILS::GRAPHICS
+export module Goom.Utils.Graphics.SmallImageBitmaps;
+
+import Goom.Utils.Graphics.ImageBitmaps;
+
+export namespace GOOM::UTILS::GRAPHICS
 {
 
 class SmallImageBitmaps

@@ -1,4 +1,4 @@
-#include "test_patterns.h"
+module;
 
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
@@ -6,6 +6,8 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
+
+module Goom.Utils.Graphics.TestPatterns;
 
 namespace GOOM::UTILS::GRAPHICS
 {

@@ -2,13 +2,13 @@ module;
 
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
-#include "utils/graphics/small_image_bitmaps.h"
 
 #include <string>
 #include <vector>
 
 export module Goom.VisualFx.CirclesFx;
 
+import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.VisualFxBase;
 
 export namespace GOOM::VISUAL_FX
