@@ -1,14 +1,19 @@
-#include "zoom_vector_effects.h"
+module;
 
-#include "filter_fx/after_effects/after_effects.h"
-#include "filter_fx/after_effects/zoom_vector_after_effects.h"
-#include "filter_fx/filter_settings.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
 
 #include <cmath>
 #include <cstdint>
 #include <string>
+
+module Goom.FilterFx.FilterEffects.ZoomVectorEffects;
+
+import Goom.FilterFx.AfterEffects.AfterEffects;
+import Goom.FilterFx.AfterEffects.ZoomVectorAfterEffects;
+import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.Utils.NameValuePairs;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

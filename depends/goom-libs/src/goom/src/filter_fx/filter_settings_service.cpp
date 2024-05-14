@@ -1,12 +1,5 @@
-#include "filter_settings_service.h"
+module;
 
-#include "after_effects/after_effects_states.h"
-#include "after_effects/after_effects_types.h"
-#include "after_effects/the_effects/rotation.h"
-#include "filter_consts.h"
-#include "filter_effects/zoom_vector_effects.h"
-#include "filter_settings.h"
-#include "filter_speed.h"
 #include "goom/goom_config.h"
 #include "goom/goom_lerp_data.h"
 #include "goom_plugin_info.h"
@@ -20,6 +13,16 @@
 #include <utility>
 #include <vector>
 
+module Goom.FilterFx.FilterSettingsService;
+
+import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
+import Goom.FilterFx.AfterEffects.AfterEffectsStates;
+import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
+import Goom.FilterFx.FilterConsts;
+import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.FilterSpeed;
+import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 

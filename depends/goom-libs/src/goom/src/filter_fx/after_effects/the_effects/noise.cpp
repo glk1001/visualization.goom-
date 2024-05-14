@@ -1,7 +1,10 @@
-#include "noise.h"
+module;
 
 #include <string>
 
+module Goom.FilterFx.AfterEffects.TheEffects.Noise;
+
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS

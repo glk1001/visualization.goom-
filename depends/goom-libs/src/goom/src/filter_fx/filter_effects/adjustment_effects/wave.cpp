@@ -1,11 +1,15 @@
-#include "wave.h"
+module;
 
-#include "filter_fx/filter_utils/utils.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 
 #include <cmath>
 
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.Wave;
+
+import Goom.FilterFx.FilterUtils.Utils;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.Utils.NameValuePairs;
+import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

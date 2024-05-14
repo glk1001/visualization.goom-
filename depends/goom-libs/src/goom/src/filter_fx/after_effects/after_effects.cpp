@@ -1,17 +1,18 @@
-#include "after_effects.h"
-
-#include "filter_fx/after_effects/the_effects/hypercos.h"
-#include "filter_fx/after_effects/the_effects/image_velocity.h"
-#include "filter_fx/after_effects/the_effects/noise.h"
-#include "filter_fx/after_effects/the_effects/planes.h"
-#include "filter_fx/after_effects/the_effects/rotation.h"
-#include "filter_fx/after_effects/the_effects/tan_effect.h"
-#include "filter_fx/after_effects/the_effects/xy_lerp_effect.h"
+module;
 
 #include <memory>
 #include <string>
 #include <utility>
 
+module Goom.FilterFx.AfterEffects.AfterEffects;
+
+import Goom.FilterFx.AfterEffects.TheEffects.Hypercos;
+import Goom.FilterFx.AfterEffects.TheEffects.ImageVelocity;
+import Goom.FilterFx.AfterEffects.TheEffects.Noise;
+import Goom.FilterFx.AfterEffects.TheEffects.Planes;
+import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
+import Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
+import Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS

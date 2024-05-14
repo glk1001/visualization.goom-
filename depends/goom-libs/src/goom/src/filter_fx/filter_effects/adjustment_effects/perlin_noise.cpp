@@ -1,7 +1,5 @@
-#include "perlin_noise.h"
+module;
 
-#include "filter_fx/filter_utils/utils.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 
@@ -10,6 +8,11 @@
 #include <limits>
 #include <type_traits>
 
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.PerlinNoise;
+
+import Goom.FilterFx.FilterUtils.Utils;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.RandUtils;
 

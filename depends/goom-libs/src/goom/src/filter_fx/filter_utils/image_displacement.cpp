@@ -1,6 +1,5 @@
-#include "image_displacement.h"
+module;
 
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
@@ -8,6 +7,9 @@
 #include <memory>
 #include <string>
 
+module Goom.FilterFx.FilterUtils.ImageDisplacement;
+
+import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 

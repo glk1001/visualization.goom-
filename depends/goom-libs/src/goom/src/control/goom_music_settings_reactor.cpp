@@ -2,9 +2,8 @@ module;
 
 //#undef NO_LOGGING
 
-#include "filter_fx/filter_settings_service.h"
-#include "filter_fx/filter_speed.h"
 #include "goom/sound_info.h"
+#include "goom_plugin_info.h"
 
 #include <algorithm>
 #include <cmath>
@@ -14,6 +13,8 @@ module;
 module Goom.Control.GoomMusicSettingsReactor;
 
 import Goom.Control.GoomAllVisualFx;
+import Goom.FilterFx.FilterSettingsService;
+import Goom.FilterFx.FilterSpeed;
 
 namespace GOOM::CONTROL
 {

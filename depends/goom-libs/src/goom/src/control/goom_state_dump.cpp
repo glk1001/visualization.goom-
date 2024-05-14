@@ -6,9 +6,6 @@ module;
 
 #include "goom/goom_config.h"
 
-#include "filter_fx/after_effects/after_effects_states.h"
-#include "filter_fx/after_effects/after_effects_types.h"
-#include "filter_fx/filter_settings_service.h"
 #include "goom/goom_control.h"
 #include "goom/goom_logger.h"
 
@@ -28,6 +25,9 @@ module Goom.Control.GoomStateDump;
 import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomStates;
+import Goom.FilterFx.AfterEffects.AfterEffectsStates;
+import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.DateUtils;
 
 namespace GOOM::CONTROL

@@ -14,11 +14,6 @@
 
 #include "goom/goom_control.h"
 
-#include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_effects/zoom_adjustment_effect_factory.h"
-#include "filter_fx/filter_settings_service.h"
-#include "filter_fx/filter_zoom_vector.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
@@ -51,7 +46,14 @@ import Goom.Control.GoomRandomStateHandler;
 import Goom.Control.GoomStateMonitor;
 import Goom.Control.GoomTitleDisplayer;
 import Goom.Draw.GoomDrawToBuffer;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffectFactory;
+import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
+import Goom.FilterFx.FilterBuffersService;
+import Goom.FilterFx.FilterSettingsService;
+import Goom.FilterFx.FilterZoomVector;
+import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.DebuggingLogger;
+import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Timer;
@@ -59,6 +61,8 @@ import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRand;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 
 namespace GOOM

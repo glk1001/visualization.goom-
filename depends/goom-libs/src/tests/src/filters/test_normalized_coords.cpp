@@ -1,4 +1,3 @@
-#include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
@@ -14,6 +13,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.Misc;
 
 namespace GOOM::UNIT_TESTS

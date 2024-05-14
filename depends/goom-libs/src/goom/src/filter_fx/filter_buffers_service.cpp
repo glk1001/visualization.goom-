@@ -1,14 +1,10 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "filter_buffers_service.h"
-
-#include "filter_buffers.h"
-#include "filter_settings.h"
 #include "goom/goom_config.h"
 #include "goom/goom_time.h"
 #include "goom_plugin_info.h"
-#include "normalized_coords.h"
-#include "zoom_vector.h"
 
 #include <cmath>
 #include <cstdint>
@@ -16,6 +12,14 @@
 #include <string>
 #include <thread>
 #include <utility>
+
+module Goom.FilterFx.FilterBuffersService;
+
+import Goom.FilterFx.FilterBuffers;
+import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.FilterFx.ZoomVector;
+import Goom.Utils.NameValuePairs;
 
 namespace GOOM::FILTER_FX
 {

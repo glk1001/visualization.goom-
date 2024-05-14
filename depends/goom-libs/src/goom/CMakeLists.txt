@@ -77,7 +77,6 @@ add_library(goom
             src/filter_fx/after_effects/the_effects/xy_lerp_effect.cpp
             src/filter_fx/after_effects/after_effects.cpp
             src/filter_fx/after_effects/after_effects_states.cpp
-            src/filter_fx/after_effects/after_effects_types.h
             src/filter_fx/after_effects/zoom_vector_after_effects.cpp
             src/filter_fx/filter_effects/adjustment_effects/amulet.cpp
             src/filter_fx/filter_effects/adjustment_effects/complex_rational.cpp
@@ -91,23 +90,17 @@ add_library(goom
             src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cpp
             src/filter_fx/filter_effects/adjustment_effects/scrunch.cpp
             src/filter_fx/filter_effects/adjustment_effects/speedway.cpp
-            src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h
             src/filter_fx/filter_effects/adjustment_effects/wave.cpp
             src/filter_fx/filter_effects/adjustment_effects/y_only.cpp
-            src/filter_fx/common_types.h
             src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cpp
             src/filter_fx/filter_effects/zoom_vector_effects.cpp
             src/filter_fx/filter_utils/image_displacement.cpp
             src/filter_fx/filter_utils/image_displacement_list.cpp
             src/filter_fx/filter_utils/utils.cpp
-            src/filter_fx/filter_consts.h
             src/filter_fx/filter_buffers.cpp
             src/filter_fx/filter_buffers_service.cpp
             src/filter_fx/filter_settings_service.cpp
-            src/filter_fx/filter_speed.h
             src/filter_fx/filter_zoom_vector.cpp
-            src/filter_fx/normalized_coords.h
-            src/filter_fx/zoom_adjustment_effect.h
             src/utils/graphics/bezier_drawer.cpp
             src/utils/graphics/blend2d_to_goom.cpp
             src/utils/graphics/blend2d_utils.cpp
@@ -185,6 +178,48 @@ target_sources(goom
                src/draw/goom_draw_to_buffer.cppm
                src/draw/goom_draw_to_container.cppm
                src/draw/goom_draw_to_many.cppm
+               src/filter_fx/after_effects/the_effects/hypercos.cppm
+               src/filter_fx/after_effects/the_effects/image_velocity.cppm
+               src/filter_fx/after_effects/the_effects/noise.cppm
+               src/filter_fx/after_effects/the_effects/planes.cppm
+               src/filter_fx/after_effects/the_effects/rotation.cppm
+               src/filter_fx/after_effects/the_effects/tan_effect.cppm
+               src/filter_fx/after_effects/the_effects/xy_lerp_effect.cppm
+               src/filter_fx/after_effects/after_effects.cppm
+               src/filter_fx/after_effects/after_effects_states.cppm
+               src/filter_fx/after_effects/after_effects_types.cppm
+               src/filter_fx/after_effects/zoom_vector_after_effects.cppm
+               src/filter_fx/filter_effects/adjustment_effects/amulet.cppm
+               src/filter_fx/filter_effects/adjustment_effects/complex_rational.cppm
+               src/filter_fx/filter_effects/adjustment_effects/complex_utils.cppm
+               src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cppm
+               src/filter_fx/filter_effects/adjustment_effects/distance_field.cppm
+               src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cppm
+               src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cppm
+               src/filter_fx/filter_effects/adjustment_effects/mobius.cppm
+               src/filter_fx/filter_effects/adjustment_effects/newton.cppm
+               src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cppm
+               src/filter_fx/filter_effects/adjustment_effects/scrunch.cppm
+               src/filter_fx/filter_effects/adjustment_effects/speedway.cppm
+               src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.cppm
+               src/filter_fx/filter_effects/adjustment_effects/wave.cppm
+               src/filter_fx/filter_effects/adjustment_effects/y_only.cppm
+               src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cppm
+               src/filter_fx/filter_effects/zoom_vector_effects.cppm
+               src/filter_fx/filter_utils/image_displacement.cppm
+               src/filter_fx/filter_utils/image_displacement_list.cppm
+               src/filter_fx/filter_utils/utils.cppm
+               src/filter_fx/common_types.cppm
+               src/filter_fx/filter_buffers.cppm
+               src/filter_fx/filter_consts.cppm
+               src/filter_fx/filter_buffers_service.cppm
+               src/filter_fx/filter_settings.cppm
+               src/filter_fx/filter_settings_service.cppm
+               src/filter_fx/filter_speed.cppm
+               src/filter_fx/filter_zoom_vector.cppm
+               src/filter_fx/normalized_coords.cppm
+               src/filter_fx/zoom_adjustment_effect.cppm
+               src/filter_fx/zoom_vector.cppm
                src/utils/graphics/bezier_drawer.cppm
                src/utils/graphics/blend2d_to_goom.cppm
                src/utils/graphics/blend2d_utils.cppm

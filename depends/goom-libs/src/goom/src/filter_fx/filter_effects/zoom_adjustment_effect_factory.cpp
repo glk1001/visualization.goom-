@@ -1,26 +1,28 @@
-#include "zoom_adjustment_effect_factory.h"
+module;
 
-#include "filter_fx/filter_effects/adjustment_effects/amulet.h"
-#include "filter_fx/filter_effects/adjustment_effects/complex_rational.h"
-#include "filter_fx/filter_effects/adjustment_effects/crystal_ball.h"
-#include "filter_fx/filter_effects/adjustment_effects/distance_field.h"
-#include "filter_fx/filter_effects/adjustment_effects/exp_reciprocal.h"
-#include "filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.h"
-#include "filter_fx/filter_effects/adjustment_effects/mobius.h"
-#include "filter_fx/filter_effects/adjustment_effects/newton.h"
-#include "filter_fx/filter_effects/adjustment_effects/perlin_noise.h"
-#include "filter_fx/filter_effects/adjustment_effects/scrunch.h"
-#include "filter_fx/filter_effects/adjustment_effects/speedway.h"
-#include "filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h"
-#include "filter_fx/filter_effects/adjustment_effects/wave.h"
-#include "filter_fx/filter_effects/adjustment_effects/y_only.h"
-#include "filter_fx/filter_settings_service.h"
-#include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/goom_config.h"
 
 #include <memory>
 #include <string>
 
+module Goom.FilterFx.FilterEffects.ZoomAdjustmentEffectFactory;
+
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Amulet;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexRational;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.CrystalBall;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.DistanceField;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.ExpReciprocal;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.ImageZoomAdjustment;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Newton;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.PerlinNoise;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Scrunch;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Speedway;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.UniformZoomAdjustmentEffect;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Wave;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
+import Goom.FilterFx.FilterSettingsService;
+import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

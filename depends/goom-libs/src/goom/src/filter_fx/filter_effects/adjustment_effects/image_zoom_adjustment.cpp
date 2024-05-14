@@ -1,9 +1,12 @@
-#include "image_zoom_adjustment.h"
+module;
 
 #include "goom/goom_config.h"
 
 #include <string>
 
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.ImageZoomAdjustment;
+
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

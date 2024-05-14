@@ -1,8 +1,11 @@
-#include "scrunch.h"
+module;
 
-#include "filter_fx/common_types.h"
 #include "goom/goom_config.h"
 
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.Scrunch;
+
+import Goom.FilterFx.CommonTypes;
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

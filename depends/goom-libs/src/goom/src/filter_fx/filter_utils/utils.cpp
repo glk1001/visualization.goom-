@@ -1,10 +1,12 @@
-#include "utils.h"
-
-#include "filter_fx/normalized_coords.h"
+module;
 
 #include <algorithm>
 
+module Goom.FilterFx.FilterUtils.Utils;
+
+import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

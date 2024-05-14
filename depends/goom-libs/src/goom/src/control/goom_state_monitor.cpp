@@ -1,7 +1,5 @@
 module;
 
-#include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_settings_service.h"
 #include "goom/point2d.h"
 
 #include <string>
@@ -11,6 +9,8 @@ module Goom.Control.GoomStateMonitor;
 
 import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomMusicSettingsReactor;
+import Goom.FilterFx.FilterBuffersService;
+import Goom.FilterFx.FilterSettingsService;
 
 namespace GOOM::CONTROL
 {

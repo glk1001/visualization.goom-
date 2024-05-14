@@ -4,22 +4,12 @@
 
 // TODO(glk) - Look at a better way to deal with this - Vitesse::SetVitesse
 #if not defined(_MSC_VER)
-#include "filter_fx/filter_settings.h"
 #else
 #pragma warning(push)
 #pragma warning(disable : 4296)
-#include "filter_fx/filter_settings.h"
 #pragma warning(pop)
 #endif
 
-#include "filter_fx/after_effects/after_effects_states.h"
-#include "filter_fx/after_effects/after_effects_types.h"
-#include "filter_fx/after_effects/the_effects/rotation.h"
-#include "filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.h"
-#include "filter_fx/filter_effects/zoom_vector_effects.h"
-#include "filter_fx/filter_speed.h"
-#include "filter_fx/filter_zoom_vector.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 
 #include <cstdint>
@@ -37,6 +27,17 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
+import Goom.FilterFx.AfterEffects.AfterEffectsStates;
+import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.UniformZoomAdjustmentEffect;
+import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
+import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.FilterSpeed;
+import Goom.FilterFx.FilterZoomVector;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.FilterFx.ZoomAdjustmentEffect;
+import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS

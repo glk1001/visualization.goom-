@@ -1,10 +1,7 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "distance_field.h"
-
-#include "filter_fx/common_types.h"
-#include "filter_fx/filter_utils/utils.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 
@@ -15,8 +12,15 @@
 #include <limits>
 #include <vector>
 
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.DistanceField;
+
+import Goom.FilterFx.FilterUtils.Utils;
+import Goom.FilterFx.CommonTypes;
+import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.EnumUtils;
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

@@ -1,14 +1,17 @@
-#include "newton.h"
+module;
 
-#include "complex_utils.h"
-#include "filter_fx/filter_utils/utils.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
 
 #include <cmath>
 #include <complex>
 #include <cstdint>
 
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.Newton;
+
+import  Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
+import Goom.FilterFx.FilterUtils.Utils;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

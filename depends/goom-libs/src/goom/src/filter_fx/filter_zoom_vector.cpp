@@ -1,15 +1,19 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "filter_zoom_vector.h"
-
-#include "filter_effects/zoom_vector_effects.h"
-#include "filter_settings.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "normalized_coords.h"
 
 #include <cstdint>
 #include <string>
+
+module Goom.FilterFx.FilterZoomVector;
+
+import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
+import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.FilterFx.ZoomAdjustmentEffect;
 
 namespace GOOM::FILTER_FX
 {

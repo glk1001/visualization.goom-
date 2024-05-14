@@ -1,14 +1,21 @@
-#include "hypercos.h"
+module;
 
-#include "filter_fx/after_effects/after_effects_states.h"
-#include "filter_fx/common_types.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 
 #include <cmath>
 #include <cstdint>
 #include <string>
+
+module Goom.FilterFx.AfterEffects.TheEffects.Hypercos;
+
+import Goom.FilterFx.AfterEffects.AfterEffectsStates;
+import Goom.FilterFx.CommonTypes;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.NameValuePairs;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

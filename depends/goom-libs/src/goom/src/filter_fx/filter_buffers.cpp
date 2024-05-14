@@ -1,13 +1,16 @@
-#include "filter_buffers.h"
+module;
 
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
-#include "normalized_coords.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <mutex>
+
+module Goom.FilterFx.FilterBuffers;
+
+import Goom.FilterFx.NormalizedCoords;
 
 namespace GOOM::FILTER_FX
 {

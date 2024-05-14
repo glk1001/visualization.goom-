@@ -1,10 +1,13 @@
-// #undef NO_LOGGING
+module;
 
-#include "xy_lerp_effect.h"
+// #undef NO_LOGGING
 
 #include <string>
 
+module Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
+
 import Goom.Utils.EnumUtils;
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS

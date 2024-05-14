@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 
-#include "filter_fx/filter_settings_service.h"
 #include "goom/spimpl.h"
 
 #include <chrono>
@@ -24,6 +23,7 @@ export module Goom.Control.GoomStateDump;
 
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomStateHandler;
+import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.Stopwatch;
 
 export namespace GOOM::CONTROL

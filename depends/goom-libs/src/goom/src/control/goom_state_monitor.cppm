@@ -1,14 +1,14 @@
 module;
 
-#include "filter_fx/filter_buffers_service.h"
-#include "filter_fx/filter_settings_service.h"
-
 #include <string>
 
 export module Goom.Control.GoomStateMonitor;
 
 import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomMusicSettingsReactor;
+import Goom.FilterFx.FilterBuffersService;
+import Goom.FilterFx.FilterSettingsService;
+import Goom.Utils.NameValuePairs;
 
 export namespace GOOM::CONTROL
 {

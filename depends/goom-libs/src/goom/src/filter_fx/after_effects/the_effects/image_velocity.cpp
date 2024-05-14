@@ -1,7 +1,10 @@
-#include "image_velocity.h"
+module;
 
 #include <string>
 
+module Goom.FilterFx.AfterEffects.TheEffects.ImageVelocity;
+
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS

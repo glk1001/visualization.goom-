@@ -1,7 +1,5 @@
 module;
 
-#include "filter_fx/filter_settings_service.h"
-#include "filter_fx/filter_speed.h"
 #include "goom_plugin_info.h"
 
 #include <cstdint>
@@ -19,6 +17,10 @@ class GoomAllVisualFx;
 export module Goom.Control.GoomMusicSettingsReactor;
 
 import Goom.Control.GoomAllVisualFx;
+import Goom.FilterFx.FilterSettingsService;
+import Goom.FilterFx.FilterSpeed;
+import Goom.Utils.NameValuePairs;
+import Goom.Utils.Math.GoomRandBase;
 import :GoomLock;
 
 export namespace GOOM::CONTROL

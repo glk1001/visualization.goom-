@@ -4,17 +4,12 @@
 
 // TODO(glk) - Look at a better way to deal with this - Vitesse::SetVitesse
 #if not defined(_MSC_VER)
-#include "filter_fx/filter_settings.h"
 #else
 #pragma warning(push)
 #pragma warning(disable : 4296)
-#include "filter_fx/filter_settings.h"
 #pragma warning(pop)
 #endif
 
-#include "filter_fx/filter_buffers.h"
-#include "filter_fx/filter_zoom_vector.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
@@ -37,6 +32,10 @@
 #endif
 
 import Goom.Control.GoomSoundEvents;
+import Goom.FilterFx.FilterBuffers;
+import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.FilterZoomVector;
+import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS

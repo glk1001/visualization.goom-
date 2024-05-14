@@ -1,13 +1,16 @@
-#include "after_effects_states.h"
+module;
 
-#include "after_effects_types.h"
-#include "filter_fx/filter_consts.h"
 #include "goom/goom_time.h"
 
 #include <cstdint>
 #include <memory>
 
+module Goom.FilterFx.AfterEffects.AfterEffectsStates;
+
+import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+import Goom.FilterFx.FilterConsts;
 import Goom.Utils.Timer;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

@@ -1,21 +1,26 @@
-#include "zoom_vector_after_effects.h"
+module;
 
-#include "after_effects.h"
-#include "after_effects_states.h"
-#include "after_effects_types.h"
-#include "filter_fx/after_effects/the_effects/hypercos.h"
-#include "filter_fx/after_effects/the_effects/image_velocity.h"
-#include "filter_fx/after_effects/the_effects/noise.h"
-#include "filter_fx/after_effects/the_effects/planes.h"
-#include "filter_fx/after_effects/the_effects/rotation.h"
-#include "filter_fx/after_effects/the_effects/tan_effect.h"
-#include "filter_fx/after_effects/the_effects/xy_lerp_effect.h"
-#include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
 #include <utility>
+
+module Goom.FilterFx.AfterEffects.ZoomVectorAfterEffects;
+
+import Goom.FilterFx.AfterEffects.TheEffects.Hypercos;
+import Goom.FilterFx.AfterEffects.TheEffects.ImageVelocity;
+import Goom.FilterFx.AfterEffects.TheEffects.Noise;
+import Goom.FilterFx.AfterEffects.TheEffects.Planes;
+import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
+import Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
+import Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.FilterFx.AfterEffects.AfterEffects;
+import Goom.FilterFx.AfterEffects.AfterEffectsStates;
+import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+import Goom.FilterFx.NormalizedCoords;
+import Goom.Utils.NameValuePairs;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

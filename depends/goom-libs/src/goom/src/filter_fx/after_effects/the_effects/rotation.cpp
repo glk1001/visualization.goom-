@@ -1,11 +1,15 @@
-#include "rotation.h"
+module;
 
 #include "goom/point2d.h"
 
 #include <cmath>
 #include <string>
 
+module Goom.FilterFx.AfterEffects.TheEffects.Rotation;
+
+import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
