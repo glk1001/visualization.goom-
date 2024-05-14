@@ -2,13 +2,13 @@ module;
 
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "math/misc.h"
 
 #include <cstdint>
 #include <vector>
 
 module Goom.VisualFx.CirclesFx:CircleParamsBuilder;
 
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import :Circle;
 

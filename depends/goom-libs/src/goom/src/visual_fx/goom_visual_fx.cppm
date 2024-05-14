@@ -4,7 +4,6 @@ module;
 #include "goom/frame_data.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <string>
@@ -17,6 +16,7 @@ class AudioSamples;
 
 export module Goom.VisualFx.VisualFxBase;
 
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
 
 export namespace GOOM::VISUAL_FX

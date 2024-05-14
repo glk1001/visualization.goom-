@@ -22,7 +22,6 @@
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand.h"
 
 #include <span>
 #include <vector>
@@ -37,6 +36,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS
 {

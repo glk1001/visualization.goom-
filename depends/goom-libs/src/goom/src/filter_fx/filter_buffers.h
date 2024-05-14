@@ -12,7 +12,7 @@
 #include <span>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Parallel;
 
 namespace GOOM
 {

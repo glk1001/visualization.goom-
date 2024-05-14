@@ -1,12 +1,12 @@
 module;
 
 #include "goom/goom_config.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <memory>
 
 module Goom.VisualFx.FlyingStarsFx:StarColorsMaker;
 
+import Goom.Utils.Math.GoomRandBase;
 import :StarColors;
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
@@ -33,7 +33,7 @@ private:
 
   static constexpr auto PROB_REVERSE_WITHIN_CLUSTER_MIX = 0.5F;
   static constexpr auto PROB_SIMILAR_LOW_COLORS         = 0.5F;
-  std::unique_ptr<const StarColors::ColorProperties> m_nextStarColorProperties;
+  StarColors::ColorProperties m_nextStarColorProperties;
 };
 
 StarColorsMaker::StarColorsMaker(const UTILS::MATH::IGoomRand& goomRand,
@@ -48,13 +48,10 @@ StarColorsMaker::StarColorsMaker(const UTILS::MATH::IGoomRand& goomRand,
         }
     },
     m_nextStarColorProperties{
-        std::make_unique<const StarColors::ColorProperties>(
-          StarColors::ColorProperties{
             .colorMapsSet =colorMapsSet,
             .colorMode = m_colorModeWeights.GetRandomWeighted(),
             .reverseWithinClusterMix = m_goomRand->ProbabilityOf(PROB_REVERSE_WITHIN_CLUSTER_MIX),
             .similarLowColors = m_goomRand->ProbabilityOf(PROB_SIMILAR_LOW_COLORS)
-      })
     }
 {
   Expects(colorMapsSet.currentMainColorMapPtr != nullptr);
@@ -70,28 +67,27 @@ auto StarColorsMaker::SetColorMapSet(const StarColors::ColorMapsSet& colorMapsSe
   Expects(colorMapsSet.dominantMainColorMapPtr != nullptr);
   Expects(colorMapsSet.dominantLowColorMapPtr != nullptr);
 
-  const auto oldColorMode               = m_nextStarColorProperties->colorMode;
-  const auto oldReverseWithinClusterMix = m_nextStarColorProperties->reverseWithinClusterMix;
-  const auto oldSimilarLowColors        = m_nextStarColorProperties->similarLowColors;
-  m_nextStarColorProperties =
-      std::make_unique<StarColors::ColorProperties>(StarColors::ColorProperties{
-          colorMapsSet, oldColorMode, oldReverseWithinClusterMix, oldSimilarLowColors});
+  const auto oldColorMode               = m_nextStarColorProperties.colorMode;
+  const auto oldReverseWithinClusterMix = m_nextStarColorProperties.reverseWithinClusterMix;
+  const auto oldSimilarLowColors        = m_nextStarColorProperties.similarLowColors;
+  m_nextStarColorProperties             = StarColors::ColorProperties{
+      colorMapsSet, oldColorMode, oldReverseWithinClusterMix, oldSimilarLowColors};
 }
 
 auto StarColorsMaker::ChangeColorMode() noexcept -> void
 {
-  const auto& oldColorMapsSet = m_nextStarColorProperties->colorMapsSet;
-  m_nextStarColorProperties   = std::make_unique<StarColors::ColorProperties>(
+  const auto& oldColorMapsSet = m_nextStarColorProperties.colorMapsSet;
+  m_nextStarColorProperties =
       StarColors::ColorProperties{oldColorMapsSet,
                                   m_colorModeWeights.GetRandomWeighted(),
                                   m_goomRand->ProbabilityOf(PROB_REVERSE_WITHIN_CLUSTER_MIX),
-                                  m_goomRand->ProbabilityOf(PROB_SIMILAR_LOW_COLORS)});
+                                  m_goomRand->ProbabilityOf(PROB_SIMILAR_LOW_COLORS)};
 }
 
 inline auto StarColorsMaker::GetNewStarColors(const float withinClusterT) const noexcept
     -> StarColors
 {
-  return StarColors{*m_nextStarColorProperties, withinClusterT};
+  return StarColors{m_nextStarColorProperties, withinClusterT};
 }
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS

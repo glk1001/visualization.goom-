@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <cstdint>
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
 
 namespace GOOM::COLOR
 {

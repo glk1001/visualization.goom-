@@ -13,8 +13,6 @@ module;
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -25,7 +23,6 @@ module;
 
 module Goom.VisualFx.CirclesFx:Circle;
 
-import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import :Helper;
 import :DotDiameters;
@@ -134,8 +131,8 @@ private:
   std::vector<COLOR::ColorMapPtrWrapper> m_rotatingLowColorMaps{};
   std::vector<uint32_t> m_rotatingDotNums{};
   static constexpr uint32_t NUM_ROTATING_COLOR_STEPS = 100U;
-  UTILS::TValue m_rotatingColorsT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_ROTATING_COLOR_STEPS}
+  UTILS::MATH::TValue m_rotatingColorsT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_ROTATING_COLOR_STEPS}
   };
   auto UpdateRotatingColorMaps() noexcept -> void;
 
@@ -317,7 +314,7 @@ using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using DRAW::ReversePixels;
 using UTILS::EnumMap;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CirclePath;
 using UTILS::MATH::IGoomRand;

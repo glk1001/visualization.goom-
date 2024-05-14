@@ -7,8 +7,7 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_time.h"
 #include "goom/point2d.h"
-#include "utils/math/damping_functions.h"
-#include "utils/math/goom_rand_base.h"
+#include "utils/math/paths.h"
 
 #include <algorithm>
 #include <array>
@@ -20,7 +19,10 @@ module;
 
 module Goom.VisualFx.TentaclesFx:TentacleDriver;
 
-import Goom.Utils;
+import Goom.Utils.Math.DampingFunctions;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.VisualFxBase;
 import :CirclesTentacleLayout;
 import :Tentacle2d;
@@ -80,12 +82,12 @@ private:
     Pixel currentLowColor;
   };
   static constexpr auto NUM_CURRENT_COLOR_STEPS = 500U;
-  UTILS::TValue m_currentColorT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_CURRENT_COLOR_STEPS}
+  UTILS::MATH::TValue m_currentColorT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_CURRENT_COLOR_STEPS}
   };
   static constexpr auto NUM_NODE_T_OFFSET_STEPS = 10U;
-  UTILS::TValue m_nodeTOffset{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_NODE_T_OFFSET_STEPS}
+  UTILS::MATH::TValue m_nodeTOffset{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_NODE_T_OFFSET_STEPS}
   };
   std::vector<TentacleAndAttributes> m_tentacles;
   [[nodiscard]] static auto GetTentacles(const UTILS::MATH::IGoomRand& goomRand,
@@ -114,12 +116,12 @@ private:
 
   auto CheckForTimerEvents() -> void;
 
-  using StepType = UTILS::TValue::StepType;
+  using StepType = UTILS::MATH::TValue::StepType;
 
   Point2dInt m_previousEndCentrePos             = m_screenCentre;
   Point2dInt m_targetEndCentrePos               = m_screenCentre;
   static constexpr auto NUM_STEPS_TO_END_TARGET = 100U;
-  UTILS::TValue m_endCentrePosT{
+  UTILS::MATH::TValue m_endCentrePosT{
       {StepType::SINGLE_CYCLE, NUM_STEPS_TO_END_TARGET}
   };
   [[nodiscard]] auto GetAcceptableEndCentrePos(
@@ -132,7 +134,7 @@ private:
   static constexpr auto MIN_END_RADIUS       = 10.0F;
   static constexpr auto MAX_END_RADIUS       = 150.0F;
   static constexpr auto NUM_END_RADIUS_STEPS = 50U;
-  UTILS::IncrementedValue<float> m_endRadius{
+  UTILS::MATH::IncrementedValue<float> m_endRadius{
       MIN_END_RADIUS, MAX_END_RADIUS, StepType::CONTINUOUS_REVERSIBLE, NUM_END_RADIUS_STEPS};
   auto UpdateTentaclesEndPos() noexcept -> void;
 
@@ -163,8 +165,8 @@ using DRAW::GetLowColor;
 using DRAW::GetMainColor;
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SineWaveMultiplier;
 

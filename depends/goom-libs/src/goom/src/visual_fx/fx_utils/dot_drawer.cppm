@@ -8,7 +8,6 @@ module;
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -16,7 +15,7 @@ module;
 
 export module Goom.VisualFx.FxUtils:DotDrawer;
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {

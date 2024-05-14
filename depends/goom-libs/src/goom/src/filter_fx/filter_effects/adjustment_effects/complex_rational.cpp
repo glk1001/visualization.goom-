@@ -5,15 +5,14 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <complex>
 #include <cstdint>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -24,7 +23,7 @@ using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::TWO_PI;

@@ -8,7 +8,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/point_utils.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <array>
@@ -20,7 +19,10 @@ module;
 
 module Goom.VisualFx.ShapesFx;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :Shapes;
@@ -30,9 +32,9 @@ namespace GOOM::VISUAL_FX
 
 using FX_UTILS::RandomPixelBlender;
 using SHAPES::Shape;
-using UTILS::IncrementedValue;
+using UTILS::MATH::IncrementedValue;
 using UTILS::Timer;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::MATH::TWO_PI;
 

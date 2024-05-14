@@ -4,10 +4,10 @@
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

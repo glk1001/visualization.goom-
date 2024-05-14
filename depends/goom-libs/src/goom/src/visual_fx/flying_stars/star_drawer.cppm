@@ -11,8 +11,6 @@ module;
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/pixel_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cmath>
@@ -23,7 +21,9 @@ module;
 
 export module Goom.VisualFx.FlyingStarsFx:StarDrawer;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 import :StarColors;
 import :Stars;
 
@@ -176,8 +176,8 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 using DRAW::IGoomDraw;
 using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::GetColorMultiply;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;

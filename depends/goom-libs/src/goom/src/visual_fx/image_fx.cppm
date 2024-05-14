@@ -8,7 +8,7 @@ module;
 
 export module Goom.VisualFx.ImageFx;
 
-import Goom.Utils;
+import Goom.Utils.Parallel;
 import Goom.VisualFx.VisualFxBase;
 
 export namespace GOOM::VISUAL_FX

@@ -1,10 +1,8 @@
 #include "image_velocity.h"
 
-#include "math/goom_rand_base.h"
-
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

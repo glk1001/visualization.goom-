@@ -5,7 +5,7 @@ module;
 
 #include <cstdint>
 
-export module Goom.Utils:StepSpeed;
+export module Goom.Utils.StepSpeed;
 
 export namespace GOOM::UTILS
 {

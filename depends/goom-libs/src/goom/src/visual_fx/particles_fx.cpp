@@ -21,7 +21,6 @@ module;
 #include "utils/graphics/pixel_utils.h"
 #include "utils/graphics/point_utils.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
@@ -33,7 +32,9 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 
@@ -49,8 +50,8 @@ using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
 using PARTICLES::EFFECTS::AttractorEffect;
 using PARTICLES::EFFECTS::IEffect;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;

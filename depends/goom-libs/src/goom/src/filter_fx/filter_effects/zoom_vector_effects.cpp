@@ -10,8 +10,6 @@
 #include <cstdint>
 #include <string>
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 

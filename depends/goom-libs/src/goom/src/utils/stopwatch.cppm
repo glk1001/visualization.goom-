@@ -7,9 +7,9 @@ module;
 #include <limits>
 #include <string>
 
-export module Goom.Utils:StopWatch;
+export module Goom.Utils.Stopwatch;
 
-import :DateUtils;
+import Goom.Utils.DateUtils;
 
 export namespace GOOM::UTILS
 {

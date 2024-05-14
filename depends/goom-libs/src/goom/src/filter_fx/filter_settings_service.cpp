@@ -10,8 +10,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_lerp_data.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <array>
 #include <cstdint>
@@ -22,7 +20,8 @@
 #include <utility>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX
 {

@@ -7,11 +7,8 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
-#include "utils/math/transform2d.h"
 
 #include <algorithm>
 #include <cmath>
@@ -24,7 +21,10 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapeParts;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.StepSpeed;
+import Goom.Utils.Math.Transform2d;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import :ShapePaths;
 
@@ -111,8 +111,8 @@ private:
   static constexpr auto MIN_MAX_DOT_RADIUS_STEPS  = MinMaxValues<uint32_t>{100U, 200U};
   static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
   UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
-  UTILS::TValue m_dotRadiusT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
+  UTILS::MATH::TValue m_dotRadiusT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
   };
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
 
@@ -180,8 +180,8 @@ private:
   };
   float m_minRadiusFraction;
   float m_maxRadiusFraction;
-  UTILS::TValue m_radiusFractionT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, 100U}
+  UTILS::MATH::TValue m_radiusFractionT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, 100U}
   };
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;
@@ -236,7 +236,7 @@ namespace GOOM::VISUAL_FX::SHAPES
 
 using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::AngleParams;
 using UTILS::MATH::CircleFunction;
 using UTILS::MATH::CirclePath;

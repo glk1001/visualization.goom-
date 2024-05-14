@@ -2,13 +2,13 @@
 
 #include "filter_fx/common_types.h"
 #include "image_displacement.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstddef>
 #include <string>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.NameValuePairs;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

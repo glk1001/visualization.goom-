@@ -40,7 +40,6 @@
 #include "utils/graphics/blend2d_to_goom.h"
 #include "utils/graphics/pixel_blend.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand.h"
 
 #include <cmath>
 #include <cstddef>
@@ -55,7 +54,10 @@
 #include "utils/math/randutils.h"
 #endif
 
-import Goom.Utils;
+import Goom.Utils.DebuggingLogger;
+import Goom.Utils.StrUtils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.FxHelper;
 
 namespace GOOM
@@ -83,7 +85,7 @@ using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
 using UTILS::Timer;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
 using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
 using UTILS::GRAPHICS::SmallImageBitmaps;

@@ -8,8 +8,6 @@
 
 #include <cstdint>
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 

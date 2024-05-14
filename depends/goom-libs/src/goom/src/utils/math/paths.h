@@ -2,7 +2,6 @@
 
 #include "goom/point2d.h"
 #include "utils/math/parametric_functions2d.h"
-#include "utils/math/transform2d.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -10,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Math.Transform2d;
 
 namespace GOOM::UTILS::MATH
 {

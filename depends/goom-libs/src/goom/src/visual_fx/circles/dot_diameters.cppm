@@ -1,12 +1,14 @@
 module;
 
-#include "utils/math/goom_rand_base.h"
+#include "goom/goom_config.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <vector>
 
 module Goom.VisualFx.CirclesFx:DotDiameters;
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

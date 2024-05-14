@@ -9,7 +9,6 @@ module;
 #include "goom/goom_types.h"
 
 #include <cmath>
-#include <memory>
 
 module Goom.VisualFx.FlyingStarsFx:StarColors;
 
@@ -54,7 +53,7 @@ public:
       -> DRAW::MultiplePixels;
 
 private:
-  std::unique_ptr<const ColorProperties> m_colorProperties;
+  ColorProperties m_colorProperties;
   float m_withinClusterT;
   Pixel m_withinClusterMainColor;
   Pixel m_withinClusterLowColor;
@@ -77,7 +76,7 @@ private:
 
 inline auto StarColors::GetColorProperties() const noexcept -> const ColorProperties&
 {
-  return *m_colorProperties;
+  return m_colorProperties;
 }
 
 inline auto StarColors::GetWithinClusterT() const noexcept -> float
@@ -97,12 +96,12 @@ using DRAW::GetMainColor;
 using DRAW::MultiplePixels;
 
 StarColors::StarColors(const ColorProperties& colorProperties, const float withinClusterT) noexcept
-  : m_colorProperties{std::make_unique<const ColorProperties>(colorProperties)},
+  : m_colorProperties{colorProperties},
     m_withinClusterT{withinClusterT},
     m_withinClusterMainColor{
-        m_colorProperties->colorMapsSet.dominantMainColorMapPtr->GetColor(withinClusterT)},
+        m_colorProperties.colorMapsSet.dominantMainColorMapPtr->GetColor(withinClusterT)},
     m_withinClusterLowColor{
-        m_colorProperties->colorMapsSet.dominantLowColorMapPtr->GetColor(withinClusterT)}
+        m_colorProperties.colorMapsSet.dominantLowColorMapPtr->GetColor(withinClusterT)}
 {
 }
 
@@ -111,7 +110,7 @@ auto StarColors::GetMixedColors(const MixedColorsParams& mixedColorsParams) cons
 {
   MultiplePixels starColors;
 
-  switch (m_colorProperties->colorMode)
+  switch (m_colorProperties.colorMode)
   {
     case ColorMode::SINE_MIX_COLORS:
       starColors = GetSineMixColors();
@@ -141,7 +140,7 @@ inline auto StarColors::GetFinalMixedColors(const MixedColorsParams& mixedColors
   const auto mixedLowColor            = GetLightenedColor(
       ColorMaps::GetColorMix(m_withinClusterLowColor, GetLowColor(colors), tMix), LIGHTEN_POWER);
 
-  if (m_colorProperties->similarLowColors)
+  if (m_colorProperties.similarLowColors)
   {
     return {mixedMainColor, mixedLowColor};
   }
@@ -160,7 +159,7 @@ inline auto StarColors::GetFinalTMix(const float lengthT) const noexcept -> floa
   static constexpr auto MAX_MIX = 0.8F;
   const auto tMix               = std::lerp(MIN_MIX, MAX_MIX, lengthT);
 
-  if (m_colorProperties->reverseWithinClusterMix)
+  if (m_colorProperties.reverseWithinClusterMix)
   {
     return 1.0F - tMix;
   }
@@ -170,8 +169,8 @@ inline auto StarColors::GetFinalTMix(const float lengthT) const noexcept -> floa
 
 inline auto StarColors::GetColors(const float t) const noexcept -> MultiplePixels
 {
-  return {m_colorProperties->colorMapsSet.currentMainColorMapPtr->GetColor(t),
-          m_colorProperties->colorMapsSet.currentLowColorMapPtr->GetColor(t)};
+  return {m_colorProperties.colorMapsSet.currentMainColorMapPtr->GetColor(t),
+          m_colorProperties.colorMapsSet.currentLowColorMapPtr->GetColor(t)};
 }
 
 inline auto StarColors::GetReversedMixColors(const float t) const noexcept -> MultiplePixels
@@ -189,8 +188,8 @@ inline auto StarColors::GetSineMixColors() const noexcept -> MultiplePixels
   const auto tSin = T_MIX_FACTOR * (1.0F + std::sin(FREQ * s_t));
 
   auto starColors =
-      MultiplePixels{m_colorProperties->colorMapsSet.currentMainColorMapPtr->GetColor(tSin),
-                     m_colorProperties->colorMapsSet.currentLowColorMapPtr->GetColor(tSin)};
+      MultiplePixels{m_colorProperties.colorMapsSet.currentMainColorMapPtr->GetColor(tSin),
+                     m_colorProperties.colorMapsSet.currentLowColorMapPtr->GetColor(tSin)};
 
   s_t += T_STEP;
 

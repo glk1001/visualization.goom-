@@ -4,11 +4,12 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "line_clipper.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cstdint>
+
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UTILS::GRAPHICS
 {

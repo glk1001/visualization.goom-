@@ -1,5 +1,3 @@
-#include "utils/math/misc.h"
-
 #include <cstdint>
 #include <vector>
 
@@ -15,14 +13,16 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UNIT_TESTS
 {
 
 using Catch::Approx;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::SMALL_FLOAT;
 
 static constexpr auto TWO = 2.0F;

@@ -3,10 +3,11 @@
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cstdint>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX
 {

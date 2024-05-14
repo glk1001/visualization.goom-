@@ -1,13 +1,14 @@
 module;
 
 #include "goom/point2d.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
 #include <vector>
 
 module Goom.VisualFx.TentaclesFx:CirclesTentacleLayout;
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {

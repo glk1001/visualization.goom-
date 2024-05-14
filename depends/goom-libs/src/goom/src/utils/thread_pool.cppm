@@ -15,7 +15,7 @@ module;
 // clang-format off
 // NOLINTBEGIN: Not my code
 
-export module Goom.Utils:ThreadPool;
+export module Goom.Utils.Parallel:ThreadPool;
 
 export namespace GOOM::UTILS
 {

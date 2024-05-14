@@ -2,7 +2,8 @@
 
 #include "goom_state_handler.h"
 #include "goom_states.h"
-#include "utils/math/goom_rand_base.h"
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::CONTROL
 {

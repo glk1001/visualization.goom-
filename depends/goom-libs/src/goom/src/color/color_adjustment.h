@@ -1,7 +1,8 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
-#include "utils/math/misc.h"
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::COLOR
 {

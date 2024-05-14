@@ -18,7 +18,7 @@ module;
 #include <string>
 #include <type_traits>
 
-export module Goom.Utils:BufferSaver;
+export module Goom.Utils.BufferSaver;
 
 export namespace GOOM::UTILS
 {

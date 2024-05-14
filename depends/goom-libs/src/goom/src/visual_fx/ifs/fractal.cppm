@@ -3,8 +3,6 @@ module;
 #include "color/random_color_maps.h"
 #include "goom/goom_types.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
@@ -14,7 +12,9 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Fractal;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 import :FractalHits;
 import :IfsTypes;
 import :Similitudes;
@@ -56,8 +56,8 @@ private:
   uint32_t m_prevSpeed                                 = INITIAL_SPEED;
   uint32_t m_speed                                     = INITIAL_SPEED;
   static constexpr uint32_t NUM_SPEED_TRANSITION_STEPS = 500;
-  UTILS::TValue m_speedTransitionT{
-      {UTILS::TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
+  UTILS::MATH::TValue m_speedTransitionT{
+      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
   };
   uint32_t m_maxCountTimesSpeed = MAX_MAX_COUNT_TIMES_SPEED;
 
@@ -87,7 +87,7 @@ namespace GOOM::VISUAL_FX::IFS
 {
 
 using COLOR::WeightedRandomColorMaps;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;

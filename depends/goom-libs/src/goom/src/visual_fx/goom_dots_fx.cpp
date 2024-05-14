@@ -12,8 +12,6 @@ module;
 #include "goom/spimpl.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -28,7 +26,8 @@ module;
 
 module Goom.VisualFx.GoomDotsFx;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 
@@ -43,8 +42,8 @@ using COLOR::SimpleColors;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using FX_UTILS::RandomPixelBlender;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::AngleParams;

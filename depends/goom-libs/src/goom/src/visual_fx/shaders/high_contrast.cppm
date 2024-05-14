@@ -1,14 +1,15 @@
 module;
 
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cmath>
 #include <cstdint>
 
 module Goom.VisualFx.ShaderFx:HighContrast;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
@@ -43,8 +44,8 @@ private:
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;
   static constexpr uint32_t HIGH_CONTRAST_ON_TIME =
       (2 * NUM_HIGH_CONTRAST_ON_STEPS) + HIGH_CONTRAST_ON_DELAY_TIME;
-  UTILS::TValue m_highContrastT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_HIGH_CONTRAST_ON_STEPS},
+  UTILS::MATH::TValue m_highContrastT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_HIGH_CONTRAST_ON_STEPS},
       {{1.0F, HIGH_CONTRAST_ON_DELAY_TIME}}
   };
   UTILS::Timer m_highContrastOnTimer{m_goomInfo->GetTime(), HIGH_CONTRAST_ON_TIME, true};

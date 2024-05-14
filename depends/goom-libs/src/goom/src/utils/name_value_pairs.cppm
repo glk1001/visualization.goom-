@@ -10,10 +10,10 @@ module;
 #include <utility>
 #include <vector>
 
-export module Goom.Utils:NameValuePairs;
+export module Goom.Utils.NameValuePairs;
 
-import :FormatUtils;
-import :StrUtils;
+import Goom.Utils.FormatUtils;
+import Goom.Utils.StrUtils;
 
 export namespace GOOM::UTILS
 {

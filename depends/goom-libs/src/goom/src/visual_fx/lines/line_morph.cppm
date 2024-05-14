@@ -12,8 +12,6 @@ module;
 #include "goom/sound_info.h"
 #include "goom_plugin_info.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cmath>
@@ -23,7 +21,7 @@ module;
 
 module Goom.VisualFx.LinesFx:LineMorph;
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxUtils;
 import :LineTypes;
 

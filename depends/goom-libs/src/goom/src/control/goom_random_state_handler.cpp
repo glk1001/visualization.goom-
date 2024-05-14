@@ -3,9 +3,8 @@
 #include "goom/goom_config.h"
 #include "goom_states.h"
 #include "state_and_filter_consts.h"
-#include "utils/math/goom_rand_base.h"
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::CONTROL
 {

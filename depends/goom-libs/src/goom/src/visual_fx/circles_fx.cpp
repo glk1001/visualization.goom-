@@ -9,7 +9,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
 
 #include <algorithm>
@@ -20,7 +19,8 @@ module;
 
 module Goom.VisualFx.CirclesFx;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :Circle;

@@ -15,7 +15,6 @@ module;
 #include "goom/point2d.h"
 #include "utils/graphics/blend2d_utils.h"
 #include "utils/graphics/point_utils.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cmath>
@@ -25,7 +24,9 @@ module;
 
 module Goom.VisualFx.RaindropsFx:Raindrops;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import :RaindropPositions;
 
@@ -107,10 +108,10 @@ private:
     uint32_t dropNum{};
     uint8_t lineThickness{};
     float fracFromWeightPoint{};
-    UTILS::IncrementedValue<float> growthRadius;
+    UTILS::MATH::IncrementedValue<float> growthRadius;
     COLOR::ColorMapPtrWrapper mainColorMap{nullptr};
     COLOR::ColorMapPtrWrapper lowColorMap{nullptr};
-    UTILS::TValue colorT;
+    UTILS::MATH::TValue colorT;
   };
   std::vector<Raindrop> m_raindrops;
   uint32_t m_pendingNewNumRaindrops = 0U;
@@ -146,8 +147,8 @@ using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::FillCircleWithGradient;
 using UTILS::GRAPHICS::GetMinSideLength;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;

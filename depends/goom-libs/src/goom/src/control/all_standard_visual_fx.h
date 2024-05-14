@@ -12,7 +12,8 @@
 #include <string>
 #include <unordered_set>
 
-import Goom.Utils;
+import Goom.Utils.Parallel;
+import Goom.Utils.Stopwatch;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.LinesFx;
 import Goom.VisualFx.ShaderFx;

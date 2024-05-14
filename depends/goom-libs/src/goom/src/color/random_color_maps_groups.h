@@ -3,7 +3,8 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "random_color_maps.h"
-#include "utils/math/goom_rand_base.h"
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::COLOR
 {

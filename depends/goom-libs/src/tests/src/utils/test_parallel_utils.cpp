@@ -16,7 +16,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
+import Goom.Utils.Parallel;
 
 namespace GOOM::UNIT_TESTS
 {

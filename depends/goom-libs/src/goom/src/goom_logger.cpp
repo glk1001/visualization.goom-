@@ -11,7 +11,8 @@
 #include <stdexcept>
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.DateUtils;
+import Goom.Utils.EnumUtils;
 
 namespace GOOM
 {

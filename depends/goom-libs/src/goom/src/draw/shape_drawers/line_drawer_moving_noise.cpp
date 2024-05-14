@@ -3,16 +3,16 @@
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 
 LineDrawerMovingNoise::LineDrawerMovingNoise(IGoomDraw& draw,

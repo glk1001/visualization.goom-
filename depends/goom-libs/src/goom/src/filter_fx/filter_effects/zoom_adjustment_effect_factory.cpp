@@ -17,10 +17,11 @@
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/goom_config.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <memory>
 #include <string>
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

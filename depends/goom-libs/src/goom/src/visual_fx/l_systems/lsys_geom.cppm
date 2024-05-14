@@ -2,8 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
@@ -11,7 +9,10 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysGeom;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
@@ -36,7 +37,7 @@ public:
       -> Point2dFlt;
   auto IncrementTs() noexcept -> void;
 
-  [[nodiscard]] auto GetVerticalMove() const noexcept -> const UTILS::IncrementedValue<float>&;
+  [[nodiscard]] auto GetVerticalMove() const noexcept -> const UTILS::MATH::IncrementedValue<float>&;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -70,34 +71,34 @@ private:
   Vec2dFlt m_translateAdjust{};
 
   static constexpr auto DEFAULT_NUM_ROTATE_DEGREES_STEPS = 100U;
-  UTILS::IncrementedValue<float> m_rotateDegreesAdjust{
+  UTILS::MATH::IncrementedValue<float> m_rotateDegreesAdjust{
       0.0F,
       UTILS::MATH::DEGREES_360,
-      UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+      UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
       DEFAULT_NUM_ROTATE_DEGREES_STEPS};
   float m_rotateSign = +1.0F;
 
   static constexpr auto DEFAULT_NUM_SPIN_DEGREES_STEPS = 100U;
-  UTILS::IncrementedValue<float> m_spinDegreesAdjust{0.0F,
+  UTILS::MATH::IncrementedValue<float> m_spinDegreesAdjust{0.0F,
                                                      UTILS::MATH::DEGREES_360,
-                                                     UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                                     UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
                                                      DEFAULT_NUM_SPIN_DEGREES_STEPS};
   float m_spinSign = -1.0F;
 
   static constexpr auto MIN_Y_SCALE_ADJUST           = 1.0F;
   static constexpr auto MAX_Y_SCALE_ADJUST           = 1.9F;
   static constexpr auto DEFAULT_Y_SCALE_ADJUST_STEPS = 300U;
-  UTILS::IncrementedValue<float> m_yScaleAdjust{MIN_Y_SCALE_ADJUST,
+  UTILS::MATH::IncrementedValue<float> m_yScaleAdjust{MIN_Y_SCALE_ADJUST,
                                                 MAX_Y_SCALE_ADJUST,
-                                                UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                                UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
                                                 DEFAULT_Y_SCALE_ADJUST_STEPS};
 
   static constexpr auto MIN_VERTICAL_MOVE           = -100.0F;
   static constexpr auto MAX_VERTICAL_MOVE           = +100.0F;
   static constexpr auto DEFAULT_VERTICAL_MOVE_STEPS = 150U;
-  UTILS::IncrementedValue<float> m_verticalMove{MIN_VERTICAL_MOVE,
+  UTILS::MATH::IncrementedValue<float> m_verticalMove{MIN_VERTICAL_MOVE,
                                                 MAX_VERTICAL_MOVE,
-                                                UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                                UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
                                                 DEFAULT_VERTICAL_MOVE_STEPS};
 };
 
@@ -142,7 +143,7 @@ inline auto LSysGeometry::SetYScaleNumSteps(const uint32_t numSteps) noexcept ->
   m_yScaleAdjust.SetNumSteps(numSteps);
 }
 
-inline auto LSysGeometry::GetVerticalMove() const noexcept -> const UTILS::IncrementedValue<float>&
+inline auto LSysGeometry::GetVerticalMove() const noexcept -> const UTILS::MATH::IncrementedValue<float>&
 {
   return m_verticalMove;
 }
@@ -152,7 +153,7 @@ inline auto LSysGeometry::GetVerticalMove() const noexcept -> const UTILS::Incre
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::DEGREES_360;
 using UTILS::MATH::ToRadians;
 

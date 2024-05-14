@@ -1,11 +1,14 @@
-#pragma once
+module;
 
 #include "goom/point2d.h"
-#include "misc.h"
 
 #include <cmath>
 
-namespace GOOM::UTILS::MATH
+export module Goom.Utils.Math.Transform2d;
+
+import Goom.Utils.Math.Misc;
+
+export namespace GOOM::UTILS::MATH
 {
 
 class Transform2d

@@ -17,8 +17,6 @@
 #include <thread>
 #include <utility>
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX
 {
 

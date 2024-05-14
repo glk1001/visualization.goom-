@@ -1,6 +1,5 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
-#include "utils/math/misc.h"
 
 #include <cstdint>
 
@@ -14,6 +13,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UNIT_TESTS
 {

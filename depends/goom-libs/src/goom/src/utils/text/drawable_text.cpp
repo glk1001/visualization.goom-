@@ -5,13 +5,13 @@
 #include "draw/shape_drawers/text_drawer.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
-#include "utils/math/misc.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.StrUtils;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UTILS::TEXT
 {

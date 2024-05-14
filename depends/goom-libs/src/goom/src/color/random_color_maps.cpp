@@ -7,14 +7,14 @@
 #include "color_maps_base.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <memory>
 #include <set>
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::COLOR
 {

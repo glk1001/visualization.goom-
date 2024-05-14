@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Parallel;
 
 namespace GOOM
 {

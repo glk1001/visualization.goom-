@@ -2,13 +2,13 @@
 
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "misc.h"
 
 #include <cmath>
 #include <cstdint>
 #include <functional>
 
-import Goom.Utils;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.TValues;
 
 namespace GOOM::UTILS::MATH
 {
@@ -235,7 +235,7 @@ public:
   };
 
   OscillatingFunction(const StartAndEndPos& startAndEndPos, const Params& params) noexcept;
-  OscillatingFunction(const UTILS::TValue& angleT,
+  OscillatingFunction(const UTILS::MATH::TValue& angleT,
                       const StartAndEndPos& startAndEndPos,
                       const Params& params) noexcept;
 
@@ -250,7 +250,7 @@ public:
 private:
   bool m_allowOscillatingPath = true;
   bool m_usingAngleT          = false;
-  UTILS::TValue m_angleT{UTILS::TValue::StepSizeProperties{}};
+  UTILS::MATH::TValue m_angleT{UTILS::MATH::TValue::StepSizeProperties{}};
   Params m_params;
   Point2dFlt m_startPos;
   Point2dFlt m_endPos;

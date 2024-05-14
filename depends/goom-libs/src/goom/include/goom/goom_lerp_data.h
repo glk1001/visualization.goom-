@@ -1,12 +1,12 @@
 #pragma once
 
 #include "goom_config.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cmath>
 
-import Goom.Utils;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.TValues;
 
 namespace GOOM
 {
@@ -40,15 +40,15 @@ private:
   static constexpr auto K_VAL         = 5.0F;
   static constexpr auto A_VAL         = 1.5F;
   static constexpr auto DEFAULT_T_INC = 0.007F;
-  UTILS::TValue m_sFuncTVal{
-      UTILS::TValue::StepSizeProperties{DEFAULT_T_INC,
-                                        UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE}
+  UTILS::MATH::TValue m_sFuncTVal{
+      UTILS::MATH::TValue::StepSizeProperties{DEFAULT_T_INC,
+                                        UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   [[nodiscard]] auto GetNextSFuncValue() const noexcept -> float;
 
-  UTILS::TValue m_incLerpFactor{
-      UTILS::TValue::StepSizeProperties{DEFAULT_INCREMENT,
-                                        UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE}
+  UTILS::MATH::TValue m_incLerpFactor{
+      UTILS::MATH::TValue::StepSizeProperties{DEFAULT_INCREMENT,
+                                        UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   float m_funcLerpFactor = 0.0F;
   float m_lerpFactor     = 0.0F;
@@ -68,9 +68,9 @@ inline auto GoomLerpData::GetSFunctionTIncrement() const noexcept -> float
 inline GoomLerpData::GoomLerpData(const float increment, const bool useSFunction) noexcept
   : m_useSFunction{useSFunction},
     m_incLerpFactor{
-        UTILS::TValue::StepSizeProperties{
+        UTILS::MATH::TValue::StepSizeProperties{
             increment,
-            UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE}},
+            UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}},
     m_funcLerpFactor{not useSFunction ? 0.0F : GetNextSFuncValue()},
     m_lerpFactor{m_funcLerpFactor}
 {

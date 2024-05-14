@@ -24,7 +24,6 @@
 #include "goom/goom_utils.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/pixel_blend.h"
-#include "utils/math/misc.h"
 
 #ifndef NO_FREETYPE_INSTALLED
 #include <codecvt>
@@ -35,7 +34,8 @@
 #include FT_FREETYPE_H
 #include FT_STROKER_H
 
-import Goom.Utils;
+import Goom.Utils.Parallel;
+import Goom.Utils.StrUtils;
 #endif
 
 namespace GOOM::DRAW::SHAPE_DRAWERS

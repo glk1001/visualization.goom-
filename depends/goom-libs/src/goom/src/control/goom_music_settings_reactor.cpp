@@ -5,14 +5,11 @@
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_speed.h"
 #include "goom/sound_info.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <utility>
-
-import Goom.Utils;
 
 namespace GOOM::CONTROL
 {

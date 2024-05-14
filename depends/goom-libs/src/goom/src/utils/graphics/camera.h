@@ -2,11 +2,12 @@
 
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/misc.h"
 
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UTILS::GRAPHICS
 {

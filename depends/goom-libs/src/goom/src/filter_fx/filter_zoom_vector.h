@@ -7,12 +7,7 @@
 #include <cstdint>
 #include <string>
 
-import Goom.Utils;
-
-namespace GOOM::UTILS::MATH
-{
-class IGoomRand;
-}
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX
 {

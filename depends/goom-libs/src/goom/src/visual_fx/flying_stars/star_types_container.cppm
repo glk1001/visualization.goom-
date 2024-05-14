@@ -7,8 +7,6 @@ module;
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <array>
 #include <cmath>
@@ -30,7 +28,9 @@ class WeightedRandomColorMaps;
 
 export module Goom.VisualFx.FlyingStarsFx:StarTypesContainer;
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 import :StarColorsMaker;
 
 export namespace GOOM::VISUAL_FX::FLYING_STARS

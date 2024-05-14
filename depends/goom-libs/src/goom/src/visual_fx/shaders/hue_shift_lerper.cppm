@@ -3,15 +3,16 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
 
 module Goom.VisualFx.ShaderFx:HueShifterLerper;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
@@ -45,8 +46,8 @@ private:
   float m_destHueShift    = 0.0F;
   float m_currentHueShift = 0.0F;
 
-  UTILS::TValue m_lerpT{
-      {UTILS::TValue::StepType::SINGLE_CYCLE, m_lerpData.minNumLerpOnSteps}
+  UTILS::MATH::TValue m_lerpT{
+      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, m_lerpData.minNumLerpOnSteps}
   };
   auto RestartLerpWithNewDestHue() noexcept -> void;
   auto RestartLerp() noexcept -> void;

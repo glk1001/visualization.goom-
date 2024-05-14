@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 
@@ -9,7 +9,9 @@
 #include <numbers>
 #include <numeric>
 
-namespace GOOM::UTILS::MATH
+export module Goom.Utils.Math.Misc;
+
+export namespace GOOM::UTILS::MATH
 {
 inline constexpr auto HALF = 1.0F / 2.0F;
 

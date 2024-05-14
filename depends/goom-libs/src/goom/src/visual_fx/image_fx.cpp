@@ -16,7 +16,6 @@ module;
 #include "goom/spimpl.h"
 #include "goom_plugin_info.h"
 #include "utils/graphics/image_bitmaps.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <array>
@@ -31,7 +30,8 @@ module;
 
 module Goom.VisualFx.ImageFx;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 
@@ -48,7 +48,7 @@ using DRAW::MultiplePixels;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
 using UTILS::Parallel;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::MATH::HALF;
 using UTILS::MATH::I_HALF;

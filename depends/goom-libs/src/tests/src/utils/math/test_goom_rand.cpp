@@ -1,5 +1,4 @@
 #include "goom/goom_types.h"
-#include "utils/math/goom_rand.h"
 
 #include <array>
 #include <cstddef>
@@ -19,7 +18,9 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS
 {

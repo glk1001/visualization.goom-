@@ -4,7 +4,7 @@ module;
 #include <cstddef>
 #include <utility>
 
-export module Goom.Utils:ArrayUtils;
+export module Goom.Utils.ArrayUtils;
 
 namespace GOOM::UTILS
 {

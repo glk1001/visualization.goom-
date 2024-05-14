@@ -10,7 +10,7 @@ module;
 #include <type_traits>
 #include <vector>
 
-export module Goom.Utils:EnumUtils;
+export module Goom.Utils.EnumUtils;
 
 export namespace GOOM::UTILS
 {

@@ -1,11 +1,12 @@
 #include "complex_utils.h"
 
 #include "filter_fx/common_types.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <complex>
 #include <limits>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

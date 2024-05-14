@@ -1,10 +1,11 @@
 #pragma once
 
 #include "goom/goom_graphic.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cstdint>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UTILS::GRAPHICS
 {

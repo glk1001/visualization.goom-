@@ -6,12 +6,11 @@
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

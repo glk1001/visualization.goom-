@@ -8,7 +8,7 @@ module;
 
 export module Goom.VisualFx.ShaderFx;
 
-import Goom.Utils;
+import Goom.Utils.Stopwatch;
 import Goom.VisualFx.VisualFxBase;
 
 export namespace GOOM::VISUAL_FX

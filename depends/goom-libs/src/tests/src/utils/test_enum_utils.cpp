@@ -13,7 +13,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
 
 namespace GOOM::UNIT_TESTS
 {

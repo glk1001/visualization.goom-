@@ -10,14 +10,14 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cstdint>
 
 module Goom.VisualFx.CirclesFx:DotDrawer;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 import :Helper;
 
 namespace GOOM::VISUAL_FX::CIRCLES
@@ -117,8 +117,8 @@ using COLOR::GetBrighterColor;
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using DRAW::MultiplePixels;
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
 

@@ -5,11 +5,12 @@ module;
 #include "draw/shape_drawers/line_drawer_with_effects.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 
 module Goom.VisualFx.LSystemFx:LineDrawerManager;
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {

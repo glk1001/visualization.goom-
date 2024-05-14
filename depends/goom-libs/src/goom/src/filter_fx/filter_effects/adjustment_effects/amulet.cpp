@@ -3,9 +3,6 @@
 #include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
-#include "math/goom_rand_base.h"
-
-import Goom.Utils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

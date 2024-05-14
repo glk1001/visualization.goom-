@@ -3,7 +3,7 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
 
-import Goom.Utils;
+import Goom.Utils.NameValuePairs;
 
 namespace GOOM::FILTER_FX
 {

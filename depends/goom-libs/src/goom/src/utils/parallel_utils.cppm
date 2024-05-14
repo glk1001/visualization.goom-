@@ -11,7 +11,7 @@ module;
 #include <thread>
 #include <vector>
 
-export module Goom.Utils:ParallelUtils;
+export module Goom.Utils.Parallel;
 
 import :ThreadPool;
 

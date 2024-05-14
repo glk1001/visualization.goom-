@@ -4,8 +4,6 @@
 #include "filter_fx/zoom_adjustment_effect.h"
 #include "goom/point2d.h"
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 

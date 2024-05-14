@@ -21,7 +21,6 @@
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
-#include "utils/math/goom_rand.h"
 
 #include <cstdint>
 #include <memory>
@@ -38,7 +37,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS
 {

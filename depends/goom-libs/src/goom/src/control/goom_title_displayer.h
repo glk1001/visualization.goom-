@@ -6,12 +6,13 @@
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM
 {

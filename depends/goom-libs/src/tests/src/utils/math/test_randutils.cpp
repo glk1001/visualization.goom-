@@ -1,5 +1,3 @@
-#include "utils/math/randutils.h"
-
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -21,6 +19,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils.Math.RandUtils;
 
 namespace GOOM::UNIT_TESTS
 {

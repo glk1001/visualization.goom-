@@ -13,7 +13,6 @@
 #include <string>
 #include <unordered_set>
 
-import Goom.Utils;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.CirclesFx;
 import Goom.VisualFx.FlyingStarsFx;

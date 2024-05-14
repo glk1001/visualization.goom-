@@ -9,8 +9,6 @@
 #include <cstdint>
 #include <mutex>
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX
 {
 

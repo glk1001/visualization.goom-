@@ -1,7 +1,6 @@
 module;
 
 #include "goom/goom_config.h"
-#include "utils/math/damping_functions.h"
 
 #include <cmath>
 #include <cstddef>
@@ -13,6 +12,8 @@ module;
 #include <vector>
 
 module Goom.VisualFx.TentaclesFx:Tentacle2d;
+
+import Goom.Utils.Math.DampingFunctions;;
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {

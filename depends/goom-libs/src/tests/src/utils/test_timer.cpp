@@ -12,7 +12,7 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
+import Goom.Utils.Timer;
 
 namespace GOOM::UNIT_TESTS
 {

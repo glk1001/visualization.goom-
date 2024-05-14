@@ -2,12 +2,13 @@ module;
 
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cstddef>
 
 module Goom.VisualFx.CirclesFx:BitmapGetter;
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

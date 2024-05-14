@@ -13,8 +13,6 @@
 #include <string>
 #include <thread>
 
-import Goom.Utils;
-
 namespace GOOM
 {
 class PluginInfo;

@@ -7,7 +7,7 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
-export module Goom.Utils:DebuggingLogger;
+export module Goom.Utils.DebuggingLogger;
 
 export namespace GOOM::UTILS
 {

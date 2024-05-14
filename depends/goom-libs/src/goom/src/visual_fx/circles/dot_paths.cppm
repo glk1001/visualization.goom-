@@ -2,8 +2,6 @@ module;
 
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -15,7 +13,9 @@ module;
 
 module Goom.VisualFx.CirclesFx:DotPaths;
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.TValues;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {
@@ -56,7 +56,7 @@ public:
   auto ChangeDirection(Direction newDirection) noexcept -> void;
   auto SetPathParams(const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept -> void;
 
-  [[nodiscard]] auto GetPositionTRef() const noexcept -> const UTILS::TValue&;
+  [[nodiscard]] auto GetPositionTRef() const noexcept -> const UTILS::MATH::TValue&;
   [[nodiscard]] auto HasUpdatedDotPathsToAndFrom() const noexcept -> bool;
   auto ResetUpdatedDotPathsToAndFromFlag() noexcept -> void;
 
@@ -216,7 +216,7 @@ inline auto DotPaths::GetOppositeDirection(const Direction direction) noexcept -
   return Direction::TO_TARGET;
 }
 
-inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::TValue&
+inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::MATH::TValue&
 {
   if (m_direction == Direction::TO_TARGET)
   {
@@ -301,7 +301,7 @@ inline auto DotPaths::GetPositionT() const noexcept -> float
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::StartAndEndPos;

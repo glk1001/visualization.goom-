@@ -6,10 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace GOOM::UTILS::MATH
-{
-class IGoomRand;
-}
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

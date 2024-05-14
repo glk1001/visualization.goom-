@@ -32,8 +32,6 @@
 #pragma GCC diagnostic pop
 #endif
 
-import Goom.Utils;
-
 namespace GOOM::UNIT_TESTS
 {
 
@@ -43,7 +41,7 @@ using COLOR::ColorMapsGrid;
 using COLOR::GetRgbColorLerp;
 using COLOR::IColorMap;
 using COLOR::COLOR_DATA::ColorMapName;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 
 namespace
 {
@@ -119,7 +117,7 @@ inline const auto VERTICAL_BASE_COLORS = std::vector<Pixel>{
 constexpr auto NUM_VERTICAL_COLORS = 3U;
 
 [[nodiscard]] auto GetColorMapsGrid(
-    const UTILS::TValue& verticalT,
+    const UTILS::MATH::TValue& verticalT,
     const ColorMapsGrid::ColorMixingTFunc& colorMixingTFunc) noexcept -> ColorMapsGrid
 {
   const auto horizontalColorMaps = std::vector<ColorMapPtrWrapper>{

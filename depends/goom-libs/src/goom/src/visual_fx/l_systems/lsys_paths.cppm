@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -12,7 +11,8 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysPaths;
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.TValues;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
@@ -76,7 +76,7 @@ inline auto LSysPath::GetPathTarget() const noexcept -> const Point2dInt&
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;

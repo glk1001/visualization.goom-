@@ -43,7 +43,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cmath>
@@ -55,7 +54,8 @@ module;
 
 module Goom.VisualFx.IfsDancersFx;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :Colorizer;
@@ -74,7 +74,7 @@ using IFS::Colorizer;
 using IFS::Fractal;
 using IFS::IfsPoint;
 using IFS::LowDensityBlurrer;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::Weights;
 

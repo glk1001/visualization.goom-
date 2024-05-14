@@ -1,15 +1,13 @@
 #include "paths.h"
 
 #include "goom/goom_config.h"
-#include "utils/math/misc.h"
-#include "utils/math/transform2d.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Math.Transform2d;
 
 namespace GOOM::UTILS::MATH
 {

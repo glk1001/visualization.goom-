@@ -5,7 +5,6 @@ module;
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/spimpl.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -13,7 +12,7 @@ module;
 
 module Goom.VisualFx.ShaderFx;
 
-import Goom.Utils;
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import :ChromaFactorLerper;
 import :ColorMultiplierLerper;

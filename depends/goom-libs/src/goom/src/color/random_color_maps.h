@@ -6,10 +6,11 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <set>
 #include <string>
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::COLOR
 {

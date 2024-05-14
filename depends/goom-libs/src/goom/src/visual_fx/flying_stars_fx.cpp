@@ -8,15 +8,16 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
 module Goom.VisualFx.FlyingStarsFx;
 
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :StarDrawer;
@@ -324,7 +325,7 @@ auto FlyingStarsFx::FlyingStarsImpl::AddStarCluster(const IStarType& starType,
                                                     const uint32_t totalNumActiveStars) noexcept
     -> void
 {
-  if (totalNumActiveStars <= m_activeStars.size())
+  if (m_activeStars.size() >= totalNumActiveStars)
   {
     return;
   }

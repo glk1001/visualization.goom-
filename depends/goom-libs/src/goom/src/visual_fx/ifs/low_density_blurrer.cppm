@@ -10,8 +10,6 @@ module;
 #include "goom/point2d.h"
 #include "utils/graphics/image_bitmaps.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <array>
@@ -22,6 +20,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:LowDensityBlurrer;
 
+import Goom.Utils.Math.GoomRandBase;
 import :Colorizer;
 import :IfsTypes;
 import :Similitudes;

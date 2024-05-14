@@ -32,8 +32,6 @@
 #pragma warning(pop)
 #endif
 
-import Goom.Utils;
-
 namespace GOOM::COLOR
 {
 

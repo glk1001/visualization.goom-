@@ -5,11 +5,8 @@
 #include "goom_all_visual_fx.h"
 #include "goom_lock.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
-
-import Goom.Utils;
 
 namespace GOOM
 {

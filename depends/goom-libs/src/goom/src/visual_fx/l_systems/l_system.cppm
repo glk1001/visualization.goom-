@@ -5,10 +5,6 @@ module;
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
-#include "utils/t_values.h"
-#include "utils/timer.h"
 
 #include <cmath>
 #include <cstdint>
@@ -24,63 +20,12 @@ module;
 #include <string>
 #include <vector>
 
-namespace GOOM::UTILS
-{
-using MATH::SMALL_FLOAT;
-using MATH::UnorderedClamp;
-
-using DefaultParams = ::LSYS::Interpreter::DefaultParams;
-
-template<>
-inline auto IncrementedValue<DefaultParams>::LerpValues(const DefaultParams& val1,
-                                                        const DefaultParams& val2,
-                                                        const float t) noexcept -> DefaultParams
-{
-  return {
-      std::lerp(val1.turnAngleInDegrees, val2.turnAngleInDegrees, t),
-      std::lerp(val1.width, val2.width, t),
-      std::lerp(val1.distance, val2.distance, t),
-  };
-}
-
-template<>
-inline auto IncrementedValue<DefaultParams>::GetMatchingT(const DefaultParams& val,
-                                                          const DefaultParams& val1,
-                                                          const DefaultParams& val2) noexcept
-    -> float
-{
-  if (std::fabs(val2.turnAngleInDegrees - val1.turnAngleInDegrees) > SMALL_FLOAT)
-  {
-    return ((val.turnAngleInDegrees - val1.turnAngleInDegrees) /
-            (val2.turnAngleInDegrees - val1.turnAngleInDegrees));
-  }
-  if (std::fabs(val2.width - val1.width) > SMALL_FLOAT)
-  {
-    return ((val.width - val1.width) / (val2.width - val1.width));
-  }
-  if (std::fabs(val2.distance - val1.distance) > SMALL_FLOAT)
-  {
-    return ((val.distance - val1.distance) / (val2.distance - val1.distance));
-  }
-  return 0.0F;
-}
-
-template<>
-// NOLINTNEXTLINE(readability-identifier-naming)
-inline auto IncrementedValue<DefaultParams>::Clamp(const DefaultParams& val,
-                                                   const DefaultParams& val1,
-                                                   const DefaultParams& val2) noexcept
-    -> DefaultParams
-{
-  return {UnorderedClamp(val.turnAngleInDegrees, val1.turnAngleInDegrees, val2.turnAngleInDegrees),
-          UnorderedClamp(val.width, val1.width, val2.width),
-          UnorderedClamp(val.distance, val1.distance, val2.distance)};
-}
-
-} // namespace GOOM::UTILS
-
 module Goom.VisualFx.LSystemFx:LSystem;
 
+import Goom.Utils.Timer;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
+import :IncrementedValuesBugFix;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
 import :LineDrawerManager;
@@ -223,8 +168,8 @@ private:
   auto UpdateLSysModel() noexcept -> void;
   auto InitNextLSysInterpreter() -> void;
   static constexpr auto DEFAULT_NUM_INTERPRETER_PARAMS_STEPS = 100U;
-  UTILS::IncrementedValue<::LSYS::Interpreter::DefaultParams> m_defaultInterpreterParams{
-      UTILS::TValue::StepType::SINGLE_CYCLE, DEFAULT_NUM_INTERPRETER_PARAMS_STEPS};
+  UTILS::MATH::IncrementedValueBugFix<::LSYS::Interpreter::DefaultParams> m_defaultInterpreterParams{
+      UTILS::MATH::TValue::StepType::SINGLE_CYCLE, DEFAULT_NUM_INTERPRETER_PARAMS_STEPS};
   auto UpdateInterpreterParams() noexcept -> void;
   auto SetNewDefaultInterpreterParams() noexcept -> void;
   [[nodiscard]] auto GetRandomDefaultInterpreterParams() const noexcept

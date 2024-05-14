@@ -10,15 +10,13 @@
 #include <cstddef>
 #include <vector>
 
-import Goom.Utils;
-
 namespace GOOM::COLOR
 {
 
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 
 ColorMapsGrid::ColorMapsGrid(const std::vector<COLOR::ColorMapPtrWrapper>& horizontalColorMaps,
-                             const UTILS::TValue& verticalT,
+                             const UTILS::MATH::TValue& verticalT,
                              const std::vector<COLOR::ColorMapPtrWrapper>& verticalColorMaps,
                              const ColorMixingTFunc& colorMixingTFunc) noexcept
   : m_horizontalColorMaps{horizontalColorMaps},

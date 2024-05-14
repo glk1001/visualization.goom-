@@ -5,13 +5,10 @@
 #include "filter_fx/common_types.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-
 #include <string>
 
-import Goom.Utils;
-
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

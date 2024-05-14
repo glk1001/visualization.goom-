@@ -2,7 +2,6 @@
 
 #include "goom/compiler_versions.h"
 #include "goom/goom_version.h"
-#include "utils/math/randutils.h"
 
 #include <cstdint>
 #include <filesystem>
@@ -10,8 +9,9 @@
 #include <string>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.StrUtils;
 import Goom.Utils.BuildTime;
+import Goom.Utils.Math.RandUtils;
 
 namespace GOOM
 {

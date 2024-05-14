@@ -1,11 +1,13 @@
-#pragma once
-
-#include "goom_rand_base.h"
-#include "randutils.h"
+module;
 
 #include <cstdint>
 
-namespace GOOM::UTILS::MATH
+export module Goom.Utils.Math.GoomRand;
+
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.RandUtils;
+
+export namespace GOOM::UTILS::MATH
 {
 
 class GoomRand : public IGoomRand

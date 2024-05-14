@@ -3,12 +3,12 @@
 #include "filter_fx/common_types.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cmath>
 #include <cstdint>
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

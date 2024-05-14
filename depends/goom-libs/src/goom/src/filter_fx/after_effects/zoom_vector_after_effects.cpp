@@ -17,8 +17,6 @@
 #include <cstdint>
 #include <utility>
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 

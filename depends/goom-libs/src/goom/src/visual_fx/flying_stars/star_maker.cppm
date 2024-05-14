@@ -2,14 +2,14 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cmath>
 #include <cstdint>
 
 export module Goom.VisualFx.FlyingStarsFx:StarMaker;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 import :StarTypesContainer;
 import :StarColorsMaker;
 import :Stars;
@@ -40,8 +40,8 @@ private:
   const IStarType* m_starType{};
   uint32_t m_numStarsToMake = 0U;
   IStarType::SetupParams m_starSetupParams{};
-  UTILS::TValue m_withinClusterT{
-      {UTILS::TValue::StepType::SINGLE_CYCLE, 1U}
+  UTILS::MATH::TValue m_withinClusterT{
+      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, 1U}
   };
 
   [[nodiscard]] auto GetStarSetupParams(const StarProperties& starProperties) const noexcept

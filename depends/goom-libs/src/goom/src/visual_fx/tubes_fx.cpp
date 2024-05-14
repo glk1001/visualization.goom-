@@ -16,7 +16,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -30,7 +29,8 @@ module;
 
 module Goom.VisualFx.TubesFx;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :TubeData;
@@ -55,7 +55,7 @@ using TUBES::Tube;
 using TUBES::TubeData;
 using TUBES::TubeDrawFuncs;
 using UTILS::Timer;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::OscillatingFunction;

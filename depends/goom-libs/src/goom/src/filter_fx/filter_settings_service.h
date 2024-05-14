@@ -8,14 +8,13 @@
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM
 {

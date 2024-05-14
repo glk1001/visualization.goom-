@@ -3,13 +3,12 @@
 #include "goom/goom_config.h"
 #include "goom/goom_utils.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <array>
 #include <cstdint>
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

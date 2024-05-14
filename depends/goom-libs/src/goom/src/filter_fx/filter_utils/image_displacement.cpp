@@ -4,11 +4,12 @@
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "utils/graphics/image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstddef>
 #include <memory>
 #include <string>
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {

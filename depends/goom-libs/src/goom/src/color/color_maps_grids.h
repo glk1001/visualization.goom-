@@ -8,7 +8,7 @@
 #include <functional>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
 
 namespace GOOM::COLOR
 {
@@ -19,11 +19,11 @@ public:
   using ColorMixingTFunc = std::function<float(float tX, float tY)>;
 
   ColorMapsGrid(const std::vector<COLOR::ColorMapPtrWrapper>& horizontalColorMaps,
-                const UTILS::TValue& verticalT,
+                const UTILS::MATH::TValue& verticalT,
                 const std::vector<COLOR::ColorMapPtrWrapper>& verticalColorMaps,
                 const ColorMixingTFunc& colorMixingTFunc) noexcept;
 
-  auto SetVerticalT(const UTILS::TValue& val) noexcept -> void;
+  auto SetVerticalT(const UTILS::MATH::TValue& val) noexcept -> void;
   auto SetColorMaps(const std::vector<COLOR::ColorMapPtrWrapper>& horizontalColorMaps,
                     const std::vector<COLOR::ColorMapPtrWrapper>& verticalColorMaps) noexcept
       -> void;
@@ -36,13 +36,13 @@ private:
   std::vector<COLOR::ColorMapPtrWrapper> m_verticalColorMaps;
   uint32_t m_width = static_cast<uint32_t>(m_verticalColorMaps.size());
 
-  const UTILS::TValue* m_verticalT;
+  const UTILS::MATH::TValue* m_verticalT;
   ColorMixingTFunc m_colorMixingT;
 
   [[nodiscard]] auto GetCurrentHorizontalLineIndex() const -> size_t;
 };
 
-inline auto ColorMapsGrid::SetVerticalT(const UTILS::TValue& val) noexcept -> void
+inline auto ColorMapsGrid::SetVerticalT(const UTILS::MATH::TValue& val) noexcept -> void
 {
   m_verticalT = &val;
 }

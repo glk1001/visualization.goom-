@@ -3,12 +3,11 @@
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "misc.h"
 
 #include <cmath>
 #include <cstdint>
 
-import Goom.Utils;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UTILS::MATH
 {
@@ -171,7 +170,7 @@ OscillatingFunction::OscillatingFunction(const StartAndEndPos& startAndEndPos,
 {
 }
 
-OscillatingFunction::OscillatingFunction(const UTILS::TValue& angleT,
+OscillatingFunction::OscillatingFunction(const UTILS::MATH::TValue& angleT,
                                          const StartAndEndPos& startAndEndPos,
                                          const Params& params) noexcept
   : m_usingAngleT{true},

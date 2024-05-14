@@ -6,7 +6,6 @@
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
 #include "image_bitmaps.h"
-#include "utils/math/misc.h"
 
 #include <array>
 #include <cstddef>
@@ -14,7 +13,8 @@
 #include <memory>
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UTILS::GRAPHICS
 {

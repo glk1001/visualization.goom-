@@ -1,7 +1,6 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
-#include "misc.h"
 
 #include <array>
 #include <cstddef>
@@ -10,9 +9,12 @@
 #include <type_traits>
 #include <vector>
 
-import Goom.Utils;
+export module Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::UTILS::MATH
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.Misc;
+
+export namespace GOOM::UTILS::MATH
 {
 
 class IGoomRand
@@ -152,7 +154,7 @@ inline void IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept
   const auto n = last - first;
   for (auto i = n - 1; i > 0; --i)
   {
-    std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
+//HELP!!    std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
   }
 }
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.

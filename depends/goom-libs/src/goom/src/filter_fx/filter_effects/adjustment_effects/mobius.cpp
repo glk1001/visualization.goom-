@@ -6,11 +6,10 @@
 #include "filter_fx/filter_utils/utils.h"
 #include "filter_fx/normalized_coords.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <complex>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

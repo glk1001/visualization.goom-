@@ -1,13 +1,11 @@
 #include "rotation.h"
 
 #include "goom/point2d.h"
-#include "math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

@@ -5,7 +5,7 @@ module;
 #include <ctime>
 #include <string>
 
-export module Goom.Utils:DateUtils;
+export module Goom.Utils.DateUtils;
 
 export namespace GOOM::UTILS
 {

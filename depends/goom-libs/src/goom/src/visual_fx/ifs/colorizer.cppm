@@ -6,8 +6,6 @@ module;
 #include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
-#include "math/goom_rand_base.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cmath>
 #include <cstdint>
@@ -16,6 +14,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Colorizer;
 
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.IfsDancersFx;
 
 namespace GOOM::VISUAL_FX::IFS

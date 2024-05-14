@@ -1,11 +1,11 @@
 #pragma once
 
 #include "filter_fx/normalized_coords.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.NameValuePairs;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

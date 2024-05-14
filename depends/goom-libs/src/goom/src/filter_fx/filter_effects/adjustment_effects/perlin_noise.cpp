@@ -4,15 +4,14 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/randutils.h"
 
 #include <PerlinNoise.hpp>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
 
-import Goom.Utils;
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.RandUtils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

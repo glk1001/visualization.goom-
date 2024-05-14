@@ -2,7 +2,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
-#include "math/misc.h"
 
 #include <algorithm>
 #include <cmath>
@@ -10,9 +9,9 @@ module;
 #include <type_traits>
 #include <vector>
 
-export module Goom.Utils:TValues;
+export module Goom.Utils.Math.TValues;
 
-export namespace GOOM::UTILS
+export namespace GOOM::UTILS::MATH
 {
 
 class TValue
@@ -111,54 +110,11 @@ private:
   auto UpdateCurrentPositionAndStep() -> void;
 };
 
-template<typename T>
-class IncrementedValue
-{
-public:
-  IncrementedValue(TValue::StepType stepType, uint32_t numSteps) noexcept;
-  IncrementedValue(const T& value1,
-                   const T& value2,
-                   TValue::StepType stepType,
-                   uint32_t numSteps) noexcept;
-  IncrementedValue(const T& value1,
-                   const T& value2,
-                   TValue::StepType stepType,
-                   float stepSize) noexcept;
+} // namespace GOOM::UTILS::MATH
 
-  [[nodiscard]] auto GetValue1() const noexcept -> const T&;
-  [[nodiscard]] auto GetValue2() const noexcept -> const T&;
+module :private;
 
-  auto SetValue1(const T& value1) noexcept -> void;
-  auto SetValue2(const T& value2) noexcept -> void;
-  auto SetValues(const T& value1, const T& value2) noexcept -> void;
-  auto SetNumSteps(uint32_t val) noexcept -> void;
-  auto ReverseValues() noexcept -> void;
-
-  [[nodiscard]] auto operator()() const noexcept -> const T&;
-  auto Increment() noexcept -> void;
-
-  [[nodiscard]] auto PeekNext() const noexcept -> T;
-
-  [[nodiscard]] auto GetT() const noexcept -> const TValue&;
-  auto ResetT(float t = 0.0) noexcept -> void;
-  auto ResetCurrentValue(const T& newValue) noexcept -> void;
-
-private:
-  T m_value1;
-  T m_value2;
-  TValue m_t;
-  T m_currentValue = m_value1;
-  [[nodiscard]] auto GetValue(float t) const noexcept -> T;
-  [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T;
-  // NOLINTNEXTLINE(readability-identifier-naming)
-  [[nodiscard]] static auto Clamp(const T& val, const T& val1, const T& val2) noexcept -> T;
-  [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
-      -> float;
-};
-
-} // namespace GOOM::UTILS
-
-namespace GOOM::UTILS
+namespace GOOM::UTILS::MATH
 {
 
 inline auto TValue::GetStepType() const noexcept -> StepType
@@ -267,163 +223,6 @@ inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexce
   return (((delayPoint.t0 - m_stepSize) + T_EPSILON) < m_t) &&
          (m_t < ((delayPoint.t0 + m_stepSize) - T_EPSILON));
 }
-
-template<typename T>
-inline IncrementedValue<T>::IncrementedValue(const TValue::StepType stepType,
-                                             const uint32_t numSteps) noexcept
-  : m_value1{}, m_value2{}, m_t{{stepType, numSteps}}
-{
-  Expects(numSteps > 0U);
-}
-
-template<typename T>
-inline IncrementedValue<T>::IncrementedValue(const T& value1,
-                                             const T& value2,
-                                             const TValue::StepType stepType,
-                                             const uint32_t numSteps) noexcept
-  : m_value1{value1}, m_value2{value2}, m_t{{stepType, numSteps}}
-{
-  Expects(numSteps > 0U);
-}
-
-template<typename T>
-inline IncrementedValue<T>::IncrementedValue(const T& value1,
-                                             const T& value2,
-                                             const TValue::StepType stepType,
-                                             const float stepSize) noexcept
-  : m_value1{value1}, m_value2{value2}, m_t{TValue::StepSizeProperties{stepSize, stepType}}
-{
-  Expects(stepSize > 0.0F);
-}
-
-template<typename T>
-auto IncrementedValue<T>::GetValue1() const noexcept -> const T&
-{
-  return m_value1;
-}
-
-template<typename T>
-auto IncrementedValue<T>::GetValue2() const noexcept -> const T&
-{
-  return m_value2;
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::SetValue1(const T& value1) noexcept -> void
-{
-  m_value1 = value1;
-  ResetCurrentValue(m_currentValue);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::SetValue2(const T& value2) noexcept -> void
-{
-  m_value2 = value2;
-  ResetCurrentValue(m_currentValue);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::SetValues(const T& value1, const T& value2) noexcept -> void
-{
-  m_value1 = value1;
-  m_value2 = value2;
-  ResetCurrentValue(m_currentValue);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::ReverseValues() noexcept -> void
-{
-  std::swap(m_value1, m_value2);
-  ResetCurrentValue(m_currentValue);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::SetNumSteps(const uint32_t val) noexcept -> void
-{
-  m_t.SetNumSteps(val);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::operator()() const noexcept -> const T&
-{
-  return m_currentValue;
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::Increment() noexcept -> void
-{
-  m_t.Increment();
-  m_currentValue = GetValue(m_t());
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::PeekNext() const noexcept -> T
-{
-  auto tCopy = m_t;
-  tCopy.Increment();
-  return GetValue(tCopy());
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
-{
-  return LerpValues(m_value1, m_value2, t);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, float t) noexcept -> T
-{
-  if constexpr (std::is_integral<T>::value)
-  {
-    return static_cast<T>(std::lerp(static_cast<float>(val1), static_cast<float>(val2), t));
-  }
-
-  using std::lerp;
-  return static_cast<T>(lerp(val1, val2, t));
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
-{
-  return MATH::UnorderedClamp(val, val1, val2);
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
-    -> float
-{
-  if (std::fabs(static_cast<float>(val2) - static_cast<float>(val1)) < MATH::SMALL_FLOAT)
-  {
-    return 0.0F;
-  }
-  return ((static_cast<float>(val) - static_cast<float>(val1)) /
-          (static_cast<float>(val2) - static_cast<float>(val1)));
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::GetT() const noexcept -> const TValue&
-{
-  return m_t;
-}
-
-template<typename T>
-inline auto IncrementedValue<T>::ResetT(const float t) noexcept -> void
-{
-  m_t.Reset(t);
-  m_currentValue = GetValue(m_t());
-}
-
-template<typename T>
-auto IncrementedValue<T>::ResetCurrentValue(const T& newValue) noexcept -> void
-{
-  const auto newClampedValue = Clamp(newValue, m_value1, m_value2);
-  ResetT(GetMatchingT(newClampedValue, m_value1, m_value2));
-}
-
-} // namespace GOOM::UTILS
-
-namespace GOOM::UTILS
-{
 
 TValue::TValue(const StepSizeProperties& stepSizeProperties) noexcept
   : m_stepType{stepSizeProperties.stepType},
@@ -690,4 +489,4 @@ inline auto TValue::HandleBoundary(const float continueValue, const FloatSign fl
   m_currentDelayPoints = m_delayPoints;
 }
 
-} // namespace GOOM::UTILS
+} // namespace GOOM::UTILS::MATH

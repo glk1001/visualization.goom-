@@ -1,9 +1,10 @@
 #pragma once
 
 #include "filter_fx/common_types.h"
-#include "utils/math/misc.h"
 
 #include <complex>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {

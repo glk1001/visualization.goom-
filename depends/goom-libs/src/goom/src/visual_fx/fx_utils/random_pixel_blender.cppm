@@ -7,13 +7,13 @@ module;
 #include "goom/goom_types.h"
 #include "utils/graphics/pixel_blend.h"
 #include "utils/graphics/pixel_utils.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 
 export module Goom.VisualFx.FxUtils:RandomPixelBlender;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {
@@ -69,8 +69,8 @@ private:
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
   static constexpr auto MIN_LERP_STEPS                     = 50U;
   static constexpr auto MAX_LERP_STEPS                     = 500U;
-  UTILS::TValue m_lerpT{
-      {UTILS::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
+  UTILS::MATH::TValue m_lerpT{
+      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
   };
 
   static const UTILS::MATH::Weights<PixelBlendType>::EventWeightPairs

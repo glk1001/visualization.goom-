@@ -3,12 +3,11 @@
 #include "after_effects_types.h"
 #include "filter_fx/filter_consts.h"
 #include "goom/goom_time.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <memory>
 
-import Goom.Utils;
+import Goom.Utils.Timer;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

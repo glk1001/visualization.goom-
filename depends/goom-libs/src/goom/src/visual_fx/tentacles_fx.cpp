@@ -13,7 +13,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <array>
@@ -24,7 +23,8 @@ module;
 
 module Goom.VisualFx.TentaclesFx;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import :CirclesTentacleLayout;

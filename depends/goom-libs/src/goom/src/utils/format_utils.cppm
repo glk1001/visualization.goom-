@@ -6,7 +6,7 @@ module;
 #include <format>
 #include <string>
 
-export module Goom.Utils:FormatUtils;
+export module Goom.Utils.FormatUtils;
 
 export namespace GOOM::UTILS::FMT
 {

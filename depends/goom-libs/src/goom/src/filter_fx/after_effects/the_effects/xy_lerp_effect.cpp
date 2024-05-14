@@ -2,11 +2,10 @@
 
 #include "xy_lerp_effect.h"
 
-#include "math/goom_rand_base.h"
-
 #include <string>
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

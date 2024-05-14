@@ -7,7 +7,6 @@ module;
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "utils/graphics/line_clipper.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -16,7 +15,8 @@ module;
 
 module Goom.VisualFx.TentaclesFx:TentaclePlotter;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 import :Tentacle3d;
 
 namespace GOOM::VISUAL_FX::TENTACLES
@@ -115,7 +115,7 @@ namespace GOOM::VISUAL_FX::TENTACLES
 {
 
 using DRAW::IGoomDraw;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::IGoomRand;
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept

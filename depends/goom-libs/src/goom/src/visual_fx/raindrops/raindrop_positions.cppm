@@ -6,8 +6,6 @@ module;
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -20,7 +18,9 @@ module;
 
 module Goom.VisualFx.RaindropsFx:RaindropPositions;
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 
 namespace GOOM::VISUAL_FX::RAINDROPS
@@ -56,19 +56,19 @@ private:
   static constexpr auto WEIGHT_POINT_CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
   static constexpr auto MIN_WEIGHT_POINT_STEPS                = 10U;
   static constexpr auto MAX_WEIGHT_POINT_STEPS                = 20U;
-  UTILS::TValue m_rectangleWeightPointT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_WEIGHT_POINT_STEPS}
+  UTILS::MATH::TValue m_rectangleWeightPointT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_WEIGHT_POINT_STEPS}
   };
 
   static constexpr auto NUM_RAINDROP_POSITION_INCREMENTS = 100U;
   static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_START = 1U;
   static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_END   = 15U; // where they meet
-  std::vector<UTILS::TValue::DelayPoint> m_raindropDelayPoints{
+  std::vector<UTILS::MATH::TValue::DelayPoint> m_raindropDelayPoints{
       {0.0F, RAINDROP_MOVEMENT_DELAY_AT_START},
       {1.0F,   RAINDROP_MOVEMENT_DELAY_AT_END}
   };
-  UTILS::TValue m_raindropPositionT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_RAINDROP_POSITION_INCREMENTS},
+  UTILS::MATH::TValue m_raindropPositionT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_RAINDROP_POSITION_INCREMENTS},
       m_raindropDelayPoints
   };
   static constexpr auto MIN_RAINDROP_POSITION_T = 0.00F;
@@ -123,8 +123,8 @@ inline auto RaindropPositions::OkToChangeNumRaindrops() const noexcept -> bool
 namespace GOOM::VISUAL_FX::RAINDROPS
 {
 
-using UTILS::IncrementedValue;
-using UTILS::TValue;
+using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
 RaindropPositions::RaindropPositions(const FxHelper& fxHelper,
@@ -295,7 +295,7 @@ auto RaindropPositions::GetNewRaindropPaths() const noexcept
   static constexpr auto NUM_OSCILLATING_PATH_INCREMENTS = NUM_RAINDROP_POSITION_INCREMENTS;
   const auto oscillatingPathDelayPoints                 = m_raindropDelayPoints;
   const auto oscillatingPathAngleT                      = TValue{
-      TValue::NumStepsProperties{UTILS::TValue::StepType::CONTINUOUS_REPEATABLE,
+      TValue::NumStepsProperties{UTILS::MATH::TValue::StepType::CONTINUOUS_REPEATABLE,
                                  NUM_OSCILLATING_PATH_INCREMENTS},
       oscillatingPathDelayPoints
   };
@@ -311,7 +311,7 @@ auto RaindropPositions::GetNewRaindropPaths() const noexcept
     const auto params         = OSCILLATING_PARAMS.at(dropNum % OSCILLATING_PARAMS.size());
     paths.emplace_back(std::make_unique<OscillatingPath>(
         std::make_unique<TValue>(
-            TValue::NumStepsProperties{UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE,
+            TValue::NumStepsProperties{UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
                                        NUM_OSCILLATING_PATH_INCREMENTS},
             oscillatingPathDelayPoints),
         oscillatingPathAngleT,

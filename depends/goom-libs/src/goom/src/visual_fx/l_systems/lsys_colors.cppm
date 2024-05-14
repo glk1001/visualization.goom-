@@ -8,8 +8,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -18,7 +16,9 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysColors;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
@@ -59,7 +59,7 @@ public:
       -> uint32_t;
   auto IncrementColorTs() noexcept -> void;
 
-  [[nodiscard]] auto GetCurrentColorTs() const noexcept -> const std::vector<UTILS::TValue>&;
+  [[nodiscard]] auto GetCurrentColorTs() const noexcept -> const std::vector<UTILS::MATH::TValue>&;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -94,11 +94,11 @@ private:
 
   static constexpr auto MIN_NUM_COLOR_STEPS = 10U;
   static constexpr auto MAX_NUM_COLOR_STEPS = 100U;
-  std::vector<UTILS::TValue> m_currentColorTs{};
+  std::vector<UTILS::MATH::TValue> m_currentColorTs{};
   static constexpr auto MIN_NUM_THICKER_COLOR_STEPS = 10U;
   static constexpr auto MAX_NUM_THICKER_COLOR_STEPS = 1000U;
   uint32_t m_currentMaxNumColorSteps                = MAX_NUM_COLOR_STEPS;
-  std::vector<UTILS::TValue> m_currentThickerColorTs{};
+  std::vector<UTILS::MATH::TValue> m_currentThickerColorTs{};
   auto ResetColorTs() noexcept -> void;
 
   static constexpr auto GAMMA = 1.0F / 2.2F;
@@ -127,7 +127,7 @@ inline auto LSysColors::SetLineWidth(const uint8_t lineWidth) noexcept -> void
   m_lineWidth = lineWidth;
 }
 
-inline auto LSysColors::GetCurrentColorTs() const noexcept -> const std::vector<UTILS::TValue>&
+inline auto LSysColors::GetCurrentColorTs() const noexcept -> const std::vector<UTILS::MATH::TValue>&
 {
   return m_currentColorTs;
 }
@@ -165,7 +165,7 @@ using COLOR::SimpleColors;
 using COLOR::COLOR_DATA::ColorMapName;
 using DRAW::MakePixels;
 using DRAW::MultiplePixels;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::MATH::HALF;
 using UTILS::MATH::IGoomRand;
 

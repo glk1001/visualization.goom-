@@ -4,11 +4,12 @@
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 #include "line_drawer.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <array>
 #include <cstdint>
 #include <vector>
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

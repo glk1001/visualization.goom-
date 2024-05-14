@@ -18,7 +18,7 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapePaths;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 
 namespace GOOM::VISUAL_FX::SHAPES
@@ -73,8 +73,8 @@ private:
   [[nodiscard]] static auto GetColorMapTypes() noexcept
       -> const std::set<COLOR::RandomColorMaps::ColorMapTypes>&;
   static constexpr auto NUM_COLOR_STEPS = 200U;
-  UTILS::TValue m_innerColorT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_COLOR_STEPS}
+  UTILS::MATH::TValue m_innerColorT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_COLOR_STEPS}
   };
 
   [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;

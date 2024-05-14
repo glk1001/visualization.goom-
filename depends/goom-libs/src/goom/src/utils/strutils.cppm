@@ -16,7 +16,7 @@ module;
 #include <string_view>
 #include <vector>
 
-export module Goom.Utils:StrUtils;
+export module Goom.Utils.StrUtils;
 
 export namespace GOOM::UTILS
 {

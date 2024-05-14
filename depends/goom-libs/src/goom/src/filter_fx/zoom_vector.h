@@ -2,8 +2,6 @@
 
 #include <string>
 
-import Goom.Utils;
-
 namespace GOOM::FILTER_FX
 {
 

@@ -2,14 +2,15 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom_plugin_info.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cmath>
 #include <cstdint>
 
 module Goom.VisualFx.ShaderFx:ColorMultiplierLerper;
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
@@ -43,8 +44,8 @@ private:
   static constexpr uint32_t MIN_NUM_LERP_ON_STEPS     = 50U;
   static constexpr uint32_t MAX_NUM_LERP_ON_STEPS     = 500U;
   static constexpr uint32_t DEFAULT_NUM_LERP_ON_STEPS = MIN_NUM_LERP_ON_STEPS;
-  UTILS::TValue m_lerpT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_NUM_LERP_ON_STEPS}
+  UTILS::MATH::TValue m_lerpT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_NUM_LERP_ON_STEPS}
   };
 
   static constexpr uint32_t MIN_LERP_CONST_TIME     = 10U;

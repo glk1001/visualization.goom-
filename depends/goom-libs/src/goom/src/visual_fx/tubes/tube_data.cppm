@@ -11,11 +11,6 @@ module;
 namespace GOOM
 {
 class GoomTime;
-
-namespace UTILS::MATH
-{
-class IGoomRand;
-}
 }
 
 module Goom.VisualFx.TubesFx:TubeData;

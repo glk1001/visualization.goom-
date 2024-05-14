@@ -1,7 +1,6 @@
 #include "control/goom_sound_events.h"
 #include "goom/goom_time.h"
 #include "goom/sound_info.h"
-#include "utils/math/misc.h"
 
 #include <algorithm>
 #include <memory>
@@ -18,6 +17,8 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::UNIT_TESTS
 {

@@ -4,12 +4,12 @@
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
 #include "the_effects/rotation.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <memory>
 
-import Goom.Utils;
+import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

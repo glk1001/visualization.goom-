@@ -11,8 +11,6 @@ module;
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 #include "utils/math/parametric_functions2d.h"
 #include "utils/math/paths.h"
 
@@ -25,7 +23,8 @@ module;
 #include <utility>
 #include <vector>
 
-import Goom.Utils;
+import Goom.Utils.Timer;
+import Goom.Utils.Math.TValues;
 
 namespace GOOM::COLOR
 {
@@ -131,7 +130,7 @@ using COLOR::GetLightenedColor;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;
 using UTILS::Timer;
-using UTILS::TValue;
+using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::ISimplePath;
 using UTILS::MATH::OscillatingFunction;

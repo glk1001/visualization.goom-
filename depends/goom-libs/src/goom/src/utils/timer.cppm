@@ -8,7 +8,7 @@ module;
 #include <cstdint>
 #include <functional>
 
-export module Goom.Utils:Timer;
+export module Goom.Utils.Timer;
 
 export namespace GOOM::UTILS
 {

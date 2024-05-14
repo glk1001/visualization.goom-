@@ -5,11 +5,11 @@
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 #include "line_drawer_noisy_pixels.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 
-import Goom.Utils;
+import Goom.Utils.Math.IncrementedValues;
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
@@ -49,8 +49,8 @@ public:
 private:
   LineDrawerNoisyPixels m_lineDrawer;
 
-  UTILS::IncrementedValue<uint8_t> m_noiseRadius;
-  UTILS::IncrementedValue<uint8_t> m_numNoisePixelsPerPixel;
+  UTILS::MATH::IncrementedValue<uint8_t> m_noiseRadius;
+  UTILS::MATH::IncrementedValue<uint8_t> m_numNoisePixelsPerPixel;
 
   auto UpdateLineDrawerNoise() noexcept -> void;
 };

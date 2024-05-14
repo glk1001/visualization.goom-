@@ -7,7 +7,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <algorithm>
 #include <cmath>
@@ -17,7 +16,8 @@ module;
 
 module Goom.VisualFx.ShapesFx:Shapes;
 
-import Goom.Utils;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
 import :ShapeParts;
 
@@ -85,8 +85,8 @@ private:
   COLOR::ConstColorMapSharedPtr m_meetingPointMainColorMapPtr = nullptr;
   COLOR::ConstColorMapSharedPtr m_meetingPointLowColorMapPtr  = nullptr;
   static constexpr uint32_t NUM_MEETING_POINT_COLOR_STEPS     = 50;
-  UTILS::TValue m_meetingPointColorsT{
-      {UTILS::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}
+  UTILS::MATH::TValue m_meetingPointColorsT{
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MEETING_POINT_COLOR_STEPS}
   };
   [[nodiscard]] auto GetCurrentMeetingPointColors() const noexcept -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetBrightnessAttenuation() const noexcept -> float;

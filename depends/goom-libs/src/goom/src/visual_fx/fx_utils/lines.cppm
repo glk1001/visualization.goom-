@@ -3,7 +3,6 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstddef>
@@ -11,6 +10,9 @@ module;
 #include <vector>
 
 export module Goom.VisualFx.FxUtils:Lines;
+
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {

@@ -5,16 +5,10 @@
 #include "filter_fx/normalized_coords.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
-#include "math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <cmath>
 #include <cstdint>
 #include <string>
-
-import Goom.Utils;
-
-import Goom.Utils;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {

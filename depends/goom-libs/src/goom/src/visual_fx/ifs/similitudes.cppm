@@ -7,8 +7,6 @@ module;
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "utils/graphics/small_image_bitmaps.h"
-#include "utils/math/goom_rand_base.h"
-#include "utils/math/misc.h"
 
 #include <array>
 #include <cmath>
@@ -19,6 +17,8 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Similitudes;
 
+import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
 import :IfsTypes;
 
 namespace GOOM::VISUAL_FX::IFS

@@ -7,14 +7,14 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
-#include "math/misc.h"
 #include "utils/graphics/bezier_drawer.h"
-#include "utils/math/goom_rand_base.h"
 
 #include <cstdint>
 #include <vector>
 
 module Goom.VisualFx.ShapesFx:BezierFlower;
+
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::SHAPES
 {

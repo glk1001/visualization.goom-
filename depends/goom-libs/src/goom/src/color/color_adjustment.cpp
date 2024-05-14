@@ -4,7 +4,6 @@
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "utils/graphics/pixel_utils.h"
-#include "utils/math/misc.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -20,6 +19,8 @@
 
 #include <cmath>
 #include <cstdint>
+
+import Goom.Utils.Math.Misc;
 
 namespace GOOM::COLOR
 {
