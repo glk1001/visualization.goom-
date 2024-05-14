@@ -1,5 +1,3 @@
-#include "draw/goom_draw.h"
-#include "draw/goom_draw_to_container.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
@@ -18,6 +16,9 @@
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic pop
 #endif
+
+import Goom.Draw.GoomDrawBase;
+import Goom.Draw.GoomDrawToContainer;
 
 namespace GOOM::UNIT_TESTS
 {

@@ -1,7 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
-#include "draw/goom_draw_to_buffer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -17,6 +15,9 @@ module;
 #include <span>
 
 module Goom.Utils.Graphics.Blend2dToGoom;
+
+import Goom.Draw.GoomDrawBase;
+import Goom.Draw.GoomDrawToBuffer;
 
 namespace GOOM::UTILS::GRAPHICS
 {

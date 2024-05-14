@@ -3,7 +3,6 @@
 #include "goom_message_displayer.h"
 
 #include "color/color_utils.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
@@ -14,6 +13,7 @@
 #include <string>
 #include <vector>
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 
 namespace GOOM::CONTROL

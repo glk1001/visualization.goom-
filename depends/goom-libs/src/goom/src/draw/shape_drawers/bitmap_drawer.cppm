@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -10,6 +9,7 @@ module;
 
 export module Goom.Draw.ShapeDrawers.BitmapDrawer;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.ImageBitmaps;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS

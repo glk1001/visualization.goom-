@@ -5,7 +5,6 @@ module;
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_time.h"
@@ -23,6 +22,8 @@ module;
 
 module Goom.VisualFx.TentaclesFx;
 
+import Goom.Draw.GoomDrawBase;
+import Goom.Utils.EnumUtils;
 import Goom.Utils.Timer;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;

@@ -1,7 +1,6 @@
 module;
 
 #include "control/goom_sound_events.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_time.h"
 #include "goom/goom_types.h"
@@ -9,6 +8,7 @@ module;
 
 export module Goom.VisualFx.FxHelper;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Math.GoomRandBase;
 

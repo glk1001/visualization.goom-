@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
@@ -11,6 +10,7 @@ module;
 
 export module Goom.Utils.Graphics.BezierDrawer;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 

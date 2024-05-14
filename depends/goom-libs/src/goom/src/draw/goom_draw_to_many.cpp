@@ -1,12 +1,15 @@
-#include "goom_draw_to_many.h"
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_draw.h"
 
 #include <vector>
+
+module Goom.Draw.GoomDrawToMany;
+
+import Goom.Draw.GoomDrawBase;
 
 namespace GOOM::DRAW
 {

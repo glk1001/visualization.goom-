@@ -5,18 +5,11 @@
 #include <string>
 #include <vector>
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Parallel;
 
-namespace GOOM
-{
-
-namespace DRAW
-{
-class IGoomDraw;
-}
-
-namespace CONTROL
+namespace GOOM::CONTROL
 {
 
 class GoomMessageDisplayer
@@ -41,5 +34,4 @@ private:
       -> std::vector<DRAW::SHAPE_DRAWERS::TextDrawer>;
 };
 
-} // namespace CONTROL
-} // namespace GOOM
+} // namespace GOOM::CONTROL

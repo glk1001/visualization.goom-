@@ -21,7 +21,6 @@
 #include "control/goom_sound_events.h"
 #include "control/goom_state_monitor.h"
 #include "control/goom_title_displayer.h"
-#include "draw/goom_draw_to_buffer.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_effects/zoom_adjustment_effect_factory.h"
 #include "filter_fx/filter_settings_service.h"
@@ -51,6 +50,7 @@
 #include "utils/math/randutils.h"
 #endif
 
+import Goom.Draw.GoomDrawToBuffer;
 import Goom.Utils.DebuggingLogger;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Timer;

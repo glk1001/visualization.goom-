@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
@@ -12,6 +11,7 @@ module;
 
 module Goom.VisualFx.TentaclesFx:TentaclePlotter;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.LineClipper;

@@ -1,7 +1,6 @@
 module;
 
 #include "color/color_utils.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 
@@ -11,6 +10,7 @@ module;
 
 export module Goom.VisualFx.FxUtils:DotDrawer;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.PixelUtils;

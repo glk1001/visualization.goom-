@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
@@ -12,6 +11,8 @@ module;
 #include <string>
 
 export module Goom.Draw.ShaperDrawers.TextDrawer;
+
+import Goom.Draw.GoomDrawBase;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS
 {

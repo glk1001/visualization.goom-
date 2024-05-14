@@ -1,7 +1,6 @@
 module;
 
 #include "color/color_utils.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -10,6 +9,7 @@ module;
 
 export module Goom.VisualFx.FxUtils:RandomPixelBlender;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;

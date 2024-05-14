@@ -2,13 +2,13 @@ module;
 
 //#undef NO_LOGGING
 
-#include "draw/goom_draw.h"
 #include "goom/point2d.h"
 
 #include <cstddef>
 
 module Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.DrawerUtils;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.GoomRandBase;

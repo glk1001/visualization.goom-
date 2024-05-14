@@ -1,11 +1,14 @@
-//#undef NO_LOGGING
+module;
 
-#include "goom_draw_to_buffer.h"
+//#undef NO_LOGGING
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
-#include "goom_draw.h"
+
+module Goom.Draw.GoomDrawToBuffer;
+
+import Goom.Draw.GoomDrawBase;
 
 namespace GOOM::DRAW
 {

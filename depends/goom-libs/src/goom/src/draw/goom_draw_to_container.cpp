@@ -1,14 +1,17 @@
-#include "goom_draw_to_container.h"
+module;
 
 #include "color/color_utils.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
-#include "goom_draw.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+
+module Goom.Draw.GoomDrawToContainer;
+
+import Goom.Draw.GoomDrawBase;
 
 namespace GOOM::DRAW
 {

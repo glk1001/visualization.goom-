@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -15,6 +14,7 @@ module;
 
 export module Goom.VisualFx.FlyingStarsFx:StarDrawer;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;
@@ -25,6 +25,7 @@ import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.EnumUtils;
 import :StarColors;
 import :Stars;
 

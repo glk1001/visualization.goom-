@@ -72,7 +72,6 @@ add_library(goom
             src/draw/shape_drawers/line_drawer_moving_noise.cpp
             src/draw/shape_drawers/line_drawer_noisy_pixels.cpp
             src/draw/shape_drawers/text_drawer.cpp
-            src/draw/goom_draw.h
             src/draw/goom_draw_to_buffer.cpp
             src/draw/goom_draw_to_container.cpp
             src/draw/goom_draw_to_many.cpp
@@ -165,6 +164,10 @@ target_sources(goom
                src/draw/shape_drawers/line_drawer_with_effects.cppm
                src/draw/shape_drawers/pixel_drawer.cppm
                src/draw/shape_drawers/text_drawer.cppm
+               src/draw/goom_draw.cppm
+               src/draw/goom_draw_to_buffer.cppm
+               src/draw/goom_draw_to_container.cppm
+               src/draw/goom_draw_to_many.cppm
                src/utils/graphics/bezier_drawer.cppm
                src/utils/graphics/blend2d_to_goom.cppm
                src/utils/graphics/blend2d_utils.cppm

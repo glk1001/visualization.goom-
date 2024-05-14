@@ -4,7 +4,6 @@ module;
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -19,6 +18,7 @@ module;
 
 module Goom.VisualFx.LinesFx:LineMorph;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;

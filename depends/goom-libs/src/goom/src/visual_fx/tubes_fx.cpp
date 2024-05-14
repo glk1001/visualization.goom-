@@ -4,9 +4,6 @@ module;
 
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
-#include "draw/goom_draw.h"
-#include "draw/goom_draw_to_container.h"
-#include "draw/goom_draw_to_many.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -24,6 +21,9 @@ module;
 
 module Goom.VisualFx.TubesFx;
 
+import Goom.Draw.GoomDrawBase;
+import Goom.Draw.GoomDrawToContainer;
+import Goom.Draw.GoomDrawToMany;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;

@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -10,6 +9,8 @@ module;
 #include <vector>
 
 export module Goom.Draw.ShaperDrawers.CircleDrawer;
+
+import Goom.Draw.GoomDrawBase;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS
 {

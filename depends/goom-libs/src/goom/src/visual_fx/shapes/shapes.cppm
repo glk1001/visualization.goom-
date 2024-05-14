@@ -2,7 +2,6 @@ module;
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -16,6 +15,7 @@ module;
 
 module Goom.VisualFx.ShapesFx:Shapes;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;

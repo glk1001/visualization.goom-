@@ -17,7 +17,6 @@ module;
 
 //#define NO_FREETYPE_INSTALLED
 
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -33,6 +32,7 @@ module;
 #include FT_FREETYPE_H
 #include FT_STROKER_H
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Parallel;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Graphics.PixelBlend;

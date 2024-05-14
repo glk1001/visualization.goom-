@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
 
-#include "draw/goom_draw.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_utils.h"
@@ -19,6 +18,7 @@ module;
 
 module Goom.VisualFx.LSystemFx;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;

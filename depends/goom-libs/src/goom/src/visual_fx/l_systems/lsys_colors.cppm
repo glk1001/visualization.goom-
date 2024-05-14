@@ -4,7 +4,6 @@ module;
 #include "color/color_data/color_map_enums.h"
 #include "color/color_maps.h"
 #include "color/color_utils.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 
@@ -15,6 +14,7 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysColors;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;

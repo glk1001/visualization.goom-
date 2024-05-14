@@ -4,7 +4,6 @@ module;
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -22,6 +21,7 @@ module;
 #include <utility>
 #include <vector>
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;

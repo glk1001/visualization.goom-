@@ -1,6 +1,5 @@
 module;
 
-#include "../goom_draw.h"
 #include "color/color_utils.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
@@ -9,6 +8,8 @@ module;
 #include <cstdint>
 
 export module Goom.Draw.ShaperDrawers.DrawerUtils;
+
+import Goom.Draw.GoomDrawBase;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS
 {

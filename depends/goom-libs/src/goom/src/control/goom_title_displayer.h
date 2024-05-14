@@ -12,18 +12,11 @@
 #include <memory>
 #include <string>
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Math.Misc;
 
-namespace GOOM
-{
-
-namespace DRAW
-{
-class IGoomDraw;
-}
-
-namespace CONTROL
+namespace GOOM::CONTROL
 {
 
 class GoomTitleDisplayer
@@ -157,5 +150,4 @@ inline auto GoomTitleDisplayer::IsFinished() const -> bool
   return m_timeLeftOfTitleDisplay <= -LINGER_AFTER_END_TIME;
 }
 
-} // namespace CONTROL
-} // namespace GOOM
+} // namespace GOOM::CONTROL

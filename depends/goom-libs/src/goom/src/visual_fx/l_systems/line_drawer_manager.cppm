@@ -1,6 +1,5 @@
 module;
 
-#include "draw/goom_draw.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 
@@ -8,6 +7,7 @@ module;
 
 module Goom.VisualFx.LSystemFx:LineDrawerManager;
 
+import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
 import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
 import Goom.Utils.Math.GoomRandBase;
