@@ -1,13 +1,16 @@
-#include "goom_state_monitor.h"
+module;
 
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_settings_service.h"
 #include "goom/point2d.h"
-#include "goom_all_visual_fx.h"
-#include "goom_music_settings_reactor.h"
 
 #include <string>
 #include <unordered_set>
+
+module Goom.Control.GoomStateMonitor;
+
+import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomMusicSettingsReactor;
 
 namespace GOOM::CONTROL
 {

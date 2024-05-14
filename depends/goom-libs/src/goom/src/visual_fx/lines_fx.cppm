@@ -1,20 +1,16 @@
 module;
 
+#include "goom/sound_info.h"
 #include "goom/spimpl.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-namespace GOOM
-{
-class AudioSamples;
-
-namespace COLOR
+namespace GOOM::COLOR
 {
 class RandomColorMaps;
 }
-} // namespace GOOM
 
 export module Goom.VisualFx.LinesFx;
 

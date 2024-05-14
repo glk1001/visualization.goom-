@@ -1,10 +1,12 @@
-#pragma once
-
-#include "goom_states.h"
+module;
 
 #include <vector>
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomStateHandler;
+
+import Goom.Control.GoomStates;
+
+export namespace GOOM::CONTROL
 {
 
 class IGoomStateHandler

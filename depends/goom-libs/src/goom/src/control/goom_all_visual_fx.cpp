@@ -1,21 +1,23 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "goom_all_visual_fx.h"
-
-#include "all_standard_visual_fx.h"
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "goom_state_handler.h"
-#include "goom_states.h"
 
 #include <string>
 #include <unordered_set>
 
+module Goom.Control.GoomAllVisualFx;
+
+import Goom.Control.GoomStateHandler;
+import Goom.Control.GoomStates;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import :AllStandardVisualFx;
 
 namespace GOOM::CONTROL
 {

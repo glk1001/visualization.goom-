@@ -1,31 +1,31 @@
-#pragma once
+module;
 
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
+#include "goom/goom_logger.h"
 #include "goom/goom_types.h"
+#include "goom/sound_info.h"
 #include "goom/spimpl.h"
-#include "goom_state_handler.h"
-#include "goom_states.h"
-#include "visual_fx_color_maps.h"
 
 #include <functional>
 #include <string>
 #include <string_view>
 #include <unordered_set>
 
+export module Goom.Control.GoomAllVisualFx;
+
+import Goom.Control.GoomStateHandler;
+import Goom.Control.GoomStates;
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
+import :VisualFxColorMaps;
 
-namespace GOOM
-{
-class AudioSamples;
-class GoomLogger;
-
-namespace CONTROL
+export namespace GOOM::CONTROL
 {
 
 class AllStandardVisualFx;
@@ -128,5 +128,4 @@ inline auto GoomAllVisualFx::GetCurrentStateName() const noexcept -> std::string
   return GoomStateInfo::GetStateInfo(m_goomStateHandler->GetCurrentState()).name;
 }
 
-} // namespace CONTROL
-} // namespace GOOM
+} // namespace GOOM::CONTROL

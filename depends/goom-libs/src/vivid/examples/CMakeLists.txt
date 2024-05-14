@@ -1,6 +1,6 @@
-cmake_minimum_required( VERSION 3.14 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.28 FATAL_ERROR )
 
-project( vivid_examples 
+project( vivid_examples
     VERSION 2.0.0
     LANGUAGES CXX
 )
@@ -14,7 +14,7 @@ target_link_libraries( ${PROJECT_NAME}_strong_types PRIVATE vivid )
 
 # examples with qt dependency (QImage, QColor)
 
-find_package( Qt5 COMPONENTS Core Gui QUIET ) 
+find_package( Qt5 COMPONENTS Core Gui QUIET )
 
 if ( Qt5_FOUND )
 

@@ -1,6 +1,6 @@
-//#undef NO_LOGGING
+module;
 
-#include "goom_music_settings_reactor.h"
+//#undef NO_LOGGING
 
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_speed.h"
@@ -10,6 +10,10 @@
 #include <cmath>
 #include <cstdint>
 #include <utility>
+
+module Goom.Control.GoomMusicSettingsReactor;
+
+import Goom.Control.GoomAllVisualFx;
 
 namespace GOOM::CONTROL
 {

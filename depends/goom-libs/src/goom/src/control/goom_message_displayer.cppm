@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include <cstddef>
 #include <cstdint>
@@ -9,7 +9,9 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Parallel;
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomMessageDisplayer;
+
+export namespace GOOM::CONTROL
 {
 
 class GoomMessageDisplayer

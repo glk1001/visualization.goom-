@@ -2,7 +2,6 @@
 
 #include "displacement_filter.h"
 
-//#include "filter_fx/normalized_coords.h"
 #include "gl_render_types.h"
 #include "gl_utils.h"
 #include "glsl_program.h"
@@ -60,9 +59,8 @@ auto InitFilterPosBuffer(const Dimensions& dimensions, std::span<Point2dFlt> tra
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
 
-  static constexpr auto MIN_COORD   = -2.0F;
-  static constexpr auto MAX_COORD   = +2.0F;
-  static constexpr auto COORD_WIDTH = MAX_COORD - MIN_COORD;
+  static constexpr auto MIN_COORD   = MIN_NORMALIZED_COORD;
+  static constexpr auto COORD_WIDTH = NORMALIZED_COORD_WIDTH;
   const float xRatioScreenToNormalizedCoord =
       COORD_WIDTH / static_cast<float>(dimensions.GetWidth());
   const float yRatioScreenToNormalizedCoord =
@@ -314,8 +312,8 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
       { "LUM_HISTOGRAM_BUFFER_INDEX",        std::to_string(LUM_HISTOGRAM_BUFFER_INDEX)},
       {                     "HEIGHT",                       std::to_string(GetHeight())},
       {               "ASPECT_RATIO",                     std::to_string(m_aspectRatio)},
-      {       "FILTER_POS_MIN_COORD",       std::to_string(-2.0F)},
-      {     "FILTER_POS_COORD_WIDTH",     std::to_string(+4.0F)},
+      {       "FILTER_POS_MIN_COORD",              std::to_string(MIN_NORMALIZED_COORD)},
+      {     "FILTER_POS_COORD_WIDTH",            std::to_string(NORMALIZED_COORD_WIDTH)},
   };
 
   try

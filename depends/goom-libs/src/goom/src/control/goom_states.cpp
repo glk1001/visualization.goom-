@@ -1,6 +1,6 @@
-//#undef NO_LOGGING
+module;
 
-#include "goom_states.h"
+//#undef NO_LOGGING
 
 #include "goom/goom_config.h"
 
@@ -8,6 +8,10 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+
+module Goom.Control.GoomStates;
+
+import Goom.Utils.EnumUtils;
 
 namespace GOOM::CONTROL
 {

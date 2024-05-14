@@ -1,4 +1,3 @@
-#include "control/goom_sound_events.h"
 #include "goom/goom_time.h"
 #include "goom/sound_info.h"
 
@@ -18,6 +17,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.Control.GoomSoundEvents;
 import Goom.Utils.Math.Misc;
 
 namespace GOOM::UNIT_TESTS

@@ -1,9 +1,12 @@
-#include "goom_random_state_handler.h"
+module;
 
 #include "goom/goom_config.h"
-#include "goom_states.h"
-#include "state_and_filter_consts.h"
 
+module Goom.Control.GoomRandomStateHandler;
+
+import Goom.Control.GoomStates;
+import Goom.Control.StateAndFilterConsts;
+import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::CONTROL

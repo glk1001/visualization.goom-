@@ -1,6 +1,10 @@
-#include "goom_state_handler.h"
+module;
 
-#include "goom_states.h"
+#include <vector>
+
+module Goom.Control.GoomStateHandler;
+
+import Goom.Control.GoomStates;
 
 namespace GOOM::CONTROL
 {
@@ -8,7 +12,8 @@ namespace GOOM::CONTROL
 auto IGoomStateHandler::GetCurrentDrawables() const -> DrawablesState
 {
   DrawablesState currentDrawables{};
-  for (const auto& drawableInfo : GoomStateInfo::GetStateInfo(GetCurrentState()).drawablesInfo)
+  for (const auto drawablesInfo = GoomStateInfo::GetStateInfo(GetCurrentState()).drawablesInfo;
+       const auto& drawableInfo : drawablesInfo)
   {
     currentDrawables.push_back(drawableInfo.fx);
   }

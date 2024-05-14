@@ -17,9 +17,10 @@ class NormalizedCoords
 public:
   // IMPORTANT: Max coord must be 2.0F - other filter functions
   //            implicitly depend on this.
-  static constexpr auto MIN_COORD   = -2.0F;
-  static constexpr auto MAX_COORD   = -MIN_COORD;
-  static constexpr auto COORD_WIDTH = MAX_COORD - MIN_COORD;
+  static_assert(MAX_NORMALIZED_COORD == 2.0F);
+  static constexpr auto MIN_COORD   = MIN_NORMALIZED_COORD;
+  static constexpr auto MAX_COORD   = MAX_NORMALIZED_COORD;
+  static constexpr auto COORD_WIDTH = NORMALIZED_COORD_WIDTH;
 
   constexpr explicit NormalizedCoords(const Point2dFlt& alreadyNormalized) noexcept;
   constexpr NormalizedCoords(float xAlreadyNormalized, float yAlreadyNormalized) noexcept;

@@ -1,6 +1,6 @@
-#pragma once
+export module Goom.Control.StateAndFilterConsts;
 
-namespace GOOM::CONTROL
+export namespace GOOM::CONTROL
 {
 
 inline constexpr auto USE_FORCED_GOOM_STATE   = false;

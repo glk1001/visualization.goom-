@@ -1,6 +1,6 @@
-//#undef NO_LOGGING
+module;
 
-#include "goom_message_displayer.h"
+//#undef NO_LOGGING
 
 #include "color/color_utils.h"
 #include "goom/goom_graphic.h"
@@ -12,6 +12,8 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
+module Goom.Control.GoomMessageDisplayer;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;

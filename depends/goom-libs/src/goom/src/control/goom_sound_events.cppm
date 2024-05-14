@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "goom/goom_time.h"
 #include "goom/sound_info.h"
 
 #include <cstdint>
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomSoundEvents;
+
+export namespace GOOM::CONTROL
 {
 
 class GoomSoundEvents

@@ -1,9 +1,7 @@
-#pragma once
+module;
 
 #include "filter_fx/filter_settings_service.h"
 #include "filter_fx/filter_speed.h"
-#include "goom_all_visual_fx.h"
-#include "goom_lock.h"
 #include "goom_plugin_info.h"
 
 #include <cstdint>
@@ -16,6 +14,15 @@ class PluginInfo;
 namespace GOOM::CONTROL
 {
 class GoomAllVisualFx;
+}
+
+export module Goom.Control.GoomMusicSettingsReactor;
+
+import Goom.Control.GoomAllVisualFx;
+import :GoomLock;
+
+export namespace GOOM::CONTROL
+{
 
 class GoomMusicSettingsReactor
 {

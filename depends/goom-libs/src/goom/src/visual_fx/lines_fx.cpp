@@ -4,7 +4,6 @@ module;
 
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
-#include "control/goom_sound_events.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_time.h"
@@ -19,6 +18,7 @@ module;
 
 module Goom.VisualFx.LinesFx;
 
+import Goom.Control.GoomSoundEvents;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;

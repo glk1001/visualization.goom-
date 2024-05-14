@@ -1,13 +1,17 @@
-#pragma once
+module;
 
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
-#include "goom_effects.h"
-#include "visual_fx_color_matched_sets.h"
-#include "visual_fx_weighted_color_maps.h"
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomAllVisualFx:VisualFxColorMaps;
+
+import Goom.Control.GoomEffects;
+import Goom.Utils.EnumUtils;
+import :VisualFxColorMatchedSets;
+import :VisualFxWeightedColorMaps;
+
+export namespace GOOM::CONTROL
 {
 
 class VisualFxColorMaps

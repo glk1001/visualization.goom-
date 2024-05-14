@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include "goom/goom_types.h"
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomEffects;
+
+export namespace GOOM::CONTROL
 {
 
 enum class GoomEffect : UnderlyingEnumType

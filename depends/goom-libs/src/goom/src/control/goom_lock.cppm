@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <cstdint>
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomMusicSettingsReactor:GoomLock;
+
+export namespace GOOM::CONTROL
 {
 
 /* note pour ceux qui n'ont pas suivis : le GoomLock permet d'empecher un */

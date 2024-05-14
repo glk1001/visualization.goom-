@@ -1,13 +1,16 @@
-#pragma once
+module;
 
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_settings_service.h"
-#include "goom_all_visual_fx.h"
-#include "goom_music_settings_reactor.h"
 
 #include <string>
 
-namespace GOOM::CONTROL
+export module Goom.Control.GoomStateMonitor;
+
+import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomMusicSettingsReactor;
+
+export namespace GOOM::CONTROL
 {
 
 class GoomStateMonitor

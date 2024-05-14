@@ -1,6 +1,6 @@
 #pragma once
 
-#include "control/state_and_filter_consts.h"
+import Goom.Control.StateAndFilterConsts;
 
 namespace GOOM::FILTER_FX
 {

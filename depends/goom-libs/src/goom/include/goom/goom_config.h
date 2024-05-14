@@ -12,6 +12,10 @@
 
 namespace GOOM
 {
+inline constexpr auto MIN_NORMALIZED_COORD   = -2.0F;
+inline constexpr auto MAX_NORMALIZED_COORD   = -MIN_NORMALIZED_COORD;
+inline constexpr auto NORMALIZED_COORD_WIDTH = MAX_NORMALIZED_COORD - MIN_NORMALIZED_COORD;
+
 #define Expects(cond) assert(cond) // NOLINT: Happy with this as a macro.
 #define Ensures(cond) assert(cond) // NOLINT: Happy with this as a macro.
 #define USED_FOR_DEBUGGING(x) ((void)(x)) // NOLINT: Happy with this as a macro.

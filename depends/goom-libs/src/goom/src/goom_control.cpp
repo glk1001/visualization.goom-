@@ -14,13 +14,6 @@
 
 #include "goom/goom_control.h"
 
-#include "control/goom_all_visual_fx.h"
-#include "control/goom_message_displayer.h"
-#include "control/goom_music_settings_reactor.h"
-#include "control/goom_random_state_handler.h"
-#include "control/goom_sound_events.h"
-#include "control/goom_state_monitor.h"
-#include "control/goom_title_displayer.h"
 #include "filter_fx/filter_buffers_service.h"
 #include "filter_fx/filter_effects/zoom_adjustment_effect_factory.h"
 #include "filter_fx/filter_settings_service.h"
@@ -50,8 +43,16 @@
 #include "utils/math/randutils.h"
 #endif
 
+import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomMessageDisplayer;
+import Goom.Control.GoomMusicSettingsReactor;
+import Goom.Control.GoomSoundEvents;
+import Goom.Control.GoomRandomStateHandler;
+import Goom.Control.GoomStateMonitor;
+import Goom.Control.GoomTitleDisplayer;
 import Goom.Draw.GoomDrawToBuffer;
 import Goom.Utils.DebuggingLogger;
+import Goom.Utils.Stopwatch;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.Blend2dToGoom;
@@ -85,12 +86,12 @@ using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;
 using UTILS::Timer;
-using UTILS::MATH::TValue;
 using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
 using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::IsBetween;
+using UTILS::MATH::TValue;
 using VISUAL_FX::FxHelper;
 
 class GoomControlLogger : public GoomLogger

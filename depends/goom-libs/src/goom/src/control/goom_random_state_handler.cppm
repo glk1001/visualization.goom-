@@ -1,11 +1,10 @@
-#pragma once
+export module Goom.Control.GoomRandomStateHandler;
 
-#include "goom_state_handler.h"
-#include "goom_states.h"
-
+import Goom.Control.GoomStateHandler;
+import Goom.Control.GoomStates;
 import Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::CONTROL
+export namespace GOOM::CONTROL
 {
 
 class GoomRandomStateHandler : public IGoomStateHandler

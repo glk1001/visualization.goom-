@@ -1,21 +1,16 @@
 // #define DO_GOOM_STATE_DUMP
 
-#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
+module;
 
-#include "goom_state_dump.h" // NOLINT: Have to include this.
+#undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "goom/goom_config.h"
 
-#ifdef DO_GOOM_STATE_DUMP
 #include "filter_fx/after_effects/after_effects_states.h"
 #include "filter_fx/after_effects/after_effects_types.h"
 #include "filter_fx/filter_settings_service.h"
 #include "goom/goom_control.h"
 #include "goom/goom_logger.h"
-#include "goom_all_visual_fx.h"
-#include "goom_music_settings_reactor.h"
-#include "goom_states.h"
-#include "utils/date_utils.h"
 
 #include <chrono>
 #include <cstdint>
@@ -25,6 +20,15 @@
 #include <memory>
 #include <string>
 #include <vector>
+
+module Goom.Control.GoomStateDump;
+
+#ifdef DO_GOOM_STATE_DUMP
+
+import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomMusicSettingsReactor;
+import Goom.Control.GoomStates;
+import Goom.Utils.DateUtils;
 
 namespace GOOM::CONTROL
 {

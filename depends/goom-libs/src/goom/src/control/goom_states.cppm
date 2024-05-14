@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
@@ -7,10 +7,12 @@
 #include <string_view>
 #include <vector>
 
+export module Goom.Control.GoomStates;
+
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::CONTROL
+export namespace GOOM::CONTROL
 {
 
 enum class GoomStates : size_t

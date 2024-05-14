@@ -1,6 +1,6 @@
-//#undef NO_LOGGING
+module;
 
-#include "goom_title_displayer.h"
+//#undef NO_LOGGING
 
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
@@ -17,6 +17,8 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+
+module Goom.Control.GoomTitleDisplayer;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;

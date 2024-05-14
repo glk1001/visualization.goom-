@@ -12,7 +12,6 @@
 #pragma warning(pop)
 #endif
 
-#include "control/goom_sound_events.h"
 #include "filter_fx/filter_buffers.h"
 #include "filter_fx/filter_zoom_vector.h"
 #include "filter_fx/normalized_coords.h"
@@ -37,6 +36,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.Control.GoomSoundEvents;
 import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS

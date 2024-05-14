@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
@@ -12,11 +12,13 @@
 #include <memory>
 #include <string>
 
+export module Goom.Control.GoomTitleDisplayer;
+
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Math.Misc;
 
-namespace GOOM::CONTROL
+export namespace GOOM::CONTROL
 {
 
 class GoomTitleDisplayer
