@@ -1,11 +1,14 @@
-#include "circle_drawer.h"
+module;
 
 #include "draw/goom_draw.h"
-#include "drawer_utils.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 
 #include <cstdint>
+
+module Goom.Draw.ShaperDrawers.CircleDrawer;
+
+import Goom.Draw.ShaperDrawers.DrawerUtils;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

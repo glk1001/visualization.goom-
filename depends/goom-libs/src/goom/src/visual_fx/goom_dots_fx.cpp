@@ -6,7 +6,6 @@ module;
 #include "color/color_maps.h"
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
-#include "draw/shape_drawers/bitmap_drawer.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
@@ -24,6 +23,7 @@ module;
 
 module Goom.VisualFx.GoomDotsFx;
 
+import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.IncrementedValues;

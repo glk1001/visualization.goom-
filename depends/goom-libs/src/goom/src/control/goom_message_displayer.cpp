@@ -4,7 +4,6 @@
 
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/text_drawer.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
@@ -14,6 +13,8 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+
+import Goom.Draw.ShaperDrawers.TextDrawer;
 
 namespace GOOM::CONTROL
 {

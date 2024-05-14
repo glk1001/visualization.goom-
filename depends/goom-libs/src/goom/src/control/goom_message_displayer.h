@@ -1,12 +1,11 @@
 #pragma once
 
-#include "draw/shape_drawers/text_drawer.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
 
+import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Parallel;
 
 namespace GOOM

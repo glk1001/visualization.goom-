@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Math.Misc;
 
 namespace GOOM
@@ -20,10 +21,6 @@ namespace GOOM
 namespace DRAW
 {
 class IGoomDraw;
-namespace SHAPE_DRAWERS
-{
-class TextDrawer;
-}
 }
 
 namespace CONTROL

@@ -7,7 +7,6 @@ module;
 #include "color/random_color_maps.h"
 #include "color/random_color_maps_groups.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/line_drawer_noisy_pixels.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -23,6 +22,7 @@ module;
 
 module Goom.VisualFx.CirclesFx:Circle;
 
+import Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 import Goom.VisualFx.FxHelper;
 import :Helper;
 import :DotDiameters;

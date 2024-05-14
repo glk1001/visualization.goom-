@@ -1,3 +1,5 @@
+module;
+
 // NOLINTBEGIN: Not my code
 #if __clang_major__ >= 16 // NOLINT: Can't include header for this.
 #pragma GCC diagnostic push
@@ -10,8 +12,6 @@
 #ifdef _MSC_VER
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #endif
-
-#include "text_drawer.h"
 
 //#include "debugging_logger.h"
 
@@ -38,6 +38,8 @@ import Goom.Utils.StrUtils;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Math.Misc;
 #endif
+
+module Goom.Draw.ShaperDrawers.TextDrawer;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

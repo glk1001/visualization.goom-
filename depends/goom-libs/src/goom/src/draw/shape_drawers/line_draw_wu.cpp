@@ -1,8 +1,10 @@
-#include "line_draw_wu.h"
+module;
 
 #include <cmath>
 #include <cstdint>
 #include <utility>
+
+module Goom.Draw.ShaperDrawers.LineDrawWu;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS::WU_LINES
 {

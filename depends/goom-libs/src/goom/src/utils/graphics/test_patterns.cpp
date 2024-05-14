@@ -2,12 +2,13 @@ module;
 
 #include "color/color_utils.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/line_drawer.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
 
 module Goom.Utils.Graphics.TestPatterns;
+
+import Goom.Draw.ShaperDrawers.LineDrawer;
 
 namespace GOOM::UTILS::GRAPHICS
 {

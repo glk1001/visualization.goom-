@@ -4,7 +4,6 @@ module;
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/circle_drawer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -17,6 +16,7 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapePaths;
 
+import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Utils.Graphics.Blend2dUtils;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;

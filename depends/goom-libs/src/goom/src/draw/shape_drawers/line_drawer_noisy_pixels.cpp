@@ -1,14 +1,17 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "line_drawer_noisy_pixels.h"
-
 #include "draw/goom_draw.h"
-#include "drawer_utils.h"
 #include "goom/point2d.h"
 
 #include <cstddef>
 
+module Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
+
+import Goom.Draw.ShaperDrawers.DrawerUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

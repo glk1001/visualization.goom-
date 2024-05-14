@@ -5,7 +5,6 @@
 #include "color/color_maps.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/text_drawer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -20,6 +19,7 @@
 #include <memory>
 #include <string>
 
+import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Math.Misc;
 
 namespace GOOM::CONTROL

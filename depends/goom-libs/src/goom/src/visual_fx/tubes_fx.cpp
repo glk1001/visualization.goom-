@@ -7,10 +7,6 @@ module;
 #include "draw/goom_draw.h"
 #include "draw/goom_draw_to_container.h"
 #include "draw/goom_draw_to_many.h"
-#include "draw/shape_drawers/bitmap_drawer.h"
-#include "draw/shape_drawers/circle_drawer.h"
-#include "draw/shape_drawers/line_drawer.h"
-#include "draw/shape_drawers/pixel_drawer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -28,7 +24,12 @@ module;
 
 module Goom.VisualFx.TubesFx;
 
+import Goom.Draw.ShapeDrawers.BitmapDrawer;
+import Goom.Draw.ShaperDrawers.CircleDrawer;
+import Goom.Draw.ShaperDrawers.LineDrawer;
+import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Timer;
+import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;

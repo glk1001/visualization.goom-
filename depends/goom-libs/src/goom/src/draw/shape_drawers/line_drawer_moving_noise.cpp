@@ -1,4 +1,4 @@
-#include "line_drawer_moving_noise.h"
+module;
 
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
@@ -6,8 +6,11 @@
 
 #include <cstdint>
 
+module Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
+
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {

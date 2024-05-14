@@ -1,10 +1,12 @@
-// NOLINTBEGIN: Not my code
+module;
 
-#include "line_draw_thick.h"
+// NOLINTBEGIN: Not my code
 
 #include "goom/goom_config.h"
 
 #include <cmath>
+
+module Goom.Draw.ShaperDrawers.LineDrawThick;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS::THICK_LINES
 {

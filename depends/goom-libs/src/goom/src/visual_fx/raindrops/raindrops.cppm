@@ -7,8 +7,6 @@ module;
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/circle_drawer.h"
-#include "draw/shape_drawers/line_drawer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -22,6 +20,8 @@ module;
 
 module Goom.VisualFx.RaindropsFx:Raindrops;
 
+import Goom.Draw.ShaperDrawers.CircleDrawer;
+import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.Blend2dUtils;
 import Goom.Utils.Graphics.PointUtils;
 import Goom.Utils.Math.IncrementedValues;

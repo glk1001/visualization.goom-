@@ -6,8 +6,6 @@ module;
 #include "color/color_utils.h"
 #include "color/random_color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/circle_drawer.h"
-#include "draw/shape_drawers/pixel_drawer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -28,6 +26,8 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
+import Goom.Draw.ShaperDrawers.CircleDrawer;
+import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Graphics.Camera;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Graphics.PointUtils;

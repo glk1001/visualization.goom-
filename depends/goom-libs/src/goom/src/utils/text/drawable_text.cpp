@@ -2,7 +2,6 @@
 
 #include "drawable_text.h"
 
-#include "draw/shape_drawers/text_drawer.h"
 #include "goom/goom_logger.h"
 #include "goom/point2d.h"
 
@@ -10,6 +9,7 @@
 #include <string>
 #include <vector>
 
+import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Math.Misc;
 

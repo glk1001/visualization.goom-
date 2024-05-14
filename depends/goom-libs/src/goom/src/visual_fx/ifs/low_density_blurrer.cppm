@@ -3,8 +3,6 @@ module;
 #include "color/color_adjustment.h"
 #include "color/color_maps.h"
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/bitmap_drawer.h"
-#include "draw/shape_drawers/pixel_drawer.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
@@ -18,6 +16,8 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:LowDensityBlurrer;
 
+import Goom.Draw.ShapeDrawers.BitmapDrawer;
+import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;

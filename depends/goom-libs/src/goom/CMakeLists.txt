@@ -67,14 +67,10 @@ add_library(goom
             src/control/visual_fx_weighted_color_maps.cpp
             src/draw/shape_drawers/bitmap_drawer.cpp
             src/draw/shape_drawers/circle_drawer.cpp
-            src/draw/shape_drawers/drawer_utils.h
             src/draw/shape_drawers/line_draw_thick.cpp
             src/draw/shape_drawers/line_draw_wu.cpp
-            src/draw/shape_drawers/line_drawer.h
             src/draw/shape_drawers/line_drawer_moving_noise.cpp
             src/draw/shape_drawers/line_drawer_noisy_pixels.cpp
-            src/draw/shape_drawers/line_drawer_with_effects.h
-            src/draw/shape_drawers/pixel_drawer.h
             src/draw/shape_drawers/text_drawer.cpp
             src/draw/goom_draw.h
             src/draw/goom_draw_to_buffer.cpp
@@ -158,6 +154,17 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               src/draw/shape_drawers/bitmap_drawer.cppm
+               src/draw/shape_drawers/circle_drawer.cppm
+               src/draw/shape_drawers/drawer_utils.cppm
+               src/draw/shape_drawers/line_draw_thick.cppm
+               src/draw/shape_drawers/line_draw_wu.cppm
+               src/draw/shape_drawers/line_drawer.cppm
+               src/draw/shape_drawers/line_drawer_moving_noise.cppm
+               src/draw/shape_drawers/line_drawer_noisy_pixels.cppm
+               src/draw/shape_drawers/line_drawer_with_effects.cppm
+               src/draw/shape_drawers/pixel_drawer.cppm
+               src/draw/shape_drawers/text_drawer.cppm
                src/utils/graphics/bezier_drawer.cppm
                src/utils/graphics/blend2d_to_goom.cppm
                src/utils/graphics/blend2d_utils.cppm

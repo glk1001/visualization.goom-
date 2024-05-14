@@ -1,9 +1,6 @@
 module;
 
 #include "draw/goom_draw.h"
-#include "draw/shape_drawers/bitmap_drawer.h"
-#include "draw/shape_drawers/circle_drawer.h"
-#include "draw/shape_drawers/line_drawer.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -18,6 +15,9 @@ module;
 
 export module Goom.VisualFx.FlyingStarsFx:StarDrawer;
 
+import Goom.Draw.ShapeDrawers.BitmapDrawer;
+import Goom.Draw.ShaperDrawers.CircleDrawer;
+import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Graphics.SmallImageBitmaps;

@@ -1,4 +1,4 @@
-#include "bitmap_drawer.h"
+module;
 
 #include "draw/goom_draw.h"
 #include "goom/goom_config.h"
@@ -6,6 +6,8 @@
 
 #include <cstdint>
 #include <vector>
+
+module Goom.Draw.ShapeDrawers.BitmapDrawer;
 
 import Goom.Utils.Graphics.ImageBitmaps;
 

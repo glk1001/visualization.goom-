@@ -1,6 +1,5 @@
 module;
 
-#include "draw/shape_drawers/line_drawer_with_effects.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
 
@@ -12,6 +11,7 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysDraw;
 
+import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
 import :LSysColors;
 import :LSysGeom;
 
