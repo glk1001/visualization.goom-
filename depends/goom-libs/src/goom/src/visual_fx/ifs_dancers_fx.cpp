@@ -36,7 +36,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color/random_color_maps.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
@@ -51,6 +50,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Graphics.SmallImageBitmaps;

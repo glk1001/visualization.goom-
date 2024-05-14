@@ -1,10 +1,8 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "random_color_maps.h"
-
 #include "color_data/color_map_enums.h"
-#include "color_maps.h"
-#include "color_maps_base.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 
@@ -13,6 +11,10 @@
 #include <set>
 #include <string>
 
+module Goom.Color.RandomColorMaps;
+
+import Goom.Color.ColorMapBase;
+import Goom.Color.ColorMaps;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 

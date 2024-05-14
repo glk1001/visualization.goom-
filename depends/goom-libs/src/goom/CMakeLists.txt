@@ -44,7 +44,6 @@ add_library(goom
             src/color/color_data/extra_color_groups.cpp
             src/color/color_adjustment.cpp
             src/color/color_maps.cpp
-            src/color/color_maps_base.h
             src/color/color_maps_grids.cpp
             src/color/color_utils.cpp
             src/color/random_color_maps.cpp
@@ -147,6 +146,13 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               src/color/color_adjustment.cppm
+               src/color/color_maps_base.cppm
+               src/color/color_maps.cppm
+               src/color/color_maps_grids.cppm
+               src/color/color_utils.cppm
+               src/color/random_color_maps.cppm
+               src/color/random_color_maps_groups.cppm
                src/control/all_standard_visual_fx.cppm
                src/control/goom_all_visual_fx.cppm
                src/control/goom_effects.cppm

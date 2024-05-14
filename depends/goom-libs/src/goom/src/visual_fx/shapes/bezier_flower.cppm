@@ -1,9 +1,6 @@
 module;
 
 #include "bezier/bezier.h"
-#include "color/color_maps.h"
-#include "color/color_maps_base.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -13,6 +10,9 @@ module;
 
 module Goom.VisualFx.ShapesFx:BezierFlower;
 
+import Goom.Color.ColorMapBase;
+import Goom.Color.ColorMaps;
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.BezierDrawer;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;

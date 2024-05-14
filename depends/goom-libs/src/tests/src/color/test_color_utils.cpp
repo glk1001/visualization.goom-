@@ -1,4 +1,3 @@
-#include "color/color_utils.h"
 #include "goom/goom_graphic.h"
 
 #include <algorithm>
@@ -15,6 +14,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelUtils;
 
 namespace GOOM::UNIT_TESTS

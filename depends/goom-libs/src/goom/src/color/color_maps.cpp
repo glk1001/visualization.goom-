@@ -1,12 +1,10 @@
-//#undef NO_LOGGING
+module;
 
-#include "color_maps.h"
+//#undef NO_LOGGING
 
 #include "color_data/color_data_maps.h"
 #include "color_data/color_map_enums.h"
 #include "color_data/extra_color_groups.h"
-#include "color_maps_base.h"
-#include "color_utils.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 
@@ -31,6 +29,12 @@
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
+
+module Goom.Color.ColorMaps;
+
+import Goom.Color.ColorMapBase;
+import Goom.Color.ColorUtils;
+import Goom.Utils.EnumUtils;
 
 namespace GOOM::COLOR
 {

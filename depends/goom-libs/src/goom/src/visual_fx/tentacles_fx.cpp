@@ -3,8 +3,6 @@ module;
 //#undef NO_LOGGING
 #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
 
-#include "color/color_maps.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_time.h"
@@ -22,6 +20,8 @@ module;
 
 module Goom.VisualFx.TentaclesFx;
 
+import Goom.Color.RandomColorMaps;
+import Goom.Color.ColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Timer;

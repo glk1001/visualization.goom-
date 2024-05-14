@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include "color_data/color_map_enums.h"
 #include "goom/goom_graphic.h"
 
 #include <cstddef>
 
-namespace GOOM::COLOR
+export module Goom.Color.ColorMapBase;
+
+export namespace GOOM::COLOR
 {
 
 class IColorMap

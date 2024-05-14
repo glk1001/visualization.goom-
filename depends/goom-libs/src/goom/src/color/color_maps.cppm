@@ -1,7 +1,6 @@
-#pragma once
+module;
 
 #include "color_data/color_map_enums.h"
-#include "color_maps_base.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 
@@ -10,7 +9,11 @@
 #include <memory>
 #include <vector>
 
-namespace GOOM::COLOR
+export module Goom.Color.ColorMaps;
+
+import Goom.Color.ColorMapBase;
+
+export namespace GOOM::COLOR
 {
 
 class ColorMapPtrWrapper : public IColorMap
@@ -110,12 +113,11 @@ public:
                                           const TintProperties& tintProperties) const noexcept
       -> ConstColorMapSharedPtr;
 
-private:
-  PixelChannelType m_defaultAlpha = MAX_ALPHA;
-
-  friend class RandomColorMaps;
   [[nodiscard]] static auto GetColorMapSharedPtr(COLOR_DATA::ColorMapName colorMapName) noexcept
       -> ConstColorMapSharedPtr;
+
+private:
+  PixelChannelType m_defaultAlpha = MAX_ALPHA;
 };
 
 inline ColorMapPtrWrapper::ColorMapPtrWrapper(const IColorMap* const colorMap,

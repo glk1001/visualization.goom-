@@ -1,19 +1,20 @@
 module;
 
-#include "color/color_adjustment.h"
-#include "color/color_maps.h"
-#include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <set>
 #include <utility>
 
 module Goom.VisualFx.IfsDancersFx:Colorizer;
 
+import Goom.Color.ColorAdjustment;
+import Goom.Color.ColorMaps;
+import Goom.Color.RandomColorMaps;
+import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.IfsDancersFx;
 

@@ -1,9 +1,5 @@
 module;
 
-#include "color/color_maps.h"
-#include "color/color_maps_base.h"
-#include "color/color_utils.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
 #include "goom/point2d.h"
@@ -12,9 +8,14 @@ module;
 
 module Goom.VisualFx.CirclesFx:DotDrawer;
 
+import Goom.Color.ColorMapBase;
+import Goom.Color.ColorMaps;
+import Goom.Color.ColorUtils;
+import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
+import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;

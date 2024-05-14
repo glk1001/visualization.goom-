@@ -1,8 +1,5 @@
 module;
 
-#include "color/color_maps.h"
-#include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -16,6 +13,9 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Similitudes;
 
+import Goom.Color.ColorMaps;
+import Goom.Color.RandomColorMaps;
+import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;

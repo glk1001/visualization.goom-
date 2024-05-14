@@ -2,11 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color/color_adjustment.h"
-#include "color/color_maps.h"
-#include "color/color_utils.h"
-#include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_utils.h"
@@ -27,11 +22,17 @@ module;
 
 module Goom.VisualFx.ImageFx;
 
+import Goom.Color.ColorAdjustment;
+import Goom.Color.ColorMaps;
+import Goom.Color.ColorUtils;
+import Goom.Color.RandomColorMaps;
+import Goom.Color.RandomColorMapsGroups;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
-import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 

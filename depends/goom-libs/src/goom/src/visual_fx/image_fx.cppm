@@ -1,6 +1,5 @@
 module;
 
-#include "color/random_color_maps.h"
 #include "goom/spimpl.h"
 
 #include <string>
@@ -8,6 +7,7 @@ module;
 
 export module Goom.VisualFx.ImageFx;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Parallel;
 import Goom.VisualFx.VisualFxBase;
 

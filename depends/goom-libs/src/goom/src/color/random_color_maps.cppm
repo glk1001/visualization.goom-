@@ -1,8 +1,6 @@
-#pragma once
+module;
 
 #include "color_data/color_map_enums.h"
-#include "color_maps.h"
-#include "color_maps_base.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -10,9 +8,13 @@
 #include <set>
 #include <string>
 
+export module Goom.Color.RandomColorMaps;
+
+import Goom.Color.ColorMapBase;
+import Goom.Color.ColorMaps;
 import Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::COLOR
+export namespace GOOM::COLOR
 {
 
 class RandomColorMaps : public ColorMaps

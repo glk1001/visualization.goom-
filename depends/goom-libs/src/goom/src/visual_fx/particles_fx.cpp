@@ -2,9 +2,6 @@ module;
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
-#include "color/color_maps.h"
-#include "color/color_utils.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
@@ -25,6 +22,9 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
+import Goom.Color.ColorMaps;
+import Goom.Color.ColorUtils;
+import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Draw.ShaperDrawers.PixelDrawer;

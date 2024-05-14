@@ -2,10 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color/color_adjustment.h"
-#include "color/color_maps.h"
-#include "color/color_utils.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 #include "goom/spimpl.h"
@@ -23,9 +19,14 @@ module;
 
 module Goom.VisualFx.GoomDotsFx;
 
+import Goom.Color.ColorAdjustment;
+import Goom.Color.ColorMaps;
+import Goom.Color.ColorUtils;
+import Goom.Color.RandomColorMaps;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;

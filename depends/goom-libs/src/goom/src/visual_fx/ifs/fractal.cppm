@@ -1,6 +1,5 @@
 module;
 
-#include "color/random_color_maps.h"
 #include "goom/goom_types.h"
 
 #include <cmath>
@@ -11,6 +10,7 @@ module;
 
 module Goom.VisualFx.IfsDancersFx:Fractal;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;

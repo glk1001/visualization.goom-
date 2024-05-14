@@ -1,6 +1,5 @@
 module;
 
-#include "color/random_color_maps.h"
 #include "goom_plugin_info.h"
 #include "utils/math/parametric_functions2d.h"
 
@@ -9,7 +8,9 @@ module;
 
 module Goom.VisualFx.CirclesFx:Circles;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import :BitmapGetter;
 import :Circle;

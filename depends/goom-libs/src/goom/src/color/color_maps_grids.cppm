@@ -1,6 +1,5 @@
-#pragma once
+module;
 
-#include "color_maps.h"
 #include "goom/goom_graphic.h"
 
 #include <cstddef>
@@ -8,9 +7,12 @@
 #include <functional>
 #include <vector>
 
+export module Goom.Color.ColorMapsGrid;
+
+import Goom.Color.ColorMaps;
 import Goom.Utils.Math.TValues;
 
-namespace GOOM::COLOR
+export namespace GOOM::COLOR
 {
 
 class ColorMapsGrid

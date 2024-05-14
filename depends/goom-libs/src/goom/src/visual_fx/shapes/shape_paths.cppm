@@ -1,8 +1,5 @@
 module;
 
-#include "color/color_adjustment.h"
-#include "color/color_maps.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -15,6 +12,9 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapePaths;
 
+import Goom.Color.ColorAdjustment;
+import Goom.Color.ColorMaps;
+import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Utils.Graphics.Blend2dUtils;

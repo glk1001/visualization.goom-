@@ -1,7 +1,5 @@
 module;
 
-#include "color/color_maps.h"
-#include "color/color_utils.h"
 #include "goom/goom_graphic.h"
 
 #include <algorithm>
@@ -9,6 +7,8 @@ module;
 
 export module Goom.Utils.Graphics.PixelBlend;
 
+import Goom.Color.ColorMaps;
+import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelUtils;
 
 export namespace GOOM::UTILS::GRAPHICS

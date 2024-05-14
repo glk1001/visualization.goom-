@@ -1,6 +1,5 @@
-#include "color_adjustment.h"
+module;
 
-#include "color_utils.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 
@@ -19,6 +18,9 @@
 #include <cmath>
 #include <cstdint>
 
+module Goom.Color.ColorAdjustment;
+
+import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.Misc;
 

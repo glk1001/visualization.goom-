@@ -1,6 +1,5 @@
 module;
 
-#include "color/color_utils.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
 
@@ -10,6 +9,8 @@ module;
 #include <cstdint>
 
 module Goom.Utils.Graphics.BezierDrawer;
+
+import Goom.Color.ColorUtils;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;

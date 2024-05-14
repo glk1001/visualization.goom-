@@ -1,6 +1,5 @@
 module;
 
-#include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_types.h"
 
@@ -10,6 +9,7 @@ module;
 
 module Goom.Control.GoomAllVisualFx:VisualFxColorMatchedSets;
 
+import Goom.Color.RandomColorMapsGroups;
 import Goom.Control.GoomEffects;
 import Goom.Utils.ArrayUtils;
 import Goom.Utils.EnumUtils;

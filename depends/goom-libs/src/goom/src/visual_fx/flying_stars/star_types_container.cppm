@@ -1,7 +1,6 @@
 module;
 
 #include "color/color_data/color_map_enums.h"
-#include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -19,15 +18,12 @@ module;
 namespace GOOM
 {
 class PluginInfo;
-
-namespace COLOR
-{
-class WeightedRandomColorMaps;
-}
 }
 
 export module Goom.VisualFx.FlyingStarsFx:StarTypesContainer;
 
+import Goom.Color.RandomColorMaps;
+import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;

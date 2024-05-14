@@ -1,9 +1,6 @@
 module;
 
-#include "color/color_adjustment.h"
 #include "color/color_data/color_map_enums.h"
-#include "color/color_maps.h"
-#include "color/color_utils.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 
@@ -14,7 +11,11 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysColors;
 
+import Goom.Color.ColorAdjustment;
+import Goom.Color.ColorMaps;
+import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
+import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;

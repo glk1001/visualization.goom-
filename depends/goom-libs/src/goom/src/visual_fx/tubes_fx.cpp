@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color/color_utils.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -21,6 +19,8 @@ module;
 
 module Goom.VisualFx.TubesFx;
 
+import Goom.Color.ColorUtils;
+import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.GoomDrawToContainer;
 import Goom.Draw.GoomDrawToMany;

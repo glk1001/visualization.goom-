@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
@@ -9,10 +9,12 @@
 #include <cstddef>
 #include <cstdint>
 
+export module Goom.Color.ColorUtils;
+
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.PixelUtils;
 
-namespace GOOM::COLOR
+export namespace GOOM::COLOR
 {
 
 [[nodiscard]] constexpr auto GetColorAverage(const Pixel& color1, const Pixel& color2) -> Pixel;

@@ -1,7 +1,5 @@
 module;
 
-#include "color/random_color_maps.h"
-#include "color/random_color_maps_groups.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -20,9 +18,12 @@ module;
 
 module Goom.VisualFx.ShapesFx:ShapeParts;
 
+import Goom.Color.RandomColorMaps;
+import Goom.Color.RandomColorMapsGroups;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.StepSpeed;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Transform2d;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;

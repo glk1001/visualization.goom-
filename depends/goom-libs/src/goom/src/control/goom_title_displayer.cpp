@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color/color_maps.h"
-#include "color/random_color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
@@ -20,6 +18,8 @@ module;
 
 module Goom.Control.GoomTitleDisplayer;
 
+import Goom.Color.RandomColorMaps;
+import Goom.Color.ColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Math.Misc;

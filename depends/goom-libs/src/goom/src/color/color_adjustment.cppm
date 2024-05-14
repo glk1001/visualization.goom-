@@ -1,10 +1,12 @@
-#pragma once
+module;
 
 #include "goom/goom_graphic.h"
 
+export module Goom.Color.ColorAdjustment;
+
 import Goom.Utils.Math.Misc;
 
-namespace GOOM::COLOR
+export namespace GOOM::COLOR
 {
 
 class ColorAdjustment

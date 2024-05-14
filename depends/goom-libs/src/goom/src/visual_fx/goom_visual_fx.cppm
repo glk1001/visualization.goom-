@@ -1,6 +1,5 @@
 module;
 
-#include "color/random_color_maps.h"
 #include "goom/frame_data.h"
 #include "goom/goom_graphic.h"
 #include "goom/point2d.h"
@@ -16,6 +15,7 @@ class AudioSamples;
 
 export module Goom.VisualFx.VisualFxBase;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
 

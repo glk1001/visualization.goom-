@@ -1,12 +1,14 @@
-#pragma once
+module;
 
 #include "goom/goom_graphic.h"
 #include "goom/goom_types.h"
-#include "random_color_maps.h"
 
+export module Goom.Color.RandomColorMapsGroups;
+
+import Goom.Color.RandomColorMaps;
 import Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::COLOR
+export namespace GOOM::COLOR
 {
 
 class RandomColorMapsGroups

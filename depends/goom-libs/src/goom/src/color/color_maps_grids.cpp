@@ -1,14 +1,17 @@
+module;
+
 //#undef NO_LOGGING
 
-#include "color_maps_grids.h"
-
-#include "color_maps.h"
 #include "goom/goom_config.h"
 #include "goom/goom_graphic.h"
 
 #include <cmath>
 #include <cstddef>
 #include <vector>
+
+module Goom.Color.ColorMapsGrid;
+
+import Goom.Color.ColorMaps;
 
 namespace GOOM::COLOR
 {

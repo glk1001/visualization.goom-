@@ -2,7 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color/color_utils.h"
 #include "goom/goom_graphic.h"
 #include "goom/goom_logger.h"
 #include "goom/goom_types.h"
@@ -15,6 +14,7 @@ module;
 
 module Goom.Control.GoomMessageDisplayer;
 
+import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 

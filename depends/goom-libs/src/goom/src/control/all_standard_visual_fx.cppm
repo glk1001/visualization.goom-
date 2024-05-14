@@ -1,6 +1,5 @@
 module;
 
-#include "color/random_color_maps.h"
 #include "goom/frame_data.h"
 #include "goom/goom_config.h"
 #include "goom/point2d.h"
@@ -15,6 +14,7 @@ module;
 
 export module Goom.Control.GoomAllVisualFx:AllStandardVisualFx;
 
+import Goom.Color.RandomColorMaps;
 import Goom.Control.GoomEffects;
 import Goom.Control.GoomStateHandler;
 import Goom.Control.GoomStates;
