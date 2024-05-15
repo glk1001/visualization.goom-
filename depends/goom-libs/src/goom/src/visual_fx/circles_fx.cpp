@@ -21,12 +21,12 @@ module Goom.VisualFx.CirclesFx;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.VisualFx.CirclesFx.Circle;
+import Goom.VisualFx.CirclesFx.CircleParamsBuilder;
+import Goom.VisualFx.CirclesFx.Circles;
+import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
-import :Circle;
-import :CircleParamsBuilder;
-import :Circles;
-import :DotPaths;
 
 namespace GOOM::VISUAL_FX
 {

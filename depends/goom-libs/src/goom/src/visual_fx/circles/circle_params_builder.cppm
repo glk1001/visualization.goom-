@@ -6,13 +6,13 @@ module;
 #include <cstdint>
 #include <vector>
 
-module Goom.VisualFx.CirclesFx:CircleParamsBuilder;
+export module Goom.VisualFx.CirclesFx.CircleParamsBuilder;
 
 import Goom.Utils.Math.Misc;
+import Goom.VisualFx.CirclesFx.Circle;
 import Goom.VisualFx.FxHelper;
-import :Circle;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class CircleParamsBuilder
@@ -114,6 +114,8 @@ inline auto CircleParamsBuilder::SetMainCircleCentreTarget(
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

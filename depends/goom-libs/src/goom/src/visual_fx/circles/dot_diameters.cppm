@@ -6,11 +6,11 @@ module;
 #include <cstdint>
 #include <vector>
 
-module Goom.VisualFx.CirclesFx:DotDiameters;
+export module Goom.VisualFx.CirclesFx.DotDiameters;
 
 import Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class DotDiameters
@@ -56,6 +56,8 @@ inline auto DotDiameters::GetDiameters() const noexcept -> const std::vector<uin
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

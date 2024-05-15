@@ -6,18 +6,18 @@ module;
 #include <cstdint>
 #include <vector>
 
-module Goom.VisualFx.CirclesFx:Circles;
+export module Goom.VisualFx.CirclesFx.Circles;
 
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.VisualFx.CirclesFx.BitmapGetter;
+import Goom.VisualFx.CirclesFx.Circle;
+import Goom.VisualFx.CirclesFx.Helper;
+import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
-import :BitmapGetter;
-import :Circle;
-import :Helper;
-import :DotPaths;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class Circles
@@ -77,6 +77,8 @@ inline auto Circles::HasPositionTJustHitEndBoundary() const noexcept -> bool
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

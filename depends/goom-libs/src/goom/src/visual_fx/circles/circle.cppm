@@ -13,7 +13,7 @@ module;
 #include <utility>
 #include <vector>
 
-module Goom.VisualFx.CirclesFx:Circle;
+export module Goom.VisualFx.CirclesFx.Circle;
 
 import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
@@ -25,13 +25,13 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.VisualFx.CirclesFx.Helper;
+import Goom.VisualFx.CirclesFx.DotDiameters;
+import Goom.VisualFx.CirclesFx.DotDrawer;
+import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
-import :Helper;
-import :DotDiameters;
-import :DotDrawer;
-import :DotPaths;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class Circle
@@ -304,6 +304,8 @@ inline auto Circle::CircleDots::GetNumMaps() const noexcept
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

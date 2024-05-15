@@ -2,11 +2,11 @@ module;
 
 #include <cstdint>
 
-module Goom.VisualFx.CirclesFx:Helper;
+export module Goom.VisualFx.CirclesFx.Helper;
 
-import :BitmapGetter;
+import Goom.VisualFx.CirclesFx.BitmapGetter;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 struct Helper

@@ -6,7 +6,7 @@ module;
 
 #include <cstdint>
 
-module Goom.VisualFx.CirclesFx:DotDrawer;
+export module Goom.VisualFx.CirclesFx.DotDrawer;
 
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
@@ -20,9 +20,9 @@ import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
-import :Helper;
+import Goom.VisualFx.CirclesFx.Helper;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class DotDrawer
@@ -110,6 +110,8 @@ inline auto DotDrawer::GetRandomDifferentColor(
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

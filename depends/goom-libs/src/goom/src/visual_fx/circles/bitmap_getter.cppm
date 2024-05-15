@@ -3,13 +3,13 @@ module;
 #include <algorithm>
 #include <cstddef>
 
-module Goom.VisualFx.CirclesFx:BitmapGetter;
+export module Goom.VisualFx.CirclesFx.BitmapGetter;
 
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class IBitmapGetter
@@ -48,6 +48,8 @@ private:
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {

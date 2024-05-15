@@ -11,13 +11,13 @@ module;
 #include <utility>
 #include <vector>
 
-module Goom.VisualFx.CirclesFx:DotPaths;
+export module Goom.VisualFx.CirclesFx.DotPaths;
 
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 
-namespace GOOM::VISUAL_FX::CIRCLES
+export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class DotPaths
@@ -297,6 +297,8 @@ inline auto DotPaths::GetPositionT() const noexcept -> float
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
+
+module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {
