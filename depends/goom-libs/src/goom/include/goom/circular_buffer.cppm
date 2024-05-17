@@ -35,6 +35,11 @@ private:
   size_t m_used     = 0;
 };
 
+} // namespace GOOM
+
+namespace GOOM
+{
+
 template<typename T>
 inline CircularBuffer<T>::CircularBuffer(const size_t size) noexcept : m_size{size}, m_buffer(size)
 {

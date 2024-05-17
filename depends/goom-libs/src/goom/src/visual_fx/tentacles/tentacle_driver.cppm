@@ -419,7 +419,7 @@ auto TentacleDriver::UpdateTentaclesEndPos() noexcept -> void
                   const auto endRadius      = std::sqrt(UTILS::MATH::Sq(tentacleEndPos.x) +
                                                    UTILS::MATH::Sq(tentacleEndPos.y));
                   const auto newTentacleEndPos =
-                      (m_endRadius() / endRadius) * tentacle.tentacle3D.GetEndPos();
+                      Scale(tentacle.tentacle3D.GetEndPos(), m_endRadius() / endRadius);
 
                   tentacle.tentacle3D.SetEndPos(newTentacleEndPos);
                 });

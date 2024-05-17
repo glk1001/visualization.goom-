@@ -57,6 +57,11 @@ private:
   [[nodiscard]] static constexpr auto GetYIntercept(float x, const LineFlt& line) -> float;
 };
 
+} // namespace GOOM::UTILS::GRAPHICS
+
+namespace GOOM::UTILS::GRAPHICS
+{
+
 constexpr LineClipper::LineClipper(const Rectangle2dInt& clipRectangle) noexcept
   : m_clipRectangle{ToRectangle2dFlt(clipRectangle)}
 {

@@ -76,6 +76,13 @@ private:
   void ThreadLoop();
 };
 
+} // namespace GOOM::UTILS
+
+//module : private;
+
+namespace GOOM::UTILS
+{
+
 namespace THREAD_POOL_IMPL
 {
 
@@ -161,11 +168,6 @@ auto ThreadPool::ScheduleAndGetFuture(FuncT&& func, ArgsT&&... args)
 
   return retFuture;
 }
-
-} // namespace GOOM::UTILS
-
-namespace GOOM::UTILS
-{
 
 ThreadPool::ThreadPool(const size_t numWorkers) noexcept : m_numWorkers(numWorkers)
 {

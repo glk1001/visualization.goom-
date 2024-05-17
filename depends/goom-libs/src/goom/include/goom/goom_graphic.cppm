@@ -218,6 +218,11 @@ private:
   std::vector<Pixel> m_owningBuff;
 };
 
+} // namespace GOOM
+
+namespace GOOM
+{
+
 inline PixelBufferVector::PixelBufferVector(const Dimensions& dimensions) noexcept
   : PixelBuffer{dimensions}, m_owningBuff(dimensions.GetSize())
 {
@@ -242,9 +247,10 @@ constexpr Pixel::Pixel(const PixelChannelType red,
 {
 }
 
-inline constexpr auto ZERO_PIXEL  = Pixel{0U, 0U, 0U, 0U};
-inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
-inline constexpr auto WHITE_PIXEL = Pixel{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
+export inline constexpr auto ZERO_PIXEL  = Pixel{0U, 0U, 0U, 0U};
+export inline constexpr auto BLACK_PIXEL = Pixel{0U, 0U, 0U, MAX_ALPHA};
+export inline constexpr auto WHITE_PIXEL =
+    Pixel{MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_COLOR_VAL, MAX_ALPHA};
 
 constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool
 {

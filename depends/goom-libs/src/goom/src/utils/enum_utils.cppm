@@ -88,6 +88,11 @@ private:
   [[nodiscard]] static auto GetSortedValuesArray(const V& keyValues) noexcept -> std::vector<T>;
 };
 
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
 template<typename E, typename T>
 constexpr EnumMap<E, T>::EnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexcept
   : m_keyValues{GetSortedValuesArray(std::move(keyValues))}

@@ -37,6 +37,11 @@ private:
       (not FloatsEqual(0.0F, m_translation.x)) || (not FloatsEqual(0.0F, m_translation.y));
 };
 
+} // namespace GOOM::UTILS::MATH
+
+namespace GOOM::UTILS::MATH
+{
+
 inline Transform2d::Transform2d(const float angleInRadians,
                                 const Vec2dFlt& translation,
                                 const float scale) noexcept

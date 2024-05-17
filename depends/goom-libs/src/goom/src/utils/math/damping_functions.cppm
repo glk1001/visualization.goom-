@@ -191,6 +191,8 @@ inline auto SineWaveMultiplier::SetPiStepFrac(const float val) noexcept -> void
 
 } // namespace GOOM::UTILS::MATH
 
+module :private;
+
 namespace GOOM::UTILS::MATH
 {
 

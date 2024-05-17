@@ -27,6 +27,10 @@ using GoomPoint2dFltBufferSaver = UTILS::BufferSaver<Point2dFlt, HeaderT>;
 [[nodiscard]] auto GetBufferValueToString(const Point2dInt& bufferValue) -> std::string;
 [[nodiscard]] auto GetBufferValueToString(const Point2dFlt& bufferValue) -> std::string;
 
+} // namespace GOOM
+
+namespace GOOM
+{
 
 inline auto GetBufferValueToString(const Pixel& bufferValue) -> std::string
 {

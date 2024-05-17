@@ -102,6 +102,13 @@ private:
                                    size_t bufferSize) -> void;
 };
 
+} // namespace GOOM::UTILS
+
+module :private;
+
+namespace GOOM::UTILS
+{
+
 template<class HeaderT>
 [[nodiscard]] auto GetFormattedBufferHeader(const HeaderT& nullHeader) -> std::string;
 template<class T>

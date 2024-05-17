@@ -90,6 +90,11 @@ private:
   void UpdateAcceleration(float prevSpeed);
 };
 
+} // namespace GOOM
+
+namespace GOOM
+{
+
 constexpr auto AudioSamples::GetPositiveValue(const float audioValue) -> float
 {
   constexpr auto MIN_AUDIO_VALUE = -1.0F;

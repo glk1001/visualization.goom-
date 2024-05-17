@@ -56,6 +56,13 @@ export namespace GOOM::UTILS::GRAPHICS
                                                       const Pixel& fgndColor,
                                                       PixelChannelType newAlpha) -> Pixel;
 
+} // namespace GOOM::UTILS::GRAPHICS
+
+module :private;
+
+namespace GOOM::UTILS::GRAPHICS
+{
+
 constexpr auto GetColorAddPixelBlend(const Pixel& bgndColor,
                                      const uint32_t fgndIntBuffIntensity,
                                      const Pixel& fgndColor,

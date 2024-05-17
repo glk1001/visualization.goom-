@@ -610,8 +610,8 @@ inline auto LSystem::GetBoundingBox2d(const float expandBounds,
                                       const BoundingBox3d& boundingBox3d) noexcept -> BoundingBox2d
 {
   auto boundingBox2d =
-      BoundingBox2d{expandBounds * LSysDraw::GetPerspectivePoint(boundingBox3d.min),
-                    expandBounds * LSysDraw::GetPerspectivePoint(boundingBox3d.max)};
+      BoundingBox2d{Scale(LSysDraw::GetPerspectivePoint(boundingBox3d.min), expandBounds),
+                    Scale(LSysDraw::GetPerspectivePoint(boundingBox3d.max), expandBounds)};
   return boundingBox2d;
 }
 

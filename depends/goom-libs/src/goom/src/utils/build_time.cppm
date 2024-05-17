@@ -13,6 +13,8 @@ export namespace GOOM::UTILS
 
 } // namespace GOOM::UTILS
 
+module :private;
+
 namespace GOOM::UTILS
 {
 

@@ -99,6 +99,8 @@ inline auto TrimAndCopy(std::string str) noexcept -> std::string
 
 } // namespace GOOM::UTILS
 
+module :private;
+
 namespace GOOM::UTILS
 {
 

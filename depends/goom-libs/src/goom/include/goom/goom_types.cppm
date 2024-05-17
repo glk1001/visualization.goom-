@@ -69,6 +69,11 @@ private:
   uint32_t m_height;
 };
 
+} // namespace GOOM
+
+namespace GOOM
+{
+
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 constexpr Dimensions::Dimensions(const uint32_t width, const uint32_t height) noexcept
   : m_width{width}, m_height{height}

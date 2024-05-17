@@ -62,11 +62,6 @@ inline auto StepSpeed::SetSpeed(const float val) -> void
   SetCurrentNumSteps();
 }
 
-inline auto StepSpeed::SetCurrentNumSteps() -> void
-{
-  m_currentNumSteps = static_cast<uint32_t>(std::lerp(m_maxNumSteps, m_minNumSteps, m_tMinMaxLerp));
-}
-
 inline auto StepSpeed::GetCurrentNumSteps() const -> uint32_t
 {
   return m_currentNumSteps;
@@ -76,6 +71,18 @@ template<typename T>
 inline auto StepSpeed::ApplySpeed(T& obj) -> void
 {
   obj.SetNumSteps(m_currentNumSteps);
+}
+
+} // namespace GOOM::UTILS
+
+module :private;
+
+namespace GOOM::UTILS
+{
+
+inline auto StepSpeed::SetCurrentNumSteps() -> void
+{
+  m_currentNumSteps = static_cast<uint32_t>(std::lerp(m_maxNumSteps, m_minNumSteps, m_tMinMaxLerp));
 }
 
 } // namespace GOOM::UTILS

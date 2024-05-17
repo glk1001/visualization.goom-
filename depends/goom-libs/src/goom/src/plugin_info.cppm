@@ -34,6 +34,11 @@ private:
   const CONTROL::GoomSoundEvents* m_soundEvents;
 };
 
+} // namespace GOOM
+
+namespace GOOM
+{
+
 inline PluginInfo::PluginInfo(const Dimensions& dimensions,
                               const GoomTime& goomTime,
                               const CONTROL::GoomSoundEvents& soundEvents) noexcept

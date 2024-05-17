@@ -17,6 +17,8 @@ auto SetGoomLogger(GoomLogger& goomLogger) noexcept -> void;
 
 } // namespace GOOM::UTILS
 
+module :private;
+
 namespace GOOM::UTILS
 {
 

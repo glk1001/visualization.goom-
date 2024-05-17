@@ -133,6 +133,11 @@ private:
       const EventWeightMultiplierPairs& weightMultiplierPairs) noexcept -> std::map<E, Weights<E>>;
 };
 
+} // namespace GOOM::UTILS::MATH
+
+namespace GOOM::UTILS::MATH
+{
+
 template<typename T>
 inline auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T
 {

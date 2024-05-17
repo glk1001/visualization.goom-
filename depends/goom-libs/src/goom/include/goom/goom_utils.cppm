@@ -29,6 +29,22 @@ auto SetRandSeed(uint64_t seed) noexcept -> void;
 [[nodiscard]] auto GetGoomLibBuildTime() noexcept -> std::string;
 
 template<typename U, typename T>
+[[nodiscard]] constexpr auto ptr_cast(T ptr) noexcept -> U;
+
+auto PutFileWithExpandedIncludes(const std::string& includeDir,
+                                 const std::string& inFilepath,
+                                 const std::string& outFilepath) -> void;
+
+[[nodiscard]] auto GetFileWithExpandedIncludes(const std::string& includeDir,
+                                               const std::string& filepath)
+    -> std::vector<std::string>;
+
+} // namespace GOOM
+
+namespace GOOM
+{
+
+template<typename U, typename T>
 [[nodiscard]] constexpr auto ptr_cast(const T ptr) noexcept -> U
 {
   static_assert(std::is_pointer_v<T>);
@@ -44,18 +60,14 @@ template<typename U, typename T>
   }
 }
 
-auto PutFileWithExpandedIncludes(const std::string& includeDir,
-                                 const std::string& inFilepath,
-                                 const std::string& outFilepath) -> void;
+} // namespace GOOM
 
-[[nodiscard]] auto GetFileWithExpandedIncludes(const std::string& includeDir,
-                                               const std::string& filepath)
-    -> std::vector<std::string>;
-
-// NOLINTBEGIN: Tricky template stuff here.
+namespace GOOM
+{
 namespace DETAIL
 {
 
+// NOLINTBEGIN: Tricky template stuff here.
 template<std::size_t N>
 struct compile_time_string
 {
