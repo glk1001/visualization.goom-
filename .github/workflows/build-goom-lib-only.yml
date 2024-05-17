@@ -13,30 +13,16 @@ jobs:
         config:
         - {
             name: 'Ubuntu Clang - RelWithDebInfo',
-            os: 'ubuntu-latest',
+            os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
             build_type: 'RelWithDebInfo',
           }
         - {
             name: 'Ubuntu Clang - Release',
-            os: 'ubuntu-latest',
+            os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
-            build_type: 'Release',
-          }
-        - {
-            name: 'Ubuntu GCC - RelWithDebInfo',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
-            build_type: 'RelWithDebInfo',
-          }
-        - {
-            name: 'Ubuntu GCC - Release',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
             build_type: 'Release',
           }
         - {
@@ -69,8 +55,9 @@ jobs:
           echo "BUILD_DIR:         ${{ env.BUILD_DIR }}"
 
       - name: Clone this Goom++ Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          submodules: true
           path: ''
 
       - name: Install Clang-${{ vars.CLANG_VER }}
@@ -81,7 +68,7 @@ jobs:
           platform: x64
 
       - name: Install GCC-${{ vars.GCC_VER }}
-        if: startsWith(matrix.config.name, 'Ubuntu GCC')
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
         uses: egor-tensin/setup-gcc@v1
         with:
           version: ${{ vars.GCC_VER }}
@@ -95,12 +82,23 @@ jobs:
           sudo apt-get install -y clang-format-${{ vars.CLANG_VER }}
           sudo apt-get install -y clang-tidy-${{ vars.CLANG_VER }}
 
+      - name: Install latest cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.29.x'
+
+      - name: Install latest ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+        with:
+          version: '1.11.1'
+
       - name: Configure
         shell: bash
         run: |
           mkdir ${{ env.GOOM_LIBS_DIR }}/${{ env.BUILD_DIR }}
           cd ${{ env.GOOM_LIBS_DIR }}/${{ env.BUILD_DIR }}
           CC=${{ matrix.config.cc }} CXX=${{ matrix.config.cxx }} cmake \
+                                                                  -G Ninja \
                                                                   -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
                                                                   -DENABLE_TESTING=1 \
                                                                   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \

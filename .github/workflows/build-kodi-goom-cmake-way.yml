@@ -36,30 +36,16 @@ jobs:
         config:
         - {
             name: 'Ubuntu Clang - RelWithDebInfo',
-            os: 'ubuntu-latest',
+            os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
             build_type: 'RelWithDebInfo',
           }
         - {
             name: 'Ubuntu Clang - Release',
-            os: 'ubuntu-latest',
+            os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
-            build_type: 'Release',
-          }
-        - {
-            name: 'Ubuntu GCC - RelWithDebInfo',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
-            build_type: 'RelWithDebInfo',
-          }
-        - {
-            name: 'Ubuntu GCC - Release',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
             build_type: 'Release',
           }
 
@@ -74,12 +60,13 @@ jobs:
 
     steps:
       - name: Clone this Goom++ Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
+          submodules: true
           path: '${{ env.VIS_GOOM_PATH }}'
 
       - name: Clone the Kodi Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'xbmc/xbmc'
           ref: ${{ vars.KODI_BRANCH }}
@@ -126,7 +113,7 @@ jobs:
           platform: x64
 
       - name: Install GCC-${{ vars.GCC_VER }}
-        if: startsWith(matrix.config.name, 'Ubuntu GCC')
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
         uses: egor-tensin/setup-gcc@v1
         with:
           version: ${{ vars.GCC_VER }}
@@ -144,7 +131,17 @@ jobs:
         if: ${{ startsWith(matrix.config.name, 'Ubuntu') }}
         run:  |
           sudo apt-get update
-          sudo apt-get install mesa-common-dev
+          sudo apt-get install -y mesa-common-dev
+
+      - name: Install latest cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.29.x'
+
+      - name: Install latest ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+        with:
+          version: '1.11.1'
 
       - name: Configure Goom++ for ${{ runner.os }}
         if: ${{ runner.os != 'Windows' }}
@@ -157,8 +154,7 @@ jobs:
           export CCACHE_DIR=${{ runner.temp }}
           bash scripts/goom-configure.sh -c ${{ matrix.config.cc }} \
                                          --build-type ${{ matrix.config.build_type }} \
-                                         --suffix ${{ github.ref_name }} \
-                                         --no-san
+                                         --suffix ${{ github.ref_name }}
 
       - name: Build Goom++ for ${{ runner.os }}
         if: ${{ runner.os != 'Windows' }}

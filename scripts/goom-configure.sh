@@ -61,7 +61,8 @@ else
   declare -r KODI_ROOT_DIR_OPTION="-DKODI_ROOT_DIR=${KODI_ROOT_DIR}"
 fi
 
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+cmake -G Ninja                          \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DENABLE_TESTING=1               \
       -DOVERRIDE_PATHS=1               \
       ${KODI_ROOT_DIR_OPTION}          \

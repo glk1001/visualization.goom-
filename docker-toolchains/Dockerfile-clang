@@ -1,0 +1,50 @@
+ARG OS_TYPE
+ARG OS_TAG
+
+FROM ${OS_TYPE}:${OS_TAG}
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG CMAKE_VERSION=3.29.2
+
+RUN apt-get update    && \
+    apt-get install -y   \
+      curl               \
+      tzdata             \
+      libfreetype-dev    \
+      libglu1-mesa-dev   \
+      mesa-common-dev    \
+      libglfw3-dev       \
+      python3-dev        \
+      python3-matplotlib \
+      locales-all        \
+      make               \
+      autoconf           \
+      automake           \
+      ninja-build        \
+      dos2unix           \
+      rsync              \
+      tar                \
+      fd-find            \
+      git                \
+      catch2             \
+      ccache             \
+      build-essential    \
+      clang-18           \
+      clang-tools-18     \
+      clang-tidy-18      \
+      clang-format-18    \
+      gdb             && \
+    apt-get clean -y
+
+RUN apt-get clean -y
+
+RUN curl -SL https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -o /tmp/curl-install.sh \
+    && chmod u+x /tmp/curl-install.sh \
+    && mkdir /usr/bin/cmake-${CMAKE_VERSION} \
+    && /tmp/curl-install.sh --skip-license --prefix=/usr/bin/cmake-${CMAKE_VERSION} \
+    && rm /tmp/curl-install.sh \
+    && ln -s /usr/bin/cmake-${CMAKE_VERSION}/bin/cmake /usr/bin/cmake
+
+ARG BUILD_UID=1001
+RUN useradd -m -u ${BUILD_UID} -s /bin/bash builder
+USER builder

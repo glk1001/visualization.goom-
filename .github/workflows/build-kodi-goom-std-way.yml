@@ -15,16 +15,9 @@ jobs:
         config:
         - {
             name: 'Ubuntu Clang - Release',
-            os: 'ubuntu-latest',
+            os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
-            build_type: 'Release',
-          }
-        - {
-            name: 'Ubuntu GCC - Release',
-            os: 'ubuntu-latest',
-            cc: 'gcc-${{ vars.GCC_VER }}',
-            cxx: 'g++-${{ vars.GCC_VER }}',
             build_type: 'Release',
           }
 
@@ -54,7 +47,7 @@ jobs:
           echo "BINARY_ADDONS_FILE: ${{ env.BINARY_ADDONS_FILE }}"
 
       - name: Clone the Kodi Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: 'xbmc/xbmc'
           ref: ${{ vars.KODI_BRANCH }}
@@ -88,6 +81,11 @@ jobs:
         run:  |
           sudo apt-get update
           sudo apt-get install mesa-common-dev
+
+      - name: Install latest cmake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.29.x'
 
       - name: Build Goom++ for ${{ runner.os }}
         shell: bash

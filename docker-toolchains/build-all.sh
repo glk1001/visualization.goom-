@@ -11,7 +11,6 @@ source "${THIS_SCRIPT_PATH}/build-get-vars.sh"
 declare NO_CACHE=""
 declare DOCKER_OS_TYPE="${DOCKER_BUILD_OS_TYPE}"
 declare DOCKER_OS_TAG="${DOCKER_BUILD_OS_TAG}"
-declare CLANG_VER=""
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -31,10 +30,13 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    --clang-ver)
-      CLANG_VER=${2}
+    --clang)
+      COMPILER=clang
       shift # past argument
-      shift # past value
+      ;;
+    --gcc)
+      COMPILER=gcc
+      shift # past argument
       ;;
     *)
       echo "Unknown option \"${key}\"."
@@ -46,31 +48,29 @@ while [[ $# -gt 0 ]]; do
 done
 
 
-if [[ "${CLANG_VER}" == "" ]]; then
-  declare -r BUILD_CLANG_VER=""
+if [[ "${COMPILER}" == "clang" ]]; then
+  declare -r DOCKER_FILE="Dockerfile-clang"
+elif [[ "${COMPILER}" == "gcc" ]]; then
+  declare -r DOCKER_FILE="Dockerfile-gcc"
 else
-  declare -r BUILD_CLANG_VER="${CLANG_VER}"
+  echo "ERROR: You need to use one of the flags \"--clang\" or \"--gcc\"."
+  echo
+  exit 1
 fi
 
 declare -r BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
 
 
-if [[ "${NO_CACHE}" == "" ]]; then
-  echo "Building \"${BUILD_IMAGE}\" with clang version \"${BUILD_CLANG_VER}\"..."
-  echo
-else
-  echo "Building \"${BUILD_IMAGE}\" with clang version \"${BUILD_CLANG_VER}\" and \"${NO_CACHE}\"..."
-  echo
-fi
+echo "Building \"${BUILD_IMAGE}\" for compiler \"${COMPILER}\"..."
+echo
 
 pushd "${THIS_SCRIPT_PATH}" > /dev/null
 
 declare -r BUILD_ARGS="--build-arg OS_TYPE=${DOCKER_OS_TYPE} \
                        --build-arg OS_TAG=${DOCKER_OS_TAG}   \
-                       --build-arg CLANG_VER=${BUILD_CLANG_VER} \
                        --build-arg UID=$(id -u)"
 
-docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_IMAGE} -f Dockerfile .
+docker build ${NO_CACHE} ${BUILD_ARGS} -t ${BUILD_IMAGE} -f "${DOCKER_FILE}" .
 
 docker system prune -f
 
