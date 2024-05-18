@@ -33,6 +33,11 @@ private:
   IGoomDraw* m_draw;
 };
 
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 inline BitmapDrawer::BitmapDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }

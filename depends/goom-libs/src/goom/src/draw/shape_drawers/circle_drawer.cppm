@@ -38,6 +38,11 @@ private:
                           const MultiplePixels& colors) noexcept -> void;
 };
 
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 inline CircleDrawer::CircleDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }

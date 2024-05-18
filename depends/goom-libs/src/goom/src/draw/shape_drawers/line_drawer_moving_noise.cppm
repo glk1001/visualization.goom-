@@ -58,6 +58,11 @@ private:
   auto UpdateLineDrawerNoise() noexcept -> void;
 };
 
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 inline auto LineDrawerMovingNoise::SetLineThickness(const uint8_t thickness) noexcept -> void
 {
   m_lineDrawer.SetLineThickness(thickness);
@@ -123,16 +128,23 @@ inline auto LineDrawerMovingNoise::IncrementNoise() noexcept -> void
   UpdateLineDrawerNoise();
 }
 
-inline auto LineDrawerMovingNoise::UpdateLineDrawerNoise() noexcept -> void
-{
-  m_lineDrawer.SetNoiseParams({m_noiseRadius(), m_numNoisePixelsPerPixel()});
-}
-
 inline auto LineDrawerMovingNoise::DrawLine(const Point2dInt& point1,
                                             const Point2dInt& point2,
                                             const MultiplePixels& colors) noexcept -> void
 {
   m_lineDrawer.DrawLine(point1, point2, colors);
+}
+
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+module :private;
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
+inline auto LineDrawerMovingNoise::UpdateLineDrawerNoise() noexcept -> void
+{
+  m_lineDrawer.SetNoiseParams({m_noiseRadius(), m_numNoisePixelsPerPixel()});
 }
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS

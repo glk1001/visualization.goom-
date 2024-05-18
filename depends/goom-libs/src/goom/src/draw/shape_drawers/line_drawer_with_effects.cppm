@@ -52,6 +52,13 @@ private:
   LineDrawerPolicy m_lineDrawer;
 };
 
+using LineDrawerWithMovingNoiseEffect = LineDrawerWithEffects<LineDrawerMovingNoise>;
+
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 template<class LineDrawerPolicy>
 inline LineDrawerWithEffects<LineDrawerPolicy>::LineDrawerWithEffects(
     LineDrawerPolicy&& lineDrawerPolicy) noexcept
@@ -87,7 +94,5 @@ inline auto LineDrawerWithEffects<LineDrawerPolicy>::DrawLine(const Point2dInt& 
 {
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
-
-using LineDrawerWithMovingNoiseEffect = LineDrawerWithEffects<LineDrawerMovingNoise>;
 
 } // namespace GOOM::DRAW::SHAPE_DRAWERS

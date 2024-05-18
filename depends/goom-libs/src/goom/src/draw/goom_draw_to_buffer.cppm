@@ -60,6 +60,11 @@ private:
   PixelBuffer* m_buffer2{};
 };
 
+} // namespace GOOM::DRAW
+
+namespace GOOM::DRAW
+{
+
 inline auto GoomDrawToSingleBuffer::GetBuffer() const noexcept -> const PixelBuffer&
 {
   return *m_buffer;

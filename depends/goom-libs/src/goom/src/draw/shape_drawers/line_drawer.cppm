@@ -78,6 +78,11 @@ private:
   [[nodiscard]] auto GetClipMargin() const noexcept -> int32_t;
 };
 
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 inline LineDrawerNoClippedEndPoints::LineDrawerNoClippedEndPoints(IGoomDraw& draw) noexcept
   : m_lineDrawer{PixelDrawerWithClipping{draw}}
 {
@@ -177,6 +182,11 @@ inline auto LineDrawer<DrawPixelPolicy>::DrawLine(const Point2dInt& point1,
     DrawThickLine(point1, point2, colors);
   }
 }
+
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
 
 template<class DrawPixelPolicy>
 inline auto LineDrawer<DrawPixelPolicy>::DrawWuLine(const Point2dInt& point1,

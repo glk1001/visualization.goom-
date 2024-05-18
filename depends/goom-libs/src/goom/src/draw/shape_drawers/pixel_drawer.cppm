@@ -24,6 +24,11 @@ private:
   ClipTester m_clipTester{m_draw->GetDimensions(), 0};
 };
 
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 inline PixelDrawer::PixelDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }

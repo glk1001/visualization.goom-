@@ -92,6 +92,11 @@ private:
   LineDrawer<NoisyPixelDrawer> m_lineDrawer;
 };
 
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
+
 inline auto LineDrawerNoisyPixels::SetLineThickness(const uint8_t thickness) noexcept -> void
 {
   m_lineDrawer.SetLineThickness(thickness);
@@ -130,6 +135,13 @@ inline auto LineDrawerNoisyPixels::DrawLine(const Point2dInt& point1,
 {
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
+
+} // namespace GOOM::DRAW::SHAPE_DRAWERS
+
+module :private;
+
+namespace GOOM::DRAW::SHAPE_DRAWERS
+{
 
 inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetBrightnessFactor(
     const float brightnessFactor) noexcept -> void

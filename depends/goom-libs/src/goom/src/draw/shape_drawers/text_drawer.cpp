@@ -20,7 +20,10 @@ module;
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
-#ifndef NO_FREETYPE_INSTALLED
+#ifdef NO_FREETYPE_INSTALLED
+import Goom.Utils.Graphics.PixelBlend;
+import Goom.Utils.Math.Misc;
+#else
 #include <cmath>
 #include <codecvt>
 #include <format>

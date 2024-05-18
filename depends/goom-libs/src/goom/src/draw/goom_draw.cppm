@@ -87,6 +87,11 @@ private:
   uint32_t m_intBuffIntensity                   = GetIntBuffIntensity(DEFAULT_BUFF_INTENSITY);
 };
 
+} // namespace GOOM::DRAW
+
+namespace GOOM::DRAW
+{
+
 inline IGoomDraw::IGoomDraw(const Dimensions& dimensions) noexcept : m_dimensions{dimensions}
 {
   SetBuffIntensity(m_buffIntensity);
@@ -162,14 +167,6 @@ inline auto IGoomDraw::GetBlendedPixel(const Pixel& bgndColor,
   return m_pixelBlendFunc(bgndColor, intBuffIntensity, fgndColor, newAlpha);
 }
 
-inline auto IGoomDraw::GetColorAddPixelBlend(const Pixel& bgndColor,
-                                             const uint32_t intBuffIntensity,
-                                             const Pixel& fgndColor,
-                                             const PixelChannelType newAlpha) noexcept -> Pixel
-{
-  return UTILS::GRAPHICS::GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
-}
-
 inline auto IGoomDraw::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept
     -> void
 {
@@ -191,6 +188,21 @@ inline auto IGoomDraw::DrawClippedPixels(const Point2dInt& point,
   }
 
   DrawPixelsToDevice(point, colors);
+}
+
+} // namespace GOOM::DRAW
+
+module :private;
+
+namespace GOOM::DRAW
+{
+
+inline auto IGoomDraw::GetColorAddPixelBlend(const Pixel& bgndColor,
+                                             const uint32_t intBuffIntensity,
+                                             const Pixel& fgndColor,
+                                             const PixelChannelType newAlpha) noexcept -> Pixel
+{
+  return UTILS::GRAPHICS::GetColorAddPixelBlend(bgndColor, intBuffIntensity, fgndColor, newAlpha);
 }
 
 } // namespace GOOM::DRAW
