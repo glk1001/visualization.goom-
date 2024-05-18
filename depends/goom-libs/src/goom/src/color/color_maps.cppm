@@ -120,6 +120,11 @@ private:
   PixelChannelType m_defaultAlpha = MAX_ALPHA;
 };
 
+} // namespace GOOM::COLOR
+
+namespace GOOM::COLOR
+{
+
 inline ColorMapPtrWrapper::ColorMapPtrWrapper(const IColorMap* const colorMap,
                                               const PixelChannelType defaultAlpha) noexcept
   : m_colorMap{colorMap}, m_defaultAlpha{defaultAlpha}

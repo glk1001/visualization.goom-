@@ -49,6 +49,15 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
 };
 
+[[nodiscard]] auto GetUnweightedRandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+                                                PixelChannelType defaultAlpha) noexcept
+    -> WeightedRandomColorMaps;
+
+} // namespace GOOM::COLOR
+
+namespace GOOM::COLOR
+{
+
 [[nodiscard]] inline auto GetUnweightedRandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
                                                        const PixelChannelType defaultAlpha) noexcept
     -> WeightedRandomColorMaps

@@ -123,6 +123,11 @@ private:
   bool m_weightsActive = true;
 };
 
+} // namespace GOOM::COLOR
+
+namespace GOOM::COLOR
+{
+
 inline auto RandomColorMaps::IsActive() const noexcept -> bool
 {
   return m_goomRand != nullptr;

@@ -64,6 +64,11 @@ enum class SimpleColors : UnderlyingEnumType
 [[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor, PixelChannelType alpha)
     -> Pixel;
 
+} // namespace GOOM::COLOR
+
+namespace GOOM::COLOR
+{
+
 template<typename T>
 constexpr auto GetColorAverage(const size_t num, const T& colors) -> Pixel
 {

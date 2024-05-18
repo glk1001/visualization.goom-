@@ -43,6 +43,11 @@ private:
   [[nodiscard]] auto GetCurrentHorizontalLineIndex() const -> size_t;
 };
 
+} // namespace GOOM::COLOR
+
+namespace GOOM::COLOR
+{
+
 inline auto ColorMapsGrid::SetVerticalT(const UTILS::MATH::TValue& val) noexcept -> void
 {
   m_verticalT = &val;

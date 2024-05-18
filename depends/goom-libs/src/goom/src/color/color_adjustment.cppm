@@ -45,6 +45,11 @@ private:
   float m_ignoreThreshold                                   = DEFAULT_GAMMA_BRIGHTNESS_THRESHOLD;
 };
 
+} // namespace GOOM::COLOR
+
+namespace GOOM::COLOR
+{
+
 inline ColorAdjustment::ColorAdjustment(const AdjustmentProperties& adjustmentProperties)
   : m_gamma{adjustmentProperties.gamma}, m_chromaFactor{adjustmentProperties.alterChromaFactor}
 {
