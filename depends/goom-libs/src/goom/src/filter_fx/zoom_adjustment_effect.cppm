@@ -39,6 +39,11 @@ private:
   Vec2dFlt m_baseZoomAdjustment{};
 };
 
+} // namespace GOOM::FILTER_FX
+
+namespace GOOM::FILTER_FX
+{
+
 inline auto IZoomAdjustmentEffect::GetBaseZoomAdjustment() const noexcept -> const Vec2dFlt&
 {
   return m_baseZoomAdjustment;

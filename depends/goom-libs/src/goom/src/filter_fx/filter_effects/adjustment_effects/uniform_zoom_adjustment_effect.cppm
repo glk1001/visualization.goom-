@@ -29,18 +29,17 @@ private:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto UniformZoomAdjustmentEffect::GetZoomAdjustment(
     const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
-}
-
-inline auto UniformZoomAdjustmentEffect::GetVelocity(
-    [[maybe_unused]] const NormalizedCoords& coords) const noexcept -> Vec2dFlt
-{
-  return GetBaseZoomAdjustment();
 }
 
 inline auto UniformZoomAdjustmentEffect::SetRandomParams() noexcept -> void
@@ -52,6 +51,19 @@ inline auto UniformZoomAdjustmentEffect::GetZoomAdjustmentEffectNameValueParams(
     -> GOOM::UTILS::NameValuePairs
 {
   return GOOM::UTILS::NameValuePairs();
+}
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
+inline auto UniformZoomAdjustmentEffect::GetVelocity(
+    [[maybe_unused]] const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+{
+  return GetBaseZoomAdjustment();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

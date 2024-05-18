@@ -54,6 +54,11 @@ private:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto Mobius::GetParams() const noexcept -> const Params&
 {
   return m_params;

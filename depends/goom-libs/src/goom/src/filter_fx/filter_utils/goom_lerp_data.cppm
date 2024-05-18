@@ -10,7 +10,7 @@ export module Goom.FilterFx.FilterUtils.GoomLerpData;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 
-export namespace GOOM
+export namespace GOOM::FILTER_FX::FILTER_UTILS
 {
 
 class GoomLerpData
@@ -50,11 +50,17 @@ private:
 
   UTILS::MATH::TValue m_incLerpFactor{
       UTILS::MATH::TValue::StepSizeProperties{
-                                              DEFAULT_INCREMENT, UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
+                                              .stepSize = DEFAULT_INCREMENT,
+                                              .stepType = UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   float m_funcLerpFactor = 0.0F;
   float m_lerpFactor     = 0.0F;
 };
+
+} // namespace GOOM::FILTER_FX::FILTER_UTILS
+
+namespace GOOM::FILTER_FX::FILTER_UTILS
+{
 
 inline auto GoomLerpData::GetSFuncValue(const float t) noexcept -> float
 {
@@ -139,4 +145,4 @@ inline auto GoomLerpData::GetLerpFactor() const noexcept -> float
   return m_lerpFactor;
 }
 
-} // namespace GOOM
+} // namespace GOOM::FILTER_FX::FILTER_UTILS

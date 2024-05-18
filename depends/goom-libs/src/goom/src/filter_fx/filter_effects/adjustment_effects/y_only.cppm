@@ -61,12 +61,34 @@ private:
       -> float;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto YOnly::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
+
+inline auto YOnly::GetParams() const noexcept -> const Params&
+{
+  return m_params;
+}
+
+inline auto YOnly::SetParams(const Params& params) noexcept -> void
+{
+  m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
 
 inline auto YOnly::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
@@ -80,16 +102,6 @@ inline auto YOnly::GetVelocity(const NormalizedCoords& coords) const noexcept ->
   return {xZoomAdjustment,
           GetBaseZoomAdjustment().y * m_params.amplitude.y *
               GetYOnlyZoomAdjustmentMultiplier(m_params.xyEffect.yEffect, coords)};
-}
-
-inline auto YOnly::GetParams() const noexcept -> const Params&
-{
-  return m_params;
-}
-
-inline auto YOnly::SetParams(const Params& params) noexcept -> void
-{
-  m_params = params;
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

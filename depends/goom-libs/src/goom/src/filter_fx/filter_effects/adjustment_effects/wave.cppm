@@ -122,12 +122,34 @@ private:
       -> float;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto Wave::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
+
+inline auto Wave::GetParams() const noexcept -> const Params&
+{
+  return m_params;
+}
+
+inline auto Wave::SetParams(const Params& params) noexcept -> void
+{
+  m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
 
 inline auto Wave::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
@@ -151,16 +173,6 @@ inline auto Wave::GetZoomAdjustmentAdd(const WaveEffect waveEffect,
 {
   return reducer * m_params.amplitude *
          GetPeriodicPart(waveEffect, m_params.freqFactor * angle, m_params.periodicFactor);
-}
-
-inline auto Wave::GetParams() const noexcept -> const Params&
-{
-  return m_params;
-}
-
-inline auto Wave::SetParams(const Params& params) noexcept -> void
-{
-  m_params = params;
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

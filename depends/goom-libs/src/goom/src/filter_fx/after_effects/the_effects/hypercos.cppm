@@ -78,6 +78,11 @@ private:
   [[nodiscard]] auto GetFrequencyFactorToUse(float frequencyFactor) const -> float;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto Hypercos::GetParams() const -> const Params&
 {
   return m_params;

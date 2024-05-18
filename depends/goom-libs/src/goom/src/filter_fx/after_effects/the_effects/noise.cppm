@@ -40,6 +40,11 @@ private:
   Params m_params;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto Noise::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
   const auto amp = m_params.noiseFactor / m_goomRand->GetRandInRange(NOISE_MIN, NOISE_MAX);

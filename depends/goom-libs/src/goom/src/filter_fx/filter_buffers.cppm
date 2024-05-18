@@ -74,6 +74,11 @@ private:
   auto DoNextTransformBuffer() noexcept -> void;
 };
 
+} // namespace GOOM::FILTER_FX
+
+namespace GOOM::FILTER_FX
+{
+
 inline auto ZoomFilterBuffers::GetUpdateStatus() const noexcept -> UpdateStatus
 {
   return m_updateStatus;

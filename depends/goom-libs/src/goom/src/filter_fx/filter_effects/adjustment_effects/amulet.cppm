@@ -45,22 +45,16 @@ private:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto Amulet::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
-}
-
-inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
-{
-  const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
-
-  const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
-
-  return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero),
-          GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromZero)};
-  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 }
 
 inline auto Amulet::GetParams() const noexcept -> const Params&
@@ -71,6 +65,24 @@ inline auto Amulet::GetParams() const noexcept -> const Params&
 inline void Amulet::SetParams(const Params& params) noexcept
 {
   m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
+inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+{
+  const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
+
+  const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
+
+  return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero),
+          GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromZero)};
+  //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

@@ -58,6 +58,11 @@ private:
   [[nodiscard]] auto ColorToNormalizedDisplacement(const Pixel& color) const noexcept -> Vec2dFlt;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_UTILS
+
+namespace GOOM::FILTER_FX::FILTER_UTILS
+{
+
 inline auto ImageDisplacement::GetImageFilename() const noexcept -> std::string
 {
   return m_imageFilename;

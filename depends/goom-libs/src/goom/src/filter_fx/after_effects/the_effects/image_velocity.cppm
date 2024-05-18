@@ -31,6 +31,11 @@ private:
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto ImageVelocity::GetVelocity(const CoordsAndVelocity& coordsAndVelocity) const
     -> NormalizedCoords
 {

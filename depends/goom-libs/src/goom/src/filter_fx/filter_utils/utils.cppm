@@ -106,6 +106,11 @@ private:
   [[nodiscard]] auto GetRandomCentredViewport() const noexcept -> Viewport;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_UTILS
+
+namespace GOOM::FILTER_FX::FILTER_UTILS
+{
+
 inline auto RandomViewport::GetProbNoViewport() const noexcept -> float
 {
   return m_probNoViewport;

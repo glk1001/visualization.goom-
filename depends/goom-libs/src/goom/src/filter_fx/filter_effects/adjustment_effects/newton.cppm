@@ -76,6 +76,11 @@ private:
       const std::complex<FltCalcType>& z) const noexcept -> FuncValueAndDerivative;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto Newton::GetParams() const noexcept -> const Params&
 {
   return m_params;

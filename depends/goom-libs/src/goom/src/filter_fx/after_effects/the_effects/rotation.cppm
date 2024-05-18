@@ -77,6 +77,11 @@ private:
   auto Toggle() -> void;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto RotationAdjustments::GetAdjustmentType() const -> AdjustmentType
 {
   return m_adjustmentType;

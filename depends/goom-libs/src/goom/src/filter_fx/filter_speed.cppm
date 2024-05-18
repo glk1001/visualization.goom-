@@ -54,6 +54,11 @@ private:
   bool m_reverseVitesse = true;
 };
 
+} // namespace GOOM::FILTER_FX
+
+namespace GOOM::FILTER_FX
+{
+
 constexpr auto Vitesse::SetDefault() noexcept -> void
 {
   m_vitesse        = DEFAULT_SPEED;

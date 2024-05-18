@@ -45,38 +45,40 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
+using enum ZoomFilterMode;
+
 namespace
 {
 
 // For debugging:
 
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::AMULET_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::COMPLEX_RATIONAL_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE0;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::CRYSTAL_BALL_MODE1;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE0;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE1;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::DISTANCE_FIELD_MODE2;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::EXP_RECIPROCAL_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE0;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE1;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE2;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::HYPERCOS_MODE3;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::IMAGE_DISPLACEMENT_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::MOBIUS_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NEWTON_MODE;
-constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::NORMAL_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::PERLIN_NOISE_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SCRUNCH_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE0;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE1;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::SPEEDWAY_MODE2;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::WATER_MODE;
-//constexpr auto FORCED_FILTER_MODE = ZoomFilterMode::Y_ONLY_MODE;
+//constexpr auto FORCED_FILTER_MODE = AMULET_MODE;
+//constexpr auto FORCED_FILTER_MODE = COMPLEX_RATIONAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = CRYSTAL_BALL_MODE0;
+//constexpr auto FORCED_FILTER_MODE = CRYSTAL_BALL_MODE1;
+//constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE0;
+//constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE1;
+//constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE2;
+//constexpr auto FORCED_FILTER_MODE = EXP_RECIPROCAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE0;
+//constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE1;
+//constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE2;
+//constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE3;
+//constexpr auto FORCED_FILTER_MODE = IMAGE_DISPLACEMENT_MODE;
+//constexpr auto FORCED_FILTER_MODE = MOBIUS_MODE;
+//constexpr auto FORCED_FILTER_MODE = NEWTON_MODE;
+constexpr auto FORCED_FILTER_MODE = NORMAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = PERLIN_NOISE_MODE;
+//constexpr auto FORCED_FILTER_MODE = SCRUNCH_MODE;
+//constexpr auto FORCED_FILTER_MODE = SPEEDWAY_MODE0;
+//constexpr auto FORCED_FILTER_MODE = SPEEDWAY_MODE1;
+//constexpr auto FORCED_FILTER_MODE = SPEEDWAY_MODE2;
+//constexpr auto FORCED_FILTER_MODE = WAVE_SQ_DIST_ANGLE_EFFECT_MODE0;
+//constexpr auto FORCED_FILTER_MODE = WAVE_SQ_DIST_ANGLE_EFFECT_MODE1;
+//constexpr auto FORCED_FILTER_MODE = WAVE_ATAN_ANGLE_EFFECT_MODE0;
+//constexpr auto FORCED_FILTER_MODE = WAVE_ATAN_ANGLE_EFFECT_MODE1;
+//constexpr auto FORCED_FILTER_MODE = WATER_MODE;
+//constexpr auto FORCED_FILTER_MODE = Y_ONLY_MODE;
 
 //constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::HYPERCOS;
 //constexpr auto FORCED_AFTER_EFFECTS_TYPE = AfterEffectsTypes::IMAGE_VELOCITY;
@@ -100,33 +102,33 @@ constexpr auto PROB_CHANGE_SPEED           = 0.5F;
 constexpr auto PROB_REVERSE_SPEED          = 0.5F;
 
 constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
-    {ZoomFilterMode::AMULET_MODE, "Amulet"},
-    {ZoomFilterMode::COMPLEX_RATIONAL_MODE, "Complex Rational"},
-    {ZoomFilterMode::CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
-    {ZoomFilterMode::CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
-    {ZoomFilterMode::DISTANCE_FIELD_MODE0, "Distance Field Mode 0"},
-    {ZoomFilterMode::DISTANCE_FIELD_MODE1, "Distance Field Mode 1"},
-    {ZoomFilterMode::DISTANCE_FIELD_MODE2, "Distance Field Mode 2"},
-    {ZoomFilterMode::EXP_RECIPROCAL_MODE, "Exp Reciprocal"},
-    {ZoomFilterMode::HYPERCOS_MODE0, "Hypercos Mode 0"},
-    {ZoomFilterMode::HYPERCOS_MODE1, "Hypercos Mode 1"},
-    {ZoomFilterMode::HYPERCOS_MODE2, "Hypercos Mode 2"},
-    {ZoomFilterMode::HYPERCOS_MODE3, "Hypercos Mode 3"},
-    {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
-    {ZoomFilterMode::MOBIUS_MODE, "Mobius"},
-    {ZoomFilterMode::NEWTON_MODE, "Newton"},
-    {ZoomFilterMode::NORMAL_MODE, "Normal"},
-    {ZoomFilterMode::PERLIN_NOISE_MODE, "Perlin Noise"},
-    {ZoomFilterMode::SCRUNCH_MODE, "Scrunch"},
-    {ZoomFilterMode::SPEEDWAY_MODE0, "Speedway Mode 0"},
-    {ZoomFilterMode::SPEEDWAY_MODE1, "Speedway Mode 1"},
-    {ZoomFilterMode::SPEEDWAY_MODE2, "Speedway Mode 2"},
-    {ZoomFilterMode::WATER_MODE, "Water"},
-    {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, "Wave Sq Dist Mode 0"},
-    {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, "Wave Sq Dist Mode 1"},
-    {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, "Wave Atan Mode 0"},
-    {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, "Wave Atan Mode 1"},
-    {ZoomFilterMode::Y_ONLY_MODE, "Y Only"},
+    {AMULET_MODE, "Amulet"},
+    {COMPLEX_RATIONAL_MODE, "Complex Rational"},
+    {CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
+    {CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
+    {DISTANCE_FIELD_MODE0, "Distance Field Mode 0"},
+    {DISTANCE_FIELD_MODE1, "Distance Field Mode 1"},
+    {DISTANCE_FIELD_MODE2, "Distance Field Mode 2"},
+    {EXP_RECIPROCAL_MODE, "Exp Reciprocal"},
+    {HYPERCOS_MODE0, "Hypercos Mode 0"},
+    {HYPERCOS_MODE1, "Hypercos Mode 1"},
+    {HYPERCOS_MODE2, "Hypercos Mode 2"},
+    {HYPERCOS_MODE3, "Hypercos Mode 3"},
+    {IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
+    {MOBIUS_MODE, "Mobius"},
+    {NEWTON_MODE, "Newton"},
+    {NORMAL_MODE, "Normal"},
+    {PERLIN_NOISE_MODE, "Perlin Noise"},
+    {SCRUNCH_MODE, "Scrunch"},
+    {SPEEDWAY_MODE0, "Speedway Mode 0"},
+    {SPEEDWAY_MODE1, "Speedway Mode 1"},
+    {SPEEDWAY_MODE2, "Speedway Mode 2"},
+    {WATER_MODE, "Water"},
+    {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, "Wave Sq Dist Mode 0"},
+    {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, "Wave Sq Dist Mode 1"},
+    {WAVE_ATAN_ANGLE_EFFECT_MODE0, "Wave Atan Mode 0"},
+    {WAVE_ATAN_ANGLE_EFFECT_MODE1, "Wave Atan Mode 1"},
+    {Y_ONLY_MODE, "Y Only"},
 }}};
 
 using AfterEffectsProbs = EnumMap<AfterEffectsTypes, float>;
@@ -147,59 +149,58 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   constexpr auto WAVE0_PROB_PLANE = 0.8F;
   constexpr auto WAVE1_PROB_PLANE = 0.8F;
 
-  using FiltMode   = ZoomFilterMode;
   using EffectType = AfterEffectsTypes;
 
   auto effectsProbs =
       GetFilledEnumMap<ZoomFilterMode, AfterEffectsProbs>(DEFAULT_AFTER_EFFECTS_PROBS);
 
-  effectsProbs[FiltMode::AMULET_MODE][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[AMULET_MODE][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::COMPLEX_RATIONAL_MODE][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[COMPLEX_RATIONAL_MODE][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::CRYSTAL_BALL_MODE0][EffectType::ROTATION] = PROB_HIGH;
-  effectsProbs[FiltMode::CRYSTAL_BALL_MODE1][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[CRYSTAL_BALL_MODE0][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[CRYSTAL_BALL_MODE1][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::DISTANCE_FIELD_MODE0][EffectType::ROTATION] = PROB_HIGH;
-  effectsProbs[FiltMode::DISTANCE_FIELD_MODE1][EffectType::ROTATION] = PROB_HIGH;
-  effectsProbs[FiltMode::DISTANCE_FIELD_MODE2][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[DISTANCE_FIELD_MODE0][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[DISTANCE_FIELD_MODE1][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[DISTANCE_FIELD_MODE2][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::EXP_RECIPROCAL_MODE][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[EXP_RECIPROCAL_MODE][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::HYPERCOS_MODE0][EffectType::ROTATION] = PROB_LOW;
-  effectsProbs[FiltMode::HYPERCOS_MODE1][EffectType::ROTATION] = PROB_LOW;
-  effectsProbs[FiltMode::HYPERCOS_MODE2][EffectType::ROTATION] = PROB_LOW;
-  effectsProbs[FiltMode::HYPERCOS_MODE3][EffectType::ROTATION] = PROB_LOW;
+  effectsProbs[HYPERCOS_MODE0][EffectType::ROTATION] = PROB_LOW;
+  effectsProbs[HYPERCOS_MODE1][EffectType::ROTATION] = PROB_LOW;
+  effectsProbs[HYPERCOS_MODE2][EffectType::ROTATION] = PROB_LOW;
+  effectsProbs[HYPERCOS_MODE3][EffectType::ROTATION] = PROB_LOW;
 
-  effectsProbs[FiltMode::IMAGE_DISPLACEMENT_MODE][EffectType::ROTATION] = PROB_ZERO;
+  effectsProbs[IMAGE_DISPLACEMENT_MODE][EffectType::ROTATION] = PROB_ZERO;
 
-  effectsProbs[FiltMode::MOBIUS_MODE][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[MOBIUS_MODE][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::NEWTON_MODE][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[NEWTON_MODE][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::NORMAL_MODE][EffectType::ROTATION] = PROB_ZERO;
+  effectsProbs[NORMAL_MODE][EffectType::ROTATION] = PROB_ZERO;
 
-  effectsProbs[FiltMode::PERLIN_NOISE_MODE][EffectType::ROTATION] = PROB_HALF;
+  effectsProbs[PERLIN_NOISE_MODE][EffectType::ROTATION] = PROB_HALF;
 
-  effectsProbs[FiltMode::SCRUNCH_MODE][EffectType::ROTATION] = PROB_HALF;
+  effectsProbs[SCRUNCH_MODE][EffectType::ROTATION] = PROB_HALF;
 
-  effectsProbs[FiltMode::SPEEDWAY_MODE0][EffectType::ROTATION] = PROB_HALF;
-  effectsProbs[FiltMode::SPEEDWAY_MODE1][EffectType::ROTATION] = PROB_HIGH;
-  effectsProbs[FiltMode::SPEEDWAY_MODE2][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[SPEEDWAY_MODE0][EffectType::ROTATION] = PROB_HALF;
+  effectsProbs[SPEEDWAY_MODE1][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[SPEEDWAY_MODE2][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::WATER_MODE][EffectType::ROTATION] = PROB_ZERO;
+  effectsProbs[WATER_MODE][EffectType::ROTATION] = PROB_ZERO;
 
-  effectsProbs[FiltMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0][EffectType::PLANES]   = WAVE0_PROB_PLANE;
-  effectsProbs[FiltMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0][EffectType::ROTATION] = PROB_HIGH;
-  effectsProbs[FiltMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1][EffectType::PLANES]   = WAVE1_PROB_PLANE;
-  effectsProbs[FiltMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[WAVE_SQ_DIST_ANGLE_EFFECT_MODE0][EffectType::PLANES]   = WAVE0_PROB_PLANE;
+  effectsProbs[WAVE_SQ_DIST_ANGLE_EFFECT_MODE0][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[WAVE_SQ_DIST_ANGLE_EFFECT_MODE1][EffectType::PLANES]   = WAVE1_PROB_PLANE;
+  effectsProbs[WAVE_SQ_DIST_ANGLE_EFFECT_MODE1][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::WAVE_ATAN_ANGLE_EFFECT_MODE0][EffectType::PLANES]   = WAVE0_PROB_PLANE;
-  effectsProbs[FiltMode::WAVE_ATAN_ANGLE_EFFECT_MODE0][EffectType::ROTATION] = PROB_HIGH;
-  effectsProbs[FiltMode::WAVE_ATAN_ANGLE_EFFECT_MODE1][EffectType::PLANES]   = WAVE1_PROB_PLANE;
-  effectsProbs[FiltMode::WAVE_ATAN_ANGLE_EFFECT_MODE1][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[WAVE_ATAN_ANGLE_EFFECT_MODE0][EffectType::PLANES]   = WAVE0_PROB_PLANE;
+  effectsProbs[WAVE_ATAN_ANGLE_EFFECT_MODE0][EffectType::ROTATION] = PROB_HIGH;
+  effectsProbs[WAVE_ATAN_ANGLE_EFFECT_MODE1][EffectType::PLANES]   = WAVE1_PROB_PLANE;
+  effectsProbs[WAVE_ATAN_ANGLE_EFFECT_MODE1][EffectType::ROTATION] = PROB_HIGH;
 
-  effectsProbs[FiltMode::Y_ONLY_MODE][EffectType::ROTATION] = PROB_HALF;
+  effectsProbs[Y_ONLY_MODE][EffectType::ROTATION] = PROB_HALF;
 
   return effectsProbs;
 }
@@ -295,121 +296,121 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   static constexpr auto Y_ONLY_MODE_WEIGHT             = 05.0F;
 
   static const auto s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
-      {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
+      {CRYSTAL_BALL_MODE0, 0.0F},
+      {CRYSTAL_BALL_MODE1, 0.0F},
   };
   static const auto s_CRYSTAL_BALL_MOD_E1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::CRYSTAL_BALL_MODE0, 0.0F},
-      {ZoomFilterMode::CRYSTAL_BALL_MODE1, 0.0F},
+      {CRYSTAL_BALL_MODE0, 0.0F},
+      {CRYSTAL_BALL_MODE1, 0.0F},
   };
   static const auto s_NORMAL_MODE_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {         ZoomFilterMode::NORMAL_MODE, 1.0F},
-      {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
-      {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
-      {ZoomFilterMode::DISTANCE_FIELD_MODE0, 2.0F},
+      {         NORMAL_MODE, 1.0F},
+      {DISTANCE_FIELD_MODE0, 2.0F},
+      {DISTANCE_FIELD_MODE0, 2.0F},
+      {DISTANCE_FIELD_MODE0, 2.0F},
   };
   static const auto s_HYPERCOS_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::HYPERCOS_MODE0, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+      {HYPERCOS_MODE0, 0.0F},
+      {HYPERCOS_MODE1, 0.0F},
+      {HYPERCOS_MODE2, 0.0F},
+      {HYPERCOS_MODE3, 0.0F},
   };
   static const auto s_HYPERCOS_MOD_E1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
-      {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+      {HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
+      {HYPERCOS_MODE1, 0.0F},
+      {HYPERCOS_MODE2, 0.0F},
+      {HYPERCOS_MODE3, 0.0F},
   };
   static const auto s_HYPERCOS_MOD_E2_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
-      {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+      {HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
+      {HYPERCOS_MODE1, 0.0F},
+      {HYPERCOS_MODE2, 0.0F},
+      {HYPERCOS_MODE3, 0.0F},
   };
   static const auto s_HYPERCOS_MOD_E3_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
-      {ZoomFilterMode::HYPERCOS_MODE1, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE2, 0.0F},
-      {ZoomFilterMode::HYPERCOS_MODE3, 0.0F},
+      {HYPERCOS_MODE0, 1.0F}, // OK for mode0 to follow
+      {HYPERCOS_MODE1, 0.0F},
+      {HYPERCOS_MODE2, 0.0F},
+      {HYPERCOS_MODE3, 0.0F},
   };
   static const auto s_SPEEDWAY_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
-      {ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
-      {ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
+      {SPEEDWAY_MODE0, 0.0F},
+      {SPEEDWAY_MODE1, 0.0F},
+      {SPEEDWAY_MODE2, 0.0F},
   };
   static const auto s_SPEEDWAY_MOD_E1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
-      {ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
-      {ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
+      {SPEEDWAY_MODE0, 0.0F},
+      {SPEEDWAY_MODE1, 0.0F},
+      {SPEEDWAY_MODE2, 0.0F},
   };
   static const auto s_SPEEDWAY_MOD_E2_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::SPEEDWAY_MODE0, 0.0F},
-      {ZoomFilterMode::SPEEDWAY_MODE1, 0.0F},
-      {ZoomFilterMode::SPEEDWAY_MODE2, 0.0F},
+      {SPEEDWAY_MODE0, 0.0F},
+      {SPEEDWAY_MODE1, 0.0F},
+      {SPEEDWAY_MODE2, 0.0F},
   };
   static const auto s_WAVE_SQ_DIST_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, 0.0F},
-      {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, 0.0F},
+      {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, 0.0F},
+      {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, 0.0F},
   };
   static const auto s_WAVE_SQ_DIST_MOD_E1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, 0.0F},
-      {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, 0.0F},
+      {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, 0.0F},
+      {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, 0.0F},
   };
   static const auto s_WAVE_ATAN_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, 0.0F},
-      {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
+      {WAVE_ATAN_ANGLE_EFFECT_MODE0, 0.0F},
+      {WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
   };
   static const auto s_WAVE_ATAN_MOD_E1_MULTIPLIERS = std::map<ZoomFilterMode, float>{
-      {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, 0.0F},
-      {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
+      {WAVE_ATAN_ANGLE_EFFECT_MODE0, 0.0F},
+      {WAVE_ATAN_ANGLE_EFFECT_MODE1, 0.0F},
   };
 
   auto filterWeights = ConditionalWeights<ZoomFilterMode>{
       goomRand,
       {
-        {ZoomFilterMode::AMULET_MODE, AMULET_MODE_WEIGHT},
-        {ZoomFilterMode::COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_MODE_WEIGHT},
-        {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL_MODE0_WEIGHT},
-        {ZoomFilterMode::CRYSTAL_BALL_MODE1, CRYSTAL_BALL_MODE1_WEIGHT},
-        {ZoomFilterMode::DISTANCE_FIELD_MODE0, DISTANCE_FIELD_MODE0_WEIGHT},
-        {ZoomFilterMode::DISTANCE_FIELD_MODE1, DISTANCE_FIELD_MODE1_WEIGHT},
-        {ZoomFilterMode::DISTANCE_FIELD_MODE2, DISTANCE_FIELD_MODE2_WEIGHT},
-        {ZoomFilterMode::EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_MODE_WEIGHT},
-        {ZoomFilterMode::HYPERCOS_MODE0, HYPERCOS_MODE0_WEIGHT},
-        {ZoomFilterMode::HYPERCOS_MODE1, HYPERCOS_MODE1_WEIGHT},
-        {ZoomFilterMode::HYPERCOS_MODE2, HYPERCOS_MODE2_WEIGHT},
-        {ZoomFilterMode::HYPERCOS_MODE3, HYPERCOS_MODE3_WEIGHT},
-        {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_MODE_WEIGHT},
-        {ZoomFilterMode::MOBIUS_MODE, MOBIUS_MODE_WEIGHT},
-        {ZoomFilterMode::NEWTON_MODE, NEWTON_MODE_WEIGHT},
-        {ZoomFilterMode::NORMAL_MODE, NORMAL_MODE_WEIGHT},
-        {ZoomFilterMode::PERLIN_NOISE_MODE, PERLIN_NOISE_MODE_WEIGHT},
-        {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_MODE_WEIGHT},
-        {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_MODE0_WEIGHT},
-        {ZoomFilterMode::SPEEDWAY_MODE1, SPEEDWAY_MODE1_WEIGHT},
-        {ZoomFilterMode::SPEEDWAY_MODE2, SPEEDWAY_MODE2_WEIGHT},
-        {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, WAVE_SQ_DIST_MODE0_WEIGHT},
-        {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, WAVE_SQ_DIST_MODE1_WEIGHT},
-        {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, WAVE_ATAN_MODE0_WEIGHT},
-        {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, WAVE_ATAN_MODE1_WEIGHT},
-        {ZoomFilterMode::WATER_MODE, WATER_MODE_WEIGHT},
-        {ZoomFilterMode::Y_ONLY_MODE, Y_ONLY_MODE_WEIGHT},
+        {AMULET_MODE, AMULET_MODE_WEIGHT},
+        {COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_MODE_WEIGHT},
+        {CRYSTAL_BALL_MODE0, CRYSTAL_BALL_MODE0_WEIGHT},
+        {CRYSTAL_BALL_MODE1, CRYSTAL_BALL_MODE1_WEIGHT},
+        {DISTANCE_FIELD_MODE0, DISTANCE_FIELD_MODE0_WEIGHT},
+        {DISTANCE_FIELD_MODE1, DISTANCE_FIELD_MODE1_WEIGHT},
+        {DISTANCE_FIELD_MODE2, DISTANCE_FIELD_MODE2_WEIGHT},
+        {EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_MODE_WEIGHT},
+        {HYPERCOS_MODE0, HYPERCOS_MODE0_WEIGHT},
+        {HYPERCOS_MODE1, HYPERCOS_MODE1_WEIGHT},
+        {HYPERCOS_MODE2, HYPERCOS_MODE2_WEIGHT},
+        {HYPERCOS_MODE3, HYPERCOS_MODE3_WEIGHT},
+        {IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_MODE_WEIGHT},
+        {MOBIUS_MODE, MOBIUS_MODE_WEIGHT},
+        {NEWTON_MODE, NEWTON_MODE_WEIGHT},
+        {NORMAL_MODE, NORMAL_MODE_WEIGHT},
+        {PERLIN_NOISE_MODE, PERLIN_NOISE_MODE_WEIGHT},
+        {SCRUNCH_MODE, SCRUNCH_MODE_WEIGHT},
+        {SPEEDWAY_MODE0, SPEEDWAY_MODE0_WEIGHT},
+        {SPEEDWAY_MODE1, SPEEDWAY_MODE1_WEIGHT},
+        {SPEEDWAY_MODE2, SPEEDWAY_MODE2_WEIGHT},
+        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, WAVE_SQ_DIST_MODE0_WEIGHT},
+        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, WAVE_SQ_DIST_MODE1_WEIGHT},
+        {WAVE_ATAN_ANGLE_EFFECT_MODE0, WAVE_ATAN_MODE0_WEIGHT},
+        {WAVE_ATAN_ANGLE_EFFECT_MODE1, WAVE_ATAN_MODE1_WEIGHT},
+        {WATER_MODE, WATER_MODE_WEIGHT},
+        {Y_ONLY_MODE, Y_ONLY_MODE_WEIGHT},
         },
       {
-        {ZoomFilterMode::CRYSTAL_BALL_MODE0, s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS},
-        {ZoomFilterMode::CRYSTAL_BALL_MODE1, s_CRYSTAL_BALL_MOD_E1_MULTIPLIERS},
-        {ZoomFilterMode::NORMAL_MODE, s_NORMAL_MODE_MULTIPLIERS},
-        {ZoomFilterMode::HYPERCOS_MODE0, s_HYPERCOS_MOD_E0_MULTIPLIERS},
-        {ZoomFilterMode::HYPERCOS_MODE1, s_HYPERCOS_MOD_E1_MULTIPLIERS},
-        {ZoomFilterMode::HYPERCOS_MODE2, s_HYPERCOS_MOD_E2_MULTIPLIERS},
-        {ZoomFilterMode::HYPERCOS_MODE3, s_HYPERCOS_MOD_E3_MULTIPLIERS},
-        {ZoomFilterMode::SPEEDWAY_MODE0, s_SPEEDWAY_MOD_E0_MULTIPLIERS},
-        {ZoomFilterMode::SPEEDWAY_MODE1, s_SPEEDWAY_MOD_E1_MULTIPLIERS},
-        {ZoomFilterMode::SPEEDWAY_MODE2, s_SPEEDWAY_MOD_E2_MULTIPLIERS},
-        {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, s_WAVE_SQ_DIST_MOD_E0_MULTIPLIERS},
-        {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, s_WAVE_SQ_DIST_MOD_E1_MULTIPLIERS},
-        {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, s_WAVE_ATAN_MOD_E0_MULTIPLIERS},
-        {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, s_WAVE_ATAN_MOD_E1_MULTIPLIERS},
+        {CRYSTAL_BALL_MODE0, s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS},
+        {CRYSTAL_BALL_MODE1, s_CRYSTAL_BALL_MOD_E1_MULTIPLIERS},
+        {NORMAL_MODE, s_NORMAL_MODE_MULTIPLIERS},
+        {HYPERCOS_MODE0, s_HYPERCOS_MOD_E0_MULTIPLIERS},
+        {HYPERCOS_MODE1, s_HYPERCOS_MOD_E1_MULTIPLIERS},
+        {HYPERCOS_MODE2, s_HYPERCOS_MOD_E2_MULTIPLIERS},
+        {HYPERCOS_MODE3, s_HYPERCOS_MOD_E3_MULTIPLIERS},
+        {SPEEDWAY_MODE0, s_SPEEDWAY_MOD_E0_MULTIPLIERS},
+        {SPEEDWAY_MODE1, s_SPEEDWAY_MOD_E1_MULTIPLIERS},
+        {SPEEDWAY_MODE2, s_SPEEDWAY_MOD_E2_MULTIPLIERS},
+        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, s_WAVE_SQ_DIST_MOD_E0_MULTIPLIERS},
+        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, s_WAVE_SQ_DIST_MOD_E1_MULTIPLIERS},
+        {WAVE_ATAN_ANGLE_EFFECT_MODE0, s_WAVE_ATAN_MOD_E0_MULTIPLIERS},
+        {WAVE_ATAN_ANGLE_EFFECT_MODE1, s_WAVE_ATAN_MOD_E1_MULTIPLIERS},
         }
   };
 
@@ -418,44 +419,46 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   return filterWeights;
 }
 
-[[nodiscard]] auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
+// NOLINTBEGIN(readability-function-cognitive-complexity)
+
+[[nodiscard]] constexpr auto GetHypercosWeights(const ZoomFilterMode filterMode) noexcept
     -> std::vector<Weights<HypercosOverlayMode>::KeyValue>
 {
-  static constexpr auto FORCED_HYPERCOS =
+  constexpr auto FORCED_HYPERCOS =
       USE_FORCED_AFTER_EFFECT and (FORCED_AFTER_EFFECTS_TYPE == AfterEffectsTypes::HYPERCOS);
 
   using Hyp         = HypercosOverlayMode;
   using ModeWeights = std::array<Weights<HypercosOverlayMode>::KeyValue, NUM<HypercosOverlayMode>>;
 
-  static constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 20.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto COMPLEX_RATIONAL_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto COMPLEX_RATIONAL_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  static constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
        {Hyp::MODE0, 10.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto CRYSTAL_BALL1_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto CRYSTAL_BALL1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 99.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto DISTANCE_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto DISTANCE_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
        {Hyp::MODE0, 10.0F},
        {Hyp::MODE1, 1.0F},
@@ -469,119 +472,119 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  static constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 2.0F},
        {Hyp::MODE2, 2.0F},
        {Hyp::MODE3, 2.0F}}
   };
-  static constexpr auto HYPERCOS1_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto HYPERCOS1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 2.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 2.0F},
        {Hyp::MODE3, 2.0F}}
   };
-  static constexpr auto HYPERCOS2_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto HYPERCOS2_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 2.0F},
        {Hyp::MODE1, 2.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 2.0F}}
   };
-  static constexpr auto HYPERCOS3_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto HYPERCOS3_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
        {Hyp::MODE0, 2.0F},
        {Hyp::MODE1, 2.0F},
        {Hyp::MODE2, 2.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  static constexpr auto NEWTON_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto NEWTON_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  static constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  static constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 0.0F}}
   };
-  static constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto SPEEDWAY_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto SPEEDWAY_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto WATER_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto WATER_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  static constexpr auto Y_ONLY_HYPERCOS_WEIGHTS = ModeWeights{
+  constexpr auto Y_ONLY_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 1.0F},
        {Hyp::MODE1, 5.0F},
@@ -589,40 +592,42 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {Hyp::MODE3, 1.0F}}
   };
 
-  static constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
-      {ZoomFilterMode::AMULET_MODE, AMULET_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::CRYSTAL_BALL_MODE0, CRYSTAL_BALL0_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::CRYSTAL_BALL_MODE1, CRYSTAL_BALL1_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::DISTANCE_FIELD_MODE0, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::DISTANCE_FIELD_MODE1, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::DISTANCE_FIELD_MODE2, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::HYPERCOS_MODE0, HYPERCOS0_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::HYPERCOS_MODE1, HYPERCOS1_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::HYPERCOS_MODE3, HYPERCOS3_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::MOBIUS_MODE, MOBIUS_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::NEWTON_MODE, NEWTON_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::PERLIN_NOISE_MODE, PERLIN_NOISE_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::SCRUNCH_MODE, SCRUNCH_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::SPEEDWAY_MODE0, SPEEDWAY_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::SPEEDWAY_MODE1, SPEEDWAY_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::SPEEDWAY_MODE2, SPEEDWAY_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::WATER_MODE, WATER_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0, WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1, WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS},
-      {ZoomFilterMode::Y_ONLY_MODE, Y_ONLY_HYPERCOS_WEIGHTS},
+  constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
+      {AMULET_MODE, AMULET_HYPERCOS_WEIGHTS},
+      {COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_HYPERCOS_WEIGHTS},
+      {CRYSTAL_BALL_MODE0, CRYSTAL_BALL0_HYPERCOS_WEIGHTS},
+      {CRYSTAL_BALL_MODE1, CRYSTAL_BALL1_HYPERCOS_WEIGHTS},
+      {DISTANCE_FIELD_MODE0, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {DISTANCE_FIELD_MODE1, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {DISTANCE_FIELD_MODE2, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
+      {EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_HYPERCOS_WEIGHTS},
+      {HYPERCOS_MODE0, HYPERCOS0_HYPERCOS_WEIGHTS},
+      {HYPERCOS_MODE1, HYPERCOS1_HYPERCOS_WEIGHTS},
+      {HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
+      {HYPERCOS_MODE3, HYPERCOS3_HYPERCOS_WEIGHTS},
+      {IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS},
+      {MOBIUS_MODE, MOBIUS_HYPERCOS_WEIGHTS},
+      {NEWTON_MODE, NEWTON_HYPERCOS_WEIGHTS},
+      {NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},
+      {PERLIN_NOISE_MODE, PERLIN_NOISE_HYPERCOS_WEIGHTS},
+      {SCRUNCH_MODE, SCRUNCH_HYPERCOS_WEIGHTS},
+      {SPEEDWAY_MODE0, SPEEDWAY_HYPERCOS_WEIGHTS},
+      {SPEEDWAY_MODE1, SPEEDWAY_HYPERCOS_WEIGHTS},
+      {SPEEDWAY_MODE2, SPEEDWAY_HYPERCOS_WEIGHTS},
+      {WATER_MODE, WATER_HYPERCOS_WEIGHTS},
+      {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS},
+      {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS},
+      {WAVE_ATAN_ANGLE_EFFECT_MODE0, WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS},
+      {WAVE_ATAN_ANGLE_EFFECT_MODE1, WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS},
+      {Y_ONLY_MODE, Y_ONLY_HYPERCOS_WEIGHTS},
   }}};
   static_assert(HYPERCOS_WEIGHTS.size() == NUM<ZoomFilterMode>);
 
   return std::vector<Weights<HypercosOverlayMode>::KeyValue>{cbegin(HYPERCOS_WEIGHTS[filterMode]),
                                                              cend(HYPERCOS_WEIGHTS[filterMode])};
 }
+
+// NOLINTEND(readability-function-cognitive-complexity)
 
 [[nodiscard]] auto GetFilterModeData(
     const IGoomRand& goomRand,
@@ -653,6 +658,11 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 }
 
 } // namespace
+
+auto GetFilterModeName(const ZoomFilterMode filterMode) noexcept -> std::string_view
+{
+  return FILTER_MODE_NAMES[filterMode];
+}
 
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              const IGoomRand& goomRand,
@@ -842,10 +852,10 @@ auto FilterSettingsService::SetRandomizedAfterEffects() -> void
 
 auto FilterSettingsService::SetWaveModeAfterEffects() -> void
 {
-  if ((m_filterMode != ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) and
-      (m_filterMode != ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) and
-      (m_filterMode != ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0) and
-      (m_filterMode != ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1))
+  if ((m_filterMode != WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) and
+      (m_filterMode != WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) and
+      (m_filterMode != WAVE_ATAN_ANGLE_EFFECT_MODE0) and
+      (m_filterMode != WAVE_ATAN_ANGLE_EFFECT_MODE1))
   {
     return;
   }
@@ -905,22 +915,21 @@ auto FilterSettingsService::SetRandomZoomMidpoint() -> void
     return;
   }
 
-  const auto allowEdgePoints = (m_filterMode != ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) and
-                               (m_filterMode != ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) and
-                               (m_filterMode != ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0) and
-                               (m_filterMode != ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1);
+  const auto allowEdgePoints = (m_filterMode != WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) and
+                               (m_filterMode != WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) and
+                               (m_filterMode != WAVE_ATAN_ANGLE_EFFECT_MODE0) and
+                               (m_filterMode != WAVE_ATAN_ANGLE_EFFECT_MODE1);
   SetAnyRandomZoomMidpoint(allowEdgePoints);
 }
 
 auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
 {
-  if ((m_filterMode == ZoomFilterMode::WATER_MODE) or (m_filterMode == ZoomFilterMode::AMULET_MODE))
+  if ((m_filterMode == WATER_MODE) or (m_filterMode == AMULET_MODE))
   {
     return true;
   }
 
-  if (((m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE0) or
-       (m_filterMode == ZoomFilterMode::CRYSTAL_BALL_MODE1)) and
+  if (((m_filterMode == CRYSTAL_BALL_MODE0) or (m_filterMode == CRYSTAL_BALL_MODE1)) and
       m_goomRand->ProbabilityOf(PROB_CRYSTAL_BALL_IN_MIDDLE))
   {
     return true;
@@ -936,19 +945,19 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
 
 inline auto FilterSettingsService::IsFilterModeAWaveMode() const -> bool
 {
-  if (m_filterMode == ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE0)
+  if (m_filterMode == WAVE_SQ_DIST_ANGLE_EFFECT_MODE0)
   {
     return true;
   }
-  if (m_filterMode == ZoomFilterMode::WAVE_SQ_DIST_ANGLE_EFFECT_MODE1)
+  if (m_filterMode == WAVE_SQ_DIST_ANGLE_EFFECT_MODE1)
   {
     return true;
   }
-  if (m_filterMode == ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE0)
+  if (m_filterMode == WAVE_ATAN_ANGLE_EFFECT_MODE0)
   {
     return true;
   }
-  if (m_filterMode == ZoomFilterMode::WAVE_ATAN_ANGLE_EFFECT_MODE1)
+  if (m_filterMode == WAVE_ATAN_ANGLE_EFFECT_MODE1)
   {
     return true;
   }

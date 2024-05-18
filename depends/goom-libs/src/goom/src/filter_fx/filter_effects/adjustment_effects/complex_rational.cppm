@@ -70,6 +70,11 @@ private:
   [[nodiscard]] static auto GetSimpleZeroesAndPoles() noexcept -> Params::ZeroesAndPoles;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto ComplexRational::GetParams() const noexcept -> const Params&
 {
   return m_params;

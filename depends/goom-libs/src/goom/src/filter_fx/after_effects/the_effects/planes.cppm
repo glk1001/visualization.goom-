@@ -120,6 +120,11 @@ private:
   [[nodiscard]] auto GetVerticalSwirlOffsetFactor(float coordValue) const -> float;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto Planes::IsHorizontalPlaneVelocityActive() const -> bool
 {
   return m_params.planeEffects.horizontalEffectActive;

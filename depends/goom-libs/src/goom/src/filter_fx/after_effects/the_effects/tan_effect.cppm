@@ -62,6 +62,11 @@ private:
   [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto TanEffect::GetVelocity(const float sqDistFromZero,
                                    const NormalizedCoords& velocity) const -> NormalizedCoords
 {
@@ -71,6 +76,23 @@ inline auto TanEffect::GetVelocity(const float sqDistFromZero,
   return {m_params.amplitude.x * tanSqDist * velocity.GetX(),
           m_params.amplitude.y * tanSqDist * velocity.GetY()};
 }
+
+inline auto TanEffect::GetParams() const -> const Params&
+{
+  return m_params;
+}
+
+inline auto TanEffect::SetParams(const Params& params) -> void
+{
+  m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
 
 inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
 {
@@ -83,16 +105,6 @@ inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
     case TanType::COT_MIX:
       return std::tan((m_params.cotMix * HALF_PI) - tanArg);
   }
-}
-
-inline auto TanEffect::GetParams() const -> const Params&
-{
-  return m_params;
-}
-
-inline auto TanEffect::SetParams(const Params& params) -> void
-{
-  m_params = params;
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

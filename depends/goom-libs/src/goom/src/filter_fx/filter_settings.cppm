@@ -44,7 +44,7 @@ struct FilterSettings
 {
   bool filterEffectsSettingsHaveChanged = false;
   FilterEffectsSettings filterEffectsSettings{};
-  GoomLerpData transformBufferLerpData{};
+  FILTER_FX::FILTER_UTILS::GoomLerpData transformBufferLerpData{};
 };
 
 } // namespace GOOM::FILTER_FX

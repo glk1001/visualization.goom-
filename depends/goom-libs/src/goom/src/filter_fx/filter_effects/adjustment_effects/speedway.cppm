@@ -62,12 +62,34 @@ private:
                                             float sqDistFromZero) const noexcept -> Vec2dFlt;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto Speedway::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(coords);
 
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
+
+inline auto Speedway::GetParams() const noexcept -> const Params&
+{
+  return m_params;
+}
+
+inline auto Speedway::SetParams(const Params& params) noexcept -> void
+{
+  m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
 
 inline auto Speedway::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
@@ -155,16 +177,6 @@ inline auto Speedway::GetMode2ZoomAdjustment(const NormalizedCoords& coords,
       std::tan(0.01F * sqDistFromZero) * m_params.amplitude.y * xZoomAdjustment;
 
   return {xZoomAdjustment, yZoomAdjustment};
-}
-
-inline auto Speedway::GetParams() const noexcept -> const Params&
-{
-  return m_params;
-}
-
-inline auto Speedway::SetParams(const Params& params) noexcept -> void
-{
-  m_params = params;
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

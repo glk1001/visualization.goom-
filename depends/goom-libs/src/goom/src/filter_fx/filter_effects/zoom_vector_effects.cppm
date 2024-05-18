@@ -77,6 +77,11 @@ private:
   [[nodiscard]] auto GetZoomAdjustmentNameValueParams() const noexcept -> UTILS::NameValuePairs;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 constexpr auto ZoomVectorEffects::IsValidMultiplierRange(
     const UTILS::MATH::IGoomRand::IGoomRand::NumberRange<float>& range) noexcept -> bool
 {
@@ -129,6 +134,13 @@ inline auto ZoomVectorEffects::SetBaseZoomAdjustmentFactor() noexcept -> void
   m_filterEffectsSettings->zoomAdjustmentEffect->SetBaseZoomAdjustment(
       {baseZoomAdjustment, baseZoomAdjustment});
 }
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
 
 constexpr auto ZoomVectorEffects::GetBaseZoomAdjustment(const float baseZoomAdjustmentFactor,
                                                         const float relativeSpeed) noexcept -> float

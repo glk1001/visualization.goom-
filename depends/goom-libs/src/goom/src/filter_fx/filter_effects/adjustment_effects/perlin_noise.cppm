@@ -55,6 +55,11 @@ private:
   [[nodiscard]] static auto GetRandSeedForPerlinNoise() -> PerlinSeedType;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto PerlinNoise::GetParams() const noexcept -> const Params&
 {
   return m_params;

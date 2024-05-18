@@ -63,6 +63,11 @@ private:
 [[nodiscard]] auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,
                                            const std::string& resourcesDirectory) -> AfterEffects;
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto AfterEffects::GetHypercos() const noexcept -> const Hypercos&
 {
   return *m_hypercos;

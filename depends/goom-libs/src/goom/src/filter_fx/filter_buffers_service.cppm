@@ -68,6 +68,11 @@ private:
   [[nodiscard]] auto GetAverageGoomTimeBetweenBufferResets() const noexcept -> uint32_t;
 };
 
+} // namespace GOOM::FILTER_FX
+
+namespace GOOM::FILTER_FX
+{
+
 inline auto FilterBuffersService::IsTransformBufferReadyToCopy() const noexcept -> bool
 {
   return ZoomFilterBuffers::UpdateStatus::AT_END == m_filterBuffers.GetUpdateStatus();

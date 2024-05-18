@@ -46,6 +46,11 @@ private:
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_UTILS
+
+namespace GOOM::FILTER_FX::FILTER_UTILS
+{
+
 inline auto ImageDisplacementList::GetCurrentImageDisplacement() const -> const ImageDisplacement&
 {
   return m_imageDisplacements[m_currentImageDisplacementIndex];

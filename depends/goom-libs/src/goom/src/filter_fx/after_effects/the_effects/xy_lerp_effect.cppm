@@ -59,6 +59,11 @@ private:
   [[nodiscard]] static auto GetFlipYProbability(Modes mode) -> float;
 };
 
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
+
 inline auto XYLerpEffect::GetVelocity(const float sqDistFromZero,
                                       const NormalizedCoords& velocity) const -> NormalizedCoords
 {
@@ -74,6 +79,23 @@ inline auto XYLerpEffect::GetVelocity(const float sqDistFromZero,
 
   return {xVelocity, m_params.ySign * yVelocity};
 }
+
+inline auto XYLerpEffect::GetParams() const -> const Params&
+{
+  return m_params;
+}
+
+inline auto XYLerpEffect::SetParams(const Params& params) -> void
+{
+  m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::AFTER_EFFECTS
+{
 
 inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoords& velocity) const
     -> float
@@ -97,16 +119,6 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoord
     case Modes::MODE3:
       return (1.0F / UTILS::MATH::HALF_PI) * std::abs(std::atan2(velocity.GetY(), velocity.GetX()));
   }
-}
-
-inline auto XYLerpEffect::GetParams() const -> const Params&
-{
-  return m_params;
-}
-
-inline auto XYLerpEffect::SetParams(const Params& params) -> void
-{
-  m_params = params;
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

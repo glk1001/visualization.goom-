@@ -128,6 +128,11 @@ private:
       -> float;
 };
 
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
 inline auto DistanceField::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
     -> Vec2dFlt
 {
@@ -140,14 +145,6 @@ inline auto DistanceField::GetZoomAdjustment(const NormalizedCoords& coords) con
   return FILTER_UTILS::GetVelocityByZoomLerpedToOne(coords, m_params.lerpToOneTs, velocity);
 }
 
-inline auto DistanceField::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
-{
-  const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);
-
-  return {m_params.amplitude.x * sqDistFromClosestPoint,
-          m_params.amplitude.y * sqDistFromClosestPoint};
-}
-
 inline auto DistanceField::GetParams() const noexcept -> const Params&
 {
   return m_params;
@@ -156,6 +153,21 @@ inline auto DistanceField::GetParams() const noexcept -> const Params&
 inline auto DistanceField::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
+
+module :private;
+
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
+{
+
+inline auto DistanceField::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+{
+  const auto sqDistFromClosestPoint = GetDistanceSquaredFromClosestPoint(coords);
+
+  return {m_params.amplitude.x * sqDistFromClosestPoint,
+          m_params.amplitude.y * sqDistFromClosestPoint};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

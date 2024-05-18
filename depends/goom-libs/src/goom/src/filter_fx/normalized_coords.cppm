@@ -117,6 +117,11 @@ private:
   friend auto operator==(const Viewport& viewport1, const Viewport& viewport2) noexcept -> bool;
 };
 
+} // namespace GOOM::FILTER_FX
+
+namespace GOOM::FILTER_FX
+{
+
 constexpr NormalizedCoordsConverter::NormalizedCoordsConverter(const Dimensions& otherDimensions,
                                                                const bool doNotScale) noexcept
   : m_xRatioOtherToNormalizedCoord{NormalizedCoords::COORD_WIDTH /
