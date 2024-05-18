@@ -6,9 +6,16 @@ module;
 
 export module Goom.Utils.ArrayUtils;
 
-namespace GOOM::UTILS
+export namespace GOOM::UTILS
 {
 
+template<typename T, std::size_t N>
+constexpr std::array<T, N> CreateArray(const T& value);
+
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
 namespace DETAIL
 {
 
@@ -22,7 +29,7 @@ constexpr std::array<T, sizeof...(Is)> CreateArrayImpl(
 
 } // namespace DETAIL
 
-export template<typename T, std::size_t N>
+template<typename T, std::size_t N>
 constexpr std::array<T, N> CreateArray(const T& value)
 {
   return DETAIL::CreateArrayImpl(value, std::make_index_sequence<N>());

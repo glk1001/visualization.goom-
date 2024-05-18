@@ -78,7 +78,7 @@ private:
   [[nodiscard]] static auto GetTentacleDrivers(
       IGoomDraw& draw,
       const IGoomRand& goomRand,
-      const GoomTime& goomTime,
+      const UTILS::GoomTime& goomTime,
       const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
       PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>;
   TentacleDriver* m_currentTentacleDriver{GetNextDriver()};
@@ -229,7 +229,7 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 auto TentaclesFx::TentaclesImpl::GetTentacleDrivers(
     IGoomDraw& draw,
     const IGoomRand& goomRand,
-    const GoomTime& goomTime,
+    const UTILS::GoomTime& goomTime,
     const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
     const PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>
 {

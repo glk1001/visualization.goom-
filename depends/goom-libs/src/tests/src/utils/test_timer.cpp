@@ -16,6 +16,7 @@ import Goom.Utils.Timer;
 namespace GOOM::UNIT_TESTS
 {
 
+using UTILS::GoomTime;
 using UTILS::OnOffTimer;
 using UTILS::Timer;
 

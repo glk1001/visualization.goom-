@@ -7,7 +7,7 @@ module;
 
 export module Goom.Utils.GoomTime;
 
-export namespace GOOM
+export namespace GOOM::UTILS
 {
 
 class GoomTime
@@ -23,6 +23,11 @@ private:
   uint64_t m_numUpdates          = 0U;
   static constexpr auto MAX_TIME = std::numeric_limits<uint64_t>::max();
 };
+
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
 
 inline auto GoomTime::ResetTime() noexcept -> void
 {
@@ -47,4 +52,4 @@ inline auto GoomTime::GetElapsedTimeSince(const uint64_t time0) const noexcept -
   return m_numUpdates - time0;
 }
 
-} // namespace GOOM
+} // namespace GOOM::UTILS

@@ -56,6 +56,11 @@ private:
   TimeValues m_timeValues{};
 };
 
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
 inline auto Stopwatch::DoUpperLimitOfTimeIntervalCheck(const bool val) -> void
 {
   m_doUpperLimitOfTimeIntervalCheck = val;

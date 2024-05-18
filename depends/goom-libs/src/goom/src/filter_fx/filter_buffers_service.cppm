@@ -44,7 +44,7 @@ public:
       -> UTILS::NameValuePairs;
 
 private:
-  const GoomTime* m_goomTime;
+  const UTILS::GoomTime* m_goomTime;
   std::unique_ptr<IZoomVector> m_zoomVector;
   ZoomFilterBuffers m_filterBuffers;
 

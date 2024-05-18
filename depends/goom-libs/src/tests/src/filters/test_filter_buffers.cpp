@@ -47,6 +47,7 @@ using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
+using UTILS::GoomTime;
 using UTILS::MATH::GoomRand;
 
 class TestFilterBuffers : public ZoomFilterBuffers

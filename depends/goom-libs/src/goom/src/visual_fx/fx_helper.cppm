@@ -35,7 +35,7 @@ public:
 
   [[nodiscard]] auto GetDimensions() const noexcept -> const Dimensions&;
   [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;
-  [[nodiscard]] auto GetGoomTime() const noexcept -> const GoomTime&;
+  [[nodiscard]] auto GetGoomTime() const noexcept -> const UTILS::GoomTime&;
 
 private:
   DRAW::IGoomDraw* m_draw;
@@ -108,7 +108,7 @@ inline auto FxHelper::GetSoundEvents() const -> const CONTROL::GoomSoundEvents&
   return m_goomInfo->GetSoundEvents();
 }
 
-inline auto FxHelper::GetGoomTime() const noexcept -> const GoomTime&
+inline auto FxHelper::GetGoomTime() const noexcept -> const UTILS::GoomTime&
 {
   return m_goomInfo->GetTime();
 }

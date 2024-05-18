@@ -24,6 +24,7 @@ namespace GOOM::UNIT_TESTS
 
 using Catch::Approx;
 using CONTROL::GoomSoundEvents;
+using UTILS::GoomTime;
 using UTILS::MATH::SMALL_FLOAT;
 
 namespace

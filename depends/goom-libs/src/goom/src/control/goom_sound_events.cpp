@@ -11,6 +11,7 @@ import Goom.Lib.SoundInfo;
 
 namespace GOOM::CONTROL
 {
+using UTILS::GoomTime;
 
 GoomSoundEvents::GoomSoundEvents(const GoomTime& goomTime, const SoundInfo& soundInfo) noexcept
   : m_goomTime{&goomTime}, m_soundInfo{&soundInfo}

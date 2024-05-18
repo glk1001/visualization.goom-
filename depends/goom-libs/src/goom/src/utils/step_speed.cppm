@@ -33,6 +33,11 @@ private:
   auto SetCurrentNumSteps() -> void;
 };
 
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
 inline StepSpeed::StepSpeed(const MinMaxValues<uint32_t>& minMaxNumSteps, const float initialSpeed)
   : m_minNumSteps{minMaxNumSteps.minValue},
     m_maxNumSteps{minMaxNumSteps.maxValue},

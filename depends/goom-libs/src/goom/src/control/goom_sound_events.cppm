@@ -13,7 +13,7 @@ export namespace GOOM::CONTROL
 class GoomSoundEvents
 {
 public:
-  GoomSoundEvents(const GoomTime& goomTime, const SoundInfo& soundInfo) noexcept;
+  GoomSoundEvents(const UTILS::GoomTime& goomTime, const SoundInfo& soundInfo) noexcept;
 
   [[nodiscard]] auto GetSoundInfo() const noexcept -> const SoundInfo&;
 
@@ -34,7 +34,7 @@ public:
   [[nodiscard]] auto GetBigGoomLimit() const noexcept -> float;
 
 private:
-  const GoomTime* m_goomTime;
+  const UTILS::GoomTime* m_goomTime;
   const SoundInfo* m_soundInfo;
 
   uint32_t m_totalGoomsInCurrentCycle             = 0;

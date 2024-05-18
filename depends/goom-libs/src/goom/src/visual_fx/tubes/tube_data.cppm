@@ -40,7 +40,7 @@ struct TubeData
   TubeDrawFuncs drawFuncs{};
   uint32_t screenWidth{};
   uint32_t screenHeight{};
-  const GoomTime* goomTime{};
+  const UTILS::GoomTime* goomTime{};
   const UTILS::MATH::IGoomRand* goomRand{};
   COLOR::WeightedRandomColorMaps mainColorMaps{};
   COLOR::WeightedRandomColorMaps lowColorMaps{};

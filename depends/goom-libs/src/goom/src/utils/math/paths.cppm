@@ -196,6 +196,11 @@ using EpicycloidPath   = ParametricPath<EpicycloidFunction>;
 using SinePath         = ParametricPath<SineFunction>;
 using OscillatingPath  = ParametricPath<OscillatingFunction>;
 
+} // namespace GOOM::UTILS::MATH
+
+namespace GOOM::UTILS::MATH
+{
+
 inline auto IPath::GetNumSteps() const noexcept -> uint32_t
 {
   return GetPositionT().GetNumSteps();

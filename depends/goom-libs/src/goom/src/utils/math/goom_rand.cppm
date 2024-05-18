@@ -23,6 +23,11 @@ public:
   [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool override;
 };
 
+} // namespace GOOM::UTILS::MATH
+
+namespace GOOM::UTILS::MATH
+{
+
 inline auto GoomRand::GetNRand(const uint32_t n1) const noexcept -> uint32_t
 {
   return RAND::GetNRand(n1);

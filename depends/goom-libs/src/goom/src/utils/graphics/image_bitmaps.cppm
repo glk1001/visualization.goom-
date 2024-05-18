@@ -52,6 +52,11 @@ private:
   auto Resize(const Dimensions& dimensions) noexcept -> void;
 };
 
+} // namespace GOOM::UTILS::GRAPHICS
+
+namespace GOOM::UTILS::GRAPHICS
+{
+
 inline ImageBitmap::ImageBitmap(const std::string& imageFilename)
 {
   Load(imageFilename);

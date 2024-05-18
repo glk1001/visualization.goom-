@@ -263,6 +263,11 @@ private:
   [[nodiscard]] auto GetOscillatingOffset(float t) const noexcept -> Vec2dFlt;
 };
 
+} // namespace GOOM::UTILS::MATH
+
+namespace GOOM::UTILS::MATH
+{
+
 template<class T>
 inline ModifiedFunction<T>::ModifiedFunction(const T& mainFunction,
                                              const ModifierFunction& modifierFunction) noexcept

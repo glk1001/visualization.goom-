@@ -11,6 +11,8 @@ import Goom.Lib.GoomGraphic;
 export namespace GOOM::UTILS::GRAPHICS
 {
 
+inline constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR = channel_limits<uint32_t>::max() + 1U;
+
 [[nodiscard]] constexpr auto MakePixel(uint32_t red,
                                        uint32_t green,
                                        uint32_t blue,
@@ -42,6 +44,11 @@ export namespace GOOM::UTILS::GRAPHICS
 [[nodiscard]] constexpr auto GetColorMax(const Pixel& color1,
                                          const Pixel& color2,
                                          PixelChannelType newAlpha) -> Pixel;
+
+} // namespace GOOM::UTILS::GRAPHICS
+
+namespace GOOM::UTILS::GRAPHICS
+{
 
 constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept
     -> Pixel
@@ -121,8 +128,6 @@ constexpr auto GetColorChannelMultiply(const PixelChannelType ch1,
   return (static_cast<uint32_t>(ch1) * static_cast<uint32_t>(ch2)) /
          channel_limits<uint32_t>::max();
 }
-
-inline constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR = channel_limits<uint32_t>::max() + 1U;
 
 constexpr auto GetChannelColorMultiplyByScalar(const uint32_t scalar,
                                                const PixelChannelType channelVal) noexcept

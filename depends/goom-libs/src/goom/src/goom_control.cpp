@@ -87,6 +87,7 @@ using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::FILTER_EFFECTS::CreateZoomAdjustmentEffect;
 using UTILS::GetNumAvailablePoolThreads;
+using UTILS::GoomTime;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
 using UTILS::StringSplit;

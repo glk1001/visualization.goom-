@@ -84,6 +84,11 @@ private:
   auto ChangeStateToOn() -> void;
 };
 
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
 inline Timer::Timer(const GoomTime& goomTime,
                     const uint64_t timeLimit,
                     const bool setToFinished) noexcept

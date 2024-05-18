@@ -153,6 +153,11 @@ private:
   float m_piStepFrac                         = DEFAULT_PI_STEP_FRAC;
 };
 
+} // namespace GOOM::UTILS::MATH
+
+namespace GOOM::UTILS::MATH
+{
+
 inline auto SineWaveMultiplier::SetX0(const float x0) noexcept -> void
 {
   m_x = x0;

@@ -102,6 +102,11 @@ private:
   Blend2dContexts m_blend2DContexts;
 };
 
+} // namespace GOOM::UTILS::GRAPHICS
+
+namespace GOOM::UTILS::GRAPHICS
+{
+
 inline auto Blend2dDoubleGoomBuffers::GetBlend2dContexts() noexcept -> Blend2dContexts&
 {
   return m_blend2DContexts;

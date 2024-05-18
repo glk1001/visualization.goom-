@@ -56,6 +56,11 @@ auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines
                                                     const std::vector<std::string>& inLines)
     -> std::vector<std::string>;
 
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
 inline auto LTrim(std::string& str) noexcept -> void
 {
   str.erase(str.begin(),

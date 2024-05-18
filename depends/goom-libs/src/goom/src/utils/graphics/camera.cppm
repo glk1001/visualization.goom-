@@ -57,6 +57,11 @@ private:
                                                    float screenHeight) noexcept -> glm::mat4;
 };
 
+} // namespace GOOM::UTILS::GRAPHICS
+
+namespace GOOM::UTILS::GRAPHICS
+{
+
 inline auto Camera::SetEyePosition(const glm::vec3& eyePosition) noexcept -> void
 {
   m_cameraProperties.eyePosition = eyePosition;

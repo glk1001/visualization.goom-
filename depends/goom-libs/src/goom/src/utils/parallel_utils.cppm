@@ -38,6 +38,11 @@ private:
   bool m_forLoopInUse = false;
 };
 
+} // namespace GOOM::UTILS
+
+namespace GOOM::UTILS
+{
+
 inline Parallel::Parallel(const int32_t numPoolThreads) noexcept
   : m_threadPool{
         (numPoolThreads <= 0)

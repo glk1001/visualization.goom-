@@ -39,6 +39,11 @@ inline constexpr auto DEFAULT_CLOSE_TO_WEIGHT_POINT_T = 0.3F; // not very close
     const Point2dInt& weightPoint,
     float closeToWeightPointT = DEFAULT_CLOSE_TO_WEIGHT_POINT_T) noexcept -> Point2dInt;
 
+} // namespace GOOM::UTILS::GRAPHICS
+
+namespace GOOM::UTILS::GRAPHICS
+{
+
 constexpr auto IsZero(const Point2dInt& point) noexcept -> bool
 {
   return (0 == point.x) and (0 == point.y);

@@ -18,12 +18,12 @@ export namespace GOOM::UTILS::MATH::RAND
 {
 
 [[nodiscard]] auto GetRandSeed() noexcept -> uint64_t;
-void SetRandSeed(uint64_t seed) noexcept;
+auto SetRandSeed(uint64_t seed) noexcept -> void;
 
 extern const uint32_t G_RAND_MAX;
 
-void SaveRandState(std::ostream& file);
-void RestoreRandState(std::istream& file);
+auto SaveRandState(std::ostream& file) -> void;
+auto RestoreRandState(std::istream& file) -> void;
 
 // Return random positive integer in the range n0 <= n < n1.
 [[nodiscard]] auto GetRandInRange(uint32_t n0, uint32_t n1) noexcept -> uint32_t;
@@ -53,6 +53,11 @@ template<typename T>
 // Return prob(m/n)
 [[nodiscard]] inline auto ProbabilityOfMInN(uint32_t m, uint32_t n) noexcept -> bool;
 [[nodiscard]] inline auto ProbabilityOf(float prob) noexcept -> bool;
+
+} // namespace GOOM::UTILS::MATH::RAND
+
+namespace GOOM::UTILS::MATH::RAND
+{
 
 inline auto GetNRand(const uint32_t n1) noexcept -> uint32_t
 {

@@ -16,7 +16,7 @@ class PluginInfo
 public:
   PluginInfo() noexcept = delete;
   PluginInfo(const Dimensions& dimensions,
-             const GoomTime& goomTime,
+             const UTILS::GoomTime& goomTime,
              const CONTROL::GoomSoundEvents& soundEvents) noexcept;
   PluginInfo(const PluginInfo&) noexcept           = delete;
   PluginInfo(PluginInfo&&) noexcept                = delete;
@@ -25,12 +25,12 @@ public:
   auto operator=(PluginInfo&&) -> PluginInfo&      = delete;
 
   [[nodiscard]] auto GetDimensions() const -> const Dimensions&;
-  [[nodiscard]] auto GetTime() const -> const GoomTime&;
+  [[nodiscard]] auto GetTime() const -> const UTILS::GoomTime&;
   [[nodiscard]] auto GetSoundEvents() const -> const CONTROL::GoomSoundEvents&;
 
 private:
   Dimensions m_dimensions;
-  const GoomTime* m_goomTime;
+  const UTILS::GoomTime* m_goomTime;
   const CONTROL::GoomSoundEvents* m_soundEvents;
 };
 
@@ -40,7 +40,7 @@ namespace GOOM
 {
 
 inline PluginInfo::PluginInfo(const Dimensions& dimensions,
-                              const GoomTime& goomTime,
+                              const UTILS::GoomTime& goomTime,
                               const CONTROL::GoomSoundEvents& soundEvents) noexcept
   : m_dimensions{dimensions}, m_goomTime{&goomTime}, m_soundEvents{&soundEvents}
 {
@@ -53,7 +53,7 @@ inline auto PluginInfo::GetDimensions() const -> const Dimensions&
   return m_dimensions;
 }
 
-inline auto PluginInfo::GetTime() const -> const GoomTime&
+inline auto PluginInfo::GetTime() const -> const UTILS::GoomTime&
 {
   return *m_goomTime;
 }
