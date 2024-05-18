@@ -83,6 +83,11 @@ private:
   [[nodiscard]] static auto GetColorMatchedSet8() noexcept -> ColorMatchedSet;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto VisualFxColorMatchedSets::SetNextRandomColorMatchedSet() noexcept -> void
 {
   m_currentColorMatchedSet = &GetNextRandomColorMatchedSet();

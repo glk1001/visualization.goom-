@@ -90,6 +90,11 @@ private:
       -> WeightedGroups;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto VisualFxWeightedColorMaps::GetCurrentRandomColorMapsGroup(
     const GoomEffect goomEffect) const noexcept -> COLOR::RandomColorMapsGroups::Groups
 {

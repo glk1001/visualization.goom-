@@ -60,6 +60,11 @@ private:
   void CheckSettledGoomLimits();
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto GoomSoundEvents::GetSoundInfo() const noexcept -> const SoundInfo&
 {
   return *m_soundInfo;

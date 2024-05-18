@@ -64,7 +64,7 @@ private:
   COLOR::ColorMapPtrWrapper m_textColorMap{m_randomColorMaps.GetRandomColorMap()};
   COLOR::ColorMapPtrWrapper m_textOutlineColorMap{m_randomColorMaps.GetRandomColorMap()};
   COLOR::ColorMapPtrWrapper m_charColorMap{
-      m_randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
+    m_randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
   void DrawText(const std::string& text);
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;
@@ -113,9 +113,14 @@ private:
 
   static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
   COLOR::ColorAdjustment m_textColorAdjust{
-      {TEXT_GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+        {TEXT_GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 };
+
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
 
 inline void GoomTitleDisplayer::DrawStaticText(const std::string& title)
 {

@@ -36,6 +36,11 @@ private:
       -> COLOR::RandomColorMapsGroups::Groups;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline VisualFxColorMaps::VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand)
   : m_goomRand{&goomRand}
 {
@@ -52,6 +57,11 @@ inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEf
   return m_randomColorMapsGroups.GetWeightedRandomColorMapsForGroup(
       GetNextRandomColorMapsGroup(goomEffect));
 }
+
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
 
 inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goomEffect) const
     -> COLOR::RandomColorMapsGroups::Groups

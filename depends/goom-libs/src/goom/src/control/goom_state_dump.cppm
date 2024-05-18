@@ -76,6 +76,11 @@ private:
   [[nodiscard]] static auto GetFormattedRowStr(uint64_t value1, T value2) -> std::string;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto GoomStateDump::SetSongTitle(const std::string& songTitle) noexcept -> void
 {
   m_songTitle = songTitle;

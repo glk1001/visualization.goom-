@@ -139,6 +139,11 @@ private:
   [[nodiscard]] static auto GetDrawablesInfo(GoomStates goomState) -> std::vector<DrawableInfo>;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto GoomStateInfo::GetStateInfo(const GoomStates goomState) -> const StateInfo&
 {
   return STATE_INFO_MAP[goomState];

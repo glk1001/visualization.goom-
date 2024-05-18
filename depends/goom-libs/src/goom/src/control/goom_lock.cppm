@@ -28,6 +28,11 @@ private:
   int32_t m_lockTime = 0;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto GoomLock::IsLocked() const -> bool
 {
   return m_lockTime > 0;

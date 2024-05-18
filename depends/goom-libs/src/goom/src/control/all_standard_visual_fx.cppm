@@ -105,6 +105,11 @@ private:
   auto ApplyShaderFxToImageBuffers() -> void;
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto AllStandardVisualFx::GetCurrentGoomDrawables() const
     -> const IGoomStateHandler::DrawablesState&
 {

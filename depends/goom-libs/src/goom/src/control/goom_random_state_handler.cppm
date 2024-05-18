@@ -21,6 +21,11 @@ private:
   GoomStates m_currentState{};
 };
 
+} // namespace GOOM::CONTROL
+
+namespace GOOM::CONTROL
+{
+
 inline auto GoomRandomStateHandler::GetCurrentState() const -> GoomStates
 {
   return m_currentState;
