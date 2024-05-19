@@ -130,6 +130,11 @@ private:
   auto DrawFlatLine(const Pixel& lineColor) noexcept -> void;
 };
 
+} // namespace GOOM::VISUAL_FX::LINES
+
+namespace GOOM::VISUAL_FX::LINES
+{
+
 inline auto LineMorph::GetLineColorPower() const noexcept -> float
 {
   return m_lineColorPower;
@@ -144,11 +149,6 @@ inline auto LineMorph::CanResetDestLine() const noexcept -> bool
 {
   return m_lineLerpParam > LINE_LERP_FINISHED_VAL;
 }
-
-} // namespace GOOM::VISUAL_FX::LINES
-
-namespace GOOM::VISUAL_FX::LINES
-{
 
 using COLOR::ColorMaps;
 using COLOR::GetLightenedColor;

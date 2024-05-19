@@ -57,16 +57,16 @@ private:
       -> ::LSYS::Point3dFlt;
 };
 
+} // namespace GOOM::VISUAL_FX::L_SYSTEM
+
+namespace GOOM::VISUAL_FX::L_SYSTEM
+{
+
 inline auto LSysDraw::SetLineDrawer(
     DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects& lineDrawer) noexcept -> void
 {
   m_lineDrawer = &lineDrawer;
 }
-
-} // namespace GOOM::VISUAL_FX::L_SYSTEM
-
-namespace GOOM::VISUAL_FX::L_SYSTEM
-{
 
 using ::LSYS::Point3dFlt;
 

@@ -148,6 +148,11 @@ private:
   [[nodiscard]] auto GetLineThickness(uint32_t tentacleNum) const noexcept -> uint8_t;
 };
 
+} // namespace GOOM::VISUAL_FX::TENTACLES
+
+namespace GOOM::VISUAL_FX::TENTACLES
+{
+
 inline auto TentacleDriver::SetDominantColorMaps(
     const COLOR::ConstColorMapSharedPtr& dominantMainColorMap,
     const COLOR::ConstColorMapSharedPtr& dominantLowColorMap) -> void
@@ -155,11 +160,6 @@ inline auto TentacleDriver::SetDominantColorMaps(
   m_dominantMainColorMapPtr = dominantMainColorMap;
   m_dominantLowColorMapPtr  = dominantLowColorMap;
 }
-
-} // namespace GOOM::VISUAL_FX::TENTACLES
-
-namespace GOOM::VISUAL_FX::TENTACLES
-{
 
 using COLOR::ColorMaps;
 using COLOR::ConstColorMapSharedPtr;

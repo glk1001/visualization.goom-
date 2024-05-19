@@ -136,6 +136,11 @@ private:
                        const DRAW::MultiplePixels& colors) noexcept -> void;
 };
 
+} //namespace GOOM::VISUAL_FX::FLYING_STARS
+
+namespace GOOM::VISUAL_FX::FLYING_STARS
+{
+
 inline auto StarDrawer::ChangeDrawMode() noexcept -> void
 {
   m_drawMode             = m_drawModeWeights.GetRandomWeighted();

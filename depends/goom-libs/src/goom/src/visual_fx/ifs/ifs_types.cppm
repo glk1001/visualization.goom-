@@ -47,6 +47,11 @@ private:
   const Similitude* m_simi = nullptr;
 };
 
+} // namespace GOOM::VISUAL_FX::IFS
+
+namespace GOOM::VISUAL_FX::IFS
+{
+
 [[nodiscard]] inline auto MultByUnit(const Dbl x) -> Flt
 {
   static constexpr auto UNIT = 1U << FIX;

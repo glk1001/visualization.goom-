@@ -106,6 +106,11 @@ private:
   [[nodiscard]] auto GetSmallRandomOffset() const noexcept -> Vec2dInt;
 };
 
+} // namespace GOOM::VISUAL_FX::CIRCLES
+
+namespace GOOM::VISUAL_FX::CIRCLES
+{
+
 inline auto DotPaths::SetPathParams(const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept
     -> void
 {

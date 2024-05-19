@@ -109,6 +109,11 @@ private:
   };
 };
 
+} // namespace GOOM::VISUAL_FX::L_SYSTEM
+
+namespace GOOM::VISUAL_FX::L_SYSTEM
+{
+
 inline auto LSysColors::SetMaxNumColorSteps(const uint32_t numSteps) noexcept -> void
 {
   m_currentMaxNumColorSteps = numSteps;
@@ -156,11 +161,6 @@ inline auto ColorShadesAndTints::GetTint(const float t) const noexcept -> Pixel
   return UTILS::GRAPHICS::GetColorAdd(
       m_baseColor, COLOR::GetBrighterColor(brightness, fromWhite), m_baseColor.A());
 }
-
-} // namespace GOOM::VISUAL_FX::L_SYSTEM
-
-namespace GOOM::VISUAL_FX::L_SYSTEM
-{
 
 using COLOR::ColorMaps;
 using COLOR::ConstColorMapSharedPtr;

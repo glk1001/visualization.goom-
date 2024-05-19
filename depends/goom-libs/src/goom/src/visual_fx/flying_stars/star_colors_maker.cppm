@@ -36,6 +36,11 @@ private:
   StarColors::ColorProperties m_nextStarColorProperties;
 };
 
+} //namespace GOOM::VISUAL_FX::FLYING_STARS
+
+namespace GOOM::VISUAL_FX::FLYING_STARS
+{
+
 StarColorsMaker::StarColorsMaker(const UTILS::MATH::IGoomRand& goomRand,
                                  const StarColors::ColorMapsSet& colorMapsSet) noexcept
   : m_goomRand{&goomRand},

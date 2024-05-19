@@ -53,15 +53,15 @@ private:
   UTILS::Timer m_lerpConstTimer{m_goomInfo->GetTime(), DEFAULT_LERP_CONST_TIME, false};
 };
 
-inline auto ChromaFactorLerper::GetChromaFactor() const noexcept -> float
-{
-  return m_currentChromaFactor;
-}
-
 } // namespace GOOM::VISUAL_FX::SHADERS
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
+
+inline auto ChromaFactorLerper::GetChromaFactor() const noexcept -> float
+{
+  return m_currentChromaFactor;
+}
 
 ChromaFactorLerper::ChromaFactorLerper(const PluginInfo& goomInfo,
                                        const UTILS::MATH::IGoomRand& goomRand,

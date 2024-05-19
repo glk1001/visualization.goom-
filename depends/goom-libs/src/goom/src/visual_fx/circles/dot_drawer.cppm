@@ -94,6 +94,11 @@ private:
       -> DRAW::MultiplePixels;
 };
 
+} // namespace GOOM::VISUAL_FX::CIRCLES
+
+namespace GOOM::VISUAL_FX::CIRCLES
+{
+
 inline auto DotDrawer::SetGlobalBrightnessFactor(const float val) noexcept -> void
 {
   m_globalBrightnessFactor = val;

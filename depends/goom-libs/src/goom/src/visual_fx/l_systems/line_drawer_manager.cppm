@@ -52,6 +52,11 @@ private:
   ILineDrawerWithEffects* m_lineDrawer = &m_lineDrawerWithMovingNoiseEffect;
 };
 
+} // namespace GOOM::VISUAL_FX::L_SYSTEM
+
+namespace GOOM::VISUAL_FX::L_SYSTEM
+{
+
 inline auto LineDrawerManager::GetLineDrawer() const noexcept -> const ILineDrawerWithEffects&
 {
   Expects(m_lineDrawer != nullptr);
@@ -64,10 +69,6 @@ inline auto LineDrawerManager::GetLineDrawer() noexcept -> ILineDrawerWithEffect
   return *m_lineDrawer;
 }
 
-} // namespace GOOM::VISUAL_FX::L_SYSTEM
-
-namespace GOOM::VISUAL_FX::L_SYSTEM
-{
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::LineDrawerMovingNoise;
 using UTILS::MATH::IGoomRand;

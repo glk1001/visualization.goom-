@@ -198,6 +198,11 @@ private:
 
 static_assert(std::is_nothrow_move_constructible_v<ShapePart>);
 
+} // namespace GOOM::VISUAL_FX::SHAPES
+
+namespace GOOM::VISUAL_FX::SHAPES
+{
+
 inline auto ShapePart::GetNumShapePaths() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_shapePaths.size());
@@ -231,11 +236,6 @@ inline auto ShapePart::SetRandomizedShapePaths() noexcept -> void
 {
   m_shapePaths = GetRandomizedShapePaths();
 }
-
-} // namespace GOOM::VISUAL_FX::SHAPES
-
-namespace GOOM::VISUAL_FX::SHAPES
-{
 
 using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;

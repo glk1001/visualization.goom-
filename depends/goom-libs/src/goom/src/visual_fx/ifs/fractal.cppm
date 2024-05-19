@@ -75,15 +75,15 @@ private:
   auto UpdateHits(const Similitude& simi, const FltPoint& point) -> void;
 };
 
-inline auto Fractal::GetMaxHitCount() const -> uint32_t
-{
-  return m_curHits->GetMaxHitCount();
-}
-
 } // namespace GOOM::VISUAL_FX::IFS
 
 namespace GOOM::VISUAL_FX::IFS
 {
+
+inline auto Fractal::GetMaxHitCount() const -> uint32_t
+{
+  return m_curHits->GetMaxHitCount();
+}
 
 using COLOR::WeightedRandomColorMaps;
 using UTILS::GRAPHICS::SmallImageBitmaps;

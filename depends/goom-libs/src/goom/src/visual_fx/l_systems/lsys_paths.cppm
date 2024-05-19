@@ -62,6 +62,11 @@ private:
   auto ChangeToToPath() noexcept -> void;
 };
 
+} // namespace GOOM::VISUAL_FX::L_SYSTEM
+
+namespace GOOM::VISUAL_FX::L_SYSTEM
+{
+
 inline auto LSysPath::GetPathStart() const noexcept -> const Point2dInt&
 {
   return m_lSysPathStart;
@@ -71,11 +76,6 @@ inline auto LSysPath::GetPathTarget() const noexcept -> const Point2dInt&
 {
   return m_lSysPathTarget;
 }
-
-} // namespace GOOM::VISUAL_FX::L_SYSTEM
-
-namespace GOOM::VISUAL_FX::L_SYSTEM
-{
 
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::OscillatingFunction;

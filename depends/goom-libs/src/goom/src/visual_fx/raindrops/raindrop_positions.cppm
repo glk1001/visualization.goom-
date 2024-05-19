@@ -95,6 +95,11 @@ private:
       const Point2dInt& requestedTargetRectangleWeightPoint) const noexcept -> Point2dInt;
 };
 
+} // namespace GOOM::VISUAL_FX::RAINDROPS
+
+namespace GOOM::VISUAL_FX::RAINDROPS
+{
+
 inline auto RaindropPositions::GetPosition(const uint32_t dropNum) const noexcept -> Point2dInt
 {
   const auto t = std::lerp(MIN_RAINDROP_POSITION_T, MAX_RAINDROP_POSITION_T, m_raindropPositionT());
@@ -117,11 +122,6 @@ inline auto RaindropPositions::OkToChangeNumRaindrops() const noexcept -> bool
 {
   return m_raindropPositionT.HasJustHitEndBoundary();
 }
-
-} // namespace GOOM::VISUAL_FX::RAINDROPS
-
-namespace GOOM::VISUAL_FX::RAINDROPS
-{
 
 using UTILS::MATH::IncrementedValue;
 using UTILS::MATH::TValue;

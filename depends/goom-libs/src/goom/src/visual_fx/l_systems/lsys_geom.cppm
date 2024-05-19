@@ -106,6 +106,11 @@ private:
       DEFAULT_VERTICAL_MOVE_STEPS};
 };
 
+} // namespace GOOM::VISUAL_FX::L_SYSTEM
+
+namespace GOOM::VISUAL_FX::L_SYSTEM
+{
+
 inline auto LSysGeometry::ReverseRotateDirection() noexcept -> void
 {
   m_rotateSign = -m_rotateSign;
@@ -152,11 +157,6 @@ inline auto LSysGeometry::GetVerticalMove() const noexcept
 {
   return m_verticalMove;
 }
-
-} // namespace GOOM::VISUAL_FX::L_SYSTEM
-
-namespace GOOM::VISUAL_FX::L_SYSTEM
-{
 
 using UTILS::MATH::DEGREES_360;
 using UTILS::MATH::ToRadians;

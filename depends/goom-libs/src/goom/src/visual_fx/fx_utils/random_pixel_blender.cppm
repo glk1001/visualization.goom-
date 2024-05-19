@@ -92,6 +92,11 @@ private:
   [[nodiscard]] static auto GetSameLumaMixPixelBlendFunc(float lumaMixT) -> PixelBlendFunc;
 };
 
+} // namespace GOOM::VISUAL_FX::FX_UTILS
+
+namespace GOOM::VISUAL_FX::FX_UTILS
+{
+
 inline auto RandomPixelBlender::Update() noexcept -> void
 {
   m_lerpT.Increment();
@@ -108,10 +113,6 @@ inline auto RandomPixelBlender::GetCurrentPixelBlendFunc() const noexcept
   return m_currentPixelBlendFunc;
 }
 
-} // namespace GOOM::VISUAL_FX::FX_UTILS
-
-namespace GOOM::VISUAL_FX::FX_UTILS
-{
 using UTILS::GRAPHICS::GetColorAddPixelBlend;
 using UTILS::GRAPHICS::GetColorAlphaAndAddBlend;
 using UTILS::GRAPHICS::GetColorAlphaBlend;

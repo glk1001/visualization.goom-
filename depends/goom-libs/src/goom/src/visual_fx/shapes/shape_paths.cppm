@@ -100,6 +100,11 @@ private:
   };
 };
 
+} // namespace GOOM::VISUAL_FX::SHAPES
+
+namespace GOOM::VISUAL_FX::SHAPES
+{
+
 inline auto ShapePath::SetNumSteps(const uint32_t val) noexcept -> void
 {
   m_path->SetNumSteps(val);
@@ -178,11 +183,6 @@ inline auto ShapePath::UpdateInnerColorInfo(
 {
   m_colorInfo.innerColorMapPtr = innerColorMaps.GetRandomColorMapSharedPtr(GetColorMapTypes());
 }
-
-} // namespace GOOM::VISUAL_FX::SHAPES
-
-namespace GOOM::VISUAL_FX::SHAPES
-{
 
 using COLOR::ColorMaps;
 using DRAW::GetLowColor;

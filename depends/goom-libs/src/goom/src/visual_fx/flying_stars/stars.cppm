@@ -40,6 +40,11 @@ private:
   StarColors m_starColors;
 };
 
+} // namespace GOOM::VISUAL_FX::FLYING_STARS
+
+namespace GOOM::VISUAL_FX::FLYING_STARS
+{
+
 inline auto Star::GetStartPos() const noexcept -> Point2dFlt
 {
   return m_params.currentPosition;
@@ -64,11 +69,6 @@ inline auto Star::IsTooOld() const noexcept -> bool
 {
   return m_params.tAge >= 1.0F;
 }
-
-} // namespace GOOM::VISUAL_FX::FLYING_STARS
-
-namespace GOOM::VISUAL_FX::FLYING_STARS
-{
 
 Star::Star(const Params& params, const StarColors& starColors) noexcept
   : m_params{params}, m_starColors{starColors.GetColorProperties(), starColors.GetWithinClusterT()}

@@ -95,6 +95,11 @@ private:
   };
 };
 
+} // namespace GOOM::VISUAL_FX::IFS
+
+namespace GOOM::VISUAL_FX::IFS
+{
+
 inline auto Colorizer::GetColorMaps() const -> const COLOR::RandomColorMaps&
 {
   return m_colorMaps;
@@ -120,11 +125,6 @@ inline auto Colorizer::GetWeightedColorMaps() const -> const COLOR::WeightedRand
 {
   return m_colorMaps;
 }
-
-} // namespace GOOM::VISUAL_FX::IFS
-
-namespace GOOM::VISUAL_FX::IFS
-{
 
 using COLOR::ColorMaps;
 using COLOR::GetUnweightedRandomColorMaps;

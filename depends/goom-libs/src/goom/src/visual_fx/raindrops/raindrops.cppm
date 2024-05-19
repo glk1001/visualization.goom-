@@ -133,15 +133,15 @@ private:
   };
 };
 
-inline auto Raindrops::SetNumRaindrops(const uint32_t newNumRaindrops) noexcept -> void
-{
-  m_pendingNewNumRaindrops = newNumRaindrops;
-}
-
 } // namespace GOOM::VISUAL_FX::RAINDROPS
 
 namespace GOOM::VISUAL_FX::RAINDROPS
 {
+
+inline auto Raindrops::SetNumRaindrops(const uint32_t newNumRaindrops) noexcept -> void
+{
+  m_pendingNewNumRaindrops = newNumRaindrops;
+}
 
 using COLOR::ColorMaps;
 using COLOR::GetBrighterColor;

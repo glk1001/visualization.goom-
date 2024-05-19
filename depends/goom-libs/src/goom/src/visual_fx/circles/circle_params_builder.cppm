@@ -87,6 +87,11 @@ private:
       -> std::vector<Point2dInt>;
 };
 
+} // namespace GOOM::VISUAL_FX::CIRCLES
+
+namespace GOOM::VISUAL_FX::CIRCLES
+{
+
 inline auto CircleParamsBuilder::SetCircleStartMode(const CircleStartModes mode) noexcept -> void
 {
   m_circleStartMode = mode;

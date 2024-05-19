@@ -184,6 +184,11 @@ private:
   auto IncrementTs() noexcept -> void;
 };
 
+} // namespace GOOM::VISUAL_FX::L_SYSTEM
+
+namespace GOOM::VISUAL_FX::L_SYSTEM
+{
+
 inline auto LSystem::ChangeColors() noexcept -> void
 {
   m_lSysColors.ChangeColors();
@@ -223,11 +228,6 @@ inline auto LSystem::SetPathTarget(const Point2dInt& pathTarget) noexcept -> voi
 {
   m_lSysPath.SetPathTarget(pathTarget);
 }
-
-} // namespace GOOM::VISUAL_FX::L_SYSTEM
-
-namespace GOOM::VISUAL_FX::L_SYSTEM
-{
 
 using ::LSYS::BoundingBox3d;
 using ::LSYS::GetBoundingBox3d;

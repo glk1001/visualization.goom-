@@ -61,6 +61,11 @@ private:
   V3dFlt m_endPosOffset{};
 };
 
+} // namespace GOOM::VISUAL_FX::TENTACLES
+
+namespace GOOM::VISUAL_FX::TENTACLES
+{
+
 inline auto Tentacle3D::GetStartPos() const -> const Point2dFlt&
 {
   return m_startPos;
@@ -118,11 +123,6 @@ constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, const float t) n
       std::lerp(point1.z, point2.z, t),
   };
 }
-
-} // namespace GOOM::VISUAL_FX::TENTACLES
-
-namespace GOOM::VISUAL_FX::TENTACLES
-{
 
 Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle) noexcept
   : m_tentacle{std::move(tentacle)}

@@ -52,6 +52,11 @@ private:
   UTILS::Timer m_highContrastOffTimer{m_goomInfo->GetTime(), HIGH_CONTRAST_OFF_TIME, false};
 };
 
+} // namespace GOOM::VISUAL_FX::SHADERS
+
+namespace GOOM::VISUAL_FX::SHADERS
+{
+
 inline auto HighContrast::GetCurrentContrast() const -> float
 {
   return m_currentContrast;
@@ -66,11 +71,6 @@ inline auto HighContrast::GetCurrentContrastMinChannelValue() const -> float
 {
   return m_currentContrastMinChannelValue;
 }
-
-} // namespace GOOM::VISUAL_FX::SHADERS
-
-namespace GOOM::VISUAL_FX::SHADERS
-{
 
 using UTILS::MATH::IGoomRand;
 

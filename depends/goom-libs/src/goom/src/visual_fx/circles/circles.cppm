@@ -61,6 +61,11 @@ private:
   auto UpdateAndDrawCircles() noexcept -> void;
 };
 
+} // namespace GOOM::VISUAL_FX::CIRCLES
+
+namespace GOOM::VISUAL_FX::CIRCLES
+{
+
 inline auto Circles::GetCurrentDirection() const noexcept -> DotPaths::Direction
 {
   return m_circles.front().GetCurrentDirection();

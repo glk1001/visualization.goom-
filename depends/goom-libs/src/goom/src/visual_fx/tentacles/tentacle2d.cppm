@@ -105,6 +105,11 @@ private:
       -> DampingFuncPtr;
 };
 
+} // namespace GOOM::VISUAL_FX::TENTACLES
+
+namespace GOOM::VISUAL_FX::TENTACLES
+{
+
 inline auto Tentacle2D::SetIterZeroYVal(const double value) -> void
 {
   m_iterZeroYVal = value;
@@ -145,11 +150,6 @@ inline auto Tentacle2D::GetDampedXAndYVectors() const -> const Tentacle2D::XAndY
 {
   return m_dampedVectors;
 }
-
-} // namespace GOOM::VISUAL_FX::TENTACLES
-
-namespace GOOM::VISUAL_FX::TENTACLES
-{
 
 using UTILS::MATH::ExpDampingFunction;
 using UTILS::MATH::FlatDampingFunction;

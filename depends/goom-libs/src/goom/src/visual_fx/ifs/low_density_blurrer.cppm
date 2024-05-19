@@ -98,6 +98,11 @@ private:
   COLOR::ColorAdjustment m_colorAdjust{{GAMMA}};
 };
 
+} // namespace GOOM::VISUAL_FX::IFS
+
+namespace GOOM::VISUAL_FX::IFS
+{
+
 inline auto LowDensityBlurrer::GetWidth() const noexcept -> uint32_t
 {
   return m_width;
@@ -113,11 +118,6 @@ inline auto LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
 {
   m_neighbourMixFactor = neighbourMixFactor;
 }
-
-} // namespace GOOM::VISUAL_FX::IFS
-
-namespace GOOM::VISUAL_FX::IFS
-{
 
 using COLOR::ColorMaps;
 using COLOR::GetColorAverage;

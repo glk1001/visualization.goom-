@@ -37,11 +37,19 @@ struct LineProperties
                                          const Dimensions& dimensions,
                                          float radius) -> std::vector<LinePoint>;
 template<typename T>
-void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsToSmooth);
+auto SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, uint32_t numPointsToSmooth) -> void;
 
+} // namespace GOOM::VISUAL_FX::FX_UTILS
+
+namespace GOOM::VISUAL_FX::FX_UTILS
+{
+
+using UTILS::MATH::HALF_PI;
+using UTILS::MATH::TWO_PI;
 
 template<typename T>
-void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, const uint32_t numPointsToSmooth)
+auto SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, const uint32_t numPointsToSmooth)
+    -> void
 {
   Expects(numPointsToSmooth > 0);
   Expects(numPointsToSmooth < circlePoints.size());
@@ -71,14 +79,6 @@ void SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, const uint32_t numP
   Ensures(circlePoints[0].point.x == circlePoints[circlePoints.size() - 1].point.x);
   Ensures(circlePoints[0].point.y == circlePoints[circlePoints.size() - 1].point.y);
 }
-
-} // namespace GOOM::VISUAL_FX::FX_UTILS
-
-namespace GOOM::VISUAL_FX::FX_UTILS
-{
-
-using UTILS::MATH::HALF_PI;
-using UTILS::MATH::TWO_PI;
 
 auto GetHorizontalLinePoints(const LineProperties& lineProperties, const float yValue)
     -> std::vector<LinePoint>

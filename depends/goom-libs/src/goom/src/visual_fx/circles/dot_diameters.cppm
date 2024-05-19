@@ -50,6 +50,11 @@ private:
   auto ChangeToVariableDiameters() noexcept -> void;
 };
 
+} // namespace GOOM::VISUAL_FX::CIRCLES
+
+namespace GOOM::VISUAL_FX::CIRCLES
+{
+
 inline auto DotDiameters::GetDiameters() const noexcept -> const std::vector<uint32_t>&
 {
   return m_diameters;

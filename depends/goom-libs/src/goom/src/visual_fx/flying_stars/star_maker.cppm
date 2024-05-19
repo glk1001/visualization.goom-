@@ -49,15 +49,15 @@ private:
   [[nodiscard]] auto GetNewStarParams(float starPathAngle) const noexcept -> Star::Params;
 };
 
-inline auto StarMaker::MoreStarsToMake() const noexcept -> bool
-{
-  return m_numStarsToMake > 0;
-}
-
 } //namespace GOOM::VISUAL_FX::FLYING_STARS
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
+
+inline auto StarMaker::MoreStarsToMake() const noexcept -> bool
+{
+  return m_numStarsToMake > 0;
+}
 
 StarMaker::StarMaker(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {

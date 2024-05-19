@@ -226,6 +226,11 @@ private:
       -> Pixel;
 };
 
+} // namespace GOOM::VISUAL_FX::CIRCLES
+
+namespace GOOM::VISUAL_FX::CIRCLES
+{
+
 inline auto Circle::IncrementTs() noexcept -> void
 {
   m_circleDots.GetDotPaths().IncrementPositionT();

@@ -59,6 +59,11 @@ private:
   [[nodiscard]] auto CanRestartLerp() const noexcept -> bool;
 };
 
+} // namespace GOOM::VISUAL_FX::SHADERS
+
+namespace GOOM::VISUAL_FX::SHADERS
+{
+
 inline auto HueShiftLerper::ChangeHue() noexcept -> void
 {
   m_lerpOffTimer.SetToFinished();
@@ -70,11 +75,6 @@ inline auto HueShiftLerper::GetHueShift() const noexcept -> float
 {
   return m_currentHueShift;
 }
-
-} // namespace GOOM::VISUAL_FX::SHADERS
-
-namespace GOOM::VISUAL_FX::SHADERS
-{
 
 using UTILS::MATH::TWO_PI;
 

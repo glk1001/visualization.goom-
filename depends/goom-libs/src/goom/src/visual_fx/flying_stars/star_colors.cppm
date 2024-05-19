@@ -75,6 +75,11 @@ private:
   [[nodiscard]] auto GetFinalTMix(float lengthT) const noexcept -> float;
 };
 
+} //namespace GOOM::VISUAL_FX::FLYING_STARS
+
+namespace GOOM::VISUAL_FX::FLYING_STARS
+{
+
 inline auto StarColors::GetColorProperties() const noexcept -> const ColorProperties&
 {
   return m_colorProperties;

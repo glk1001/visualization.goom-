@@ -49,6 +49,11 @@ private:
   float m_endRadius;
 };
 
+} // namespace GOOM::VISUAL_FX::TENTACLES
+
+namespace GOOM::VISUAL_FX::TENTACLES
+{
+
 inline auto CirclesTentacleLayout::GetNumTentacles() const noexcept -> uint32_t
 {
   return static_cast<uint32_t>(m_startPoints.size());
@@ -73,11 +78,6 @@ inline auto CirclesTentacleLayout::GetEndRadius() const noexcept -> float
 {
   return m_endRadius;
 }
-
-} // namespace GOOM::VISUAL_FX::TENTACLES
-
-namespace GOOM::VISUAL_FX::TENTACLES
-{
 
 using UTILS::MATH::HALF_PI;
 using UTILS::MATH::TWO_PI;

@@ -58,6 +58,11 @@ private:
       -> Bezier::Bezier<3>;
 };
 
+} // namespace GOOM::VISUAL_FX::SHAPES
+
+namespace GOOM::VISUAL_FX::SHAPES
+{
+
 inline PetalColoring::PetalColoring(const UTILS::MATH::IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand}
 {
@@ -79,10 +84,6 @@ inline auto BezierFlower::SetRotation(const float rotation) -> void
   m_rotation = rotation;
 }
 
-} // namespace GOOM::VISUAL_FX::SHAPES
-
-namespace GOOM::VISUAL_FX::SHAPES
-{
 using COLOR::IColorMap;
 using COLOR::RandomColorMaps;
 using UTILS::MATH::TWO_PI;

@@ -54,15 +54,15 @@ private:
   UTILS::Timer m_lerpConstTimer{m_goomInfo->GetTime(), DEFAULT_LERP_CONST_TIME, false};
 };
 
-inline auto ColorMultiplierLerper::GetColorMultiplier() const noexcept -> float
-{
-  return m_currentColorMultiplier;
-}
-
 } // namespace GOOM::VISUAL_FX::SHADERS
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
+
+inline auto ColorMultiplierLerper::GetColorMultiplier() const noexcept -> float
+{
+  return m_currentColorMultiplier;
+}
 
 ColorMultiplierLerper::ColorMultiplierLerper(const PluginInfo& goomInfo,
                                              const UTILS::MATH::IGoomRand& goomRand,

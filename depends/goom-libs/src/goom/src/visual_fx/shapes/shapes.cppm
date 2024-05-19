@@ -97,6 +97,11 @@ private:
   auto SetRandomShapeNumSteps() noexcept -> void;
 };
 
+} // namespace GOOM::VISUAL_FX::SHAPES
+
+namespace GOOM::VISUAL_FX::SHAPES
+{
+
 inline auto Shape::SetVaryDotRadius(const bool val) -> void
 {
   m_varyDotRadius = val;
@@ -164,11 +169,6 @@ inline auto Shape::SetShapeNumSteps() noexcept -> void
     SetRandomShapeNumSteps();
   }
 }
-
-} // namespace GOOM::VISUAL_FX::SHAPES
-
-namespace GOOM::VISUAL_FX::SHAPES
-{
 
 using COLOR::WeightedRandomColorMaps;
 using DRAW::MultiplePixels;

@@ -50,15 +50,15 @@ private:
   std::vector<IfsPoint> m_buffer{};
 };
 
-inline auto FractalHits::GetMaxHitCount() const -> uint32_t
-{
-  return m_maxHitCount;
-}
-
 } // namespace GOOM::VISUAL_FX::IFS
 
 namespace GOOM::VISUAL_FX::IFS
 {
+
+inline auto FractalHits::GetMaxHitCount() const -> uint32_t
+{
+  return m_maxHitCount;
+}
 
 using COLOR::GetColorAverage;
 

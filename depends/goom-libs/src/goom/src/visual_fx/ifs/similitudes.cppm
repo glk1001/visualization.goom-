@@ -141,6 +141,11 @@ private:
   // NOLINTEND(readability-identifier-length,readability-identifier-naming)
 };
 
+} // namespace GOOM::VISUAL_FX::IFS
+
+namespace GOOM::VISUAL_FX::IFS
+{
+
 inline auto Similitudes::GetNumSimis() const -> size_t
 {
   return m_numSimis;
@@ -186,11 +191,6 @@ inline auto Similitude::GetCurrentPointBitmap() const -> const UTILS::GRAPHICS::
 {
   return m_currentPointBitmap;
 }
-
-} // namespace GOOM::VISUAL_FX::IFS
-
-namespace GOOM::VISUAL_FX::IFS
-{
 
 using COLOR::GetUnweightedRandomColorMaps;
 using COLOR::WeightedRandomColorMaps;

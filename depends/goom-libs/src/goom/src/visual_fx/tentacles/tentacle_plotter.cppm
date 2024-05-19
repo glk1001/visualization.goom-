@@ -86,6 +86,11 @@ private:
       -> std::vector<Line3DFlt>;
 };
 
+} // namespace GOOM::VISUAL_FX::TENTACLES
+
+namespace GOOM::VISUAL_FX::TENTACLES
+{
+
 inline auto TentaclePlotter::SetGetColorsFunc(const GetColorsFunc& getColorsFunc) noexcept -> void
 {
   m_getColors = getColorsFunc;
@@ -108,11 +113,6 @@ inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void
                       m_goomRand->GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET),
                       m_goomRand->GetRandInRange(MIN_CAMERA_Z_OFFSET, MAX_CAMERA_Z_OFFSET)};
 }
-
-} // namespace GOOM::VISUAL_FX::TENTACLES
-
-namespace GOOM::VISUAL_FX::TENTACLES
-{
 
 using DRAW::IGoomDraw;
 using UTILS::MATH::IGoomRand;
