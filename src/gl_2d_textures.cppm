@@ -75,6 +75,11 @@ private:
   auto CopyPboBufferToBoundTexture(size_t pboIndex) noexcept -> void;
 };
 
+} // namespace GOOM::OPENGL
+
+namespace GOOM::OPENGL
+{
+
 template<typename CppTextureType,
          uint32_t NumTextures,
          int32_t TextureLocation,

@@ -12,6 +12,7 @@ struct TextureBufferDimensions
   uint32_t width;
   uint32_t height;
 };
+
 struct WindowDimensions
 {
   int32_t width;

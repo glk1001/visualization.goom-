@@ -97,6 +97,11 @@ private:
   auto InitAudioValues(int32_t numChannels) noexcept -> void;
 };
 
+} // namespace GOOM::VIS
+
+namespace GOOM::VIS
+{
+
 inline auto GoomVisualization::GetScene() noexcept -> GOOM::OPENGL::DisplacementFilter&
 {
   return *m_glScene;

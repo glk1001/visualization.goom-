@@ -324,6 +324,11 @@ private:
 #endif
 };
 
+} // namespace GOOM::OPENGL
+
+namespace GOOM::OPENGL
+{
+
 inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::string&
 {
   return m_shaderDir;
@@ -371,15 +376,10 @@ inline auto DisplacementFilter::BindFilterBuff3Texture() noexcept -> void
   m_glFilterBuffers.filterBuff3Texture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
 }
 
-} // namespace GOOM::OPENGL
-
 namespace fs = std::filesystem;
 
 // TODO(glk) - Need to pass goomLogger
 //std_fmt::println("{}", __LINE__);
-
-namespace GOOM::OPENGL
-{
 
 using GOOM::GoomLogger;
 //using GOOM::FILTER_FX::NormalizedCoords;

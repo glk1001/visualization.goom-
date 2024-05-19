@@ -45,6 +45,11 @@ private:
   int32_t m_framebufferHeight = m_height;
 };
 
+} // namespace GOOM::OPENGL
+
+namespace GOOM::OPENGL
+{
+
 inline IScene::IScene(const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept
   : m_width{static_cast<int32_t>(textureBufferDimensions.width)},
     m_height{static_cast<int32_t>(textureBufferDimensions.height)}
@@ -77,6 +82,5 @@ inline auto IScene::SetFramebufferDimensions(
   m_framebufferWidth  = windowDimensions.width;
   m_framebufferHeight = windowDimensions.height;
 }
-
 
 } // namespace GOOM::OPENGL
