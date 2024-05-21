@@ -1,5 +1,5 @@
-add_subdirectory(goom)
 add_subdirectory(vivid)
+add_subdirectory(goom)
 
 if (NOT ENABLE_TESTING)
     message(STATUS "Goom-libs: NOT Building Unit Tests.")

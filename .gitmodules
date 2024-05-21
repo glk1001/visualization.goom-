@@ -1,0 +1,3 @@
+[submodule "depends/goom-libs/src/goom/src/particles"]
+	path = depends/goom-libs/src/goom/src/particles
+	url = https://github.com/glk1001/Particles

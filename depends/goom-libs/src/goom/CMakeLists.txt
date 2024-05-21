@@ -14,9 +14,6 @@ endif ()
 if (NOT LSys_SOURCE_DIR)
     message(FATAL_ERROR "\"LSys_SOURCE_DIR\" must be defined.")
 endif ()
-if (NOT particles_SOURCE_DIR)
-    message(FATAL_ERROR "\"particles_SOURCE_DIR\" must be defined.")
-endif ()
 
 if (WIN32)
     add_definitions(-D_WIN32PC)
@@ -124,6 +121,12 @@ add_library(goom
             src/goom_utils.cpp
             src/goom_version.cpp
             src/sound_info.cpp
+            src/particles/src/particles/effects/attractor_effect.cpp
+            src/particles/src/particles/effects/fountain_effect.cpp
+            src/particles/src/particles/effects/tunnel_effect.cpp
+            src/particles/src/particles/particle_generators.cpp
+            src/particles/src/particles/particle_updaters.cpp
+            src/particles/src/particles/particles.cpp
 )
 
 add_library(goom::lib ALIAS goom)
@@ -131,6 +134,13 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
+               src/particles/include/particles/effects/effect.cppm
+               src/particles/include/particles/effects/attractor_effect.cppm
+               src/particles/include/particles/effects/fountain_effect.cppm
+               src/particles/include/particles/effects/tunnel_effect.cppm
+               src/particles/include/particles/particle_generators.cppm
+               src/particles/include/particles/particle_updaters.cppm
+               src/particles/include/particles/particles.cppm
                include/goom/circular_buffer.cppm
                include/goom/compiler_versions.cppm
                include/goom/frame_data.cppm
@@ -333,6 +343,12 @@ target_sources(goom
                src/plugin_info.cppm
 )
 
+add_dependencies(goom
+                 libs::vivid
+                 LSys::lib
+                 blend2d::blend2d
+)
+
 
 target_include_directories(goom
                            PRIVATE
@@ -349,7 +365,6 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/lib/perlin_noise/include
                            ${GOOM_LIBS_DIR}/lib/std_fmt/include
                            ${LSys_SOURCE_DIR}/include
-                           ${particles_SOURCE_DIR}/include
                            ${blend2d_SOURCE_DIR}/src
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
@@ -373,7 +388,6 @@ message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSY
 message(STATUS "Goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom: blend2d_SOURCE_DIR         = \"${blend2d_SOURCE_DIR}\".")
 message(STATUS "Goom: LSys_SOURCE_DIR            = \"${LSys_SOURCE_DIR}\".")
-message(STATUS "Goom: particles_SOURCE_DIR       = \"${particles_SOURCE_DIR}\".")
 message(STATUS "Goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom: magic_enum_INCLUDE_DIR     = \"${magic_enum_INCLUDE_DIR}\".")

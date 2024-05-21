@@ -4,8 +4,6 @@ module;
 
 #include "goom/goom_config.h"
 #include "goom/goom_logger.h"
-#include "particles/effects/attractor_effect.h"
-#include "particles/effects/effect.h"
 
 #include <cmath>
 #include <cstdint>
@@ -17,6 +15,8 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
+import Particles.Effects.Attractor;
+import Particles.Effects.Effect;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;
 import Goom.Color.RandomColorMaps;
