@@ -26,6 +26,7 @@ namespace GOOM::UNIT_TESTS
 {
 
 using Catch::Approx;
+using GOOM::FILTER_FX::FILTER_UTILS::GoomLerpData;
 
 namespace
 {

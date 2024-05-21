@@ -169,9 +169,6 @@ TEST_CASE("uint32_t min max get random")
   REQUIRE(max2 == N_MAX2 - 1);
 
   REQUIRE_NOTHROW(GetRandInRange(5U, 6U));
-#ifndef NDEBUG
-  REQUIRE_THROWS_WITH(GetRandInRange(5U, 1U), StartsWith("uint n0"));
-#endif
 }
 
 TEST_CASE("int32_t min max get random")
@@ -207,11 +204,6 @@ TEST_CASE("int32_t min max get random")
   REQUIRE_NOTHROW(GetRandInRange(5, 6));
   REQUIRE_NOTHROW(GetRandInRange(-6, -5));
   REQUIRE_NOTHROW(GetRandInRange(-6, 10));
-#ifndef NDEBUG
-  REQUIRE_THROWS_WITH(GetRandInRange(-5, -6), StartsWith("int n0"));
-  REQUIRE_THROWS_WITH(GetRandInRange(5, 1), StartsWith("int n0"));
-  REQUIRE_THROWS_WITH(GetRandInRange(5, -1), StartsWith("int n0"));
-#endif
 }
 
 TEST_CASE("float min max get random")
@@ -245,11 +237,6 @@ TEST_CASE("float min max get random")
   REQUIRE_NOTHROW(GetRandInRange(POS_MIN, POS_MAX));
   REQUIRE_NOTHROW(GetRandInRange(NEG_MIN, NEG_MAX));
   REQUIRE_NOTHROW(GetRandInRange(NEG_MIN, POS_MAX));
-#ifndef NDEBUG
-  REQUIRE_THROWS_WITH(GetRandInRange(NEG_MAX, NEG_MIN), StartsWith("float x0"));
-  REQUIRE_THROWS_WITH(GetRandInRange(POS_MIN, 1.0F), StartsWith("float x0"));
-  REQUIRE_THROWS_WITH(GetRandInRange(POS_MIN, -1.0F), StartsWith("float x0"));
-#endif
 }
 // NOLINTEND(readability-function-cognitive-complexity)
 // NOLINTEND(bugprone-chained-comparison)

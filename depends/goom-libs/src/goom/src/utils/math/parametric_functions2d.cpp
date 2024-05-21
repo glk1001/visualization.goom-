@@ -102,7 +102,7 @@ auto HypotrochoidFunction::GetPointAtAngle(const float angle) const noexcept -> 
       -(m_rDiff * std::sin(angle)) + (m_params.height * std::sin(angleArg2)),
   };
 
-  return (m_params.amplitude * point) + m_centrePos;
+  return Scale(point, m_params.amplitude) + m_centrePos;
 }
 
 EpicycloidFunction::EpicycloidFunction(const Vec2dFlt& centrePos,
@@ -143,7 +143,7 @@ auto EpicycloidFunction::GetPointAtAngle(const float angle) const noexcept -> Po
           +(m_params.smallR * std::sin(angleArg2)),
   };
 
-  return (m_params.amplitude * point) + m_centrePos;
+  return Scale(point, m_params.amplitude) + m_centrePos;
 }
 
 SineFunction::SineFunction(const StartAndEndPos& startAndEndPos, const Params& params) noexcept
