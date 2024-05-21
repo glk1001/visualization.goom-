@@ -1,17 +1,8 @@
-#include <cstdint>
-#include <vector>
-
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic pop
-#endif
+#include <cstdint>
+#include <vector>
 
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
@@ -22,8 +13,8 @@ namespace GOOM::UNIT_TESTS
 
 using Catch::Approx;
 using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 using UTILS::MATH::SMALL_FLOAT;
+using UTILS::MATH::TValue;
 
 static constexpr auto TWO = 2.0F;
 

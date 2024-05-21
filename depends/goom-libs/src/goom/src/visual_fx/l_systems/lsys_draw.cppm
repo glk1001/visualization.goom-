@@ -4,12 +4,12 @@ module;
 
 #include <algorithm>
 #include <cstdint>
-#include <lsys/parsed_model.h>
-#include <lsys/vector.h>
 #include <vector>
 
 module Goom.VisualFx.LSystemFx:LSysDraw;
 
+import LSys.ParsedModel;
+import LSys.Vector;
 import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
 import Goom.Lib.Point2d;
 import :LSysColors;

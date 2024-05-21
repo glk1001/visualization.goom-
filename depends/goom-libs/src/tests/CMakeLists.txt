@@ -59,7 +59,6 @@ target_link_libraries(${GOOM_LIB_TESTS_NAME}
                       PRIVATE
                       goom
                       vivid
-                      LSys::lib
                       blend2d::blend2d
                       Catch2::Catch2
                       ${CMAKE_THREAD_LIBS_INIT}

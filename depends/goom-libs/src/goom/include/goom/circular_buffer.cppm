@@ -72,12 +72,6 @@ inline auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
   return m_size - m_used;
 }
 
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
-
 template<typename T>
 auto CircularBuffer<T>::Write(const std::span<const T> srce) noexcept -> void
 {
@@ -135,10 +129,6 @@ auto CircularBuffer<T>::Read(std::vector<T>& dest) noexcept -> void
     m_used -= delta;
   }
 }
-
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic pop
-#endif
 
 // TODO(glk) Make this a unit test
 #if 0 // Visual Studio not happy with this

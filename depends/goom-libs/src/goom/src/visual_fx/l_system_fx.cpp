@@ -8,13 +8,13 @@ module;
 
 #include <algorithm>
 #include <cstdint>
-#include <lsys/rand.h>
 #include <memory>
 #include <string>
 #include <vector>
 
 module Goom.VisualFx.LSystemFx;
 
+import LSys.Rand;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;

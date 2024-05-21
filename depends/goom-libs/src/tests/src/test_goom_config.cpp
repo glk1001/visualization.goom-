@@ -5,17 +5,8 @@
 #include "goom/goom_config.h"
 
 #include <array>
-#include <string>
-
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic pop
-#endif
+#include <string>
 
 import Goom.Lib.GoomUtils;
 

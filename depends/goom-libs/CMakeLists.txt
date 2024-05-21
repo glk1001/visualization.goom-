@@ -76,12 +76,6 @@ CPMAddPackage(NAME "blend2d"
               FORCE False
 )
 set_target_properties(blend2d PROPERTIES POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE})
-CPMAddPackage(NAME "LSys"
-              GITHUB_REPOSITORY "glk1001/LSys"
-              GIT_TAG "master"
-              FORCE True
-)
-set_target_properties(lsys-gen PROPERTIES EXCLUDE_FROM_ALL True)
 
 CPMAddPackage("gh:Neargye/magic_enum#v0.9.5")
 if (magic_enum_SOURCE_DIR)
@@ -121,7 +115,6 @@ message(STATUS "Goom-libs: BUILD_SHARED_LIBS              = \"${BUILD_SHARED_LIB
 message(STATUS "Goom-libs: ENABLE_TESTING                 = \"${ENABLE_TESTING}\".")
 message(STATUS "Goom-libs: GOOM_LIBS_DIR                  = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom-libs: blend2d_SOURCE_DIR             = \"${blend2d_SOURCE_DIR}\".")
-message(STATUS "Goom-libs: LSys_SOURCE_DIR                = \"${LSys_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: GLM_INCLUDE_DIR                = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS          = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR         = \"${magic_enum_INCLUDE_DIR}\".")

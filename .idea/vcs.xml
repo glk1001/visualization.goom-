@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../kodi" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/depends/goom-libs/src/goom/src/lsys" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/depends/goom-libs/src/goom/src/particles" vcs="Git" />
   </component>
 </project>

@@ -118,12 +118,6 @@ add_subdirectory(${GOOM_LIBS_RELDIR})
 add_compile_options(${vis_goom_pp_PROJECT_WARNINGS})
 #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    # glm has many 'unsafe-buffer-usage' warnings.
-    message(STATUS "Turning off 'unsafe-buffer-usage' for Clang.")
-    add_compile_options(-Wno-unknown-warning-option -Wno-unsafe-buffer-usage)
-endif ()
-
 
 # Setup the includes and other dependencies the addon builder needs.
 include_directories(BEFORE
@@ -151,12 +145,11 @@ set(${VIS_GOOM_ADDON_PREFIX}_HEADERS
 # Let kodi set this:
 set(CMAKE_INSTALL_LIBDIR "")
 
-list(APPEND DEPLIBS goom::lib libs::vivid LSys::lib blend2d::blend2d)
+list(APPEND DEPLIBS goom::lib libs::vivid blend2d::blend2d)
 build_addon(${VIS_GOOM_TARGET_NAME} ${VIS_GOOM_ADDON_PREFIX} DEPLIBS)
 add_dependencies(${VIS_GOOM_TARGET_NAME}
                  goom::lib
                  libs::vivid
-                 LSys::lib
                  blend2d::blend2d
 )
 

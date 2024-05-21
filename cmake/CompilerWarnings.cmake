@@ -55,6 +55,7 @@ function(vis_goom_pp_get_project_warnings WARNINGS_AS_ERRORS compiler_warnings)
         -Wno-switch-default
 
         # COULD BE USEFUL but cause existing code (e.g., math20) to have warnings
+        -Wno-unsafe-buffer-usage
         -Wno-reserved-identifier
         -Wno-float-equal
         -Wno-date-time

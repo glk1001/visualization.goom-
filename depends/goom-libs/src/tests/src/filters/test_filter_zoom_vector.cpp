@@ -12,20 +12,11 @@
 
 #include "goom/goom_config.h"
 
-#include <cstdint>
-#include <memory>
-
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic pop
-#endif
+#include <cstdint>
+#include <memory>
 
 import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;

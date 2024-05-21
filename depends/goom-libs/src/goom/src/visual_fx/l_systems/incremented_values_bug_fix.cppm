@@ -5,12 +5,12 @@ module;
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <lsys/interpret.h>
 #include <type_traits>
 #include <vector>
 
 module Goom.VisualFx.LSystemFx:IncrementedValuesBugFix;
 
+import LSys.Interpret;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;

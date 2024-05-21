@@ -38,12 +38,7 @@ inline auto ImageBitmap::SetPixel(const size_t x, const size_t y, const RGB& pix
   m_owningBuff.at((y * m_width) + x) = pixel;
 }
 
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
-#pragma GCC diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
-void ImageBitmap::Load(const std::string& imageFilename)
+auto ImageBitmap::Load(const std::string& imageFilename) -> void
 {
   m_filename                                = imageFilename;
   const auto [rgbImage, width, height, bpp] = GetRGBImage();
@@ -78,9 +73,6 @@ void ImageBitmap::Load(const std::string& imageFilename)
 
   ::stbi_image_free(rgbImage);
 }
-#if __clang_major__ >= 16 // NOLINT: Can't include header for this.
-#pragma GCC diagnostic pop
-#endif
 
 auto ImageBitmap::GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>
 {

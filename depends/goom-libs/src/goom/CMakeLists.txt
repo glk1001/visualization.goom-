@@ -11,9 +11,6 @@ endif ()
 if (NOT blend2d_SOURCE_DIR)
     message(FATAL_ERROR "\"blend2d_SOURCE_DIR\" must be defined.")
 endif ()
-if (NOT LSys_SOURCE_DIR)
-    message(FATAL_ERROR "\"LSys_SOURCE_DIR\" must be defined.")
-endif ()
 
 if (WIN32)
     add_definitions(-D_WIN32PC)
@@ -27,106 +24,465 @@ else ()
 endif ()
 
 
+set(LSys_SOURCE_DIR src/lsys)
+
+set(LSys_modules
+    ${LSys_SOURCE_DIR}/include/lsys/actions.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/consts.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/expression.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/generator.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/generic_generator.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/graphics_generator.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/interpret.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/l_sys_model.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/list.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/module.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/name.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/parsed_model.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/polygon.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/production.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/radiance_generator.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/rand.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/symbol_table.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/turtle.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/value.cppm
+    ${LSys_SOURCE_DIR}/include/lsys/vector.cppm
+)
+
+set(LSys_source_files
+    ${LSys_SOURCE_DIR}/include/lsys/debug.h
+    ${LSys_SOURCE_DIR}/include/lsys/parser.h
+    ${LSys_SOURCE_DIR}/src/actions.cpp
+    ${LSys_SOURCE_DIR}/src/consts.cpp
+    ${LSys_SOURCE_DIR}/src/expression.cpp
+    ${LSys_SOURCE_DIR}/src/generator.cpp
+    ${LSys_SOURCE_DIR}/src/generic_generator.cpp
+    ${LSys_SOURCE_DIR}/src/graphics_generator.cpp
+    ${LSys_SOURCE_DIR}/src/interpret.cpp
+    ${LSys_SOURCE_DIR}/src/l_sys_model.cpp
+    ${LSys_SOURCE_DIR}/src/lexer.cpp
+    ${LSys_SOURCE_DIR}/src/module.cpp
+    ${LSys_SOURCE_DIR}/src/name.cpp
+    ${LSys_SOURCE_DIR}/src/parsed_model.cpp
+    ${LSys_SOURCE_DIR}/src/parser.cpp
+    ${LSys_SOURCE_DIR}/src/production.cpp
+    ${LSys_SOURCE_DIR}/src/rand.cpp
+    ${LSys_SOURCE_DIR}/src/radiance_generator.cpp
+    ${LSys_SOURCE_DIR}/src/token.h
+    ${LSys_SOURCE_DIR}/src/turtle.cpp
+    ${LSys_SOURCE_DIR}/src/value.cpp
+    ${LSys_SOURCE_DIR}/src/vector.cpp
+)
+
+set(MSVC_WARNINGS_OFF
+    /wd4005
+    /wd4201
+    /wd4996
+    /w
+)
+set(CLANG_WARNINGS_OFF
+    -Wno-extra
+    -Wno-date-time
+    -Wno-old-style-cast
+    -Wno-conversion
+    -Wno-sign-conversion
+    -Wno-implicit-fallthrough
+    -Wno-register
+    -Wno-unused-function
+    -Wno-write-strings
+    -Wno-switch-default
+)
+set(GCC_WARNINGS_OFF
+    ${CLANG_WARNINGS_OFF}
+    -Wno-pedantic
+    -Wno-useless-cast
+    -Wno-effc++
+)
+
+if (MSVC)
+    set(SOME_WARNINGS_OFF "${MSVC_WARNINGS_OFF}")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    set(SOME_WARNINGS_OFF "${CLANG_WARNINGS_OFF}")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(SOME_WARNINGS_OFF "${GCC_WARNINGS_OFF}")
+endif ()
+STRING(REPLACE ";" " " SOME_WARNINGS_OFF "${SOME_WARNINGS_OFF}")
+
+set_source_files_properties(
+        ${LSys_SOURCE_DIR}/src/command_line_options.cpp
+        ${LSys_SOURCE_DIR}/src/lexer.cpp
+        ${LSys_SOURCE_DIR}/src/name.cpp
+        ${LSys_SOURCE_DIR}/src/options.cpp
+        ${LSys_SOURCE_DIR}/src/parser.cpp
+        ${LSys_SOURCE_DIR}/src/value.cpp
+        ${LSys_SOURCE_DIR}/src/vector.cpp
+        PROPERTIES
+        COMPILE_FLAGS "${SOME_WARNINGS_OFF}"
+)
+
+
+set(Particles_modules
+    src/particles/include/particles/effects/effect.cppm
+    src/particles/include/particles/effects/attractor_effect.cppm
+    src/particles/include/particles/effects/fountain_effect.cppm
+    src/particles/include/particles/effects/tunnel_effect.cppm
+    src/particles/include/particles/particle_generators.cppm
+    src/particles/include/particles/particle_updaters.cppm
+    src/particles/include/particles/particles.cppm
+)
+
+set(Particles_source_files
+    src/particles/src/particles/effects/attractor_effect.cpp
+    src/particles/src/particles/effects/fountain_effect.cpp
+    src/particles/src/particles/effects/tunnel_effect.cpp
+    src/particles/src/particles/particle_generators.cpp
+    src/particles/src/particles/particle_updaters.cpp
+    src/particles/src/particles/particles.cpp
+)
+
+set(GoomLib_modules
+    include/goom/circular_buffer.cppm
+    include/goom/compiler_versions.cppm
+    include/goom/frame_data.cppm
+    include/goom/goom_buffer_saver.cppm
+    include/goom/goom_control.cppm
+    include/goom/goom_graphic.cppm
+    include/goom/goom_types.cppm
+    include/goom/goom_utils.cppm
+    include/goom/goom_version.cppm
+    include/goom/point2d.cppm
+    include/goom/sound_info.cppm
+    include/goom/spimpl.cppm
+)
+set(GoomLib_source_files
+    include/goom/goom_config.h
+    src/goom_control.cpp
+    src/goom_graphic.cpp
+    src/goom_logger.cpp
+    src/goom_utils.cpp
+    src/goom_version.cpp
+    src/sound_info.cpp
+)
+
+set(GoomColor_modules
+    src/color/color_data/extra_color_groups.cppm
+    src/color/color_adjustment.cppm
+    src/color/color_maps_base.cppm
+    src/color/color_maps.cppm
+    src/color/color_maps_grids.cppm
+    src/color/color_utils.cppm
+    src/color/random_color_maps.cppm
+    src/color/random_color_maps_groups.cppm
+)
+
+set(GoomColor_source_files
+    src/color/color_data/color_data_maps.cpp
+    src/color/color_data/extra_color_groups.cpp
+    src/color/color_adjustment.cpp
+    src/color/color_maps.cpp
+    src/color/color_maps_grids.cpp
+    src/color/color_utils.cpp
+    src/color/random_color_maps.cpp
+    src/color/random_color_maps_groups.cpp
+)
+
+set(GoomControl_modules
+    src/control/all_standard_visual_fx.cppm
+    src/control/goom_all_visual_fx.cppm
+    src/control/goom_effects.cppm
+    src/control/goom_lock.cppm
+    src/control/goom_message_displayer.cppm
+    src/control/goom_music_settings_reactor.cppm
+    src/control/goom_random_state_handler.cppm
+    src/control/goom_sound_events.cppm
+    src/control/goom_state_dump.cppm
+    src/control/goom_state_handler.cppm
+    src/control/goom_state_monitor.cppm
+    src/control/goom_states.cppm
+    src/control/goom_title_displayer.cppm
+    src/control/state_and_filter_consts.cppm
+    src/control/visual_fx_color_maps.cppm
+    src/control/visual_fx_color_matched_sets.cppm
+    src/control/visual_fx_weighted_color_maps.cppm
+)
+
+set(GoomControl_source_files
+    src/control/goom_all_visual_fx.cpp
+    src/control/goom_message_displayer.cpp
+    src/control/goom_music_settings_reactor.cpp
+    src/control/goom_random_state_handler.cpp
+    src/control/goom_sound_events.cpp
+    src/control/goom_state_dump.cpp
+    src/control/goom_state_handler.cpp
+    src/control/goom_state_monitor.cpp
+    src/control/goom_states.cpp
+    src/control/goom_title_displayer.cpp
+)
+
+set(GoomDraw_modules
+    src/draw/shape_drawers/bitmap_drawer.cppm
+    src/draw/shape_drawers/circle_drawer.cppm
+    src/draw/shape_drawers/drawer_utils.cppm
+    src/draw/shape_drawers/line_draw_thick.cppm
+    src/draw/shape_drawers/line_draw_wu.cppm
+    src/draw/shape_drawers/line_drawer.cppm
+    src/draw/shape_drawers/line_drawer_moving_noise.cppm
+    src/draw/shape_drawers/line_drawer_noisy_pixels.cppm
+    src/draw/shape_drawers/line_drawer_with_effects.cppm
+    src/draw/shape_drawers/pixel_drawer.cppm
+    src/draw/shape_drawers/text_drawer.cppm
+    src/draw/goom_draw.cppm
+    src/draw/goom_draw_to_buffer.cppm
+    src/draw/goom_draw_to_container.cppm
+    src/draw/goom_draw_to_many.cppm
+)
+
+set(GoomDraw_source_files
+    src/draw/shape_drawers/bitmap_drawer.cpp
+    src/draw/shape_drawers/circle_drawer.cpp
+    src/draw/shape_drawers/line_draw_thick.cpp
+    src/draw/shape_drawers/line_draw_wu.cpp
+    src/draw/shape_drawers/line_drawer_moving_noise.cpp
+    src/draw/shape_drawers/line_drawer_noisy_pixels.cpp
+    src/draw/shape_drawers/text_drawer.cpp
+    src/draw/goom_draw_to_buffer.cpp
+    src/draw/goom_draw_to_container.cpp
+    src/draw/goom_draw_to_many.cpp
+)
+
+set(GoomFilterFx_modules
+    src/filter_fx/after_effects/the_effects/hypercos.cppm
+    src/filter_fx/after_effects/the_effects/image_velocity.cppm
+    src/filter_fx/after_effects/the_effects/noise.cppm
+    src/filter_fx/after_effects/the_effects/planes.cppm
+    src/filter_fx/after_effects/the_effects/rotation.cppm
+    src/filter_fx/after_effects/the_effects/tan_effect.cppm
+    src/filter_fx/after_effects/the_effects/xy_lerp_effect.cppm
+    src/filter_fx/after_effects/after_effects.cppm
+    src/filter_fx/after_effects/after_effects_states.cppm
+    src/filter_fx/after_effects/after_effects_types.cppm
+    src/filter_fx/after_effects/zoom_vector_after_effects.cppm
+    src/filter_fx/filter_effects/adjustment_effects/amulet.cppm
+    src/filter_fx/filter_effects/adjustment_effects/complex_rational.cppm
+    src/filter_fx/filter_effects/adjustment_effects/complex_utils.cppm
+    src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cppm
+    src/filter_fx/filter_effects/adjustment_effects/distance_field.cppm
+    src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cppm
+    src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cppm
+    src/filter_fx/filter_effects/adjustment_effects/mobius.cppm
+    src/filter_fx/filter_effects/adjustment_effects/newton.cppm
+    src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cppm
+    src/filter_fx/filter_effects/adjustment_effects/scrunch.cppm
+    src/filter_fx/filter_effects/adjustment_effects/speedway.cppm
+    src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.cppm
+    src/filter_fx/filter_effects/adjustment_effects/wave.cppm
+    src/filter_fx/filter_effects/adjustment_effects/y_only.cppm
+    src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cppm
+    src/filter_fx/filter_effects/zoom_vector_effects.cppm
+    src/filter_fx/filter_utils/goom_lerp_data.cppm
+    src/filter_fx/filter_utils/image_displacement.cppm
+    src/filter_fx/filter_utils/image_displacement_list.cppm
+    src/filter_fx/filter_utils/utils.cppm
+    src/filter_fx/common_types.cppm
+    src/filter_fx/filter_buffers.cppm
+    src/filter_fx/filter_consts.cppm
+    src/filter_fx/filter_buffers_service.cppm
+    src/filter_fx/filter_settings.cppm
+    src/filter_fx/filter_settings_service.cppm
+    src/filter_fx/filter_speed.cppm
+    src/filter_fx/filter_zoom_vector.cppm
+    src/filter_fx/normalized_coords.cppm
+    src/filter_fx/zoom_adjustment_effect.cppm
+    src/filter_fx/zoom_vector.cppm
+)
+
+set(GoomFilterFx_source_files
+    src/filter_fx/after_effects/the_effects/hypercos.cpp
+    src/filter_fx/after_effects/the_effects/image_velocity.cpp
+    src/filter_fx/after_effects/the_effects/noise.cpp
+    src/filter_fx/after_effects/the_effects/planes.cpp
+    src/filter_fx/after_effects/the_effects/rotation.cpp
+    src/filter_fx/after_effects/the_effects/tan_effect.cpp
+    src/filter_fx/after_effects/the_effects/xy_lerp_effect.cpp
+    src/filter_fx/after_effects/after_effects.cpp
+    src/filter_fx/after_effects/after_effects_states.cpp
+    src/filter_fx/after_effects/zoom_vector_after_effects.cpp
+    src/filter_fx/filter_effects/adjustment_effects/amulet.cpp
+    src/filter_fx/filter_effects/adjustment_effects/complex_rational.cpp
+    src/filter_fx/filter_effects/adjustment_effects/complex_utils.cpp
+    src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cpp
+    src/filter_fx/filter_effects/adjustment_effects/distance_field.cpp
+    src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cpp
+    src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
+    src/filter_fx/filter_effects/adjustment_effects/mobius.cpp
+    src/filter_fx/filter_effects/adjustment_effects/newton.cpp
+    src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cpp
+    src/filter_fx/filter_effects/adjustment_effects/scrunch.cpp
+    src/filter_fx/filter_effects/adjustment_effects/speedway.cpp
+    src/filter_fx/filter_effects/adjustment_effects/wave.cpp
+    src/filter_fx/filter_effects/adjustment_effects/y_only.cpp
+    src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cpp
+    src/filter_fx/filter_effects/zoom_vector_effects.cpp
+    src/filter_fx/filter_utils/image_displacement.cpp
+    src/filter_fx/filter_utils/image_displacement_list.cpp
+    src/filter_fx/filter_utils/utils.cpp
+    src/filter_fx/filter_buffers.cpp
+    src/filter_fx/filter_buffers_service.cpp
+    src/filter_fx/filter_settings_service.cpp
+    src/filter_fx/filter_zoom_vector.cpp
+)
+
+set(GoomUtils_modules
+    src/utils/graphics/bezier_drawer.cppm
+    src/utils/graphics/blend2d_to_goom.cppm
+    src/utils/graphics/blend2d_utils.cppm
+    src/utils/graphics/camera.cppm
+    src/utils/graphics/image_bitmaps.cppm
+    src/utils/graphics/line_clipper.cppm
+    src/utils/graphics/pixel_blend.cppm
+    src/utils/graphics/pixel_utils.cppm
+    src/utils/graphics/point_utils.cppm
+    src/utils/graphics/small_image_bitmaps.cppm
+    src/utils/graphics/test_patterns.cppm
+    src/utils/math/damping_functions.cppm
+    src/utils/math/goom_rand.cppm
+    src/utils/math/goom_rand_base.cppm
+    src/utils/math/incremented_values.cppm
+    src/utils/math/misc.cppm
+    src/utils/math/parametric_functions2d.cppm
+    src/utils/math/paths.cppm
+    src/utils/math/randutils.cppm
+    src/utils/math/t_values.cppm
+    src/utils/math/transform2d.cppm
+    src/utils/text/drawable_text.cppm
+    src/utils/array_utils.cppm
+    src/utils/buffer_saver.cppm
+    src/utils/build_time.cppm
+    src/utils/date_utils.cppm
+    src/utils/debugging_logger.cppm
+    src/utils/enum_utils.cppm
+    src/utils/format_utils.cppm
+    src/utils/goom_time.cppm
+    src/utils/name_value_pairs.cppm
+    src/utils/parallel_utils.cppm
+    src/utils/step_speed.cppm
+    src/utils/stopwatch.cppm
+    src/utils/strutils.cppm
+    src/utils/thread_pool.cppm
+    src/utils/timer.cppm
+)
+
+set(GoomUtils_source_files
+    src/utils/graphics/bezier_drawer.cpp
+    src/utils/graphics/blend2d_to_goom.cpp
+    src/utils/graphics/blend2d_utils.cpp
+    src/utils/graphics/camera.cpp
+    src/utils/graphics/image_bitmaps.cpp
+    src/utils/graphics/small_image_bitmaps.cpp
+    src/utils/graphics/stb_image.h
+    src/utils/graphics/test_patterns.cpp
+    src/utils/math/parametric_functions2d.cpp
+    src/utils/math/paths.cpp
+    src/utils/text/drawable_text.cpp
+)
+
+set(GoomVisualFx_modules
+    src/visual_fx/circles/bitmap_getter.cppm
+    src/visual_fx/circles/circle.cppm
+    src/visual_fx/circles/circle_params_builder.cppm
+    src/visual_fx/circles/circles.cppm
+    src/visual_fx/circles/dot_diameters.cppm
+    src/visual_fx/circles/dot_drawer.cppm
+    src/visual_fx/circles/dot_paths.cppm
+    src/visual_fx/circles/helper.cppm
+    src/visual_fx/circles_fx.cppm
+    src/visual_fx/flying_stars/star_colors.cppm
+    src/visual_fx/flying_stars/star_colors_maker.cppm
+    src/visual_fx/flying_stars/star_drawer.cppm
+    src/visual_fx/flying_stars/star_maker.cppm
+    src/visual_fx/flying_stars/star_types_container.cppm
+    src/visual_fx/flying_stars/stars.cppm
+    src/visual_fx/flying_stars_fx.cppm
+    src/visual_fx/fx_utils/dot_drawer.cppm
+    src/visual_fx/fx_utils/lines.cppm
+    src/visual_fx/fx_utils/random_pixel_blender.cppm
+    src/visual_fx/ifs/colorizer.cppm
+    src/visual_fx/ifs/fractal.cppm
+    src/visual_fx/ifs/fractal_hits.cppm
+    src/visual_fx/ifs/ifs_types.cppm
+    src/visual_fx/ifs/low_density_blurrer.cppm
+    src/visual_fx/ifs/similitudes.cppm
+    src/visual_fx/l_systems/l_system.cppm
+    src/visual_fx/l_systems/lsys_colors.cppm
+    src/visual_fx/l_systems/lsys_draw.cppm
+    src/visual_fx/l_systems/lsys_geom.cppm
+    src/visual_fx/l_systems/lsys_paths.cppm
+    src/visual_fx/l_systems/incremented_values_bug_fix.cppm
+    src/visual_fx/l_systems/line_drawer_manager.cppm
+    src/visual_fx/lines/line_morph.cppm
+    src/visual_fx/lines/line_types.cppm
+    src/visual_fx/raindrops/raindrops.cppm
+    src/visual_fx/raindrops/raindrop_positions.cppm
+    src/visual_fx/shaders/chroma_factor_lerper.cppm
+    src/visual_fx/shaders/color_multiplier_lerper.cppm
+    src/visual_fx/shaders/high_contrast.cppm
+    src/visual_fx/shaders/hue_shift_lerper.cppm
+    src/visual_fx/shapes/bezier_flower.cppm
+    src/visual_fx/shapes/shape_parts.cppm
+    src/visual_fx/shapes/shape_paths.cppm
+    src/visual_fx/shapes/shapes.cppm
+    src/visual_fx/tentacles/circles_tentacle_layout.cppm
+    src/visual_fx/tentacles/tentacle_driver.cppm
+    src/visual_fx/tentacles/tentacle_plotter.cppm
+    src/visual_fx/tentacles/tentacle2d.cppm
+    src/visual_fx/tentacles/tentacle3d.cppm
+    src/visual_fx/tubes/tube_data.cppm
+    src/visual_fx/tubes/tubes.cppm
+    src/visual_fx/circles_fx.cppm
+    src/visual_fx/flying_stars_fx.cppm
+    src/visual_fx/fx_helper.cppm
+    src/visual_fx/fx_utils.cppm
+    src/visual_fx/goom_dots_fx.cppm
+    src/visual_fx/goom_visual_fx.cppm
+    src/visual_fx/ifs_dancers_fx.cppm
+    src/visual_fx/image_fx.cppm
+    src/visual_fx/l_system_fx.cppm
+    src/visual_fx/lines_fx.cppm
+    src/visual_fx/particles_fx.cppm
+    src/visual_fx/raindrops_fx.cppm
+    src/visual_fx/shader_fx.cppm
+    src/visual_fx/shapes_fx.cppm
+    src/visual_fx/tentacles_fx.cppm
+    src/visual_fx/tubes_fx.cppm
+)
+
+set(GoomVisualFx_source_files
+    src/visual_fx/circles_fx.cpp
+    src/visual_fx/flying_stars_fx.cpp
+    src/visual_fx/goom_dots_fx.cpp
+    src/visual_fx/ifs_dancers_fx.cpp
+    src/visual_fx/image_fx.cpp
+    src/visual_fx/l_system_fx.cpp
+    src/visual_fx/lines_fx.cpp
+    src/visual_fx/particles_fx.cpp
+    src/visual_fx/raindrops_fx.cpp
+    src/visual_fx/shader_fx.cpp
+    src/visual_fx/shapes_fx.cpp
+    src/visual_fx/tentacles_fx.cpp
+    src/visual_fx/tubes_fx.cpp
+)
+
 add_library(goom
             STATIC
-            include/goom/goom_config.h
-            src/color/color_data/color_data_maps.cpp
-            src/color/color_data/extra_color_groups.cpp
-            src/color/color_adjustment.cpp
-            src/color/color_maps.cpp
-            src/color/color_maps_grids.cpp
-            src/color/color_utils.cpp
-            src/color/random_color_maps.cpp
-            src/color/random_color_maps_groups.cpp
-            src/control/goom_all_visual_fx.cpp
-            src/control/goom_message_displayer.cpp
-            src/control/goom_music_settings_reactor.cpp
-            src/control/goom_random_state_handler.cpp
-            src/control/goom_sound_events.cpp
-            src/control/goom_state_dump.cpp
-            src/control/goom_state_handler.cpp
-            src/control/goom_state_monitor.cpp
-            src/control/goom_states.cpp
-            src/control/goom_title_displayer.cpp
-            src/draw/shape_drawers/bitmap_drawer.cpp
-            src/draw/shape_drawers/circle_drawer.cpp
-            src/draw/shape_drawers/line_draw_thick.cpp
-            src/draw/shape_drawers/line_draw_wu.cpp
-            src/draw/shape_drawers/line_drawer_moving_noise.cpp
-            src/draw/shape_drawers/line_drawer_noisy_pixels.cpp
-            src/draw/shape_drawers/text_drawer.cpp
-            src/draw/goom_draw_to_buffer.cpp
-            src/draw/goom_draw_to_container.cpp
-            src/draw/goom_draw_to_many.cpp
-            src/filter_fx/after_effects/the_effects/hypercos.cpp
-            src/filter_fx/after_effects/the_effects/image_velocity.cpp
-            src/filter_fx/after_effects/the_effects/noise.cpp
-            src/filter_fx/after_effects/the_effects/planes.cpp
-            src/filter_fx/after_effects/the_effects/rotation.cpp
-            src/filter_fx/after_effects/the_effects/tan_effect.cpp
-            src/filter_fx/after_effects/the_effects/xy_lerp_effect.cpp
-            src/filter_fx/after_effects/after_effects.cpp
-            src/filter_fx/after_effects/after_effects_states.cpp
-            src/filter_fx/after_effects/zoom_vector_after_effects.cpp
-            src/filter_fx/filter_effects/adjustment_effects/amulet.cpp
-            src/filter_fx/filter_effects/adjustment_effects/complex_rational.cpp
-            src/filter_fx/filter_effects/adjustment_effects/complex_utils.cpp
-            src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cpp
-            src/filter_fx/filter_effects/adjustment_effects/distance_field.cpp
-            src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cpp
-            src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
-            src/filter_fx/filter_effects/adjustment_effects/mobius.cpp
-            src/filter_fx/filter_effects/adjustment_effects/newton.cpp
-            src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cpp
-            src/filter_fx/filter_effects/adjustment_effects/scrunch.cpp
-            src/filter_fx/filter_effects/adjustment_effects/speedway.cpp
-            src/filter_fx/filter_effects/adjustment_effects/wave.cpp
-            src/filter_fx/filter_effects/adjustment_effects/y_only.cpp
-            src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cpp
-            src/filter_fx/filter_effects/zoom_vector_effects.cpp
-            src/filter_fx/filter_utils/image_displacement.cpp
-            src/filter_fx/filter_utils/image_displacement_list.cpp
-            src/filter_fx/filter_utils/utils.cpp
-            src/filter_fx/filter_buffers.cpp
-            src/filter_fx/filter_buffers_service.cpp
-            src/filter_fx/filter_settings_service.cpp
-            src/filter_fx/filter_zoom_vector.cpp
-            src/utils/graphics/bezier_drawer.cpp
-            src/utils/graphics/blend2d_to_goom.cpp
-            src/utils/graphics/blend2d_utils.cpp
-            src/utils/graphics/camera.cpp
-            src/utils/graphics/image_bitmaps.cpp
-            src/utils/graphics/small_image_bitmaps.cpp
-            src/utils/graphics/stb_image.h
-            src/utils/graphics/test_patterns.cpp
-            src/utils/math/parametric_functions2d.cpp
-            src/utils/math/paths.cpp
-            src/utils/text/drawable_text.cpp
-            src/visual_fx/circles_fx.cpp
-            src/visual_fx/flying_stars_fx.cpp
-            src/visual_fx/goom_dots_fx.cpp
-            src/visual_fx/ifs_dancers_fx.cpp
-            src/visual_fx/image_fx.cpp
-            src/visual_fx/l_system_fx.cpp
-            src/visual_fx/lines_fx.cpp
-            src/visual_fx/particles_fx.cpp
-            src/visual_fx/raindrops_fx.cpp
-            src/visual_fx/shader_fx.cpp
-            src/visual_fx/shapes_fx.cpp
-            src/visual_fx/tentacles_fx.cpp
-            src/visual_fx/tubes_fx.cpp
-            src/goom_control.cpp
-            src/goom_graphic.cpp
-            src/goom_logger.cpp
-            src/goom_utils.cpp
-            src/goom_version.cpp
-            src/sound_info.cpp
-            src/particles/src/particles/effects/attractor_effect.cpp
-            src/particles/src/particles/effects/fountain_effect.cpp
-            src/particles/src/particles/effects/tunnel_effect.cpp
-            src/particles/src/particles/particle_generators.cpp
-            src/particles/src/particles/particle_updaters.cpp
-            src/particles/src/particles/particles.cpp
+            ${LSys_source_files}
+            ${Particles_source_files}
+            ${GoomLib_source_files}
+            ${GoomColor_source_files}
+            ${GoomControl_source_files}
+            ${GoomDraw_source_files}
+            ${GoomFilterFx_source_files}
+            ${GoomUtils_source_files}
+            ${GoomVisualFx_source_files}
 )
 
 add_library(goom::lib ALIAS goom)
@@ -134,218 +490,20 @@ add_library(goom::lib ALIAS goom)
 target_sources(goom
                PUBLIC
                FILE_SET CXX_MODULES FILES
-               src/particles/include/particles/effects/effect.cppm
-               src/particles/include/particles/effects/attractor_effect.cppm
-               src/particles/include/particles/effects/fountain_effect.cppm
-               src/particles/include/particles/effects/tunnel_effect.cppm
-               src/particles/include/particles/particle_generators.cppm
-               src/particles/include/particles/particle_updaters.cppm
-               src/particles/include/particles/particles.cppm
-               include/goom/circular_buffer.cppm
-               include/goom/compiler_versions.cppm
-               include/goom/frame_data.cppm
-               include/goom/goom_buffer_saver.cppm
-               include/goom/goom_control.cppm
-               include/goom/goom_graphic.cppm
-               include/goom/goom_types.cppm
-               include/goom/goom_utils.cppm
-               include/goom/goom_version.cppm
-               include/goom/point2d.cppm
-               include/goom/sound_info.cppm
-               include/goom/spimpl.cppm
-               src/color/color_data/extra_color_groups.cppm
-               src/color/color_adjustment.cppm
-               src/color/color_maps_base.cppm
-               src/color/color_maps.cppm
-               src/color/color_maps_grids.cppm
-               src/color/color_utils.cppm
-               src/color/random_color_maps.cppm
-               src/color/random_color_maps_groups.cppm
-               src/control/all_standard_visual_fx.cppm
-               src/control/goom_all_visual_fx.cppm
-               src/control/goom_effects.cppm
-               src/control/goom_lock.cppm
-               src/control/goom_message_displayer.cppm
-               src/control/goom_music_settings_reactor.cppm
-               src/control/goom_random_state_handler.cppm
-               src/control/goom_sound_events.cppm
-               src/control/goom_state_dump.cppm
-               src/control/goom_state_handler.cppm
-               src/control/goom_state_monitor.cppm
-               src/control/goom_states.cppm
-               src/control/goom_title_displayer.cppm
-               src/control/state_and_filter_consts.cppm
-               src/control/visual_fx_color_maps.cppm
-               src/control/visual_fx_color_matched_sets.cppm
-               src/control/visual_fx_weighted_color_maps.cppm
-               src/draw/shape_drawers/bitmap_drawer.cppm
-               src/draw/shape_drawers/circle_drawer.cppm
-               src/draw/shape_drawers/drawer_utils.cppm
-               src/draw/shape_drawers/line_draw_thick.cppm
-               src/draw/shape_drawers/line_draw_wu.cppm
-               src/draw/shape_drawers/line_drawer.cppm
-               src/draw/shape_drawers/line_drawer_moving_noise.cppm
-               src/draw/shape_drawers/line_drawer_noisy_pixels.cppm
-               src/draw/shape_drawers/line_drawer_with_effects.cppm
-               src/draw/shape_drawers/pixel_drawer.cppm
-               src/draw/shape_drawers/text_drawer.cppm
-               src/draw/goom_draw.cppm
-               src/draw/goom_draw_to_buffer.cppm
-               src/draw/goom_draw_to_container.cppm
-               src/draw/goom_draw_to_many.cppm
-               src/filter_fx/after_effects/the_effects/hypercos.cppm
-               src/filter_fx/after_effects/the_effects/image_velocity.cppm
-               src/filter_fx/after_effects/the_effects/noise.cppm
-               src/filter_fx/after_effects/the_effects/planes.cppm
-               src/filter_fx/after_effects/the_effects/rotation.cppm
-               src/filter_fx/after_effects/the_effects/tan_effect.cppm
-               src/filter_fx/after_effects/the_effects/xy_lerp_effect.cppm
-               src/filter_fx/after_effects/after_effects.cppm
-               src/filter_fx/after_effects/after_effects_states.cppm
-               src/filter_fx/after_effects/after_effects_types.cppm
-               src/filter_fx/after_effects/zoom_vector_after_effects.cppm
-               src/filter_fx/filter_effects/adjustment_effects/amulet.cppm
-               src/filter_fx/filter_effects/adjustment_effects/complex_rational.cppm
-               src/filter_fx/filter_effects/adjustment_effects/complex_utils.cppm
-               src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cppm
-               src/filter_fx/filter_effects/adjustment_effects/distance_field.cppm
-               src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cppm
-               src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cppm
-               src/filter_fx/filter_effects/adjustment_effects/mobius.cppm
-               src/filter_fx/filter_effects/adjustment_effects/newton.cppm
-               src/filter_fx/filter_effects/adjustment_effects/perlin_noise.cppm
-               src/filter_fx/filter_effects/adjustment_effects/scrunch.cppm
-               src/filter_fx/filter_effects/adjustment_effects/speedway.cppm
-               src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.cppm
-               src/filter_fx/filter_effects/adjustment_effects/wave.cppm
-               src/filter_fx/filter_effects/adjustment_effects/y_only.cppm
-               src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cppm
-               src/filter_fx/filter_effects/zoom_vector_effects.cppm
-               src/filter_fx/filter_utils/goom_lerp_data.cppm
-               src/filter_fx/filter_utils/image_displacement.cppm
-               src/filter_fx/filter_utils/image_displacement_list.cppm
-               src/filter_fx/filter_utils/utils.cppm
-               src/filter_fx/common_types.cppm
-               src/filter_fx/filter_buffers.cppm
-               src/filter_fx/filter_consts.cppm
-               src/filter_fx/filter_buffers_service.cppm
-               src/filter_fx/filter_settings.cppm
-               src/filter_fx/filter_settings_service.cppm
-               src/filter_fx/filter_speed.cppm
-               src/filter_fx/filter_zoom_vector.cppm
-               src/filter_fx/normalized_coords.cppm
-               src/filter_fx/zoom_adjustment_effect.cppm
-               src/filter_fx/zoom_vector.cppm
-               src/utils/graphics/bezier_drawer.cppm
-               src/utils/graphics/blend2d_to_goom.cppm
-               src/utils/graphics/blend2d_utils.cppm
-               src/utils/graphics/camera.cppm
-               src/utils/graphics/image_bitmaps.cppm
-               src/utils/graphics/line_clipper.cppm
-               src/utils/graphics/pixel_blend.cppm
-               src/utils/graphics/pixel_utils.cppm
-               src/utils/graphics/point_utils.cppm
-               src/utils/graphics/small_image_bitmaps.cppm
-               src/utils/graphics/test_patterns.cppm
-               src/utils/math/damping_functions.cppm
-               src/utils/math/goom_rand.cppm
-               src/utils/math/goom_rand_base.cppm
-               src/utils/math/incremented_values.cppm
-               src/utils/math/misc.cppm
-               src/utils/math/parametric_functions2d.cppm
-               src/utils/math/paths.cppm
-               src/utils/math/randutils.cppm
-               src/utils/math/t_values.cppm
-               src/utils/math/transform2d.cppm
-               src/utils/text/drawable_text.cppm
-               src/utils/array_utils.cppm
-               src/utils/buffer_saver.cppm
-               src/utils/build_time.cppm
-               src/utils/date_utils.cppm
-               src/utils/debugging_logger.cppm
-               src/utils/enum_utils.cppm
-               src/utils/format_utils.cppm
-               src/utils/goom_time.cppm
-               src/utils/name_value_pairs.cppm
-               src/utils/parallel_utils.cppm
-               src/utils/step_speed.cppm
-               src/utils/stopwatch.cppm
-               src/utils/strutils.cppm
-               src/utils/thread_pool.cppm
-               src/utils/timer.cppm
-               src/visual_fx/circles/bitmap_getter.cppm
-               src/visual_fx/circles/circle.cppm
-               src/visual_fx/circles/circle_params_builder.cppm
-               src/visual_fx/circles/circles.cppm
-               src/visual_fx/circles/dot_diameters.cppm
-               src/visual_fx/circles/dot_drawer.cppm
-               src/visual_fx/circles/dot_paths.cppm
-               src/visual_fx/circles/helper.cppm
-               src/visual_fx/circles_fx.cppm
-               src/visual_fx/flying_stars/star_colors.cppm
-               src/visual_fx/flying_stars/star_colors_maker.cppm
-               src/visual_fx/flying_stars/star_drawer.cppm
-               src/visual_fx/flying_stars/star_maker.cppm
-               src/visual_fx/flying_stars/star_types_container.cppm
-               src/visual_fx/flying_stars/stars.cppm
-               src/visual_fx/flying_stars_fx.cppm
-               src/visual_fx/fx_utils/dot_drawer.cppm
-               src/visual_fx/fx_utils/lines.cppm
-               src/visual_fx/fx_utils/random_pixel_blender.cppm
-               src/visual_fx/ifs/colorizer.cppm
-               src/visual_fx/ifs/fractal.cppm
-               src/visual_fx/ifs/fractal_hits.cppm
-               src/visual_fx/ifs/ifs_types.cppm
-               src/visual_fx/ifs/low_density_blurrer.cppm
-               src/visual_fx/ifs/similitudes.cppm
-               src/visual_fx/l_systems/l_system.cppm
-               src/visual_fx/l_systems/lsys_colors.cppm
-               src/visual_fx/l_systems/lsys_draw.cppm
-               src/visual_fx/l_systems/lsys_geom.cppm
-               src/visual_fx/l_systems/lsys_paths.cppm
-               src/visual_fx/l_systems/incremented_values_bug_fix.cppm
-               src/visual_fx/l_systems/line_drawer_manager.cppm
-               src/visual_fx/lines/line_morph.cppm
-               src/visual_fx/lines/line_types.cppm
-               src/visual_fx/raindrops/raindrops.cppm
-               src/visual_fx/raindrops/raindrop_positions.cppm
-               src/visual_fx/shaders/chroma_factor_lerper.cppm
-               src/visual_fx/shaders/color_multiplier_lerper.cppm
-               src/visual_fx/shaders/high_contrast.cppm
-               src/visual_fx/shaders/hue_shift_lerper.cppm
-               src/visual_fx/shapes/bezier_flower.cppm
-               src/visual_fx/shapes/shape_parts.cppm
-               src/visual_fx/shapes/shape_paths.cppm
-               src/visual_fx/shapes/shapes.cppm
-               src/visual_fx/tentacles/circles_tentacle_layout.cppm
-               src/visual_fx/tentacles/tentacle_driver.cppm
-               src/visual_fx/tentacles/tentacle_plotter.cppm
-               src/visual_fx/tentacles/tentacle2d.cppm
-               src/visual_fx/tentacles/tentacle3d.cppm
-               src/visual_fx/tubes/tube_data.cppm
-               src/visual_fx/tubes/tubes.cppm
-               src/visual_fx/circles_fx.cppm
-               src/visual_fx/flying_stars_fx.cppm
-               src/visual_fx/fx_helper.cppm
-               src/visual_fx/fx_utils.cppm
-               src/visual_fx/goom_dots_fx.cppm
-               src/visual_fx/goom_visual_fx.cppm
-               src/visual_fx/ifs_dancers_fx.cppm
-               src/visual_fx/image_fx.cppm
-               src/visual_fx/l_system_fx.cppm
-               src/visual_fx/lines_fx.cppm
-               src/visual_fx/particles_fx.cppm
-               src/visual_fx/raindrops_fx.cppm
-               src/visual_fx/shader_fx.cppm
-               src/visual_fx/shapes_fx.cppm
-               src/visual_fx/tentacles_fx.cppm
-               src/visual_fx/tubes_fx.cppm
+               ${LSys_modules}
+               ${Particles_modules}
+               ${GoomLib_modules}
+               ${GoomColor_modules}
+               ${GoomControl_modules}
+               ${GoomDraw_modules}
+               ${GoomFilterFx_modules}
+               ${GoomUtils_modules}
+               ${GoomVisualFx_modules}
                src/plugin_info.cppm
 )
 
 add_dependencies(goom
                  libs::vivid
-                 LSys::lib
                  blend2d::blend2d
 )
 
@@ -359,12 +517,13 @@ target_include_directories(goom
 
 target_include_directories(goom
                            SYSTEM PRIVATE
+                           ${LSys_SOURCE_DIR}/include
+                           ${LSys_SOURCE_DIR}/include/lsys
                            ${GOOM_LIBS_DIR}/src/bezier/include
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/perlin_noise/include
                            ${GOOM_LIBS_DIR}/lib/std_fmt/include
-                           ${LSys_SOURCE_DIR}/include
                            ${blend2d_SOURCE_DIR}/src
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
@@ -387,7 +546,6 @@ message(STATUS "Goom: C++ compile options        = \"${goom_compile_options}\"."
 message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSYS}\".")
 message(STATUS "Goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Goom: blend2d_SOURCE_DIR         = \"${blend2d_SOURCE_DIR}\".")
-message(STATUS "Goom: LSys_SOURCE_DIR            = \"${LSys_SOURCE_DIR}\".")
 message(STATUS "Goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom: magic_enum_INCLUDE_DIR     = \"${magic_enum_INCLUDE_DIR}\".")

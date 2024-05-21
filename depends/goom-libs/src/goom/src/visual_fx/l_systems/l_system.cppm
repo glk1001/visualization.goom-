@@ -4,20 +4,20 @@ module;
 
 #include <cmath>
 #include <cstdint>
-#include <lsys/graphics_generator.h>
-#include <lsys/interpret.h>
-#include <lsys/l_sys_model.h>
-#include <lsys/list.h>
-#include <lsys/module.h>
-#include <lsys/parsed_model.h>
-#include <lsys/value.h>
-#include <lsys/vector.h>
 #include <memory>
 #include <string>
 #include <vector>
 
 module Goom.VisualFx.LSystemFx:LSystem;
 
+import LSys.GraphicsGenerator;
+import LSys.Interpret;
+import LSys.List;
+import LSys.LSysModel;
+import LSys.Module;
+import LSys.ParsedModel;
+import LSys.Value;
+import LSys.Vector;
 import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
