@@ -29,24 +29,10 @@ LSys_get_modules("${LSys_SOURCE_DIR}" LSys_modules)
 LSys_get_source_files("${LSys_SOURCE_DIR}" LSys_source_files)
 LSys_set_some_warnings_off("${LSys_SOURCE_DIR}")
 
-set(Particles_modules
-    src/particles/include/particles/effects/effect.cppm
-    src/particles/include/particles/effects/attractor_effect.cppm
-    src/particles/include/particles/effects/fountain_effect.cppm
-    src/particles/include/particles/effects/tunnel_effect.cppm
-    src/particles/include/particles/particle_generators.cppm
-    src/particles/include/particles/particle_updaters.cppm
-    src/particles/include/particles/particles.cppm
-)
-
-set(Particles_source_files
-    src/particles/src/particles/effects/attractor_effect.cpp
-    src/particles/src/particles/effects/fountain_effect.cpp
-    src/particles/src/particles/effects/tunnel_effect.cpp
-    src/particles/src/particles/particle_generators.cpp
-    src/particles/src/particles/particle_updaters.cpp
-    src/particles/src/particles/particles.cpp
-)
+include(src/particles/cmake/GetParticlesSources.cmake)
+set(Particles_SOURCE_DIR src/particles/)
+Particles_get_modules("${Particles_SOURCE_DIR}" Particles_modules)
+Particles_get_source_files("${Particles_SOURCE_DIR}" Particles_source_files)
 
 set(GoomLib_modules
     include/goom/circular_buffer.cppm
