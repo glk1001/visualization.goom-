@@ -23,103 +23,11 @@ else ()
     MESSAGE(STATUS "Goom: Logging turned off.")
 endif ()
 
-
-set(LSys_SOURCE_DIR src/lsys)
-
-set(LSys_modules
-    ${LSys_SOURCE_DIR}/include/lsys/actions.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/consts.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/expression.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/generator.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/generic_generator.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/graphics_generator.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/interpret.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/l_sys_model.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/list.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/module.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/name.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/parsed_model.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/polygon.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/production.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/radiance_generator.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/rand.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/symbol_table.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/turtle.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/value.cppm
-    ${LSys_SOURCE_DIR}/include/lsys/vector.cppm
-)
-
-set(LSys_source_files
-    ${LSys_SOURCE_DIR}/include/lsys/debug.h
-    ${LSys_SOURCE_DIR}/include/lsys/parser.h
-    ${LSys_SOURCE_DIR}/src/actions.cpp
-    ${LSys_SOURCE_DIR}/src/consts.cpp
-    ${LSys_SOURCE_DIR}/src/expression.cpp
-    ${LSys_SOURCE_DIR}/src/generator.cpp
-    ${LSys_SOURCE_DIR}/src/generic_generator.cpp
-    ${LSys_SOURCE_DIR}/src/graphics_generator.cpp
-    ${LSys_SOURCE_DIR}/src/interpret.cpp
-    ${LSys_SOURCE_DIR}/src/l_sys_model.cpp
-    ${LSys_SOURCE_DIR}/src/lexer.cpp
-    ${LSys_SOURCE_DIR}/src/module.cpp
-    ${LSys_SOURCE_DIR}/src/name.cpp
-    ${LSys_SOURCE_DIR}/src/parsed_model.cpp
-    ${LSys_SOURCE_DIR}/src/parser.cpp
-    ${LSys_SOURCE_DIR}/src/production.cpp
-    ${LSys_SOURCE_DIR}/src/rand.cpp
-    ${LSys_SOURCE_DIR}/src/radiance_generator.cpp
-    ${LSys_SOURCE_DIR}/src/token.h
-    ${LSys_SOURCE_DIR}/src/turtle.cpp
-    ${LSys_SOURCE_DIR}/src/value.cpp
-    ${LSys_SOURCE_DIR}/src/vector.cpp
-)
-
-set(MSVC_WARNINGS_OFF
-    /wd4005
-    /wd4201
-    /wd4996
-    /w
-)
-set(CLANG_WARNINGS_OFF
-    -Wno-extra
-    -Wno-date-time
-    -Wno-old-style-cast
-    -Wno-conversion
-    -Wno-sign-conversion
-    -Wno-implicit-fallthrough
-    -Wno-register
-    -Wno-unused-function
-    -Wno-write-strings
-    -Wno-switch-default
-)
-set(GCC_WARNINGS_OFF
-    ${CLANG_WARNINGS_OFF}
-    -Wno-pedantic
-    -Wno-useless-cast
-    -Wno-effc++
-)
-
-if (MSVC)
-    set(SOME_WARNINGS_OFF "${MSVC_WARNINGS_OFF}")
-elseif (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    set(SOME_WARNINGS_OFF "${CLANG_WARNINGS_OFF}")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(SOME_WARNINGS_OFF "${GCC_WARNINGS_OFF}")
-endif ()
-STRING(REPLACE ";" " " SOME_WARNINGS_OFF "${SOME_WARNINGS_OFF}")
-
-set_source_files_properties(
-        ${LSys_SOURCE_DIR}/src/command_line_options.cpp
-        ${LSys_SOURCE_DIR}/src/lexer.cpp
-        ${LSys_SOURCE_DIR}/src/name.cpp
-        ${LSys_SOURCE_DIR}/src/options.cpp
-        ${LSys_SOURCE_DIR}/src/parser.cpp
-        ${LSys_SOURCE_DIR}/src/value.cpp
-        ${LSys_SOURCE_DIR}/src/vector.cpp
-        PROPERTIES
-        COMPILE_FLAGS "${SOME_WARNINGS_OFF}"
-)
-
+include(src/lsys/cmake/GetLSysSources.cmake)
+set(LSys_SOURCE_DIR src/lsys/)
+LSys_get_modules("${LSys_SOURCE_DIR}" LSys_modules)
+LSys_get_source_files("${LSys_SOURCE_DIR}" LSys_source_files)
+LSys_set_some_warnings_off("${LSys_SOURCE_DIR}")
 
 set(Particles_modules
     src/particles/include/particles/effects/effect.cppm
@@ -517,13 +425,12 @@ target_include_directories(goom
 
 target_include_directories(goom
                            SYSTEM PRIVATE
-                           ${LSys_SOURCE_DIR}/include
-                           ${LSys_SOURCE_DIR}/include/lsys
                            ${GOOM_LIBS_DIR}/src/bezier/include
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/perlin_noise/include
                            ${GOOM_LIBS_DIR}/lib/std_fmt/include
+                           ${LSys_SOURCE_DIR}/include/lsys
                            ${blend2d_SOURCE_DIR}/src
                            ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
