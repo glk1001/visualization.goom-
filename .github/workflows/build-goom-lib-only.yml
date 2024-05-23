@@ -74,12 +74,12 @@ jobs:
           version: ${{ vars.GCC_VER }}
           platform: x64
 
-      - name: Install clang-format-${{ vars.CLANG_VER }} and clang-tidy-${{ vars.CLANG_VER }}
+      - name: Install clang-format-17 and clang-tidy-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         run: |
           sudo apt-get update
           sudo apt-get install -y python3
-          sudo apt-get install -y clang-format-${{ vars.CLANG_VER }}
+          sudo apt-get install -y clang-format-17
           sudo apt-get install -y clang-tidy-${{ vars.CLANG_VER }}
 
       - name: Install latest cmake
@@ -112,18 +112,20 @@ jobs:
                                                                   --build ${{ env.BUILD_DIR }} \
                                                                   --config ${{ matrix.config.build_type }}
 
-      - name: Run clang-format-${{ vars.CLANG_VER }}
+      - name: Run clang-format-17
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         shell: bash
         run: |
-          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_VER }}" \
+          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-17" \
                                               -i -r \
-                                              -e "*build-*" -e "*vivid*" -e "*bezier" -e "*tcb*" -e "*perlin_noise*" \
+                                              -e "*particles/src/glm" \
+                                              -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
+                                              -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" \
                                               "${PWD}"
           if [[ "$(git diff --name-only)" != "" ]]; then
             echo "ERROR: clang-format problem."
             echo
-            clang-format-${{ vars.CLANG_VER }} --version
+            clang-format-17 --version
             echo
             git diff --name-only
             #git diff
