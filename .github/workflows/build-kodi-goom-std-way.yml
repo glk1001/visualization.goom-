@@ -1,7 +1,5 @@
 name: Build kodi goom-pp using 'make'
 on:
-  push:
-    branches: [master]
   workflow_dispatch:
 
 jobs:

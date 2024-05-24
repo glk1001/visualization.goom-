@@ -62,7 +62,7 @@ public:
   virtual auto UpdateWindAndGravity() noexcept -> void                                     = 0;
 };
 
-class StarType;
+class StarType; // NOLINT(readability-identifier-naming): Seems to be a clang-tidy bug?
 
 class StarTypesContainer
 {

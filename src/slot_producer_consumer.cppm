@@ -65,20 +65,20 @@ private:
   GOOM::GoomLogger* m_goomLogger;
   std::string m_name;
   bool m_finished = false;
-  std::mutex m_mutex{};
-  std::condition_variable m_producer_cv{};
-  std::condition_variable m_consumer_cv{};
-  std::condition_variable m_resourcer_cv{};
+  std::mutex m_mutex;
+  std::condition_variable m_producer_cv;
+  std::condition_variable m_consumer_cv;
+  std::condition_variable m_resourcer_cv;
 
   size_t m_maxInUseSlots;
   size_t m_maxResourceItems = 0U;
-  std::queue<size_t> m_inUseSlotsQueue{};
-  std::queue<size_t> m_freeSlotsQueue{};
-  std::queue<TResource> m_resourceQueue{};
+  std::queue<size_t> m_inUseSlotsQueue;
+  std::queue<size_t> m_freeSlotsQueue;
+  std::queue<TResource> m_resourceQueue;
 
-  ProduceItemFunc m_produceItem{};
-  ProduceItemWithoutResourceFunc m_produceItemWithoutResource{};
-  ConsumeItemFunc m_consumeItem{};
+  ProduceItemFunc m_produceItem;
+  ProduceItemWithoutResourceFunc m_produceItemWithoutResource;
+  ConsumeItemFunc m_consumeItem;
   uint64_t m_numConsumeRequests            = 0U;
   uint64_t m_numTimesConsumerGaveUpWaiting = 0U;
 };

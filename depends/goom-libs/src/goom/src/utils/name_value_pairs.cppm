@@ -29,6 +29,7 @@ using NameValuePairs = std::vector<NameValuePair>;
 
 [[nodiscard]] auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string;
 
+// NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest)
 {
   std::move(cbegin(nameValues), cend(nameValues), std::back_inserter(dest));

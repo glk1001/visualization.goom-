@@ -95,7 +95,7 @@ public:
   auto operator()(double x) -> double override;
 
 private:
-  std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>> m_pieces{};
+  std::vector<std::tuple<double, double, std::unique_ptr<IDampingFunction>>> m_pieces;
 };
 
 class ISequenceFunction

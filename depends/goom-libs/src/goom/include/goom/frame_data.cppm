@@ -13,7 +13,7 @@ export namespace GOOM
 
 struct FilterPosArrays
 {
-  std::span<Point2dFlt> filterDestPos{};
+  std::span<Point2dFlt> filterDestPos;
   float filterPosBuffersLerpFactor                 = 0.0F;
   static constexpr auto MIN_POS1_POS2_MIX_FREQ     = 0.001F;
   static constexpr auto MAX_POS1_POS2_MIX_FREQ     = 0.010F;
@@ -23,9 +23,9 @@ struct FilterPosArrays
 };
 struct ImageArrays
 {
-  GOOM::PixelBuffer mainImagePixelBuffer{};
+  GOOM::PixelBuffer mainImagePixelBuffer;
   bool mainImagePixelBufferNeedsUpdating = false;
-  GOOM::PixelBuffer lowImagePixelBuffer{};
+  GOOM::PixelBuffer lowImagePixelBuffer;
   bool lowImagePixelBufferNeedsUpdating = false;
 };
 struct MiscData

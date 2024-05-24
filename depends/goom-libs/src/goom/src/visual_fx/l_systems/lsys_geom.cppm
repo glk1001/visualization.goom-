@@ -65,9 +65,9 @@ private:
     float cosRotateAngle{};
     Vec2dFlt translate;
   };
-  std::vector<TransformAdjust> m_transformAdjustArray{};
+  std::vector<TransformAdjust> m_transformAdjustArray;
   [[nodiscard]] auto GetTransformAdjustArray() const noexcept -> std::vector<TransformAdjust>;
-  std::vector<TransformLSys> m_currentTransformArray{};
+  std::vector<TransformLSys> m_currentTransformArray;
 
   Vec2dFlt m_translateAdjust{};
 

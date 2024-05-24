@@ -50,9 +50,11 @@ public:
   struct WeightedColorMaps
   {
     uint32_t id = 0;
+    // NOLINTBEGIN(readability-redundant-member-init): Causes compile error
     COLOR::WeightedRandomColorMaps mainColorMaps{};
     COLOR::WeightedRandomColorMaps lowColorMaps{};
     COLOR::WeightedRandomColorMaps extraColorMaps{};
+    // NOLINTEND(readability-redundant-member-init): Causes compile error
   };
   virtual auto SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) noexcept -> void;
 

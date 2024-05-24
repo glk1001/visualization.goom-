@@ -1,6 +1,5 @@
 #ifndef GOOM_DEBUG
 #define GOOM_DEBUG
-#include <cmath>
 #endif
 
 #include "goom/goom_config.h"

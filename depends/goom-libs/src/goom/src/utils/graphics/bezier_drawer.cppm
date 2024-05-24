@@ -59,8 +59,8 @@ public:
 private:
   DRAW::IGoomDraw* m_draw;
   const SmallImageBitmaps* m_smallBitmaps;
-  GetColorFunc m_lineColorFunc{};
-  GetColorFunc m_dotColorFunc{};
+  GetColorFunc m_lineColorFunc;
+  GetColorFunc m_dotColorFunc;
 
   static constexpr uint8_t DEFAULT_LINE_THICKNESS            = 1;
   uint8_t m_lineThickness                                    = DEFAULT_LINE_THICKNESS;

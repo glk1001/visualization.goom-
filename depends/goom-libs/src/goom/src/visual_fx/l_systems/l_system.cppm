@@ -106,9 +106,9 @@ private:
     LSystemFile::Overrides lSysOverrides{};
     float lSystemXScale = 1.0F;
     float lSystemYScale = 1.0F;
-    std::unique_ptr<::LSYS::LSysModel> lSysModel{};
+    std::unique_ptr<::LSYS::LSysModel> lSysModel;
   };
-  std::unique_ptr<::LSYS::List<::LSYS::Module>> m_lSysModuleList{};
+  std::unique_ptr<::LSYS::List<::LSYS::Module>> m_lSysModuleList;
   LSysModelSet m_lSysModelSet;
   [[nodiscard]] static auto GetLSysModelSet(const PluginInfo& goomInfo,
                                             const std::string& lSysDirectory,
@@ -141,7 +141,7 @@ private:
   static constexpr const auto* GENERATOR_NAME = "On the Fly";
   std::unique_ptr<::LSYS::GraphicsGenerator> m_LSysGenerator =
       std::make_unique<::LSYS::GraphicsGenerator>(GENERATOR_NAME, m_drawFuncs);
-  std::unique_ptr<::LSYS::Interpreter> m_lSysInterpreter{};
+  std::unique_ptr<::LSYS::Interpreter> m_lSysInterpreter;
 
   static constexpr auto BRIGHTNESS_ON_TIME         = 25U;
   static constexpr auto BRIGHTNESS_OFF_TIME        = 5U;

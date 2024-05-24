@@ -94,8 +94,8 @@ private:
   auto ChangeStarsColorMaps() noexcept -> void;
   auto ChangeTentaclesColorMaps() noexcept -> void;
 
-  IGoomStateHandler::DrawablesState m_currentGoomDrawables{};
-  ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc{};
+  IGoomStateHandler::DrawablesState m_currentGoomDrawables;
+  ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc;
   auto ResetDrawBuffSettings(GoomDrawables fx) -> void;
 
   auto SetFrameMiscDataToStandardFx() -> void;

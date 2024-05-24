@@ -52,7 +52,7 @@ private:
   bool m_pendingFilterEffectsSettings       = false;
   uint64_t m_numPendingFilterEffectsChanges = 0U;
 
-  std::thread m_bufferProducerThread{};
+  std::thread m_bufferProducerThread;
   auto StartTransformBufferThread() noexcept -> void;
   auto UpdateCompletedTransformBufferStats() noexcept -> void;
   auto CompletePendingSettings() noexcept -> void;

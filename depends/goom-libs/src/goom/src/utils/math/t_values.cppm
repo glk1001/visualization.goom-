@@ -87,7 +87,7 @@ private:
   };
   Boundaries m_currentPosition = Boundaries::INSIDE;
 
-  std::vector<DelayPoint> m_delayPoints{};
+  std::vector<DelayPoint> m_delayPoints;
   std::vector<DelayPoint> m_currentDelayPoints{m_delayPoints};
   bool m_startedDelay              = false;
   bool m_justFinishedDelay         = false;

@@ -82,7 +82,7 @@ protected:
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand = nullptr;
-  std::string m_colorMapsName{};
+  std::string m_colorMapsName;
 
   static constexpr float MIN_ROTATION_POINT = 0.5F;
   static constexpr float MAX_ROTATION_POINT = 0.9F;
@@ -119,7 +119,7 @@ public:
   [[nodiscard]] auto GetRandomColorMapName() const noexcept -> COLOR_DATA::ColorMapName override;
 
 private:
-  UTILS::MATH::Weights<ColorMapGroup> m_weights{};
+  UTILS::MATH::Weights<ColorMapGroup> m_weights;
   bool m_weightsActive = true;
 };
 

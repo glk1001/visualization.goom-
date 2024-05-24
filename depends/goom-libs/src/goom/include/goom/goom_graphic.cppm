@@ -204,7 +204,7 @@ protected:
 private:
   uint32_t m_width  = 0U;
   uint32_t m_height = 0U;
-  Buffer m_buff{};
+  Buffer m_buff;
 };
 
 class PixelBufferVector : public PixelBuffer

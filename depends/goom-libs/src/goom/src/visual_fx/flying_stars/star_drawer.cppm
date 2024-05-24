@@ -79,8 +79,7 @@ private:
   {
     CLEAN,
     SUPER_CLEAN,
-    MESSY,
-    _num // unused, and marks the enum end
+    MESSY
   };
   static constexpr float DRAW_MODES_CLEAN_WEIGHT       = 20.0F;
   static constexpr float DRAW_MODES_SUPER_CLEAN_WEIGHT = 10.0F;
@@ -297,8 +296,6 @@ inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
       return 1.0F + UTILS::MATH::SMALL_FLOAT;
     case DrawModes::MESSY:
       return MAX_MULTIPLIER;
-    default:
-      FailFast();
   }
 }
 
@@ -313,8 +310,6 @@ inline auto StarDrawer::GetLineMaxPartMultiplier() const noexcept -> float
     case DrawModes::CLEAN:
     case DrawModes::MESSY:
       return LINE_MAX_MULTIPLIER;
-    default:
-      FailFast();
   }
 }
 

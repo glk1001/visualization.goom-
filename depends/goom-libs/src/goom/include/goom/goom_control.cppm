@@ -35,9 +35,9 @@ public:
 
   struct SongInfo
   {
-    std::string title{};
-    std::string genre{};
-    uint32_t duration{};
+    std::string title;
+    std::string genre;
+    uint32_t duration = 0U;
   };
   auto SetSongInfo(const SongInfo& songInfo) -> void;
 

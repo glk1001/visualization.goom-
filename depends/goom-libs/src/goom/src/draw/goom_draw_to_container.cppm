@@ -53,8 +53,8 @@ protected:
       -> void override;
 
 private:
-  std::vector<std::vector<ColorsList>> m_xyPixelList{};
-  std::vector<Point2dInt> m_orderedXYPixelList{};
+  std::vector<std::vector<ColorsList>> m_xyPixelList;
+  std::vector<Point2dInt> m_orderedXYPixelList;
   [[nodiscard]] auto GetWriteableColorsList(const Point2dInt& point) noexcept -> ColorsList&;
   [[nodiscard]] auto GetLastDrawnColor(const Point2dInt& point) const noexcept -> Pixel;
   [[nodiscard]] auto GetLastDrawnColors(const Point2dInt& point) const noexcept -> MultiplePixels;

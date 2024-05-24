@@ -36,16 +36,16 @@ struct TubeDrawFuncs
 
 struct TubeData
 {
-  uint32_t tubeId{};
+  uint32_t tubeId = 0U;
   TubeDrawFuncs drawFuncs{};
-  uint32_t screenWidth{};
-  uint32_t screenHeight{};
-  const UTILS::GoomTime* goomTime{};
-  const UTILS::MATH::IGoomRand* goomRand{};
-  COLOR::WeightedRandomColorMaps mainColorMaps{};
-  COLOR::WeightedRandomColorMaps lowColorMaps{};
-  float radiusEdgeOffset{};
-  float brightnessFactor{};
+  uint32_t screenWidth                   = 0U;
+  uint32_t screenHeight                  = 0U;
+  const UTILS::GoomTime* goomTime        = nullptr;
+  const UTILS::MATH::IGoomRand* goomRand = nullptr;
+  COLOR::WeightedRandomColorMaps mainColorMaps;
+  COLOR::WeightedRandomColorMaps lowColorMaps;
+  float radiusEdgeOffset = 0.0F;
+  float brightnessFactor = 0.0F;
 };
 
 } // namespace GOOM::VISUAL_FX::TUBES

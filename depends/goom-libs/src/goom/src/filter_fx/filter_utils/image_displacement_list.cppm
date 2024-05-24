@@ -39,7 +39,7 @@ public:
   [[nodiscard]] auto GetCurrentImageDisplacement() -> ImageDisplacement&;
 
 private:
-  std::vector<ImageDisplacement> m_imageDisplacements{};
+  std::vector<ImageDisplacement> m_imageDisplacements;
   std::string m_resourcesDirectory;
   const UTILS::MATH::IGoomRand* m_goomRand;
   size_t m_currentImageDisplacementIndex = 0;

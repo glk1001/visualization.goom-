@@ -46,8 +46,8 @@ private:
       -> std::vector<std::vector<HitInfo>>;
   uint32_t m_maxHitCount                = 0;
   static constexpr size_t HITS_ESTIMATE = 1000;
-  std::vector<IfsPoint> m_hits{};
-  std::vector<IfsPoint> m_buffer{};
+  std::vector<IfsPoint> m_hits;
+  std::vector<IfsPoint> m_buffer;
 };
 
 } // namespace GOOM::VISUAL_FX::IFS

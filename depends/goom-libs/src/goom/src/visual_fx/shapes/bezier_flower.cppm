@@ -34,8 +34,8 @@ public:
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   uint32_t m_numPetals = 0;
-  std::vector<COLOR::ColorMapPtrWrapper> m_lineColorMaps{};
-  std::vector<COLOR::ColorMapPtrWrapper> m_dotColorMaps{};
+  std::vector<COLOR::ColorMapPtrWrapper> m_lineColorMaps;
+  std::vector<COLOR::ColorMapPtrWrapper> m_dotColorMaps;
   uint32_t m_currentPetalNum = 0;
 };
 

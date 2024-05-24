@@ -12,7 +12,7 @@ export namespace GOOM::OPENGL
 class IScene
 {
 public:
-  explicit IScene(const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
+  explicit IScene(const TextureBufferDimensions& textureBufferDimensions) noexcept;
   IScene(const IScene&)                    = delete;
   IScene(IScene&&)                         = delete;
   virtual ~IScene()                        = default;
@@ -26,7 +26,7 @@ public:
 
   auto GetFramebufferWidth() const noexcept -> int32_t;
   auto GetFramebufferHeight() const noexcept -> int32_t;
-  auto SetFramebufferDimensions(const GOOM::WindowDimensions& windowDimensions) noexcept -> void;
+  auto SetFramebufferDimensions(const WindowDimensions& windowDimensions) noexcept -> void;
 
   // Load textures, initialize shaders, etc.
   virtual auto InitScene() -> void             = 0;
@@ -36,7 +36,7 @@ public:
   virtual auto Render() -> void = 0;
 
   // Called when screen is resized.
-  virtual auto Resize(const GOOM::WindowDimensions& windowDimensions) -> void = 0;
+  virtual auto Resize(const WindowDimensions& windowDimensions) -> void = 0;
 
 private:
   int32_t m_width;
@@ -50,7 +50,7 @@ private:
 namespace GOOM::OPENGL
 {
 
-inline IScene::IScene(const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept
+inline IScene::IScene(const TextureBufferDimensions& textureBufferDimensions) noexcept
   : m_width{static_cast<int32_t>(textureBufferDimensions.width)},
     m_height{static_cast<int32_t>(textureBufferDimensions.height)}
 {
@@ -76,8 +76,8 @@ inline auto IScene::GetFramebufferHeight() const noexcept -> int32_t
   return m_framebufferHeight;
 }
 
-inline auto IScene::SetFramebufferDimensions(
-    const GOOM::WindowDimensions& windowDimensions) noexcept -> void
+inline auto IScene::SetFramebufferDimensions(const WindowDimensions& windowDimensions) noexcept
+    -> void
 {
   m_framebufferWidth  = windowDimensions.width;
   m_framebufferHeight = windowDimensions.height;

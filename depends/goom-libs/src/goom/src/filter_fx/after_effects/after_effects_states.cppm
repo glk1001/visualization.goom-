@@ -69,7 +69,7 @@ public:
                      const AfterEffectsOffTimeMap& offTimes) noexcept;
   AfterEffectsStates(const AfterEffectsStates&) noexcept = delete;
   AfterEffectsStates(AfterEffectsStates&&) noexcept      = delete;
-  ~AfterEffectsStates() noexcept;
+  ~AfterEffectsStates() noexcept; // NOLINT(performance-trivially-destructible)
   auto operator=(const AfterEffectsStates&) -> AfterEffectsStates& = delete;
   auto operator=(AfterEffectsStates&&) -> AfterEffectsStates&      = delete;
 

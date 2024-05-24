@@ -77,7 +77,7 @@ protected:
 private:
   Dimensions m_dimensions;
 
-  PixelBlendFunc m_pixelBlendFunc{};
+  PixelBlendFunc m_pixelBlendFunc;
   [[nodiscard]] static auto GetColorAddPixelBlend(const Pixel& bgndColor,
                                                   uint32_t intBuffIntensity,
                                                   const Pixel& fgndColor,

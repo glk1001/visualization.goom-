@@ -15,7 +15,7 @@ import Goom.Lib.GoomTypes;
 export namespace GOOM::CONTROL
 {
 
-enum class GoomStates : size_t
+enum class GoomStates : UnderlyingEnumType
 {
   CIRCLES_ONLY = 0,
   CIRCLES_IFS,

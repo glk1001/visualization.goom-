@@ -45,8 +45,8 @@ protected:
 private:
   uint32_t m_width{};
   uint32_t m_height{};
-  std::vector<RGB> m_owningBuff{};
-  std::string m_filename{};
+  std::vector<RGB> m_owningBuff;
+  std::string m_filename;
   [[nodiscard]] auto GetRGBImage() const -> std::tuple<uint8_t*, int32_t, int32_t, int32_t>;
   auto SetPixel(size_t x, size_t y, const RGB& pixel) noexcept -> void;
   auto Resize(const Dimensions& dimensions) noexcept -> void;

@@ -34,7 +34,7 @@ import :TubeData;
 namespace GOOM::VISUAL_FX::TUBES
 {
 
-enum class ColorMapMixMode
+enum class ColorMapMixMode: UnderlyingEnumType
 {
   SHAPES_ONLY,
   STRIPED_SHAPES_ONLY,
@@ -45,12 +45,12 @@ enum class ColorMapMixMode
 
 struct ShapeColors
 {
-  Pixel mainColor{};
-  Pixel lowColor{};
-  Pixel innerMainColor{};
-  Pixel innerLowColor{};
-  Pixel outerCircleMainColor{};
-  Pixel outerCircleLowColor{};
+  Pixel mainColor;
+  Pixel lowColor;
+  Pixel innerMainColor;
+  Pixel innerLowColor;
+  Pixel outerCircleMainColor;
+  Pixel outerCircleLowColor;
 };
 
 class BrightnessAttenuation

@@ -257,7 +257,7 @@ auto GoomVisualization::InitAudioValues(int32_t numChannels) noexcept -> void
   m_audioSampleLen = m_numChannels * AudioSamples::AUDIO_SAMPLE_LEN;
 }
 
-auto GoomVisualization::InitSceneFrameData() noexcept -> void
+auto GoomVisualization::InitSceneFrameData() -> void
 {
   m_glScene->InitScene();
 }

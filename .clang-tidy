@@ -24,7 +24,9 @@ Checks: >
   zircon-*,
   -misc-include-cleaner,
   -llvm-header-guard,
-  -abseil-string-find-str-contains
+  -readability-redundant-declaration,
+  -abseil-string-find-str-contains,
+  -cert-dcl58-cpp
 
 # Turn all the warnings from the checks above into errors.
 WarningsAsErrors: '*'

@@ -182,9 +182,9 @@ private:
   COLOR::ColorMapPtrWrapper m_linesMainColorMap{nullptr};
   COLOR::ColorMapPtrWrapper m_linesLowColorMap{nullptr};
   uint32_t m_numRotatingColors = 0;
-  std::vector<COLOR::ColorMapPtrWrapper> m_rotatingMainColorMaps{};
-  std::vector<COLOR::ColorMapPtrWrapper> m_rotatingLowColorMaps{};
-  std::vector<uint32_t> m_rotatingDotNums{};
+  std::vector<COLOR::ColorMapPtrWrapper> m_rotatingMainColorMaps;
+  std::vector<COLOR::ColorMapPtrWrapper> m_rotatingLowColorMaps;
+  std::vector<uint32_t> m_rotatingDotNums;
   static constexpr uint32_t NUM_ROTATING_COLOR_STEPS = 100U;
   UTILS::MATH::TValue m_rotatingColorsT{
       {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_ROTATING_COLOR_STEPS}

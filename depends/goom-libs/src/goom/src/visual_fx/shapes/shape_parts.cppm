@@ -156,7 +156,7 @@ private:
   static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
   uint32_t m_maxNumShapePaths;
   uint32_t m_totalNumShapeParts;
-  std::vector<ShapePath> m_shapePaths{};
+  std::vector<ShapePath> m_shapePaths;
   bool m_useEvenShapePartNumsForDirection = true;
 
   Point2dInt m_shapePathsTargetPoint;
@@ -183,8 +183,9 @@ private:
   };
   float m_minRadiusFraction;
   float m_maxRadiusFraction;
+  static constexpr auto DEFAULT_NUM_STEPS = 100U;
   UTILS::MATH::TValue m_radiusFractionT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, 100U}
+      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_NUM_STEPS}
   };
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;

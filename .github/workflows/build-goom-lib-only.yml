@@ -92,6 +92,10 @@ jobs:
         with:
           version: '1.11.1'
 
+      - name: Configure Developer Command Prompt for Microsoft Visual C++.
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Configure
         shell: bash
         run: |
@@ -128,10 +132,10 @@ jobs:
             clang-format-17 --version
             echo
             git diff --name-only
-            #git diff
             echo
             exit 1
           fi
+          echo "Success: Everything is clang-formatted correctly."
 
       - name: Run clang-tidy-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
@@ -148,7 +152,8 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.GOOM_LIBS_DIR }}
-          ${{ env.BUILD_DIR }}/goom-libs-artifacts/bin/${{ matrix.config.build_type }}/goom_lib_tests -d yes
+
+          ${{ env.BUILD_DIR }}/${{ env.GOOM_LIBS_DIR }}/src/tests/goom_lib_tests -d yes
 
       - name: Run Goom++ Test Harness for  ${{ runner.os }}
         if: ${{ runner.os == 'Windows' }}
@@ -156,5 +161,4 @@ jobs:
         run: |
           cd ${{ env.GOOM_LIBS_DIR }}
 
-          ${{ env.BUILD_DIR }}/goom-libs-artifacts/bin/Release/goom_lib_tests.exe -d yes
-
+          ${{ env.BUILD_DIR }}/${{ env.GOOM_LIBS_DIR }}/src/tests/goom_lib_tests.exe -d yes

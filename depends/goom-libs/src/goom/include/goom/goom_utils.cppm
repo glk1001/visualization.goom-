@@ -52,10 +52,12 @@ template<typename U, typename T>
 
   if constexpr (std::is_same_v<U, const std::remove_pointer_t<U>*>)
   {
+    // NOLINTNEXTLINE(bugprone-casting-through-void)
     return static_cast<U>(static_cast<const void*>(ptr));
   }
   else
   {
+    // NOLINTNEXTLINE(bugprone-casting-through-void)
     return static_cast<U>(static_cast<void*>(ptr));
   }
 }

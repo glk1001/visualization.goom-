@@ -177,7 +177,7 @@ auto CVisualizationGoom::HandleError(const std::string& errorMsg) -> void
 
 auto CVisualizationGoom::PassSettings() noexcept -> void
 {
-  m_goomVisualization.SetRandomSeed(std::random_device{}());
+  GoomVisualization::SetRandomSeed(std::random_device{}());
 
   m_goomVisualization.SetShowGoomState(KODI_ADDON::GetSettingBoolean(SHOW_GOOM_STATE_SETTING));
   m_goomVisualization.SetDumpDirectory(

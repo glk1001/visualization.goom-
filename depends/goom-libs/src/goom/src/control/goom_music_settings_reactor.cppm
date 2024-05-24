@@ -55,7 +55,7 @@ private:
   static constexpr uint32_t MEGA_LENT_LOCK_TIME_INCREASE           = 50;
   static constexpr uint32_t CHANGE_VITESSE_LOCK_TIME_INCREASE      = 50;
   static constexpr uint32_t CHANGE_SWITCH_VALUES_LOCK_TIME         = 150;
-  GoomLock m_lock{}; // pour empecher de nouveaux changements
+  GoomLock m_lock; // pour empecher de nouveaux changements
 
   static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 300;
   static constexpr auto MAX_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 500;

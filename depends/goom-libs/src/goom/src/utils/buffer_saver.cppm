@@ -230,6 +230,7 @@ auto BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
   if (not file.good())
   {
     throw std::runtime_error(std::format(
+        // NOLINTNEXTLINE(concurrency-mt-unsafe)
         "Could not open file '{}' for binary writing. Error: {}.", filename, strerror(errno)));
   }
   WriteBinary(file, tag, header, buffer);
@@ -296,6 +297,7 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
   if (not file.good())
   {
     throw std::runtime_error(std::format(
+        // NOLINTNEXTLINE(concurrency-mt-unsafe)
         "Could not open file '{}' for text writing. Error: {}.", filename, strerror(errno)));
   }
   WriteFormatted(file, tag, header, buffer, formatters);

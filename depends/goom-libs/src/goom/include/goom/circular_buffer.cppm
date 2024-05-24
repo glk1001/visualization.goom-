@@ -131,6 +131,7 @@ auto CircularBuffer<T>::Read(std::vector<T>& dest) noexcept -> void
 }
 
 // TODO(glk) Make this a unit test
+// NOLINTNEXTLINE(readability-avoid-unconditional-preprocessor-if)
 #if 0 // Visual Studio not happy with this
 static constexpr int SILENCE_THRESHOLD = 8;
 

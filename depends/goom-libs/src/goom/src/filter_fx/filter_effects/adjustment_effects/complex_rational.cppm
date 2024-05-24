@@ -44,8 +44,8 @@ public:
     float modulatorPeriod;
     struct ZeroesAndPoles
     {
-      std::vector<std::complex<FltCalcType>> zeroes{};
-      std::vector<std::complex<FltCalcType>> poles{};
+      std::vector<std::complex<FltCalcType>> zeroes;
+      std::vector<std::complex<FltCalcType>> poles;
     };
     ZeroesAndPoles zeroesAndPoles{};
   };

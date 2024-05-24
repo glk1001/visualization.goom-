@@ -157,8 +157,8 @@ private:
   auto SetupGlData() -> void;
   auto InitTextureBuffers() noexcept -> void;
   auto SetupGlLumComputeData() noexcept -> void;
-  RequestNextFrameDataFunc m_requestNextFrameData{};
-  ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData{};
+  RequestNextFrameDataFunc m_requestNextFrameData;
+  ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData;
   auto UpdatePass1MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePass4MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdateCurrentDestFilterPosBufferToGl() noexcept -> void;
@@ -235,7 +235,7 @@ private:
                 FILTER_POS_TEX_INTERNAL_FORMAT,
                 FILTER_POS_TEX_PIXEL_TYPE,
                 0>
-        filterSrcePosTexture{};
+        filterSrcePosTexture;
     Gl2DTexture<FilterPosBuffersXY,
                 NUM_FILTER_POS_TEXTURES,
                 FILTER_DEST_POS_TEX_LOCATION,
@@ -243,7 +243,7 @@ private:
                 FILTER_POS_TEX_INTERNAL_FORMAT,
                 FILTER_POS_TEX_PIXEL_TYPE,
                 NUM_PBOS>
-        filterDestPosTexture{};
+        filterDestPosTexture;
     size_t numActiveTextures         = NUM_FILTER_POS_TEXTURES;
     size_t currentActiveTextureIndex = 0;
   };
@@ -260,7 +260,7 @@ private:
                 FILTER_BUFF_TEX_INTERNAL_FORMAT,
                 FILTER_BUFF_TEX_PIXEL_TYPE,
                 0>
-        filterBuff1Texture{};
+        filterBuff1Texture;
     Gl2DTexture<GOOM::PixelIntType,
                 NUM_FILTER_BUFF_TEXTURES,
                 FILTER_BUFF2_TEX_LOCATION,
@@ -268,7 +268,7 @@ private:
                 FILTER_BUFF_TEX_INTERNAL_FORMAT,
                 FILTER_BUFF_TEX_PIXEL_TYPE,
                 0>
-        filterBuff2Texture{};
+        filterBuff2Texture;
     Gl2DTexture<GOOM::PixelIntType,
                 NUM_FILTER_BUFF_TEXTURES,
                 FILTER_BUFF3_TEX_LOCATION,
@@ -276,7 +276,7 @@ private:
                 FILTER_BUFF_TEX_INTERNAL_FORMAT,
                 FILTER_BUFF_TEX_PIXEL_TYPE,
                 0>
-        filterBuff3Texture{};
+        filterBuff3Texture;
   };
   GlFilterBuffers m_glFilterBuffers{};
   auto SetupGlFilterBuffers() -> void;
@@ -291,7 +291,7 @@ private:
                 IMAGE_TEX_INTERNAL_FORMAT,
                 IMAGE_TEX_PIXEL_TYPE,
                 NUM_PBOS>
-        mainImageTexture{};
+        mainImageTexture;
     Gl2DTexture<GOOM::Pixel,
                 NUM_IMAGE_TEXTURES,
                 LOW_IMAGE_TEX_LOCATION,
@@ -299,7 +299,7 @@ private:
                 IMAGE_TEX_INTERNAL_FORMAT,
                 IMAGE_TEX_PIXEL_TYPE,
                 NUM_PBOS>
-        lowImageTexture{};
+        lowImageTexture;
   };
   GlImageBuffers m_glImageBuffers{};
   auto SetupGlImageBuffers() -> void;
@@ -753,6 +753,7 @@ auto DisplacementFilter::UpdateFrameData(const size_t pboIndex) noexcept -> void
   m_currentPboIndex = pboIndex;
 }
 
+// NOLINTNEXTLINE(bugprone-exception-escape): Not sure what clang-tidy is on about
 auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
 {
   m_receivedFrameData = m_requestNextFrameData();
@@ -812,6 +813,7 @@ auto DisplacementFilter::WaitForRenderSync() noexcept -> void
   m_releaseCurrentFrameData(m_currentPboIndex);
 }
 
+// NOLINTNEXTLINE(bugprone-exception-escape): Not sure what clang-tidy is on about
 auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
 {
   m_programPass4ResetFilterBuff2AndOutputBuff3.Use();
@@ -850,6 +852,7 @@ auto DisplacementFilter::Pass5OutputToScreen() noexcept -> void
                                 GL_LINEAR));
 }
 
+// NOLINTNEXTLINE(bugprone-exception-escape): Not sure what clang-tidy is on about
 auto DisplacementFilter::Pass2FilterBuff3LuminanceHistogram() noexcept -> void
 {
   m_programPass2FilterBuff1LuminanceHistogram.Use();
@@ -863,6 +866,7 @@ auto DisplacementFilter::Pass2FilterBuff3LuminanceHistogram() noexcept -> void
   GlCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
 }
 
+// NOLINTNEXTLINE(bugprone-exception-escape): Not sure what clang-tidy is on about
 auto DisplacementFilter::Pass3FilterBuff3LuminanceAverage() noexcept -> void
 {
   m_programPass3FilterBuff1LuminanceAverage.Use();
@@ -871,6 +875,7 @@ auto DisplacementFilter::Pass3FilterBuff3LuminanceAverage() noexcept -> void
   GlCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 }
 
+// NOLINTNEXTLINE(bugprone-exception-escape): Not sure what clang-tidy is on about
 auto DisplacementFilter::SetupGlLumComputeData() noexcept -> void
 {
   SetupGlLumHistogramBuffer();
@@ -969,6 +974,7 @@ auto DisplacementFilter::UpdatePass4MiscDataToGl(const size_t pboIndex) noexcept
       UNIFORM_GAMMA, m_frameDataArray.at(pboIndex).miscData.gamma);
 }
 
+// NOLINTNEXTLINE(bugprone-exception-escape): Not sure what clang-tidy is on about
 auto DisplacementFilter::UpdateCurrentDestFilterPosBufferToGl() noexcept -> void
 {
   if (not m_frameDataArray.at(m_currentPboIndex).filterPosArrays.filterDestPosNeedsUpdating)

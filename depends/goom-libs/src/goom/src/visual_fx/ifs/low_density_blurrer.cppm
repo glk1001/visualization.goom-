@@ -74,7 +74,7 @@ private:
   const Colorizer* m_colorizer;
   float m_neighbourMixFactor = 1.0;
   BlurrerColorMode m_colorMode{};
-  Pixel m_singleColor{};
+  Pixel m_singleColor;
 
   auto SetPointColors(std::vector<IfsPoint>& lowDensityPoints,
                       uint32_t maxLowDensityCount) const noexcept -> void;

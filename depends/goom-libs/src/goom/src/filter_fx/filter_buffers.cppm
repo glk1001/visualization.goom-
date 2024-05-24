@@ -61,8 +61,8 @@ private:
   UpdateStatus m_updateStatus = UpdateStatus::AT_START;
 
   bool m_shutdown = false;
-  std::mutex m_mutex{};
-  std::condition_variable m_bufferProducer_cv{};
+  std::mutex m_mutex;
+  std::condition_variable m_bufferProducer_cv;
 
   UTILS::Parallel m_parallel{UTILS::GetNumAvailablePoolThreads()};
   ZoomPointFunc m_getZoomPoint;

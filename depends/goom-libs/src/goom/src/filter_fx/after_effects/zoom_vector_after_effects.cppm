@@ -36,7 +36,7 @@ private:
   uint32_t m_screenWidth;
   AfterEffects m_afterEffects;
   AfterEffectsStates::AfterEffectsSettings m_afterEffectsSettings{};
-  RotationAdjustments m_rotationAdjustments{};
+  RotationAdjustments m_rotationAdjustments;
   Point2dInt m_zoomMidpoint{};
 
   auto SetRandomHypercosOverlayEffects() noexcept -> void;

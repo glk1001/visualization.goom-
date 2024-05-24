@@ -73,9 +73,9 @@ private:
   IGoomStateHandler* m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
   auto ChangeState() noexcept -> void;
-  IGoomStateHandler::DrawablesState m_currentGoomDrawables{};
+  IGoomStateHandler::DrawablesState m_currentGoomDrawables;
 
-  ResetDrawBuffSettingsFunc m_resetDrawBuffSettings{};
+  ResetDrawBuffSettingsFunc m_resetDrawBuffSettings;
   auto ResetCurrentDrawBuffSettings(GoomDrawables fx) noexcept -> void;
   [[nodiscard]] auto GetCurrentBuffSettings(GoomDrawables fx) const noexcept -> FXBuffSettings;
 

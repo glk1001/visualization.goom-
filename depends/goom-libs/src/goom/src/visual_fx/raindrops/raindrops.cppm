@@ -63,8 +63,8 @@ private:
   COLOR::WeightedRandomColorMaps m_randomLowColorMaps;
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
   DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer;
-  Pixel m_mainWeightPointColor{};
-  Pixel m_lowWeightPointColor{};
+  Pixel m_mainWeightPointColor;
+  Pixel m_lowWeightPointColor;
 
   static constexpr auto RADIUS_TO_RECT_SIDE_FRAC       = 1.0F / 50.0F;
   static constexpr auto MIN_TO_MAX_RADIUS_FRAC         = 1.0F / 50.0F;

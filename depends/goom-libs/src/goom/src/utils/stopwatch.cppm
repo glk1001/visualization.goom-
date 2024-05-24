@@ -45,8 +45,8 @@ public:
 
 private:
   float m_durationInMs = 0.0F;
-  ChronoTimePoint m_startTime{};
-  ChronoTimePoint m_lastMarkedTime{};
+  ChronoTimePoint m_startTime;
+  ChronoTimePoint m_lastMarkedTime;
   float m_startDelayAdjustInMs                        = 0.0F;
   bool m_doUpperLimitOfTimeIntervalCheck              = false;
   float m_upperLimitOfTimeIntervalInMsSinceLastMarked = std::numeric_limits<float>::max();

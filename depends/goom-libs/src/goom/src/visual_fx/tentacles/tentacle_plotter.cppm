@@ -50,7 +50,7 @@ private:
   LineClipper m_lineClipper{GetLineClipRectangle(1U)};
   [[nodiscard]] auto GetLineClipRectangle(uint8_t lineThickness) const noexcept -> Rectangle2dInt;
 
-  GetColorsFunc m_getColors{};
+  GetColorsFunc m_getColors;
   DRAW::MultiplePixels m_endDotColors{};
   float m_nodeTOffset = 0.0F;
 

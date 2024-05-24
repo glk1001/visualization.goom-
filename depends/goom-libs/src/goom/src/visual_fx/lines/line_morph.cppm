@@ -73,7 +73,7 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   PixelChannelType m_defaultAlpha;
 
-  COLOR::WeightedRandomColorMaps m_colorMaps{};
+  COLOR::WeightedRandomColorMaps m_colorMaps;
   COLOR::ConstColorMapSharedPtr m_currentColorMapPtr = nullptr;
   float m_currentBrightness                          = 1.0F;
 

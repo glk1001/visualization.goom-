@@ -76,7 +76,7 @@ public:
 
 private:
   using SimiGroup = std::vector<Similitude>;
-  SimiGroup m_mainSimiGroup{};
+  SimiGroup m_mainSimiGroup;
   static constexpr size_t NUM_EXTRA_SIMI_GROUPS = 4;
   using ExtraSimiGroups                         = std::array<SimiGroup, NUM_EXTRA_SIMI_GROUPS>;
   ExtraSimiGroups m_extraSimiGroups{};
@@ -97,7 +97,7 @@ private:
   COLOR::WeightedRandomColorMaps m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
-  IfsFunc m_currentIfsFunc{};
+  IfsFunc m_currentIfsFunc;
 
   struct CentreType
   {

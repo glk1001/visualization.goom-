@@ -58,10 +58,10 @@ public:
 
   struct TrackInfo
   {
-    std::string title{};
-    std::string artist{};
-    std::string albumArtist{};
-    std::string genre{};
+    std::string title;
+    std::string artist;
+    std::string albumArtist;
+    std::string genre;
     uint32_t duration = 0U;
   };
   auto UpdateTrack(const TrackInfo& track) -> void;
@@ -76,14 +76,14 @@ private:
   auto InitConstructor() noexcept -> void;
 
   std::unique_ptr<GOOM::OPENGL::DisplacementFilter> m_glScene;
-  auto InitSceneFrameData() noexcept -> void;
+  auto InitSceneFrameData() -> void;
 
   std::unique_ptr<GOOM::GoomControl> m_goomControl;
   auto InitGoomControl() noexcept -> void;
 
   GOOM::SlotProducerConsumer<GOOM::AudioSamples> m_slotProducerConsumer;
   GOOM::SlotProducerIsDriving<GOOM::AudioSamples> m_slotProducerIsDriving;
-  std::thread m_slotProducerConsumerThread{};
+  std::thread m_slotProducerConsumerThread;
   auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
   auto ConsumeItem(size_t slot) noexcept -> void;
   uint32_t m_numberOfDroppedAudioSamples = 0U;

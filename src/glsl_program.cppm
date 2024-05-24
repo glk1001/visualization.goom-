@@ -69,8 +69,8 @@ public:
   auto SetUniform(const std::string_view& name, GLuint val) -> void;
 
 private:
-  GLuint m_handle;
-  bool m_linked;
+  GLuint m_handle = 0;
+  bool m_linked = false;
 
   std::unordered_map<std::string, int> m_uniformLocations;
   auto FindUniformLocations() -> void;
@@ -117,9 +117,7 @@ const std::unordered_map<std::string, int32_t> EXTENSIONS = {
 
 } // namespace
 
-GlslProgram::GlslProgram() : m_handle(0), m_linked(false)
-{
-}
+GlslProgram::GlslProgram() = default;
 
 GlslProgram::~GlslProgram()
 {

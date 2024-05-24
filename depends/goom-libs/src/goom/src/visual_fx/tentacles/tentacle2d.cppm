@@ -75,11 +75,11 @@ private:
   static constexpr double DEFAULT_ITER_ZERO_LERP_FACTOR = 0.8;
   double m_iterZeroLerpFactor                           = DEFAULT_ITER_ZERO_LERP_FACTOR;
 
-  std::vector<double> m_xVec{};
-  std::vector<double> m_yVec{};
-  std::vector<double> m_dampedXVec{};
-  std::vector<double> m_dampedYVec{};
-  std::vector<double> m_dampingCache{};
+  std::vector<double> m_xVec;
+  std::vector<double> m_yVec;
+  std::vector<double> m_dampedXVec;
+  std::vector<double> m_dampedYVec;
+  std::vector<double> m_dampingCache;
   static constexpr auto NUM_IGNORE_FIRST_VALS = 10U;
   XAndYVectors m_dampedVectors{std::ref(m_dampedXVec), std::ref(m_dampedYVec)};
   std::unique_ptr<UTILS::MATH::IDampingFunction> m_dampingFunc;
