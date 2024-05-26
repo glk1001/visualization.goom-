@@ -26,8 +26,8 @@ jobs:
             build_type: 'Release',
           }
         - {
-            name: 'Windows Latest MSVC - Release',
-            os: 'windows-latest',
+            name: 'Windows 2022 MSVC - Release',
+            os: 'windows-2022',
             cc: 'cl',
             cxx: 'cl',
             build_type: 'Release',
