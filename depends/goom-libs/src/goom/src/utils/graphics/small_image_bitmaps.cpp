@@ -16,6 +16,8 @@ module Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.GoomConfigPaths;
+import Goom.Lib.GoomPaths;
 import Goom.Lib.GoomUtils;
 
 namespace GOOM::UTILS::GRAPHICS

@@ -10,6 +10,8 @@ module Goom.FilterFx.FilterUtils.ImageDisplacementList;
 
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.GoomConfigPaths;
+import Goom.Lib.GoomPaths;
 import Goom.Lib.GoomUtils;
 import Goom.Lib.Point2d;
 

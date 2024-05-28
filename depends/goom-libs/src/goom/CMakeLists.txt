@@ -39,8 +39,10 @@ set(GoomLib_modules
     include/goom/compiler_versions.cppm
     include/goom/frame_data.cppm
     include/goom/goom_buffer_saver.cppm
+    include/goom/goom_config_paths.cppm
     include/goom/goom_control.cppm
     include/goom/goom_graphic.cppm
+    include/goom/goom_paths.cppm
     include/goom/goom_types.cppm
     include/goom/goom_utils.cppm
     include/goom/goom_version.cppm

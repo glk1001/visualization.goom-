@@ -8,6 +8,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <string>
 
+import Goom.Lib.GoomConfigPaths;
+import Goom.Lib.GoomPaths;
 import Goom.Lib.GoomUtils;
 
 namespace GOOM::UNIT_TESTS
@@ -18,7 +20,7 @@ namespace GOOM::UNIT_TESTS
 TEST_CASE("Paths")
 {
   static constexpr auto TEST_STR           = "test"_cts;
-  static constexpr auto TEST_STR_ARRAY     = TEST_STR.to_array();
+  static constexpr auto TEST_STR_ARRAY     = TEST_STR.buffer;
   static constexpr auto EXPECTED_STR_ARRAY = std::to_array({'t', 'e', 's', 't', '\0'});
   REQUIRE(TEST_STR_ARRAY == EXPECTED_STR_ARRAY);
 

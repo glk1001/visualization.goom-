@@ -28,8 +28,9 @@
 #endif
 
 import Goom.GoomVisualization;
+import Goom.Lib.GoomConfigPaths;
 import Goom.Lib.GoomControl;
-import Goom.Lib.GoomUtils;
+import Goom.Lib.GoomPaths;
 
 using GOOM::AudioSamples;
 using GOOM::GoomControl;

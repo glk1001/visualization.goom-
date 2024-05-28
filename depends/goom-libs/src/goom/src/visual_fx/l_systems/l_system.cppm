@@ -25,6 +25,7 @@ import :IncrementedValuesBugFix;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.GoomPaths;
 import Goom.Lib.GoomUtils;
 import Goom.Lib.Point2d;
 import Goom.PluginInfo;
