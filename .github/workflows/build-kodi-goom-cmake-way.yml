@@ -23,6 +23,7 @@ jobs:
           echo "KODI_BRANCH:            ${{ vars.KODI_BRANCH }}"
           echo "VIS_GOOM_ROOT_DIR:      ${{ vars.VIS_GOOM_ROOT_DIR }}"
           echo "CLANG_VER:              ${{ vars.CLANG_VER }}"
+          echo "CLANG_FORMAT_VER:       ${{ vars.CLANG_FORMAT_VER }}"
           echo "GCC_VER:                ${{ vars.GCC_VER }}"
 
   build:
@@ -31,7 +32,8 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     strategy:
-      fail-fast: false
+      fail-fast: true
+      max-parallel: 2
       matrix:
         config:
         - {
@@ -50,13 +52,12 @@ jobs:
           }
 
     env:
-      KODI_PATH:              ${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}
-      KODI_ADDONS_BUILD_PATH: ${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}/kodi-build/addons
-      VIS_GOOM_PATH: ${{ github.workspace }}/${{ vars.VIS_GOOM_ROOT_DIR }}
-      BINARY_ADDONS_FILE: 'cmake/addons/bootstrap/repositories/binary-addons.txt'
-      ARCHIVE_NAME: 'kodi-${{ vars.KODI_BRANCH }}-goom++-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+      KODI_PATH:      '${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}'
+      VIS_GOOM_PATH:  '${{ github.workspace }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
+      GOOM_LIBS_DIR:  'depends/goom-libs'
+      ARCHIVE_NAME:   'kodi-${{ vars.KODI_BRANCH }}-goom++-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
       ARTIFACTS_PATH: '${{ github.workspace }}/artifacts-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
-      BUILD_PATH:                                 'build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+      BUILD_PATH:     'build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
 
     steps:
       - name: Clone this Goom++ Repo
@@ -80,52 +81,50 @@ jobs:
           echo "cc:                     ${{ matrix.config.cc }}"
           echo "cxx:                    ${{ matrix.config.cxx }}"
           echo "os:                     ${{ matrix.config.os }}"
+          echo "VIS_GOOM_PATH:          ${{ env.VIS_GOOM_PATH }}"
+          echo "GOOM_LIBS_DIR:          ${{ env.GOOM_LIBS_DIR }}"
           echo "KODI_PATH:              ${{ env.KODI_PATH }}"
-          echo "KODI_ADDONS_BUILD_PATH: ${{ env.KODI_ADDONS_BUILD_PATH  }}"
           echo "BUILD_PATH:             ${{ env.BUILD_PATH }}"
           echo "ARCHIVE_NAME:           ${{ env.ARCHIVE_NAME }}"
           echo "ARTIFACTS_PATH:         ${{ env.ARTIFACTS_PATH }}"
-          echo "BINARY_ADDONS_FILE:     ${{ env.BINARY_ADDONS_FILE }}"
-
-      - name: Change Kodi Binary Repo for ${{ runner.os }}
-        if: ${{ runner.os == 'Linux' }}
-        shell: bash
-        run: |
-          cd ${{ vars.KODI_ROOT_DIR }}
-          sed -i 's/xbmc/glk1001/g' ${{ env.BINARY_ADDONS_FILE }}
-          sed -i 's/ ${{ vars.KODI_BRANCH }}/ ${{ github.ref_name }}/g' ${{ env.BINARY_ADDONS_FILE }}
-          cat ${{ env.BINARY_ADDONS_FILE }}
-
-      - name: Change Kodi Binary Repo for ${{ runner.os }}
-        if: ${{ runner.os == 'Windows' }}
-        shell: powershell
-        run: |
-          cd ${{ vars.KODI_ROOT_DIR }}
-          (Get-Content '${{ env.BINARY_ADDONS_FILE }}') -replace 'xbmc', 'glk1001' | Set-Content '${{ env.BINARY_ADDONS_FILE }}'
-          (Get-Content '${{ env.BINARY_ADDONS_FILE }}') -replace ' ${{ vars.KODI_BRANCH }}', ' ${{ github.ref_name }}' | Set-Content '${{ env.BINARY_ADDONS_FILE }}'
-          type ${{ env.BINARY_ADDONS_FILE }}
 
       - name: Install Clang-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
-        uses: egor-tensin/setup-clang@v1
-        with:
-          version: ${{ vars.CLANG_VER }}
-          platform: x64
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
 
-      - name: Install GCC-${{ vars.GCC_VER }}
+          sudo apt-get update
+          sudo bash docker-toolchains/llvm.sh ${{ vars.CLANG_VER }}
+
+      # Clang-19 found a bug in gcc 14 libstdc++:
+      #   "This change uncovered a bug in libstdc++ 14.1.0 which may cause compile
+      #    failures on systems using that version of libstdc++ and Clang 19..."
+      # So make sure gcc-13 is installed, then remove gcc-14.
+      - name: Install gcc-13
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         uses: egor-tensin/setup-gcc@v1
         with:
-          version: ${{ vars.GCC_VER }}
+          version: 13
           platform: x64
 
-      - name: Install clang-format-17 and clang-tidy-${{ vars.CLANG_VER }}
+      - name: Remove gcc-14
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        run: |
+          sudo apt-get update
+          sudo apt-get remove gcc-14
+          sudo apt-get autoclean && sudo apt-get autoremove --purge
+
+      - name: Install clang-format-${{ vars.CLANG_FORMAT_VER }} and clang-tidy-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         run: |
           sudo apt-get update
           sudo apt-get install -y python3
-          sudo apt-get install -y clang-format-17
+          sudo apt-get install -y clang-format-${{ vars.CLANG_FORMAT_VER }}
           sudo apt-get install -y clang-tidy-${{ vars.CLANG_VER }}
+
+          python3 --version
+          clang-format-${{ vars.CLANG_FORMAT_VER }} --version
+          clang-tidy-${{ vars.CLANG_VER }} --version
 
       - name: Install Necessary Ubuntu Packages
         if: ${{ startsWith(matrix.config.name, 'Ubuntu') }}
@@ -143,12 +142,33 @@ jobs:
         with:
           version: '1.11.1'
 
+      - name: Run clang-format-${{ vars.CLANG_FORMAT_VER }}
+        if: startsWith(matrix.config.name, 'Ubuntu Clang')
+        shell: bash
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+
+          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_FORMAT_VER }}" \
+                                              -i -r \
+                                              -e "*particles/src/glm" \
+                                              -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
+                                              -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" -e "*magic_enum*" \
+                                              "${PWD}"
+          if [[ "$(git diff --name-only)" != "" ]]; then
+            echo "ERROR: clang-format problem."
+            echo
+            clang-format-${{ vars.CLANG_FORMAT_VER }} --version
+            echo
+            git diff --name-only
+            echo
+            exit 1
+          fi
+          echo "Success: Everything is clang-formatted correctly."
+
       - name: Configure Goom++ for ${{ runner.os }}
         if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          mkdir -p ${{ env.KODI_ADDONS_BUILD_PATH }}
-
           cd ${{ env.VIS_GOOM_PATH }}
 
           export CCACHE_DIR=${{ runner.temp }}
@@ -166,34 +186,10 @@ jobs:
           bash scripts/goom-build.sh -c ${{ matrix.config.cc }} --build-type ${{ matrix.config.build_type }} --suffix ${{ github.ref_name }}
 
           mkdir -p ${{ env.ARTIFACTS_PATH }}
-          cp -pr ${{ env.KODI_ADDONS_BUILD_PATH }}/lib/kodi/addons/visualization.goom-pp/*   ${{ env.ARTIFACTS_PATH }}/
-          cp -pr ${{ env.KODI_ADDONS_BUILD_PATH }}/share/kodi/addons/visualization.goom-pp/* ${{ env.ARTIFACTS_PATH }}/
+          cp -pr ${{ env.BUILD_PATH }}/kodi-vis-goom-addon/* ${{ env.ARTIFACTS_PATH }}/
 
           echo "Artifacts contents (${{ env.ARTIFACTS_PATH }}/):"
           ls ${{ env.ARTIFACTS_PATH }}/
-
-      - name: Run clang-format-17
-        if: startsWith(matrix.config.name, 'Ubuntu Clang')
-        shell: bash
-        run: |
-          cd ${{ env.VIS_GOOM_PATH }}
-
-          python3 scripts/run-clang-format.py --clang-format-executable "clang-format-17" \
-                                              -i -r \
-                                              -e "*particles/src/glm" \
-                                              -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
-                                              -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" \
-                                              "${PWD}"
-          if [[ "$(git diff --name-only)" != "" ]]; then
-            echo "ERROR: clang-format problem."
-            echo
-            clang-format-17 --version
-            echo
-            git diff --name-only
-            echo
-            exit 1
-          fi
-          echo "Success: Everything is clang-formatted correctly."
 
       - name: Run clang-tidy-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
@@ -233,7 +229,7 @@ jobs:
           ./scripts/goom-build.bat ${{ matrix.config.build_type }} ${{ github.ref_name }}
 
           New-Item -Type Directory -Path ${{ env.ARTIFACTS_PATH }}
-          copy-item -path ${{ env.KODI_ADDONS_BUILD_PATH }}/${{ vars.VIS_GOOM_ROOT_DIR }}/* ${{ env.ARTIFACTS_PATH }}/ -recurse
+          copy-item -path ${{ env.BUILD_DIR }}/kodi-vis-goom-addon/* ${{ env.ARTIFACTS_PATH }}/ -recurse
 
           echo "Artifacts contents:"
           ls ${{ env.ARTIFACTS_PATH }}/
@@ -244,7 +240,7 @@ jobs:
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
 
-          ${{ env.BUILD_PATH }}/goom-libs-artifacts/bin/${{ matrix.config.build_type }}/goom_lib_tests -d yes
+          ${{ env.BUILD_PATH }}/${{ env.GOOM_LIBS_DIR }}/src/tests/goom_lib_tests -d yes
 
       - name: Run Goom++ Test Harness for  ${{ runner.os }}
         if: ${{ runner.os == 'Windows' }}
@@ -252,7 +248,7 @@ jobs:
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
 
-          ${{ env.BUILD_PATH }}/visualization.goom-pp-prefix/src/visualization.goom-pp-build/goom-libs-artifacts/bin/Release/goom_lib_tests.exe -d yes
+          ${{ env.BUILD_PATH }}/${{ env.GOOM_LIBS_DIR }}/src/tests/goom_lib_tests.exe -d yes
 
       - name: Archive Goom++ Artifacts
         if: ${{ github.event_name == 'workflow_dispatch' }}

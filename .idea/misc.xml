@@ -16,6 +16,7 @@
       <file path="$PROJECT_DIR$/build-clion-clang-18-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-Release-nexus" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-19-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-gcc-13-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-gcc-14-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-gcc-12-RelWithDebInfo-nexus" />

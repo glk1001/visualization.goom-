@@ -6,6 +6,7 @@ declare USING_DOCKER="no"
 declare USING_CLION="no"
 declare DOCKER_OS_TYPE="${DOCKER_BUILD_OS_TYPE}"
 declare DOCKER_OS_TAG="${DOCKER_BUILD_OS_TAG}"
+declare DOCKER_TAG="${DOCKER_BUILD_TAG}"
 declare EXTRA_ARGS=""
 
 while [[ $# -gt 0 ]]; do
@@ -116,6 +117,10 @@ elif [[ "${COMPILER}" == "clang-18" ]]; then
   declare -r C_COMPILER=clang-18
   declare -r CPP_COMPILER=clang-18
   declare -r COMPILER_VERSION=18
+elif [[ "${COMPILER}" == "clang-19" ]]; then
+  declare -r C_COMPILER=clang-19
+  declare -r CPP_COMPILER=clang-19
+  declare -r COMPILER_VERSION=19
 else
   echo "ERROR: Unknown compiler \"${COMPILER}\"."
   echo
@@ -155,7 +160,7 @@ else
 fi
 
 declare -r HOST_TIME_ZONE=$(cat /etc/timezone)
-declare -r DOCKER_BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG})"
+declare -r DOCKER_BUILD_IMAGE="$(get_docker_build_image ${DOCKER_OS_TYPE} ${DOCKER_OS_TAG} ${DOCKER_TAG} ${COMPILER} ${COMPILER_VERSION})"
 
 # Clion
 if [[ "${USING_CLION}" == "no" ]]; then

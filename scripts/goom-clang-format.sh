@@ -28,7 +28,7 @@ if [[ "${1:-}" != "" ]]; then
                                 -i -r -j 6 \
                                 -e "*particles/src/glm" \
                                 -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
-                                -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" \
+                                -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" -e "*magic_enum*" \
                                 "${CUSTOM_SRCE}"
   exit $?
 fi

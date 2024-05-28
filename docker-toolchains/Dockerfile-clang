@@ -29,15 +29,26 @@ RUN apt-get update    && \
       catch2             \
       ccache             \
       build-essential    \
-      clang-18           \
-      clang-tools-18     \
-      clang-tidy-18      \
-      clang-format-18    \
       gdb             && \
     apt-get clean -y
 
+# Install Clang
+ARG CLANG_VER=""
+
+COPY "llvm.sh" /tmp/llvm.sh
+WORKDIR /tmp
+
+RUN apt-get update                                       && \
+    apt-get install -y                                      \
+      --no-install-recommends software-properties-common    \
+      lsb-release                                           \
+      wget
+
+RUN if [ -n "${CLANG_VER}" ] ; then bash llvm.sh ${CLANG_VER} && apt-get install -y clang-tidy-${CLANG_VER} clang-format-${CLANG_VER} ; fi
+
 RUN apt-get clean -y
 
+# Install cmake
 RUN curl -SL https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh -o /tmp/curl-install.sh \
     && chmod u+x /tmp/curl-install.sh \
     && mkdir /usr/bin/cmake-${CMAKE_VERSION} \
