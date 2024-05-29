@@ -72,10 +72,11 @@ using MATH::UnorderedClamp;
 
 using DefaultParams = ::LSYS::Interpreter::DefaultParams;
 
-template<>
-auto IncrementedValueBugFix<DefaultParams>::LerpValues(const DefaultParams& val1,
-                                                       const DefaultParams& val2,
-                                                       const float t) noexcept -> DefaultParams
+auto lerp(const DefaultParams& val1, const DefaultParams& val2, const float t) noexcept
+    -> DefaultParams;
+
+auto lerp(const DefaultParams& val1, const DefaultParams& val2, const float t) noexcept
+    -> DefaultParams
 {
   return {
       std::lerp(val1.turnAngleInDegrees, val2.turnAngleInDegrees, t),
@@ -84,11 +85,13 @@ auto IncrementedValueBugFix<DefaultParams>::LerpValues(const DefaultParams& val1
   };
 }
 
-template<>
-auto IncrementedValueBugFix<DefaultParams>::GetMatchingT(const DefaultParams& val,
-                                                         const DefaultParams& val1,
-                                                         const DefaultParams& val2) noexcept
-    -> float
+auto GetMatching(const DefaultParams& val,
+                 const DefaultParams& val1,
+                 const DefaultParams& val2) noexcept -> float;
+
+auto GetMatching(const DefaultParams& val,
+                 const DefaultParams& val1,
+                 const DefaultParams& val2) noexcept -> float
 {
   if (std::fabs(val2.turnAngleInDegrees - val1.turnAngleInDegrees) > SMALL_FLOAT)
   {
@@ -106,12 +109,14 @@ auto IncrementedValueBugFix<DefaultParams>::GetMatchingT(const DefaultParams& va
   return 0.0F;
 }
 
-template<>
+auto Clamped(const DefaultParams& val,
+             const DefaultParams& val1,
+             const DefaultParams& val2) noexcept -> DefaultParams;
+
 // NOLINTNEXTLINE(readability-identifier-naming)
-auto IncrementedValueBugFix<DefaultParams>::Clamp(const DefaultParams& val,
-                                                  const DefaultParams& val1,
-                                                  const DefaultParams& val2) noexcept
-    -> DefaultParams
+auto Clamped(const DefaultParams& val,
+             const DefaultParams& val1,
+             const DefaultParams& val2) noexcept -> DefaultParams
 {
   return {UnorderedClamp(val.turnAngleInDegrees, val1.turnAngleInDegrees, val2.turnAngleInDegrees),
           UnorderedClamp(val.width, val1.width, val2.width),
@@ -233,26 +238,20 @@ auto IncrementedValueBugFix<T>::LerpValues(const T& val1, const T& val2, float t
     return static_cast<T>(std::lerp(static_cast<float>(val1), static_cast<float>(val2), t));
   }
 
-  using std::lerp;
   return static_cast<T>(lerp(val1, val2, t));
 }
 
 template<typename T>
 auto IncrementedValueBugFix<T>::Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
 {
-  return MATH::UnorderedClamp(val, val1, val2);
+  return Clamped(val, val1, val2);
 }
 
 template<typename T>
 auto IncrementedValueBugFix<T>::GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
     -> float
 {
-  if (std::fabs(static_cast<float>(val2) - static_cast<float>(val1)) < MATH::SMALL_FLOAT)
-  {
-    return 0.0F;
-  }
-  return ((static_cast<float>(val) - static_cast<float>(val1)) /
-          (static_cast<float>(val2) - static_cast<float>(val1)));
+  return GetMatching(val, val1, val2);
 }
 
 template<typename T>
