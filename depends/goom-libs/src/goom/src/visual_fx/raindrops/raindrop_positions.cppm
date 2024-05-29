@@ -263,10 +263,12 @@ auto RaindropPositions::ResetPositions(const uint32_t newNumConcentricCircles,
   else
   {
     const auto numExcessElements =
-        static_cast<int64_t>(m_raindropPositions.size() - newNumRaindrops);
-    m_raindropPositions.erase(end(m_raindropPositions) - numExcessElements,
+        static_cast<int64_t>(m_raindropPositions.size()) - static_cast<int64_t>(newNumRaindrops);
+    m_raindropPositions.erase(end(m_raindropPositions) -
+                                  static_cast<std::ptrdiff_t>(numExcessElements),
                               end(m_raindropPositions));
-    m_raindropPaths.erase(end(m_raindropPaths) - numExcessElements, end(m_raindropPaths));
+    m_raindropPaths.erase(end(m_raindropPaths) - static_cast<std::ptrdiff_t>(numExcessElements),
+                          end(m_raindropPaths));
   }
 
   Ensures(m_raindropPositions.size() == newNumRaindrops);
