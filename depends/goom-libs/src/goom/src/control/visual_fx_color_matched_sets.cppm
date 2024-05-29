@@ -15,7 +15,7 @@ import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.GoomTypes;
 
-export namespace GOOM::CONTROL
+namespace GOOM::CONTROL
 {
 
 class VisualFxColorMatchedSets
