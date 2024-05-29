@@ -79,7 +79,7 @@ private:
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
 
-  using GridWidthRange = UTILS::MATH::IGoomRand::NumberRange<uint32_t>;
+  using GridWidthRange = UTILS::MATH::NumberRange<uint32_t>;
   auto SetRandomParams(const AmplitudeRange& amplitudeRange,
                        const GridWidthRange& gridWidthRange) noexcept -> void;
 

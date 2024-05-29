@@ -17,6 +17,8 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::NumberRange;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -33,7 +35,7 @@ public:
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
   [[nodiscard]] static constexpr auto IsValidMultiplierRange(
-      const UTILS::MATH::IGoomRand::NumberRange<float>& range) noexcept -> bool;
+      const NumberRange<float>& range) noexcept -> bool;
 
   [[nodiscard]] static auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,
                                                     const std::string& resourcesDirectory) noexcept
@@ -83,7 +85,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 constexpr auto ZoomVectorEffects::IsValidMultiplierRange(
-    const UTILS::MATH::IGoomRand::IGoomRand::NumberRange<float>& range) noexcept -> bool
+    const NumberRange<float>& range) noexcept -> bool
 {
   if (MIN_ALLOWED_BASE_ZOOM_ADJUSTMENT >
       GetBaseZoomAdjustment(range.min * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F))

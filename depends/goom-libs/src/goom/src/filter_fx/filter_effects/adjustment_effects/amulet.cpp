@@ -15,9 +15,10 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using FILTER_UTILS::RandomViewport;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_AMPLITUDE = 1.0F;
-static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.1F, 1.51F};
+static constexpr auto AMPLITUDE_RANGE   = NumberRange<float>{0.1F, 1.51F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,

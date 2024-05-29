@@ -109,7 +109,7 @@ enum class GoomDrawables : UnderlyingEnumType
   TUBES,
 };
 
-using BuffIntensityRange = UTILS::MATH::IGoomRand::NumberRange<float>;
+using BuffIntensityRange = UTILS::MATH::NumberRange<float>;
 
 class GoomStateInfo
 {

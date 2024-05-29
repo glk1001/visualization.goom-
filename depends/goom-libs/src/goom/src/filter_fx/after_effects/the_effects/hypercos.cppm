@@ -69,8 +69,8 @@ private:
   Params m_params;
   UTILS::MATH::Weights<HypercosEffect> m_hypercosOverlayWeights;
   auto SetHypercosEffect(HypercosOverlayMode overlay,
-                         const UTILS::MATH::IGoomRand::NumberRange<float>& freqRange,
-                         const UTILS::MATH::IGoomRand::NumberRange<float>& amplitudeRange) -> void;
+                         const UTILS::MATH::NumberRange<float>& freqRange,
+                         const UTILS::MATH::NumberRange<float>& amplitudeRange) -> void;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  HypercosEffect effect,
                                  const FrequencyFactor& frequencyFactorToUse) const

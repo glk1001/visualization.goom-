@@ -35,23 +35,23 @@ struct SqDistOffset
 
 struct AmplitudeRange
 {
-  UTILS::MATH::IGoomRand::NumberRange<float> xRange;
-  UTILS::MATH::IGoomRand::NumberRange<float> yRange;
+  UTILS::MATH::NumberRange<float> xRange;
+  UTILS::MATH::NumberRange<float> yRange;
 };
 struct FrequencyFactorRange
 {
-  UTILS::MATH::IGoomRand::NumberRange<float> xRange;
-  UTILS::MATH::IGoomRand::NumberRange<float> yRange;
+  UTILS::MATH::NumberRange<float> xRange;
+  UTILS::MATH::NumberRange<float> yRange;
 };
 struct SqDistMultRange
 {
-  UTILS::MATH::IGoomRand::NumberRange<float> xRange;
-  UTILS::MATH::IGoomRand::NumberRange<float> yRange;
+  UTILS::MATH::NumberRange<float> xRange;
+  UTILS::MATH::NumberRange<float> yRange;
 };
 struct SqDistOffsetRange
 {
-  UTILS::MATH::IGoomRand::NumberRange<float> xRange;
-  UTILS::MATH::IGoomRand::NumberRange<float> yRange;
+  UTILS::MATH::NumberRange<float> xRange;
+  UTILS::MATH::NumberRange<float> yRange;
 };
 
 } // namespace GOOM::FILTER_FX

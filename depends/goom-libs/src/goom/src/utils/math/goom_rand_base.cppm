@@ -17,6 +17,13 @@ import Goom.Utils.Math.Misc;
 export namespace GOOM::UTILS::MATH
 {
 
+template<typename T>
+struct NumberRange
+{
+  T min;
+  T max;
+};
+
 class IGoomRand
 {
 public:
@@ -30,13 +37,7 @@ public:
   // Return random integer in the range 0 <= n < n1.
   [[nodiscard]] virtual auto GetNRand(uint32_t n1) const noexcept -> uint32_t = 0;
 
-  // Return random number in the range n0 <= n < n1.
-  template<typename T>
-  struct NumberRange
-  {
-    T min;
-    T max;
-  };
+// Return random number in the range n0 <= n < n1.
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
   [[nodiscard]] virtual auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept

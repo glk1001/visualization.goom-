@@ -89,10 +89,10 @@ private:
   struct WaveModeSettings
   {
     AngleEffect angleEffect{};
-    UTILS::MATH::IGoomRand::NumberRange<float> freqFactorRange{};
-    UTILS::MATH::IGoomRand::NumberRange<float> amplitudeRange{};
-    UTILS::MATH::IGoomRand::NumberRange<float> periodicFactorRange{};
-    UTILS::MATH::IGoomRand::NumberRange<float> sinCosPeriodicFactorRange{};
+    UTILS::MATH::NumberRange<float> freqFactorRange{};
+    UTILS::MATH::NumberRange<float> amplitudeRange{};
+    UTILS::MATH::NumberRange<float> periodicFactorRange{};
+    UTILS::MATH::NumberRange<float> sinCosPeriodicFactorRange{};
   };
   auto SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcept -> void;
 
@@ -108,8 +108,8 @@ private:
   [[nodiscard]] auto GetPeriodicFactor(
       WaveEffect xWaveEffect,
       WaveEffect yWaveEffect,
-      const UTILS::MATH::IGoomRand::NumberRange<float>& periodicFactorRange,
-      const UTILS::MATH::IGoomRand::NumberRange<float>& sinCosPeriodicFactorRange) const noexcept
+      const UTILS::MATH::NumberRange<float>& periodicFactorRange,
+      const UTILS::MATH::NumberRange<float>& sinCosPeriodicFactorRange) const noexcept
       -> float;
   [[nodiscard]] auto GetReducerCoeff(WaveEffect xWaveEffect,
                                      WaveEffect yWaveEffect,

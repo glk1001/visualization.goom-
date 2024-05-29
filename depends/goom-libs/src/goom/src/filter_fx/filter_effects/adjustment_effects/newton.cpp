@@ -25,33 +25,34 @@ using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.01F, 0.11F};
+static constexpr auto AMPLITUDE_RANGE   = NumberRange<float>{0.01F, 0.11F};
 
 static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = IGoomRand::NumberRange<float>{0.0F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange<float>{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_USE_Z_SIN       = true;
 static constexpr auto DEFAULT_Z_SIN_AMPLITUDE = 0.1F;
-static constexpr auto Z_SIN_AMPLITUDE_RANGE   = IGoomRand::NumberRange<float>{0.01F, 20.0F};
+static constexpr auto Z_SIN_AMPLITUDE_RANGE   = NumberRange<float>{0.01F, 20.0F};
 
 static constexpr auto DEFAULT_USE_SQ_DIST_DENOM = true;
 static constexpr auto DEFAULT_DENOMINATOR       = 20.0F;
-static constexpr auto DENOMINATOR_RANGE         = IGoomRand::NumberRange<float>{20.0F, 40.0F};
+static constexpr auto DENOMINATOR_RANGE         = NumberRange<float>{20.0F, 40.0F};
 
 static constexpr auto DEFAULT_EXPONENT = 3U;
-static constexpr auto EXPONENT_RANGE   = IGoomRand::NumberRange<uint32_t>{3U, 11U};
+static constexpr auto EXPONENT_RANGE   = NumberRange<uint32_t>{3U, 11U};
 
 static constexpr auto DEFAULT_A_REAL = 1.0F;
 static constexpr auto DEFAULT_A_IMAG = 0.0F;
-static constexpr auto A_REAL_RANGE   = IGoomRand::NumberRange<float>{-1.0F, +1.0F};
-static constexpr auto A_IMAG_RANGE   = IGoomRand::NumberRange<float>{-1.0F, +1.0F};
+static constexpr auto A_REAL_RANGE   = NumberRange<float>{-1.0F, +1.0F};
+static constexpr auto A_IMAG_RANGE   = NumberRange<float>{-1.0F, +1.0F};
 
 static constexpr auto DEFAULT_C_REAL = 0.0F;
 static constexpr auto DEFAULT_C_IMAG = 0.0F;
-static constexpr auto C_REAL_RANGE   = IGoomRand::NumberRange<float>{-1.0F, +1.0F};
-static constexpr auto C_IMAG_RANGE   = IGoomRand::NumberRange<float>{-1.0F, +1.0F};
+static constexpr auto C_REAL_RANGE   = NumberRange<float>{-1.0F, +1.0F};
+static constexpr auto C_IMAG_RANGE   = NumberRange<float>{-1.0F, +1.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,

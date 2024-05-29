@@ -25,6 +25,7 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::PI;
 
 // Hypercos:
@@ -36,17 +37,17 @@ static constexpr auto DEFAULT_REVERSE = false;
 
 static constexpr auto X_DEFAULT_FREQUENCY_FACTOR = 10.0F;
 static constexpr auto Y_DEFAULT_FREQUENCY_FACTOR = 10.0F;
-static constexpr auto FREQUENCY_FACTOR_RANGE     = IGoomRand::NumberRange<float>{5.0F, 100.0F};
-static constexpr auto BIG_FREQUENCY_FACTOR_RANGE = IGoomRand::NumberRange<float>{5.0F, 500.0F};
+static constexpr auto FREQUENCY_FACTOR_RANGE     = NumberRange<float>{5.0F, 100.0F};
+static constexpr auto BIG_FREQUENCY_FACTOR_RANGE = NumberRange<float>{5.0F, 500.0F};
 static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE =
-    IGoomRand::NumberRange<float>{1000.0F, 10000.0F};
+    NumberRange<float>{1000.0F, 10000.0F};
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto AMPLITUDE_RANGE =
-    IGoomRand::NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 1.1F * X_DEFAULT_AMPLITUDE};
+    NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 1.1F * X_DEFAULT_AMPLITUDE};
 static constexpr auto BIG_AMPLITUDE_RANGE =
-    IGoomRand::NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 10.1F * X_DEFAULT_AMPLITUDE};
+    NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 10.1F * X_DEFAULT_AMPLITUDE};
 
 static constexpr auto PROB_FREQUENCY_FACTORS_EQUAL = 0.5F;
 static constexpr auto PROB_REVERSE                 = 0.5F;
@@ -135,8 +136,8 @@ auto Hypercos::SetMode3RandomParams() -> void
 }
 
 auto Hypercos::SetHypercosEffect(const HypercosOverlayMode overlay,
-                                 const IGoomRand::NumberRange<float>& freqRange,
-                                 const IGoomRand::NumberRange<float>& amplitudeRange) -> void
+                                 const NumberRange<float>& freqRange,
+                                 const NumberRange<float>& amplitudeRange) -> void
 {
   const auto xFrequencyFactor = m_goomRand->GetRandInRange(freqRange);
   const auto yFrequencyFactor = m_goomRand->ProbabilityOf(PROB_FREQUENCY_FACTORS_EQUAL)
