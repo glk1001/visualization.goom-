@@ -30,11 +30,12 @@ TEST_CASE("Test Parallel Utils", "[ParallelFor]")
   static constexpr auto ARRAY_LEN = 100000U;
   auto testArray                  = std::vector<uint64_t>(ARRAY_LEN);
   static constexpr auto FIXED_VAL = 33UL;
-  const auto func                 = [](const uint64_t i) { return i * FIXED_VAL + i * i; };
-  const auto assignFunc           = [&testArray, &func, &threadsUsed, &mutex](const uint64_t i)
+  const auto func                 = [](const uint64_t i) -> uint64_t
+  { return static_cast<uint64_t>((i * FIXED_VAL) + (i * i)); };
+  const auto assignFunc = [&testArray, &func, &threadsUsed, &mutex](const uint64_t i)
   {
-    testArray[i]    = func(i);
-    const auto lock = std::lock_guard<std::mutex>{mutex};
+    testArray[static_cast<uint32_t>(i)] = func(i);
+    const auto lock                     = std::lock_guard<std::mutex>{mutex};
     threadsUsed.emplace(std::this_thread::get_id());
   };
 
