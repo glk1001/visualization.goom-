@@ -25,7 +25,7 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import :Colorizer;
-import :IfsTypes;
+import :IfsPoints;
 import :Similitudes;
 
 namespace GOOM::VISUAL_FX::IFS

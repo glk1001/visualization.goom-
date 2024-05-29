@@ -305,6 +305,7 @@ set(GoomVisualFx_modules
     src/visual_fx/ifs/colorizer.cppm
     src/visual_fx/ifs/fractal.cppm
     src/visual_fx/ifs/fractal_hits.cppm
+    src/visual_fx/ifs/ifs_points.cppm
     src/visual_fx/ifs/ifs_types.cppm
     src/visual_fx/ifs/low_density_blurrer.cppm
     src/visual_fx/ifs/similitudes.cppm

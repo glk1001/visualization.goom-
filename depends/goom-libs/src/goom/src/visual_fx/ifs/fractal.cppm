@@ -15,7 +15,6 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 import :FractalHits;
-import :IfsTypes;
 import :Similitudes;
 
 namespace GOOM::VISUAL_FX::IFS
