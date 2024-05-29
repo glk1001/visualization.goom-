@@ -302,7 +302,8 @@ auto Raindrops::UpdateAnyPendingNumRaindrops() noexcept -> void
   {
     const auto numExcessElements =
         static_cast<int64_t>(m_raindrops.size() - acceptableNumRaindrops);
-    m_raindrops.erase(end(m_raindrops) - numExcessElements, end(m_raindrops));
+    m_raindrops.erase(end(m_raindrops) - static_cast<std::ptrdiff_t>(numExcessElements),
+                      end(m_raindrops));
   }
   else
   {
