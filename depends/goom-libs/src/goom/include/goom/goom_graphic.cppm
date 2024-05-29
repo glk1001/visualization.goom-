@@ -158,6 +158,7 @@ private:
 
 static_assert(sizeof(Pixel) == sizeof(PixelIntType));
 [[nodiscard]] constexpr auto Rgba(const Pixel& color) noexcept -> PixelIntType;
+[[nodiscard]] constexpr auto operator==(const Pixel& pixel1, const Pixel& pixel2) noexcept -> bool;
 
 struct FXBuffSettings
 {
