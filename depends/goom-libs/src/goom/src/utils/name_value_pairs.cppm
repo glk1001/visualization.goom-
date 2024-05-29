@@ -112,11 +112,20 @@ inline auto to_string(const Point2dInt& value) -> std::string
   return FMT::Pt("{}", value);
 }
 
+// TODO(glk): Need this but MSVC workaround with user formatted types
+#ifdef _MSC_VER
+template<>
+inline auto to_string([[maybe_unused]] const Point2dFlt& value) -> std::string
+{
+  return "MSVC: bugged, not implemented.";
+}
+#else
 template<>
 inline auto to_string(const Point2dFlt& value) -> std::string
 {
   return FMT::Pt("{:.2f}", value);
 }
+#endif
 // NOLINTEND(readability-identifier-naming)
 
 } // namespace GOOM::UTILS
