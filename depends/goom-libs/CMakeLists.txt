@@ -77,13 +77,7 @@ CPMAddPackage(NAME "blend2d"
 )
 set_target_properties(blend2d PROPERTIES POSITION_INDEPENDENT_CODE ${POS_INDEP_CODE})
 
-CPMAddPackage("gh:Neargye/magic_enum#v0.9.5")
-if (magic_enum_SOURCE_DIR)
-    message(STATUS "Found magic_enum package - using supplied include directories.")
-    set(magic_enum_INCLUDE_DIR "${magic_enum_SOURCE_DIR}/include/magic_enum")
-else ()
-    message(FATAL_ERROR "Could not find magic_enum package.")
-endif ()
+set(magic_enum_INCLUDE_DIR "${GOOM_LIBS_DIR}/lib/magic_enum")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     message(WARNING "Freetype on Windows/Mac is too hard to install - disabling Freetype.")
