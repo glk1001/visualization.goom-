@@ -5,11 +5,11 @@ module;
 #include <string>
 #include <vector>
 
+export module Goom.Control.GoomMessageDisplayer;
+
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
 import Goom.Utils.Parallel;
-
-export module Goom.Control.GoomMessageDisplayer;
 
 export namespace GOOM::CONTROL
 {
