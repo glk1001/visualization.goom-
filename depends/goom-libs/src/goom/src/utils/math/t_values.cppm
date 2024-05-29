@@ -111,13 +111,6 @@ private:
   auto UpdateCurrentPositionAndStep() -> void;
 };
 
-} // namespace GOOM::UTILS::MATH
-
-module :private;
-
-namespace GOOM::UTILS::MATH
-{
-
 inline auto TValue::GetStepType() const noexcept -> StepType
 {
   return m_stepType;
@@ -224,6 +217,13 @@ inline auto TValue::IsInThisDelayZone(const DelayPoint& delayPoint) const noexce
   return (((delayPoint.t0 - m_stepSize) + T_EPSILON) < m_t) &&
          (m_t < ((delayPoint.t0 + m_stepSize) - T_EPSILON));
 }
+
+} // namespace GOOM::UTILS::MATH
+
+module :private;
+
+namespace GOOM::UTILS::MATH
+{
 
 TValue::TValue(const StepSizeProperties& stepSizeProperties) noexcept
   : m_stepType{stepSizeProperties.stepType},

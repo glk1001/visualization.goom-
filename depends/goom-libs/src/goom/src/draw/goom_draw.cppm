@@ -190,13 +190,6 @@ inline auto IGoomDraw::DrawClippedPixels(const Point2dInt& point,
   DrawPixelsToDevice(point, colors);
 }
 
-} // namespace GOOM::DRAW
-
-module :private;
-
-namespace GOOM::DRAW
-{
-
 inline auto IGoomDraw::GetColorAddPixelBlend(const Pixel& bgndColor,
                                              const uint32_t intBuffIntensity,
                                              const Pixel& fgndColor,

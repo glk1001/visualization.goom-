@@ -53,13 +53,6 @@ inline auto UniformZoomAdjustmentEffect::GetZoomAdjustmentEffectNameValueParams(
   return GOOM::UTILS::NameValuePairs();
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
-{
-
 inline auto UniformZoomAdjustmentEffect::GetVelocity(
     [[maybe_unused]] const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {

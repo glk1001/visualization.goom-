@@ -90,13 +90,6 @@ inline auto XYLerpEffect::SetParams(const Params& params) -> void
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::AFTER_EFFECTS
-{
-
 inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoords& velocity) const
     -> float
 {

@@ -135,13 +135,6 @@ inline auto LineDrawerMovingNoise::DrawLine(const Point2dInt& point1,
   m_lineDrawer.DrawLine(point1, point2, colors);
 }
 
-} // namespace GOOM::DRAW::SHAPE_DRAWERS
-
-module :private;
-
-namespace GOOM::DRAW::SHAPE_DRAWERS
-{
-
 inline auto LineDrawerMovingNoise::UpdateLineDrawerNoise() noexcept -> void
 {
   m_lineDrawer.SetNoiseParams({m_noiseRadius(), m_numNoisePixelsPerPixel()});

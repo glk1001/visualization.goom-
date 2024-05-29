@@ -50,13 +50,6 @@ inline auto ImageZoomAdjustment::GetZoomAdjustment(const NormalizedCoords& coord
   return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
-{
-
 inline auto ImageZoomAdjustment::GetVelocity(const NormalizedCoords& coords) const noexcept
     -> Vec2dFlt
 {

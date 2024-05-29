@@ -84,13 +84,6 @@ inline auto CrystalBall::SetParams(const Params& params) noexcept -> void
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
-{
-
 inline auto CrystalBall::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto sqDistFromZero = SqDistanceFromZero(coords);

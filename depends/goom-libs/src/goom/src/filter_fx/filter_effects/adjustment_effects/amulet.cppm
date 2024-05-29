@@ -67,13 +67,6 @@ inline void Amulet::SetParams(const Params& params) noexcept
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
-{
-
 inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);

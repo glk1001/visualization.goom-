@@ -92,13 +92,6 @@ inline auto GoomDrawToContainer::GetChangedCoordsList() const noexcept
   return m_orderedXYPixelList;
 }
 
-} // namespace GOOM::DRAW
-
-module :private;
-
-namespace GOOM::DRAW
-{
-
 inline auto GoomDrawToContainer::GetLastDrawnColor(const Point2dInt& point) const noexcept -> Pixel
 {
   const auto& colorsList = GetColorsList(point);

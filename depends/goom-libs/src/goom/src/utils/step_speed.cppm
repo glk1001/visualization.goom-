@@ -78,13 +78,6 @@ inline auto StepSpeed::ApplySpeed(T& obj) -> void
   obj.SetNumSteps(m_currentNumSteps);
 }
 
-} // namespace GOOM::UTILS
-
-module :private;
-
-namespace GOOM::UTILS
-{
-
 inline auto StepSpeed::SetCurrentNumSteps() -> void
 {
   m_currentNumSteps = static_cast<uint32_t>(std::lerp(m_maxNumSteps, m_minNumSteps, m_tMinMaxLerp));

@@ -256,13 +256,6 @@ inline auto OnOffTimer::Update() noexcept -> void
   }
 }
 
-} // namespace GOOM::UTILS
-
-module :private;
-
-namespace GOOM::UTILS
-{
-
 inline auto OnOffTimer::ChangeStateToOff() -> void
 {
   Expects(m_offTimer.Finished());

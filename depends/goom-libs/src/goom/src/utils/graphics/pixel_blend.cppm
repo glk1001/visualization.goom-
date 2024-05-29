@@ -58,8 +58,6 @@ export namespace GOOM::UTILS::GRAPHICS
 
 } // namespace GOOM::UTILS::GRAPHICS
 
-module :private;
-
 namespace GOOM::UTILS::GRAPHICS
 {
 

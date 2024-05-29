@@ -137,13 +137,6 @@ inline auto ZoomVectorEffects::SetBaseZoomAdjustmentFactor() noexcept -> void
       {baseZoomAdjustment, baseZoomAdjustment});
 }
 
-} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::FILTER_EFFECTS
-{
-
 constexpr auto ZoomVectorEffects::GetBaseZoomAdjustment(const float baseZoomAdjustmentFactor,
                                                         const float relativeSpeed) noexcept -> float
 {

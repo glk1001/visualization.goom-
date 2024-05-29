@@ -87,13 +87,6 @@ inline auto TanEffect::SetParams(const Params& params) -> void
   m_params = params;
 }
 
-} // namespace GOOM::FILTER_FX::AFTER_EFFECTS
-
-module :private;
-
-namespace GOOM::FILTER_FX::AFTER_EFFECTS
-{
-
 inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float
 {
   switch (m_params.tanType)
