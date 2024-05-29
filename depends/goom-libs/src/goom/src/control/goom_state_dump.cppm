@@ -7,15 +7,15 @@ module;
 #include <string>
 #include <vector>
 
+// #define DO_GOOM_STATE_DUMP
+
+export module Goom.Control.GoomStateDump;
+
 namespace GOOM
 {
 class GoomControl;
 class GoomLogger;
 }
-
-// #define DO_GOOM_STATE_DUMP
-
-export module Goom.Control.GoomStateDump;
 
 #ifdef DO_GOOM_STATE_DUMP
 
