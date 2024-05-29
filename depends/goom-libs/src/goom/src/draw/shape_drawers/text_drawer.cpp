@@ -1,5 +1,11 @@
 module;
 
+#ifdef _MSC_VER
+#pragma warning(push)
+// Disable warning about global module fragment.
+#pragma warning(disable : 5202)
+#endif
+
 // NOLINTBEGIN: Not my code
 
 //#undef NO_LOGGING
@@ -27,7 +33,14 @@ import Goom.Utils.Math.Misc;
 #include <locale>
 #include FT_FREETYPE_H
 #include FT_STROKER_H
+#endif
 
+module Goom.Draw.ShaperDrawers.TextDrawer;
+
+#ifdef NO_FREETYPE_INSTALLED
+import Goom.Utils.Graphics.PixelBlend;
+import Goom.Utils.Math.Misc;
+#else
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Parallel;
 import Goom.Utils.StrUtils;
@@ -38,8 +51,6 @@ import Goom.Lib.GoomUtils;
 import Goom.Lib.Point2d;
 import Goom.Lib.SPimpl;
 #endif
-
-module Goom.Draw.ShaperDrawers.TextDrawer;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
