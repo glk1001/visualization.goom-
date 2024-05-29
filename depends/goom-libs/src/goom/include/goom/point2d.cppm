@@ -24,7 +24,9 @@ struct Point2dInt
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
 [[nodiscard]] constexpr auto GetPoint2dInt(int32_t x, int32_t y) noexcept -> Point2dInt = delete;
 [[nodiscard]] constexpr auto GetPoint2dInt(uint32_t x, uint32_t y) noexcept -> Point2dInt;
+#ifndef _MSC_VER
 [[nodiscard]] constexpr auto GetPoint2dInt(size_t x, size_t y) noexcept -> Point2dInt;
+#endif
 // NOLINTEND(bugprone-easily-swappable-parameters)
 [[nodiscard]] constexpr auto ToPoint2dFlt(const Point2dInt& point) noexcept -> Point2dFlt;
 
@@ -150,10 +152,12 @@ constexpr auto GetPoint2dInt(const uint32_t x, const uint32_t y) noexcept -> Poi
   return {static_cast<int32_t>(x), static_cast<int32_t>(y)};
 }
 
+#ifndef _MSC_VER
 constexpr auto GetPoint2dInt(const size_t x, const size_t y) noexcept -> Point2dInt
 {
   return {static_cast<int32_t>(x), static_cast<int32_t>(y)};
 }
+#endif
 
 constexpr auto ToPoint2dFlt(const Point2dInt& point) noexcept -> Point2dFlt
 {
