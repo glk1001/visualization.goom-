@@ -70,7 +70,7 @@ public:
   StarTypesContainer(const PluginInfo& goomInfo, const UTILS::MATH::IGoomRand& goomRand) noexcept;
   StarTypesContainer(const StarTypesContainer&) noexcept = delete;
   StarTypesContainer(StarTypesContainer&&) noexcept      = delete;
-  ~StarTypesContainer() noexcept;
+  ~StarTypesContainer() noexcept = default;
   auto operator=(const StarTypesContainer&) noexcept -> StarTypesContainer& = delete;
   auto operator=(StarTypesContainer&&) noexcept -> StarTypesContainer&      = delete;
 
@@ -250,8 +250,6 @@ StarTypesContainer::StarTypesContainer(const PluginInfo& goomInfo,
     }
 {
 }
-
-StarTypesContainer::~StarTypesContainer() noexcept = default;
 
 auto StarTypesContainer::GetRandomStarType() noexcept -> IStarType&
 {

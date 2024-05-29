@@ -24,7 +24,7 @@ public:
   explicit FractalHits(const Dimensions& dimensions) noexcept;
   FractalHits(const FractalHits&) noexcept = default;
   FractalHits(FractalHits&&) noexcept      = default;
-  ~FractalHits() noexcept;
+  ~FractalHits() noexcept = default;
   auto operator=(const FractalHits&) noexcept -> FractalHits& = delete;
   auto operator=(FractalHits&&) noexcept -> FractalHits&      = delete;
 
@@ -66,8 +66,6 @@ FractalHits::FractalHits(const Dimensions& dimensions) noexcept : m_dimensions{d
 {
   m_hits.reserve(HITS_ESTIMATE);
 }
-
-FractalHits::~FractalHits() noexcept = default;
 
 auto FractalHits::GetHitInfo(const Dimensions& dimensions) noexcept
     -> std::vector<std::vector<HitInfo>>

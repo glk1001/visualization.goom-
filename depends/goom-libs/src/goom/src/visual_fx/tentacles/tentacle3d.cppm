@@ -33,7 +33,7 @@ public:
   explicit Tentacle3D(std::unique_ptr<Tentacle2D> tentacle) noexcept;
   Tentacle3D(const Tentacle3D&) noexcept = delete;
   Tentacle3D(Tentacle3D&&) noexcept      = default;
-  ~Tentacle3D() noexcept;
+  ~Tentacle3D() noexcept = default;
   auto operator=(const Tentacle3D&) -> Tentacle3D& = delete;
   auto operator=(Tentacle3D&&) -> Tentacle3D&      = delete;
 
@@ -128,8 +128,6 @@ Tentacle3D::Tentacle3D(std::unique_ptr<Tentacle2D> tentacle) noexcept
   : m_tentacle{std::move(tentacle)}
 {
 }
-
-Tentacle3D::~Tentacle3D() noexcept = default;
 
 auto Tentacle3D::SetEndPosOffset(const V3dFlt& endPosOffset) noexcept -> void
 {
