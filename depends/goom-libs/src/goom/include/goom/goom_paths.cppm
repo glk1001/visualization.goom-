@@ -22,7 +22,8 @@ struct CompileTimeString
   consteval CompileTimeString(const CompileTimeString<LhsSize>& lhs,
                               const CompileTimeString<RhsSize>& rhs) noexcept
   {
-    const auto concatStr = lhs.to_string() + rhs.to_string();
+    auto concatStr = lhs.to_string();
+    concatStr.append(rhs.to_string());
     std::copy_n(concatStr.c_str(), N, buffer.begin());
   }
 
