@@ -267,7 +267,7 @@ class static_str {
 
   constexpr std::uint16_t size() const noexcept { return N; }
 
-  constexpr operator string_view() const noexcept { return {data(), size()}; }
+  constexpr operator std::string_view() const noexcept { return {data(), size()}; }
 
  private:
   template <std::uint16_t... I>
