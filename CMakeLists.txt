@@ -3,51 +3,32 @@ cmake_minimum_required(VERSION 3.28)
 project(visualization.goom-pp)
 
 set(VIS_GOOM_TARGET_NAME "visualization.goom-pp")
-set(VIS_GOOM_ADDON_PREFIX "GOOM")
+set(VIS_GOOM_ADDON_VERSION "20.1.1")
+string(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM)
 
 option(ENABLE_TESTING "Enable unit testing" OFF)
 
 set(GOOM_LIBS_RELDIR depends/goom-libs)
 set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
-set(GOOM_INCLUDE_DIR "${GOOM_LIBS_DIR}/src/goom/include")
+set(GOOM_DIR "${GOOM_LIBS_DIR}/src/goom")
+set(GOOM_INCLUDE_DIR "${GOOM_DIR}/include")
+set(GOOM_ADDON_FILES_DIR "${PROJECT_SOURCE_DIR}/visualization.goom-pp")
+set(GOOM_RESOURCES_DIR "${GOOM_ADDON_FILES_DIR}/resources")
 
 if (NOT KODI_ROOT_DIR)
     set(KODI_ROOT_DIR ${PROJECT_SOURCE_DIR}/..)
 endif ()
 get_filename_component(KODI_ROOT_DIR "${KODI_ROOT_DIR}" ABSOLUTE)
+set(KODI_INCLUDE_DIR "${KODI_ROOT_DIR}/kodi/xbmc/addons/kodi-dev-kit/include")
 
 set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}")
 if (NOT EXISTS "${GOOM_BUILD_DIR}")
     message(FATAL_ERROR "Could not find goom build directory \"${GOOM_BUILD_DIR}\".")
 endif ()
 
-set(CMAKE_INSTALL_PREFIX "${KODI_ROOT_DIR}/kodi/kodi-build/addons")
-if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}")
-    message(FATAL_ERROR "Could not find install directory \"${CMAKE_INSTALL_PREFIX}\".")
-endif ()
+set(CMAKE_INSTALL_PREFIX "${GOOM_BUILD_DIR}/kodi-vis-goom-addon")
 
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
-
-# Executing the Kodi addon cmake script here allows this script to be the main cmake script.
-# This fits in with the way CLion works.
-if (EXISTS "${CMAKE_BINARY_DIR}/CMakeCache.txt")
-    message(STATUS "In build mode: Found cache file \"${CMAKE_BINARY_DIR}/CMakeCache.txt\".")
-else ()
-    message(STATUS "In config mode: Executing kodi addons cmake.")
-    execute_process(COMMAND cmake
-                    -D ADDONS_TO_BUILD=${VIS_GOOM_TARGET_NAME}
-                    -D ADDON_SRC_PREFIX=${KODI_ROOT_DIR}
-                    -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                    -D PACKAGE_ZIP=1
-                    ${KODI_ROOT_DIR}/kodi/cmake/addons
-                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                    RESULT_VARIABLE CMAKE_RESULT)
-    if (NOT CMAKE_RESULT EQUAL "0")
-        file(REMOVE "${CMAKE_BINARY_DIR}/CMakeCache.txt")
-        message(FATAL_ERROR "cmake kodi-addons failed.")
-    endif ()
-endif ()
 
 
 set(CMAKE_CXX_STANDARD 20)
@@ -70,17 +51,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
 else ()
     set(POS_INDEP_CODE "ON")
 endif ()
-if (CORE_SYSTEM_NAME STREQUAL "osx")
-    set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup -flat_namespace")
-endif ()
 
 
 CPMAddPackage("gh:g-truc/glm#1.0.1")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
-
-find_package(Kodi REQUIRED)
-# Override Kodi's C++ standard setting.
-set(CMAKE_CXX_STANDARD 20)
 
 if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
     find_package(OpenGl REQUIRED)
@@ -93,17 +67,24 @@ else ()
 endif ()
 
 
-# Let the Goom code know we're building from Kodi. There are Kodi
+# Let the Goom code know we're building using Kodi. There are Kodi
 # headers that the Main goom code needs only when doing a Kodi build.
 add_definitions(-DIS_KODI_BUILD)
+if(PLATFORM STREQUAL "linux")
+    add_definitions(-DTARGET_LINUX)
+elseif(PLATFORM STREQUAL "windows")
+    add_definitions(-DTARGET_WINDOWS)
+else()
+    message(FATAL "Platform \"${PLATFORM}\" not supported.")
+endif()
 
 # Set GOOM_DEBUG for non-release builds.
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
 if (UPPER_CMAKE_BUILD_TYPE STREQUAL "RELEASE")
-    MESSAGE(STATUS "Vis.Goom: GOOM_DEBUG turned off.")
+    message(STATUS "Vis.Goom: GOOM_DEBUG turned off.")
 else ()
     add_definitions(-DGOOM_DEBUG)
-    MESSAGE(STATUS "Vis.Goom: GOOM_DEBUG turned on.")
+    message(STATUS "Vis.Goom: GOOM_DEBUG turned on.")
 endif ()
 
 
@@ -115,38 +96,28 @@ vis_goom_pp_get_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS vis_goom_pp_PROJ
 add_subdirectory(${GOOM_LIBS_RELDIR})
 
 
+include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 add_compile_options(${vis_goom_pp_PROJECT_WARNINGS})
 #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 
-# Setup the includes and other dependencies the addon builder needs.
-include_directories(BEFORE
-                    ${GOOM_INCLUDE_DIR}
-)
-include_directories(BEFORE
-                    SYSTEM
-                    ${GOOM_LIBS_DIR}/lib/std_fmt/include
-                    ${GLM_INCLUDE_DIR}
-                    ${KODI_INCLUDE_DIR}
-                    ${KODI_FIXED_INCLUDE_DIR}
-)
-
-set(${VIS_GOOM_ADDON_PREFIX}_SOURCES
+set(VIS_GOOM_SOURCES
     src/Main.cpp
     src/build_time.cpp
     src/goom_visualization.cpp
 )
-set(${VIS_GOOM_ADDON_PREFIX}_HEADERS
+set(VIS_GOOM_HEADERS
     src/gl_call.h
     src/goom_gl.h
     src/Main.h
 )
 
-# Let kodi set this:
-set(CMAKE_INSTALL_LIBDIR "")
-
 list(APPEND DEPLIBS goom::lib libs::vivid blend2d::blend2d)
-build_addon(${VIS_GOOM_TARGET_NAME} ${VIS_GOOM_ADDON_PREFIX} DEPLIBS)
+
+add_library(${VIS_GOOM_TARGET_NAME} SHARED
+            ${VIS_GOOM_HEADERS}
+            ${VIS_GOOM_SOURCES}
+)
 add_dependencies(${VIS_GOOM_TARGET_NAME}
                  goom::lib
                  libs::vivid
@@ -168,6 +139,17 @@ target_sources(${VIS_GOOM_TARGET_NAME}
                src/slot_producer_consumer.cppm
 )
 
+target_link_libraries(${VIS_GOOM_TARGET_NAME} PRIVATE ${DEPLIBS})
+target_include_directories(${VIS_GOOM_TARGET_NAME}
+                           PRIVATE
+                           ${GOOM_INCLUDE_DIR}
+)
+target_include_directories(${VIS_GOOM_TARGET_NAME}
+                           SYSTEM PRIVATE
+                           ${GOOM_LIBS_DIR}/lib/std_fmt/include
+                           ${GLM_INCLUDE_DIR}
+                           ${KODI_INCLUDE_DIR}
+)
 
 # Force the build time into the compiled binaries.
 set(GOOM_BUILD_TIME_FILES
@@ -182,10 +164,21 @@ add_custom_command(TARGET goom_build_time
                    VERBATIM
 )
 
-
-include(CPack)
-
-include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
+set(INSTALL_DEST_DIR ".")
+install(TARGETS ${VIS_GOOM_TARGET_NAME} DESTINATION "${INSTALL_DEST_DIR}")
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/scripts/fix-vis-goom-lib-name.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/fix-vis-goom-lib-name.cmake
+        @ONLY
+)
+install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/fix-vis-goom-lib-name.cmake)
+install(DIRECTORY ${GOOM_RESOURCES_DIR} DESTINATION "${INSTALL_DEST_DIR}")
+configure_file(
+        ${GOOM_ADDON_FILES_DIR}/addon.xml.in
+        ${CMAKE_CURRENT_BINARY_DIR}/addon.xml
+        @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/addon.xml DESTINATION "${INSTALL_DEST_DIR}")
 
 
 get_target_property(goom_addon_compile_options ${VIS_GOOM_TARGET_NAME} COMPILE_OPTIONS)
@@ -193,7 +186,7 @@ get_target_property(goom_addon_compile_features ${VIS_GOOM_TARGET_NAME} COMPILE_
 
 message(STATUS "Vis.goom: Cmake version              = \"${CMAKE_VERSION}\"")
 message(STATUS "Vis.goom: Cmake generator            = \"${CMAKE_GENERATOR}\"")
-message(STATUS "Vis.goom: CORE_SYSTEM_NAME           = \"${CORE_SYSTEM_NAME}\".")
+message(STATUS "Vis.goom: CMAKE_SYSTEM_NAME          = \"${CMAKE_SYSTEM_NAME}\".")
 message(STATUS "Vis.goom: CMAKE_CXX_COMPILER_ID      = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Vis.goom: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Vis.goom: CMAKE_BUILD_TYPE           = \"${CMAKE_BUILD_TYPE}\".")
@@ -208,8 +201,6 @@ message(STATUS "Vis.goom: CMAKE_BINARY_DIR           = \"${CMAKE_BINARY_DIR}\"."
 message(STATUS "Vis.goom: CMAKE_MODULE_PATH          = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Vis.goom: CMAKE_SCRIPTS_PATH         = \"${CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Vis.goom: CMAKE_INSTALL_PREFIX       = \"${CMAKE_INSTALL_PREFIX}\".")
-message(STATUS "Vis.goom: CMAKE_INSTALL_LIBDIR       = \"${CMAKE_INSTALL_LIBDIR}\".")
-message(STATUS "Vis.goom: CMAKE_INSTALL_DATADIR      = \"${CMAKE_INSTALL_DATADIR}\".")
 message(STATUS "Vis.goom: C++ standard               = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Vis.goom: C++ standard required      = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
 message(STATUS "Vis.goom: C++ extensions             = \"${CMAKE_CXX_EXTENSIONS}\".")
@@ -219,8 +210,10 @@ message(STATUS "Vis.goom: ENABLE_TESTING             = \"${ENABLE_TESTING}\".")
 message(STATUS "Vis.goom: GOOM_BUILD_DIR             = \"${GOOM_BUILD_DIR}\".")
 message(STATUS "Vis.goom: GOOM_INCLUDE_DIR           = \"${GOOM_INCLUDE_DIR}\".")
 message(STATUS "Vis.goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Vis.goom: GOOM_ADDON_FILES_DIR       = \"${GOOM_ADDON_FILES_DIR}\".")
+message(STATUS "Vis.goom: GOOM_RESOURCES_DIR         = \"${GOOM_RESOURCES_DIR}\".")
 message(STATUS "Vis.goom: KODI_ROOT_DIR              = \"${KODI_ROOT_DIR}\".")
-message(STATUS "Vis.goom: KODI_CONFIG_DIR            = \"${KODI_CONFIG_DIR}\".")
 message(STATUS "Vis.goom: KODI_INCLUDE_DIR           = \"${KODI_INCLUDE_DIR}\".")
-message(STATUS "Vis.goom: KODI_FIXED_INCLUDE_DIR     = \"${KODI_FIXED_INCLUDE_DIR}\".")
+message(STATUS "Vis.Goom: OPENGL_DEFINITIONS         = \"${OPENGL_DEFINITIONS}\".")
+message(STATUS "Vis.Goom: OPENGLES_DEFINITIONS       = \"${OPENGLES_DEFINITIONS}\".")
 message(STATUS "Vis.goom: DEPLIBS                    = \"${DEPLIBS}\".")

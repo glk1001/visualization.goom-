@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <array>
-#include <c-api/addon_base.h>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -18,6 +17,7 @@
 #include <kodi/AddonBase.h>
 #include <kodi/Filesystem.h>
 #include <kodi/addon-instance/Visualization.h>
+#include <kodi/c-api/addon_base.h>
 #include <random>
 #include <span>
 #include <string>

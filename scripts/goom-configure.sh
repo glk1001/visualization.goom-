@@ -64,7 +64,6 @@ fi
 cmake -G Ninja                          \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DENABLE_TESTING=1               \
-      -DOVERRIDE_PATHS=1               \
       ${KODI_ROOT_DIR_OPTION}          \
       ..
 

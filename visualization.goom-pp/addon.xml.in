@@ -1,7 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <addon id="visualization.goom-pp" version="20.1.1" name="Goom++" provider-name="Team Kodi">
-    <requires>@ADDON_DEPENDS@</requires>
-    <extension point="xbmc.player.musicviz" library_@PLATFORM@="@LIBRARY_FILENAME@"/>
+    <requires>
+        <import addon="kodi.binary.global.main" minversion="2.0.0" version="2.0.2"/>
+        <import addon="kodi.binary.global.gui" minversion="5.15.0" version="5.15.0"/>
+        <import addon="kodi.binary.global.filesystem" minversion="1.1.7" version="1.1.8"/>
+        <import addon="kodi.binary.instance.visualization" minversion="4.0.0" version="4.0.0"/></requires>
+    <extension point="xbmc.player.musicviz" library_linux="@VIS_GOOM_TARGET_NAME@.so.@VIS_GOOM_ADDON_VERSION@"/>
     <extension point="xbmc.addon.metadata">
         <platform>@PLATFORM@</platform>
         <license>GPL-2.0-or-later</license>

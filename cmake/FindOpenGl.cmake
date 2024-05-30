@@ -14,7 +14,7 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_OPENGL gl QUIET)
 endif()
 
-if(NOT CORE_SYSTEM_NAME STREQUAL osx)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
   find_path(OPENGL_INCLUDE_DIR GL/gl.h
                                PATHS ${PC_OPENGL_gl_INCLUDEDIR})
   find_library(OPENGL_gl_LIBRARY NAMES GL
