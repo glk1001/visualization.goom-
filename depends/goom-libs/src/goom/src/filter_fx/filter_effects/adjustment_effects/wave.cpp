@@ -50,7 +50,7 @@ static constexpr auto MAX_SPIRAL_ROTATE_LERP           = 1.0F;
 
 static constexpr auto DEFAULT_USE_MODIFIED_ATAN_ANGLE    = false;
 static constexpr auto DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR = 1.0F;
-static constexpr auto MODIFIED_ATAN_ANGLE_FACTOR_RANGE = NumberRange<float>{0.1F, 10.0F};
+static constexpr auto MODIFIED_ATAN_ANGLE_FACTOR_RANGE   = NumberRange<float>{0.1F, 10.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -61,11 +61,10 @@ static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
 
 
 // These give weird but interesting wave results
-static constexpr auto SMALL_FREQ_FACTOR_RANGE   = NumberRange<float>{0.001F, 0.1F};
-static constexpr auto BIG_AMPLITUDE_RANGE       = NumberRange<float>{1.0F, 50.0F};
-static constexpr auto BIG_PERIODIC_FACTOR_RANGE = NumberRange<float>{50.0F, 100.0F};
-static constexpr auto BIG_SIN_COS_PERIODIC_FACTOR_RANGE =
-    NumberRange<float>{10.0F, 90.0F};
+static constexpr auto SMALL_FREQ_FACTOR_RANGE           = NumberRange<float>{0.001F, 0.1F};
+static constexpr auto BIG_AMPLITUDE_RANGE               = NumberRange<float>{1.0F, 50.0F};
+static constexpr auto BIG_PERIODIC_FACTOR_RANGE         = NumberRange<float>{50.0F, 100.0F};
+static constexpr auto BIG_SIN_COS_PERIODIC_FACTOR_RANGE = NumberRange<float>{10.0F, 90.0F};
 
 static constexpr auto PROB_ALLOW_STRANGE_WAVE_VALUES          = 0.1F;
 static constexpr auto PROB_WAVE_XY_EFFECTS_EQUAL              = 0.75F;

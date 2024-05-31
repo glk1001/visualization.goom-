@@ -35,12 +35,11 @@ static constexpr auto DEFAULT_OVERLAY = HypercosOverlayMode::NONE;
 static constexpr auto DEFAULT_EFFECT  = Hypercos::HypercosEffect::NONE;
 static constexpr auto DEFAULT_REVERSE = false;
 
-static constexpr auto X_DEFAULT_FREQUENCY_FACTOR = 10.0F;
-static constexpr auto Y_DEFAULT_FREQUENCY_FACTOR = 10.0F;
-static constexpr auto FREQUENCY_FACTOR_RANGE     = NumberRange<float>{5.0F, 100.0F};
-static constexpr auto BIG_FREQUENCY_FACTOR_RANGE = NumberRange<float>{5.0F, 500.0F};
-static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE =
-    NumberRange<float>{1000.0F, 10000.0F};
+static constexpr auto X_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
+static constexpr auto Y_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
+static constexpr auto FREQUENCY_FACTOR_RANGE          = NumberRange<float>{5.0F, 100.0F};
+static constexpr auto BIG_FREQUENCY_FACTOR_RANGE      = NumberRange<float>{5.0F, 500.0F};
+static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE = NumberRange<float>{1000.0F, 10000.0F};
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
