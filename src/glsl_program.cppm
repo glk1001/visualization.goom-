@@ -16,7 +16,6 @@ module;
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -47,15 +46,12 @@ public:
 
   auto DeleteProgram() -> void;
 
-  auto CompileShader(const std::string_view& fileName) -> void;
+  auto CompileShader(const std::string& fileName) -> void;
   auto LinkShader() -> void;
   auto ValidateShader() const -> void;
 
   auto Use() const -> void;
   [[nodiscard]] auto IsInUse() const noexcept -> bool;
-
-  [[nodiscard]] auto GetSubroutineIndex(GLenum shaderType,
-                                        const std::string_view& name) const noexcept -> GLuint;
 
   auto SetUniform(const std::string_view& name, float x, float y, float z) -> void;
   auto SetUniform(const std::string_view& name, const glm::vec2& vec) -> void;
@@ -70,19 +66,18 @@ public:
 
 private:
   GLuint m_handle = 0;
-  bool m_linked = false;
+  bool m_linked   = false;
 
   std::unordered_map<std::string, int> m_uniformLocations;
   auto FindUniformLocations() -> void;
   [[nodiscard]] auto GetUniformLocation(const std::string_view& name) -> GLint;
 
-  auto CompileShader(const std::string_view& fileName, GLenum type) -> void;
-  auto CompileShader(const std::string& source, GLenum type, const std::string_view& fileName)
-      -> void;
+  auto CompileShader(const std::string& filename, GLenum type) -> void;
+  auto CompileShader(const std::string& source, GLenum type, const std::string& filename) -> void;
   [[nodiscard]] auto IsLinked() const noexcept -> bool;
   auto DetachAndDeleteShaderObjects() const -> void;
 
-  [[nodiscard]] static auto FileExists(const std::string_view& fileName) -> bool;
+  [[nodiscard]] static auto FileExists(const std::string_view& filename) -> bool;
   [[nodiscard]] static auto GetExtension(const std::string_view& filename) -> std::string;
 };
 
@@ -144,21 +139,20 @@ auto GlslProgram::DetachAndDeleteShaderObjects() const -> void
   auto shaderNames = std::vector<GLuint>(static_cast<GLuint>(numShaders));
   glGetAttachedShaders(m_handle, numShaders, nullptr, shaderNames.data());
 
-  for (auto shader : shaderNames)
+  for (const auto shader : shaderNames)
   {
     glDetachShader(m_handle, shader);
     glDeleteShader(shader);
   }
 }
 
-auto GlslProgram::CompileShader(const std::string_view& fileName) -> void
+auto GlslProgram::CompileShader(const std::string& fileName) -> void
 {
 
   // Check the file name's extension to determine the shader type
-  auto ext  = GetExtension(fileName);
-  auto type = GL_VERTEX_SHADER;
-  auto it   = EXTENSIONS.find(ext);
-  if (it != EXTENSIONS.end())
+  const auto ext = GetExtension(fileName);
+  auto type      = GL_VERTEX_SHADER;
+  if (const auto it = EXTENSIONS.find(ext); it != EXTENSIONS.end())
   {
     type = it->second;
   }
@@ -175,35 +169,33 @@ auto GlslProgram::GetExtension(const std::string_view& filename) -> std::string
 {
   const auto nameStr = std::string{filename};
 
-  const auto dotLoc = nameStr.find_last_of('.');
-  if (dotLoc != std::string::npos)
+  if (const auto dotLoc = nameStr.find_last_of('.'); dotLoc != std::string::npos)
   {
     auto ext = nameStr.substr(dotLoc);
-    if (ext == ".glsl")
-    {
-      auto loc = nameStr.find_last_of('.', dotLoc - 1);
-      if (loc == std::string::npos)
-      {
-        loc = nameStr.find_last_of('_', dotLoc - 1);
-      }
-      if (loc != std::string::npos)
-      {
-        return nameStr.substr(loc);
-      }
-    }
-    else
+    if (ext != ".glsl")
     {
       return ext;
     }
+
+    auto loc = nameStr.find_last_of('.', dotLoc - 1);
+    if (loc == std::string::npos)
+    {
+      loc = nameStr.find_last_of('_', dotLoc - 1);
+    }
+    if (loc != std::string::npos)
+    {
+      return nameStr.substr(loc);
+    }
   }
+
   return "";
 }
 
-auto GlslProgram::CompileShader(const std::string_view& fileName, const GLenum type) -> void
+auto GlslProgram::CompileShader(const std::string& filename, const GLenum type) -> void
 {
-  if (not FileExists(fileName))
+  if (not FileExists(filename))
   {
-    throw GlslProgramException(std::string{"Shader: "} + fileName.data() + " not found.");
+    throw GlslProgramException(std::string{"Shader: "} + filename + " not found.");
   }
 
   if (m_handle <= 0)
@@ -215,10 +207,10 @@ auto GlslProgram::CompileShader(const std::string_view& fileName, const GLenum t
     }
   }
 
-  auto inFile = std::ifstream{fileName.data(), std::ios::in};
+  auto inFile = std::ifstream{filename, std::ios::in};
   if (not inFile)
   {
-    throw GlslProgramException(std::string{"Unable to open: "} + fileName.data());
+    throw GlslProgramException(std::string{"Unable to open: "} + filename);
   }
 
   // Get file contents
@@ -226,12 +218,12 @@ auto GlslProgram::CompileShader(const std::string_view& fileName, const GLenum t
   code << inFile.rdbuf();
   inFile.close();
 
-  CompileShader(code.str(), type, fileName);
+  CompileShader(code.str(), type, filename);
 }
 
 auto GlslProgram::CompileShader(const std::string& source,
                                 const GLenum type,
-                                const std::string_view& fileName) -> void
+                                const std::string& filename) -> void
 {
   if (m_handle <= 0)
   {
@@ -254,9 +246,9 @@ auto GlslProgram::CompileShader(const std::string& source,
   {
     // Compile failed, get log
     auto msg = std::string{};
-    if (not fileName.empty())
+    if (not filename.empty())
     {
-      msg = std::string(fileName) + ": shader compilation failed\n";
+      msg = filename + ": shader compilation failed\n";
     }
     else
     {
@@ -379,8 +371,8 @@ auto GlslProgram::FindUniformLocations() -> void
       //std_fmt::println("Skipped uniform {}", i);
       continue; // Skip uniforms in blocks
     }
-    auto nameBufSize = results[0] + 1;
-    auto name        = std::vector<char>(static_cast<size_t>(nameBufSize));
+    const auto nameBufSize = results[0] + 1;
+    auto name              = std::vector<char>(static_cast<size_t>(nameBufSize));
     glGetProgramResourceName(
         m_handle, GL_UNIFORM, static_cast<GLuint>(i), nameBufSize, nullptr, name.data());
     m_uniformLocations[name.data()] = results[2];
@@ -503,25 +495,20 @@ auto GlslProgram::ValidateShader() const -> void
   }
 }
 
-auto GlslProgram::FileExists(const std::string_view& fileName) -> bool
+auto GlslProgram::FileExists(const std::string_view& filename) -> bool
 {
-  return std::filesystem::exists(fileName);
-}
-
-auto GlslProgram::GetSubroutineIndex(const GLenum shaderType,
-                                     const std::string_view& name) const noexcept -> GLuint
-{
-  return glGetSubroutineIndex(m_handle, shaderType, name.data());
+  return std::filesystem::exists(filename);
 }
 
 auto GlslProgram::GetUniformLocation(const std::string_view& name) -> GLint
 {
-  auto pos = m_uniformLocations.find(name.data());
+  const auto nameStr = std::string{name};
 
+  const auto pos = m_uniformLocations.find(nameStr);
   if (pos == m_uniformLocations.end())
   {
-    auto loc                        = glGetUniformLocation(m_handle, name.data());
-    m_uniformLocations[name.data()] = loc;
+    const auto loc              = glGetUniformLocation(m_handle, nameStr.c_str());
+    m_uniformLocations[nameStr] = loc;
     return loc;
   }
 

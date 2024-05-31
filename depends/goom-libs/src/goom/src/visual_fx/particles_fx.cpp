@@ -361,7 +361,7 @@ auto ParticlesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMap
 
 auto ParticlesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return m_pimpl->GetCurrentColorMapsNames();
+  return ParticlesFxImpl::GetCurrentColorMapsNames();
 }
 
 auto ParticlesFx::ApplyToImageBuffers() noexcept -> void

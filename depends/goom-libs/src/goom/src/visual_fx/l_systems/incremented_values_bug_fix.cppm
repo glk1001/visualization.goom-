@@ -72,7 +72,7 @@ using MATH::UnorderedClamp;
 
 using DefaultParams = ::LSYS::Interpreter::DefaultParams;
 
-auto lerp(const DefaultParams& val1, const DefaultParams& val2, const float t) noexcept
+auto lerp(const DefaultParams& val1, const DefaultParams& val2, float t) noexcept
     -> DefaultParams;
 
 auto lerp(const DefaultParams& val1, const DefaultParams& val2, const float t) noexcept

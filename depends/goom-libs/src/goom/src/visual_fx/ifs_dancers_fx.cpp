@@ -455,9 +455,8 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawNextIfsPoints() noexcept -> void
   const auto tStep = (1 == numPoints) ? 0.0F : ((1.0F - 0.0F) / static_cast<float>(numPoints - 1));
   auto t           = -tStep;
 
-  auto doneColorChange =
-      (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE) &&
-      (m_colorizer.GetColorMode() != IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE);
+  auto doneColorChange = (m_colorizer.GetColorMode() != ColorMode::MEGA_MAP_COLOR_CHANGE) &&
+                         (m_colorizer.GetColorMode() != ColorMode::MEGA_MIX_COLOR_CHANGE);
   auto numPointsDrawn = 0U;
 
   for (auto i = 0U; i < numPoints; i += static_cast<uint32_t>(m_ifsIncr))
@@ -530,11 +529,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPoints(
     }
 
     lowDensityPoints.emplace_back(point);
-
-    if (maxLowDensityCount < point.GetCount())
-    {
-      maxLowDensityCount = point.GetCount();
-    }
+    maxLowDensityCount = std::max(maxLowDensityCount, point.GetCount());
   }
 
   if (BlurTheLowDensityPoints(numPointsAlreadyDrawn, lowDensityPoints))

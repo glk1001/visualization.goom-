@@ -41,12 +41,12 @@ namespace GOOM
 {
 
 template<typename T>
-inline CircularBuffer<T>::CircularBuffer(const size_t size) noexcept : m_size{size}, m_buffer(size)
+CircularBuffer<T>::CircularBuffer(const size_t size) noexcept : m_size{size}, m_buffer(size)
 {
 }
 
 template<typename T>
-inline auto CircularBuffer<T>::Clear() noexcept -> void
+auto CircularBuffer<T>::Clear() noexcept -> void
 {
   m_readPtr  = 0;
   m_writePtr = 0;
@@ -54,19 +54,19 @@ inline auto CircularBuffer<T>::Clear() noexcept -> void
 }
 
 template<typename T>
-inline auto CircularBuffer<T>::BufferLength() const noexcept -> size_t
+auto CircularBuffer<T>::BufferLength() const noexcept -> size_t
 {
   return m_size;
 }
 
 template<typename T>
-inline auto CircularBuffer<T>::DataAvailable() const noexcept -> size_t
+auto CircularBuffer<T>::DataAvailable() const noexcept -> size_t
 {
   return m_used;
 }
 
 template<typename T>
-inline auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
+auto CircularBuffer<T>::FreeSpace() const noexcept -> size_t
 {
   Expects(m_used <= m_size);
   return m_size - m_used;
@@ -83,13 +83,12 @@ auto CircularBuffer<T>::Write(const std::span<const T> srce) noexcept -> void
   while (count)
   {
     size_t delta = m_size - m_writePtr;
-    if (delta > count)
-    {
-      delta = count;
-    }
+    delta        = std::min(delta, count);
     std::copy(srcePtr, srcePtr + delta, begin(m_buffer) + static_cast<std::ptrdiff_t>(m_writePtr));
+
     m_used += delta;
     m_writePtr = (m_writePtr + delta) % m_size;
+
     srcePtr += delta;
     count -= delta;
   }
@@ -106,14 +105,9 @@ auto CircularBuffer<T>::Read(std::vector<T>& dest) noexcept -> void
   for (;;)
   {
     size_t delta = m_size - m_readPtr;
-    if (delta > m_used)
-    {
-      delta = m_used;
-    }
-    if (delta > count)
-    {
-      delta = count;
-    }
+    delta        = std::min(delta, m_used);
+    delta        = std::min(delta, count);
+
     if (0 == delta)
     {
       break;

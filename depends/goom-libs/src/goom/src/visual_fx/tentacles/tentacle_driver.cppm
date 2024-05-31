@@ -485,6 +485,7 @@ auto TentacleDriver::DrawTentacles() noexcept -> void
         [this, &colorT, &tentacleAndAttributes](const float nodeT)
         { return GetMixedColors(colorT(), nodeT, tentacleAndAttributes, BRIGHTNESS); });
 
+    // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks): Not sure why this is flagged???
     m_tentaclePlotter.Plot3D(tentacleAndAttributes.tentacle3D);
 
     colorT.Increment();

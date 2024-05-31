@@ -442,11 +442,7 @@ inline auto DistanceField::GetMinDistanceSquared(
 
   for (const auto& centre : centres)
   {
-    const auto distanceSquared = SqDistance(point, centre);
-    if (distanceSquared < minDistanceSquared)
-    {
-      minDistanceSquared = distanceSquared;
-    }
+    minDistanceSquared = std::min(SqDistance(point, centre), minDistanceSquared);
   }
 
   Ensures(minDistanceSquared < MAX_DISTANCE_SQUARED);

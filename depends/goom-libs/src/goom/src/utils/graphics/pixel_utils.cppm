@@ -53,22 +53,10 @@ namespace GOOM::UTILS::GRAPHICS
 constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept
     -> Pixel
 {
-  if (red > MAX_CHANNEL_VALUE_HDR)
-  {
-    red = MAX_CHANNEL_VALUE_HDR;
-  }
-  if (green > MAX_CHANNEL_VALUE_HDR)
-  {
-    green = MAX_CHANNEL_VALUE_HDR;
-  }
-  if (blue > MAX_CHANNEL_VALUE_HDR)
-  {
-    blue = MAX_CHANNEL_VALUE_HDR;
-  }
-  if (alpha > MAX_ALPHA)
-  {
-    alpha = MAX_ALPHA;
-  }
+  red = std::min(red, MAX_CHANNEL_VALUE_HDR);
+  green = std::min(green, MAX_CHANNEL_VALUE_HDR);
+  blue = std::min(blue, MAX_CHANNEL_VALUE_HDR);
+  alpha = std::min<uint32_t>(alpha, MAX_ALPHA);
 
   return Pixel{static_cast<PixelChannelType>(red),
                static_cast<PixelChannelType>(green),

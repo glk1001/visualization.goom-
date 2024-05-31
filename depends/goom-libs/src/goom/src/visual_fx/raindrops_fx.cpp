@@ -86,7 +86,7 @@ auto RaindropsFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMap
 
 auto RaindropsFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return m_pimpl->GetCurrentColorMapsNames();
+  return RaindropsFxImpl::GetCurrentColorMapsNames();
 }
 
 auto RaindropsFx::ApplyToImageBuffers() noexcept -> void

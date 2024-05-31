@@ -136,7 +136,7 @@ auto CirclesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps)
 
 auto CirclesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return m_pimpl->GetCurrentColorMapsNames();
+  return CirclesFxImpl::GetCurrentColorMapsNames();
 }
 
 auto CirclesFx::ApplyToImageBuffers() noexcept -> void

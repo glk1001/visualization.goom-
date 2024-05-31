@@ -70,14 +70,8 @@ inline void SoundInfo::UpdateVolume(const AudioSamples& samples)
 {
   m_volume = samples.GetSampleOverallMinMax().maxVal;
 
-  if (m_volume > m_allTimesMaxVolume)
-  {
-    m_allTimesMaxVolume = m_volume;
-  }
-  if (samples.GetSampleOverallMinMax().minVal < m_allTimesMinVolume)
-  {
-    m_allTimesMinVolume = samples.GetSampleOverallMinMax().minVal;
-  }
+  m_allTimesMaxVolume = std::max(m_volume, m_allTimesMaxVolume);
+  m_allTimesMinVolume = std::min(samples.GetSampleOverallMinMax().minVal, m_allTimesMinVolume);
 
   Ensures((0.0F <= m_volume) and (m_volume <= 1.0F));
 }

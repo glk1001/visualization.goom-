@@ -203,8 +203,8 @@ auto Raindrops::GetNewSourceRectangleWeightPoint(const Point2dInt& focusPoint) c
 
   const auto xSign = m_fxHelper->GetGoomRand().ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
   const auto ySign = m_fxHelper->GetGoomRand().ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
-  return {m_screenCentre.x + xSign * (m_fxHelper->GetDimensions().GetIntWidth() / 4),
-          m_screenCentre.y + ySign * (m_fxHelper->GetDimensions().GetIntHeight() / 4)};
+  return {m_screenCentre.x + (xSign * (m_fxHelper->GetDimensions().GetIntWidth() / 4)),
+          m_screenCentre.y + (ySign * (m_fxHelper->GetDimensions().GetIntHeight() / 4))};
 }
 
 auto Raindrops::GetNewRaindropParams(const Rectangle2dInt& rectangle2D) const noexcept

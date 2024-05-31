@@ -118,7 +118,7 @@ TEST_CASE("Weighted Events")
         ConditionalWeights<Events>{goomRand, weightPairs, s_WEIGHT_MULTIPLIERS};
     const auto conditionalSumOfWeights =
         static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(PREVIOUS_EVENT));
-    static constexpr auto EXPECTED_SUM_FOR_GIVEN = 5.0 + 2.0 * 10.0 + 6.0;
+    static constexpr auto EXPECTED_SUM_FOR_GIVEN = 5.0 + (2.0 * 10.0) + 6.0;
     REQUIRE(conditionalSumOfWeights == Approx(EXPECTED_SUM_FOR_GIVEN));
 
     const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);

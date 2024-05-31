@@ -145,7 +145,7 @@ auto LSystemFx::SetWeightedColorMaps(
 
 auto LSystemFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return m_pimpl->GetCurrentColorMapsNames();
+  return LSystemFxImpl::GetCurrentColorMapsNames();
 }
 
 auto LSystemFx::ApplyToImageBuffers() noexcept -> void

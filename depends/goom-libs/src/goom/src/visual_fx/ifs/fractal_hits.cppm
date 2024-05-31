@@ -104,10 +104,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
   auto& hitInfo = m_hitInfo[static_cast<uint32_t>(y)][static_cast<uint32_t>(x)];
 
   ++hitInfo.count;
-  if (hitInfo.count > m_maxHitCount)
-  {
-    m_maxHitCount = hitInfo.count;
-  }
+  m_maxHitCount = std::max(hitInfo.count, m_maxHitCount);
 
   hitInfo.simi = &simi;
   if (hitInfo.count > 1)

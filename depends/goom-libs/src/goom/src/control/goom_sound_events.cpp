@@ -39,10 +39,8 @@ auto GoomSoundEvents::UpdateLastGoom() -> void
     m_goomPower = m_soundInfo->GetAcceleration() - m_goomLimit;
   }
 
-  if (m_soundInfo->GetAcceleration() > m_maxAccelerationSinceLastReset)
-  {
-    m_maxAccelerationSinceLastReset = m_soundInfo->GetAcceleration();
-  }
+  m_maxAccelerationSinceLastReset =
+      std::max(m_soundInfo->GetAcceleration(), m_maxAccelerationSinceLastReset);
 
   // Toute les 2 secondes: vérifier si le taux de goom est correct et le modifier sinon.
   // Every 2 seconds: check if the goom rate is correct and modify it otherwise.

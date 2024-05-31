@@ -162,9 +162,9 @@ auto GoomAllVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeV
   m_allStandardVisualFx->ApplyEndEffectIfNearEnd(timeValues);
 }
 
-auto GoomAllVisualFx::GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>
+auto GoomAllVisualFx::GetCurrentColorMapsNames() noexcept -> std::unordered_set<std::string>
 {
-  return m_allStandardVisualFx->GetActiveColorMapsNames();
+  return AllStandardVisualFx::GetActiveColorMapsNames();
 }
 
 } // namespace GOOM::CONTROL

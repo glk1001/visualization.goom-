@@ -135,7 +135,7 @@ auto ShapesFx::SetWeightedColorMaps(const WeightedColorMaps& weightedColorMaps) 
 
 auto ShapesFx::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>
 {
-  return m_pimpl->GetCurrentColorMapsNames();
+  return ShapesFxImpl::GetCurrentColorMapsNames();
 }
 
 auto ShapesFx::ApplyToImageBuffers() noexcept -> void

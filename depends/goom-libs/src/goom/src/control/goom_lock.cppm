@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
 
 export module Goom.Control.GoomMusicSettingsReactor:GoomLock;
@@ -41,10 +42,7 @@ inline auto GoomLock::IsLocked() const -> bool
 inline void GoomLock::Update()
 {
   --m_lockTime;
-  if (m_lockTime < 0)
-  {
-    m_lockTime = 0;
-  }
+  m_lockTime = std::max(m_lockTime, 0);
 }
 
 inline auto GoomLock::GetLockTime() const -> uint32_t

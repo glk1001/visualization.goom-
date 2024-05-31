@@ -34,14 +34,9 @@ auto BitmapDrawer::Bitmap(const Point2dInt& centre,
     return;
   }
 
-  if (x0 < 0)
-  {
-    x0 = 0;
-  }
-  if (y0 < 0)
-  {
-    y0 = 0;
-  }
+  x0 = std::max(x0, 0);
+  y0 = std::max(y0, 0);
+
   if (x1 >= m_draw->GetDimensions().GetIntWidth())
   {
     x1 = m_draw->GetDimensions().GetIntWidth() - 1;

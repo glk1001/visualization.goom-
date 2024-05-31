@@ -63,7 +63,7 @@ public:
   auto ApplyCurrentStateToImageBuffers(const AudioSamples& soundData) noexcept -> void;
   auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
 
-  [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::unordered_set<std::string>;
+  [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::unordered_set<std::string>;
 
 private:
   const UTILS::MATH::IGoomRand* m_goomRand;
@@ -93,10 +93,10 @@ private:
   static constexpr auto SYNC_RANDOM_WEIGHT  = 50.0F;
   static constexpr auto ASYNC_RANDOM_WEIGHT = 50.0F;
   UTILS::MATH::Weights<GlobalBlendType> m_globalBlendTypeWeight{
-    *m_goomRand,
-    {{GlobalBlendType::NONRANDOM, NONRANDOM_WEIGHT},
-                {GlobalBlendType::SYNC_RANDOM, SYNC_RANDOM_WEIGHT},
-                {GlobalBlendType::ASYNC_RANDOM, ASYNC_RANDOM_WEIGHT}}
+      *m_goomRand,
+      {{GlobalBlendType::NONRANDOM, NONRANDOM_WEIGHT},
+                  {GlobalBlendType::SYNC_RANDOM, SYNC_RANDOM_WEIGHT},
+                  {GlobalBlendType::ASYNC_RANDOM, ASYNC_RANDOM_WEIGHT}}
   };
 };
 

@@ -54,10 +54,9 @@ TEST_CASE("Normalized Coords Values")
         NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{WIDTH - 1U, HEIGHT - 1U});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
     REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MAX_COORD));
-    static constexpr auto MAX_Y =
-        NormalizedCoords::MIN_COORD +
-        (NormalizedCoords::COORD_WIDTH) *
-            (static_cast<float>(HEIGHT - 1) / static_cast<float>(WIDTH - 1));
+    static constexpr auto MAX_Y = NormalizedCoords::MIN_COORD +
+                                  (NormalizedCoords::COORD_WIDTH * (static_cast<float>(HEIGHT - 1) /
+                                                                    static_cast<float>(WIDTH - 1)));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
     UNSCOPED_INFO("maxY = " << MAX_Y);
     REQUIRE(FloatsEqual(COORDS.GetY(), MAX_Y));

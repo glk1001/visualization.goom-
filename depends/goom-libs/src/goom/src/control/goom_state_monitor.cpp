@@ -70,7 +70,7 @@ auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::Na
   static constexpr auto* PARAM_GROUP = "";
   return {
       GetPair(PARAM_GROUP, "State", m_visualFx->GetCurrentStateName()),
-      GetPair(PARAM_GROUP, "Color Maps", GetString(m_visualFx->GetCurrentColorMapsNames())),
+      GetPair(PARAM_GROUP, "Color Maps", GetString(GoomAllVisualFx::GetCurrentColorMapsNames())),
       GetPair(PARAM_GROUP, "Filter Mode", m_filterSettingsService->GetCurrentFilterModeName()),
       GetPair(PARAM_GROUP,
               "Previous Filter Mode",
