@@ -1,18 +1,25 @@
 Install Kodi flatpak:
     flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     flatpak install --user tv.kodi.Kodi
+    flatpak install --user tv.kodi.Kodi.Debug
 
 Install latest flatpak runtime (with gcc 13 support)
     flatpak install --user org.freedesktop.Platform
         (Choose 23.08)
+    flatpak install --user org.freedesktop.Sdk/x86_64/22.08
+    flatpak install --user org.freedesktop.Sdk/x86_64/23.08
 
 rsync -avh "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/23.08/.../files/lib/"
   to "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/22.08/.../files/lib/"
+
+rsync -avh "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Sdk/x86_64/23.08/.../files/lib/"
+  to  "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Sdk/x86_64/22.08/.../files/lib/"
 
   Ignore locale errors.
 
 To use g++14, copy "/lib/x86_64-linux-gnu/libstdc++.so.6.*" to
     "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/22.08/.../files/lib/x86_64-linux-gnu"
+    "/home/greg/.local/share/flatpak/runtime/org.freedesktop.Sdk/x86_64/22.08/.../files/lib/x86_64-linux-gnu"
 
 To run Kodi flatpak for first time:
     flatpak --filesystem=home run tv.kodi.Kodi
@@ -30,5 +37,8 @@ Kodi data is in "/home/greg/.var/app/tv.kodi.Kodi/data"
     Setup video and music sources
 
 To run with goom++:
-    bash scripts/goom-flatpak-install-to.sh
-    flatpak --filesystem=home run tv.kodi.Kodi
+    bash scripts/goom-flatpak-install-to.sh --clion -c clang-19 --build-type RelWithDebInfo --suffix nexus --docker
+    flatpak --filesystem=home run --devel tv.kodi.Kodi
+
+To look at stacktrace:
+    flatpak-coredumpctl --gdb-arguments "--batch -ex 'thread apply all bt'" tv.kodi.Kodi
