@@ -141,6 +141,8 @@ struct Vec2dFlt
 [[nodiscard]] constexpr auto operator+(const Vec2dFlt& vec, float scalar) noexcept -> Vec2dFlt;
 [[nodiscard]] constexpr auto operator-(const Vec2dFlt& vec, float scalar) noexcept -> Vec2dFlt;
 [[nodiscard]] constexpr auto operator*(float scale, const Vec2dFlt& vec) noexcept -> Vec2dFlt;
+[[nodiscard]] constexpr auto lerp(const Vec2dFlt& vec1, const Vec2dFlt& vec2, float t) noexcept
+    -> Vec2dFlt;
 
 } // namespace GOOM
 
@@ -391,6 +393,14 @@ constexpr auto clamp(const Point2dFlt& point,
                      const Point2dFlt& point2) noexcept -> Point2dFlt
 {
   return {std::clamp(point.x, point1.x, point2.x), std::clamp(point.y, point1.y, point2.y)};
+}
+
+constexpr auto lerp(const Vec2dFlt& vec1, const Vec2dFlt& vec2, const float t) noexcept -> Vec2dFlt
+{
+  return {
+      std::lerp(vec1.x, vec2.x, t),
+      std::lerp(vec1.y, vec2.y, t),
+  };
 }
 
 constexpr auto midpoint(const Point2dInt& point1, const Point2dInt& point2) noexcept -> Point2dInt

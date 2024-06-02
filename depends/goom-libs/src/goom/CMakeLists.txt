@@ -164,6 +164,7 @@ set(GoomFilterFx_modules
     src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cppm
     src/filter_fx/filter_effects/adjustment_effects/distance_field.cppm
     src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cppm
+    src/filter_fx/filter_effects/adjustment_effects/func_of_func.cppm
     src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cppm
     src/filter_fx/filter_effects/adjustment_effects/mobius.cppm
     src/filter_fx/filter_effects/adjustment_effects/newton.cppm
@@ -209,6 +210,7 @@ set(GoomFilterFx_source_files
     src/filter_fx/filter_effects/adjustment_effects/crystal_ball.cpp
     src/filter_fx/filter_effects/adjustment_effects/distance_field.cpp
     src/filter_fx/filter_effects/adjustment_effects/exp_reciprocal.cpp
+    src/filter_fx/filter_effects/adjustment_effects/func_of_func.cpp
     src/filter_fx/filter_effects/adjustment_effects/image_zoom_adjustment.cpp
     src/filter_fx/filter_effects/adjustment_effects/mobius.cpp
     src/filter_fx/filter_effects/adjustment_effects/newton.cpp

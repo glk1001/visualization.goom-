@@ -2,6 +2,7 @@ module;
 
 #include "goom/goom_config.h"
 
+#include <format>
 #include <memory>
 #include <string>
 
@@ -12,6 +13,7 @@ import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexRational;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.CrystalBall;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.DistanceField;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.ExpReciprocal;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.FunctionOfFunction;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.ImageZoomAdjustment;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.Newton;
@@ -24,15 +26,20 @@ import Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.EnumUtils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-using GOOM::UTILS::MATH::IGoomRand;
+using UTILS::NUM;
+using UTILS::MATH::IGoomRand;
 
-auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
-                                const IGoomRand& goomRand,
-                                const std::string& resourcesDirectory)
+namespace
+{
+
+auto CreateFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
+                                    const IGoomRand& goomRand,
+                                    const std::string& resourcesDirectory)
     -> std::unique_ptr<IZoomAdjustmentEffect>
 {
   switch (filterMode)
@@ -89,6 +96,35 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
     case ZoomFilterMode::Y_ONLY_MODE:
       return std::make_unique<YOnly>(goomRand);
   }
+}
+
+} // namespace
+
+auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
+                                const IGoomRand& goomRand,
+                                const std::string& resourcesDirectory)
+    -> std::unique_ptr<IZoomAdjustmentEffect>
+{
+  if (static constexpr auto PROB_FUNC_OF_FUNC = 0.5F; goomRand.ProbabilityOf(PROB_FUNC_OF_FUNC))
+  {
+    if (auto zoomAdjustmentEffect =
+            CreateFuncZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory);
+        zoomAdjustmentEffect != nullptr)
+    {
+      const auto funcOfMode =
+          static_cast<ZoomFilterMode>(goomRand.GetRandInRange(0U, NUM<ZoomFilterMode>));
+      if (auto funcOf = CreateFuncZoomAdjustmentEffect(funcOfMode, goomRand, resourcesDirectory);
+          funcOf != nullptr)
+      {
+        const auto fofName =
+            std::format("{}({})", GetFilterModeName(funcOfMode), GetFilterModeName(filterMode));
+        return std::make_unique<FunctionOfFunction>(
+            goomRand, fofName, std::move(funcOf), std::move(zoomAdjustmentEffect));
+      }
+    }
+  }
+
+  return CreateFuncZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory);
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS
