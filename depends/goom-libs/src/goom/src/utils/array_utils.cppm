@@ -10,7 +10,10 @@ export namespace GOOM::UTILS
 {
 
 template<typename T, std::size_t N>
-constexpr std::array<T, N> CreateArray(const T& value);
+constexpr auto CreateArray(const T& value) -> std::array<T, N>;
+
+template<typename T, std::size_t N>
+constexpr auto Contains(const std::array<T, N>& array, const T& value) noexcept -> bool;
 
 } // namespace GOOM::UTILS
 
@@ -30,9 +33,23 @@ constexpr std::array<T, sizeof...(Is)> CreateArrayImpl(
 } // namespace DETAIL
 
 template<typename T, std::size_t N>
-constexpr std::array<T, N> CreateArray(const T& value)
+constexpr auto CreateArray(const T& value) -> std::array<T, N>
 {
   return DETAIL::CreateArrayImpl(value, std::make_index_sequence<N>());
+}
+
+template<typename T, std::size_t N>
+constexpr auto Contains(const std::array<T, N>& array, const T& value) noexcept -> bool
+{
+  for (const auto& element : array)
+  {
+    if (element == value)
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 } // namespace GOOM::UTILS
