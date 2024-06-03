@@ -445,6 +445,10 @@ inline auto DistanceField::GetMinDistanceSquared(
     minDistanceSquared = std::min(SqDistance(point, centre), minDistanceSquared);
   }
 
+  if (minDistanceSquared >= MAX_DISTANCE_SQUARED)
+  {
+    minDistanceSquared = MAX_DISTANCE_SQUARED - UTILS::MATH::SMALL_FLOAT;
+  }
   Ensures(minDistanceSquared < MAX_DISTANCE_SQUARED);
 
   return minDistanceSquared;
