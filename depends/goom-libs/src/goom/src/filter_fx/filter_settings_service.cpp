@@ -44,6 +44,7 @@ using UTILS::MATH::I_QUARTER;
 using UTILS::MATH::I_THREE_QUARTERS;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
+using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
 
@@ -67,12 +68,10 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE2;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE3;
 //constexpr auto FORCED_FILTER_MODE = IMAGE_DISPLACEMENT_MODE;
-constexpr auto FORCED_FILTER_MODE = IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0;
 //constexpr auto FORCED_FILTER_MODE = MOBIUS_MODE;
 //constexpr auto FORCED_FILTER_MODE = NEWTON_MODE;
-//constexpr auto FORCED_FILTER_MODE = NORMAL_MODE;
+constexpr auto FORCED_FILTER_MODE = NORMAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = PERLIN_NOISE_MODE;
-//constexpr auto FORCED_FILTER_MODE = PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0;
 //constexpr auto FORCED_FILTER_MODE = SCRUNCH_MODE;
 //constexpr auto FORCED_FILTER_MODE = SPEEDWAY_MODE0;
 //constexpr auto FORCED_FILTER_MODE = SPEEDWAY_MODE1;
@@ -119,12 +118,10 @@ constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {HYPERCOS_MODE2, "Hypercos Mode 2"},
     {HYPERCOS_MODE3, "Hypercos Mode 3"},
     {IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
-    {IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0, "Image Displacement of Wave Sq Dist Mode 0"},
     {MOBIUS_MODE, "Mobius"},
     {NEWTON_MODE, "Newton"},
     {NORMAL_MODE, "Normal"},
     {PERLIN_NOISE_MODE, "Perlin Noise"},
-    {PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0, "Perlin Noise of Wave Sq Dist Mode 0"},
     {SCRUNCH_MODE, "Scrunch"},
     {SPEEDWAY_MODE0, "Speedway Mode 0"},
     {SPEEDWAY_MODE1, "Speedway Mode 1"},
@@ -178,8 +175,7 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[HYPERCOS_MODE2][EffectType::ROTATION] = PROB_LOW;
   effectsProbs[HYPERCOS_MODE3][EffectType::ROTATION] = PROB_LOW;
 
-  effectsProbs[IMAGE_DISPLACEMENT_MODE][EffectType::ROTATION]                        = PROB_ZERO;
-  effectsProbs[IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0][EffectType::ROTATION] = PROB_ZERO;
+  effectsProbs[IMAGE_DISPLACEMENT_MODE][EffectType::ROTATION] = PROB_ZERO;
 
   effectsProbs[MOBIUS_MODE][EffectType::ROTATION] = PROB_HIGH;
 
@@ -187,8 +183,7 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
 
   effectsProbs[NORMAL_MODE][EffectType::ROTATION] = PROB_ZERO;
 
-  effectsProbs[PERLIN_NOISE_MODE][EffectType::ROTATION]                        = PROB_HALF;
-  effectsProbs[PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0][EffectType::ROTATION] = PROB_HALF;
+  effectsProbs[PERLIN_NOISE_MODE][EffectType::ROTATION] = PROB_HALF;
 
   effectsProbs[SCRUNCH_MODE][EffectType::ROTATION] = PROB_HALF;
 
@@ -275,35 +270,33 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 [[nodiscard]] auto GetWeightedFilterEvents(const IGoomRand& goomRand)
     -> ConditionalWeights<ZoomFilterMode>
 {
-  static constexpr auto AMULET_MODE_WEIGHT                              = 10.0F;
-  static constexpr auto COMPLEX_RATIONAL_MODE_WEIGHT                    = 10.0F;
-  static constexpr auto CRYSTAL_BALL_MODE0_WEIGHT                       = 04.0F;
-  static constexpr auto CRYSTAL_BALL_MODE1_WEIGHT                       = 02.0F;
-  static constexpr auto DISTANCE_FIELD_MODE0_WEIGHT                     = 03.0F;
-  static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT                     = 03.0F;
-  static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT                     = 02.0F;
-  static constexpr auto EXP_RECIPROCAL_MODE_WEIGHT                      = 10.0F;
-  static constexpr auto HYPERCOS_MODE0_WEIGHT                           = 08.0F;
-  static constexpr auto HYPERCOS_MODE1_WEIGHT                           = 04.0F;
-  static constexpr auto HYPERCOS_MODE2_WEIGHT                           = 02.0F;
-  static constexpr auto HYPERCOS_MODE3_WEIGHT                           = 01.0F;
-  static constexpr auto IMAGE_DISPLACEMENT_MODE_WEIGHT                  = 05.0F;
-  static constexpr auto IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_WEIGHT = 05.0F;
-  static constexpr auto MOBIUS_MODE_WEIGHT                              = 10.0F;
-  static constexpr auto NEWTON_MODE_WEIGHT                              = 10.0F;
-  static constexpr auto NORMAL_MODE_WEIGHT                              = 10.0F;
-  static constexpr auto PERLIN_NOISE_MODE_WEIGHT                        = 10.0F;
-  static constexpr auto PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_WEIGHT       = 10.0F;
-  static constexpr auto SCRUNCH_MODE_WEIGHT                             = 06.0F;
-  static constexpr auto SPEEDWAY_MODE0_WEIGHT                           = 02.0F;
-  static constexpr auto SPEEDWAY_MODE1_WEIGHT                           = 01.0F;
-  static constexpr auto SPEEDWAY_MODE2_WEIGHT                           = 05.0F;
-  static constexpr auto WAVE_SQ_DIST_MODE0_WEIGHT                       = 05.0F;
-  static constexpr auto WAVE_SQ_DIST_MODE1_WEIGHT                       = 04.0F;
-  static constexpr auto WAVE_ATAN_MODE0_WEIGHT                          = 05.0F;
-  static constexpr auto WAVE_ATAN_MODE1_WEIGHT                          = 04.0F;
-  static constexpr auto WATER_MODE_WEIGHT                               = 00.0F;
-  static constexpr auto Y_ONLY_MODE_WEIGHT                              = 05.0F;
+  static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
+  static constexpr auto COMPLEX_RATIONAL_MODE_WEIGHT   = 10.0F;
+  static constexpr auto CRYSTAL_BALL_MODE0_WEIGHT      = 04.0F;
+  static constexpr auto CRYSTAL_BALL_MODE1_WEIGHT      = 02.0F;
+  static constexpr auto DISTANCE_FIELD_MODE0_WEIGHT    = 03.0F;
+  static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
+  static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 02.0F;
+  static constexpr auto EXP_RECIPROCAL_MODE_WEIGHT     = 10.0F;
+  static constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
+  static constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
+  static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
+  static constexpr auto HYPERCOS_MODE3_WEIGHT          = 01.0F;
+  static constexpr auto IMAGE_DISPLACEMENT_MODE_WEIGHT = 05.0F;
+  static constexpr auto MOBIUS_MODE_WEIGHT             = 10.0F;
+  static constexpr auto NEWTON_MODE_WEIGHT             = 10.0F;
+  static constexpr auto NORMAL_MODE_WEIGHT             = 10.0F;
+  static constexpr auto PERLIN_NOISE_MODE_WEIGHT       = 10.0F;
+  static constexpr auto SCRUNCH_MODE_WEIGHT            = 06.0F;
+  static constexpr auto SPEEDWAY_MODE0_WEIGHT          = 02.0F;
+  static constexpr auto SPEEDWAY_MODE1_WEIGHT          = 01.0F;
+  static constexpr auto SPEEDWAY_MODE2_WEIGHT          = 05.0F;
+  static constexpr auto WAVE_SQ_DIST_MODE0_WEIGHT      = 05.0F;
+  static constexpr auto WAVE_SQ_DIST_MODE1_WEIGHT      = 04.0F;
+  static constexpr auto WAVE_ATAN_MODE0_WEIGHT         = 05.0F;
+  static constexpr auto WAVE_ATAN_MODE1_WEIGHT         = 04.0F;
+  static constexpr auto WATER_MODE_WEIGHT              = 00.0F;
+  static constexpr auto Y_ONLY_MODE_WEIGHT             = 05.0F;
 
   static const auto s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS = std::map<ZoomFilterMode, float>{
       {CRYSTAL_BALL_MODE0, 0.0F},
@@ -391,13 +384,10 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
         {HYPERCOS_MODE2, HYPERCOS_MODE2_WEIGHT},
         {HYPERCOS_MODE3, HYPERCOS_MODE3_WEIGHT},
         {IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_MODE_WEIGHT},
-        {IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0,
-           IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_WEIGHT},
         {MOBIUS_MODE, MOBIUS_MODE_WEIGHT},
         {NEWTON_MODE, NEWTON_MODE_WEIGHT},
         {NORMAL_MODE, NORMAL_MODE_WEIGHT},
         {PERLIN_NOISE_MODE, PERLIN_NOISE_MODE_WEIGHT},
-        {PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0, PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_WEIGHT},
         {SCRUNCH_MODE, SCRUNCH_MODE_WEIGHT},
         {SPEEDWAY_MODE0, SPEEDWAY_MODE0_WEIGHT},
         {SPEEDWAY_MODE1, SPEEDWAY_MODE1_WEIGHT},
@@ -520,13 +510,6 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {Hyp::MODE2, 1.0F},
        {Hyp::MODE3, 1.0F}}
   };
-  constexpr auto IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
-  };
   constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
@@ -549,13 +532,6 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {Hyp::MODE3, 0.0F}}
   };
   constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
-  };
-  constexpr auto PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0_WEIGHTS = ModeWeights{
       {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
        {Hyp::MODE0, 5.0F},
        {Hyp::MODE1, 1.0F},
@@ -633,13 +609,10 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
       {HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE3, HYPERCOS3_HYPERCOS_WEIGHTS},
       {IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS},
-      {IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0,
-       IMAGE_DISPLACEMENT_OF_WAVE_SQ_DIST_ANGLE_MODE0_WEIGHTS},
       {MOBIUS_MODE, MOBIUS_HYPERCOS_WEIGHTS},
       {NEWTON_MODE, NEWTON_HYPERCOS_WEIGHTS},
       {NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},
       {PERLIN_NOISE_MODE, PERLIN_NOISE_HYPERCOS_WEIGHTS},
-      {PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0, PERLIN_NOISE_OF_WAVE_SQ_DIST_ANGLE_MODE0_WEIGHTS},
       {SCRUNCH_MODE, SCRUNCH_HYPERCOS_WEIGHTS},
       {SPEEDWAY_MODE0, SPEEDWAY_HYPERCOS_WEIGHTS},
       {SPEEDWAY_MODE1, SPEEDWAY_HYPERCOS_WEIGHTS},
@@ -997,6 +970,7 @@ inline auto FilterSettingsService::IsFilterModeAWaveMode() const -> bool
 auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) const
     -> ZoomMidpointEvents
 {
+  Expects(m_zoomMidpointWeights.GetSumOfWeights() > SMALL_FLOAT);
   auto midPointEvent = m_zoomMidpointWeights.GetRandomWeighted();
 
   if (allowEdgePoints)
