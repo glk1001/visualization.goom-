@@ -126,10 +126,18 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 xy)
   lerpedPositions.pos1 += deltaAmp * delta;
   lerpedPositions.pos2 -= deltaAmp * delta;
 
+  vec2 normalizedXY = vec2(FILTER_POS_MIN_COORD + FILTER_POS_COORD_WIDTH*float(xy.x)/float(HEIGHT)/ASPECT_RATIO,
+                           FILTER_POS_MIN_COORD + FILTER_POS_COORD_WIDTH*float(xy.y)/float(HEIGHT));
+  float distToLerp = distance(normalizedXY, lerpedPositions.pos2);
+
   TexelPositions filterBuff2Positions = GetTexelPositions(lerpedPositions);
 
-  return
+  vec4 blendedColors =
       GetColorFromBlendedColors(filterBuff2Positions, GetColorBlendTMix(uv, filterBuff2Positions));
+
+  blendedColors.rgb *= (1.0F + distToLerp/70.0F);
+
+  return blendedColors;
 }
 
 struct SrceAndDestPositions
