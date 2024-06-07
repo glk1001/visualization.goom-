@@ -388,10 +388,14 @@ add_library(goom::lib ALIAS goom)
 
 target_sources(goom
                PUBLIC
-               FILE_SET CXX_MODULES FILES
+               FILE_SET public_modules TYPE CXX_MODULES FILES
+               ${GoomLib_modules}
+)
+target_sources(goom
+               PUBLIC  # Seems like there is not way (yet) to make this PRIVATE
+               FILE_SET private_modules TYPE CXX_MODULES FILES
                ${LSys_modules}
                ${Particles_modules}
-               ${GoomLib_modules}
                ${GoomColor_modules}
                ${GoomControl_modules}
                ${GoomDraw_modules}

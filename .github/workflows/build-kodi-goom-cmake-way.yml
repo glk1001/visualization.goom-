@@ -1,7 +1,7 @@
 name: Build kodi goom-pp using 'cmake'
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -36,14 +36,14 @@ jobs:
       max-parallel: 2
       matrix:
         config:
-        - {
+          - {
             name: 'Ubuntu Clang - RelWithDebInfo',
             os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
             cxx: 'clang++-${{ vars.CLANG_VER }}',
             build_type: 'RelWithDebInfo',
           }
-        - {
+          - {
             name: 'Ubuntu Clang - Release',
             os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
@@ -52,12 +52,12 @@ jobs:
           }
 
     env:
-      KODI_PATH:      '${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}'
-      VIS_GOOM_PATH:  '${{ github.workspace }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
-      GOOM_LIBS_DIR:  'depends/goom-libs'
-      ARCHIVE_NAME:   'kodi-${{ vars.KODI_BRANCH }}-goom++-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+      KODI_PATH: '${{ github.workspace }}/${{ vars.KODI_ROOT_DIR }}'
+      VIS_GOOM_PATH: '${{ github.workspace }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
+      GOOM_LIBS_DIR: 'depends/goom-libs'
+      ARCHIVE_NAME: 'kodi-${{ vars.KODI_BRANCH }}-goom++-${{ matrix.config.os }}-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
       ARTIFACTS_PATH: '${{ github.workspace }}/artifacts-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
-      BUILD_PATH:     'build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
+      BUILD_PATH: 'build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}'
 
     steps:
       - name: Clone this Goom++ Repo
@@ -128,7 +128,7 @@ jobs:
 
       - name: Install Necessary Ubuntu Packages
         if: ${{ startsWith(matrix.config.name, 'Ubuntu') }}
-        run:  |
+        run: |
           sudo apt-get update
           sudo apt-get install -y mesa-common-dev
 
@@ -279,32 +279,32 @@ jobs:
       - name: Zip and copy artifacts to deployment repo
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-            declare -r UPPER_KODI_BRANCH="${{ vars.KODI_BRANCH }}"
-            declare -r LOWER_KODI_BRANCH="${UPPER_KODI_BRANCH,,}"
-            declare -r LINUX_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-linux-x86_64.zip
-            declare -r WINDOWS_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-windows-x86_64.zip
-
-            cd artifacts/linux
-            zip -m -r "${LINUX_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
-            cd -
-
-            cd artifacts/windows
-            zip -m -r "${WINDOWS_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
-            cd -
-
-            git clone https://.:${{ secrets.ACTIONS_GITHUB }}@github.com/glk1001/glk1001.github.io target
-            cd target
-            git switch master
-            git reset --hard HEAD~1
-
-            git config --global user.email 'gregg.kay@gmail.com'
-            git config --global user.name '${{ github.repository_owner }}'
-
-            mv "../artifacts/linux/${LINUX_ZIP_NAME}" .
-            mv "../artifacts/windows/${WINDOWS_ZIP_NAME}" .
-
-            git add "${LINUX_ZIP_NAME}"
-            git add "${WINDOWS_ZIP_NAME}"
-
-            git commit -m "Latest Goom++ Build"
-            git push -f
+          declare -r UPPER_KODI_BRANCH="${{ vars.KODI_BRANCH }}"
+          declare -r LOWER_KODI_BRANCH="${UPPER_KODI_BRANCH,,}"
+          declare -r LINUX_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-linux-x86_64.zip
+          declare -r WINDOWS_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-windows-x86_64.zip
+          
+          cd artifacts/linux
+          zip -m -r "${LINUX_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
+          cd -
+          
+          cd artifacts/windows
+          zip -m -r "${WINDOWS_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
+          cd -
+          
+          git clone https://.:${{ secrets.ACTIONS_GITHUB }}@github.com/glk1001/glk1001.github.io target
+          cd target
+          git switch master
+          git reset --hard HEAD~1
+          
+          git config --global user.email 'gregg.kay@gmail.com'
+          git config --global user.name '${{ github.repository_owner }}'
+          
+          mv "../artifacts/linux/${LINUX_ZIP_NAME}" .
+          mv "../artifacts/windows/${WINDOWS_ZIP_NAME}" .
+          
+          git add "${LINUX_ZIP_NAME}"
+          git add "${WINDOWS_ZIP_NAME}"
+          
+          git commit -m "Latest Goom++ Build"
+          git push -f

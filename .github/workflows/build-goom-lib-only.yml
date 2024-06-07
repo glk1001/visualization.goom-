@@ -1,7 +1,7 @@
 name: Build goom-lib only
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -11,24 +11,24 @@ jobs:
 
     strategy:
       fail-fast: true
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         config:
-        - {
-            name: 'Ubuntu Clang - RelWithDebInfo',
-            os: 'ubuntu-24.04',
-            cc: 'clang-${{ vars.CLANG_VER }}',
-            cxx: 'clang++-${{ vars.CLANG_VER }}',
-            build_type: 'RelWithDebInfo',
-          }
-        - {
+          - {
             name: 'Windows 2022 MSVC - Release',
             os: 'windows-2022',
             cc: 'cl',
             cxx: 'cl',
             build_type: 'Release',
           }
-        - {
+          - {
+            name: 'Ubuntu Clang - RelWithDebInfo',
+            os: 'ubuntu-24.04',
+            cc: 'clang-${{ vars.CLANG_VER }}',
+            cxx: 'clang++-${{ vars.CLANG_VER }}',
+            build_type: 'RelWithDebInfo',
+          }
+          - {
             name: 'Ubuntu Clang - Release',
             os: 'ubuntu-24.04',
             cc: 'clang-${{ vars.CLANG_VER }}',
