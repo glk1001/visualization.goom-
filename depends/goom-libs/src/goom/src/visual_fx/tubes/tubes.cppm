@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -25,6 +23,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
@@ -181,7 +180,136 @@ static constexpr auto MAX_LOW_COLOR_TYPE_TIME = 1000U;
 static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.8F;
 static constexpr auto LIGHTER_COLOR_POWER     = 10.0F;
 
-class ShapeColorizer;
+
+struct Shape
+{
+  uint32_t shapeNum{};
+  std::unique_ptr<OscillatingPath> path;
+  uint8_t lineThickness{1};
+};
+
+class ShapeColorizer
+{
+public:
+  struct ShapeColorMaps
+  {
+    ColorMapPtrWrapper mainColorMap{nullptr};
+    ColorMapPtrWrapper lowColorMap{nullptr};
+    ColorMapPtrWrapper innerMainColorMap{nullptr};
+    ColorMapPtrWrapper innerLowColorMap{nullptr};
+  };
+
+  ShapeColorizer(uint32_t numShapes, const TubeData& data, uint32_t numCircles) noexcept;
+
+  [[nodiscard]] auto GetBrightnessFactor() const noexcept -> float;
+  auto SetBrightnessFactor(float val) noexcept -> void;
+
+  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+
+  auto ResetColorMaps() noexcept -> void;
+  auto RotateShapeColorMaps() noexcept -> void;
+  [[nodiscard]] auto GetColors(LowColorTypes lowColorType,
+                               uint32_t circleNum,
+                               const Shape& shape,
+                               const Point2dInt& shapeCentrePos) const noexcept -> ShapeColors;
+  auto UpdateAllTValues() noexcept -> void;
+
+private:
+  TubeData m_data;
+
+  static constexpr auto GAMMA = 1.0F;
+  ColorAdjustment m_colorAdjust{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
+
+  std::vector<ShapeColorMaps> m_shapeColorMaps;
+  std::vector<ShapeColors> m_oldShapeColors;
+  static constexpr uint32_t NUM_SHAPE_COLOR_STEPS = 1000;
+  TValue m_shapeColorsT{
+      {TValue::StepType::CONTINUOUS_REPEATABLE, NUM_SHAPE_COLOR_STEPS}
+  };
+
+  std::vector<ShapeColorMaps> m_circleColorMaps;
+  std::vector<ShapeColors> m_oldCircleColors;
+  TValue m_circleColorsT{
+      {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP}
+  };
+
+  ColorMapPtrWrapper m_outerCircleMainColorMap;
+  ColorMapPtrWrapper m_outerCircleLowColorMap;
+  static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
+  TValue m_outerCircleT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS}
+  };
+
+  ColorMapMixMode m_colorMapMixMode             = ColorMapMixMode::CIRCLES_ONLY;
+  static constexpr uint32_t NUM_MIX_COLOR_STEPS = 1000;
+  TValue m_mixT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MIX_COLOR_STEPS}
+  };
+  Weights<ColorMapMixMode> m_colorMapMixModes;
+
+  static constexpr uint32_t NUM_STEPS_FROM_OLD = 50;
+  TValue m_oldT{
+      {TValue::StepType::SINGLE_CYCLE, NUM_STEPS_FROM_OLD}
+  };
+
+  auto InitColorMaps() noexcept -> void;
+  auto ResetColorMixMode() noexcept -> void;
+  auto ResetColorMapsLists() noexcept -> void;
+  auto ResetColorMapsList(std::vector<ShapeColorMaps>* colorMaps,
+                          std::vector<ShapeColors>* oldColors,
+                          TValue* t) noexcept -> void;
+  auto ResetColorMaps(ShapeColorMaps* colorMaps) const noexcept -> void;
+  auto CopyColors(const ShapeColorMaps& colorMaps,
+                  const TValue& t,
+                  ShapeColors* oldColors) const noexcept -> void;
+
+  uint32_t m_stripeWidth = MIN_STRIPE_WIDTH;
+  [[nodiscard]] auto GetShapeNumToUse(uint32_t shapeNum) const noexcept -> uint32_t;
+  [[nodiscard]] auto GetBrightness(const Shape& shape,
+                                   const Point2dInt& shapeCentrePos) const noexcept -> float;
+
+  [[nodiscard]] auto GetShapeColors(uint32_t shapeNum, float brightness) const noexcept
+      -> ShapeColors;
+  [[nodiscard]] auto GetCircleColors(uint32_t circleNum, float brightness) const noexcept
+      -> ShapeColors;
+  [[nodiscard]] auto GetColors(const ShapeColorMaps& shapeColorMaps,
+                               const TValue& t,
+                               const ShapeColors& oldShapeColors,
+                               float brightness) const noexcept -> ShapeColors;
+  [[nodiscard]] static auto GetLowColor(LowColorTypes colorType, const ShapeColors& colors) noexcept
+      -> Pixel;
+  [[nodiscard]] static auto GetLowMixedColor(LowColorTypes colorType,
+                                             const ShapeColors& colors1,
+                                             const ShapeColors& colors2,
+                                             float mixT) noexcept -> Pixel;
+  [[nodiscard]] static auto GetInnerLowColor(LowColorTypes colorType,
+                                             const ShapeColors& colors) noexcept -> Pixel;
+  [[nodiscard]] static auto GetInnerLowMixedColor(LowColorTypes colorType,
+                                                  const ShapeColors& colors1,
+                                                  const ShapeColors& colors2,
+                                                  float mixT) noexcept -> Pixel;
+  static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
+  BrightnessAttenuation m_brightnessAttenuation;
+  [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
+      -> Pixel;
+  [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
+                                         const Shape& shape,
+                                         float brightness) const noexcept -> ShapeColors;
+  [[nodiscard]] auto GetCirclesOnlyColors(const LowColorTypes& lowColorType,
+                                          uint32_t circleNum,
+                                          float brightness) const noexcept -> ShapeColors;
+  [[nodiscard]] auto GetShapesAndCirclesColors(const LowColorTypes& lowColorType,
+                                               uint32_t circleNum,
+                                               const Shape& shape,
+                                               float brightness) const noexcept -> ShapeColors;
+};
+
+static constexpr auto TRUE_LOW_COLOR_WEIGHT      = 30.0F;
+static constexpr auto MAIN_COLOR_WEIGHT          = 10.0F;
+static constexpr auto LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
 
 class TubeParametricPath : public ISimplePath
 {
@@ -221,13 +349,6 @@ auto TubeParametricPath::GetNextPoint() const noexcept -> Point2dInt
 
   return point;
 }
-
-struct Shape
-{
-  uint32_t shapeNum{};
-  std::unique_ptr<OscillatingPath> path;
-  uint8_t lineThickness{1};
-};
 
 class Tube::TubeImpl
 {
@@ -404,129 +525,6 @@ auto Tube::SetMaxJitterOffset(const int32_t val) noexcept -> void
   m_pimpl->SetMaxJitterOffset(val);
 }
 
-class ShapeColorizer
-{
-public:
-  struct ShapeColorMaps
-  {
-    ColorMapPtrWrapper mainColorMap{nullptr};
-    ColorMapPtrWrapper lowColorMap{nullptr};
-    ColorMapPtrWrapper innerMainColorMap{nullptr};
-    ColorMapPtrWrapper innerLowColorMap{nullptr};
-  };
-
-  ShapeColorizer(uint32_t numShapes, const TubeData& data, uint32_t numCircles) noexcept;
-
-  [[nodiscard]] auto GetBrightnessFactor() const noexcept -> float;
-  auto SetBrightnessFactor(float val) noexcept -> void;
-
-  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
-
-  auto ResetColorMaps() noexcept -> void;
-  auto RotateShapeColorMaps() noexcept -> void;
-  [[nodiscard]] auto GetColors(LowColorTypes lowColorType,
-                               uint32_t circleNum,
-                               const Shape& shape,
-                               const Point2dInt& shapeCentrePos) const noexcept -> ShapeColors;
-  auto UpdateAllTValues() noexcept -> void;
-
-private:
-  TubeData m_data;
-
-  static constexpr auto GAMMA = 1.0F;
-  ColorAdjustment m_colorAdjust{
-      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
-  };
-
-  std::vector<ShapeColorMaps> m_shapeColorMaps;
-  std::vector<ShapeColors> m_oldShapeColors;
-  static constexpr uint32_t NUM_SHAPE_COLOR_STEPS = 1000;
-  TValue m_shapeColorsT{
-      {TValue::StepType::CONTINUOUS_REPEATABLE, NUM_SHAPE_COLOR_STEPS}
-  };
-
-  std::vector<ShapeColorMaps> m_circleColorMaps;
-  std::vector<ShapeColors> m_oldCircleColors;
-  TValue m_circleColorsT{
-      {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP}
-  };
-
-  ColorMapPtrWrapper m_outerCircleMainColorMap;
-  ColorMapPtrWrapper m_outerCircleLowColorMap;
-  static constexpr uint32_t NUM_OUTER_CIRCLE_COLOR_STEPS = 100;
-  TValue m_outerCircleT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_OUTER_CIRCLE_COLOR_STEPS}
-  };
-
-  ColorMapMixMode m_colorMapMixMode             = ColorMapMixMode::CIRCLES_ONLY;
-  static constexpr uint32_t NUM_MIX_COLOR_STEPS = 1000;
-  TValue m_mixT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_MIX_COLOR_STEPS}
-  };
-  Weights<ColorMapMixMode> m_colorMapMixModes;
-
-  static constexpr uint32_t NUM_STEPS_FROM_OLD = 50;
-  TValue m_oldT{
-      {TValue::StepType::SINGLE_CYCLE, NUM_STEPS_FROM_OLD}
-  };
-
-  auto InitColorMaps() noexcept -> void;
-  auto ResetColorMixMode() noexcept -> void;
-  auto ResetColorMapsLists() noexcept -> void;
-  auto ResetColorMapsList(std::vector<ShapeColorMaps>* colorMaps,
-                          std::vector<ShapeColors>* oldColors,
-                          TValue* t) noexcept -> void;
-  auto ResetColorMaps(ShapeColorMaps* colorMaps) const noexcept -> void;
-  auto CopyColors(const ShapeColorMaps& colorMaps,
-                  const TValue& t,
-                  ShapeColors* oldColors) const noexcept -> void;
-
-  uint32_t m_stripeWidth = MIN_STRIPE_WIDTH;
-  [[nodiscard]] auto GetShapeNumToUse(uint32_t shapeNum) const noexcept -> uint32_t;
-  [[nodiscard]] auto GetBrightness(const Shape& shape,
-                                   const Point2dInt& shapeCentrePos) const noexcept -> float;
-
-  [[nodiscard]] auto GetShapeColors(uint32_t shapeNum, float brightness) const noexcept
-      -> ShapeColors;
-  [[nodiscard]] auto GetCircleColors(uint32_t circleNum, float brightness) const noexcept
-      -> ShapeColors;
-  [[nodiscard]] auto GetColors(const ShapeColorMaps& shapeColorMaps,
-                               const TValue& t,
-                               const ShapeColors& oldShapeColors,
-                               float brightness) const noexcept -> ShapeColors;
-  [[nodiscard]] static auto GetLowColor(LowColorTypes colorType, const ShapeColors& colors) noexcept
-      -> Pixel;
-  [[nodiscard]] static auto GetLowMixedColor(LowColorTypes colorType,
-                                             const ShapeColors& colors1,
-                                             const ShapeColors& colors2,
-                                             float mixT) noexcept -> Pixel;
-  [[nodiscard]] static auto GetInnerLowColor(LowColorTypes colorType,
-                                             const ShapeColors& colors) noexcept -> Pixel;
-  [[nodiscard]] static auto GetInnerLowMixedColor(LowColorTypes colorType,
-                                                  const ShapeColors& colors1,
-                                                  const ShapeColors& colors2,
-                                                  float mixT) noexcept -> Pixel;
-  static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
-  BrightnessAttenuation m_brightnessAttenuation;
-  [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
-      -> Pixel;
-  [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
-                                         const Shape& shape,
-                                         float brightness) const noexcept -> ShapeColors;
-  [[nodiscard]] auto GetCirclesOnlyColors(const LowColorTypes& lowColorType,
-                                          uint32_t circleNum,
-                                          float brightness) const noexcept -> ShapeColors;
-  [[nodiscard]] auto GetShapesAndCirclesColors(const LowColorTypes& lowColorType,
-                                               uint32_t circleNum,
-                                               const Shape& shape,
-                                               float brightness) const noexcept -> ShapeColors;
-};
-
-static constexpr auto TRUE_LOW_COLOR_WEIGHT      = 30.0F;
-static constexpr auto MAIN_COLOR_WEIGHT          = 10.0F;
-static constexpr auto LIGHTENED_LOW_COLOR_WEIGHT = 10.0F;
-
 Tube::TubeImpl::TubeImpl(
     const TubeData& data, const OscillatingFunction::Params& pathParams) noexcept
   : m_data{data},
@@ -540,7 +538,7 @@ Tube::TubeImpl::TubeImpl(
         }
     }
 {
-  Ensures(m_shapes.size() > 0);
+  Ensures(not m_shapes.empty());
 }
 
 auto Tube::TubeImpl::GetInitialShapes(const TubeData& data,

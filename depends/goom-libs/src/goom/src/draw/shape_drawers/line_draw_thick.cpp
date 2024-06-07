@@ -2,11 +2,11 @@ module;
 
 // NOLINTBEGIN: Not my code
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 
 module Goom.Draw.ShaperDrawers.LineDrawThick;
+
+import Goom.Lib.AssertUtils;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS::THICK_LINES
 {

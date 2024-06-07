@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 
@@ -15,6 +13,8 @@ module;
 #endif
 
 export module Goom.FilterFx.FilterSpeed;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::FILTER_FX
 {

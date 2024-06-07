@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 module Goom.Utils.Graphics.TestPatterns;
 
 import Goom.Color.ColorUtils;

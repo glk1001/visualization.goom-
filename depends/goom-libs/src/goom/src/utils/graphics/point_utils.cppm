@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 
@@ -10,6 +8,7 @@ export module Goom.Utils.Graphics.PointUtils;
 import Goom.Utils.Graphics.LineClipper;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 

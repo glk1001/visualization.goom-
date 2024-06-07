@@ -1,7 +1,6 @@
 module;
 
 #include "color_data/color_map_enums.h"
-#include "goom/goom_config.h"
 
 #include <set>
 #include <string>
@@ -11,6 +10,7 @@ export module Goom.Color.RandomColorMaps;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
@@ -166,7 +166,7 @@ inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::str
 inline auto RandomColorMaps::GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&
 {
   Expects(m_goomRand != nullptr);
-
+  // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)
   return *m_goomRand;
 }
 

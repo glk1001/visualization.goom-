@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 export module Goom.Control.GoomAllVisualFx:VisualFxColorMaps;
 
 import Goom.Color.RandomColorMaps;

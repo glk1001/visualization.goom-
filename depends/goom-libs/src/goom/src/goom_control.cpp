@@ -14,7 +14,6 @@ module;
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <cmath>
@@ -59,6 +58,7 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.GoomConfigPaths;
 import Goom.Lib.GoomGraphic;
@@ -751,13 +751,14 @@ inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 
 inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 {
+  // NOLINTBEGIN(clang-analyzer-core.NonNullParamChecker)
+  Expects(m_p1 != nullptr);
+  Expects(m_p2 != nullptr);
+
   if (m_songInfo.title.empty())
   {
     return;
   }
-
-  Expects(m_p1 != nullptr);
-  Expects(m_p2 != nullptr);
 
   if (m_showTitle == ShowSongTitleType::ALWAYS)
   {
@@ -788,6 +789,8 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
     m_goomTextOutput.SetBuffer(*m_p2);
   }
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
+
+  // NOLINTEND(clang-analyzer-core.NonNullParamChecker)
 }
 
 /*
@@ -801,6 +804,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
   }
 
   Expects(m_p1 != nullptr);
+  // NOLINTNEXTLINE(clang-analyzer-core.NonNullParamChecker)
   m_goomTextOutput.SetBuffer(*m_p1);
 
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));

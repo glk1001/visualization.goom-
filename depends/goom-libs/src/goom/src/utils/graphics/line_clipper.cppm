@@ -1,13 +1,12 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 
 export module Goom.Utils.Graphics.LineClipper;
 
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::GRAPHICS
 {

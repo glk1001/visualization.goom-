@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.CrystalBall;
 
 import Goom.FilterFx.CommonTypes;

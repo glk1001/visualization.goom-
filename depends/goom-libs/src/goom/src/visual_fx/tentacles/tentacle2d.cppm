@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -14,7 +12,7 @@ module;
 module Goom.VisualFx.TentaclesFx:Tentacle2d;
 
 import Goom.Utils.Math.DampingFunctions;
-;
+import Goom.Lib.AssertUtils;
 
 namespace GOOM::VISUAL_FX::TENTACLES
 {
@@ -184,7 +182,6 @@ inline auto Tentacle2D::ValidateSettings() const -> void
   Expects(m_dimensions.xDimensions.min < m_dimensions.xDimensions.max);
   Expects(m_dimensions.yDimensions.min < m_dimensions.yDimensions.max);
   Expects(m_numRequestedNodes >= MIN_NUM_NODES);
-  USED_FOR_DEBUGGING(SMALL_WEIGHT);
   Expects(m_basePreviousYWeight > SMALL_WEIGHT);
   Expects(m_baseCurrentYWeight > SMALL_WEIGHT);
 }

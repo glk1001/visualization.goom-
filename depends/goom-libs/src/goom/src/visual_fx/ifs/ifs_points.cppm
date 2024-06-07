@@ -1,11 +1,10 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 
 module Goom.VisualFx.IfsDancersFx:IfsPoints;
 
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
 import :IfsTypes;

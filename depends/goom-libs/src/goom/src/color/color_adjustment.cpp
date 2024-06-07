@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201) // glm: nonstandard extension used: nameless struct/union
@@ -22,6 +20,7 @@ module Goom.Color.ColorAdjustment;
 import Goom.Color.ColorUtils;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR

@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <string>
@@ -12,6 +10,7 @@ module Goom.VisualFx.ShaderFx;
 
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.SPimpl;
 import :ChromaFactorLerper;
@@ -148,6 +147,7 @@ inline auto ShaderFx::ShaderFxImpl::SetFrameMiscData(MiscData& miscData) noexcep
 
 inline auto ShaderFx::ShaderFxImpl::ApplyToImageBuffers() -> void
 {
+  // NOLINTBEGIN(clang-analyzer-core.NullDereference)
   Expects(m_frameMiscData != nullptr);
 
   m_highContrast.UpdateHighContrast();
@@ -159,6 +159,7 @@ inline auto ShaderFx::ShaderFxImpl::ApplyToImageBuffers() -> void
   m_frameMiscData->hueShift            = m_hueShiftLerper.GetHueShift();
   m_frameMiscData->chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
   m_frameMiscData->baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
+  // NOLINTEND(clang-analyzer-core.NullDereference)
 }
 
 inline auto ShaderFx::ShaderFxImpl::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) -> void

@@ -3,8 +3,6 @@ module;
 // clang-format off
 // NOLINTBEGIN: Not my code
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <future>
@@ -13,6 +11,7 @@ module;
 
 export module Goom.Utils.Parallel;
 
+import Goom.Lib.AssertUtils;
 import :ThreadPool;
 
 export namespace GOOM::UTILS

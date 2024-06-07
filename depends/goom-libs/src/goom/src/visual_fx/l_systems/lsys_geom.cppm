@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -12,6 +10,7 @@ import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM

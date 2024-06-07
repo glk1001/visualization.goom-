@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -10,6 +8,7 @@ module;
 
 export module Goom.Utils.Math.TValues;
 
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS::MATH
@@ -310,7 +309,6 @@ inline auto TValue::SingleCycleIncrement() noexcept -> void
   }
   m_t += m_currentStep;
 
-  USED_FOR_DEBUGGING(std::isnan(m_t));
   Ensures(not std::isnan(m_t));
   Ensures(m_t >= MIN_T_VALUE);
 }

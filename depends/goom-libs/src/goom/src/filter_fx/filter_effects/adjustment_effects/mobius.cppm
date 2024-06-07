@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;
 
 import Goom.FilterFx.FilterUtils.Utils;

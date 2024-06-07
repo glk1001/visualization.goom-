@@ -1,5 +1,3 @@
-#include "goom/goom_config.h"
-
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>

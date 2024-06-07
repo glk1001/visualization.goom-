@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -20,6 +18,7 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.GoomTime;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.SoundInfo;
 import Goom.Lib.SPimpl;

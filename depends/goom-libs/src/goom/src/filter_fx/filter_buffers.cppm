@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <condition_variable>
 #include <functional>
@@ -13,6 +11,7 @@ export module Goom.FilterFx.FilterBuffers;
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Parallel;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import Goom.PluginInfo;

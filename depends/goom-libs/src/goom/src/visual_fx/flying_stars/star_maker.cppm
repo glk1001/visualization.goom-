@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstdint>
 
@@ -9,6 +7,7 @@ export module Goom.VisualFx.FlyingStarsFx:StarMaker;
 
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 import :StarTypesContainer;
 import :StarColorsMaker;

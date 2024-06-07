@@ -1,13 +1,12 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 
 module Goom.Draw.ShaperDrawers.CircleDrawer;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.DrawerUtils;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS

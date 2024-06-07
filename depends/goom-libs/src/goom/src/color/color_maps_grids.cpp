@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstddef>
 #include <vector>
@@ -11,6 +9,7 @@ module;
 module Goom.Color.ColorMapsGrid;
 
 import Goom.Color.ColorMaps;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR

@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <array>
 #include <cstdint>
 #include <string>

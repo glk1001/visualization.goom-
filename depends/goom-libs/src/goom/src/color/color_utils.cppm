@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -11,6 +9,7 @@ export module Goom.Color.ColorUtils;
 
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.PixelUtils;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 

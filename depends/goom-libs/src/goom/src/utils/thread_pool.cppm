@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <condition_variable>
 #include <functional>
 #include <future>
@@ -16,6 +14,8 @@ module;
 // NOLINTBEGIN: Not my code
 
 export module Goom.Utils.Parallel:ThreadPool;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS
 {

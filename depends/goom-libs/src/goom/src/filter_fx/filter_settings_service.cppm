@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <functional>
 #include <memory>
 #include <string>
@@ -17,6 +15,7 @@ import Goom.FilterFx.FilterSpeed;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;

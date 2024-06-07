@@ -1,7 +1,3 @@
-#ifndef GOOM_DEBUG
-#define GOOM_DEBUG
-#endif
-
 // TODO(glk) - Look at a better way to deal with this - Vitesse::SetVitesse
 #if not defined(_MSC_VER)
 #else
@@ -9,8 +5,6 @@
 #pragma warning(disable : 4296)
 #pragma warning(pop)
 #endif
-
-#include "goom/goom_config.h"
 
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>

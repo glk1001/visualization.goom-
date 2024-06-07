@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 #include <functional>
 #include <string>
@@ -15,6 +13,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 using GOOM::UTILS::MATH::NumberRange;

@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -11,6 +9,7 @@ module Goom.Utils.Math.Paths;
 
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.Transform2d;
+import Goom.Lib.AssertUtils;
 
 namespace GOOM::UTILS::MATH
 {

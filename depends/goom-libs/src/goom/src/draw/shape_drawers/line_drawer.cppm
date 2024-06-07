@@ -1,8 +1,7 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
+#include <utility>
 
 export module Goom.Draw.ShaperDrawers.LineDrawer;
 
@@ -10,6 +9,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.DrawerUtils;
 import Goom.Draw.ShaperDrawers.LineDrawThick;
 import Goom.Draw.ShaperDrawers.LineDrawWu;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 

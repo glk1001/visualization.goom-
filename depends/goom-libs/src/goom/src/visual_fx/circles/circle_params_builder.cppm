@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 #include <vector>
 
@@ -10,6 +8,7 @@ export module Goom.VisualFx.CirclesFx.CircleParamsBuilder;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.CirclesFx.Circle;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
@@ -234,7 +233,6 @@ inline auto CircleParamsBuilder::GetCircleRadiusReducer() const noexcept -> floa
 inline auto CircleParamsBuilder::GetFourCornersCircleRadii(
     const float mainCircleRadius) const noexcept -> std::vector<float>
 {
-  USED_FOR_DEBUGGING(FIXED_NUM_CIRCLES);
   Expects(FIXED_NUM_CIRCLES == m_numCircles);
 
   const auto innerCircleRadius = HALF * mainCircleRadius;

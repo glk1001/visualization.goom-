@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
 #ifdef DEBUG_LOGGING
 #include "goom/goom_logger.h"
 #endif
@@ -17,6 +16,8 @@ module;
 
 export module Goom.GoomVisualization:SlotProducerConsumer;
 
+import Goom.Lib.AssertUtils;
+
 export namespace GOOM
 {
 
@@ -26,10 +27,10 @@ template<typename TResource>
 class SlotProducerConsumer
 {
 public:
-  SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
+  SlotProducerConsumer(GoomLogger& goomLogger,
                        size_t maxInUseSlots,
                        const std::string& name) noexcept;
-  SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
+  SlotProducerConsumer(GoomLogger& goomLogger,
                        size_t maxInUseSlots,
                        const std::string& name,
                        size_t maxResourceItems) noexcept;
@@ -62,7 +63,7 @@ public:
   auto SetConsumeItemFunc(const ConsumeItemFunc& consumeItemFunc) noexcept -> void;
 
 private:
-  GOOM::GoomLogger* m_goomLogger;
+  GoomLogger* m_goomLogger;
   std::string m_name;
   bool m_finished = false;
   std::mutex m_mutex;
@@ -119,7 +120,7 @@ private:
 using SlotConsumerIsDrivingWithoutResources = SlotConsumerIsDriving<std::nullptr_t>;
 
 template<typename TResource>
-SlotProducerConsumer<TResource>::SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
+SlotProducerConsumer<TResource>::SlotProducerConsumer(GoomLogger& goomLogger,
                                                       const size_t maxInUseSlots,
                                                       const std::string& name) noexcept
   : m_goomLogger{&goomLogger}, m_name{name}, m_maxInUseSlots{maxInUseSlots}
@@ -129,7 +130,7 @@ SlotProducerConsumer<TResource>::SlotProducerConsumer(GOOM::GoomLogger& goomLogg
 }
 
 template<typename TResource>
-SlotProducerConsumer<TResource>::SlotProducerConsumer(GOOM::GoomLogger& goomLogger,
+SlotProducerConsumer<TResource>::SlotProducerConsumer(GoomLogger& goomLogger,
                                                       const size_t maxInUseSlots,
                                                       const std::string& name,
                                                       const size_t maxResourceItems) noexcept

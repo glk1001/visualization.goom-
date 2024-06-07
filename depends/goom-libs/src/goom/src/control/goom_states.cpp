@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <string_view>
 #include <utility>
@@ -12,6 +10,7 @@ module;
 module Goom.Control.GoomStates;
 
 import Goom.Utils.EnumUtils;
+import Goom.Lib.AssertUtils;
 
 namespace GOOM::CONTROL
 {

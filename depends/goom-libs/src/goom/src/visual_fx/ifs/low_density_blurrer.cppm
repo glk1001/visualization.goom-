@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -21,6 +19,7 @@ import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
@@ -149,7 +148,6 @@ auto LowDensityBlurrer::SetWidth(const uint32_t val) noexcept -> void
 #pragma warning(disable : 4389) // '!=' mismatch. Not sure why?
 #endif
   static constexpr auto VALID_WIDTHS = std::array{3, 5, 7};
-  USED_FOR_DEBUGGING(VALID_WIDTHS);
   Expects(std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) != cend(VALID_WIDTHS));
 #ifdef _MSC_VER
 #pragma warning(pop)

@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 module Goom.Control.GoomAllVisualFx:VisualFxWeightedColorMaps;
 
 import Goom.Color.RandomColorMapsGroups;

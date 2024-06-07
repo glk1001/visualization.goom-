@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <memory>
 #include <tuple>
@@ -11,6 +9,7 @@ module;
 export module Goom.Utils.Math.DampingFunctions;
 
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::MATH
 {
@@ -207,7 +206,6 @@ ExpDampingFunction::ExpDampingFunction(const ExpProperties& expProperties)
   : m_amplitude{expProperties.amplitude}
 {
   static constexpr auto MIN_AMP = 0.00001;
-  USED_FOR_DEBUGGING(MIN_AMP);
   Expects(std::fabs(expProperties.amplitude) >= MIN_AMP);
   Expects(expProperties.yAtStartToRise > m_amplitude);
   Expects(expProperties.yAtXMax > m_amplitude);

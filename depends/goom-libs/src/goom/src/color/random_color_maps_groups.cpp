@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 module Goom.Color.RandomColorMapsGroups;
 
 import Goom.Color.ColorMaps;

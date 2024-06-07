@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -24,6 +22,7 @@ import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.GoomTime;
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
 import :CirclesTentacleLayout;

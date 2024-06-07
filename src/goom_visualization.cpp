@@ -2,7 +2,6 @@ module;
 
 #undef NO_LOGGING
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <chrono>
@@ -17,6 +16,7 @@ module;
 module Goom.GoomVisualization;
 
 import Goom.GoomVisualization.BuildTime;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.CompilerVersions;
 import Goom.Lib.GoomControl;
 import Goom.Lib.GoomTypes;
@@ -29,13 +29,6 @@ import :SlotProducerConsumer;
 namespace GOOM::VIS
 {
 
-using GOOM::AudioSamples;
-using GOOM::Dimensions;
-using GOOM::GoomControl;
-using GOOM::SetRandSeed;
-using GOOM::ShowSongTitleType;
-using GOOM::TextureBufferDimensions;
-using GOOM::WindowDimensions;
 using GOOM::OPENGL::DisplacementFilter;
 
 namespace
@@ -53,7 +46,7 @@ namespace
 
   const auto kodiGoomDataDir = kodi::vfs::TranslateSpecialProtocol(GOOM_ADDON_DATA_DIR);
 
-  return kodiGoomDataDir + GOOM::PATH_SEP + AUDIO_BUFFERS_DIR_PREFIX;
+  return kodiGoomDataDir + PATH_SEP + AUDIO_BUFFERS_DIR_PREFIX;
 }
 #endif
 
@@ -63,7 +56,7 @@ constexpr auto MAX_AUDIO_DATA_QUEUE_LEN      = 100U;
 
 } // namespace
 
-GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
+GoomVisualization::GoomVisualization(GoomLogger& goomLogger,
                                      const std::string& resourcesDir,
                                      const uint32_t consumeWaitForProducerMs,
                                      const std::string& shaderDir,
@@ -85,11 +78,11 @@ GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
   InitConstructor();
 }
 
-GoomVisualization::GoomVisualization(GOOM::GoomLogger& goomLogger,
+GoomVisualization::GoomVisualization(GoomLogger& goomLogger,
                                      const std::string& resourcesDir,
                                      const uint32_t consumeWaitForProducerMs,
                                      const TextureBufferDimensions& textureBufferDimensions,
-                                     std::unique_ptr<GOOM::OPENGL::DisplacementFilter>&& glScene)
+                                     std::unique_ptr<OPENGL::DisplacementFilter>&& glScene)
   : m_goomLogger{&goomLogger},
     m_consumeWaitForProducerMs{consumeWaitForProducerMs},
     m_glScene{std::move(glScene)},
@@ -167,10 +160,10 @@ auto GoomVisualization::Start(const int numChannels) -> void
   Expects(not m_started);
 
   LogInfo(*m_goomLogger, "Goom Vis: Build Time     : {}.", GetGoomVisualizationBuildTime());
-  LogInfo(*m_goomLogger, "Goom: Version            : {}.", GOOM::GetGoomLibVersionInfo());
-  LogInfo(*m_goomLogger, "Goom: Compiler           : {}.", GOOM::GetCompilerVersion());
-  LogInfo(*m_goomLogger, "Goom Library: Compiler   : {}.", GOOM::GetGoomLibCompilerVersion());
-  LogInfo(*m_goomLogger, "Goom Library: Build Time : {}.", GOOM::GetGoomLibBuildTime());
+  LogInfo(*m_goomLogger, "Goom: Version            : {}.", GetGoomLibVersionInfo());
+  LogInfo(*m_goomLogger, "Goom: Compiler           : {}.", GetCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Compiler   : {}.", GetGoomLibCompilerVersion());
+  LogInfo(*m_goomLogger, "Goom Library: Build Time : {}.", GetGoomLibBuildTime());
   LogInfo(*m_goomLogger, "Random seed              : {}.", GetRandSeed());
   LogInfo(*m_goomLogger, "Num pool threads         : {}.", m_goomControl->GetNumPoolThreads());
   LogInfo(*m_goomLogger,

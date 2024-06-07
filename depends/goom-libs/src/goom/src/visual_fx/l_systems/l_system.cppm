@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -24,6 +22,7 @@ import Goom.Utils.Math.Misc;
 import :IncrementedValuesBugFix;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomPaths;
 import Goom.Lib.GoomUtils;

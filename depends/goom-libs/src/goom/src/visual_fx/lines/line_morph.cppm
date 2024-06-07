@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -21,6 +19,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.SoundInfo;
 import Goom.Lib.Point2d;
@@ -372,7 +371,6 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
                           const AudioSamples::MinMaxValues& soundMinMax) noexcept -> void
 {
   static constexpr auto LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
-  USED_FOR_DEBUGGING(LAST_POINT_INDEX);
 
   Expects(
       (m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or

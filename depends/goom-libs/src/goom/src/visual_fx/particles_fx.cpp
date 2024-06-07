@@ -2,7 +2,6 @@ module;
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <cmath>
@@ -33,6 +32,7 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.GoomTime;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;

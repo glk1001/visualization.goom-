@@ -1,12 +1,11 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <memory>
 
 module Goom.VisualFx.FlyingStarsFx:StarColorsMaker;
 
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import :StarColors;
 
 namespace GOOM::VISUAL_FX::FLYING_STARS

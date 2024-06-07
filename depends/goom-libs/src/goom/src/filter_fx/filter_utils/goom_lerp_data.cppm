@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 
@@ -9,6 +7,7 @@ export module Goom.FilterFx.FilterUtils.GoomLerpData;
 
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::FILTER_FX::FILTER_UTILS
 {

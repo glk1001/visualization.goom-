@@ -10,17 +10,13 @@
   <component name="CidrRootsConfiguration">
     <excludeRoots>
       <file path="$PROJECT_DIR$/SPOTIFY_ERROR" />
-      <file path="$PROJECT_DIR$/build-clion-clang-17-Debug-nexus" />
-      <file path="$PROJECT_DIR$/build-clion-clang-17-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-clang-18-Debug-nexus" />
       <file path="$PROJECT_DIR$/build-clion-clang-18-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-Release-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-19-RelWithDebInfo-nexus" />
-      <file path="$PROJECT_DIR$/build-clion-docker-gcc-13-RelWithDebInfo-nexus" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-19-Release-nexus" />
       <file path="$PROJECT_DIR$/build-clion-docker-gcc-14-RelWithDebInfo-nexus" />
-      <file path="$PROJECT_DIR$/build-clion-gcc-12-RelWithDebInfo-nexus" />
-      <file path="$PROJECT_DIR$/build-clion-gcc-13-RelWithDebInfo-nexus" />
       <file path="$PROJECT_DIR$/depends/goom-libs/src/goom/src/color/color_data/venv" />
       <file path="$PROJECT_DIR$/venv-test" />
     </excludeRoots>

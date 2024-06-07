@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -11,6 +9,7 @@ export module Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 export namespace GOOM::DRAW::SHAPE_DRAWERS

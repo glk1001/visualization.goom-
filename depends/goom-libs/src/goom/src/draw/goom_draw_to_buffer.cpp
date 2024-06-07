@@ -2,7 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 module Goom.Draw.GoomDrawToBuffer;

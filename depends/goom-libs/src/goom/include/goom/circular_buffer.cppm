@@ -1,13 +1,13 @@
 module;
 
-#include "goom_config.h"
-
 #include <algorithm>
 #include <cstddef>
 #include <span>
 #include <vector>
 
 export module Goom.Lib.CircularBuffer;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM
 {

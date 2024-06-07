@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -19,6 +17,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomVector;
 import Goom.Utils.GoomTime;
 import Goom.Utils.NameValuePairs;
+import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
 namespace GOOM::FILTER_FX

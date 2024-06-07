@@ -11,6 +11,10 @@ import Goom.Lib.Point2d;
 export namespace GOOM
 {
 
+inline constexpr auto MIN_NORMALIZED_COORD   = -2.0F;
+inline constexpr auto MAX_NORMALIZED_COORD   = -MIN_NORMALIZED_COORD;
+inline constexpr auto NORMALIZED_COORD_WIDTH = MAX_NORMALIZED_COORD - MIN_NORMALIZED_COORD;
+
 struct FilterPosArrays
 {
   std::span<Point2dFlt> filterDestPos;

@@ -1,11 +1,11 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 #include <limits>
 
 export module Goom.Utils.GoomTime;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS
 {

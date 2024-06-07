@@ -2,7 +2,6 @@
 
 #include "Main.h"
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <algorithm>

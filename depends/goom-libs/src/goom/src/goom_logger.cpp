@@ -1,7 +1,5 @@
 #include "goom/goom_logger.h"
 
-#include "goom/goom_config.h"
-
 #include <format>
 #include <fstream>
 #include <ios>
@@ -13,6 +11,7 @@
 
 import Goom.Utils.DateUtils;
 import Goom.Utils.EnumUtils;
+import Goom.Lib.AssertUtils;
 
 namespace GOOM
 {

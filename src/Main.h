@@ -8,8 +8,6 @@
  *  See LICENSE.md for more information.
  */
 
-#include "goom/goom_config.h" // NOLINT: Always want this
-
 #ifdef TARGET_DARWIN
 #define GL_SILENCE_DEPRECATION
 #endif

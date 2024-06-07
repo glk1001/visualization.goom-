@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <functional>
 
 export module Goom.Draw.ShaperDrawers.LineDrawWu;

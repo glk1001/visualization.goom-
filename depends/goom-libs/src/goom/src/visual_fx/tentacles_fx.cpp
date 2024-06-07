@@ -1,9 +1,6 @@
 module;
 
 //#undef NO_LOGGING
-#define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
-
-#include "goom/goom_config.h"
 
 #include <algorithm>
 #include <array>
@@ -23,6 +20,7 @@ import Goom.Utils.Timer;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
@@ -259,6 +257,7 @@ inline auto TentaclesFx::TentaclesImpl::RefreshTentacles() -> void
 
   ChangeDominantColor();
 
+  // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)
   m_currentTentacleDriver->ChangeTentacleColorMaps();
 }
 
@@ -323,6 +322,7 @@ inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void
 
   m_timeWithThisDominantColor.ResetToZero();
 
+  // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
   m_currentTentacleDriver->SetDominantColorMaps(m_dominantMainColorMapPtr,
                                                 m_dominantLowColorMapPtr);
 }

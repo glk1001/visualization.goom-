@@ -1,9 +1,3 @@
-#ifndef GOOM_DEBUG
-#define GOOM_DEBUG
-#endif
-
-#include "goom/goom_config.h"
-
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>

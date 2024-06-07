@@ -1,12 +1,11 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <vector>
 
 module Goom.Draw.GoomDrawToMany;
 
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;

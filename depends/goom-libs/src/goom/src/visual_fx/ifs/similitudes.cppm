@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -18,6 +16,7 @@ import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import :IfsTypes;

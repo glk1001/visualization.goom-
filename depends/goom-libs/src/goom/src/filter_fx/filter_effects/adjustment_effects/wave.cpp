@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.Wave;

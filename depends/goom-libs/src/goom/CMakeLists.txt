@@ -35,6 +35,7 @@ Particles_get_modules("${Particles_SOURCE_DIR}" Particles_modules)
 Particles_get_source_files("${Particles_SOURCE_DIR}" Particles_source_files)
 
 set(GoomLib_modules
+    include/goom/assert_utils.cppm
     include/goom/circular_buffer.cppm
     include/goom/compiler_versions.cppm
     include/goom/frame_data.cppm
@@ -51,7 +52,6 @@ set(GoomLib_modules
     include/goom/spimpl.cppm
 )
 set(GoomLib_source_files
-    include/goom/goom_config.h
     src/goom_control.cpp
     src/goom_graphic.cpp
     src/goom_logger.cpp

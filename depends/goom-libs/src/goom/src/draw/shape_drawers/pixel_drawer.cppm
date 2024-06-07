@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 export module Goom.Draw.ShaperDrawers.PixelDrawer;
 
 import Goom.Draw.GoomDrawBase;

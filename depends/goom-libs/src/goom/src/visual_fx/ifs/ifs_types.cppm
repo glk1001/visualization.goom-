@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 
 module Goom.VisualFx.IfsDancersFx:IfsTypes;

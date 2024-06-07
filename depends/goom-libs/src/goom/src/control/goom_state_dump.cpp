@@ -4,7 +4,6 @@ module;
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <chrono>

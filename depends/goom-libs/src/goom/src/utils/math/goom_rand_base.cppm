@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -13,6 +11,7 @@ export module Goom.Utils.Math.GoomRandBase;
 
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::MATH
 {

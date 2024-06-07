@@ -3,7 +3,6 @@ module;
 //#define SAVE_FILTER_BUFFERS
 
 #include "gl_call.h"
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "goom_gl.h"
 
@@ -34,6 +33,7 @@ class GoomLogger;
 
 export module Goom.GoomVisualization:DisplacementFilter;
 
+import Goom.Lib.AssertUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
@@ -53,7 +53,7 @@ public:
   static constexpr auto NUM_PBOS = 3U;
   using FilterPosBuffersXY       = GOOM::Point2dFlt;
 
-  DisplacementFilter(GOOM::GoomLogger& goomLogger,
+  DisplacementFilter(GoomLogger& goomLogger,
                      const std::string& shaderDir,
                      const GOOM::TextureBufferDimensions& textureBufferDimensions) noexcept;
 
@@ -116,7 +116,7 @@ protected:
   virtual auto Pass1UpdateFilterBuff1AndBuff3() noexcept -> void;
 
 private:
-  GOOM::GoomLogger* m_goomLogger;
+  GoomLogger* m_goomLogger;
   std::string m_shaderDir;
   size_t m_buffSize;
   float m_aspectRatio;
@@ -284,7 +284,7 @@ private:
 
   struct GlImageBuffers
   {
-    Gl2DTexture<GOOM::Pixel,
+    Gl2DTexture<Pixel,
                 NUM_IMAGE_TEXTURES,
                 MAIN_IMAGE_TEX_LOCATION,
                 IMAGE_TEX_FORMAT,
@@ -292,7 +292,7 @@ private:
                 IMAGE_TEX_PIXEL_TYPE,
                 NUM_PBOS>
         mainImageTexture;
-    Gl2DTexture<GOOM::Pixel,
+    Gl2DTexture<Pixel,
                 NUM_IMAGE_TEXTURES,
                 LOW_IMAGE_TEX_LOCATION,
                 IMAGE_TEX_FORMAT,
@@ -316,7 +316,7 @@ private:
   auto SaveFilterBuffersAfterPass4() -> void;
 
   auto SavePixelBuffer(const std::string& filename,
-                       std::span<GOOM::Pixel> buffer,
+                       std::span<Pixel> buffer,
                        float lumAverage = 0.0F) const -> void;
   auto SaveFilterPosBuffer(const std::string& filename, uint32_t textureIndex) -> void;
   auto SaveFilterPosBuffer(const std::string& filename, std::span<FilterPosBuffersXY> buffer) const
@@ -334,7 +334,7 @@ inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::stri
   return m_shaderDir;
 }
 
-inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> GOOM::FrameData&
+inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> FrameData&
 {
   return m_frameDataArray.at(pboIndex);
 }
@@ -366,7 +366,7 @@ inline auto DisplacementFilter::GetBuffSize() const noexcept -> size_t
   return m_buffSize;
 }
 
-inline auto DisplacementFilter::GetCurrentFrameData() const noexcept -> const GOOM::FrameData&
+inline auto DisplacementFilter::GetCurrentFrameData() const noexcept -> const FrameData&
 {
   return m_frameDataArray.at(m_currentPboIndex);
 }
@@ -381,7 +381,6 @@ namespace fs = std::filesystem;
 // TODO(glk) - Need to pass goomLogger
 //std_fmt::println("{}", __LINE__);
 
-using GOOM::GoomLogger;
 //using GOOM::FILTER_FX::NormalizedCoords;
 
 namespace
@@ -489,7 +488,7 @@ auto DisplacementFilter::InitFrameDataArray() noexcept -> void
   }
 }
 
-auto DisplacementFilter::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
+auto DisplacementFilter::InitMiscData(MiscData& miscData) noexcept -> void
 {
   miscData.brightness          = 1.0F;
   miscData.chromaFactor        = 1.0F;
@@ -497,13 +496,13 @@ auto DisplacementFilter::InitMiscData(GOOM::MiscData& miscData) noexcept -> void
   miscData.gamma               = DEFAULT_GAMMA;
 }
 
-auto DisplacementFilter::InitImageArrays(GOOM::ImageArrays& imageArrays) noexcept -> void
+auto DisplacementFilter::InitImageArrays(ImageArrays& imageArrays) noexcept -> void
 {
   imageArrays.mainImagePixelBufferNeedsUpdating = false;
   imageArrays.lowImagePixelBufferNeedsUpdating  = false;
 }
 
-auto DisplacementFilter::InitFilterPosArrays(GOOM::FilterPosArrays& filterPosArrays) noexcept
+auto DisplacementFilter::InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept
     -> void
 {
   filterPosArrays.filterPosBuffersLerpFactor = 0.0F;
@@ -1131,7 +1130,7 @@ auto DisplacementFilter::SaveGlBuffersAfterPass4() -> void
 
 auto DisplacementFilter::SaveFilterBuffersAfterPass1() -> void
 {
-  auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
+  auto filterBuffer = std::vector<Pixel>(m_buffSize);
   m_glFilterBuffers.filterBuff1Texture.BindTextures(m_programPass1UpdateFilterBuff1AndBuff3);
   GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
 
@@ -1155,7 +1154,7 @@ auto DisplacementFilter::SaveFilterBuffersAfterPass4() -> void
 {
   const auto lumAverage = GetLumAverage();
 
-  auto filterBuffer = std::vector<GOOM::Pixel>(m_buffSize);
+  auto filterBuffer = std::vector<Pixel>(m_buffSize);
   m_glFilterBuffers.filterBuff3Texture.BindTextures(m_programPass4ResetFilterBuff2AndOutputBuff3);
   GlCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, FILTER_BUFF_TEX_PIXEL_TYPE, filterBuffer.data()));
 
@@ -1197,7 +1196,7 @@ auto DisplacementFilter::SaveFilterPosBuffer(const std::string& filename,
 }
 
 auto DisplacementFilter::SavePixelBuffer(const std::string& filename,
-                                         std::span<GOOM::Pixel> buffer,
+                                         std::span<Pixel> buffer,
                                          const float lumAverage) const -> void
 {
   auto file = std::ofstream{filename};

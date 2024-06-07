@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -11,8 +9,11 @@ module;
 
 export module Goom.Utils.Math.Misc;
 
+import Goom.Lib.AssertUtils;
+
 export namespace GOOM::UTILS::MATH
 {
+
 inline constexpr auto HALF = 1.0F / 2.0F;
 
 // NOLINTNEXTLINE: problem with 'readability-identifier-naming.ConstexprVariableIgnoredRegexp'

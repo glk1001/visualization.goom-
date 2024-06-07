@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <vector>
@@ -9,6 +7,7 @@ module;
 export module Goom.VisualFx.CirclesFx.DotDiameters;
 
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {

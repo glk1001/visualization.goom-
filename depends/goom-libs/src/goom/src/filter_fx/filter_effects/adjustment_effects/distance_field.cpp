@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -20,6 +18,7 @@ import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

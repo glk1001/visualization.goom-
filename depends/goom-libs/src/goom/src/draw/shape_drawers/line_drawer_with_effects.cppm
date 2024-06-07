@@ -1,8 +1,7 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
+#include <utility>
 
 export module Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
 

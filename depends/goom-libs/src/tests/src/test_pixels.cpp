@@ -1,9 +1,3 @@
-#ifndef GOOM_DEBUG
-#define GOOM_DEBUG
-#endif
-
-#include "goom/goom_config.h"
-
 #include <catch2/catch_test_macros.hpp>
 
 import Goom.Utils.Math.Misc;

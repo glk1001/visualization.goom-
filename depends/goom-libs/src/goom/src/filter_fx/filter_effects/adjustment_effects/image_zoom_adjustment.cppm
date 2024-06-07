@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <string>
 
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.ImageZoomAdjustment;

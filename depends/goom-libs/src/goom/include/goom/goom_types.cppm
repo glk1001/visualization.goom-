@@ -1,11 +1,10 @@
 module;
 
-#include "goom_config.h"
-
 #include <cstdint>
 
 export module Goom.Lib.GoomTypes;
 
+import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 export namespace GOOM

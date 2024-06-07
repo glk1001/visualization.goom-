@@ -3,7 +3,6 @@ module;
 //#undef NO_LOGGING
 
 #include "color_data/color_map_enums.h"
-#include "goom/goom_config.h"
 
 #include <cstdint>
 #include <memory>

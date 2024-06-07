@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "goom/goom_config.h"
-
 #include <complex>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;

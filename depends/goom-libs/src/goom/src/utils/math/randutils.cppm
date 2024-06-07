@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 #include "xoshiro.hpp"
 
@@ -13,6 +12,8 @@ module;
 #include <type_traits>
 
 export module Goom.Utils.Math.RandUtils;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::MATH::RAND
 {

@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -16,6 +14,7 @@ import Goom.Color.RandomColorMaps;
 import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.VisualFx.IfsDancersFx;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 
 namespace GOOM::VISUAL_FX::IFS

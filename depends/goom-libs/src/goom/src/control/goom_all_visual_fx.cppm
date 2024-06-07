@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <functional>

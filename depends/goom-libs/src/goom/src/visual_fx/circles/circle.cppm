@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <cstdint>
@@ -29,6 +28,7 @@ import Goom.VisualFx.CirclesFx.DotDiameters;
 import Goom.VisualFx.CirclesFx.DotDrawer;
 import Goom.VisualFx.CirclesFx.DotPaths;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;

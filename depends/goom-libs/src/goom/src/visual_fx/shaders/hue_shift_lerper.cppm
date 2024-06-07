@@ -1,6 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #include <cmath>
@@ -12,6 +11,7 @@ import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
 namespace GOOM::VISUAL_FX::SHADERS

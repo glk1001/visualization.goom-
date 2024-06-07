@@ -7,6 +7,7 @@
       <configuration PROFILE_NAME="docker-clang-18-RelWithDebInfo" ENABLED="true" GENERATION_DIR="build-clion-docker-clang-18-RelWithDebInfo-nexus" CONFIG_NAME="RelWithDebInfo" TOOLCHAIN_NAME="docker-clang-18" GENERATION_OPTIONS="-G Ninja -DENABLE_TESTING=1 -DKODI_ROOT_DIR=/tmp/xbmc" BUILD_OPTIONS="-- -j 9" />
       <configuration PROFILE_NAME="docker-clang-18-Release" ENABLED="true" GENERATION_DIR="build-clion-docker-clang-18-Release-nexus" CONFIG_NAME="Release" TOOLCHAIN_NAME="docker-clang-18" GENERATION_OPTIONS="-G Ninja -DENABLE_TESTING=1 -DKODI_ROOT_DIR=/tmp/xbmc" BUILD_OPTIONS="-- -j 9" />
       <configuration PROFILE_NAME="docker-clang-19-RelWithDebInfo" ENABLED="true" GENERATION_DIR="build-clion-docker-clang-19-RelWithDebInfo-nexus" CONFIG_NAME="RelWithDebInfo" TOOLCHAIN_NAME="docker-clang-19" GENERATION_OPTIONS="-G Ninja -DENABLE_TESTING=1 -DKODI_ROOT_DIR=/tmp/xbmc" BUILD_OPTIONS="-- -j 6" />
+      <configuration PROFILE_NAME="docker-clang-19-Release" ENABLED="true" GENERATION_DIR="build-clion-docker-clang-19-Release-nexus" CONFIG_NAME="Release" TOOLCHAIN_NAME="docker-clang-19" GENERATION_OPTIONS="-G Ninja -DENABLE_TESTING=1 -DKODI_ROOT_DIR=/tmp/xbmc" BUILD_OPTIONS="-- -j 6" />
       <configuration PROFILE_NAME="docker-gcc-14-RelWithDebInfo" ENABLED="true" GENERATION_DIR="build-clion-docker-gcc-14-RelWithDebInfo-nexus" CONFIG_NAME="RelWithDebInfo" TOOLCHAIN_NAME="docker-gcc-14" GENERATION_OPTIONS="-G Ninja -DENABLE_TESTING=1 -DKODI_ROOT_DIR=../../xbmc" BUILD_OPTIONS="-- -j 9" />
     </configurations>
   </component>

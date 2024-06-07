@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -25,6 +23,7 @@ import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.Transform2d;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;

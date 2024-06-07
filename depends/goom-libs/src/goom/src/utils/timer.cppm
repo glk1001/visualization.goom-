@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <functional>
@@ -9,6 +7,7 @@ module;
 export module Goom.Utils.Timer;
 
 import Goom.Utils.GoomTime;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS

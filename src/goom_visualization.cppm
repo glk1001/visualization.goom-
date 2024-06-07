@@ -27,16 +27,16 @@ export namespace GOOM::VIS
 class GoomVisualization
 {
 public:
-  GoomVisualization(GOOM::GoomLogger& goomLogger,
+  GoomVisualization(GoomLogger& goomLogger,
                     const std::string& resourcesDir,
                     uint32_t consumeWaitForProducerMs,
                     const std::string& shaderDir,
                     const TextureBufferDimensions& textureBufferDimensions);
-  GoomVisualization(GOOM::GoomLogger& goomLogger,
+  GoomVisualization(GoomLogger& goomLogger,
                     const std::string& resourcesDir,
                     uint32_t consumeWaitForProducerMs,
                     const TextureBufferDimensions& textureBufferDimensions,
-                    std::unique_ptr<GOOM::OPENGL::DisplacementFilter>&& glScene);
+                    std::unique_ptr<OPENGL::DisplacementFilter>&& glScene);
   GoomVisualization(const GoomVisualization&) noexcept = delete;
   GoomVisualization(GoomVisualization&&) noexcept      = delete;
   ~GoomVisualization() noexcept;
@@ -66,25 +66,25 @@ public:
   };
   auto UpdateTrack(const TrackInfo& track) -> void;
 
-  [[nodiscard]] auto GetScene() noexcept -> GOOM::OPENGL::DisplacementFilter&;
+  [[nodiscard]] auto GetScene() noexcept -> OPENGL::DisplacementFilter&;
   [[nodiscard]] auto GetNumAudioSamples() const noexcept -> uint32_t;
 
 private:
   bool m_started = false;
-  GOOM::GoomLogger* m_goomLogger;
+  GoomLogger* m_goomLogger;
   uint32_t m_consumeWaitForProducerMs;
   auto InitConstructor() noexcept -> void;
 
-  std::unique_ptr<GOOM::OPENGL::DisplacementFilter> m_glScene;
+  std::unique_ptr<OPENGL::DisplacementFilter> m_glScene;
   auto InitSceneFrameData() -> void;
 
-  std::unique_ptr<GOOM::GoomControl> m_goomControl;
+  std::unique_ptr<GoomControl> m_goomControl;
   auto InitGoomControl() noexcept -> void;
 
-  GOOM::SlotProducerConsumer<GOOM::AudioSamples> m_slotProducerConsumer;
-  GOOM::SlotProducerIsDriving<GOOM::AudioSamples> m_slotProducerIsDriving;
+  SlotProducerConsumer<AudioSamples> m_slotProducerConsumer;
+  SlotProducerIsDriving<AudioSamples> m_slotProducerIsDriving;
   std::thread m_slotProducerConsumerThread;
-  auto ProduceItem(size_t slot, const GOOM::AudioSamples& audioSamples) noexcept -> void;
+  auto ProduceItem(size_t slot, const AudioSamples& audioSamples) noexcept -> void;
   auto ConsumeItem(size_t slot) noexcept -> void;
   uint32_t m_numberOfDroppedAudioSamples = 0U;
   auto LogProducerConsumerSummary() -> void;
@@ -102,7 +102,7 @@ private:
 namespace GOOM::VIS
 {
 
-inline auto GoomVisualization::GetScene() noexcept -> GOOM::OPENGL::DisplacementFilter&
+inline auto GoomVisualization::GetScene() noexcept -> OPENGL::DisplacementFilter&
 {
   return *m_glScene;
 }

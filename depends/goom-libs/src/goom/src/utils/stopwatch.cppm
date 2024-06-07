@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <chrono>
 #include <cstdint>
 #include <limits>
@@ -10,6 +8,7 @@ module;
 export module Goom.Utils.Stopwatch;
 
 import Goom.Utils.DateUtils;
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS
 {

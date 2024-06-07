@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cmath>
 
 export module Goom.FilterFx.FilterUtils.Utils;
@@ -9,6 +7,7 @@ export module Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 

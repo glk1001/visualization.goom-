@@ -1,7 +1,5 @@
 module;
 
-#include "goom_config.h"
-
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -12,6 +10,12 @@ module;
 export module Goom.Lib.GoomGraphic;
 
 import Goom.Lib.GoomTypes;
+
+#ifdef WORDS_BIGENDIAN
+#define COLOR_ARGB
+#else
+#define COLOR_BGRA
+#endif
 
 export namespace GOOM
 {

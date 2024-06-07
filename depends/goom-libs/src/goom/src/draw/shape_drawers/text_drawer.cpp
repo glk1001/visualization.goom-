@@ -18,7 +18,6 @@ module;
 
 //#define NO_FREETYPE_INSTALLED
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 #ifdef NO_FREETYPE_INSTALLED
@@ -46,6 +45,7 @@ import Goom.Utils.Parallel;
 import Goom.Utils.StrUtils;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomUtils;
 import Goom.Lib.Point2d;

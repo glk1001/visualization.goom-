@@ -1,12 +1,12 @@
 module;
 
-#include "goom/goom_config.h"
 #include "goom/goom_logger.h"
 
 export module Goom.Draw.GoomDrawToBuffer;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Lib.GoomGraphic;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
@@ -83,6 +83,7 @@ inline auto GoomDrawToSingleBuffer::SetBuffer(PixelBuffer& buff) noexcept -> voi
 inline auto GoomDrawToSingleBuffer::GetPixel(const Point2dInt& point) const noexcept -> Pixel
 {
   Expects(m_buffer != nullptr);
+  // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
   return (*m_buffer)(point.x, point.y);
 }
 

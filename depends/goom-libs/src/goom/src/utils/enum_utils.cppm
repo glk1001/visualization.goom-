@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -11,6 +9,8 @@ module;
 #include <vector>
 
 export module Goom.Utils.EnumUtils;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS
 {

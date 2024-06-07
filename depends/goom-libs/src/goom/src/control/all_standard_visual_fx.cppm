@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <functional>
@@ -34,6 +32,7 @@ import Goom.VisualFx.ShapesFx;
 import Goom.VisualFx.TentaclesFx;
 import Goom.VisualFx.TubesFx;
 import Goom.VisualFx.VisualFxBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
@@ -136,7 +135,7 @@ inline void AllStandardVisualFx::ResetDrawBuffSettings(const GoomDrawables fx)
 inline auto AllStandardVisualFx::GetFrameMiscData() const noexcept -> const MiscData&
 {
   Expects(m_frameMiscData != nullptr);
-
+  // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)
   return *m_frameMiscData;
 }
 

@@ -1,7 +1,5 @@
 module;
 
-#include "goom_config.h"
-
 #include <algorithm>
 #include <array>
 #include <cstddef>
@@ -9,6 +7,8 @@ module;
 #include <span>
 
 export module Goom.Lib.SoundInfo;
+
+import Goom.Lib.AssertUtils;
 
 export namespace GOOM
 {

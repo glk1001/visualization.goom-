@@ -1,7 +1,3 @@
-module;
-
-#include "goom/goom_config.h"
-
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.Amulet;
 
 import Goom.FilterFx.FilterUtils.Utils;

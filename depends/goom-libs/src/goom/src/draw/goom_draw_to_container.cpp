@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -10,6 +8,7 @@ module Goom.Draw.GoomDrawToContainer;
 
 import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 

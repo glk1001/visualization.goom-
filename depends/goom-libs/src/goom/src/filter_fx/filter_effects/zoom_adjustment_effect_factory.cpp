@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <format>
 #include <memory>
 #include <string>

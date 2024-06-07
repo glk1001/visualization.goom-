@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -13,6 +11,7 @@ module Goom.VisualFx.LSystemFx:IncrementedValuesBugFix;
 import LSys.Interpret;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::UTILS::MATH

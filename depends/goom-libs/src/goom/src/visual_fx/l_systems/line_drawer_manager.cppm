@@ -1,7 +1,5 @@
 module;
 
-#include "goom/goom_config.h"
-
 #include <cstdint>
 
 module Goom.VisualFx.LSystemFx:LineDrawerManager;
@@ -10,6 +8,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
 import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
 import Goom.Utils.Math.GoomRandBase;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
@@ -60,12 +59,14 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 inline auto LineDrawerManager::GetLineDrawer() const noexcept -> const ILineDrawerWithEffects&
 {
   Expects(m_lineDrawer != nullptr);
+  // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)
   return *m_lineDrawer;
 }
 
 inline auto LineDrawerManager::GetLineDrawer() noexcept -> ILineDrawerWithEffects&
 {
   Expects(m_lineDrawer != nullptr);
+  // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)
   return *m_lineDrawer;
 }
 
