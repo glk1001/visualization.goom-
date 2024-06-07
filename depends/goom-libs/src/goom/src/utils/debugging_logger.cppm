@@ -2,6 +2,8 @@ module;
 
 #undef NO_LOGGING
 
+// #define REQUIRE_ASSERTS_FOR_ALL_BUILDS // Check for non-null pointers.
+
 #include "goom/goom_logger.h"
 
 export module Goom.Utils.DebuggingLogger;
