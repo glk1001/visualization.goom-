@@ -283,28 +283,28 @@ jobs:
           declare -r LOWER_KODI_BRANCH="${UPPER_KODI_BRANCH,,}"
           declare -r LINUX_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-linux-x86_64.zip
           declare -r WINDOWS_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-windows-x86_64.zip
-          
+
           cd artifacts/linux
           zip -m -r "${LINUX_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
           cd -
-          
+
           cd artifacts/windows
           zip -m -r "${WINDOWS_ZIP_NAME}" '${{ vars.VIS_GOOM_ROOT_DIR }}/'
           cd -
-          
+
           git clone https://.:${{ secrets.ACTIONS_GITHUB }}@github.com/glk1001/glk1001.github.io target
           cd target
           git switch master
           git reset --hard HEAD~1
-          
+
           git config --global user.email 'gregg.kay@gmail.com'
           git config --global user.name '${{ github.repository_owner }}'
-          
+
           mv "../artifacts/linux/${LINUX_ZIP_NAME}" .
           mv "../artifacts/windows/${WINDOWS_ZIP_NAME}" .
-          
+
           git add "${LINUX_ZIP_NAME}"
           git add "${WINDOWS_ZIP_NAME}"
-          
+
           git commit -m "Latest Goom++ Build"
           git push -f
