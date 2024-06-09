@@ -22,7 +22,6 @@ module;
 #include <vector>
 
 #ifdef SAVE_FILTER_BUFFERS
-#include <format_23>
 #include <fstream>
 #endif
 

@@ -31,7 +31,7 @@ set(CMAKE_INSTALL_PREFIX "${GOOM_BUILD_DIR}/kodi-vis-goom-addon")
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -148,7 +148,6 @@ target_include_directories(${VIS_GOOM_TARGET_NAME}
 )
 target_include_directories(${VIS_GOOM_TARGET_NAME}
                            SYSTEM PRIVATE
-                           ${GOOM_LIBS_DIR}/lib/std_fmt/include
                            ${GLM_INCLUDE_DIR}
                            ${KODI_INCLUDE_DIR}
 )
@@ -193,7 +192,7 @@ message(STATUS "Vis.goom: CMAKE_CXX_COMPILER_ID      = \"${CMAKE_CXX_COMPILER_ID
 message(STATUS "Vis.goom: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Vis.goom: CMAKE_BUILD_TYPE           = \"${CMAKE_BUILD_TYPE}\".")
 message(STATUS "Vis.goom: CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}\n"
-               "                                         = \"${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}}\".")
+        "                                        = \"${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}}\".")
 message(STATUS "Vis.goom: CMAKE_CXX_FLAGS_INIT       = \"${CMAKE_CXX_FLAGS_INIT}\".")
 message(STATUS "Vis.goom: WARNINGS_AS_ERRORS         = \"${vis_goom_pp_WARNINGS_AS_ERRORS}\".")
 if (WIN32)

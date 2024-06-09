@@ -5,7 +5,7 @@ module;
 #include <iostream>
 #else
 #include <format>
-#include <format_23>
+#include <print>
 #endif
 #include <source_location>
 
@@ -69,7 +69,7 @@ constexpr auto Check(const bool expr,
               << "\n";
 #else
     const auto extraInfoStr = extraInfo.empty() ? std::string{} : std::format(" ({})", extraInfo);
-    std_fmt::println("{}{} - {}:{}", reason, extraInfoStr, location.file_name(), location.line());
+    std::println("{}{} - {}:{}", reason, extraInfoStr, location.file_name(), location.line());
 #endif
 
     std::terminate();

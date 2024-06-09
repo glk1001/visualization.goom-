@@ -3,7 +3,7 @@ module;
 #include "goom_gl.h"
 
 #include <format>
-#include <format_23>
+#include <print>
 #include <string>
 
 export module Goom.GoomVisualization.GlUtils;
@@ -121,7 +121,7 @@ auto APIENTRY DebugCallback(const GLenum source,
       sevStr = "UNK";
   }
 
-  std_fmt::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
+  std::println("{}:{}[{}]({}): {}", sourceStr, typeStr, sevStr, id, msg);
 }
 
 auto GlClearError() -> void
@@ -169,7 +169,7 @@ auto CheckForOpenGLError([[maybe_unused]] const char* const file, [[maybe_unused
         message = std::format("Unknown error: {}", glError);
     }
 
-    std_fmt::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
+    std::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
     result = false;
 
     glError = glGetError();
@@ -195,15 +195,15 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
   auto sampleBuffers = GLint{};
   glGetIntegerv(GL_SAMPLE_BUFFERS, &sampleBuffers);
 
-  std_fmt::println("-------------------------------------------------------------");
-  std_fmt::println("GL Vendor    : {}", vendor);
-  std_fmt::println("GL Renderer  : {}", renderer);
-  std_fmt::println("GL Version   : {}", version);
-  std_fmt::println("GL Version   : {}.{}", major, minor);
-  std_fmt::println("GLSL Version : {}", glslVersion);
-  std_fmt::println("MSAA samples : {}", samples);
-  std_fmt::println("MSAA buffers : {}", sampleBuffers);
-  std_fmt::println("-------------------------------------------------------------");
+  std::println("-------------------------------------------------------------");
+  std::println("GL Vendor    : {}", vendor);
+  std::println("GL Renderer  : {}", renderer);
+  std::println("GL Version   : {}", version);
+  std::println("GL Version   : {}.{}", major, minor);
+  std::println("GLSL Version : {}", glslVersion);
+  std::println("MSAA samples : {}", samples);
+  std::println("MSAA buffers : {}", sampleBuffers);
+  std::println("-------------------------------------------------------------");
 
   if (dumpExtensions)
   {
@@ -211,8 +211,8 @@ auto DumpGLInfo(const bool dumpExtensions) -> void
     glGetIntegerv(GL_NUM_EXTENSIONS, &nExtensions);
     for (auto i = 0; i < nExtensions; i++)
     {
-      //      std_fmt::print("{}\n",
-      //                     ptr_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(i))));
+      //      std::print("{}\n",
+      //                ptr_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(i))));
     }
   }
 }

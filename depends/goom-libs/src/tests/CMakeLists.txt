@@ -50,7 +50,6 @@ target_include_directories(${GOOM_LIB_TESTS_NAME}
                            ${GOOM_LIBS_DIR}/lib/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/perlin_noise
-                           ${GOOM_LIBS_DIR}/lib/std_fmt/include
                            ${magic_enum_INCLUDE_DIR}
                            ${GLM_INCLUDE_DIR}
 )
