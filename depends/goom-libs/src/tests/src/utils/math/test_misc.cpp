@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 //#undef NO_LOGGING
 
 #include <catch2/catch_test_macros.hpp>
@@ -117,3 +119,5 @@ TEST_CASE("Frac")
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

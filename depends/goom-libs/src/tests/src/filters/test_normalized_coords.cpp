@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
@@ -164,3 +166,5 @@ TEST_CASE("Normalized Coords Operations", )
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

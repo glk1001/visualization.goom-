@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
 
@@ -104,3 +106,5 @@ TEST_CASE("Pixel Multiply")
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

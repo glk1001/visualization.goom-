@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 #include "color/color_data/color_map_enums.h"
 
 #include <cstddef>
@@ -184,3 +186,5 @@ TEST_CASE("Test GetCurrentHorizontalLineColors")
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

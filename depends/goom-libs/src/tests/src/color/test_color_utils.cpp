@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 #include <algorithm>
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
@@ -163,3 +165,5 @@ TEST_CASE("Lightened color")
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

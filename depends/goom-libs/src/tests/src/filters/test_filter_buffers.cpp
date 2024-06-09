@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 // TODO(glk) - Look at a better way to deal with this - Vitesse::SetVitesse
 #if not defined(_MSC_VER)
 #else
@@ -371,3 +373,5 @@ TEST_CASE("ZoomFilterBuffers Clipping")
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

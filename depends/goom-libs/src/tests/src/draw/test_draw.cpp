@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 #include <algorithm>
 #include <array>
 #include <catch2/catch_message.hpp>
@@ -254,3 +256,5 @@ TEST_CASE("Test DrawMovingText ClearAll", "[GoomDrawToContainerClearAll]")
 // NOLINTEND(bugprone-chained-comparison)
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue

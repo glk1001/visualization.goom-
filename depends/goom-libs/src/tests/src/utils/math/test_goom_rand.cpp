@@ -1,3 +1,5 @@
+// NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
+
 #include <array>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_message.hpp>
@@ -271,3 +273,5 @@ TEST_CASE("Conditional Weighted Events Exceptions")
 ***/
 
 } // namespace GOOM::UNIT_TESTS
+
+// NOLINTEND(cert-err58-cpp): Catch2 3.6.0 issue
