@@ -16,7 +16,6 @@ import Goom.Utils.Math.RandUtils;
 namespace GOOM::UNIT_TESTS
 {
 
-using Catch::Matchers::StartsWith;
 using UTILS::MATH::RAND::GetRand;
 using UTILS::MATH::RAND::GetRandInRange;
 using UTILS::MATH::RAND::GetRandSeed;

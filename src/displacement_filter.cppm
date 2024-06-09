@@ -58,7 +58,7 @@ public:
 
   auto InitScene() -> void override;
   auto Resize(const GOOM::WindowDimensions& windowDimensions) noexcept -> void override;
-  auto DestroyScene() noexcept -> void override;
+  auto DestroyScene() -> void override;
 
   [[nodiscard]] auto GetShaderDir() const noexcept -> const std::string&;
   [[nodiscard]] auto GetBrightnessAdjust() const noexcept -> float;
@@ -108,7 +108,7 @@ protected:
   [[nodiscard]] auto GetBuffSize() const noexcept -> size_t;
   [[nodiscard]] auto GetCurrentFrameData() const noexcept -> const GOOM::FrameData&;
   auto BindFilterBuff3Texture() noexcept -> void;
-  [[nodiscard]] auto GetLumAverage() const noexcept -> float;
+  [[nodiscard]] auto GetLumAverage() const -> float;
 
   static constexpr auto PASS1_VERTEX_SHADER   = "filter.vs";
   static constexpr auto PASS1_FRAGMENT_SHADER = "pass1_update_filter_buff1_and_buff3.fs";
@@ -124,19 +124,19 @@ private:
   GLuint m_renderTextureName{};
   bool m_receivedFrameData = false;
   GLsync m_renderSync{};
-  auto DoTheDraw() const noexcept -> void;
+  auto DoTheDraw() const -> void;
   auto WaitForRenderSync() noexcept -> void;
 
   size_t m_currentPboIndex = 0U;
   std::vector<FrameData> m_frameDataArray;
   auto InitFrameDataArrayPointers(std::vector<FrameData>& frameDataArray) noexcept -> void;
   auto InitFrameDataArray() noexcept -> void;
-  auto InitFrameDataArrayToGl() noexcept -> void;
+  auto InitFrameDataArrayToGl() -> void;
   static auto InitMiscData(MiscData& miscData) noexcept -> void;
   static auto InitImageArrays(ImageArrays& imageArrays) noexcept -> void;
   auto InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void;
 
-  auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const noexcept -> void;
+  auto CopyTextureData(GLuint srceTextureName, GLuint destTextureName) const -> void;
 
   GLuint m_fsQuad{};
   static constexpr GLuint COMPONENTS_PER_VERTEX     = 2;
@@ -150,18 +150,18 @@ private:
                                 const std::string& filepath,
                                 const ShaderMacros& shaderMacros) -> void;
   [[nodiscard]] auto GetShaderFilepath(const std::string& filename) const noexcept -> std::string;
-  auto SetupRenderToTextureFBO() noexcept -> void;
-  auto SetupScreenBuffers() noexcept -> void;
+  auto SetupRenderToTextureFBO() -> void;
+  auto SetupScreenBuffers() -> void;
   static auto SetupGlSettings() -> void;
   auto SetupGlData() -> void;
-  auto InitTextureBuffers() noexcept -> void;
+  auto InitTextureBuffers() -> void;
   auto SetupGlLumComputeData() noexcept -> void;
   RequestNextFrameDataFunc m_requestNextFrameData;
   ReleaseCurrentFrameDataFunc m_releaseCurrentFrameData;
   auto UpdatePass1MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdatePass4MiscDataToGl(size_t pboIndex) noexcept -> void;
   auto UpdateCurrentDestFilterPosBufferToGl() noexcept -> void;
-  auto UpdateImageBuffersToGl(size_t pboIndex) noexcept -> void;
+  auto UpdateImageBuffersToGl(size_t pboIndex) -> void;
 
   GlslProgram m_programPass1UpdateFilterBuff1AndBuff3;
 
@@ -178,7 +178,7 @@ private:
   static constexpr auto PASS4_FRAGMENT_SHADER = "pass4_reset_filter_buff2_and_output_buff3.fs";
   auto Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void;
 
-  auto Pass5OutputToScreen() noexcept -> void;
+  auto Pass5OutputToScreen() -> void;
 
   static constexpr auto NUM_FILTER_BUFF_TEXTURES  = 1;
   static constexpr auto FILTER_BUFF1_TEX_LOCATION = 0;
@@ -220,10 +220,10 @@ private:
   static constexpr auto LUM_HISTOGRAM_BUFFER_INDEX = 3;
   static constexpr auto LUM_AVG_TEX_UNIT           = GL_TEXTURE0 + LUM_AVG_TEX_LOCATION;
   auto SetLumHistogramParams() noexcept -> void;
-  auto SetupGlLumHistogramBuffer() noexcept -> void;
+  auto SetupGlLumHistogramBuffer() -> void;
   GLuint m_lumAverageDataTextureName{};
   auto SetLumAverageParams(float frameTime) noexcept -> void;
-  auto SetupGlLumAverageData() noexcept -> void;
+  auto SetupGlLumAverageData() -> void;
 
   struct GlFilterPosBuffers
   {
@@ -458,7 +458,7 @@ auto DisplacementFilter::InitScene() -> void
   InitFrameDataArrayToGl();
 }
 
-auto DisplacementFilter::DestroyScene() noexcept -> void
+auto DisplacementFilter::DestroyScene() -> void
 {
   GlCall(glDeleteTextures(1, &m_renderTextureName));
   GlCall(glDeleteFramebuffers(1, &m_renderToTextureFbo));
@@ -501,8 +501,7 @@ auto DisplacementFilter::InitImageArrays(ImageArrays& imageArrays) noexcept -> v
   imageArrays.lowImagePixelBufferNeedsUpdating  = false;
 }
 
-auto DisplacementFilter::InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept
-    -> void
+auto DisplacementFilter::InitFilterPosArrays(FilterPosArrays& filterPosArrays) noexcept -> void
 {
   filterPosArrays.filterPosBuffersLerpFactor = 0.0F;
 
@@ -519,7 +518,7 @@ auto DisplacementFilter::InitFilterPosArrays(FilterPosArrays& filterPosArrays) n
   }
 }
 
-auto DisplacementFilter::InitFrameDataArrayToGl() noexcept -> void
+auto DisplacementFilter::InitFrameDataArrayToGl() -> void
 {
   for (auto i = 0U; i < NUM_FILTER_POS_TEXTURES; ++i)
   {
@@ -538,7 +537,7 @@ auto DisplacementFilter::Resize(const WindowDimensions& windowDimensions) noexce
   SetFramebufferDimensions(windowDimensions);
 }
 
-auto DisplacementFilter::SetupRenderToTextureFBO() noexcept -> void
+auto DisplacementFilter::SetupRenderToTextureFBO() -> void
 {
   // Generate and bind the FBO.
   GlCall(glGenFramebuffers(1, &m_renderToTextureFbo));
@@ -562,7 +561,7 @@ auto DisplacementFilter::SetupRenderToTextureFBO() noexcept -> void
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-auto DisplacementFilter::SetupScreenBuffers() noexcept -> void
+auto DisplacementFilter::SetupScreenBuffers() -> void
 {
   // Setup the vertex and texture coordinate arrays for a full-screen quad (2 triangles).
   static constexpr auto X0 = -1.0F;
@@ -776,7 +775,7 @@ auto DisplacementFilter::Pass1UpdateFilterBuff1AndBuff3() noexcept -> void
 #endif
 }
 
-auto DisplacementFilter::DoTheDraw() const noexcept -> void
+auto DisplacementFilter::DoTheDraw() const -> void
 {
   GlCall(glBindFramebuffer(GL_FRAMEBUFFER, m_renderToTextureFbo));
   GlCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
@@ -832,7 +831,7 @@ auto DisplacementFilter::Pass4UpdateFilterBuff2AndOutputBuff3() noexcept -> void
 #endif
 }
 
-auto DisplacementFilter::Pass5OutputToScreen() noexcept -> void
+auto DisplacementFilter::Pass5OutputToScreen() -> void
 {
   GlCall(glViewport(0, 0, GetFramebufferWidth(), GetFramebufferHeight()));
 
@@ -914,7 +913,7 @@ auto DisplacementFilter::SetLumAverageParams(const float frameTime) noexcept -> 
   m_programPass3FilterBuff1LuminanceAverage.SetUniform(UNIFORM_LUMINANCE_PARAMS, lumAverageParams);
 }
 
-auto DisplacementFilter::GetLumAverage() const noexcept -> float
+auto DisplacementFilter::GetLumAverage() const -> float
 {
   GlCall(glBindTexture(GL_TEXTURE_2D, m_lumAverageDataTextureName));
 
@@ -997,7 +996,7 @@ auto DisplacementFilter::RotateCurrentFilterPosTextureIndex() noexcept -> void
 }
 
 auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,
-                                         const GLuint destTextureName) const noexcept -> void
+                                         const GLuint destTextureName) const -> void
 {
   GlCall(glCopyImageSubData(srceTextureName,
                             GL_TEXTURE_2D,
@@ -1016,7 +1015,7 @@ auto DisplacementFilter::CopyTextureData(const GLuint srceTextureName,
                             1));
 }
 
-auto DisplacementFilter::UpdateImageBuffersToGl(const size_t pboIndex) noexcept -> void
+auto DisplacementFilter::UpdateImageBuffersToGl(const size_t pboIndex) -> void
 {
   if (m_frameDataArray.at(pboIndex).imageArrays.mainImagePixelBufferNeedsUpdating)
   {
@@ -1068,7 +1067,7 @@ auto DisplacementFilter::SetupGlImageBuffers() -> void
       0, LOW_IMAGE_TEX_SHADER_NAME, NULL_IMAGE_UNIT, GetWidth(), GetHeight());
 }
 
-auto DisplacementFilter::SetupGlLumHistogramBuffer() noexcept -> void
+auto DisplacementFilter::SetupGlLumHistogramBuffer() -> void
 {
   GlCall(glGenBuffers(1, &m_histogramBufferName));
   GlCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_histogramBufferName));
@@ -1081,7 +1080,7 @@ auto DisplacementFilter::SetupGlLumHistogramBuffer() noexcept -> void
   GlCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0));
 }
 
-auto DisplacementFilter::SetupGlLumAverageData() noexcept -> void
+auto DisplacementFilter::SetupGlLumAverageData() -> void
 {
   GlCall(glGenTextures(1, &m_lumAverageDataTextureName));
   GlCall(glActiveTexture(LUM_AVG_TEX_UNIT));
@@ -1095,7 +1094,7 @@ auto DisplacementFilter::SetupGlLumAverageData() noexcept -> void
   GlCall(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1, GL_RED, GL_FLOAT, &initialData));
 }
 
-auto DisplacementFilter::InitTextureBuffers() noexcept -> void
+auto DisplacementFilter::InitTextureBuffers() -> void
 {
   m_glFilterBuffers.filterBuff1Texture.ZeroTextures();
   m_glFilterBuffers.filterBuff2Texture.ZeroTextures();
