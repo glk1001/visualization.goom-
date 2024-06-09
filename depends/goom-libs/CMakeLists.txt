@@ -22,6 +22,9 @@ else ()
     add_definitions(-DGOOM_DEBUG)
     MESSAGE(STATUS "Goom: GOOM_DEBUG turned on.")
 endif ()
+string(REPLACE "-DNDEBUG" ""
+       CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}
+       ${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}})
 
 
 include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
@@ -98,6 +101,8 @@ message(STATUS "Goom-libs: Cmake generator                = \"${CMAKE_GENERATOR}
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_ID          = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Goom-libs: CMAKE_CXX_COMPILER_VERSION     = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Goom-libs: CMAKE_BUILD_TYPE               = \"${CMAKE_BUILD_TYPE}\".")
+message(STATUS "Goom-libs: CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}"
+        " = \"${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}}\".")
 message(STATUS "Goom-libs: WARNINGS_AS_ERRORS             = \"${vis_goom_pp_WARNINGS_AS_ERRORS}\".")
 message(STATUS "Goom-libs: CMAKE_MODULE_PATH              = \"${CMAKE_MODULE_PATH}\".")
 message(STATUS "Goom-libs: CMAKE_SCRIPTS_PATH             = \"${CMAKE_SCRIPTS_PATH}\".")

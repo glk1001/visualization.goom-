@@ -13,6 +13,11 @@ export module Goom.Lib.AssertUtils;
 
 #ifdef GOOM_DEBUG
 static constexpr auto ENABLE_ASSERTS = true;
+#ifndef _MSC_VER // TODO(glk): Bugged in MSVC??
+#ifdef NDEBUG
+#error "Should not be set for GOOM_DEBUG"
+#endif
+#endif
 #else
 static constexpr auto ENABLE_ASSERTS = false;
 #endif

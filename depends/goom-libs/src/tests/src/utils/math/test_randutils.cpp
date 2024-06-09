@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_all.hpp>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -7,18 +8,13 @@
 #include <limits>
 #include <tuple>
 #include <vector>
-#ifndef NDEBUG
-#include <catch2/matchers/catch_matchers_all.hpp>
-#endif
 
 import Goom.Utils.Math.RandUtils;
 
 namespace GOOM::UNIT_TESTS
 {
 
-#ifndef NDEBUG
 using Catch::Matchers::StartsWith;
-#endif
 using UTILS::MATH::RAND::GetRand;
 using UTILS::MATH::RAND::GetRandInRange;
 using UTILS::MATH::RAND::GetRandSeed;

@@ -70,13 +70,13 @@ endif ()
 # Let the Goom code know we're building using Kodi. There are Kodi
 # headers that the Main goom code needs only when doing a Kodi build.
 add_definitions(-DIS_KODI_BUILD)
-if(PLATFORM STREQUAL "linux")
+if (PLATFORM STREQUAL "linux")
     add_definitions(-DTARGET_LINUX)
-elseif(PLATFORM STREQUAL "windows")
+elseif (PLATFORM STREQUAL "windows")
     add_definitions(-DTARGET_WINDOWS)
-else()
+else ()
     message(FATAL "Platform \"${PLATFORM}\" not supported.")
-endif()
+endif ()
 
 # Set GOOM_DEBUG for non-release builds.
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_CMAKE_BUILD_TYPE)
@@ -86,7 +86,9 @@ else ()
     add_definitions(-DGOOM_DEBUG)
     message(STATUS "Vis.Goom: GOOM_DEBUG turned on.")
 endif ()
-
+string(REPLACE "-DNDEBUG" ""
+       CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}
+       ${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}})
 
 include(ProjectOptions.cmake)
 vis_goom_pp_get_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS vis_goom_pp_PROJECT_WARNINGS)
@@ -190,10 +192,13 @@ message(STATUS "Vis.goom: CMAKE_SYSTEM_NAME          = \"${CMAKE_SYSTEM_NAME}\".
 message(STATUS "Vis.goom: CMAKE_CXX_COMPILER_ID      = \"${CMAKE_CXX_COMPILER_ID}\".")
 message(STATUS "Vis.goom: CMAKE_CXX_COMPILER_VERSION = \"${CMAKE_CXX_COMPILER_VERSION}\".")
 message(STATUS "Vis.goom: CMAKE_BUILD_TYPE           = \"${CMAKE_BUILD_TYPE}\".")
+message(STATUS "Vis.goom: CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}\n"
+               "                                         = \"${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}}\".")
+message(STATUS "Vis.goom: CMAKE_CXX_FLAGS_INIT       = \"${CMAKE_CXX_FLAGS_INIT}\".")
 message(STATUS "Vis.goom: WARNINGS_AS_ERRORS         = \"${vis_goom_pp_WARNINGS_AS_ERRORS}\".")
 if (WIN32)
     message(STATUS "Vis.goom: CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION ="
-            " \"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\".")
+            "\"${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}\".")
 endif ()
 message(STATUS "Vis.goom: CMAKE_SOURCE_DIR           = \"${CMAKE_SOURCE_DIR}\".")
 message(STATUS "Vis.goom: PROJECT_SOURCE_DIR         = \"${PROJECT_SOURCE_DIR}\".")
