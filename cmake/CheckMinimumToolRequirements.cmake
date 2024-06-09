@@ -30,17 +30,6 @@ if (NOT ${CMAKE_CXX_EXTENSIONS} STREQUAL OFF)
     message(FATAL_ERROR "CMAKE_CXX_EXTENSIONS should be set to 'OFF'. Currently set to '${CMAKE_CXX_EXTENSIONS}'.")
 endif ()
 
-# Don't trust older build environments yet.
-include(CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX(optional OPTIONAL_INCLUDE)
-if (NOT OPTIONAL_INCLUDE)
-    message(FATAL_ERROR "Could not find C++17 'optional' header. Is libc++ up to date?")
-endif ()
-CHECK_INCLUDE_FILE_CXX(filesystem FILESYSTEM_INCLUDE)
-if (NOT FILESYSTEM_INCLUDE)
-    message(FATAL_ERROR "Could not find C++17 'filesystem' header. Is libc++ up to date?")
-endif ()
-
 # Check minimum Window SDK
 if (WIN32)
     if (NOT CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION)

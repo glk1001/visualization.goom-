@@ -29,6 +29,8 @@ RUN apt-get update    && \
       catch2             \
       ccache             \
       build-essential    \
+      gcc-14             \
+      g++-14             \
       gdb             && \
     apt-get clean -y
 
@@ -55,6 +57,8 @@ RUN curl -SL https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION
     && /tmp/curl-install.sh --skip-license --prefix=/usr/bin/cmake-${CMAKE_VERSION} \
     && rm /tmp/curl-install.sh \
     && ln -s /usr/bin/cmake-${CMAKE_VERSION}/bin/cmake /usr/bin/cmake
+
+COPY "unicode.h" "/usr/include/c++/14/bits/unicode.h"
 
 ARG BUILD_UID=1001
 RUN useradd -m -u ${BUILD_UID} -s /bin/bash builder

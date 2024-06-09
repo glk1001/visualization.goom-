@@ -37,6 +37,7 @@ jobs:
           }
 
     env:
+      VIS_GOOM_PATH: '${{ github.workspace }}/${{ vars.VIS_GOOM_ROOT_DIR }}'
       GOOM_LIBS_DIR: depends/goom-libs
       BUILD_DIR: build-${{ matrix.config.cc }}-${{ matrix.config.build_type }}-${{ github.ref_name }}
 
@@ -69,23 +70,22 @@ jobs:
           sudo apt-get update
           sudo bash docker-toolchains/llvm.sh ${{ vars.CLANG_VER }}
 
-      # Clang-19 found a bug in gcc 14 libstdc++:
-      #   "This change uncovered a bug in libstdc++ 14.1.0 which may cause compile
-      #    failures on systems using that version of libstdc++ and Clang 19..."
-      # So make sure gcc-13 is installed, then remove gcc-14.
-      - name: Install gcc-13
+      - name: Install gcc-${{ vars.GCC_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         uses: egor-tensin/setup-gcc@v1
         with:
-          version: 13
+          version: ${{ vars.GCC_VER }}
           platform: x64
 
-      - name: Remove gcc-14
+      # Clang-19 found a bug in gcc 14 libstdc++:
+      #   "This change uncovered a bug in libstdc++ 14.1.0 which may cause compile
+      #    failures on systems using that version of libstdc++ and Clang 19..."
+      # So copy in a fixed 'unicode.h'.
+      - name: Fix gcc 14.1 unicode.h
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         run: |
-          sudo apt-get update
-          sudo apt-get remove gcc-14
-          sudo apt-get autoclean && sudo apt-get autoremove --purge
+          cd ${{ env.VIS_GOOM_PATH }}
+          sudo cp "docker-toolchains/unicode.h" "/usr/include/c++/14/bits/unicode.h"
 
       - name: Install clang-format-${{ vars.CLANG_FORMAT_VER }} and clang-tidy-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
@@ -120,6 +120,7 @@ jobs:
           python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_FORMAT_VER }}" \
                                               -i -r \
                                               -e "*particles/src/glm" \
+                                              -e "*docker-toolchains/unicode.h" \
                                               -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
                                               -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" -e "*magic_enum*" \
                                               "${PWD}"
