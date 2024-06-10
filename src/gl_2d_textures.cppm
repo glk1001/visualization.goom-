@@ -48,10 +48,10 @@ public:
 
   [[nodiscard]] auto GetTextureName(size_t textureIndex) const noexcept -> GLuint;
 
-  auto ZeroTextures() -> void;
-  auto BindTextures(GlslProgram& program) -> void;
-  auto BindTexture(GlslProgram& program, uint32_t textureIndex) -> void;
-  auto CopyMappedBufferToTexture(size_t pboIndex, size_t textureIndex) -> void;
+  auto ZeroTextures() noexcept -> void;
+  auto BindTextures(GlslProgram& program) noexcept -> void;
+  auto BindTexture(GlslProgram& program, uint32_t textureIndex) noexcept -> void;
+  auto CopyMappedBufferToTexture(size_t pboIndex, size_t textureIndex) noexcept -> void;
 
 private:
   static constexpr GLenum TEXTURE_UNIT = GL_TEXTURE0 + TextureLocation;
@@ -72,7 +72,7 @@ private:
   PboBuffers m_pboBuffers{};
   auto AllocatePboBuffers() -> void;
   auto DeletePboBuffers() -> void;
-  auto CopyPboBufferToBoundTexture(size_t pboIndex) -> void;
+  auto CopyPboBufferToBoundTexture(size_t pboIndex) noexcept -> void;
 };
 
 } // namespace GOOM::OPENGL
@@ -198,7 +198,7 @@ auto Gl2DTexture<CppTextureType,
                  TextureFormat,
                  TextureInternalFormat,
                  TexturePixelType,
-                 NumPbos>::BindTextures(GlslProgram& program) -> void
+                 NumPbos>::BindTextures(GlslProgram& program) noexcept -> void
 {
   for (auto i = 0U; i < m_textureNames.size(); ++i)
   {
@@ -219,7 +219,8 @@ auto Gl2DTexture<CppTextureType,
                  TextureFormat,
                  TextureInternalFormat,
                  TexturePixelType,
-                 NumPbos>::BindTexture(GlslProgram& program, const uint32_t textureIndex) -> void
+                 NumPbos>::BindTexture(GlslProgram& program, const uint32_t textureIndex) noexcept
+    -> void
 {
   program.SetUniform(m_textureShaderNames.at(textureIndex),
                      TextureLocation + static_cast<int32_t>(textureIndex));
@@ -278,7 +279,7 @@ inline auto Gl2DTexture<CppTextureType,
                         TextureFormat,
                         TextureInternalFormat,
                         TexturePixelType,
-                        NumPbos>::ZeroTextures() -> void
+                        NumPbos>::ZeroTextures() noexcept -> void
 {
   //  const auto zero = int64_t{0xFF000000};
   //  GlCall(glClearTexImage(m_textureName, 0, TextureFormat, TexturePixelType, &zero));
@@ -315,7 +316,8 @@ inline auto Gl2DTexture<CppTextureType,
                         TexturePixelType,
                         // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
                         NumPbos>::CopyMappedBufferToTexture(const size_t pboIndex,
-                                                            const size_t textureIndex) -> void
+                                                            const size_t textureIndex) noexcept
+    -> void
 {
   GlCall(glBindTexture(GL_TEXTURE_2D, m_textureNames.at(textureIndex)));
 
@@ -415,7 +417,7 @@ auto Gl2DTexture<CppTextureType,
                  TextureFormat,
                  TextureInternalFormat,
                  TexturePixelType,
-                 NumPbos>::CopyPboBufferToBoundTexture(const size_t pboIndex) -> void
+                 NumPbos>::CopyPboBufferToBoundTexture(const size_t pboIndex) noexcept -> void
 {
   GlCall(glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_pboBuffers.ids.at(pboIndex)));
 
