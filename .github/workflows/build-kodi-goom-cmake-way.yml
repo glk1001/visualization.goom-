@@ -12,19 +12,19 @@ jobs:
       - name: Print global context
         shell: bash
         run: |
-          echo "github.ref:             ${{ github.ref }}"
-          echo "github.ref_name:        ${{ github.ref_name }}"
-          echo "github.event_name:      ${{ github.event_name }}"
-          echo "github.event_path:      ${{ github.event_path }}"
-          echo "github.workflow_sha:    ${{ github.workflow_sha }}"
-          echo "github.workflow:        ${{ github.workflow }}"
-          echo "github.workspace:       ${{ github.workspace }}"
-          echo "KODI_ROOT_DIR:          ${{ vars.KODI_ROOT_DIR }}"
-          echo "KODI_BRANCH:            ${{ vars.KODI_BRANCH }}"
-          echo "VIS_GOOM_ROOT_DIR:      ${{ vars.VIS_GOOM_ROOT_DIR }}"
-          echo "CLANG_VER:              ${{ vars.CLANG_VER }}"
-          echo "CLANG_FORMAT_VER:       ${{ vars.CLANG_FORMAT_VER }}"
-          echo "GCC_VER:                ${{ vars.GCC_VER }}"
+          echo "github.ref:          ${{ github.ref }}"
+          echo "github.ref_name:     ${{ github.ref_name }}"
+          echo "github.event_name:   ${{ github.event_name }}"
+          echo "github.event_path:   ${{ github.event_path }}"
+          echo "github.workflow_sha: ${{ github.workflow_sha }}"
+          echo "github.workflow:     ${{ github.workflow }}"
+          echo "github.workspace:    ${{ github.workspace }}"
+          echo "KODI_ROOT_DIR:       ${{ vars.KODI_ROOT_DIR }}"
+          echo "KODI_BRANCH:         ${{ vars.KODI_BRANCH }}"
+          echo "VIS_GOOM_ROOT_DIR:   ${{ vars.VIS_GOOM_ROOT_DIR }}"
+          echo "CLANG_VER:           ${{ vars.CLANG_VER }}"
+          echo "CLANG_FORMAT_VER:    ${{ vars.CLANG_FORMAT_VER }}"
+          echo "GCC_VER:             ${{ vars.GCC_VER }}"
 
   build:
     needs: info
@@ -76,22 +76,23 @@ jobs:
       - name: Print env
         shell: bash
         run: |
-          echo "runner.os:              ${{ runner.os }}"
-          echo "runner.arch:            ${{ runner.arch }}"
-          echo "cc:                     ${{ matrix.config.cc }}"
-          echo "cxx:                    ${{ matrix.config.cxx }}"
-          echo "os:                     ${{ matrix.config.os }}"
-          echo "VIS_GOOM_PATH:          ${{ env.VIS_GOOM_PATH }}"
-          echo "GOOM_LIBS_DIR:          ${{ env.GOOM_LIBS_DIR }}"
-          echo "KODI_PATH:              ${{ env.KODI_PATH }}"
-          echo "BUILD_PATH:             ${{ env.BUILD_PATH }}"
-          echo "ARCHIVE_NAME:           ${{ env.ARCHIVE_NAME }}"
-          echo "ARTIFACTS_PATH:         ${{ env.ARTIFACTS_PATH }}"
+          echo "runner.os:      ${{ runner.os }}"
+          echo "runner.arch:    ${{ runner.arch }}"
+          echo "cc:             ${{ matrix.config.cc }}"
+          echo "cxx:            ${{ matrix.config.cxx }}"
+          echo "os:             ${{ matrix.config.os }}"
+          echo "VIS_GOOM_PATH:  ${{ env.VIS_GOOM_PATH }}"
+          echo "GOOM_LIBS_DIR:  ${{ env.GOOM_LIBS_DIR }}"
+          echo "KODI_PATH:      ${{ env.KODI_PATH }}"
+          echo "BUILD_PATH:     ${{ env.BUILD_PATH }}"
+          echo "ARCHIVE_NAME:   ${{ env.ARCHIVE_NAME }}"
+          echo "ARTIFACTS_PATH: ${{ env.ARTIFACTS_PATH }}"
 
       - name: Install Clang-${{ vars.CLANG_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           sudo apt-get update
           sudo bash docker-toolchains/llvm.sh ${{ vars.CLANG_VER }}
@@ -111,6 +112,7 @@ jobs:
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
           sudo cp "docker-toolchains/unicode.h" "/usr/include/c++/14/bits/unicode.h"
 
       - name: Install clang-format-${{ vars.CLANG_FORMAT_VER }} and clang-tidy-${{ vars.CLANG_VER }}
@@ -146,6 +148,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           python3 scripts/run-clang-format.py --clang-format-executable "clang-format-${{ vars.CLANG_FORMAT_VER }}" \
                                               -i -r \
@@ -170,6 +173,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           export CCACHE_DIR=${{ runner.temp }}
           bash scripts/goom-configure.sh -c ${{ matrix.config.cc }} \
@@ -181,6 +185,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           export CCACHE_DIR=${{ runner.temp }}
           bash scripts/goom-build.sh -c ${{ matrix.config.cc }} --build-type ${{ matrix.config.build_type }} --suffix ${{ github.ref_name }}
@@ -196,6 +201,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           run-clang-tidy-${{ vars.CLANG_VER }} -j $(getconf _NPROCESSORS_ONLN) \
                                                -header-filter='^((?!catch2).)*$' \
@@ -217,6 +223,7 @@ jobs:
         shell: powershell
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           ./scripts/goom-configure.bat ${{ matrix.config.build_type }} ${{ github.ref_name }}
 
@@ -225,6 +232,7 @@ jobs:
         shell: powershell
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           ./scripts/goom-build.bat ${{ matrix.config.build_type }} ${{ github.ref_name }}
 
@@ -239,6 +247,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           ${{ env.BUILD_PATH }}/${{ env.GOOM_LIBS_DIR }}/src/tests/goom_lib_tests -d yes
 
@@ -247,6 +256,7 @@ jobs:
         shell: powershell
         run: |
           cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
 
           ${{ env.BUILD_PATH }}/${{ env.GOOM_LIBS_DIR }}/src/tests/goom_lib_tests.exe -d yes
 
@@ -279,6 +289,8 @@ jobs:
       - name: Zip and copy artifacts to deployment repo
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
+          echo "PWD = \"${PWD}\"."
+
           declare -r UPPER_KODI_BRANCH="${{ vars.KODI_BRANCH }}"
           declare -r LOWER_KODI_BRANCH="${UPPER_KODI_BRANCH,,}"
           declare -r LINUX_ZIP_NAME=${{ vars.VIS_GOOM_ROOT_DIR }}-${LOWER_KODI_BRANCH}-linux-x86_64.zip
