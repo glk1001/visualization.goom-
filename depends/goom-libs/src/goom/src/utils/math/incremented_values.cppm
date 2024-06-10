@@ -2,6 +2,7 @@ module;
 
 #include <algorithm>
 #include <cmath>
+#include <concepts>
 #include <cstdint>
 #include <type_traits>
 #include <vector>
@@ -13,8 +14,62 @@ import Goom.Utils.Math.TValues;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
+export template<typename T>
+auto lerp(const T& val1, const T& val2, float t) noexcept -> T;
+export template<typename T>
+auto Clamped(const T& val, const T& val1, const T& val2) noexcept -> T;
+export template<typename T>
+auto GetMatching(const T& val, const T& val1, const T& val2) noexcept -> float;
+
+template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto lerp(const T& val1, const T& val2, const float t) noexcept -> T
+{
+  return static_cast<T>(std::lerp(val1, val2, t));
+}
+
+template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto Clamped(const T& val, const T& val1, const T& val2) noexcept -> T
+{
+  return GOOM::UTILS::MATH::UnorderedClamp(val, val1, val2);
+}
+
+template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto GetMatching(const T& val, const T& val1, const T& val2) noexcept -> float
+{
+  using GOOM::UTILS::MATH::SMALL_FLOAT;
+
+  if (std::fabs(static_cast<float>(val2) - static_cast<float>(val1)) < SMALL_FLOAT)
+  {
+    return 0.0F;
+  }
+  return ((static_cast<float>(val) - static_cast<float>(val1)) /
+          (static_cast<float>(val2) - static_cast<float>(val1)));
+}
+
 export namespace GOOM::UTILS::MATH
 {
+
+template<typename T>
+concept Lerpable = requires(const T& val1, const T& val2, float t) {
+  {
+    lerp(val1, val2, t)
+  } -> std::same_as<T>;
+};
+template<typename T>
+concept Matchable = requires(const T& val, const T& val1, const T& val2) {
+  {
+    GetMatching(val, val1, val2)
+  } -> std::same_as<float>;
+};
+template<typename T>
+concept Clampable = requires(const T& val, const T& val1, const T& val2) {
+  {
+    Clamped(val, val1, val2)
+  } -> std::same_as<T>;
+};
 
 template<typename T>
 class IncrementedValue
@@ -54,10 +109,14 @@ private:
   TValue m_t;
   T m_currentValue = m_value1;
   [[nodiscard]] auto GetValue(float t) const noexcept -> T;
-  [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T;
-  [[nodiscard]] static auto Clamp(const T& val, const T& val1, const T& val2) noexcept -> T;
+
+  [[nodiscard]] static auto LerpValues(const T& val1, const T& val2, float t) noexcept -> T
+    requires Lerpable<T>;
+  [[nodiscard]] static auto Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
+    requires Clampable<T>;
   [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
-      -> float;
+      -> float
+    requires Matchable<T>;
 };
 
 } // namespace GOOM::UTILS::MATH
@@ -67,27 +126,29 @@ namespace GOOM::UTILS::MATH
 
 template<typename T>
 IncrementedValue<T>::IncrementedValue(const TValue::StepType stepType,
-                                             const uint32_t numSteps) noexcept
+                                      const uint32_t numSteps) noexcept
   : m_value1{}, m_value2{}, m_t{{stepType, numSteps}}
 {
   Expects(numSteps > 0U);
 }
 
 template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 IncrementedValue<T>::IncrementedValue(const T& value1,
-                                             const T& value2,
-                                             const TValue::StepType stepType,
-                                             const uint32_t numSteps) noexcept
+                                      const T& value2,
+                                      const TValue::StepType stepType,
+                                      const uint32_t numSteps) noexcept
   : m_value1{value1}, m_value2{value2}, m_t{{stepType, numSteps}}
 {
   Expects(numSteps > 0U);
 }
 
 template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 IncrementedValue<T>::IncrementedValue(const T& value1,
-                                             const T& value2,
-                                             const TValue::StepType stepType,
-                                             const float stepSize) noexcept
+                                      const T& value2,
+                                      const TValue::StepType stepType,
+                                      const float stepSize) noexcept
   : m_value1{value1}, m_value2{value2}, m_t{TValue::StepSizeProperties{stepSize, stepType}}
 {
   Expects(stepSize > 0.0F);
@@ -168,32 +229,27 @@ auto IncrementedValue<T>::GetValue(const float t) const noexcept -> T
 }
 
 template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto IncrementedValue<T>::LerpValues(const T& val1, const T& val2, float t) noexcept -> T
+  requires Lerpable<T>
 {
-  if constexpr (std::is_integral<T>::value)
-  {
-    return static_cast<T>(std::lerp(static_cast<float>(val1), static_cast<float>(val2), t));
-  }
-
-  using std::lerp;
-  return static_cast<T>(lerp(val1, val2, t));
+  return lerp(val1, val2, t);
 }
 
 template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto IncrementedValue<T>::Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
+  requires Clampable<T>
 {
-  return UnorderedClamp(val, val1, val2);
+  return Clamped(val, val1, val2);
 }
 
 template<typename T>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 auto IncrementedValue<T>::GetMatchingT(const T& val, const T& val1, const T& val2) noexcept -> float
+  requires Matchable<T>
 {
-  if (std::fabs(static_cast<float>(val2) - static_cast<float>(val1)) < SMALL_FLOAT)
-  {
-    return 0.0F;
-  }
-  return ((static_cast<float>(val) - static_cast<float>(val1)) /
-          (static_cast<float>(val2) - static_cast<float>(val1)));
+  return GetMatching(val, val1, val2);
 }
 
 template<typename T>

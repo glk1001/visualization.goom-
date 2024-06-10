@@ -16,12 +16,12 @@ import LSys.Module;
 import LSys.ParsedModel;
 import LSys.Value;
 import LSys.Vector;
-import Goom.Utils.Timer;
-import Goom.Utils.Math.TValues;
+import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
-import :IncrementedValuesBugFix;
-import Goom.VisualFx.VisualFxBase;
+import Goom.Utils.Math.TValues;
+import Goom.Utils.Timer;
 import Goom.VisualFx.FxHelper;
+import Goom.VisualFx.VisualFxBase;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomPaths;
@@ -33,6 +33,57 @@ import :LSysColors;
 import :LSysDraw;
 import :LSysGeom;
 import :LSysPaths;
+
+using DefaultParams = LSYS::Interpreter::DefaultParams;
+
+template<>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto lerp(const DefaultParams& val1, const DefaultParams& val2, const float t) noexcept
+    -> DefaultParams
+{
+  return {
+      std::lerp(val1.turnAngleInDegrees, val2.turnAngleInDegrees, t),
+      std::lerp(val1.width, val2.width, t),
+      std::lerp(val1.distance, val2.distance, t),
+  };
+}
+
+template<>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto Clamped(const DefaultParams& val,
+             const DefaultParams& val1,
+             const DefaultParams& val2) noexcept -> DefaultParams
+{
+  using GOOM::UTILS::MATH::UnorderedClamp;
+
+  return {UnorderedClamp(val.turnAngleInDegrees, val1.turnAngleInDegrees, val2.turnAngleInDegrees),
+          UnorderedClamp(val.width, val1.width, val2.width),
+          UnorderedClamp(val.distance, val1.distance, val2.distance)};
+}
+
+template<>
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto GetMatching(const DefaultParams& val,
+                 const DefaultParams& val1,
+                 const DefaultParams& val2) noexcept -> float
+{
+  using GOOM::UTILS::MATH::SMALL_FLOAT;
+
+  if (std::fabs(val2.turnAngleInDegrees - val1.turnAngleInDegrees) > SMALL_FLOAT)
+  {
+    return ((val.turnAngleInDegrees - val1.turnAngleInDegrees) /
+            (val2.turnAngleInDegrees - val1.turnAngleInDegrees));
+  }
+  if (std::fabs(val2.width - val1.width) > SMALL_FLOAT)
+  {
+    return ((val.width - val1.width) / (val2.width - val1.width));
+  }
+  if (std::fabs(val2.distance - val1.distance) > SMALL_FLOAT)
+  {
+    return ((val.distance - val1.distance) / (val2.distance - val1.distance));
+  }
+  return 0.0F;
+}
 
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
@@ -168,13 +219,11 @@ private:
   auto UpdateLSysModel() noexcept -> void;
   auto InitNextLSysInterpreter() -> void;
   static constexpr auto DEFAULT_NUM_INTERPRETER_PARAMS_STEPS = 100U;
-  UTILS::MATH::IncrementedValueBugFix<::LSYS::Interpreter::DefaultParams>
-      m_defaultInterpreterParams{UTILS::MATH::TValue::StepType::SINGLE_CYCLE,
-                                 DEFAULT_NUM_INTERPRETER_PARAMS_STEPS};
+  UTILS::MATH::IncrementedValue<DefaultParams> m_defaultInterpreterParams{
+      UTILS::MATH::TValue::StepType::SINGLE_CYCLE, DEFAULT_NUM_INTERPRETER_PARAMS_STEPS};
   auto UpdateInterpreterParams() noexcept -> void;
   auto SetNewDefaultInterpreterParams() noexcept -> void;
-  [[nodiscard]] auto GetRandomDefaultInterpreterParams() const noexcept
-      -> ::LSYS::Interpreter::DefaultParams;
+  [[nodiscard]] auto GetRandomDefaultInterpreterParams() const noexcept -> DefaultParams;
   auto ResetModelNamedArgs() -> void;
   auto RegenerateModuleList() noexcept -> void;
   auto RestartLSysInterpreter() noexcept -> void;

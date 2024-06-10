@@ -316,7 +316,6 @@ set(GoomVisualFx_modules
     src/visual_fx/l_systems/lsys_draw.cppm
     src/visual_fx/l_systems/lsys_geom.cppm
     src/visual_fx/l_systems/lsys_paths.cppm
-    src/visual_fx/l_systems/incremented_values_bug_fix.cppm
     src/visual_fx/l_systems/line_drawer_manager.cppm
     src/visual_fx/lines/line_morph.cppm
     src/visual_fx/lines/line_types.cppm
