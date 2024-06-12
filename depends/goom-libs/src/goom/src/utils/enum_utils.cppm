@@ -16,20 +16,28 @@ export namespace GOOM::UTILS
 {
 
 template<class E>
+concept EnumType = std::is_enum_v<E>;
+
+template<class T>
+concept KeyValueArrayType = requires(T a) {
+  a[0]; // Accessing elements through [] works.
+  a.at(0); // Accessing elements through [] works.
+  a.size(); // a must have size() method.
+};
+
+template<EnumType E>
 inline constexpr auto NUM = static_cast<uint32_t>(magic_enum::enum_count<E>());
 
-template<class E>
+template<EnumType E>
 auto EnumToString(E value) -> std::string;
 
-template<class E>
+template<EnumType E>
 auto StringToEnum(const std::string& eStr) -> E;
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 class EnumMap
 {
 public:
-  static_assert(std::is_enum_v<E>);
-
   struct KeyValue
   {
     E key; // NOLINT(misc-non-private-member-variables-in-classes)
@@ -63,14 +71,13 @@ private:
       -> std::array<T, NUM<E>>;
 };
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 [[nodiscard]] constexpr auto GetFilledEnumMap(const T& value) -> EnumMap<E, T>;
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 class RuntimeEnumMap
 {
 public:
-  static_assert(std::is_enum_v<E>);
   using KeyValue = typename EnumMap<E, T>::KeyValue;
 
   RuntimeEnumMap() = delete;
@@ -84,7 +91,7 @@ public:
 private:
   explicit RuntimeEnumMap(std::vector<T>&& keyValues) noexcept;
   std::vector<T> m_keyValues;
-  template<typename V>
+  template<KeyValueArrayType V>
   [[nodiscard]] static auto GetSortedValuesArray(const V& keyValues) noexcept -> std::vector<T>;
 };
 
@@ -93,25 +100,25 @@ private:
 namespace GOOM::UTILS
 {
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr EnumMap<E, T>::EnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexcept
   : m_keyValues{GetSortedValuesArray(std::move(keyValues))}
 {
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr auto EnumMap<E, T>::Make(std::vector<KeyValue>&& keyValues) noexcept -> EnumMap<E, T>
 {
   return EnumMap{GetSortedValuesArray(std::move(keyValues))};
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr EnumMap<E, T>::EnumMap(std::array<T, NUM<E>>&& keyValues) noexcept
   : m_keyValues{std::move(keyValues)}
 {
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr auto EnumMap<E, T>::keys() -> std::array<E, NUM<E>>
 {
   auto keys = std::array<E, NUM<E>>{};
@@ -122,25 +129,25 @@ constexpr auto EnumMap<E, T>::keys() -> std::array<E, NUM<E>>
   return keys;
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr auto EnumMap<E, T>::operator[](const E key) const noexcept -> const T&
 {
   return m_keyValues.at(static_cast<size_t>(key));
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr auto EnumMap<E, T>::operator[](const E key) noexcept -> T&
 {
   return m_keyValues.at(static_cast<size_t>(key));
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 constexpr auto EnumMap<E, T>::size() const noexcept -> size_t
 {
   return m_keyValues.size();
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 template<typename V>
 constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> std::array<T, NUM<E>>
 {
@@ -152,7 +159,7 @@ constexpr auto EnumMap<E, T>::GetSortedValuesArray(V&& keyValues) noexcept -> st
   return sortedValuesArray;
 }
 
-template<typename E, typename T>
+template<EnumType E, typename T>
 [[nodiscard]] constexpr auto GetFilledEnumMap(const T& value) -> EnumMap<E, T>
 {
   auto enumMap = EnumMap<E, T>{};
@@ -165,47 +172,45 @@ template<typename E, typename T>
   return enumMap;
 }
 
-template<typename E, typename T>
-inline RuntimeEnumMap<E, T>::RuntimeEnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexcept
+template<EnumType E, typename T>
+RuntimeEnumMap<E, T>::RuntimeEnumMap(std::array<KeyValue, NUM<E>>&& keyValues) noexcept
   : m_keyValues{GetSortedValuesArray(std::move(keyValues))}
 {
 }
 
-template<typename E, typename T>
-inline auto RuntimeEnumMap<E, T>::Make(std::vector<KeyValue>&& keyValues) noexcept
-    -> RuntimeEnumMap<E, T>
+template<EnumType E, typename T>
+auto RuntimeEnumMap<E, T>::Make(std::vector<KeyValue>&& keyValues) noexcept -> RuntimeEnumMap<E, T>
 {
   return RuntimeEnumMap{GetSortedValuesArray(std::move(keyValues))};
 }
 
-template<typename E, typename T>
-inline RuntimeEnumMap<E, T>::RuntimeEnumMap(std::vector<T>&& keyValues) noexcept
+template<EnumType E, typename T>
+RuntimeEnumMap<E, T>::RuntimeEnumMap(std::vector<T>&& keyValues) noexcept
   : m_keyValues{std::move(keyValues)}
 {
 }
 
-template<typename E, typename T>
-inline auto RuntimeEnumMap<E, T>::operator[](const E key) const noexcept -> const T&
+template<EnumType E, typename T>
+auto RuntimeEnumMap<E, T>::operator[](const E key) const noexcept -> const T&
 {
   return m_keyValues.at(static_cast<size_t>(key));
 }
 
-template<typename E, typename T>
-inline auto RuntimeEnumMap<E, T>::operator[](const E key) noexcept -> T&
+template<EnumType E, typename T>
+auto RuntimeEnumMap<E, T>::operator[](const E key) noexcept -> T&
 {
   return m_keyValues.at(static_cast<size_t>(key));
 }
 
-template<typename E, typename T>
-inline auto RuntimeEnumMap<E, T>::size() const noexcept -> size_t
+template<EnumType E, typename T>
+auto RuntimeEnumMap<E, T>::size() const noexcept -> size_t
 {
   return m_keyValues.size();
 }
 
-template<typename E, typename T>
-template<typename V>
-inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(const V& keyValues) noexcept
-    -> std::vector<T>
+template<EnumType E, typename T>
+template<KeyValueArrayType V>
+auto RuntimeEnumMap<E, T>::GetSortedValuesArray(const V& keyValues) noexcept -> std::vector<T>
 {
   Expects(keyValues.size() == NUM<E>);
 
@@ -223,18 +228,15 @@ inline auto RuntimeEnumMap<E, T>::GetSortedValuesArray(const V& keyValues) noexc
   return sortedValuesArray;
 }
 
-template<class E>
+template<EnumType E>
 auto EnumToString(const E value) -> std::string
 {
-  static_assert(std::is_enum_v<E>);
   return std::string(magic_enum::enum_name(value));
 }
 
-template<class E>
+template<EnumType E>
 auto StringToEnum(const std::string& eStr) -> E
 {
-  static_assert(std::is_enum_v<E>);
-
   if (const auto val = magic_enum::enum_cast<E>(eStr); val)
   {
     return *val;
