@@ -13,7 +13,7 @@ import Goom.Lib.GoomUtils;
 export namespace GOOM::OPENGL
 {
 
-auto CheckForOpenGLError(const char* file, int line) -> bool;
+auto CheckForOpenGLError(std::string& message) -> bool;
 
 auto DumpGLInfo(bool dumpExtensions = false) -> void;
 
@@ -131,15 +131,13 @@ auto GlClearError() -> void
   }
 }
 
-auto CheckForOpenGLError([[maybe_unused]] const char* const file, [[maybe_unused]] const int line)
-    -> bool
+auto CheckForOpenGLError(std::string& message) -> bool
 {
   auto result  = true;
   auto glError = glGetError();
 
   while (glError != GL_NO_ERROR)
   {
-    std::string message{};
     switch (glError)
     {
       case GL_INVALID_ENUM:
@@ -169,7 +167,6 @@ auto CheckForOpenGLError([[maybe_unused]] const char* const file, [[maybe_unused
         message = std::format("Unknown error: {}", glError);
     }
 
-    std::println("OpenGL error: {}. At line {}, in file '{}'.", message, line, file);
     result = false;
 
     glError = glGetError();

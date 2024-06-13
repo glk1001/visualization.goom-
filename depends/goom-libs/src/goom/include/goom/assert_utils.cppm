@@ -69,7 +69,8 @@ constexpr auto Check(const bool expr,
               << "\n";
 #else
     const auto extraInfoStr = extraInfo.empty() ? std::string{} : std::format(" ({})", extraInfo);
-    std::println("{}{} - {}:{}", reason, extraInfoStr, location.file_name(), location.line());
+    std::println(
+        stderr, "{}{} - {}:{}", reason, extraInfoStr, location.file_name(), location.line());
 #endif
 
     std::terminate();

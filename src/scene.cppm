@@ -30,7 +30,7 @@ public:
 
   // Load textures, initialize shaders, etc.
   virtual auto InitScene() -> void             = 0;
-  virtual auto DestroyScene() noexcept -> void = 0;
+  virtual auto DestroyScene() -> void = 0;
 
   // Draw your scene.
   virtual auto Render() -> void = 0;

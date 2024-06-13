@@ -109,7 +109,6 @@ set(VIS_GOOM_SOURCES
     src/goom_visualization.cpp
 )
 set(VIS_GOOM_HEADERS
-    src/gl_call.h
     src/goom_gl.h
     src/Main.h
 )
@@ -133,6 +132,7 @@ target_sources(${VIS_GOOM_TARGET_NAME}
                src/displacement_filter.cppm
                src/gl_render_types.cppm
                src/gl_2d_textures.cppm
+               src/gl_caller.cppm
                src/gl_utils.cppm
                src/glsl_program.cppm
                src/glsl_shader_file.cppm
