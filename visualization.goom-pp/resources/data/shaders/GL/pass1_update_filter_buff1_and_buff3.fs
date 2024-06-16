@@ -18,7 +18,7 @@ in vec3 position;
 in vec2 texCoord;
 
 uniform float u_lerpFactor;
-uniform float u_buff2Buff3Mix = 0.1;
+uniform float u_buff2Buff3Mix = 0.1F;
 uniform bool u_resetSrceFilterPosBuffers;
 uniform float u_pos1Pos2MixFreq;
 uniform uint u_time;
@@ -38,28 +38,27 @@ vec3 blend(vec3 base, vec3 blend, float opacity)
 }
 **/
 
-vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 deviceXY);
+vec4 GetFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY);
 float GetBaseColorMultiplier(vec3 color);
 
 void main()
 {
   ivec2 deviceXY = ivec2(gl_FragCoord.xy);
 
-  vec4 filterBuff2Val = GetPosMappedFilterBuff2Value(texCoord, deviceXY);
+  vec4 filterBuff2Val = GetFilterBuff2ColorValue(texCoord, deviceXY);
   vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
 
   vec4 colorMain = texture(tex_mainImage, texCoord);
   vec4 colorLow  = texture(tex_lowImage, texCoord);
 
-  //  vec4 filtBuff2ColorMain = vec4(blend(filtBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
-  //  vec4 filtBuff2ColorMain = vec4((1-colorMain.a)*filtBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
+  //  vec4 filterBuff2ColorMain = vec4(blend(filterBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
+  //  vec4 filterBuff2ColorMain = vec4((1-colorMain.a)*filterBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
   //  float alpha = 1 - 0.5 * colorMain.a;
-  //  vec4 filtBuff2ColorMain = (1-alpha)*filtBuff2Val + alpha*50*colorMain;
-  //  vec4 filtBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filtBuff2Val.rgb, colorMain.a), 1.0);
-  //  vec4 filtBuff2ColorMain = vec4(filtBuff2Val.rgb, 1.0);
+  //  vec4 filterBuff2ColorMain = (1-alpha)*filterBuff2Val + alpha*50*colorMain;
+  //  vec4 filterBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filterBuff2Val.rgb, colorMain.a), 1.0);
+  //  vec4 filterBuff2ColorMain = vec4(filterBuff2Val.rgb, 1.0);
 
   filterBuff2Val.rgb = mix(filterBuff2Val.rgb, filterBuff3Val.rgb, u_buff2Buff3Mix);
-
   filterBuff2Val.rgb *= GetBaseColorMultiplier(filterBuff2Val.rgb);
 
   vec3 filterBuff2ColorMain = filterBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
@@ -91,24 +90,42 @@ float GetBaseColorMultiplier(vec3 color)
 }
 
 
-struct LerpedNormalizedPositions
-{
-  vec2 pos1;
-  vec2 pos2;
-};
 struct TexelPositions
 {
   vec2 uv1;
   vec2 uv2;
 };
+struct FilterBuffColors
+{
+  vec4 color1;
+  vec4 color2;
+};
+
+TexelPositions GetPosMappedFilterBuff2TexelPositions(vec2 uv, ivec2 deviceXY);
+FilterBuffColors GetFilterBuff2Colors(TexelPositions texelPositions);
+vec4 GetColorFromBlendedColors(FilterBuffColors filterBuff2Colors, float tMix);
+float GetColorBlendTMix(vec2 fromUV, TexelPositions toTexelPositions);
+
+vec4 GetFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY)
+{
+  TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(uv, deviceXY);
+  FilterBuffColors filterBuff2Colors = GetFilterBuff2Colors(filterBuff2TexelPositions);
+  return GetColorFromBlendedColors(
+      filterBuff2Colors, GetColorBlendTMix(uv, filterBuff2TexelPositions));
+}
+
+
+struct LerpedNormalizedPositions
+{
+  vec2 pos1;
+  vec2 pos2;
+};
 LerpedNormalizedPositions GetLerpedNormalizedPositions(ivec2 deviceXY);
 TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPositions);
 void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
                                        LerpedNormalizedPositions lerpedNormalizedPositions);
-float GetColorBlendTMix(vec2 uv, TexelPositions texelPositions);
-vec4 GetColorFromBlendedColors(TexelPositions filterBuff2TexelPositions, float tMix);
 
-vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 deviceXY)
+TexelPositions GetPosMappedFilterBuff2TexelPositions(vec2 uv, ivec2 deviceXY)
 {
   deviceXY = ivec2(deviceXY.x, HEIGHT - 1 - deviceXY.y);
 
@@ -125,10 +142,7 @@ vec4 GetPosMappedFilterBuff2Value(vec2 uv, ivec2 deviceXY)
   lerpedNormalizedPositions.pos1 += deltaAmp * delta;
   lerpedNormalizedPositions.pos2 -= deltaAmp * delta;
 
-  TexelPositions filterBuff2TexelPositions = GetTexelPositions(lerpedNormalizedPositions);
-
-  return GetColorFromBlendedColors(filterBuff2TexelPositions, 
-                                   GetColorBlendTMix(uv, filterBuff2TexelPositions));
+  return GetTexelPositions(lerpedNormalizedPositions);
 }
 
 struct SrceAndDestNormalizedPositions
@@ -137,11 +151,6 @@ struct SrceAndDestNormalizedPositions
   vec2 destPos1;
   vec2 srcePos2;
   vec2 destPos2;
-};
-struct FilterBuffColors
-{
-  vec4 color1;
-  vec4 color2;
 };
 
 SrceAndDestNormalizedPositions GetSrceAndDestNormalizedPositions(ivec2 deviceXY)
@@ -164,7 +173,8 @@ LerpedNormalizedPositions GetLerpedNormalizedPositions(ivec2 deviceXY)
   );
 }
 
-void ResetImageSrceFilterBuffPositions(ivec2 deviceXY, LerpedNormalizedPositions lerpedNormalizedPositions)
+void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
+                                       LerpedNormalizedPositions lerpedNormalizedPositions)
 {
   // Reset the filter srce pos buffers to the current lerped state, ready for
   // a new filter dest pos buffer.
@@ -187,6 +197,7 @@ TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPosit
              GetTexelPos(lerpedNormalizedPositions.pos2)
   );
 }
+
 
 FilterBuffColors GetFilterBuff2Colors(TexelPositions texelPositions)
 {
@@ -214,24 +225,24 @@ float GetSinTMix()
   return 0.5 * (1.0 + sin(u_pos1Pos2MixFreq * u_time));
 }
 
-float GetUVDistAdjustedTMix(vec2 uv, TexelPositions texelPositions, float tMix)
+float GetUVDistAdjustedTMix(vec2 fromUV, TexelPositions toTexelPositions, float tMix)
 {
   const float MAX_UV = sqrt(2.0);
-  //vec2 posUv = mix(texelPositions.uv1, texelPositions.uv2, vec2(tMix.x));
-  //float distUv = min(distance(uv, posUv), MAX_UV) / MAX_UV;
-  float uvDist = min(distance(uv, texelPositions.uv2), MAX_UV) / MAX_UV;
+  //vec2 posUv = mix(toTexelPositions.uv1, toTexelPositions.uv2, vec2(tMix.x));
+  //float distUv = min(distance(fromUV, posUv), MAX_UV) / MAX_UV;
+  float uvDist = min(distance(fromUV, toTexelPositions.uv2), MAX_UV) / MAX_UV;
 
   return tMix * (1.0 - uvDist);
 }
 
-float GetColorBlendTMix(vec2 uv, TexelPositions texelPositions)
+float GetColorBlendTMix(vec2 fromUV, TexelPositions toTexelPositions)
 {
   const float SIN_T_MIX = GetSinTMix();
   // return SIN_T_MIX;
-  return GetUVDistAdjustedTMix(uv, texelPositions, SIN_T_MIX);
+  return GetUVDistAdjustedTMix(fromUV, toTexelPositions, SIN_T_MIX);
 }
 
-vec3 GetMixedColor(vec3 tMix, FilterBuffColors filterBuffColors)
+vec3 GetMixedColor(FilterBuffColors filterBuffColors, vec3 tMix)
 {
   // return mix(filterBuffColors.color1.rgb, filterBuffColors.color1.rgb, tMix);
   // return mix(filterBuffColors.color2.rgb, filterBuffColors.color2.rgb, tMix);
@@ -239,10 +250,10 @@ vec3 GetMixedColor(vec3 tMix, FilterBuffColors filterBuffColors)
   return mix(filterBuffColors.color1.rgb, filterBuffColors.color2.rgb, tMix);
 }
 
-vec4 GetColorFromBlendedColors(TexelPositions filterBuff2TexelPositions, float tMix)
+vec4 GetColorFromBlendedColors(FilterBuffColors filterBuff2Colors, float tMix)
 {
-  FilterBuffColors filterBuff2Colors = GetFilterBuff2Colors(filterBuff2TexelPositions);
+  vec3 mixedColor = GetMixedColor(filterBuff2Colors, vec3(tMix));
   float alpha = filterBuff2Colors.color1.a;
 
-  return vec4(GetMixedColor(vec3(tMix), filterBuff2Colors), alpha);
+  return vec4(mixedColor, alpha);
 }
