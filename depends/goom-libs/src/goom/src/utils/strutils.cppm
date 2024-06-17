@@ -109,90 +109,13 @@ module :private;
 namespace GOOM::UTILS
 {
 
-namespace
-{
-
-auto GetIncludeFileName(const std::string& includeDir,
-                        // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-                        const std::string& parentFileDir,
-                        const std::string& includeLine) -> std::string
-{
-  const auto words = StringSplit(includeLine, " ");
-  if (words.size() <= 1)
-  {
-    throw std::runtime_error("Expected filename after #include");
-  }
-  const auto& filename = words.at(1);
-  if (filename.size() < 2)
-  {
-    throw std::runtime_error("#include filename is not double quoted");
-  }
-  if (filename[0] != '\"')
-  {
-    throw std::runtime_error(
-        std::format(R"(Expected #include filename '{}' to start with ")", filename));
-  }
-  if (filename[filename.size() - 1] != '\"')
-  {
-    throw std::runtime_error(
-        std::format(R"(Expected #include filename '{}' to end with ")", filename));
-  }
-  if (filename.size() <= 2)
-  {
-    throw std::runtime_error("#include filename is empty");
-  }
-
-  auto theFilename = filename.substr(1, filename.size() - 2);
-  if (not parentFileDir.empty())
-  {
-    theFilename = parentFileDir + "/" + filename.substr(1, filename.size() - 2);
-    if (std::filesystem::exists(theFilename))
-    {
-      return theFilename;
-    }
-  }
-
-  auto inclFilename = std::filesystem::absolute(includeDir + "/" + theFilename).string();
-  if (not std::filesystem::exists(inclFilename))
-  {
-    throw std::runtime_error{
-        std::format(R"(Could not open file "{}" or "{}")", theFilename, inclFilename)};
-  }
-  return inclFilename;
-}
-
-// NOLINTNEXTLINE(misc-no-recursion)
-auto GetExpandedFileLines(const std::string& includeDir,
-                          const std::string& parentFileDir,
-                          const std::vector<std::string>& inLines) -> std::vector<std::string>
-{
-  if (not std::filesystem::exists(includeDir))
-  {
-    throw std::runtime_error{std::format(R"(Could not find include directory "{}")", includeDir)};
-  }
-
-  auto outLines = std::vector<std::string>{};
-  for (const auto& line : inLines)
-  {
-    const auto trimmedLine = RTrimAndCopy(line);
-
-    if (static constexpr auto INCLUDE = std::string_view{"#include"};
-        not trimmedLine.starts_with(INCLUDE))
-    {
-      outLines.push_back(line);
-    }
-    else
-    {
-      const auto includeLines = GetFileLinesWithExpandedIncludes(
-          includeDir, GetIncludeFileName(includeDir, parentFileDir, trimmedLine));
-      std::copy(cbegin(includeLines), cend(includeLines), std::back_inserter(outLines));
-    }
-  }
-
-  return outLines;
-}
-
-} // namespace
+[[nodiscard]] auto GetIncludeFileName(const std::string& includeDir,
+                                      const std::string& parentFileDir,
+                                      const std::string& includeLine) -> std::string;
+[[nodiscard]] auto GetExpandedFileLines(const std::string& includeDir,
+                                        const std::string& parentFileDir,
+                                        const std::vector<std::string>& inLines)
+    -> std::vector<std::string>;
 
 auto GetFileLines(const std::string& filepath) -> std::vector<std::string>
 {
@@ -317,6 +240,86 @@ auto StringSplit(const std::string& str, const std::string_view& delim) -> std::
   }
 
   return vec;
+}
+
+auto GetIncludeFileName(const std::string& includeDir,
+                        // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+                        const std::string& parentFileDir,
+                        const std::string& includeLine) -> std::string
+{
+  const auto words = StringSplit(includeLine, " ");
+  if (words.size() <= 1)
+  {
+    throw std::runtime_error("Expected filename after #include");
+  }
+  const auto& filename = words.at(1);
+  if (filename.size() < 2)
+  {
+    throw std::runtime_error("#include filename is not double quoted");
+  }
+  if (filename[0] != '\"')
+  {
+    throw std::runtime_error(
+        std::format(R"(Expected #include filename '{}' to start with ")", filename));
+  }
+  if (filename[filename.size() - 1] != '\"')
+  {
+    throw std::runtime_error(
+        std::format(R"(Expected #include filename '{}' to end with ")", filename));
+  }
+  if (filename.size() <= 2)
+  {
+    throw std::runtime_error("#include filename is empty");
+  }
+
+  auto theFilename = filename.substr(1, filename.size() - 2);
+  if (not parentFileDir.empty())
+  {
+    theFilename = parentFileDir + "/" + filename.substr(1, filename.size() - 2);
+    if (std::filesystem::exists(theFilename))
+    {
+      return theFilename;
+    }
+  }
+
+  auto inclFilename = std::filesystem::absolute(includeDir + "/" + theFilename).string();
+  if (not std::filesystem::exists(inclFilename))
+  {
+    throw std::runtime_error{
+        std::format(R"(Could not open file "{}" or "{}")", theFilename, inclFilename)};
+  }
+  return inclFilename;
+}
+
+// NOLINTNEXTLINE(misc-no-recursion)
+auto GetExpandedFileLines(const std::string& includeDir,
+                          const std::string& parentFileDir,
+                          const std::vector<std::string>& inLines) -> std::vector<std::string>
+{
+  if (not std::filesystem::exists(includeDir))
+  {
+    throw std::runtime_error{std::format(R"(Could not find include directory "{}")", includeDir)};
+  }
+
+  auto outLines = std::vector<std::string>{};
+  for (const auto& line : inLines)
+  {
+    const auto trimmedLine = RTrimAndCopy(line);
+
+    if (static constexpr auto INCLUDE = std::string_view{"#include"};
+        not trimmedLine.starts_with(INCLUDE))
+    {
+      outLines.push_back(line);
+    }
+    else
+    {
+      const auto includeLines = GetFileLinesWithExpandedIncludes(
+          includeDir, GetIncludeFileName(includeDir, parentFileDir, trimmedLine));
+      std::copy(cbegin(includeLines), cend(includeLines), std::back_inserter(outLines));
+    }
+  }
+
+  return outLines;
 }
 
 } // namespace GOOM::UTILS

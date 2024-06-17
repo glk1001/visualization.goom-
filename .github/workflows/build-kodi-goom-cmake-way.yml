@@ -99,10 +99,13 @@ jobs:
 
       - name: Install gcc-${{ vars.GCC_VER }}
         if: startsWith(matrix.config.name, 'Ubuntu Clang')
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: ${{ vars.GCC_VER }}
-          platform: x64
+        run: |
+          cd ${{ env.VIS_GOOM_PATH }}
+          echo "PWD = \"${PWD}\"."
+
+          sudo apt-get update
+          sudo apt-get install -y gcc-${{ vars.GCC_VER }}
+          sudo apt-get install -y g++-${{ vars.GCC_VER }}
 
       # Clang-19 found a bug in gcc 14 libstdc++:
       #   "This change uncovered a bug in libstdc++ 14.1.0 which may cause compile

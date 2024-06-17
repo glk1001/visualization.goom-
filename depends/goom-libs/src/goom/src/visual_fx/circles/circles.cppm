@@ -134,19 +134,17 @@ auto Circles::GetCircles(FxHelper& fxHelper,
 auto Circles::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps,
                                    const WeightedRandomColorMaps& weightedLowMaps) noexcept -> void
 {
-  std::for_each(begin(m_circles),
-                end(m_circles),
-                [&weightedMaps, &weightedLowMaps](Circle& circle)
-                { circle.SetWeightedColorMaps(weightedMaps, weightedLowMaps); });
+  std::ranges::for_each(m_circles,
+                        [&weightedMaps, &weightedLowMaps](Circle& circle)
+                        { circle.SetWeightedColorMaps(weightedMaps, weightedLowMaps); });
 
   m_bitmapGetter.ChangeCurrentBitmap();
 }
 
 auto Circles::ChangeDirection(const DotPaths::Direction newDirection) noexcept -> void
 {
-  std::for_each(begin(m_circles),
-                end(m_circles),
-                [&newDirection](Circle& circle) { circle.ChangeDirection(newDirection); });
+  std::ranges::for_each(m_circles,
+                        [&newDirection](Circle& circle) { circle.ChangeDirection(newDirection); });
 }
 
 auto Circles::SetPathParams(const std::vector<OscillatingFunction::Params>& pathParams) noexcept
@@ -169,7 +167,7 @@ auto Circles::SetGlobalBrightnessFactors(const std::vector<float>& brightnessFac
 
 auto Circles::Start() noexcept -> void
 {
-  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.Start(); });
+  std::ranges::for_each(m_circles, [](Circle& circle) { circle.Start(); });
 }
 
 auto Circles::UpdateAndDraw() noexcept -> void
@@ -178,14 +176,14 @@ auto Circles::UpdateAndDraw() noexcept -> void
   UpdatePositionSpeed();
 }
 
-inline auto Circles::UpdateAndDrawCircles() noexcept -> void
+auto Circles::UpdateAndDrawCircles() noexcept -> void
 {
-  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.UpdateAndDraw(); });
+  std::ranges::for_each(m_circles, [](Circle& circle) { circle.UpdateAndDraw(); });
 }
 
 auto Circles::IncrementTs() noexcept -> void
 {
-  std::for_each(begin(m_circles), end(m_circles), [](Circle& circle) { circle.IncrementTs(); });
+  std::ranges::for_each(m_circles, [](Circle& circle) { circle.IncrementTs(); });
 }
 
 auto Circles::UpdatePositionSpeed() noexcept -> void
@@ -201,9 +199,8 @@ auto Circles::UpdatePositionSpeed() noexcept -> void
   const auto newNumSteps                   = std::min(
       MIN_POSITION_STEPS + m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom(), MAX_POSITION_STEPS);
 
-  std::for_each(begin(m_circles),
-                end(m_circles),
-                [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
+  std::ranges::for_each(
+      m_circles, [&newNumSteps](Circle& circle) { circle.UpdatePositionSpeed(newNumSteps); });
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
