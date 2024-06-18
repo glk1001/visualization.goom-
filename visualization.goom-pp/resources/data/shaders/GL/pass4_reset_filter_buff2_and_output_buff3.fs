@@ -5,37 +5,38 @@
 
 layout(location = 0) out vec4 fragColor;
 
-// @formatter:off
-// clang-format off
+// Stores this frames' buff2 value (including current low color). Persisted to 'filterBuff2'.
 layout(binding=FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform readonly image2D img_filterBuff1;
 layout(binding=FILTER_BUFF2_IMAGE_UNIT, rgba16f) uniform          image2D img_filterBuff2;
+
+// Stores this frames' buff2 value and main color. Not persisted.
 layout(binding=FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform readonly image2D img_filterBuff3;
-layout(binding=LUM_AVG_IMAGE_UNIT,         r16f) uniform readonly image2D img_lumAvg;
-// clang-format on
-// @formatter:on
+
+// Luminance values for exposure correction.
+layout(binding=LUM_AVG_IMAGE_UNIT, r16f) uniform readonly image2D img_lumAvg;
 
 uniform float u_brightness;
 uniform float u_brightnessAdjust;
 uniform float u_hueShift;
 uniform float u_chromaFactor;
 
-float GetFinalExposure(float brightness, float averageLuminance);
 vec3 GetHueShift(vec3 color);
 float GetChromaticIncrease(float chroma);
 vec3 RGBtoHCY(vec3 RGB);
 vec3 HCYtoRGB(vec3 HCY);
+float GetFinalExposure(float brightness, float averageLuminance);
 
 void main()
 {
-  ivec2 xy = ivec2(gl_FragCoord.xy);
+  ivec2 deviceXY = ivec2(gl_FragCoord.xy);
 
   // Get the hdr color to work with.
-  vec4 filtBuff3Val = imageLoad(img_filterBuff3, xy);
-  vec4 hdrColor     = filtBuff3Val;
+  vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
+  vec4 hdrColor       = filterBuff3Val;
 
   // Copy filter buff1 to filter buff2 ready for the next frame.
-  vec4 filtBuff1Val = imageLoad(img_filterBuff1, xy);
-  imageStore(img_filterBuff2, xy, filtBuff1Val);
+  vec4 filterBuff1Val = imageLoad(img_filterBuff1, deviceXY);
+  imageStore(img_filterBuff2, deviceXY, filterBuff1Val);
 
   // Convert to HCY.
   vec3 hcy = RGBtoHCY(hdrColor.rgb);

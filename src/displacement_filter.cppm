@@ -204,8 +204,8 @@ private:
 
   static constexpr auto NULL_TEXTURE_NAME            = "";
   static constexpr auto FILTER_BUFF2_TEX_SHADER_NAME = "tex_filterBuff2";
-  static constexpr auto MAIN_IMAGE_TEX_SHADER_NAME   = "tex_mainImage";
-  static constexpr auto LOW_IMAGE_TEX_SHADER_NAME    = "tex_lowImage";
+  static constexpr auto MAIN_IMAGE_TEX_SHADER_NAME   = "tex_mainColorImage";
+  static constexpr auto LOW_IMAGE_TEX_SHADER_NAME    = "tex_lowColorImage";
 
   static constexpr auto NULL_IMAGE_UNIT             = -1;
   static constexpr auto FILTER_BUFF1_IMAGE_UNIT     = 0;
