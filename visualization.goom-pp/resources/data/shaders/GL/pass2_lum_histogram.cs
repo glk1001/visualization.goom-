@@ -67,7 +67,7 @@ void main()
 }
 
 
-// For a given color and luminance range, return the histogram bin index
+// For a given color and luminance range, return the histogram bin index.
 uint colorToBin(vec3 hdrColor, float minLogLum, float inverseLogLumRange)
 {
   // Convert our RGB value to Luminance, see note for RGB_TO_LUM macro above.

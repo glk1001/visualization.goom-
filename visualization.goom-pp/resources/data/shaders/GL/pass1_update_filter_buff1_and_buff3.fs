@@ -2,13 +2,16 @@
 
 #include "pass1_update_filter_buff1_and_buff3_consts.h"
 
-uniform sampler2D tex_filterBuff2;
-uniform sampler2D tex_mainImage;
-uniform sampler2D tex_lowImage;
+uniform sampler2D tex_filterBuff2;    // Low colors from last frame
+uniform sampler2D tex_mainColorImage; // Main colors for this frame
+uniform sampler2D tex_lowColorImage;  // Low colors for this frame
 
+// At end of this pass, 'filterBuff1' contains the newly mapped colors plus low colors.
 layout(binding = FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff1;
+// At end of this pass, 'filterBuff3' contains the newly mapped colors plus main colors.
 layout(binding = FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff3;
 
+// All the buffers used for position mapping.
 layout(binding = FILTER_SRCE_POS_IMAGE_UNIT1, rg32f) uniform image2D  img_filterSrcePosBuff1;
 layout(binding = FILTER_SRCE_POS_IMAGE_UNIT2, rg32f) uniform image2D  img_filterSrcePosBuff2;
 layout(binding = FILTER_DEST_POS_IMAGE_UNIT1, rg32f) uniform readonly image2D img_filterDestPosBuff1;
@@ -17,7 +20,7 @@ layout(binding = FILTER_DEST_POS_IMAGE_UNIT2, rg32f) uniform readonly image2D im
 in vec3 position;
 in vec2 texCoord;
 
-uniform float u_lerpFactor;
+uniform float u_lerpFactor;  // For lerping between srce and dest buffers.
 uniform float u_buff2Buff3Mix = 0.1F;
 uniform bool u_resetSrceFilterPosBuffers;
 uniform float u_pos1Pos2MixFreq;
@@ -25,47 +28,36 @@ uniform uint u_time;
 
 // For base multiplier, too close to 1, gives washed
 // out look, too far away and things get too dark.
-uniform float u_baseColorMultiplier;
-uniform float u_mainColorMultiplier = 1.0;
-uniform float u_lowColorMultiplier  = 0.7;
+uniform float u_baseColorMultiplier;       // Used to factor this frames' buff2 color.
+uniform float u_mainColorMultiplier = 1.0; // Used to factor this frames' main color.
+uniform float u_lowColorMultiplier  = 0.7; // Used to factor this frames' low color.
 
-/**
-vec3 blend(vec3 base, vec3 blend, float opacity)
-{
-//  return blendAdd(base, blend, opacity);
-  return blendMode(1, base, blend, opacity);
-//  return blendLighten(base, blend, opacity);
-}
-**/
-
-vec4 GetFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY);
+vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY);
 float GetBaseColorMultiplier(vec3 color);
 
 void main()
 {
   ivec2 deviceXY = ivec2(gl_FragCoord.xy);
 
-  vec4 filterBuff2Val = GetFilterBuff2ColorValue(texCoord, deviceXY);
+  vec4 filterBuff2Val = GetPosMappedFilterBuff2ColorValue(texCoord, deviceXY);
   vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
 
-  vec4 colorMain = texture(tex_mainImage, texCoord);
-  vec4 colorLow  = texture(tex_lowImage, texCoord);
-
-  //  vec4 filterBuff2ColorMain = vec4(blend(filterBuff2Val.rgb, 90*colorMain.rgb, 0.5*colorMain.a), 1.0);
-  //  vec4 filterBuff2ColorMain = vec4((1-colorMain.a)*filterBuff2Val.rgb + colorMain.a*colorMain.rgb, 1.0);
-  //  float alpha = 1 - 0.5 * colorMain.a;
-  //  vec4 filterBuff2ColorMain = (1-alpha)*filterBuff2Val + alpha*50*colorMain;
-  //  vec4 filterBuff2ColorMain = vec4(blend(100*colorMain.rgb, 0.5*filterBuff2Val.rgb, colorMain.a), 1.0);
-  //  vec4 filterBuff2ColorMain = vec4(filterBuff2Val.rgb, 1.0);
-
+  // Mix in some of the previous frames' color from the current deviceXY.
   filterBuff2Val.rgb = mix(filterBuff2Val.rgb, filterBuff3Val.rgb, u_buff2Buff3Mix);
+
+  // Boost this frames' buff2 color by the base color multiplier.
   filterBuff2Val.rgb *= GetBaseColorMultiplier(filterBuff2Val.rgb);
 
-  vec3 filterBuff2ColorMain = filterBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
-  vec3 filterBuff2ColorLow  = filterBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
+  // Get and store the low color added to this frames' buff2 color.
+  vec4 colorLow            = texture(tex_lowColorImage, texCoord);
+  float alpha              = colorLow.a; // Use low color alpha for main also.
+  vec3 filterBuff2ColorLow = filterBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
+  imageStore(img_filterBuff1, deviceXY, vec4(filterBuff2ColorLow, alpha));
 
-  imageStore(img_filterBuff1, deviceXY, vec4(filterBuff2ColorLow, colorLow.a));
-  imageStore(img_filterBuff3, deviceXY, vec4(filterBuff2ColorMain, colorLow.a));
+  // Get and store the main color added to this frames' buff2 color.
+  vec4 colorMain            = texture(tex_mainColorImage, texCoord);
+  vec3 filterBuff2ColorMain = filterBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
+  imageStore(img_filterBuff3, deviceXY, vec4(filterBuff2ColorMain, alpha));
 
   discard;
 }
@@ -101,17 +93,17 @@ struct FilterBuffColors
   vec4 color2;
 };
 
-TexelPositions GetPosMappedFilterBuff2TexelPositions(vec2 uv, ivec2 deviceXY);
+TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY);
 FilterBuffColors GetFilterBuff2Colors(TexelPositions texelPositions);
-vec4 GetColorFromBlendedColors(FilterBuffColors filterBuff2Colors, float tMix);
-float GetColorBlendTMix(vec2 fromUV, TexelPositions toTexelPositions);
+vec4 GetColorFromMixOfColor1AndColor2(FilterBuffColors filterBuff2Colors, float tMix);
+float GetColor1Color2TMix(vec2 fromUV, TexelPositions toTexelPositions);
 
-vec4 GetFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY)
+vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY)
 {
-  TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(uv, deviceXY);
-  FilterBuffColors filterBuff2Colors = GetFilterBuff2Colors(filterBuff2TexelPositions);
-  return GetColorFromBlendedColors(
-      filterBuff2Colors, GetColorBlendTMix(uv, filterBuff2TexelPositions));
+  TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(deviceXY);
+  FilterBuffColors filterBuff2Colors       = GetFilterBuff2Colors(filterBuff2TexelPositions);
+  return GetColorFromMixOfColor1AndColor2(
+      filterBuff2Colors, GetColor1Color2TMix(uv, filterBuff2TexelPositions));
 }
 
 
@@ -125,7 +117,7 @@ TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPosit
 void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
                                        LerpedNormalizedPositions lerpedNormalizedPositions);
 
-TexelPositions GetPosMappedFilterBuff2TexelPositions(vec2 uv, ivec2 deviceXY)
+TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY)
 {
   deviceXY = ivec2(deviceXY.x, HEIGHT - 1 - deviceXY.y);
 
@@ -136,9 +128,9 @@ TexelPositions GetPosMappedFilterBuff2TexelPositions(vec2 uv, ivec2 deviceXY)
     ResetImageSrceFilterBuffPositions(deviceXY, lerpedNormalizedPositions);
   }
 
-  const float deltaAmp = 0.01;
+  const float deltaAmp  = 0.01;
   const float deltaFreq = 0.05;
-  const vec2 delta = vec2(cos(deltaFreq * u_time), sin(deltaFreq * u_time));
+  const vec2 delta      = vec2(cos(deltaFreq * u_time), sin(deltaFreq * u_time));
   lerpedNormalizedPositions.pos1 += deltaAmp * delta;
   lerpedNormalizedPositions.pos2 -= deltaAmp * delta;
 
@@ -235,25 +227,17 @@ float GetUVDistAdjustedTMix(vec2 fromUV, TexelPositions toTexelPositions, float 
   return tMix * (1.0 - uvDist);
 }
 
-float GetColorBlendTMix(vec2 fromUV, TexelPositions toTexelPositions)
+float GetColor1Color2TMix(vec2 fromUV, TexelPositions toTexelPositions)
 {
   const float SIN_T_MIX = GetSinTMix();
   // return SIN_T_MIX;
   return GetUVDistAdjustedTMix(fromUV, toTexelPositions, SIN_T_MIX);
 }
 
-vec3 GetMixedColor(FilterBuffColors filterBuffColors, vec3 tMix)
+vec4 GetColorFromMixOfColor1AndColor2(FilterBuffColors filterBuff2Colors, float tMix)
 {
-  // return mix(filterBuffColors.color1.rgb, filterBuffColors.color1.rgb, tMix);
-  // return mix(filterBuffColors.color2.rgb, filterBuffColors.color2.rgb, tMix);
-
-  return mix(filterBuffColors.color1.rgb, filterBuffColors.color2.rgb, tMix);
-}
-
-vec4 GetColorFromBlendedColors(FilterBuffColors filterBuff2Colors, float tMix)
-{
-  vec3 mixedColor = GetMixedColor(filterBuff2Colors, vec3(tMix));
-  float alpha = filterBuff2Colors.color1.a;
+  vec3 mixedColor = mix(filterBuff2Colors.color1.rgb, filterBuff2Colors.color2.rgb, vec3(tMix));
+  float alpha     = filterBuff2Colors.color1.a;
 
   return vec4(mixedColor, alpha);
 }
