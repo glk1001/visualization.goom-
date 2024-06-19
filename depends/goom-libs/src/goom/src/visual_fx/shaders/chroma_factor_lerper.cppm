@@ -31,13 +31,13 @@ private:
   [[maybe_unused]] const PluginInfo* m_goomInfo;
   const UTILS::MATH::IGoomRand* m_goomRand;
 
-  static constexpr auto MIN_CHROMA_RANGE = 0.1F;
+  static constexpr auto MIN_RANGE = 0.1F;
   float m_minChromaFactor;
   float m_maxChromaFactor;
-  float m_srceChromaFactor    = m_goomRand->GetRandInRange(m_minChromaFactor, m_maxChromaFactor);
-  float m_destChromaFactor    = GetRandomDestChromaFactor();
+  float m_srceChromaFactor = m_goomRand->GetRandInRange(m_minChromaFactor, m_maxChromaFactor);
+  float m_destChromaFactor = GetDestChromaFactor();
+  [[nodiscard]] auto GetDestChromaFactor() const noexcept -> float;
   float m_currentChromaFactor = m_srceChromaFactor;
-  [[nodiscard]] auto GetRandomDestChromaFactor() const noexcept -> float;
 
   static constexpr uint32_t MIN_NUM_LERP_ON_STEPS     = 50U;
   static constexpr uint32_t MAX_NUM_LERP_ON_STEPS     = 500U;
@@ -73,7 +73,7 @@ ChromaFactorLerper::ChromaFactorLerper(const PluginInfo& goomInfo,
     m_maxChromaFactor{maxChromaFactor}
 {
   Expects(minChromaFactor < maxChromaFactor);
-  Expects(std::fabs(minChromaFactor - maxChromaFactor) >= MIN_CHROMA_RANGE);
+  Expects(std::fabs(minChromaFactor - maxChromaFactor) >= MIN_RANGE);
 }
 
 auto ChromaFactorLerper::Update() noexcept -> void
@@ -92,22 +92,23 @@ auto ChromaFactorLerper::Update() noexcept -> void
 auto ChromaFactorLerper::ChangeChromaFactorRange() noexcept -> void
 {
   m_srceChromaFactor = m_currentChromaFactor;
-  m_destChromaFactor = GetRandomDestChromaFactor();
+  m_destChromaFactor = GetDestChromaFactor();
   m_lerpT.Reset(0.0F);
+  m_lerpConstTimer.ResetToZero();
 
   m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(MIN_NUM_LERP_ON_STEPS, MAX_NUM_LERP_ON_STEPS));
   m_lerpConstTimer.SetTimeLimitAndResetToZero(
       m_goomRand->GetRandInRange(MIN_LERP_CONST_TIME, MAX_LERP_CONST_TIME));
 }
 
-auto ChromaFactorLerper::GetRandomDestChromaFactor() const noexcept -> float
+auto ChromaFactorLerper::GetDestChromaFactor() const noexcept -> float
 {
   static constexpr auto MAX_LOOPS = 10U;
 
   for (auto i = 0U; i < MAX_LOOPS; ++i)
   {
     const auto destChromaFactor = m_goomRand->GetRandInRange(m_minChromaFactor, m_maxChromaFactor);
-    if (std::fabs(m_srceChromaFactor - destChromaFactor) >= MIN_CHROMA_RANGE)
+    if (std::fabs(m_srceChromaFactor - destChromaFactor) >= MIN_RANGE)
     {
       return destChromaFactor;
     }

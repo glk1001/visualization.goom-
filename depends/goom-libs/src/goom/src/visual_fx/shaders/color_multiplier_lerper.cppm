@@ -94,6 +94,7 @@ auto ColorMultiplierLerper::ChangeMultiplierRange() noexcept -> void
 {
   m_srceColorMultiplier = m_currentColorMultiplier;
   m_destColorMultiplier = GetDestColorMultiplier();
+  m_lerpT.Reset(0.0F);
   m_lerpConstTimer.ResetToZero();
 
   m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(MIN_NUM_LERP_ON_STEPS, MAX_NUM_LERP_ON_STEPS));
