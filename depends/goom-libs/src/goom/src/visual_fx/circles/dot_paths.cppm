@@ -117,13 +117,11 @@ inline auto DotPaths::SetPathParams(const DotPathParamsToAndFrom& dotPathParamsT
 
 inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) noexcept -> void
 {
-  std::for_each(begin(m_dotPathsToAndFrom.dotPathToTarget),
-                end(m_dotPathsToAndFrom.dotPathToTarget),
-                [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
+  std::ranges::for_each(m_dotPathsToAndFrom.dotPathToTarget,
+                        [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
 
-  std::for_each(begin(m_dotPathsToAndFrom.dotPathFromTarget),
-                end(m_dotPathsToAndFrom.dotPathFromTarget),
-                [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
+  std::ranges::for_each(m_dotPathsToAndFrom.dotPathFromTarget,
+                        [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
 }
 
 inline auto DotPaths::IncrementPositionT() noexcept -> void
@@ -147,7 +145,7 @@ inline auto DotPaths::IncrementPositionT(std::vector<UTILS::MATH::OscillatingPat
   {
     return;
   }
-  std::for_each(begin(paths), end(paths), [](UTILS::MATH::IPath& path) { path.IncrementT(); });
+  std::ranges::for_each(paths, [](UTILS::MATH::IPath& path) { path.IncrementT(); });
 }
 
 inline auto DotPaths::CheckReverse(const Direction currentDirection,
@@ -193,21 +191,19 @@ inline auto DotPaths::ChangeDirection(const Direction newDirection) noexcept -> 
 {
   m_direction = newDirection;
 
-  std::for_each(begin(m_dotPathsToAndFrom.dotPathToTarget),
-                end(m_dotPathsToAndFrom.dotPathToTarget),
-                [](UTILS::MATH::IPath& path)
-                {
-                  path.Reset(0.0F);
-                  path.IncrementT();
-                });
+  std::ranges::for_each(m_dotPathsToAndFrom.dotPathToTarget,
+                        [](UTILS::MATH::IPath& path)
+                        {
+                          path.Reset(0.0F);
+                          path.IncrementT();
+                        });
 
-  std::for_each(begin(m_dotPathsToAndFrom.dotPathFromTarget),
-                end(m_dotPathsToAndFrom.dotPathFromTarget),
-                [](UTILS::MATH::IPath& path)
-                {
-                  path.Reset(0.0F);
-                  path.IncrementT();
-                });
+  std::ranges::for_each(m_dotPathsToAndFrom.dotPathFromTarget,
+                        [](UTILS::MATH::IPath& path)
+                        {
+                          path.Reset(0.0F);
+                          path.IncrementT();
+                        });
 }
 
 inline auto DotPaths::GetOppositeDirection(const Direction direction) noexcept -> Direction

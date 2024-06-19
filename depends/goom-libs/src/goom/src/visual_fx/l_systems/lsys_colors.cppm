@@ -258,30 +258,22 @@ auto LSysColors::ResetColorTs() noexcept -> void
 {
   const auto numColorSteps =
       m_goomRand->GetRandInRange(MIN_NUM_COLOR_STEPS, m_currentMaxNumColorSteps + 1U);
-  std::for_each(begin(m_currentColorTs),
-                end(m_currentColorTs),
-                [&numColorSteps](auto& colorT) { colorT.SetNumSteps(numColorSteps); });
-  std::for_each(
-      begin(m_currentColorTs), end(m_currentColorTs), [](auto& colorT) { colorT.Reset(0.0F); });
+  std::ranges::for_each(m_currentColorTs,
+                        [&numColorSteps](auto& colorT) { colorT.SetNumSteps(numColorSteps); });
+  std::ranges::for_each(m_currentColorTs, [](auto& colorT) { colorT.Reset(0.0F); });
 
   const auto numThickerColorSteps =
       m_goomRand->GetRandInRange(MIN_NUM_THICKER_COLOR_STEPS, MAX_NUM_THICKER_COLOR_STEPS + 1U);
-  std::for_each(begin(m_currentThickerColorTs),
-                end(m_currentThickerColorTs),
-                [&numThickerColorSteps](auto& colorT)
-                { colorT.SetNumSteps(numThickerColorSteps); });
-  std::for_each(begin(m_currentThickerColorTs),
-                end(m_currentThickerColorTs),
-                [](auto& colorT) { colorT.Reset(0.0F); });
+  std::ranges::for_each(m_currentThickerColorTs,
+                        [&numThickerColorSteps](auto& colorT)
+                        { colorT.SetNumSteps(numThickerColorSteps); });
+  std::ranges::for_each(m_currentThickerColorTs, [](auto& colorT) { colorT.Reset(0.0F); });
 }
 
 auto LSysColors::IncrementColorTs() noexcept -> void
 {
-  std::for_each(
-      begin(m_currentColorTs), end(m_currentColorTs), [](auto& colorT) { colorT.Increment(); });
-  std::for_each(begin(m_currentThickerColorTs),
-                end(m_currentThickerColorTs),
-                [](auto& colorT) { colorT.Increment(); });
+  std::ranges::for_each(m_currentColorTs, [](auto& colorT) { colorT.Increment(); });
+  std::ranges::for_each(m_currentThickerColorTs, [](auto& colorT) { colorT.Increment(); });
 }
 
 auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) const noexcept

@@ -33,7 +33,7 @@ import :TubeData;
 namespace GOOM::VISUAL_FX::TUBES
 {
 
-enum class ColorMapMixMode: UnderlyingEnumType
+enum class ColorMapMixMode : UnderlyingEnumType
 {
   SHAPES_ONLY,
   STRIPED_SHAPES_ONLY,
@@ -705,8 +705,7 @@ inline auto Tube::TubeImpl::GetCircleSpeed() const noexcept -> float
 
 inline auto Tube::TubeImpl::SetCircleSpeed(const float val) noexcept -> void
 {
-  std::for_each(
-      begin(m_shapes), end(m_shapes), [&val](Shape& shape) { shape.path->SetStepSize(val); });
+  std::ranges::for_each(m_shapes, [&val](Shape& shape) { shape.path->SetStepSize(val); });
 }
 
 inline auto Tube::TubeImpl::IncreaseCircleSpeed() noexcept -> void
@@ -754,7 +753,7 @@ inline auto Tube::TubeImpl::GetHexLen() const noexcept -> float
 
 inline auto Tube::TubeImpl::UpdateTValues() noexcept -> void
 {
-  std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { shape.path->IncrementT(); });
+  std::ranges::for_each(m_shapes, [](Shape& shape) { shape.path->IncrementT(); });
   m_centrePath->IncrementT();
   m_colorizer->UpdateAllTValues();
 }

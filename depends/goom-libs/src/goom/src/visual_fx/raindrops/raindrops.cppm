@@ -346,19 +346,17 @@ auto Raindrops::SetWeightedColorMaps(const WeightedRandomColorMaps& randomMainCo
   m_mainWeightPointColor = m_raindropParams.sameMainColorMap.GetColor(0.0F);
   m_lowWeightPointColor  = m_raindropParams.sameLowColorMap.GetColor(0.0F);
 
-  std::for_each(begin(m_raindrops),
-                end(m_raindrops),
-                [this](auto& raindrop)
-                { raindrop.mainColorMap = m_randomMainColorMaps.GetRandomColorMap(); });
+  std::ranges::for_each(m_raindrops,
+                        [this](auto& raindrop)
+                        { raindrop.mainColorMap = m_randomMainColorMaps.GetRandomColorMap(); });
 }
 
 auto Raindrops::DrawRaindrops() noexcept -> void
 {
   DrawCircleAroundWeightPoint();
 
-  std::for_each(begin(m_raindrops),
-                end(m_raindrops),
-                [this](auto& raindrop) { DrawRaindrop(raindrop, GetRaindropColors(raindrop)); });
+  std::ranges::for_each(
+      m_raindrops, [this](auto& raindrop) { DrawRaindrop(raindrop, GetRaindropColors(raindrop)); });
 }
 
 auto Raindrops::GetRaindropColors(const Raindrop& raindrop) const noexcept -> DRAW::MultiplePixels
@@ -445,8 +443,7 @@ auto Raindrops::UpdateRaindrops() noexcept -> void
 
   m_raindropPositions.UpdatePositions();
 
-  std::for_each(
-      begin(m_raindrops), end(m_raindrops), [](auto& raindrop) { UpdateRaindrop(raindrop); });
+  std::ranges::for_each(m_raindrops, [](auto& raindrop) { UpdateRaindrop(raindrop); });
 }
 
 auto Raindrops::UpdateRaindrop(Raindrop& raindrop) noexcept -> void

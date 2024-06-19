@@ -277,10 +277,9 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
 
   if (weightedColorMaps.id == NORMAL_COLOR_TYPE)
   {
-    std::for_each(begin(m_tentacleDrivers),
-                  end(m_tentacleDrivers),
-                  [&newWeightedColorMaps](auto& driver)
-                  { driver.SetWeightedColorMaps(newWeightedColorMaps); });
+    std::ranges::for_each(m_tentacleDrivers,
+                          [&newWeightedColorMaps](auto& driver)
+                          { driver.SetWeightedColorMaps(newWeightedColorMaps); });
   }
   else if (newWeightedColorMaps.id == DOMINANT_COLOR_TYPE)
   {
@@ -307,9 +306,9 @@ inline auto TentaclesFx::TentaclesImpl::ChangePixelBlender(
 inline auto TentaclesFx::TentaclesImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept
     -> void
 {
-  std::for_each(begin(m_tentacleDrivers),
-                end(m_tentacleDrivers),
-                [&zoomMidpoint](auto& driver) { driver.SetTentaclesEndCentrePos(zoomMidpoint); });
+  std::ranges::for_each(m_tentacleDrivers,
+                        [&zoomMidpoint](auto& driver)
+                        { driver.SetTentaclesEndCentrePos(zoomMidpoint); });
 }
 
 inline auto TentaclesFx::TentaclesImpl::ChangeDominantColor() -> void

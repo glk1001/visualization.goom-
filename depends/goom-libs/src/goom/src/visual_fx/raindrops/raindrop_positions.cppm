@@ -141,8 +141,7 @@ auto RaindropPositions::UpdatePositions() noexcept -> void
 {
   m_rectangleWeightPointT.Increment();
   m_raindropPositionT.Increment();
-  std::for_each(
-      begin(m_raindropPaths), end(m_raindropPaths), [](auto& path) { path->IncrementT(); });
+  std::ranges::for_each(m_raindropPaths, [](auto& path) { path->IncrementT(); });
 }
 
 auto RaindropPositions::GetCurrentRectangleWeightPoint() const noexcept -> Point2dInt

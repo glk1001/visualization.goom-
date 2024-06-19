@@ -211,10 +211,9 @@ auto Shape::SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps
   m_meetingPointMainColorMapPtr =
       weightedMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&weightedMaps](ShapePart& shapePart)
-                { shapePart.SetWeightedMainColorMaps(weightedMaps); });
+  std::ranges::for_each(m_shapeParts,
+                        [&weightedMaps](ShapePart& shapePart)
+                        { shapePart.SetWeightedMainColorMaps(weightedMaps); });
 }
 
 auto Shape::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
@@ -222,18 +221,16 @@ auto Shape::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps)
   m_meetingPointLowColorMapPtr =
       weightedMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&weightedMaps](ShapePart& shapePart)
-                { shapePart.SetWeightedLowColorMaps(weightedMaps); });
+  std::ranges::for_each(m_shapeParts,
+                        [&weightedMaps](ShapePart& shapePart)
+                        { shapePart.SetWeightedLowColorMaps(weightedMaps); });
 }
 
 auto Shape::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void
 {
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&weightedMaps](ShapePart& shapePart)
-                { shapePart.SetWeightedInnerColorMaps(weightedMaps); });
+  std::ranges::for_each(m_shapeParts,
+                        [&weightedMaps](ShapePart& shapePart)
+                        { shapePart.SetWeightedInnerColorMaps(weightedMaps); });
 }
 
 auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
@@ -244,27 +241,24 @@ auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
     return;
   }
 
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&zoomMidpoint](ShapePart& shapePart)
-                { shapePart.SetShapePathsTargetPoint(zoomMidpoint); });
+  std::ranges::for_each(m_shapeParts,
+                        [&zoomMidpoint](ShapePart& shapePart)
+                        { shapePart.SetShapePathsTargetPoint(zoomMidpoint); });
 }
 
 auto Shape::SetShapePathsMinMaxNumSteps(
     const MinMaxValues<uint32_t>& minMaxShapePathsNumSteps) noexcept -> void
 {
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&minMaxShapePathsNumSteps](ShapePart& shapePart)
-                { shapePart.SetShapePathsMinMaxNumSteps(minMaxShapePathsNumSteps); });
+  std::ranges::for_each(m_shapeParts,
+                        [&minMaxShapePathsNumSteps](ShapePart& shapePart)
+                        { shapePart.SetShapePathsMinMaxNumSteps(minMaxShapePathsNumSteps); });
 }
 
 auto Shape::Start() noexcept -> void
 {
   SetFixedShapeNumSteps();
 
-  std::for_each(
-      begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Start(); });
+  std::ranges::for_each(m_shapeParts, [](ShapePart& shapePart) { shapePart.Start(); });
 }
 
 auto Shape::Draw() noexcept -> void
@@ -275,9 +269,8 @@ auto Shape::Draw() noexcept -> void
       m_varyDotRadius,
       GetCurrentMeetingPointColors(),
   };
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&shapePartParams](ShapePart& shapePart) { shapePart.Draw(shapePartParams); });
+  std::ranges::for_each(
+      m_shapeParts, [&shapePartParams](ShapePart& shapePart) { shapePart.Draw(shapePartParams); });
 
   if (FirstShapePathAtMeetingPoint())
   {
@@ -308,8 +301,7 @@ inline auto Shape::GetBrightnessAttenuation() const noexcept -> float
 
 auto Shape::Update() noexcept -> void
 {
-  std::for_each(
-      begin(m_shapeParts), end(m_shapeParts), [](ShapePart& shapePart) { shapePart.Update(); });
+  std::ranges::for_each(m_shapeParts, [](ShapePart& shapePart) { shapePart.Update(); });
 }
 
 auto Shape::DoRandomChanges() noexcept -> void
@@ -318,13 +310,12 @@ auto Shape::DoRandomChanges() noexcept -> void
   const auto useEvenPartNumsForDirection =
       m_goomRand->ProbabilityOf(PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION);
 
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [&useEvenPartNumsForDirection](ShapePart& shapePart)
-                {
-                  shapePart.UseEvenShapePartNumsForDirection(useEvenPartNumsForDirection);
-                  shapePart.DoRandomChanges();
-                });
+  std::ranges::for_each(m_shapeParts,
+                        [&useEvenPartNumsForDirection](ShapePart& shapePart)
+                        {
+                          shapePart.UseEvenShapePartNumsForDirection(useEvenPartNumsForDirection);
+                          shapePart.DoRandomChanges();
+                        });
 }
 
 auto Shape::SetFixedShapeNumSteps() noexcept -> void
@@ -332,20 +323,18 @@ auto Shape::SetFixedShapeNumSteps() noexcept -> void
   m_fixedTMinMaxLerp   = ShapePart::GetNewRandomMinMaxLerpT(*m_goomRand, m_fixedTMinMaxLerp);
   const auto positionT = GetFirstShapePathPositionT();
 
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [this, &positionT](ShapePart& shapePart)
-                {
-                  shapePart.UseFixedShapePathsNumSteps(m_fixedTMinMaxLerp);
-                  shapePart.ResetTs(positionT);
-                });
+  std::ranges::for_each(m_shapeParts,
+                        [this, &positionT](ShapePart& shapePart)
+                        {
+                          shapePart.UseFixedShapePathsNumSteps(m_fixedTMinMaxLerp);
+                          shapePart.ResetTs(positionT);
+                        });
 }
 
 auto Shape::SetRandomShapeNumSteps() noexcept -> void
 {
-  std::for_each(begin(m_shapeParts),
-                end(m_shapeParts),
-                [](ShapePart& shapePart) { shapePart.UseRandomShapePathsNumSteps(); });
+  std::ranges::for_each(m_shapeParts,
+                        [](ShapePart& shapePart) { shapePart.UseRandomShapePathsNumSteps(); });
 }
 
 auto Shape::GetTotalNumShapePaths() const noexcept -> uint32_t

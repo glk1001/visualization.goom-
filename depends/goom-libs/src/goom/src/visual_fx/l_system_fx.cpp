@@ -315,13 +315,12 @@ auto LSystemFx::LSystemFxImpl::Start() -> void
 {
   SetRandFunc([this]() { return m_fxHelper->GetGoomRand().GetRandInRange(0.0, 1.0); });
 
-  std::for_each(begin(m_lSystems),
-                end(m_lSystems),
-                [this](auto& lSystem)
-                {
-                  lSystem->SetPathStart(m_screenCentre);
-                  lSystem->Start();
-                });
+  std::ranges::for_each(m_lSystems,
+                        [this](auto& lSystem)
+                        {
+                          lSystem->SetPathStart(m_screenCentre);
+                          lSystem->Start();
+                        });
 
   InitNextActiveLSystems();
 }
@@ -329,9 +328,7 @@ auto LSystemFx::LSystemFxImpl::Start() -> void
 inline auto LSystemFx::LSystemFxImpl::ChangeColors() noexcept -> void
 {
   //LogInfo("Changing colors.");
-  std::for_each(begin(m_activeLSystems),
-                end(m_activeLSystems),
-                [](auto* lSystem) { lSystem->ChangeColors(); });
+  std::ranges::for_each(m_activeLSystems, [](auto* lSystem) { lSystem->ChangeColors(); });
 }
 
 inline auto LSystemFx::LSystemFxImpl::GetCurrentColorMapsNames() noexcept
@@ -350,9 +347,8 @@ inline auto LSystemFx::LSystemFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidp
     -> void
 {
   LogInfo("Setting new zoom midpoint ({}, {}).", zoomMidpoint.x, zoomMidpoint.y);
-  std::for_each(begin(m_activeLSystems),
-                end(m_activeLSystems),
-                [&zoomMidpoint](auto* lSystem) { lSystem->SetPathTarget(zoomMidpoint); });
+  std::ranges::for_each(m_activeLSystems,
+                        [&zoomMidpoint](auto* lSystem) { lSystem->SetPathTarget(zoomMidpoint); });
 }
 
 inline auto LSystemFx::LSystemFxImpl::Resume() -> void
@@ -385,8 +381,7 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
     InitNextActiveLSystems();
   }
 
-  std::for_each(
-      begin(m_activeLSystems), end(m_activeLSystems), [](auto* lSystem) { lSystem->Update(); });
+  std::ranges::for_each(m_activeLSystems, [](auto* lSystem) { lSystem->Update(); });
 }
 
 inline auto LSystemFx::LSystemFxImpl::UpdatePixelBlender() noexcept -> void
@@ -399,9 +394,7 @@ inline auto LSystemFx::LSystemFxImpl::DrawLSystem() noexcept -> void
 {
   //LogInfo("Start L-System draw.");
 
-  std::for_each(begin(m_activeLSystems),
-                end(m_activeLSystems),
-                [](auto* lSystem) { lSystem->DrawLSystem(); });
+  std::ranges::for_each(m_activeLSystems, [](auto* lSystem) { lSystem->DrawLSystem(); });
 }
 
 inline auto LSystemFx::LSystemFxImpl::GetLSystemDirectory(

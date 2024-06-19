@@ -215,8 +215,7 @@ inline auto ShapePart::GetShapePath(const size_t shapePathNum) const noexcept ->
 
 inline auto ShapePart::ResetTs(const float val) noexcept -> void
 {
-  std::for_each(
-      begin(m_shapePaths), end(m_shapePaths), [&val](ShapePath& path) { path.ResetT(val); });
+  std::ranges::for_each(m_shapePaths, [&val](ShapePath& path) { path.ResetT(val); });
 }
 
 inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
@@ -329,9 +328,8 @@ auto ShapePart::UpdateShapePathTargets() noexcept -> void
 
   m_shapePathsTargetPoint = m_newShapePathsTargetPoint;
 
-  std::for_each(begin(m_shapePaths),
-                end(m_shapePaths),
-                [this](ShapePath& shapePath) { UpdateShapePathTransform(shapePath); });
+  std::ranges::for_each(m_shapePaths,
+                        [this](ShapePath& shapePath) { UpdateShapePathTransform(shapePath); });
 
   ResetTs(0.0F);
 
@@ -524,26 +522,23 @@ auto ShapePart::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weighte
 
 auto ShapePart::UpdateShapesMainColorMaps() noexcept -> void
 {
-  std::for_each(begin(m_shapePaths),
-                end(m_shapePaths),
-                [this](ShapePath& shapePath)
-                { shapePath.UpdateMainColorInfo(m_colorInfo.mainColorMaps); });
+  std::ranges::for_each(m_shapePaths,
+                        [this](ShapePath& shapePath)
+                        { shapePath.UpdateMainColorInfo(m_colorInfo.mainColorMaps); });
 }
 
 auto ShapePart::UpdateShapesLowColorMaps() noexcept -> void
 {
-  std::for_each(begin(m_shapePaths),
-                end(m_shapePaths),
-                [this](ShapePath& shapePath)
-                { shapePath.UpdateLowColorInfo(m_colorInfo.lowColorMaps); });
+  std::ranges::for_each(m_shapePaths,
+                        [this](ShapePath& shapePath)
+                        { shapePath.UpdateLowColorInfo(m_colorInfo.lowColorMaps); });
 }
 
 auto ShapePart::UpdateShapesInnerColorMaps() noexcept -> void
 {
-  std::for_each(begin(m_shapePaths),
-                end(m_shapePaths),
-                [this](ShapePath& shapePath)
-                { shapePath.UpdateInnerColorInfo(m_colorInfo.innerColorMaps); });
+  std::ranges::for_each(m_shapePaths,
+                        [this](ShapePath& shapePath)
+                        { shapePath.UpdateInnerColorInfo(m_colorInfo.innerColorMaps); });
 }
 
 auto ShapePart::ChangeAllShapesColorMapsNow() noexcept -> void
@@ -618,10 +613,9 @@ auto ShapePart::UseRandomShapePathsNumSteps() noexcept -> void
 
 auto ShapePart::SetShapePathsNumSteps() noexcept -> void
 {
-  std::for_each(begin(m_shapePaths),
-                end(m_shapePaths),
-                [this](ShapePath& path)
-                { path.SetNumSteps(m_shapePathsStepSpeed.GetCurrentNumSteps()); });
+  std::ranges::for_each(m_shapePaths,
+                        [this](ShapePath& path)
+                        { path.SetNumSteps(m_shapePathsStepSpeed.GetCurrentNumSteps()); });
 
   m_dotRadiusT.SetNumSteps(m_dotRadiusStepSpeed.GetCurrentNumSteps());
 }
@@ -697,7 +691,7 @@ auto ShapePart::Update() noexcept -> void
 
 inline auto ShapePart::IncrementTs() noexcept -> void
 {
-  std::for_each(begin(m_shapePaths), end(m_shapePaths), [](ShapePath& path) { path.IncrementT(); });
+  std::ranges::for_each(m_shapePaths, [](ShapePath& path) { path.IncrementT(); });
 
   m_dotRadiusT.Increment();
   m_megaColorChangeOnOffTimer.Update();

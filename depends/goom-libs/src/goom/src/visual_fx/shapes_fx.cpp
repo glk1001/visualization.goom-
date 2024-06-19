@@ -212,9 +212,8 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.01F;
   const auto varyDotRadius = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_VARY_DOT_RADIUS);
-  std::for_each(begin(m_shapes),
-                end(m_shapes),
-                [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
+  std::ranges::for_each(m_shapes,
+                        [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> void
@@ -222,10 +221,9 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapePathMinMaxNumSteps() noexcept -> 
   const auto newMinMaxNumShapePathSteps =
       MinMaxValues<uint32_t>{m_numIncrementsPerUpdate * MIN_NUM_SHAPE_PATH_STEPS,
                              m_numIncrementsPerUpdate * MAX_NUM_SHAPE_PATH_STEPS};
-  std::for_each(begin(m_shapes),
-                end(m_shapes),
-                [&newMinMaxNumShapePathSteps](Shape& shape)
-                { shape.SetShapePathsMinMaxNumSteps(newMinMaxNumShapePathSteps); });
+  std::ranges::for_each(m_shapes,
+                        [&newMinMaxNumShapePathSteps](Shape& shape)
+                        { shape.SetShapePathsMinMaxNumSteps(newMinMaxNumShapePathSteps); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::ChangePixelBlender(
@@ -322,13 +320,12 @@ inline auto ShapesFx::ShapesFxImpl::Start() noexcept -> void
 {
   UpdateShapeEffects();
 
-  std::for_each(begin(m_shapes),
-                end(m_shapes),
-                [](Shape& shape)
-                {
-                  shape.SetFixedShapeNumSteps();
-                  shape.Start();
-                });
+  std::ranges::for_each(m_shapes,
+                        [](Shape& shape)
+                        {
+                          shape.SetFixedShapeNumSteps();
+                          shape.Start();
+                        });
 }
 
 inline auto ShapesFx::ShapesFxImpl::ApplyToImageBuffers() noexcept -> void
@@ -357,7 +354,7 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeSpeeds() noexcept -> void
 
 inline auto ShapesFx::ShapesFxImpl::SetShapeSpeeds() noexcept -> void
 {
-  std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { shape.SetShapeNumSteps(); });
+  std::ranges::for_each(m_shapes, [](Shape& shape) { shape.SetShapeNumSteps(); });
 }
 
 inline auto ShapesFx::ShapesFxImpl::UpdateShapes() noexcept -> void
@@ -366,7 +363,7 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapes() noexcept -> void
 
   for (auto i = 0U; i < numIncrements; ++i)
   {
-    std::for_each(begin(m_shapes), end(m_shapes), [](Shape& shape) { UpdateShape(shape); });
+    std::ranges::for_each(m_shapes, [](Shape& shape) { UpdateShape(shape); });
   }
 }
 

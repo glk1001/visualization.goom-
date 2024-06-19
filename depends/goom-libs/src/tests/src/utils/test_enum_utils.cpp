@@ -117,9 +117,7 @@ TEST_CASE("ForRange")
   REQUIRE(sum == EXPECTED_SUM);
 
   sum = 0;
-  std::for_each(std::begin(CONST_ENUM_MAP),
-                std::end(CONST_ENUM_MAP),
-                [&sum](const auto& value) { sum += value; });
+  std::ranges::for_each(CONST_ENUM_MAP, [&sum](const auto& value) { sum += value; });
   REQUIRE(sum == EXPECTED_SUM);
 }
 

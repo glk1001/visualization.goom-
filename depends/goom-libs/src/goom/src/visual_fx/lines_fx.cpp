@@ -239,7 +239,7 @@ LinesFx::LinesImpl::LinesImpl(FxHelper& fxHelper,
 
 inline auto LinesFx::LinesImpl::Start() noexcept -> void
 {
-  std::for_each(begin(m_lineMorphs), end(m_lineMorphs), [](LineMorph& line) { line.Start(); });
+  std::ranges::for_each(m_lineMorphs, [](LineMorph& line) { line.Start(); });
 }
 
 auto LinesFx::LinesImpl::GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>

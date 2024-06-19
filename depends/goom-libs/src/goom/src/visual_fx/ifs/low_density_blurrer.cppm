@@ -237,15 +237,14 @@ auto LowDensityBlurrer::GetNeighbours(const IfsPoint& point) const noexcept -> s
 inline auto LowDensityBlurrer::DrawPoints(const std::vector<IfsPoint>& lowDensityPoints) noexcept
     -> void
 {
-  std::for_each(cbegin(lowDensityPoints),
-                cend(lowDensityPoints),
-                [this](const auto& point)
-                {
-                  if (point.GetCount() != 0)
-                  {
-                    DrawPoint(point);
-                  }
-                });
+  std::ranges::for_each(lowDensityPoints,
+                        [this](const auto& point)
+                        {
+                          if (point.GetCount() != 0)
+                          {
+                            DrawPoint(point);
+                          }
+                        });
 }
 
 inline auto LowDensityBlurrer::DrawPoint(const IfsPoint& point) noexcept -> void

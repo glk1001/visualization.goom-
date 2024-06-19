@@ -209,17 +209,17 @@ auto Gl2DTexture<CppTextureType,
 {
   if constexpr (0 == NumPbos)
   {
-    std::for_each(begin(m_textureNames),
-                  end(m_textureNames),
-                  [this](auto& textureName) { m_gl->Call()(glDeleteTextures, 1, &textureName); });
+    std::ranges::for_each(m_textureNames,
+                          [this](auto& textureName)
+                          { m_gl->Call()(glDeleteTextures, 1, &textureName); });
     return;
   }
 
   DeletePboBuffers();
 
-  std::for_each(begin(m_textureNames),
-                end(m_textureNames),
-                [this](auto& textureName) { m_gl->Call()(glDeleteTextures, 1, &textureName); });
+  std::ranges::for_each(m_textureNames,
+                        [this](auto& textureName)
+                        { m_gl->Call()(glDeleteTextures, 1, &textureName); });
 }
 
 template<typename CppTextureType,
@@ -256,8 +256,7 @@ auto Gl2DTexture<CppTextureType,
                  TextureFormat,
                  TextureInternalFormat,
                  TexturePixelType,
-                 NumPbos>::BindTexture(GlslProgram& program, const uint32_t textureIndex)
-    -> void
+                 NumPbos>::BindTexture(GlslProgram& program, const uint32_t textureIndex) -> void
 {
   program.SetUniform(m_textureShaderNames.at(textureIndex),
                      TextureLocation + static_cast<int32_t>(textureIndex));
@@ -274,12 +273,12 @@ template<typename CppTextureType,
          GLenum TexturePixelType,
          uint32_t NumPbos>
 auto Gl2DTexture<CppTextureType,
-                        NumTextures,
-                        TextureLocation,
-                        TextureFormat,
-                        TextureInternalFormat,
-                        TexturePixelType,
-                        NumPbos>::GetTextureName(const size_t textureIndex) const noexcept -> GLuint
+                 NumTextures,
+                 TextureLocation,
+                 TextureFormat,
+                 TextureInternalFormat,
+                 TexturePixelType,
+                 NumPbos>::GetTextureName(const size_t textureIndex) const noexcept -> GLuint
 {
   return m_textureNames.at(textureIndex);
 }
@@ -292,12 +291,12 @@ template<typename CppTextureType,
          GLenum TexturePixelType,
          uint32_t NumPbos>
 auto Gl2DTexture<CppTextureType,
-                        NumTextures,
-                        TextureLocation,
-                        TextureFormat,
-                        TextureInternalFormat,
-                        TexturePixelType,
-                        NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept
+                 NumTextures,
+                 TextureLocation,
+                 TextureFormat,
+                 TextureInternalFormat,
+                 TexturePixelType,
+                 NumPbos>::GetMappedBuffer(const size_t pboIndex) noexcept
     -> std::span<CppTextureType>
 {
   return std::span<CppTextureType>{m_pboBuffers.mappedBuffers.at(pboIndex), m_buffSize};
@@ -311,12 +310,12 @@ template<typename CppTextureType,
          GLenum TexturePixelType,
          uint32_t NumPbos>
 auto Gl2DTexture<CppTextureType,
-                        NumTextures,
-                        TextureLocation,
-                        TextureFormat,
-                        TextureInternalFormat,
-                        TexturePixelType,
-                        NumPbos>::ZeroTextures() -> void
+                 NumTextures,
+                 TextureLocation,
+                 TextureFormat,
+                 TextureInternalFormat,
+                 TexturePixelType,
+                 NumPbos>::ZeroTextures() -> void
 {
   //  const auto zero = int64_t{0xFF000000};
   //  GlCall(glClearTexImage(m_textureName, 0, TextureFormat, TexturePixelType, &zero));
@@ -331,9 +330,8 @@ auto Gl2DTexture<CppTextureType,
   //                            TexturePixelType,
   //                            0,
   //                            nullptr));
-  std::for_each(
-      begin(m_textureNames),
-      end(m_textureNames),
+  std::ranges::for_each(
+      m_textureNames,
       [this](const auto textureName)
       { m_gl->Call()(glClearTexImage, textureName, 0, TextureFormat, TexturePixelType, nullptr); });
 }
@@ -346,15 +344,14 @@ template<typename CppTextureType,
          GLenum TexturePixelType,
          uint32_t NumPbos>
 auto Gl2DTexture<CppTextureType,
-                        NumTextures,
-                        TextureLocation,
-                        TextureFormat,
-                        TextureInternalFormat,
-                        TexturePixelType,
-                        // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-                        NumPbos>::CopyMappedBufferToTexture(const size_t pboIndex,
-                                                            const size_t textureIndex)
-    -> void
+                 NumTextures,
+                 TextureLocation,
+                 TextureFormat,
+                 TextureInternalFormat,
+                 TexturePixelType,
+                 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+                 NumPbos>::CopyMappedBufferToTexture(const size_t pboIndex,
+                                                     const size_t textureIndex) -> void
 {
   m_gl->Call()(glBindTexture, static_cast<GLenum>(GL_TEXTURE_2D), m_textureNames.at(textureIndex));
 

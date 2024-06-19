@@ -226,53 +226,49 @@ auto AllStandardVisualFx::GetLinesFx() noexcept -> VISUAL_FX::LinesFx&
 
 auto AllStandardVisualFx::Start() -> void
 {
-  std::for_each(begin(m_drawablesMap), end(m_drawablesMap), [](auto& value) { value->Start(); });
+  std::ranges::for_each(m_drawablesMap, [](auto& value) { value->Start(); });
 }
 
 auto AllStandardVisualFx::Finish() -> void
 {
-  std::for_each(begin(m_drawablesMap), end(m_drawablesMap), [](auto& value) { value->Finish(); });
+  std::ranges::for_each(m_drawablesMap, [](auto& value) { value->Finish(); });
 }
 
 auto AllStandardVisualFx::RefreshAllFx() -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this](const auto currentlyDrawable)
-                { m_drawablesMap[currentlyDrawable]->Refresh(); });
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this](const auto currentlyDrawable)
+                        { m_drawablesMap[currentlyDrawable]->Refresh(); });
 }
 
 auto AllStandardVisualFx::SuspendFx() -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this](const auto currentlyDrawable)
-                { m_drawablesMap[currentlyDrawable]->Suspend(); });
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this](const auto currentlyDrawable)
+                        { m_drawablesMap[currentlyDrawable]->Suspend(); });
 }
 
 auto AllStandardVisualFx::ResumeFx() -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this](const auto currentlyDrawable)
-                { m_drawablesMap[currentlyDrawable]->Resume(); });
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this](const auto currentlyDrawable)
+                        { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
 
 auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
     const IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this, &pixelBlenderParams](const auto currentlyDrawable)
-                { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams); });
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this, &pixelBlenderParams](const auto currentlyDrawable) {
+                          m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams);
+                        });
 }
 
 auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this, &zoomMidpoint](const auto currentlyDrawable)
-                { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this, &zoomMidpoint](const auto currentlyDrawable)
+                        { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
 }
 
 auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::string>
@@ -295,28 +291,26 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
 
 auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this](const auto& drawable)
-                {
-                  auto& visualFx = *m_drawablesMap[drawable];
-                  visualFx.SetFrameMiscData(*m_frameMiscData);
-                });
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this](const auto& drawable)
+                        {
+                          auto& visualFx = *m_drawablesMap[drawable];
+                          visualFx.SetFrameMiscData(*m_frameMiscData);
+                        });
 }
 
 auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soundData) -> void
 {
-  std::for_each(begin(m_currentGoomDrawables),
-                end(m_currentGoomDrawables),
-                [this, &soundData](const auto& drawable)
-                {
-                  auto& visualFx = *m_drawablesMap[drawable];
+  std::ranges::for_each(m_currentGoomDrawables,
+                        [this, &soundData](const auto& drawable)
+                        {
+                          auto& visualFx = *m_drawablesMap[drawable];
 
-                  visualFx.SetSoundData(soundData);
+                          visualFx.SetSoundData(soundData);
 
-                  ResetDrawBuffSettings(drawable);
-                  visualFx.ApplyToImageBuffers();
-                });
+                          ResetDrawBuffSettings(drawable);
+                          visualFx.ApplyToImageBuffers();
+                        });
 }
 
 auto AllStandardVisualFx::ApplyShaderFxToImageBuffers() -> void

@@ -310,9 +310,8 @@ auto TentacleDriver::SetWeightedColorMaps(
   auto lightness                            = IncrementedValue<float>{
       MIN_LIGHTNESS, 1.0F, TValue::StepType::CONTINUOUS_REVERSIBLE, LIGHTNESS_STEP_SIZE};
 
-  std::for_each(
-      begin(m_tentacles),
-      end(m_tentacles),
+  std::ranges::for_each(
+      m_tentacles,
       [this, &baseMainColorMapName, &baseLowColorMapName, &saturation, &lightness](auto& tentacle)
       {
         const auto tintProperties = ColorMaps::TintProperties{saturation(), lightness()};
@@ -331,9 +330,7 @@ auto TentacleDriver::SetWeightedColorMaps(
 
 auto TentacleDriver::StartIterating() -> void
 {
-  std::for_each(begin(m_tentacles),
-                end(m_tentacles),
-                [](auto& tentacle) { tentacle.tentacle3D.StartIterating(); });
+  std::ranges::for_each(m_tentacles, [](auto& tentacle) { tentacle.tentacle3D.StartIterating(); });
 
   m_endCentrePosT.Reset();
 }
@@ -392,31 +389,29 @@ auto TentacleDriver::UpdateTentaclesEndCentrePosOffsets() noexcept -> void
   const auto endCentrePosOffset = endCentrePos - ToVec2dInt(m_screenCentre);
   const auto radiusScale        = m_goomRand->GetRandInRange(MIN_RADIUS_FACTOR, MAX_RADIUS_FACTOR);
 
-  std::for_each(begin(m_tentacles),
-                end(m_tentacles),
-                [&endCentrePosOffset, &radiusScale](auto& tentacle)
-                {
-                  const auto newRadiusCentreEndPosOffset = GetNewRadiusEndCentrePosOffset(
-                      radiusScale, tentacle.tentacle3D.GetEndPos(), endCentrePosOffset);
+  std::ranges::for_each(m_tentacles,
+                        [&endCentrePosOffset, &radiusScale](auto& tentacle)
+                        {
+                          const auto newRadiusCentreEndPosOffset = GetNewRadiusEndCentrePosOffset(
+                              radiusScale, tentacle.tentacle3D.GetEndPos(), endCentrePosOffset);
 
-                  tentacle.tentacle3D.SetEndPosOffset(newRadiusCentreEndPosOffset);
-                });
+                          tentacle.tentacle3D.SetEndPosOffset(newRadiusCentreEndPosOffset);
+                        });
 }
 
 auto TentacleDriver::UpdateTentaclesEndPos() noexcept -> void
 {
-  std::for_each(begin(m_tentacles),
-                end(m_tentacles),
-                [this](auto& tentacle)
-                {
-                  const auto tentacleEndPos = tentacle.tentacle3D.GetEndPos();
-                  const auto endRadius      = std::sqrt(UTILS::MATH::Sq(tentacleEndPos.x) +
-                                                   UTILS::MATH::Sq(tentacleEndPos.y));
-                  const auto newTentacleEndPos =
-                      Scale(tentacle.tentacle3D.GetEndPos(), m_endRadius() / endRadius);
+  std::ranges::for_each(m_tentacles,
+                        [this](auto& tentacle)
+                        {
+                          const auto tentacleEndPos = tentacle.tentacle3D.GetEndPos();
+                          const auto endRadius      = std::sqrt(UTILS::MATH::Sq(tentacleEndPos.x) +
+                                                           UTILS::MATH::Sq(tentacleEndPos.y));
+                          const auto newTentacleEndPos =
+                              Scale(tentacle.tentacle3D.GetEndPos(), m_endRadius() / endRadius);
 
-                  tentacle.tentacle3D.SetEndPos(newTentacleEndPos);
-                });
+                          tentacle.tentacle3D.SetEndPos(newTentacleEndPos);
+                        });
 }
 
 auto TentacleDriver::GetNewRadiusEndCentrePosOffset(
