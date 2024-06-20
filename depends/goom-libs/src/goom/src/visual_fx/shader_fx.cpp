@@ -13,18 +13,16 @@ import Goom.VisualFx.FxHelper;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.SPimpl;
-import :ChromaFactorLerper;
-import :ColorMultiplierLerper;
 import :HighContrast;
 import :HueShifterLerper;
+import :ShaderObjectLerper;
 
 namespace GOOM::VISUAL_FX
 {
 
-using SHADERS::ChromaFactorLerper;
-using SHADERS::ColorMultiplierLerper;
 using SHADERS::HighContrast;
 using SHADERS::HueShiftLerper;
+using SHADERS::ShaderObjectLerper;
 using UTILS::Stopwatch;
 using UTILS::MATH::Sq;
 
@@ -45,19 +43,33 @@ private:
 
   HighContrast m_highContrast;
 
-  static constexpr uint32_t HUE_MIN_NUM_LERP_ON_STEPS = 25U;
-  static constexpr uint32_t HUE_MAX_NUM_LERP_ON_STEPS = 100U;
-  static constexpr uint32_t HUE_MIN_LERP_OFF_TIME     = 500U;
-  static constexpr uint32_t HUE_MAX_LERP_OFF_TIME     = 5000U;
+  static constexpr HueShiftLerper::Params HUE_SHIFT_LERPER_PARAMS{
+      .numLerpStepsRange  = { 25U,  100U},
+      .lerpConstTimeRange = {500U, 5000U},
+  };
   HueShiftLerper m_hueShiftLerper;
 
-  static constexpr auto MIN_CHROMA_FACTOR = 0.5F;
-  static constexpr auto MAX_CHROMA_FACTOR = 5.0F;
-  ChromaFactorLerper m_chromaFactorLerper;
+  static constexpr ShaderObjectLerper::Params CHROMA_FACTOR_LERPER_PARAMS{
+      .valueRange           = {0.5F, 5.0F},
+      .minValueRangeDist    = 0.1F,
+      .numLerpStepsRange    = { 50U, 500U},
+      .lerpConstTimeRange   = { 50U, 100U},
+      .initialNumLerpSteps  = 50U,
+      .initialLerpConstTime = 50U,
+  };
+  ShaderObjectLerper m_chromaFactorLerper;
 
   static constexpr auto MIN_BASE_COLOR_MULTIPLIER = 0.96F;
   static constexpr auto MAX_BASE_COLOR_MULTIPLIER = 1.00F;
-  ColorMultiplierLerper m_baseColorMultiplierLerper;
+  static constexpr ShaderObjectLerper::Params BASE_COLOR_MULTIPLIER_LERPER_PARAMS{
+      .valueRange           = {0.96F, 1.00F},
+      .minValueRangeDist    = 0.025F,
+      .numLerpStepsRange    = {  50U,  500U},
+      .lerpConstTimeRange   = {  10U,   50U},
+      .initialNumLerpSteps  = 50U,
+      .initialLerpConstTime = 10U,
+  };
+  ShaderObjectLerper m_baseColorMultiplierLerper;
 
   auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;
 };
@@ -110,20 +122,11 @@ auto ShaderFx::ApplyEndEffect(const Stopwatch::TimeValues& timeValues) noexcept 
 
 ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
   : m_highContrast{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand()},
-    m_hueShiftLerper{fxHelper.GetGoomInfo(),
-                     fxHelper.GetGoomRand(),
-                     {
-                         HUE_MIN_NUM_LERP_ON_STEPS,
-                         HUE_MAX_NUM_LERP_ON_STEPS,
-                         HUE_MIN_LERP_OFF_TIME,
-                         HUE_MAX_LERP_OFF_TIME
-                     }},
+    m_hueShiftLerper{fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), HUE_SHIFT_LERPER_PARAMS},
     m_chromaFactorLerper{
-        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), MIN_CHROMA_FACTOR, MAX_CHROMA_FACTOR},
-    m_baseColorMultiplierLerper{fxHelper.GetGoomInfo(),
-                                fxHelper.GetGoomRand(),
-                                MIN_BASE_COLOR_MULTIPLIER,
-                                MAX_BASE_COLOR_MULTIPLIER}
+        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), CHROMA_FACTOR_LERPER_PARAMS},
+    m_baseColorMultiplierLerper{
+        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), BASE_COLOR_MULTIPLIER_LERPER_PARAMS}
 {
 }
 
@@ -135,9 +138,9 @@ inline auto ShaderFx::ShaderFxImpl::Start() noexcept -> void
 inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
 {
   m_highContrast.ChangeHighContrast();
-  m_hueShiftLerper.ChangeHue();
-  m_chromaFactorLerper.ChangeChromaFactorRange();
-  m_baseColorMultiplierLerper.ChangeMultiplierRange();
+  m_hueShiftLerper.ChangeValueRange();
+  m_chromaFactorLerper.ChangeValueRange();
+  m_baseColorMultiplierLerper.ChangeValueRange();
 }
 
 inline auto ShaderFx::ShaderFxImpl::SetFrameMiscData(MiscData& miscData) noexcept -> void
@@ -156,9 +159,9 @@ inline auto ShaderFx::ShaderFxImpl::ApplyToImageBuffers() -> void
   m_baseColorMultiplierLerper.Update();
 
   m_frameMiscData->brightness          = m_highContrast.GetCurrentBrightness();
-  m_frameMiscData->hueShift            = m_hueShiftLerper.GetHueShift();
-  m_frameMiscData->chromaFactor        = m_chromaFactorLerper.GetChromaFactor();
-  m_frameMiscData->baseColorMultiplier = m_baseColorMultiplierLerper.GetColorMultiplier();
+  m_frameMiscData->hueShift            = m_hueShiftLerper.GetLerpedValue();
+  m_frameMiscData->chromaFactor        = m_chromaFactorLerper.GetLerpedValue();
+  m_frameMiscData->baseColorMultiplier = m_baseColorMultiplierLerper.GetLerpedValue();
   // NOLINTEND(clang-analyzer-core.NullDereference)
 }
 

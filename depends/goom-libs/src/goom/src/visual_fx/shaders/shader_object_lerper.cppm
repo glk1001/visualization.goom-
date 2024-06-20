@@ -11,13 +11,13 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
+using GOOM::UTILS::Timer;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+
 namespace GOOM::VISUAL_FX::SHADERS
 {
-
-using UTILS::Timer;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::NumberRange;
-using UTILS::MATH::TValue;
 
 class ShaderObjectLerper
 {
@@ -25,6 +25,7 @@ public:
   struct Params
   {
     NumberRange<float> valueRange{};
+    float minValueRangeDist{};
     NumberRange<uint32_t> numLerpStepsRange{};
     NumberRange<uint32_t> lerpConstTimeRange{};
     uint32_t initialNumLerpSteps{};
@@ -44,7 +45,6 @@ private:
   [[maybe_unused]] const PluginInfo* m_goomInfo;
   const IGoomRand* m_goomRand;
 
-  static constexpr auto MIN_RANGE = 0.1F;
   Params m_params;
   float m_srceValue = m_goomRand->GetRandInRange(m_params.valueRange);
   float m_destValue = GetNewDestValue();
@@ -75,7 +75,18 @@ ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
     m_lerpConstTimer{m_goomInfo->GetTime(), m_params.initialLerpConstTime, false}
 {
   Expects(m_params.valueRange.min < m_params.valueRange.max);
-  Expects(std::fabs(m_params.valueRange.max - m_params.valueRange.min) >= MIN_RANGE);
+  Expects(m_params.minValueRangeDist > 0.0F);
+  Expects(m_params.valueRange.max - m_params.valueRange.min >= m_params.minValueRangeDist);
+
+  Expects(0 < m_params.numLerpStepsRange.min);
+  Expects(m_params.numLerpStepsRange.min < m_params.numLerpStepsRange.max);
+  Expects(m_params.numLerpStepsRange.min <= m_params.initialNumLerpSteps);
+  Expects(m_params.initialNumLerpSteps <= m_params.numLerpStepsRange.max);
+
+  Expects(0 < m_params.lerpConstTimeRange.min);
+  Expects(m_params.lerpConstTimeRange.min < m_params.lerpConstTimeRange.max);
+  Expects(m_params.lerpConstTimeRange.min <= m_params.initialLerpConstTime);
+  Expects(m_params.initialLerpConstTime <= m_params.lerpConstTimeRange.max);
 }
 
 auto ShaderObjectLerper::Update() noexcept -> void
@@ -106,10 +117,11 @@ auto ShaderObjectLerper::GetNewDestValue() const noexcept -> float
 {
   static constexpr auto MAX_LOOPS = 10U;
 
+  // NOTE: The new dest value can be < srce value.
   for (auto i = 0U; i < MAX_LOOPS; ++i)
   {
     const auto destValue = m_goomRand->GetRandInRange(m_params.valueRange);
-    if (std::fabs(m_srceValue - destValue) >= MIN_RANGE)
+    if (std::fabs(m_srceValue - destValue) >= m_params.minValueRangeDist)
     {
       return destValue;
     }

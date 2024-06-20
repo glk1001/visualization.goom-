@@ -322,8 +322,6 @@ set(GoomVisualFx_modules
     src/visual_fx/lines/line_types.cppm
     src/visual_fx/raindrops/raindrops.cppm
     src/visual_fx/raindrops/raindrop_positions.cppm
-    src/visual_fx/shaders/chroma_factor_lerper.cppm
-    src/visual_fx/shaders/color_multiplier_lerper.cppm
     src/visual_fx/shaders/high_contrast.cppm
     src/visual_fx/shaders/hue_shift_lerper.cppm
     src/visual_fx/shaders/shader_object_lerper.cppm

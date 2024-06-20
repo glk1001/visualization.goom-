@@ -14,47 +14,48 @@ import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
+using GOOM::UTILS::Timer;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+
 namespace GOOM::VISUAL_FX::SHADERS
 {
 
 class HueShiftLerper
 {
 public:
-  struct LerpData
+  struct Params
   {
-    uint32_t minNumLerpOnSteps{};
-    uint32_t maxNumLerpOnSteps{};
-    uint32_t minLerpOffTime{};
-    uint32_t maxLerpOffTime{};
+    NumberRange<uint32_t> numLerpStepsRange{};
+    NumberRange<uint32_t> lerpConstTimeRange{};
   };
 
   HueShiftLerper(const PluginInfo& goomInfo,
-                 const UTILS::MATH::IGoomRand& goomRand,
-                 const LerpData& lerpData) noexcept;
+                 const IGoomRand& goomRand,
+                 const Params& params) noexcept;
 
   auto Update() noexcept -> void;
-  auto ChangeHue() noexcept -> void;
+  auto ChangeValueRange() noexcept -> void;
 
-  [[nodiscard]] auto GetHueShift() const noexcept -> float;
+  [[nodiscard]] auto GetLerpedValue() const noexcept -> float;
 
 private:
   const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  LerpData m_lerpData;
+  const IGoomRand* m_goomRand;
+  Params m_params;
 
   float m_srceHueShift    = 0.0F;
   float m_destHueShift    = 0.0F;
   float m_currentHueShift = 0.0F;
 
-  UTILS::MATH::TValue m_lerpT{
-      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, m_lerpData.minNumLerpOnSteps}
-  };
+  TValue m_lerpT;
   auto RestartLerpWithNewDestHue() noexcept -> void;
   auto RestartLerp() noexcept -> void;
   auto SetNewDestHue() noexcept -> void;
   auto StopLerpAndSetHueShiftOff() noexcept -> void;
 
-  UTILS::Timer m_lerpOffTimer{m_goomInfo->GetTime(), m_lerpData.minLerpOffTime, false};
+  Timer m_lerpConstTimer;
 
   [[nodiscard]] auto CanRestartLerp() const noexcept -> bool;
 };
@@ -64,14 +65,14 @@ private:
 namespace GOOM::VISUAL_FX::SHADERS
 {
 
-inline auto HueShiftLerper::ChangeHue() noexcept -> void
+inline auto HueShiftLerper::ChangeValueRange() noexcept -> void
 {
-  m_lerpOffTimer.SetToFinished();
+  m_lerpConstTimer.SetToFinished();
 
   RestartLerpWithNewDestHue();
 }
 
-inline auto HueShiftLerper::GetHueShift() const noexcept -> float
+inline auto HueShiftLerper::GetLerpedValue() const noexcept -> float
 {
   return m_currentHueShift;
 }
@@ -79,25 +80,29 @@ inline auto HueShiftLerper::GetHueShift() const noexcept -> float
 using UTILS::MATH::TWO_PI;
 
 HueShiftLerper::HueShiftLerper(const PluginInfo& goomInfo,
-                               const UTILS::MATH::IGoomRand& goomRand,
-                               const LerpData& lerpData) noexcept
-  : m_goomInfo{&goomInfo}, m_goomRand{&goomRand}, m_lerpData{lerpData}
+                               const IGoomRand& goomRand,
+                               const Params& params) noexcept
+  : m_goomInfo{&goomInfo},
+    m_goomRand{&goomRand},
+    m_params{params},
+    m_lerpT{{TValue::StepType::SINGLE_CYCLE, m_params.numLerpStepsRange.min}},
+    m_lerpConstTimer{m_goomInfo->GetTime(), m_params.lerpConstTimeRange.min, false}
 {
 }
 
 auto HueShiftLerper::Update() noexcept -> void
 {
-  if (not m_lerpOffTimer.Finished())
+  if (not m_lerpConstTimer.Finished())
   {
     if (not CanRestartLerp())
     {
       return;
     }
-    m_lerpOffTimer.SetToFinished();
+    m_lerpConstTimer.SetToFinished();
   }
 
-  Expects(m_lerpOffTimer.Finished());
-  if (m_lerpOffTimer.JustFinished())
+  Expects(m_lerpConstTimer.Finished());
+  if (m_lerpConstTimer.JustFinished())
   {
     RestartLerpWithNewDestHue();
   }
@@ -119,15 +124,14 @@ auto HueShiftLerper::RestartLerpWithNewDestHue() noexcept -> void
 
 inline auto HueShiftLerper::RestartLerp() noexcept -> void
 {
-  m_lerpT.SetNumSteps(
-      m_goomRand->GetRandInRange(m_lerpData.minNumLerpOnSteps, m_lerpData.maxNumLerpOnSteps + 1));
+  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(m_params.numLerpStepsRange));
 
   LogInfo("LerpT = {}. Reset lerpT steps to {}", m_lerpT(), m_lerpT.GetNumSteps());
 }
 
 inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
 {
-  m_srceHueShift = GetHueShift();
+  m_srceHueShift = GetLerpedValue();
   m_lerpT.Reset(0.0F);
 
   static constexpr auto MAX_CHANGE = TWO_PI;
@@ -137,11 +141,11 @@ inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
 
 inline auto HueShiftLerper::StopLerpAndSetHueShiftOff() noexcept -> void
 {
-  m_lerpOffTimer.SetTimeLimitAndResetToZero(
-      m_goomRand->GetRandInRange(m_lerpData.minLerpOffTime, m_lerpData.maxLerpOffTime + 1));
+  m_lerpConstTimer.SetTimeLimitAndResetToZero(
+      m_goomRand->GetRandInRange(m_params.lerpConstTimeRange));
   LogInfo("LerpT = {}. Set off timer {}", m_lerpT(), m_lerpOffTimer.GetTimeLeft());
 
-  m_srceHueShift = GetHueShift();
+  m_srceHueShift = GetLerpedValue();
   m_destHueShift = m_srceHueShift;
   m_lerpT.Reset(0.0F);
 }

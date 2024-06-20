@@ -10,6 +10,11 @@ import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.PluginInfo;
 
+using GOOM::UTILS::Timer;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+
 namespace GOOM::VISUAL_FX::SHADERS
 {
 
@@ -19,37 +24,37 @@ public:
   static constexpr float DEFAULT_CONTRAST   = 1.0F;
   static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
 
-  HighContrast(const PluginInfo& goomInfo, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept;
 
-  void Start();
+  auto Start() -> void;
 
-  void ChangeHighContrast();
-  void UpdateHighContrast();
+  auto ChangeHighContrast() -> void;
+  auto UpdateHighContrast() -> void;
   [[nodiscard]] auto GetCurrentContrast() const -> float;
   [[nodiscard]] auto GetCurrentBrightness() const -> float;
   [[nodiscard]] auto GetCurrentContrastMinChannelValue() const -> float;
 
 private:
   const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
 
   float m_currentContrast                = DEFAULT_CONTRAST;
   float m_currentBrightness              = DEFAULT_BRIGHTNESS;
   float m_currentContrastMinChannelValue = 0.0F;
   float m_maxContrastMinChannelValue     = 0.0F;
-  void ResetValues();
+  auto ResetValues() -> void;
 
   static constexpr uint32_t NUM_HIGH_CONTRAST_ON_STEPS  = 250;
   static constexpr uint32_t HIGH_CONTRAST_ON_DELAY_TIME = 100;
   static constexpr uint32_t HIGH_CONTRAST_ON_TIME =
       (2 * NUM_HIGH_CONTRAST_ON_STEPS) + HIGH_CONTRAST_ON_DELAY_TIME;
-  UTILS::MATH::TValue m_highContrastT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_HIGH_CONTRAST_ON_STEPS},
+  TValue m_highContrastT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_HIGH_CONTRAST_ON_STEPS},
       {{1.0F, HIGH_CONTRAST_ON_DELAY_TIME}}
   };
-  UTILS::Timer m_highContrastOnTimer{m_goomInfo->GetTime(), HIGH_CONTRAST_ON_TIME, true};
+  Timer m_highContrastOnTimer{m_goomInfo->GetTime(), HIGH_CONTRAST_ON_TIME, true};
   static constexpr uint32_t HIGH_CONTRAST_OFF_TIME = 300;
-  UTILS::Timer m_highContrastOffTimer{m_goomInfo->GetTime(), HIGH_CONTRAST_OFF_TIME, false};
+  Timer m_highContrastOffTimer{m_goomInfo->GetTime(), HIGH_CONTRAST_OFF_TIME, false};
 };
 
 } // namespace GOOM::VISUAL_FX::SHADERS
@@ -72,14 +77,12 @@ inline auto HighContrast::GetCurrentContrastMinChannelValue() const -> float
   return m_currentContrastMinChannelValue;
 }
 
-using UTILS::MATH::IGoomRand;
-
 HighContrast::HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{&goomInfo}, m_goomRand{&goomRand}
 {
 }
 
-void HighContrast::Start()
+auto HighContrast::Start() -> void
 {
   m_highContrastT.Reset();
   m_highContrastOnTimer.ResetToZero();
@@ -88,7 +91,7 @@ void HighContrast::Start()
   ResetValues();
 }
 
-inline void HighContrast::ResetValues()
+inline auto HighContrast::ResetValues() -> void
 {
   m_currentContrast                = DEFAULT_CONTRAST;
   m_currentBrightness              = DEFAULT_BRIGHTNESS;
@@ -96,7 +99,7 @@ inline void HighContrast::ResetValues()
   m_maxContrastMinChannelValue     = 0.0F;
 }
 
-void HighContrast::ChangeHighContrast()
+auto HighContrast::ChangeHighContrast() -> void
 {
   if (!m_highContrastOffTimer.Finished())
   {
@@ -113,14 +116,12 @@ void HighContrast::ChangeHighContrast()
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
-    static constexpr auto MIN_CONTRAST_MIN_CHAN = -0.5F;
-    static constexpr auto MAX_CONTRAST_MIN_CHAN = -0.2F;
-    m_maxContrastMinChannelValue =
-        m_goomRand->GetRandInRange(MIN_CONTRAST_MIN_CHAN, MAX_CONTRAST_MIN_CHAN);
+    static constexpr auto CONTRAST_MIN_CHAN_RANGE = NumberRange{-0.5F, -0.2F};
+    m_maxContrastMinChannelValue = m_goomRand->GetRandInRange(CONTRAST_MIN_CHAN_RANGE);
   }
 }
 
-void HighContrast::UpdateHighContrast()
+auto HighContrast::UpdateHighContrast() -> void
 {
   m_highContrastT.Increment();
 
