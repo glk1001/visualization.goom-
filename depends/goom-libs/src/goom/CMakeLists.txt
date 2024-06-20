@@ -326,6 +326,7 @@ set(GoomVisualFx_modules
     src/visual_fx/shaders/color_multiplier_lerper.cppm
     src/visual_fx/shaders/high_contrast.cppm
     src/visual_fx/shaders/hue_shift_lerper.cppm
+    src/visual_fx/shaders/shader_object_lerper.cppm
     src/visual_fx/shapes/bezier_flower.cppm
     src/visual_fx/shapes/shape_parts.cppm
     src/visual_fx/shapes/shape_paths.cppm
