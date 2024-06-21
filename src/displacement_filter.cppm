@@ -85,6 +85,7 @@ protected:
   static constexpr auto* UNIFORM_HUE_SHIFT             = "u_hueShift";
   static constexpr auto* UNIFORM_CHROMA_FACTOR         = "u_chromaFactor";
   static constexpr auto* UNIFORM_BASE_COLOR_MULTIPLIER = "u_baseColorMultiplier";
+  static constexpr auto* UNIFORM_PREV_FRAME_T_MIX      = "u_prevFrameTMix";
   static constexpr auto* UNIFORM_LUMINANCE_PARAMS      = "u_params";
   static constexpr auto* UNIFORM_GAMMA                 = "u_gamma";
   static constexpr auto* UNIFORM_RESET_SRCE_FILTER_POS = "u_resetSrceFilterPosBuffers";
@@ -1009,6 +1010,8 @@ auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept
       m_frameDataArray.at(pboIndex).filterPosArrays.filterPos1Pos2FreqMixFreq);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
+  m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
+        UNIFORM_PREV_FRAME_T_MIX, m_frameDataArray.at(pboIndex).miscData.prevFrameTMix);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_TIME, static_cast<uint32_t>(m_frameDataArray.at(pboIndex).miscData.goomTime));
 }

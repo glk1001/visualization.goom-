@@ -21,8 +21,7 @@ in vec3 position;
 in vec2 texCoord;
 
 uniform float u_lerpFactor;  // For lerping between srce and dest buffers.
-uniform float u_minBuff2Buff3Mix = 0.1F;
-uniform float u_maxBuff2Buff3Mix = 0.9F;
+uniform float u_prevFrameTMix;
 uniform bool u_resetSrceFilterPosBuffers;
 uniform float u_pos1Pos2MixFreq;
 uniform uint u_time;
@@ -44,13 +43,7 @@ void main()
   vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
 
   // Mix in some of the previous frames' color from the current deviceXY.
-  const float extraBuff2Buff3MixFreq = 0.05F;
-  const float extraBuff2Buff3Mix = mix(0.0F,
-                                       u_maxBuff2Buff3Mix - u_minBuff2Buff3Mix,
-                                       0.5F * (1.0F + cos(extraBuff2Buff3MixFreq * u_time)));
-  filterBuff2Val.rgb = mix(filterBuff2Val.rgb,
-                           filterBuff3Val.rgb,
-                           u_minBuff2Buff3Mix + extraBuff2Buff3Mix);
+  filterBuff2Val.rgb = mix(filterBuff2Val.rgb, filterBuff3Val.rgb, u_prevFrameTMix);
 
   // Boost this frames' buff2 color by the base color multiplier.
   filterBuff2Val.rgb *= GetBaseColorMultiplier(filterBuff2Val.rgb);
