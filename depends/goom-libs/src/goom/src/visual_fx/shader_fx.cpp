@@ -59,8 +59,6 @@ private:
   };
   ShaderObjectLerper m_chromaFactorLerper;
 
-  static constexpr auto MIN_BASE_COLOR_MULTIPLIER = 0.96F;
-  static constexpr auto MAX_BASE_COLOR_MULTIPLIER = 1.00F;
   static constexpr ShaderObjectLerper::Params BASE_COLOR_MULTIPLIER_LERPER_PARAMS{
       .valueRange           = {0.96F, 1.00F},
       .minValueRangeDist    = 0.025F,
@@ -70,6 +68,16 @@ private:
       .initialLerpConstTime = 10U,
   };
   ShaderObjectLerper m_baseColorMultiplierLerper;
+
+  static constexpr ShaderObjectLerper::Params PREV_FRAME_T_MIX_LERPER_PARAMS{
+      .valueRange           = {0.1F, 0.9F},
+      .minValueRangeDist    = 0.2F,
+      .numLerpStepsRange    = { 50U, 500U},
+      .lerpConstTimeRange   = { 10U,  50U},
+      .initialNumLerpSteps  = 50U,
+      .initialLerpConstTime = 10U,
+  };
+  ShaderObjectLerper m_prevFrameTMixLerper;
 
   auto FadeToBlack(const Stopwatch::TimeValues& timeValues) -> void;
 };
@@ -126,7 +134,9 @@ ShaderFx::ShaderFxImpl::ShaderFxImpl(const FxHelper& fxHelper) noexcept
     m_chromaFactorLerper{
         fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), CHROMA_FACTOR_LERPER_PARAMS},
     m_baseColorMultiplierLerper{
-        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), BASE_COLOR_MULTIPLIER_LERPER_PARAMS}
+        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), BASE_COLOR_MULTIPLIER_LERPER_PARAMS},
+    m_prevFrameTMixLerper{
+        fxHelper.GetGoomInfo(), fxHelper.GetGoomRand(), PREV_FRAME_T_MIX_LERPER_PARAMS}
 {
 }
 
@@ -141,6 +151,7 @@ inline auto ShaderFx::ShaderFxImpl::ChangeEffects() -> void
   m_hueShiftLerper.ChangeValueRange();
   m_chromaFactorLerper.ChangeValueRange();
   m_baseColorMultiplierLerper.ChangeValueRange();
+  m_prevFrameTMixLerper.ChangeValueRange();
 }
 
 inline auto ShaderFx::ShaderFxImpl::SetFrameMiscData(MiscData& miscData) noexcept -> void
@@ -157,11 +168,13 @@ inline auto ShaderFx::ShaderFxImpl::ApplyToImageBuffers() -> void
   m_hueShiftLerper.Update();
   m_chromaFactorLerper.Update();
   m_baseColorMultiplierLerper.Update();
+  m_prevFrameTMixLerper.Update();
 
   m_frameMiscData->brightness          = m_highContrast.GetCurrentBrightness();
   m_frameMiscData->hueShift            = m_hueShiftLerper.GetLerpedValue();
   m_frameMiscData->chromaFactor        = m_chromaFactorLerper.GetLerpedValue();
   m_frameMiscData->baseColorMultiplier = m_baseColorMultiplierLerper.GetLerpedValue();
+  m_frameMiscData->prevFrameTMix       = m_prevFrameTMixLerper.GetLerpedValue();
   // NOLINTEND(clang-analyzer-core.NullDereference)
 }
 
