@@ -7,7 +7,6 @@ module;
 export module Goom.Utils.Timer;
 
 import Goom.Utils.GoomTime;
-import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::UTILS
@@ -48,7 +47,7 @@ public:
   OnOffTimer(const GoomTime& goomTime, const TimerCounts& timerCounts) noexcept;
 
   auto Reset() noexcept -> void;
-  auto SetTimerCounts(const TimerCounts& timerCounts) noexcept;
+  auto SetTimerCounts(const TimerCounts& timerCounts) noexcept -> void;
 
   using Action = std::function<bool()>; // return true if action succeeded.
   struct OnAndOffActions
@@ -88,49 +87,14 @@ private:
 namespace GOOM::UTILS
 {
 
-inline Timer::Timer(const GoomTime& goomTime,
-                    const uint64_t timeLimit,
-                    const bool setToFinished) noexcept
-  : m_goomTime{&goomTime},
-    m_startTime{m_goomTime->GetCurrentTime()},
-    m_timeLimit{timeLimit},
-    m_targetTime{m_startTime + timeLimit},
-    m_finished{setToFinished}
-{
-}
-
 inline auto Timer::GetTimeElapsed() const noexcept -> uint64_t
 {
   return std::min(m_timeLimit, m_goomTime->GetElapsedTimeSince(m_startTime));
 }
 
-inline auto Timer::GetTimeLeft() const noexcept -> uint64_t
-{
-  if (m_finished or (m_goomTime->GetCurrentTime() >= m_targetTime))
-  {
-    return 0U;
-  }
-  return m_targetTime - m_goomTime->GetCurrentTime();
-}
-
-inline auto Timer::ResetToZero() noexcept -> void
-{
-  m_startTime  = m_goomTime->GetCurrentTime();
-  m_targetTime = m_startTime + m_timeLimit;
-  m_finished   = false;
-}
-
 inline auto Timer::SetToFinished() noexcept -> void
 {
   m_finished = true;
-}
-
-inline auto Timer::SetTimeLimit(const uint64_t timeLimit, const bool setToFinished) noexcept -> void
-{
-  m_startTime  = m_goomTime->GetCurrentTime();
-  m_timeLimit  = timeLimit;
-  m_targetTime = m_startTime + timeLimit;
-  m_finished   = setToFinished;
 }
 
 inline auto Timer::JustFinished() const noexcept -> bool
@@ -141,158 +105,6 @@ inline auto Timer::JustFinished() const noexcept -> bool
 inline auto Timer::Finished() const noexcept -> bool
 {
   return m_finished or (m_goomTime->GetCurrentTime() >= m_targetTime);
-}
-
-inline OnOffTimer::OnOffTimer(const GoomTime& goomTime, const TimerCounts& timerCounts) noexcept
-  : m_timerCounts{timerCounts},
-    m_onTimer{goomTime, m_timerCounts.numOnCount, true},
-    m_offTimer{goomTime, m_timerCounts.numOffCount, true}
-{
-}
-
-inline auto OnOffTimer::Reset() noexcept -> void
-{
-  m_onTimer.ResetToZero();
-  m_offTimer.ResetToZero();
-  m_onTimer.SetToFinished();
-  m_offTimer.SetToFinished();
-  m_timerState = TimerState::NO_TIMERS_ACTIVE;
-}
-
-inline auto OnOffTimer::SetTimerCounts(const TimerCounts& timerCounts) noexcept
-{
-  m_timerCounts = timerCounts;
-  m_onTimer.SetTimeLimit(m_timerCounts.numOnCount, true);
-  m_offTimer.SetTimeLimit(m_timerCounts.numOffCount, true);
-}
-
-inline auto OnOffTimer::SetActions(const OnAndOffActions& onAndOffActions) noexcept -> void
-{
-  m_onAction  = onAndOffActions.onAction;
-  m_offAction = onAndOffActions.offAction;
-}
-
-inline auto OnOffTimer::StartOnTimer() noexcept -> void
-{
-  Expects(m_timerState == TimerState::NO_TIMERS_ACTIVE);
-  Expects(m_onTimer.Finished());
-  Expects(m_offTimer.Finished());
-  Expects(m_onAction != nullptr);
-  Expects(m_offAction != nullptr);
-
-  m_timerState = TimerState::ON_TIMER_ACTIVE;
-  m_onTimer.ResetToZero();
-  m_onAction();
-
-  Ensures(not m_onTimer.Finished());
-  Ensures(m_offTimer.Finished());
-}
-
-inline auto OnOffTimer::StartOffTimer() noexcept -> void
-{
-  Expects(m_timerState == TimerState::NO_TIMERS_ACTIVE);
-  Expects(m_onTimer.Finished());
-  Expects(m_offTimer.Finished());
-  Expects(m_onAction != nullptr);
-  Expects(m_offAction != nullptr);
-
-  m_timerState = TimerState::OFF_TIMER_ACTIVE;
-  m_offTimer.ResetToZero();
-  m_offAction();
-
-  Ensures(not m_offTimer.Finished());
-  Ensures(m_onTimer.Finished());
-}
-
-inline auto OnOffTimer::Stop() noexcept -> void
-{
-  if (TimerState::ON_TIMER_ACTIVE == m_timerState)
-  {
-    m_offAction();
-  }
-  else if (TimerState::OFF_TIMER_ACTIVE == m_timerState)
-  {
-    m_onAction();
-  }
-  m_timerState = TimerState::NO_TIMERS_ACTIVE;
-  m_onTimer.SetToFinished();
-  m_offTimer.SetToFinished();
-
-  Ensures(m_onTimer.Finished());
-  Ensures(m_offTimer.Finished());
-  Ensures(m_timerState == TimerState::NO_TIMERS_ACTIVE);
-}
-
-inline auto OnOffTimer::TryToChangeState() noexcept -> void
-{
-  if (TimerState::ON_TIMER_ACTIVE == m_timerState)
-  {
-    ChangeStateToOff();
-  }
-  else if (TimerState::OFF_TIMER_ACTIVE == m_timerState)
-  {
-    ChangeStateToOn();
-  }
-}
-
-inline auto OnOffTimer::Update() noexcept -> void
-{
-  if (TimerState::ON_TIMER_ACTIVE == m_timerState)
-  {
-    Expects(m_offTimer.Finished());
-    if (m_onTimer.Finished())
-    {
-      ChangeStateToOff();
-    }
-  }
-  else if (TimerState::OFF_TIMER_ACTIVE == m_timerState)
-  {
-    Expects(m_onTimer.Finished());
-    if (m_offTimer.Finished())
-    {
-      ChangeStateToOn();
-    }
-  }
-}
-
-inline auto OnOffTimer::ChangeStateToOff() -> void
-{
-  Expects(m_offTimer.Finished());
-
-  if (not m_offAction())
-  {
-    m_onTimer.SetTimeLimit(m_timerCounts.numOnCountAfterFailedOff);
-    Ensures(not m_onTimer.Finished());
-    Ensures(m_offTimer.Finished());
-    return;
-  }
-
-  m_onTimer.SetToFinished();
-  m_offTimer.SetTimeLimit(m_timerCounts.numOffCount);
-  m_timerState = TimerState::OFF_TIMER_ACTIVE;
-
-  Ensures(not m_offTimer.Finished());
-  Ensures(m_onTimer.Finished());
-}
-
-inline auto OnOffTimer::ChangeStateToOn() -> void
-{
-  Expects(m_onTimer.Finished());
-
-  if (not m_onAction())
-  {
-    m_offTimer.SetTimeLimit(m_timerCounts.numOffCountAfterFailedOn);
-    Ensures(not m_offTimer.Finished());
-    Ensures(m_onTimer.Finished());
-    return;
-  }
-
-  m_offTimer.SetToFinished();
-  m_onTimer.SetTimeLimit(m_timerCounts.numOnCount);
-  m_timerState = TimerState::ON_TIMER_ACTIVE;
-
-  Ensures(not m_onTimer.Finished());
-  Ensures(m_offTimer.Finished());
 }
 
 } // namespace GOOM::UTILS

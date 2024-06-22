@@ -282,6 +282,7 @@ set(GoomUtils_source_files
     src/utils/math/parametric_functions2d.cpp
     src/utils/math/paths.cpp
     src/utils/text/drawable_text.cpp
+    src/utils/timer.cpp
 )
 
 set(GoomVisualFx_modules
