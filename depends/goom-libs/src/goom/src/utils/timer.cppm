@@ -26,6 +26,9 @@ public:
   [[nodiscard]] auto Finished() const noexcept -> bool;
   [[nodiscard]] auto GetTimeElapsed() const noexcept -> uint64_t;
 
+  [[nodiscard]] auto GetStartTme() const noexcept -> uint64_t;
+  [[nodiscard]] auto GetTargetTime() const noexcept -> uint64_t;
+
 private:
   const GoomTime* m_goomTime;
   uint64_t m_startTime;
@@ -65,18 +68,23 @@ public:
   auto Update() noexcept -> void;
   auto TryToChangeState() noexcept -> void;
 
-private:
-  TimerCounts m_timerCounts;
-  Timer m_onTimer;
-  Timer m_offTimer;
-  Action m_onAction  = nullptr;
-  Action m_offAction = nullptr;
   enum class TimerState : UnderlyingEnumType
   {
     NO_TIMERS_ACTIVE,
     ON_TIMER_ACTIVE,
     OFF_TIMER_ACTIVE,
   };
+  [[nodiscard]] auto GetTimerState() const noexcept -> TimerState;
+
+  [[nodiscard]] auto GetOnTimer() const noexcept -> const Timer&;
+  [[nodiscard]] auto GetOffTimer() const noexcept -> const Timer&;
+
+private:
+  TimerCounts m_timerCounts;
+  Timer m_onTimer;
+  Timer m_offTimer;
+  Action m_onAction       = nullptr;
+  Action m_offAction      = nullptr;
   TimerState m_timerState = TimerState::NO_TIMERS_ACTIVE;
   auto ChangeStateToOff() -> void;
   auto ChangeStateToOn() -> void;
@@ -87,14 +95,24 @@ private:
 namespace GOOM::UTILS
 {
 
+inline auto Timer::SetToFinished() noexcept -> void
+{
+  m_finished = true;
+}
+
 inline auto Timer::GetTimeElapsed() const noexcept -> uint64_t
 {
   return std::min(m_timeLimit, m_goomTime->GetElapsedTimeSince(m_startTime));
 }
 
-inline auto Timer::SetToFinished() noexcept -> void
+inline auto Timer::GetStartTme() const noexcept -> uint64_t
 {
-  m_finished = true;
+  return m_startTime;
+}
+
+inline auto Timer::GetTargetTime() const noexcept -> uint64_t
+{
+  return m_targetTime;
 }
 
 inline auto Timer::JustFinished() const noexcept -> bool
@@ -105,6 +123,21 @@ inline auto Timer::JustFinished() const noexcept -> bool
 inline auto Timer::Finished() const noexcept -> bool
 {
   return m_finished or (m_goomTime->GetCurrentTime() >= m_targetTime);
+}
+
+inline auto OnOffTimer::GetTimerState() const noexcept -> TimerState
+{
+  return m_timerState;
+}
+
+inline auto OnOffTimer::GetOnTimer() const noexcept -> const Timer&
+{
+  return m_onTimer;
+}
+
+inline auto OnOffTimer::GetOffTimer() const noexcept -> const Timer&
+{
+  return m_offTimer;
 }
 
 } // namespace GOOM::UTILS
