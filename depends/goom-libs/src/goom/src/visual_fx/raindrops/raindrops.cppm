@@ -19,6 +19,7 @@ import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.Blend2dUtils;
 import Goom.Utils.Graphics.PointUtils;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
@@ -28,6 +29,21 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import :RaindropPositions;
+
+using GOOM::COLOR::ColorMapPtrWrapper;
+using GOOM::COLOR::ColorMaps;
+using GOOM::COLOR::GetBrighterColor;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::DRAW::SHAPE_DRAWERS::CircleDrawer;
+using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints;
+using GOOM::UTILS::GRAPHICS::FillCircleWithGradient;
+using GOOM::UTILS::GRAPHICS::GetMinSideLength;
+using GOOM::UTILS::GRAPHICS::GetPointClippedToRectangle;
+using GOOM::UTILS::MATH::IncrementedValue;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::U_HALF;
 
 namespace GOOM::VISUAL_FX::RAINDROPS
 {
@@ -41,16 +57,15 @@ public:
 
   Raindrops(FxHelper& fxHelper,
             uint32_t numRaindrops,
-            const COLOR::WeightedRandomColorMaps& randomMainColorMaps,
-            const COLOR::WeightedRandomColorMaps& randomLowColorMaps,
+            const WeightedRandomColorMaps& randomMainColorMaps,
+            const WeightedRandomColorMaps& randomLowColorMaps,
             const Rectangle2dInt& rectangle2D,
             const Point2dInt& targetRectangleWeightPoint) noexcept;
 
   auto SetNumRaindrops(uint32_t newNumRaindrops) noexcept -> void;
   auto SetRectangleWeightPoint(const Point2dInt& targetRectangleWeightPoint) noexcept -> void;
-  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& randomMainColorMaps,
-                            const COLOR::WeightedRandomColorMaps& randomLowColorMaps) noexcept
-      -> void;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& randomMainColorMaps,
+                            const WeightedRandomColorMaps& randomLowColorMaps) noexcept -> void;
 
   auto DrawRaindrops() noexcept -> void;
   auto UpdateRaindrops() noexcept -> void;
@@ -58,18 +73,17 @@ public:
 private:
   FxHelper* m_fxHelper;
   Point2dInt m_screenCentre = m_fxHelper->GetDimensions().GetCentrePoint();
-  COLOR::WeightedRandomColorMaps m_randomMainColorMaps;
-  COLOR::WeightedRandomColorMaps m_randomLowColorMaps;
-  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
-  DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer;
+  WeightedRandomColorMaps m_randomMainColorMaps;
+  WeightedRandomColorMaps m_randomLowColorMaps;
+  CircleDrawer m_circleDrawer;
+  LineDrawerNoClippedEndPoints m_lineDrawer;
   Pixel m_mainWeightPointColor;
   Pixel m_lowWeightPointColor;
 
   static constexpr auto RADIUS_TO_RECT_SIDE_FRAC       = 1.0F / 50.0F;
   static constexpr auto MIN_TO_MAX_RADIUS_FRAC         = 1.0F / 50.0F;
   static constexpr auto MAX_GROWTH_FACTOR              = 3.0F;
-  static constexpr auto MIN_GROWTH_STEPS               = 10U;
-  static constexpr auto MAX_GROWTH_STEPS               = 50U;
+  static constexpr auto GROWTH_STEPS_RANGE             = NumberRange{10U, 50U};
   static constexpr auto WEIGHT_POINT_CIRCLE_BRIGHTNESS = 1.30F;
   static constexpr auto LINE_TO_TARGET_BRIGHTNESS      = 0.05F;
   static constexpr auto LINE_TO_NEXT_DROP_BRIGHTNESS   = 0.10F;
@@ -78,8 +92,7 @@ private:
   static constexpr auto LOW_BRIGHTNESS_INCREASE        = 1.10F;
   static constexpr auto WEIGHT_POINT_RADIUS_FRAC       = 0.015F;
   static constexpr auto MAX_LINE_THICKNESS             = 2U;
-  static constexpr auto MIN_NUM_CONCENTRIC_CIRCLES     = 3U;
-  static constexpr auto MAX_NUM_CONCENTRIC_CIRCLES     = 7U;
+  static constexpr auto NUM_CONCENTRIC_CIRCLES_RANGE   = NumberRange{3U, 7U};
   struct RaindropParams
   {
     Rectangle2dInt rectangle2D{};
@@ -87,8 +100,8 @@ private:
     float maxStartingRadius{};
     uint32_t numConcentricCircles{};
     float maxGrowthRadius{};
-    COLOR::ColorMapPtrWrapper sameMainColorMap{nullptr};
-    COLOR::ColorMapPtrWrapper sameLowColorMap{nullptr};
+    ColorMapPtrWrapper sameMainColorMap{nullptr};
+    ColorMapPtrWrapper sameLowColorMap{nullptr};
   };
   RaindropParams m_raindropParams;
   [[nodiscard]] auto GetNewRaindropParams(const Rectangle2dInt& rectangle2D) const noexcept
@@ -107,10 +120,10 @@ private:
     uint32_t dropNum{};
     uint8_t lineThickness{};
     float fracFromWeightPoint{};
-    UTILS::MATH::IncrementedValue<float> growthRadius;
-    COLOR::ColorMapPtrWrapper mainColorMap{nullptr};
-    COLOR::ColorMapPtrWrapper lowColorMap{nullptr};
-    UTILS::MATH::TValue colorT;
+    IncrementedValue<float> growthRadius;
+    ColorMapPtrWrapper mainColorMap{nullptr};
+    ColorMapPtrWrapper lowColorMap{nullptr};
+    TValue colorT;
   };
   std::vector<Raindrop> m_raindrops;
   uint32_t m_pendingNewNumRaindrops = 0U;
@@ -121,9 +134,8 @@ private:
   [[nodiscard]] auto GetNewRaindrop(uint32_t dropNum) const noexcept -> Raindrop;
   static auto UpdateRaindrop(Raindrop& raindrop) noexcept -> void;
 
-  [[nodiscard]] auto GetRaindropColors(const Raindrop& raindrop) const noexcept
-      -> DRAW::MultiplePixels;
-  auto DrawRaindrop(const Raindrop& raindrop, const DRAW::MultiplePixels& colors) noexcept -> void;
+  [[nodiscard]] auto GetRaindropColors(const Raindrop& raindrop) const noexcept -> MultiplePixels;
+  auto DrawRaindrop(const Raindrop& raindrop, const MultiplePixels& colors) noexcept -> void;
   auto DrawCircleAroundWeightPoint() noexcept -> void;
 
   static constexpr auto GAMMA = 2.2F;
@@ -141,17 +153,6 @@ inline auto Raindrops::SetNumRaindrops(const uint32_t newNumRaindrops) noexcept 
 {
   m_pendingNewNumRaindrops = newNumRaindrops;
 }
-
-using COLOR::ColorMaps;
-using COLOR::GetBrighterColor;
-using COLOR::WeightedRandomColorMaps;
-using DRAW::MultiplePixels;
-using UTILS::GRAPHICS::FillCircleWithGradient;
-using UTILS::GRAPHICS::GetMinSideLength;
-using UTILS::GRAPHICS::GetPointClippedToRectangle;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
-using UTILS::MATH::U_HALF;
 
 Raindrops::Raindrops(FxHelper& fxHelper,
                      const uint32_t numRaindrops,
@@ -213,8 +214,8 @@ auto Raindrops::GetNewRaindropParams(const Rectangle2dInt& rectangle2D) const no
 
   const auto maxEnclosingRadius = static_cast<float>(U_HALF * GetMinSideLength(rectangle2D));
 
-  raindropParams.numConcentricCircles = m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_NUM_CONCENTRIC_CIRCLES, MAX_NUM_CONCENTRIC_CIRCLES + 1);
+  raindropParams.numConcentricCircles =
+      m_fxHelper->GetGoomRand().GetRandInRange(NUM_CONCENTRIC_CIRCLES_RANGE);
   raindropParams.maxStartingRadius = RADIUS_TO_RECT_SIDE_FRAC * maxEnclosingRadius;
   raindropParams.minStartingRadius = MIN_TO_MAX_RADIUS_FRAC * raindropParams.maxStartingRadius;
 
@@ -255,19 +256,19 @@ auto Raindrops::GetNewRaindrop(const uint32_t dropNum) const noexcept -> Raindro
   const auto dropCentrePoint     = m_raindropPositions.GetPosition(dropNum);
   const auto fracFromWeightPoint = GetFracFromWeightPoint(dropCentrePoint);
 
-  const auto numGrowthSteps =
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_GROWTH_STEPS, MAX_GROWTH_STEPS + 1);
+  const auto numGrowthSteps = m_fxHelper->GetGoomRand().GetRandInRange(GROWTH_STEPS_RANGE);
 
   const auto startingRadius = m_fxHelper->GetGoomRand().GetRandInRange(
       m_raindropParams.minStartingRadius, m_raindropParams.maxStartingRadius);
   const auto maxGrowthRadius =
       m_fxHelper->GetGoomRand().GetRandInRange(startingRadius, m_raindropParams.maxGrowthRadius);
 
-  static constexpr auto STEP_TYPE = TValue::StepType::CONTINUOUS_REVERSIBLE;
+  static constexpr auto STEP_TYPE            = TValue::StepType::CONTINUOUS_REVERSIBLE;
+  static constexpr auto LINE_THICKNESS_RANGE = NumberRange{1U, MAX_LINE_THICKNESS};
 
   return {
       dropNum,
-      static_cast<uint8_t>(m_fxHelper->GetGoomRand().GetRandInRange(1U, MAX_LINE_THICKNESS + 1U)),
+      static_cast<uint8_t>(m_fxHelper->GetGoomRand().GetRandInRange(LINE_THICKNESS_RANGE)),
       fracFromWeightPoint,
       IncrementedValue<float>{startingRadius, maxGrowthRadius, STEP_TYPE, numGrowthSteps},
       m_randomMainColorMaps.GetRandomColorMap(),
@@ -290,8 +291,8 @@ auto Raindrops::UpdateAnyPendingNumRaindrops() noexcept -> void
     return;
   }
 
-  m_raindropParams.numConcentricCircles = m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_NUM_CONCENTRIC_CIRCLES, MAX_NUM_CONCENTRIC_CIRCLES + 1);
+  m_raindropParams.numConcentricCircles =
+      m_fxHelper->GetGoomRand().GetRandInRange(NUM_CONCENTRIC_CIRCLES_RANGE);
 
   const auto acceptableNumRaindrops = GetAcceptableNumRaindrops(m_pendingNewNumRaindrops);
 

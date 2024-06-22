@@ -27,6 +27,20 @@ import :Colorizer;
 import :IfsPoints;
 import :Similitudes;
 
+using GOOM::COLOR::ColorAdjustment;
+using GOOM::COLOR::ColorMaps;
+using GOOM::COLOR::GetColorAverage;
+using GOOM::DRAW::IGoomDraw;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using GOOM::DRAW::SHAPE_DRAWERS::PixelDrawer;
+using GOOM::UTILS::GRAPHICS::ImageBitmap;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::Sq;
+using GOOM::UTILS::MATH::U_HALF;
+
 namespace GOOM::VISUAL_FX::IFS
 {
 
@@ -44,11 +58,11 @@ class LowDensityBlurrer
 {
 public:
   LowDensityBlurrer() noexcept = delete;
-  LowDensityBlurrer(DRAW::IGoomDraw& draw,
-                    const UTILS::MATH::IGoomRand& goomRand,
+  LowDensityBlurrer(IGoomDraw& draw,
+                    const IGoomRand& goomRand,
                     uint32_t width,
                     const Colorizer& colorizer,
-                    const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+                    const SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetWidth() const noexcept -> uint32_t;
   auto SetWidth(uint32_t val) noexcept -> void;
@@ -62,14 +76,14 @@ public:
       -> void;
 
 private:
-  DRAW::IGoomDraw* m_draw;
-  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer{*m_draw};
-  DRAW::SHAPE_DRAWERS::PixelDrawer m_pixelDrawer{*m_draw};
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  IGoomDraw* m_draw;
+  BitmapDrawer m_bitmapDrawer{*m_draw};
+  PixelDrawer m_pixelDrawer{*m_draw};
+  const IGoomRand* m_goomRand;
   uint32_t m_width;
-  size_t m_widthSquared = UTILS::MATH::Sq(static_cast<size_t>(m_width));
-  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
-  const UTILS::GRAPHICS::ImageBitmap* m_currentImageBitmap{};
+  size_t m_widthSquared = Sq(static_cast<size_t>(m_width));
+  const SmallImageBitmaps* m_smallBitmaps;
+  const ImageBitmap* m_currentImageBitmap{};
   const Colorizer* m_colorizer;
   float m_neighbourMixFactor = 1.0;
   BlurrerColorMode m_colorMode{};
@@ -79,8 +93,7 @@ private:
                       uint32_t maxLowDensityCount) const noexcept -> void;
   auto DrawPoints(const std::vector<IfsPoint>& lowDensityPoints) noexcept -> void;
   auto DrawPoint(const IfsPoint& point) noexcept -> void;
-  [[nodiscard]] auto GetImageBitmap(bool useBitmaps) const noexcept
-      -> const UTILS::GRAPHICS::ImageBitmap*;
+  [[nodiscard]] auto GetImageBitmap(bool useBitmaps) const noexcept -> const ImageBitmap*;
   [[nodiscard]] auto GetBrightness() const noexcept -> float;
   [[nodiscard]] auto GetNeighbours(const IfsPoint& point) const noexcept -> std::vector<Pixel>;
   [[nodiscard]] auto GetPointColor(const IfsPoint& point,
@@ -94,7 +107,7 @@ private:
                                         float logAlpha) const noexcept -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  COLOR::ColorAdjustment m_colorAdjust{{GAMMA}};
+  ColorAdjustment m_colorAdjust{{GAMMA}};
 };
 
 } // namespace GOOM::VISUAL_FX::IFS
@@ -117,16 +130,6 @@ inline auto LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
 {
   m_neighbourMixFactor = neighbourMixFactor;
 }
-
-using COLOR::ColorMaps;
-using COLOR::GetColorAverage;
-using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
-using UTILS::GRAPHICS::ImageBitmap;
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::Sq;
-using UTILS::MATH::U_HALF;
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
                                      const IGoomRand& goomRand,
@@ -172,9 +175,8 @@ auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const noexcept -> 
     return nullptr;
   }
 
-  static constexpr auto MIN_RES = 3U;
-  static constexpr auto MAX_RES = 7U;
-  const auto bitmapRes          = m_goomRand->GetRandInRange(MIN_RES, MAX_RES);
+  static constexpr auto RES_RANGE = NumberRange{3U, 7U};
+  const auto bitmapRes            = m_goomRand->GetRandInRange(RES_RANGE);
 
   return &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, bitmapRes);
 }

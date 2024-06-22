@@ -17,6 +17,13 @@ import Goom.Lib.GoomTypes;
 import :FractalHits;
 import :Similitudes;
 
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::U_HALF;
+
 namespace GOOM::VISUAL_FX::IFS
 {
 
@@ -24,13 +31,13 @@ class Fractal
 {
 public:
   Fractal(const Dimensions& dimensions,
-          const UTILS::MATH::IGoomRand& goomRand,
-          const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
+          const IGoomRand& goomRand,
+          const SmallImageBitmaps& smallBitmaps);
 
   auto Init() -> void;
   auto Reset() -> void;
 
-  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   [[nodiscard]] auto GetSpeed() const -> uint32_t;
   auto SetSpeed(uint32_t val) -> void;
@@ -40,24 +47,23 @@ public:
 
 private:
   Similitudes m_similitudes;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
 
   Flt m_halfWidth;
   Flt m_halfHeight;
 
-  static constexpr uint32_t MIN_MAX_COUNT_TIMES_SPEED = 950;
-  static constexpr uint32_t MAX_MAX_COUNT_TIMES_SPEED = 1500;
-  uint32_t m_iterationCount                           = 0;
+  static constexpr auto MAX_COUNT_TIMES_SPEED_RANGE = NumberRange{950U, 1500U};
+  uint32_t m_iterationCount                         = 0;
   auto UpdateIterationCount() -> void;
 
-  static constexpr uint32_t INITIAL_SPEED              = 6;
-  uint32_t m_prevSpeed                                 = INITIAL_SPEED;
-  uint32_t m_speed                                     = INITIAL_SPEED;
-  static constexpr uint32_t NUM_SPEED_TRANSITION_STEPS = 500;
-  UTILS::MATH::TValue m_speedTransitionT{
-      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
+  static constexpr auto INITIAL_SPEED              = 6U;
+  uint32_t m_prevSpeed                             = INITIAL_SPEED;
+  uint32_t m_speed                                 = INITIAL_SPEED;
+  static constexpr auto NUM_SPEED_TRANSITION_STEPS = 500U;
+  TValue m_speedTransitionT{
+      {TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
   };
-  uint32_t m_maxCountTimesSpeed = MAX_MAX_COUNT_TIMES_SPEED;
+  uint32_t m_maxCountTimesSpeed = MAX_COUNT_TIMES_SPEED_RANGE.max;
 
   FractalHits m_hits1;
   FractalHits m_hits2;
@@ -83,12 +89,6 @@ inline auto Fractal::GetMaxHitCount() const -> uint32_t
 {
   return m_curHits->GetMaxHitCount();
 }
-
-using COLOR::WeightedRandomColorMaps;
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::TValue;
-using UTILS::MATH::U_HALF;
 
 Fractal::Fractal(const Dimensions& dimensions,
                  const IGoomRand& goomRand,
@@ -141,8 +141,7 @@ auto Fractal::SetSpeed(const uint32_t val) -> void
 
 auto Fractal::Reset() -> void
 {
-  m_maxCountTimesSpeed =
-      m_goomRand->GetRandInRange(MIN_MAX_COUNT_TIMES_SPEED, MAX_MAX_COUNT_TIMES_SPEED + 1U);
+  m_maxCountTimesSpeed = m_goomRand->GetRandInRange(MAX_COUNT_TIMES_SPEED_RANGE);
 
   m_similitudes.ResetCurrentIfsFunc();
 }

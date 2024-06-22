@@ -21,6 +21,12 @@ import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
+using GOOM::UTILS::RuntimeEnumMap;
+using GOOM::UTILS::MATH::ConditionalWeights;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::FILTER_FX
 {
 
@@ -65,15 +71,13 @@ public:
     AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
   using FilterModeEnumMap =
-      UTILS::RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
-  using CreateZoomAdjustmentEffectFunc =
-      std::function<std::unique_ptr<IZoomAdjustmentEffect>(ZoomFilterMode filterMode,
-                                                           const UTILS::MATH::IGoomRand& goomRand,
-                                                           const std::string& resourcesDirectory)>;
+      RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
+  using CreateZoomAdjustmentEffectFunc = std::function<std::unique_ptr<IZoomAdjustmentEffect>(
+      ZoomFilterMode filterMode, const IGoomRand& goomRand, const std::string& resourcesDirectory)>;
   // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
 
-  FilterSettingsService(const GOOM::PluginInfo& goomInfo,
-                        const UTILS::MATH::IGoomRand& goomRand,
+  FilterSettingsService(const PluginInfo& goomInfo,
+                        const IGoomRand& goomRand,
                         const std::string& resourcesDirectory,
                         const CreateZoomAdjustmentEffectFunc& createZoomAdjustmentEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
@@ -115,7 +119,7 @@ protected:
   [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
   void SetFilterMode(ZoomFilterMode filterMode);
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const -> const UTILS::MATH::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const -> const IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeRandomEffects() -> void;
@@ -126,7 +130,7 @@ protected:
 
 private:
   const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   Point2dInt m_screenCentre;
   std::string m_resourcesDirectory;
   std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates> m_randomizedAfterEffects;
@@ -145,12 +149,10 @@ private:
   static constexpr auto DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION    = 0.5F;
   static constexpr auto MAX_MAX_ZOOM_ADJUSTMENT                        = 4.01F;
   static constexpr auto DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE            = false;
-  static constexpr auto MIN_MULTIPLIER_EFFECT_FREQ                     = 0.5F;
-  static constexpr auto MAX_MULTIPLIER_EFFECT_FREQ                     = 20.0F;
+  static constexpr auto MULTIPLIER_EFFECT_FREQ_RANGE                   = NumberRange{0.5F, 20.0F};
   static constexpr auto DEFAULT_MULTIPLIER_EFFECT_X_FREQ               = 1.0F;
   static constexpr auto DEFAULT_MULTIPLIER_EFFECT_Y_FREQ               = 1.0F;
-  static constexpr auto MIN_MULTIPLIER_EFFECT_AMPLITUDE                = 0.0F;
-  static constexpr auto MAX_MULTIPLIER_EFFECT_AMPLITUDE                = 0.03F;
+  static constexpr auto MULTIPLIER_EFFECT_AMPLITUDE_RANGE              = NumberRange{0.0F, 0.03F};
   static constexpr auto DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE          = 0.0F;
   static constexpr auto DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE          = 0.0F;
   static constexpr auto DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS         = 0.5F;
@@ -158,7 +160,7 @@ private:
   static constexpr auto PROB_MULTIPLIER_EFFECT_FREQUENCIES_EQUAL       = 0.95F;
   static constexpr auto PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL        = 0.95F;
   FilterSettings m_filterSettings;
-  UTILS::MATH::ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
+  ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
   [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetZoomAdjustmentEffect() -> std::shared_ptr<IZoomAdjustmentEffect>&;
   auto SetMaxZoomAdjustment() -> void;
@@ -186,7 +188,7 @@ private:
   static constexpr auto TOP_RIGHT_QUARTER_MID_POINT_WEIGHT    = 10.0F;
   static constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
   static constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
-  UTILS::MATH::Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
+  Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
   [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
   [[nodiscard]] auto IsFilterModeAWaveMode() const -> bool;
   auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
@@ -231,7 +233,7 @@ inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
   return *m_goomInfo;
 }
 
-inline auto FilterSettingsService::GetGoomRand() const -> const UTILS::MATH::IGoomRand&
+inline auto FilterSettingsService::GetGoomRand() const -> const IGoomRand&
 {
   return *m_goomRand;
 }
@@ -264,10 +266,9 @@ inline auto FilterSettingsService::ChangeMilieu() -> void
 
 inline auto FilterSettingsService::SetMaxZoomAdjustment() -> void
 {
-  static constexpr auto MIN_SPEED_FACTOR = 0.5F;
-  static constexpr auto MAX_SPEED_FACTOR = 1.0F;
+  static constexpr auto SPEED_FACTOR_RANGE = NumberRange{0.5F, 1.0F};
   m_filterSettings.filterEffectsSettings.maxZoomAdjustment =
-      m_goomRand->GetRandInRange(MIN_SPEED_FACTOR, MAX_SPEED_FACTOR) * MAX_MAX_ZOOM_ADJUSTMENT;
+      m_goomRand->GetRandInRange(SPEED_FACTOR_RANGE) * MAX_MAX_ZOOM_ADJUSTMENT;
 }
 
 inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void

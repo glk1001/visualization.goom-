@@ -26,13 +26,36 @@ import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 import :LineTypes;
 
+using GOOM::COLOR::ColorAdjustment;
+using GOOM::COLOR::ColorMapPtrWrapper;
+using GOOM::COLOR::ColorMaps;
+using GOOM::COLOR::ConstColorMapSharedPtr;
+using GOOM::COLOR::GetLightenedColor;
+using GOOM::COLOR::GetSimpleColor;
+using GOOM::COLOR::SimpleColors;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::DRAW::IGoomDraw;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
+using GOOM::UTILS::NUM;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::SMALL_FLOAT;
+using GOOM::VISUAL_FX::FX_UTILS::DotSizes;
+using GOOM::VISUAL_FX::FX_UTILS::GetCircularLinePoints;
+using GOOM::VISUAL_FX::FX_UTILS::GetHorizontalLinePoints;
+using GOOM::VISUAL_FX::FX_UTILS::GetVerticalLinePoints;
+using GOOM::VISUAL_FX::FX_UTILS::LinePoint;
+using GOOM::VISUAL_FX::FX_UTILS::SmoothTheCircleJoinAtEnds;
+
 namespace GOOM::VISUAL_FX::LINES
 {
 
 class LineMorph
 {
 public:
-  static constexpr uint32_t MIN_LINE_DURATION = 80;
+  static constexpr auto MIN_LINE_DURATION = 80U;
 
   // construit un effet de line (une ligne horitontale pour commencer)
   // builds a line effect (a horizontal line to start with)
@@ -42,15 +65,15 @@ public:
     LineParams destLineParams;
   };
 
-  LineMorph(DRAW::IGoomDraw& draw,
+  LineMorph(IGoomDraw& draw,
             const PluginInfo& goomInfo,
-            const UTILS::MATH::IGoomRand& goomRand,
-            const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
+            const IGoomRand& goomRand,
+            const SmallImageBitmaps& smallBitmaps,
             const SrceDestLineParams& srceDestLineParams,
             PixelChannelType defaultAlpha) noexcept;
 
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
-  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -66,26 +89,26 @@ public:
   [[nodiscard]] auto GetRandomLineColor() const noexcept -> Pixel;
 
 private:
-  DRAW::IGoomDraw* m_draw;
-  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer{*m_draw};
+  IGoomDraw* m_draw;
+  LineDrawerClippedEndPoints m_lineDrawer{*m_draw};
   const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   PixelChannelType m_defaultAlpha;
 
-  COLOR::WeightedRandomColorMaps m_colorMaps;
-  COLOR::ConstColorMapSharedPtr m_currentColorMapPtr = nullptr;
-  float m_currentBrightness                          = 1.0F;
+  WeightedRandomColorMaps m_colorMaps;
+  ConstColorMapSharedPtr m_currentColorMapPtr = nullptr;
+  float m_currentBrightness                   = 1.0F;
 
   static constexpr float GAMMA = 1.0F / 2.0F;
-  COLOR::ColorAdjustment m_colorAdjust{
-      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  ColorAdjustment m_colorAdjust{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 
-  std::vector<FX_UTILS::LinePoint> m_srcePoints;
-  std::vector<FX_UTILS::LinePoint> m_srcePointsCopy;
+  std::vector<LinePoint> m_srcePoints;
+  std::vector<LinePoint> m_srcePointsCopy;
   LineParams m_srceLineParams;
 
-  std::vector<FX_UTILS::LinePoint> m_destPoints;
+  std::vector<LinePoint> m_destPoints;
   LineParams m_destLineParams;
 
   static constexpr float LINE_LERP_FINISHED_VAL = 1.1F;
@@ -93,21 +116,20 @@ private:
   float m_lineLerpParam                         = 0.0F;
   auto MoveSrceLineCloserToDest() noexcept -> void;
   [[nodiscard]] auto GetFreshLine(LineType lineType, float lineParam) const noexcept
-      -> std::vector<FX_UTILS::LinePoint>;
+      -> std::vector<LinePoint>;
 
   // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
   bool m_useLineColor             = true;
   float m_lineColorPower          = 0.0F;
   float m_lineColorPowerIncrement = 0.0F;
-  [[nodiscard]] auto GetRandomColorMap() const noexcept -> COLOR::ColorMapPtrWrapper;
+  [[nodiscard]] auto GetRandomColorMap() const noexcept -> ColorMapPtrWrapper;
   [[nodiscard]] auto GetFinalLineColor(const Pixel& color) const noexcept -> Pixel;
   auto UpdateColorInfo() noexcept -> void;
 
   // This factor gives the maximum height to the peaks of the audio samples lines.
   // This value seems pleasing.
-  static constexpr float MIN_MAX_NORMALIZED_PEAK = 100.0F;
-  static constexpr float MAX_MAX_NORMALIZED_PEAK = 400.0F;
-  float m_maxNormalizedPeak                      = MIN_MAX_NORMALIZED_PEAK;
+  static constexpr auto MAX_NORMALIZED_PEAK_RANGE = NumberRange{100.0F, 400.0F};
+  float m_maxNormalizedPeak                       = MAX_NORMALIZED_PEAK_RANGE.min;
 
   FX_UTILS::DotDrawer m_dotDrawer;
   float m_audioRange    = 0.0F;
@@ -120,7 +142,7 @@ private:
   [[nodiscard]] auto GetAudioPoints(const Pixel& lineColor,
                                     const AudioSamples::SampleArray& audioData) const noexcept
       -> std::vector<PointAndColor>;
-  [[nodiscard]] auto GetNextPointData(const FX_UTILS::LinePoint& linePoint,
+  [[nodiscard]] auto GetNextPointData(const LinePoint& linePoint,
                                       const Pixel& mainColor,
                                       const Pixel& randColor,
                                       float dataVal) const noexcept -> PointAndColor;
@@ -148,24 +170,6 @@ inline auto LineMorph::CanResetDestLine() const noexcept -> bool
 {
   return m_lineLerpParam > LINE_LERP_FINISHED_VAL;
 }
-
-using COLOR::ColorMaps;
-using COLOR::GetLightenedColor;
-using COLOR::GetSimpleColor;
-using COLOR::SimpleColors;
-using COLOR::WeightedRandomColorMaps;
-using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
-using FX_UTILS::DotSizes;
-using FX_UTILS::GetCircularLinePoints;
-using FX_UTILS::GetHorizontalLinePoints;
-using FX_UTILS::GetVerticalLinePoints;
-using FX_UTILS::LinePoint;
-using FX_UTILS::SmoothTheCircleJoinAtEnds;
-using UTILS::NUM;
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::SMALL_FLOAT;
 
 static constexpr auto MIN_DOT_SIZE01_WEIGHT = 100.0F;
 static constexpr auto MIN_DOT_SIZE02_WEIGHT = 050.0F;
@@ -230,7 +234,7 @@ LineMorph::LineMorph(IGoomDraw& draw,
 {
 }
 
-auto LineMorph::GetRandomColorMap() const noexcept -> COLOR::ColorMapPtrWrapper
+auto LineMorph::GetRandomColorMap() const noexcept -> ColorMapPtrWrapper
 {
   return m_colorMaps.GetRandomColorMap(m_colorMaps.GetRandomGroup());
 }
@@ -294,10 +298,9 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   }
   if (m_lineLerpParam >= 1.0F)
   {
-    m_srceLineParams.lineType            = m_destLineParams.lineType;
-    static constexpr auto MIN_BRIGHTNESS = 5.0F;
-    static constexpr auto MAX_BRIGHTNESS = 8.0F;
-    m_currentBrightness = m_goomRand->GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+    m_srceLineParams.lineType              = m_destLineParams.lineType;
+    static constexpr auto BRIGHTNESS_RANGE = NumberRange{5.0F, 8.0F};
+    m_currentBrightness                    = m_goomRand->GetRandInRange(BRIGHTNESS_RANGE);
   }
 
   Ensures((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
@@ -310,20 +313,19 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   m_srceLineParams.color =
       ColorMaps::GetColorMix(m_srceLineParams.color, m_destLineParams.color, COLOR_MIX_AMOUNT);
 
-  static constexpr auto MIN_POW_INC = 0.03F;
-  static constexpr auto MAX_POW_INC = 0.10F;
-  static constexpr auto MIN_POWER   = 1.1F;
-  static constexpr auto MAX_POWER   = 17.5F;
+  static constexpr auto POW_INC_RANGE = NumberRange{0.03F, 0.10F};
+  static constexpr auto MIN_POWER     = 1.1F;
+  static constexpr auto MAX_POWER     = 17.5F;
   m_lineColorPower += m_lineColorPowerIncrement;
   if (m_lineColorPower < MIN_POWER)
   {
     m_lineColorPower          = MIN_POWER;
-    m_lineColorPowerIncrement = m_goomRand->GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    m_lineColorPowerIncrement = m_goomRand->GetRandInRange(POW_INC_RANGE);
   }
   if (m_lineColorPower > MAX_POWER)
   {
     m_lineColorPower          = MAX_POWER;
-    m_lineColorPowerIncrement = -m_goomRand->GetRandInRange(MIN_POW_INC, MAX_POW_INC);
+    m_lineColorPowerIncrement = -m_goomRand->GetRandInRange(POW_INC_RANGE);
   }
 
   static constexpr auto AMP_MIX_AMOUNT = 0.01F;
@@ -340,14 +342,12 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
 
   m_lineLerpParam = 0.0;
 
-  static constexpr auto MIN_BRIGHTNESS = 1.5F;
-  static constexpr auto MAX_BRIGHTNESS = 3.0F;
-  m_currentBrightness                  = m_goomRand->GetRandInRange(MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+  static constexpr auto BRIGHTNESS_RANGE = NumberRange{1.5F, 3.0F};
+  m_currentBrightness                    = m_goomRand->GetRandInRange(BRIGHTNESS_RANGE);
 
   m_dotDrawer.ChangeDotSizes();
 
-  m_maxNormalizedPeak =
-      m_goomRand->GetRandInRange(MIN_MAX_NORMALIZED_PEAK, MAX_MAX_NORMALIZED_PEAK);
+  m_maxNormalizedPeak = m_goomRand->GetRandInRange(MAX_NORMALIZED_PEAK_RANGE);
 
   m_srcePointsCopy = m_srcePoints;
 }

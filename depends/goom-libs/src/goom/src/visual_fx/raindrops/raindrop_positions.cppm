@@ -11,6 +11,7 @@ module;
 
 module Goom.VisualFx.RaindropsFx:RaindropPositions;
 
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;
@@ -21,6 +22,12 @@ import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import Goom.PluginInfo;
+
+using GOOM::UTILS::MATH::IncrementedValue;
+using GOOM::UTILS::MATH::IPath;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::TWO_PI;
 
 namespace GOOM::VISUAL_FX::RAINDROPS
 {
@@ -53,29 +60,27 @@ private:
   Params m_params;
   Point2dInt m_screenCentre = m_fxHelper->GetGoomInfo().GetDimensions().GetCentrePoint();
   static constexpr auto WEIGHT_POINT_CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
-  static constexpr auto MIN_WEIGHT_POINT_STEPS                = 10U;
-  static constexpr auto MAX_WEIGHT_POINT_STEPS                = 20U;
-  UTILS::MATH::TValue m_rectangleWeightPointT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, MIN_WEIGHT_POINT_STEPS}
+  static constexpr auto WEIGHT_POINT_STEPS_RANGE              = NumberRange{10U, 20U};
+  TValue m_rectangleWeightPointT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, WEIGHT_POINT_STEPS_RANGE.min}
   };
 
   static constexpr auto NUM_RAINDROP_POSITION_INCREMENTS = 100U;
   static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_START = 1U;
   static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_END   = 15U; // where they meet
-  std::vector<UTILS::MATH::TValue::DelayPoint> m_raindropDelayPoints{
+  std::vector<TValue::DelayPoint> m_raindropDelayPoints{
       {0.0F, RAINDROP_MOVEMENT_DELAY_AT_START},
       {1.0F,   RAINDROP_MOVEMENT_DELAY_AT_END}
   };
-  UTILS::MATH::TValue m_raindropPositionT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_RAINDROP_POSITION_INCREMENTS},
+  TValue m_raindropPositionT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_RAINDROP_POSITION_INCREMENTS},
       m_raindropDelayPoints
   };
   static constexpr auto MIN_RAINDROP_POSITION_T = 0.00F;
   static constexpr auto MAX_RAINDROP_POSITION_T = 0.95F;
   std::vector<Point2dInt> m_raindropPositions;
-  std::vector<std::unique_ptr<UTILS::MATH::IPath>> m_raindropPaths;
-  [[nodiscard]] auto GetNewRaindropPaths() const noexcept
-      -> std::vector<std::unique_ptr<UTILS::MATH::IPath>>;
+  std::vector<std::unique_ptr<IPath>> m_raindropPaths;
+  [[nodiscard]] auto GetNewRaindropPaths() const noexcept -> std::vector<std::unique_ptr<IPath>>;
   [[nodiscard]] auto GetNewRaindropPositions(uint32_t numRaindrops) const noexcept
       -> std::vector<Point2dInt>;
   [[nodiscard]] auto GetPositionsOnConcentricCircles(uint32_t numPositions,
@@ -122,10 +127,6 @@ inline auto RaindropPositions::OkToChangeNumRaindrops() const noexcept -> bool
   return m_raindropPositionT.HasJustHitEndBoundary();
 }
 
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
-using UTILS::MATH::TWO_PI;
-
 RaindropPositions::RaindropPositions(const FxHelper& fxHelper,
                                      const uint32_t numRaindrops,
                                      const Params& params) noexcept
@@ -158,7 +159,7 @@ auto RaindropPositions::SetNewTargetRectangleWeightPoint(
   m_params.targetRectangleWeightPoint =
       GetAcceptableTargetRectangleWeightPoint(targetRectangleWeightPoint);
   m_rectangleWeightPointT.SetNumSteps(
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_WEIGHT_POINT_STEPS, MAX_WEIGHT_POINT_STEPS + 1));
+      m_fxHelper->GetGoomRand().GetRandInRange(WEIGHT_POINT_STEPS_RANGE));
   m_rectangleWeightPointT.Reset();
 }
 

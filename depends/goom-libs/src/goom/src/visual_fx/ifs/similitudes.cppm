@@ -21,6 +21,17 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import :IfsTypes;
 
+using GOOM::COLOR::ColorMapPtrWrapper;
+using GOOM::COLOR::GetUnweightedRandomColorMaps;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::UTILS::GRAPHICS::ImageBitmap;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::DEGREES_180;
+using GOOM::UTILS::MATH::HALF;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::PI;
+
 namespace GOOM::VISUAL_FX::IFS
 {
 
@@ -30,38 +41,37 @@ public:
   [[nodiscard]] auto GetCPoint() const -> FltPoint;
   [[nodiscard]] auto GetColor() const -> Pixel;
   [[nodiscard]] auto GetColorMap() const -> const COLOR::ColorMapPtrWrapper&;
-  [[nodiscard]] auto GetCurrentPointBitmap() const -> const UTILS::GRAPHICS::ImageBitmap*;
+  [[nodiscard]] auto GetCurrentPointBitmap() const -> const ImageBitmap*;
 
 private:
   friend class Similitudes;
-  Dbl m_dbl_cx                                             = 0;
-  Dbl m_dbl_cy                                             = 0;
-  Dbl m_dbl_r1                                             = 0;
-  Dbl m_dbl_r2                                             = 0;
-  Dbl m_dbl_A1                                             = 0;
-  Dbl m_dbl_A2                                             = 0;
-  Flt m_cx                                                 = 0;
-  Flt m_cy                                                 = 0;
-  Flt m_r1                                                 = 0;
-  Flt m_r2                                                 = 0;
-  Flt m_cosA1                                              = 0;
-  Flt m_sinA1                                              = 0;
-  Flt m_cosA2                                              = 0;
-  Flt m_sinA2                                              = 0;
-  Pixel m_color                                            = BLACK_PIXEL;
-  const UTILS::GRAPHICS::ImageBitmap* m_currentPointBitmap = nullptr;
-  COLOR::ColorMapPtrWrapper m_colorMap{nullptr};
+  Dbl m_dbl_cx                            = 0;
+  Dbl m_dbl_cy                            = 0;
+  Dbl m_dbl_r1                            = 0;
+  Dbl m_dbl_r2                            = 0;
+  Dbl m_dbl_A1                            = 0;
+  Dbl m_dbl_A2                            = 0;
+  Flt m_cx                                = 0;
+  Flt m_cy                                = 0;
+  Flt m_r1                                = 0;
+  Flt m_r2                                = 0;
+  Flt m_cosA1                             = 0;
+  Flt m_sinA1                             = 0;
+  Flt m_cosA2                             = 0;
+  Flt m_sinA2                             = 0;
+  Pixel m_color                           = BLACK_PIXEL;
+  const ImageBitmap* m_currentPointBitmap = nullptr;
+  ColorMapPtrWrapper m_colorMap{nullptr};
 };
 
 class Similitudes
 {
 public:
-  Similitudes(const UTILS::MATH::IGoomRand& goomRand,
-              const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps);
+  Similitudes(const IGoomRand& goomRand, const SmallImageBitmaps& smallBitmaps);
 
   auto Init() -> void;
 
-  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedColorMaps) -> void;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void;
 
   auto UpdateMainSimis(Dbl uValue) -> void;
   auto IterateSimis() -> void;
@@ -89,11 +99,11 @@ private:
                              size_t extraSimiIndex,
                              Similitude& mainSimi) -> void;
   auto UpdateMainSimisFltPart() -> void;
-  [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) const -> const UTILS::GRAPHICS::ImageBitmap*;
+  [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) const -> const ImageBitmap*;
 
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
-  COLOR::WeightedRandomColorMaps m_colorMaps;
+  const IGoomRand* m_goomRand;
+  const SmallImageBitmaps* m_smallBitmaps;
+  WeightedRandomColorMaps m_colorMaps;
 
   using IfsFunc = std::function<FltPoint(const Similitude& simi, Flt x1, Flt y1, Flt x2, Flt y2)>;
   IfsFunc m_currentIfsFunc;
@@ -190,15 +200,6 @@ inline auto Similitude::GetCurrentPointBitmap() const -> const UTILS::GRAPHICS::
 {
   return m_currentPointBitmap;
 }
-
-using COLOR::GetUnweightedRandomColorMaps;
-using COLOR::WeightedRandomColorMaps;
-using UTILS::GRAPHICS::ImageBitmap;
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::DEGREES_180;
-using UTILS::MATH::HALF;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::PI;
 
 static constexpr auto NUM0_WEIGHT = 10.0F;
 static constexpr auto NUM1_WEIGHT = 05.0F;
@@ -428,9 +429,8 @@ auto Similitudes::GetSimiBitmap(const bool useBitmaps) const -> const ImageBitma
     return nullptr;
   }
 
-  static constexpr auto MIN_RES = 3U;
-  static constexpr auto MAX_RES = 7U;
-  const auto res                = m_goomRand->GetRandInRange(MIN_RES, MAX_RES);
+  static constexpr auto RES_RANGE = NumberRange{3U, 7U};
+  const auto res                  = m_goomRand->GetRandInRange(RES_RANGE);
 
   if (static constexpr auto PROB_SPHERE_BITMAP = 0.6F;
       m_goomRand->ProbabilityOf(PROB_SPHERE_BITMAP))

@@ -35,6 +35,7 @@ using UTILS::MATH::IGoomRand;
 namespace
 {
 
+using UTILS::MATH::NumberRange;
 using enum ZoomFilterMode;
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
@@ -127,8 +128,9 @@ auto GetFuncOfMode(const ZoomFilterMode baseFilterMode, const IGoomRand& goomRan
 
   for (auto i = 0U; i < MAX_RETRIES; ++i)
   {
+    static constexpr auto FILTER_MODE_RANGE = NumberRange{0U, NUM<ZoomFilterMode> - 1};
     if (const auto funcOfMode =
-            static_cast<ZoomFilterMode>(goomRand.GetRandInRange(0U, NUM<ZoomFilterMode>));
+            static_cast<ZoomFilterMode>(goomRand.GetRandInRange(FILTER_MODE_RANGE));
         IsAllowedFuncOfMode(funcOfMode, baseFilterMode))
     {
       return funcOfMode;

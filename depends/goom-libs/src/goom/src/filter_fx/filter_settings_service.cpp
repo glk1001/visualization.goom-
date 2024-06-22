@@ -725,14 +725,14 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
       }
     }
 {
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ >= MIN_MULTIPLIER_EFFECT_FREQ);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ <= MAX_MULTIPLIER_EFFECT_FREQ);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ >= MIN_MULTIPLIER_EFFECT_FREQ);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ <= MAX_MULTIPLIER_EFFECT_FREQ);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE >= MIN_MULTIPLIER_EFFECT_AMPLITUDE);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE <= MAX_MULTIPLIER_EFFECT_AMPLITUDE);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE >= MIN_MULTIPLIER_EFFECT_AMPLITUDE);
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE <= MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ >= MULTIPLIER_EFFECT_FREQ_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ <= MULTIPLIER_EFFECT_FREQ_RANGE.max);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ >= MULTIPLIER_EFFECT_FREQ_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ <= MULTIPLIER_EFFECT_FREQ_RANGE.max);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE >= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.max);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE >= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.max);
   static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS >= 0.0F);
   static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS <= 1.0F);
 }
@@ -805,28 +805,26 @@ auto FilterSettingsService::ResetRandomFilterMultiplierEffect() -> void
   {
     multiplierEffectsSettings.isActive = true;
 
-    multiplierEffectsSettings.xFreq =
-        m_goomRand->GetRandInRange(MIN_MULTIPLIER_EFFECT_FREQ, MAX_MULTIPLIER_EFFECT_FREQ);
+    multiplierEffectsSettings.xFreq = m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_FREQ_RANGE);
     if (m_goomRand->ProbabilityOf(PROB_MULTIPLIER_EFFECT_FREQUENCIES_EQUAL))
     {
       multiplierEffectsSettings.yFreq = multiplierEffectsSettings.xFreq;
     }
     else
     {
-      multiplierEffectsSettings.yFreq =
-          m_goomRand->GetRandInRange(MIN_MULTIPLIER_EFFECT_FREQ, MAX_MULTIPLIER_EFFECT_FREQ);
+      multiplierEffectsSettings.yFreq = m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_FREQ_RANGE);
     }
 
-    multiplierEffectsSettings.xAmplitude = m_goomRand->GetRandInRange(
-        MIN_MULTIPLIER_EFFECT_AMPLITUDE, MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+    multiplierEffectsSettings.xAmplitude =
+        m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_AMPLITUDE_RANGE);
     if (m_goomRand->ProbabilityOf(PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL))
     {
       multiplierEffectsSettings.yAmplitude = multiplierEffectsSettings.xAmplitude;
     }
     else
     {
-      multiplierEffectsSettings.yAmplitude = m_goomRand->GetRandInRange(
-          MIN_MULTIPLIER_EFFECT_AMPLITUDE, MAX_MULTIPLIER_EFFECT_AMPLITUDE);
+      multiplierEffectsSettings.yAmplitude =
+          m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_AMPLITUDE_RANGE);
     }
   }
 

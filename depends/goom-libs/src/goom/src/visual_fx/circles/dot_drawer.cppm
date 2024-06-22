@@ -12,6 +12,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Utils.EnumUtils;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
@@ -21,32 +22,44 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::COLOR::ColorMapPtrWrapper;
+using GOOM::COLOR::ColorMaps;
+using GOOM::COLOR::GetBrighterColor;
+using GOOM::COLOR::IColorMap;
+using GOOM::COLOR::RandomColorMaps;
+using GOOM::DRAW::IGoomDraw;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using GOOM::DRAW::SHAPE_DRAWERS::CircleDrawer;
+using GOOM::UTILS::NUM;
+using GOOM::UTILS::MATH::I_HALF;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::IncrementedValue;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+
 export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
 class DotDrawer
 {
 public:
-  DotDrawer(DRAW::IGoomDraw& draw,
-            const UTILS::MATH::IGoomRand& goomRand,
-            const Helper& helper) noexcept;
+  DotDrawer(IGoomDraw& draw, const IGoomRand& goomRand, const Helper& helper) noexcept;
 
-  auto SetWeightedColorMaps(const COLOR::RandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
 
-  auto DrawDot(const Point2dInt& pos,
-               uint32_t diameter,
-               const DRAW::MultiplePixels& colors) noexcept -> void;
+  auto DrawDot(const Point2dInt& pos, uint32_t diameter, const MultiplePixels& colors) noexcept
+      -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   const Helper* m_helper;
-  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer;
-  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
+  BitmapDrawer m_bitmapDrawer;
+  CircleDrawer m_circleDrawer;
   float m_globalBrightnessFactor = 1.0F;
 
-  static constexpr float MIN_BGND_MIX_T = 0.2F;
-  static constexpr float MAX_BGND_MIX_T = 0.8F;
+  static constexpr auto BGND_MIX_T_RANGE = NumberRange{0.2F, 0.8F};
   float m_bgndMainColorMixT;
   float m_bgndLowColorMixT;
   enum class DecorationType : UnderlyingEnumType
@@ -60,16 +73,15 @@ private:
   Pixel m_differentColor = BLACK_PIXEL;
 
   bool m_doCircleDotShapes = true;
-  COLOR::ColorMapPtrWrapper m_outerCircleDotColorMap{nullptr};
-  static constexpr float MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.1F;
-  static constexpr float MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T = 0.9F;
-  float m_outerCircleDotColorMix                          = MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T;
+  ColorMapPtrWrapper m_outerCircleDotColorMap{nullptr};
+  static constexpr auto OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE = NumberRange{0.1F, 0.9F};
+  float m_outerCircleDotColorMix                           = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.min;
 
   auto DrawBitmapDot(const Point2dInt& position,
                      uint32_t diameter,
-                     const DRAW::MultiplePixels& colors) noexcept -> void;
-  [[nodiscard]] auto GetRandomDifferentColor(
-      const COLOR::RandomColorMaps& weightedMaps) const noexcept -> Pixel;
+                     const MultiplePixels& colors) noexcept -> void;
+  [[nodiscard]] auto GetRandomDifferentColor(const RandomColorMaps& weightedMaps) const noexcept
+      -> Pixel;
   [[nodiscard]] auto GetRandomDecorationType() const noexcept -> DecorationType;
   [[nodiscard]] static auto IsSpecialPoint(const Point2dInt& bitmapPoint,
                                            uint32_t diameter) noexcept -> bool;
@@ -80,16 +92,15 @@ private:
                                       float mixT) const noexcept -> Pixel;
   auto DrawCircleDot(const Point2dInt& centre,
                      uint32_t diameter,
-                     const DRAW::MultiplePixels& colors,
-                     const COLOR::IColorMap& innerColorMap) noexcept -> void;
-  [[nodiscard]] static auto GetCircleColors(float brightness,
-                                            const DRAW::MultiplePixels& colors) noexcept
-      -> DRAW::MultiplePixels;
+                     const MultiplePixels& colors,
+                     const IColorMap& innerColorMap) noexcept -> void;
+  [[nodiscard]] static auto GetCircleColors(float brightness, const MultiplePixels& colors) noexcept
+      -> MultiplePixels;
   [[nodiscard]] static auto GetCircleColorsWithInner(float brightness,
-                                                     const DRAW::MultiplePixels& colors,
+                                                     const MultiplePixels& colors,
                                                      const Pixel& innerColor,
                                                      float innerColorMix) noexcept
-      -> DRAW::MultiplePixels;
+      -> MultiplePixels;
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
@@ -104,11 +115,11 @@ inline auto DotDrawer::SetGlobalBrightnessFactor(const float val) noexcept -> vo
 
 inline auto DotDrawer::GetRandomDecorationType() const noexcept -> DecorationType
 {
-  return static_cast<DecorationType>(m_goomRand->GetRandInRange(0U, UTILS::NUM<DecorationType>));
+  return static_cast<DecorationType>(m_goomRand->GetRandInRange(0U, NUM<DecorationType>));
 }
 
-inline auto DotDrawer::GetRandomDifferentColor(
-    const COLOR::RandomColorMaps& weightedMaps) const noexcept -> Pixel
+inline auto DotDrawer::GetRandomDifferentColor(const RandomColorMaps& weightedMaps) const noexcept
+    -> Pixel
 {
   return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange(0.0F, 1.0F));
 }
@@ -120,46 +131,33 @@ module :private;
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-using COLOR::ColorMaps;
-using COLOR::GetBrighterColor;
-using COLOR::IColorMap;
-using COLOR::RandomColorMaps;
-using DRAW::MultiplePixels;
-using UTILS::MATH::I_HALF;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
-
 static constexpr auto PROB_CIRCLES                          = 0.5F;
 static constexpr auto DOT_INSIDE_MIN_BRIGHTNESS_FACTOR      = 1.0F;
 static constexpr auto DOT_INSIDE_MAX_BRIGHTNESS_FACTOR      = 2.0F;
 static constexpr auto DECORATION_DIFFERENT_COLOR_BRIGHTNESS = 2.0F;
 static constexpr auto DECORATION_SPECIAL_BRIGHTNESS         = 4.0F;
 
-DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
-                     const IGoomRand& goomRand,
-                     const Helper& helper) noexcept
+DotDrawer::DotDrawer(IGoomDraw& draw, const IGoomRand& goomRand, const Helper& helper) noexcept
   : m_goomRand{&goomRand},
     m_helper{&helper},
     m_bitmapDrawer{draw},
     m_circleDrawer{draw},
-    m_bgndMainColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
-    m_bgndLowColorMixT{m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T)},
+    m_bgndMainColorMixT{m_goomRand->GetRandInRange(BGND_MIX_T_RANGE)},
+    m_bgndLowColorMixT{m_goomRand->GetRandInRange(BGND_MIX_T_RANGE)},
     m_decorationType{GetRandomDecorationType()}
 {
 }
 
 auto DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void
 {
-  m_bgndMainColorMixT      = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
-  m_bgndLowColorMixT       = m_goomRand->GetRandInRange(MIN_BGND_MIX_T, MAX_BGND_MIX_T);
+  m_bgndMainColorMixT      = m_goomRand->GetRandInRange(BGND_MIX_T_RANGE);
+  m_bgndLowColorMixT       = m_goomRand->GetRandInRange(BGND_MIX_T_RANGE);
   m_decorationType         = GetRandomDecorationType();
   m_differentColor         = GetRandomDifferentColor(weightedMaps);
   m_outerCircleDotColorMap = weightedMaps.GetRandomColorMap();
 
   m_doCircleDotShapes      = m_goomRand->ProbabilityOf(PROB_CIRCLES);
-  m_outerCircleDotColorMix = m_goomRand->GetRandInRange(MIN_OUTER_CIRCLE_DOT_COLOR_MIX_T,
-                                                        MAX_OUTER_CIRCLE_DOT_COLOR_MIX_T);
+  m_outerCircleDotColorMix = m_goomRand->GetRandInRange(OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE);
 }
 
 auto DotDrawer::DrawDot(const Point2dInt& pos,

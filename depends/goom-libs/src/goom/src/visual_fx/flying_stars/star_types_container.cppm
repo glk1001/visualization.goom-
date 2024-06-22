@@ -24,6 +24,18 @@ import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 import :StarColorsMaker;
 
+using GOOM::COLOR::GetUnweightedRandomColorMaps;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::COLOR::COLOR_DATA::ColorMapName;
+using GOOM::UTILS::NUM;
+using GOOM::UTILS::MATH::I_HALF;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::PI;
+using GOOM::UTILS::MATH::Sq;
+using GOOM::UTILS::MATH::THIRD_PI;
+using GOOM::UTILS::MATH::TWO_PI;
+
 export namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
@@ -67,19 +79,18 @@ class StarType; // NOLINT(readability-identifier-naming): Seems to be a clang-ti
 class StarTypesContainer
 {
 public:
-  StarTypesContainer(const PluginInfo& goomInfo, const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  StarTypesContainer(const StarTypesContainer&) noexcept = delete;
-  StarTypesContainer(StarTypesContainer&&) noexcept      = delete;
-  ~StarTypesContainer() noexcept = default;
+  StarTypesContainer(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept;
+  StarTypesContainer(const StarTypesContainer&) noexcept                    = delete;
+  StarTypesContainer(StarTypesContainer&&) noexcept                         = delete;
+  ~StarTypesContainer() noexcept                                            = default;
   auto operator=(const StarTypesContainer&) noexcept -> StarTypesContainer& = delete;
   auto operator=(StarTypesContainer&&) noexcept -> StarTypesContainer&      = delete;
 
   [[nodiscard]] auto GetRandomStarType() noexcept -> IStarType&;
 
   auto SetWeightedColorMaps(uint32_t starTypeId,
-                            const COLOR::WeightedRandomColorMaps& weightedMainColorMaps,
-                            const COLOR::WeightedRandomColorMaps& weightedLowColorMaps) noexcept
-      -> void;
+                            const WeightedRandomColorMaps& weightedMainColorMaps,
+                            const WeightedRandomColorMaps& weightedLowColorMaps) noexcept -> void;
   [[nodiscard]] auto GetCurrentColorMapsNames() const noexcept -> std::vector<std::string>;
 
   auto ChangeColorMode() noexcept -> void;
@@ -95,7 +106,7 @@ private:
     RAIN,
     FOUNTAIN,
   };
-  static_assert(NUM_STAR_TYPES == UTILS::NUM<AvailableStarTypes>);
+  static_assert(NUM_STAR_TYPES == NUM<AvailableStarTypes>);
   std::array<std::unique_ptr<StarType>, NUM_STAR_TYPES> m_starTypesList;
   static constexpr float STAR_TYPES_FIREWORKS_WEIGHT = 10.0F;
   static constexpr float STAR_TYPES_FOUNTAIN_WEIGHT  = 07.0F;
@@ -107,17 +118,6 @@ private:
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
-
-using COLOR::GetUnweightedRandomColorMaps;
-using COLOR::WeightedRandomColorMaps;
-using COLOR::COLOR_DATA::ColorMapName;
-using UTILS::NUM;
-using UTILS::MATH::I_HALF;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::PI;
-using UTILS::MATH::Sq;
-using UTILS::MATH::THIRD_PI;
-using UTILS::MATH::TWO_PI;
 
 class StarType : public IStarType
 {
@@ -165,24 +165,19 @@ private:
   [[nodiscard]] auto GetFixedMainColorMapName() const noexcept -> ColorMapName;
   [[nodiscard]] auto GetFixedLowColorMapName() const noexcept -> ColorMapName;
 
-  static constexpr auto MIN_NUM_STEPS_TO_REACH_MAX_AGE = 100.0F;
-  static constexpr auto MAX_NUM_STEPS_TO_REACH_MAX_AGE = 1000.0F;
+  static constexpr auto NUM_STEPS_TO_REACH_MAX_AGE_RANGE = NumberRange{100.0F, 1000.0F};
 
-  static constexpr float MIN_MIN_SIDE_WIND     = -0.10F;
-  static constexpr float MAX_MIN_SIDE_WIND     = -0.01F;
-  static constexpr float MIN_MAX_SIDE_WIND     = +0.01F;
-  static constexpr float MAX_MAX_SIDE_WIND     = +0.10F;
-  static constexpr float DEFAULT_MIN_SIDE_WIND = 0.0F;
-  static constexpr float DEFAULT_MAX_SIDE_WIND = 0.00001F;
-  float m_minSideWind                          = DEFAULT_MIN_SIDE_WIND;
-  float m_maxSideWind                          = DEFAULT_MAX_SIDE_WIND;
+  static constexpr auto MIN_SIDE_WIND_RANGE   = NumberRange{-0.10F, -0.01F};
+  static constexpr auto MAX_SIDE_WIND_RANGE   = NumberRange{+0.01F, +0.10F};
+  static constexpr auto DEFAULT_MIN_SIDE_WIND = 0.0F;
+  static constexpr auto DEFAULT_MAX_SIDE_WIND = 0.00001F;
+  float m_minSideWind                         = DEFAULT_MIN_SIDE_WIND;
+  float m_maxSideWind                         = DEFAULT_MAX_SIDE_WIND;
 
-  static constexpr float MIN_MIN_GRAVITY = +0.005F;
-  static constexpr float MAX_MIN_GRAVITY = +0.010F;
-  static constexpr float MIN_MAX_GRAVITY = +0.050F;
-  static constexpr float MAX_MAX_GRAVITY = +0.090F;
-  float m_minGravity                     = MAX_MIN_GRAVITY;
-  float m_maxGravity                     = MAX_MAX_GRAVITY;
+  static constexpr auto MIN_GRAVITY_RANGE = NumberRange{+0.005F, +0.010F};
+  static constexpr auto MAX_GRAVITY_RANGE = NumberRange{+0.050F, +0.090F};
+  float m_minGravity                      = MIN_GRAVITY_RANGE.max;
+  float m_maxGravity                      = MAX_GRAVITY_RANGE.max;
 
   friend class StarTypesContainer;
   auto ChangeColorMode() noexcept -> void;
@@ -306,8 +301,7 @@ auto StarTypesContainer::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcep
 // NOLINTNEXTLINE(cert-err58-cpp)
 static const auto DEFAULT_COLOR_MAP_TYPES = WeightedRandomColorMaps::GetAllColorMapsTypes();
 
-static constexpr auto MIN_Y_DISTANCE_OUT_OF_SCREEN = 10;
-static constexpr auto MAX_Y_DISTANCE_OUT_OF_SCREEN = 50;
+static constexpr auto Y_DISTANCE_OUT_OF_SCREEN_RANGE = NumberRange{10, 50};
 
 StarType::StarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
   : m_goomInfo{&goomInfo},
@@ -372,10 +366,10 @@ auto StarType::UpdateWindAndGravity() noexcept -> void
     return;
   }
 
-  m_minSideWind = m_goomRand->GetRandInRange(MIN_MIN_SIDE_WIND, MAX_MIN_SIDE_WIND);
-  m_maxSideWind = m_goomRand->GetRandInRange(MIN_MAX_SIDE_WIND, MAX_MAX_SIDE_WIND);
-  m_minGravity  = m_goomRand->GetRandInRange(MIN_MIN_GRAVITY, MAX_MIN_GRAVITY);
-  m_maxGravity  = m_goomRand->GetRandInRange(MIN_MAX_GRAVITY, MAX_MAX_GRAVITY);
+  m_minSideWind = m_goomRand->GetRandInRange(MIN_SIDE_WIND_RANGE);
+  m_maxSideWind = m_goomRand->GetRandInRange(MAX_SIDE_WIND_RANGE);
+  m_minGravity  = m_goomRand->GetRandInRange(MIN_GRAVITY_RANGE);
+  m_maxGravity  = m_goomRand->GetRandInRange(MAX_GRAVITY_RANGE);
 }
 
 auto StarType::GetColorMapsSet() const noexcept -> StarColors::ColorMapsSet
@@ -442,7 +436,7 @@ inline auto StarType::GetFixedLowColorMapName() const noexcept -> ColorMapName
 inline auto StarType::GetTAgeInc() const noexcept -> float
 {
   const auto numStepsToReachMaxAge =
-      GetGoomRand().GetRandInRange(MIN_NUM_STEPS_TO_REACH_MAX_AGE, MAX_NUM_STEPS_TO_REACH_MAX_AGE) *
+      GetGoomRand().GetRandInRange(NUM_STEPS_TO_REACH_MAX_AGE_RANGE) *
       (1.0F - GetGoomInfo().GetSoundEvents().GetGoomPower());
 
   return 1.0F / numStepsToReachMaxAge;
@@ -498,8 +492,7 @@ auto RainStarType::GetRandomizedSetupParams(const float defaultPathLength) const
   setupParams.startPos.x =
       static_cast<int32_t>(xFracOfHalfWidth * static_cast<float_t>(GetHalfWidth()));
 
-  setupParams.startPos.y =
-      -GetGoomRand().GetRandInRange(MIN_Y_DISTANCE_OUT_OF_SCREEN, MAX_Y_DISTANCE_OUT_OF_SCREEN + 1);
+  setupParams.startPos.y = -GetGoomRand().GetRandInRange(Y_DISTANCE_OUT_OF_SCREEN_RANGE);
 
   static constexpr auto LENGTH_FACTOR = 1.5F;
   setupParams.nominalPathLength       = LENGTH_FACTOR * defaultPathLength;
@@ -529,9 +522,8 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
   setupParams.startPos.x =
       static_cast<int32_t>(xFracOfHalfWidth * static_cast<float_t>(GetHalfWidth()));
 
-  setupParams.startPos.y =
-      GetGoomInfo().GetDimensions().GetIntHeight() +
-      GetGoomRand().GetRandInRange(MIN_Y_DISTANCE_OUT_OF_SCREEN, MAX_Y_DISTANCE_OUT_OF_SCREEN + 1);
+  setupParams.startPos.y = GetGoomInfo().GetDimensions().GetIntHeight() +
+                           GetGoomRand().GetRandInRange(Y_DISTANCE_OUT_OF_SCREEN_RANGE);
 
   setupParams.nominalPathLength = 1.0F + defaultPathLength;
 
@@ -552,10 +544,9 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
 auto FireworksStarType::GetRandomizedStarPathAngle(
     [[maybe_unused]] const Point2dInt& startPos) const noexcept -> float
 {
-  static constexpr auto MIN_ANGLE = 0.0F;
-  static constexpr auto MAX_ANGLE = TWO_PI;
+  static constexpr auto ANGLE_RANGE = NumberRange{0.0F, TWO_PI};
 
-  return GetGoomRand().GetRandInRange(MIN_ANGLE, MAX_ANGLE);
+  return GetGoomRand().GetRandInRange(ANGLE_RANGE);
 }
 
 auto RainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept -> float

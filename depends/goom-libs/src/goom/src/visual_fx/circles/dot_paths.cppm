@@ -16,6 +16,15 @@ import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::IPath;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::OscillatingFunction;
+using GOOM::UTILS::MATH::OscillatingPath;
+using GOOM::UTILS::MATH::SMALL_FLOAT;
+using GOOM::UTILS::MATH::StartAndEndPos;
+using GOOM::UTILS::MATH::TValue;
+
 export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
@@ -34,11 +43,11 @@ public:
   };
   struct DotPathParamsToAndFrom
   {
-    UTILS::MATH::OscillatingFunction::Params dotPathParamsToTarget;
-    UTILS::MATH::OscillatingFunction::Params dotPathParamsFromTarget;
+    OscillatingFunction::Params dotPathParamsToTarget;
+    OscillatingFunction::Params dotPathParamsFromTarget;
   };
 
-  DotPaths(const UTILS::MATH::IGoomRand& goomRand,
+  DotPaths(const IGoomRand& goomRand,
            uint32_t numDots,
            DotStartsToAndFrom&& dotStartsToAndFrom,
            const DotTargetsToAndFrom& dotTargetsToAndFrom,
@@ -55,7 +64,7 @@ public:
   auto ChangeDirection(Direction newDirection) noexcept -> void;
   auto SetPathParams(const DotPathParamsToAndFrom& dotPathParamsToAndFrom) noexcept -> void;
 
-  [[nodiscard]] auto GetPositionTRef() const noexcept -> const UTILS::MATH::TValue&;
+  [[nodiscard]] auto GetPositionTRef() const noexcept -> const TValue&;
   [[nodiscard]] auto HasUpdatedDotPathsToAndFrom() const noexcept -> bool;
   auto ResetUpdatedDotPathsToAndFromFlag() noexcept -> void;
 
@@ -73,7 +82,7 @@ public:
   [[nodiscard]] auto GetNextDotPositions() const noexcept -> std::vector<Point2dInt>;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   uint32_t m_numDots;
   DotStartsToAndFrom m_dotStartsToAndFrom;
   DotTargetsToAndFrom m_dotTargetsToAndFrom;
@@ -84,22 +93,22 @@ private:
   bool m_randomizePoints = false;
   struct DotPathsToAndFrom
   {
-    std::vector<UTILS::MATH::OscillatingPath> dotPathToTarget;
-    std::vector<UTILS::MATH::OscillatingPath> dotPathFromTarget;
+    std::vector<OscillatingPath> dotPathToTarget;
+    std::vector<OscillatingPath> dotPathFromTarget;
   };
   DotPathsToAndFrom m_dotPathsToAndFrom;
   bool m_updatedDotPathsToAndFrom = false;
   [[nodiscard]] auto GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noexcept
       -> DotPathsToAndFrom;
   auto MakeToDotPathsSameAsFromDotPaths() noexcept -> void;
-  [[nodiscard]] auto GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPath>& dotPath)
-      const noexcept -> std::vector<Point2dInt>;
+  [[nodiscard]] auto GetNextDotPositions(const std::vector<OscillatingPath>& dotPath) const noexcept
+      -> std::vector<Point2dInt>;
   Direction m_direction         = Direction::TO_TARGET;
   bool m_changeDirectionPending = false;
-  static auto IncrementPositionT(std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept -> void;
+  static auto IncrementPositionT(std::vector<OscillatingPath>& paths) noexcept -> void;
   [[nodiscard]] auto GetStepSize() const noexcept -> float;
-  auto CheckReverse(Direction currentDirection,
-                    const std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept -> void;
+  auto CheckReverse(Direction currentDirection, const std::vector<OscillatingPath>& paths) noexcept
+      -> void;
   [[nodiscard]] static auto GetOppositeDirection(Direction direction) noexcept -> Direction;
   [[nodiscard]] auto GetSmallRandomOffset() const noexcept -> Vec2dInt;
 };
@@ -118,10 +127,10 @@ inline auto DotPaths::SetPathParams(const DotPathParamsToAndFrom& dotPathParamsT
 inline auto DotPaths::SetPositionTNumSteps(const uint32_t numSteps) noexcept -> void
 {
   std::ranges::for_each(m_dotPathsToAndFrom.dotPathToTarget,
-                        [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
+                        [&numSteps](IPath& path) { path.SetNumSteps(numSteps); });
 
   std::ranges::for_each(m_dotPathsToAndFrom.dotPathFromTarget,
-                        [&numSteps](UTILS::MATH::IPath& path) { path.SetNumSteps(numSteps); });
+                        [&numSteps](IPath& path) { path.SetNumSteps(numSteps); });
 }
 
 inline auto DotPaths::IncrementPositionT() noexcept -> void
@@ -138,19 +147,17 @@ inline auto DotPaths::IncrementPositionT() noexcept -> void
   }
 }
 
-inline auto DotPaths::IncrementPositionT(std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept
-    -> void
+inline auto DotPaths::IncrementPositionT(std::vector<OscillatingPath>& paths) noexcept -> void
 {
   if (paths.front().IsStopped())
   {
     return;
   }
-  std::ranges::for_each(paths, [](UTILS::MATH::IPath& path) { path.IncrementT(); });
+  std::ranges::for_each(paths, [](IPath& path) { path.IncrementT(); });
 }
 
 inline auto DotPaths::CheckReverse(const Direction currentDirection,
-                                   const std::vector<UTILS::MATH::OscillatingPath>& paths) noexcept
-    -> void
+                                   const std::vector<OscillatingPath>& paths) noexcept -> void
 {
   if (not paths.front().IsStopped())
   {
@@ -192,14 +199,14 @@ inline auto DotPaths::ChangeDirection(const Direction newDirection) noexcept -> 
   m_direction = newDirection;
 
   std::ranges::for_each(m_dotPathsToAndFrom.dotPathToTarget,
-                        [](UTILS::MATH::IPath& path)
+                        [](IPath& path)
                         {
                           path.Reset(0.0F);
                           path.IncrementT();
                         });
 
   std::ranges::for_each(m_dotPathsToAndFrom.dotPathFromTarget,
-                        [](UTILS::MATH::IPath& path)
+                        [](IPath& path)
                         {
                           path.Reset(0.0F);
                           path.IncrementT();
@@ -216,7 +223,7 @@ inline auto DotPaths::GetOppositeDirection(const Direction direction) noexcept -
   return Direction::TO_TARGET;
 }
 
-inline auto DotPaths::GetPositionTRef() const noexcept -> const UTILS::MATH::TValue&
+inline auto DotPaths::GetPositionTRef() const noexcept -> const TValue&
 {
   if (m_direction == Direction::TO_TARGET)
   {
@@ -248,12 +255,12 @@ inline auto DotPaths::GetPositionTNumSteps() const noexcept -> uint32_t
 
 inline auto DotPaths::HasPositionTJustHitStartBoundary() const noexcept -> bool
 {
-  return IsCloseToStartBoundary(GetStepSize() - UTILS::MATH::SMALL_FLOAT);
+  return IsCloseToStartBoundary(GetStepSize() - SMALL_FLOAT);
 }
 
 inline auto DotPaths::HasPositionTJustHitEndBoundary() const noexcept -> bool
 {
-  return IsCloseToEndBoundary(GetStepSize() - UTILS::MATH::SMALL_FLOAT);
+  return IsCloseToEndBoundary(GetStepSize() - SMALL_FLOAT);
 }
 
 inline auto DotPaths::GetStepSize() const noexcept -> float
@@ -302,11 +309,6 @@ module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {
-
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::OscillatingPath;
-using UTILS::MATH::StartAndEndPos;
-using UTILS::MATH::TValue;
 
 DotPaths::DotPaths(const IGoomRand& goomRand,
                    const uint32_t numDots,
@@ -373,8 +375,8 @@ auto DotPaths::GetNextDotPositions() const noexcept -> std::vector<Point2dInt>
   return GetNextDotPositions(m_dotPathsToAndFrom.dotPathFromTarget);
 }
 
-auto DotPaths::GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPath>& dotPath)
-    const noexcept -> std::vector<Point2dInt>
+auto DotPaths::GetNextDotPositions(const std::vector<OscillatingPath>& dotPath) const noexcept
+    -> std::vector<Point2dInt>
 {
   auto nextDotPositions = std::vector<Point2dInt>(m_numDots);
   for (auto i = 0U; i < m_numDots; ++i)
@@ -390,10 +392,8 @@ auto DotPaths::GetNextDotPositions(const std::vector<UTILS::MATH::OscillatingPat
 
 inline auto DotPaths::GetSmallRandomOffset() const noexcept -> Vec2dInt
 {
-  static constexpr auto MIN_VARIATION = -5;
-  static constexpr auto MAX_VARIATION = +5;
-  return {m_goomRand->GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1),
-          m_goomRand->GetRandInRange(MIN_VARIATION, MAX_VARIATION + 1)};
+  static constexpr auto VARIATION_RANGE = NumberRange{-5, +5};
+  return {m_goomRand->GetRandInRange(VARIATION_RANGE), m_goomRand->GetRandInRange(VARIATION_RANGE)};
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

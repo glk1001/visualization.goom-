@@ -30,6 +30,28 @@ import Goom.Lib.Point2d;
 import Goom.Lib.SPimpl;
 import :TubeData;
 
+using GOOM::COLOR::ColorAdjustment;
+using GOOM::COLOR::ColorMapPtrWrapper;
+using GOOM::COLOR::ColorMaps;
+using GOOM::COLOR::GetLightenedColor;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::UTILS::Timer;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::ISimplePath;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::OscillatingFunction;
+using GOOM::UTILS::MATH::OscillatingPath;
+using GOOM::UTILS::MATH::PI;
+using GOOM::UTILS::MATH::SMALL_FLOAT;
+using GOOM::UTILS::MATH::Sq;
+using GOOM::UTILS::MATH::StartAndEndPos;
+using GOOM::UTILS::MATH::THIRD_PI;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::TWO_PI;
+using GOOM::UTILS::MATH::U_HALF;
+using GOOM::UTILS::MATH::Weights;
+
 namespace GOOM::VISUAL_FX::TUBES
 {
 
@@ -76,7 +98,7 @@ private:
 class Tube
 {
 public:
-  Tube(const TubeData& data, const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
+  Tube(const TubeData& data, const OscillatingFunction::Params& pathParams) noexcept;
 
   [[nodiscard]] auto IsActive() const noexcept -> bool;
 
@@ -99,7 +121,7 @@ public:
   auto DecreaseCentreSpeed() noexcept -> void;
 
   auto SetAllowOscillatingCirclePaths(bool val) noexcept -> void;
-  auto SetCirclePathParams(const UTILS::MATH::OscillatingFunction::Params& params) noexcept -> void;
+  auto SetCirclePathParams(const OscillatingFunction::Params& params) noexcept -> void;
   static const float NORMAL_CIRCLE_SPEED;
   auto SetCircleSpeed(float val) noexcept -> void;
   auto IncreaseCircleSpeed() noexcept -> void;
@@ -118,27 +140,6 @@ private:
 namespace GOOM::VISUAL_FX::TUBES
 {
 
-using COLOR::ColorAdjustment;
-using COLOR::ColorMapPtrWrapper;
-using COLOR::ColorMaps;
-using COLOR::GetLightenedColor;
-using COLOR::WeightedRandomColorMaps;
-using DRAW::MultiplePixels;
-using UTILS::Timer;
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::ISimplePath;
-using UTILS::MATH::OscillatingFunction;
-using UTILS::MATH::OscillatingPath;
-using UTILS::MATH::PI;
-using UTILS::MATH::SMALL_FLOAT;
-using UTILS::MATH::Sq;
-using UTILS::MATH::StartAndEndPos;
-using UTILS::MATH::THIRD_PI;
-using UTILS::MATH::TValue;
-using UTILS::MATH::TWO_PI;
-using UTILS::MATH::U_HALF;
-using UTILS::MATH::Weights;
-
 static constexpr auto NUM_SHAPES_PER_TUBE = 45U;
 // Strangely, 'NUM_SHAPES_PER_TUBE = 100' gives a small gap in
 // circle at 90 and 270 degrees.
@@ -150,12 +151,11 @@ static constexpr auto MAX_NO_BOUNDARY_SHAPES_TIME = 1U;
 static constexpr auto PROB_HEX_DOT_SHAPE          = 1.0F / 50.0F;
 static constexpr auto MAX_HEX_DOT_SHAPES_TIME     = 100U;
 
-static constexpr auto MIN_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 6;
-static constexpr auto MAX_STRIPE_WIDTH = NUM_SHAPES_PER_TUBE / 3;
-static_assert(MIN_STRIPE_WIDTH > 0);
+static constexpr auto STRIPE_WIDTH_RANGE =
+    NumberRange{NUM_SHAPES_PER_TUBE / 6U, NUM_SHAPES_PER_TUBE / 3U};
+static_assert(STRIPE_WIDTH_RANGE.min > 0);
 
-static constexpr auto MIN_NUM_CIRCLES_IN_GROUP = 10U;
-static constexpr auto MAX_NUM_CIRCLES_IN_GROUP = 100U;
+static constexpr auto MAX_INDEX_CIRCLES_IN_GROUP_RANGE = NumberRange{10U, 100U};
 
 static constexpr auto MIN_HEX_SIZE = 3.0F;
 static constexpr auto MAX_HEX_SIZE = 9.0F;
@@ -174,8 +174,7 @@ enum class LowColorTypes : UnderlyingEnumType
   MAIN_COLOR,
   LIGHTENED_LOW_COLOR,
 };
-static constexpr auto MIN_LOW_COLOR_TYPE_TIME = 100U;
-static constexpr auto MAX_LOW_COLOR_TYPE_TIME = 1000U;
+static constexpr auto LOW_COLOR_TYPE_TIME_RANGE = NumberRange{100U, 1000U};
 
 static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.8F;
 static constexpr auto LIGHTER_COLOR_POWER     = 10.0F;
@@ -233,7 +232,7 @@ private:
   std::vector<ShapeColorMaps> m_circleColorMaps;
   std::vector<ShapeColors> m_oldCircleColors;
   TValue m_circleColorsT{
-      {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_NUM_CIRCLES_IN_GROUP}
+      {TValue::StepType::CONTINUOUS_REPEATABLE, MAX_INDEX_CIRCLES_IN_GROUP_RANGE.max + 1}
   };
 
   ColorMapPtrWrapper m_outerCircleMainColorMap;
@@ -266,21 +265,21 @@ private:
                   const TValue& t,
                   ShapeColors* oldColors) const noexcept -> void;
 
-  uint32_t m_stripeWidth = MIN_STRIPE_WIDTH;
+  uint32_t m_stripeWidth = STRIPE_WIDTH_RANGE.min;
   [[nodiscard]] auto GetShapeNumToUse(uint32_t shapeNum) const noexcept -> uint32_t;
   [[nodiscard]] auto GetBrightness(const Shape& shape,
                                    const Point2dInt& shapeCentrePos) const noexcept -> float;
 
-  [[nodiscard]] auto GetShapeColors(uint32_t shapeNum, float brightness) const noexcept
-      -> ShapeColors;
-  [[nodiscard]] auto GetCircleColors(uint32_t circleNum, float brightness) const noexcept
-      -> ShapeColors;
+  [[nodiscard]] auto GetShapeColors(uint32_t shapeNum,
+                                    float brightness) const noexcept -> ShapeColors;
+  [[nodiscard]] auto GetCircleColors(uint32_t circleNum,
+                                     float brightness) const noexcept -> ShapeColors;
   [[nodiscard]] auto GetColors(const ShapeColorMaps& shapeColorMaps,
                                const TValue& t,
                                const ShapeColors& oldShapeColors,
                                float brightness) const noexcept -> ShapeColors;
-  [[nodiscard]] static auto GetLowColor(LowColorTypes colorType, const ShapeColors& colors) noexcept
-      -> Pixel;
+  [[nodiscard]] static auto GetLowColor(LowColorTypes colorType,
+                                        const ShapeColors& colors) noexcept -> Pixel;
   [[nodiscard]] static auto GetLowMixedColor(LowColorTypes colorType,
                                              const ShapeColors& colors1,
                                              const ShapeColors& colors2,
@@ -293,8 +292,8 @@ private:
                                                   float mixT) noexcept -> Pixel;
   static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
   BrightnessAttenuation m_brightnessAttenuation;
-  [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
-      -> Pixel;
+  [[nodiscard]] auto GetFinalColor(const Pixel& oldColor,
+                                   const Pixel& color) const noexcept -> Pixel;
   [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
                                          const Shape& shape,
                                          float brightness) const noexcept -> ShapeColors;
@@ -391,8 +390,8 @@ public:
 
 private:
   TubeData m_data;
-  std::unique_ptr<ShapeColorizer> m_colorizer{
-      std::make_unique<ShapeColorizer>(NUM_SHAPES_PER_TUBE, m_data, MAX_NUM_CIRCLES_IN_GROUP)};
+  std::unique_ptr<ShapeColorizer> m_colorizer{std::make_unique<ShapeColorizer>(
+      NUM_SHAPES_PER_TUBE, m_data, MAX_INDEX_CIRCLES_IN_GROUP_RANGE.max + 1)};
   bool m_active                                = true;
   static constexpr float PATH_STEP             = NML_CIRCLE_SPEED;
   static constexpr uint32_t SHAPE_T_DELAY_TIME = 10;
@@ -407,9 +406,8 @@ private:
                                              const OscillatingFunction::Params& pathParams) noexcept
       -> std::vector<Shape>;
 
-  Timer m_circleGroupTimer{
-      *m_data.goomTime,
-      m_data.goomRand->GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP)};
+  Timer m_circleGroupTimer{*m_data.goomTime,
+                           m_data.goomRand->GetRandInRange(MAX_INDEX_CIRCLES_IN_GROUP_RANGE)};
   Timer m_interiorShapeTimer{*m_data.goomTime, MAX_INTERIOR_SHAPES_TIME};
   Timer m_noBoundaryShapeTimer{*m_data.goomTime, MAX_NO_BOUNDARY_SHAPES_TIME};
   Timer m_hexDotShapeTimer{*m_data.goomTime, MAX_HEX_DOT_SHAPES_TIME, true};
@@ -418,7 +416,7 @@ private:
   uint32_t m_interiorShapeSize{GetInteriorShapeSize(m_hexLen)};
   [[nodiscard]] auto GetInteriorShapeSize(float hexLen) const noexcept -> uint32_t;
 
-  Timer m_lowColorTypeTimer{*m_data.goomTime, MAX_LOW_COLOR_TYPE_TIME};
+  Timer m_lowColorTypeTimer{*m_data.goomTime, LOW_COLOR_TYPE_TIME_RANGE.max};
   LowColorTypes m_currentLowColorType = LowColorTypes::TRUE_LOW_COLOR;
   Weights<LowColorTypes> m_lowColorTypes;
 
@@ -604,7 +602,7 @@ auto Tube::TubeImpl::ResetColorMaps() noexcept -> void
 {
   m_colorizer->ResetColorMaps();
   m_circleGroupTimer.SetTimeLimitAndResetToZero(
-      m_data.goomRand->GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP));
+      m_data.goomRand->GetRandInRange(MAX_INDEX_CIRCLES_IN_GROUP_RANGE));
 }
 
 inline auto Tube::TubeImpl::RotateShapeColorMaps() noexcept -> void
@@ -669,14 +667,16 @@ inline auto Tube::TubeImpl::SetCentreSpeed(const float val) noexcept -> void
 
 inline auto Tube::TubeImpl::IncreaseCentreSpeed() noexcept -> void
 {
-  const auto factor   = m_data.goomRand->GetRandInRange(1.01F, 10.0F);
+  static constexpr auto FACTOR_RANGE = NumberRange{1.01F, 10.0F};
+  const auto factor                  = m_data.goomRand->GetRandInRange(FACTOR_RANGE);
   const auto newSpeed = std::min(MAX_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
 
 inline auto Tube::TubeImpl::DecreaseCentreSpeed() noexcept -> void
 {
-  const auto factor   = m_data.goomRand->GetRandInRange(0.1F, 0.99F);
+  static constexpr auto FACTOR_RANGE = NumberRange{0.1F, 0.99F};
+  const auto factor                  = m_data.goomRand->GetRandInRange(FACTOR_RANGE);
   const auto newSpeed = std::min(MIN_CENTRE_SPEED, m_centrePath->GetStepSize() * factor);
   m_centrePath->SetStepSize(newSpeed);
 }
@@ -710,10 +710,8 @@ inline auto Tube::TubeImpl::SetCircleSpeed(const float val) noexcept -> void
 
 inline auto Tube::TubeImpl::IncreaseCircleSpeed() noexcept -> void
 {
-  static constexpr auto MIN_INCREASE_SPEED_FACTOR = 1.01F;
-  static constexpr auto MAX_INCREASE_SPEED_FACTOR = 10.0F;
-  const auto factor =
-      m_data.goomRand->GetRandInRange(MIN_INCREASE_SPEED_FACTOR, MAX_INCREASE_SPEED_FACTOR);
+  static constexpr auto INCREASE_SPEED_FACTOR_RANGE = NumberRange{1.01F, 10.0F};
+  const auto factor = m_data.goomRand->GetRandInRange(INCREASE_SPEED_FACTOR_RANGE);
 
   const auto newSpeed = std::min(MAX_CIRCLE_SPEED, GetCircleSpeed() * factor);
   SetCircleSpeed(newSpeed);
@@ -721,10 +719,8 @@ inline auto Tube::TubeImpl::IncreaseCircleSpeed() noexcept -> void
 
 inline auto Tube::TubeImpl::DecreaseCircleSpeed() noexcept -> void
 {
-  static constexpr auto MIN_DECREASE_SPEED_FACTOR = 0.1F;
-  static constexpr auto MAX_DECREASE_SPEED_FACTOR = 0.99F;
-  const auto factor =
-      m_data.goomRand->GetRandInRange(MIN_DECREASE_SPEED_FACTOR, MAX_DECREASE_SPEED_FACTOR);
+  static constexpr auto DECREASE_SPEED_FACTOR_RANGE = NumberRange{0.1F, 0.99F};
+  const auto factor = m_data.goomRand->GetRandInRange(DECREASE_SPEED_FACTOR_RANGE);
 
   const auto newSpeed = std::max(MIN_CIRCLE_SPEED, GetCircleSpeed() * factor);
   SetCircleSpeed(newSpeed);
@@ -784,20 +780,19 @@ inline auto Tube::TubeImpl::UpdateTimers() noexcept -> void
   {
     m_currentLowColorType = m_lowColorTypes.GetRandomWeighted();
     m_lowColorTypeTimer.SetTimeLimitAndResetToZero(
-        m_data.goomRand->GetRandInRange(MIN_LOW_COLOR_TYPE_TIME, MAX_LOW_COLOR_TYPE_TIME + 1));
+        m_data.goomRand->GetRandInRange(LOW_COLOR_TYPE_TIME_RANGE));
   }
 }
 
 inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) const noexcept -> uint32_t
 {
-  static constexpr auto MIN_SIZE_FACTOR = 0.5F;
-  static constexpr auto MAX_SIZE_FACTOR = 1.3F;
+  static constexpr auto SIZE_FACTOR_RANGE = NumberRange{0.5F, 1.3F};
   return static_cast<uint32_t>(
-      std::round(m_data.goomRand->GetRandInRange(MIN_SIZE_FACTOR, MAX_SIZE_FACTOR) * hexLen));
+      std::round(m_data.goomRand->GetRandInRange(SIZE_FACTOR_RANGE) * hexLen));
 }
 
-auto Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const noexcept
-    -> void
+auto Tube::TubeImpl::DrawShape(const Shape& shape,
+                               const Vec2dInt& centreOffset) const noexcept -> void
 {
   const auto jitterXOffset  = m_data.goomRand->GetRandInRange(0, m_maxJitterOffset + 1);
   const auto jitterYOffset  = jitterXOffset;
@@ -911,6 +906,7 @@ ShapeColorizer::ShapeColorizer(const uint32_t numShapes,
 {
   Expects(numShapes > 0);
   Expects(numCircles > 0);
+  Expects(numCircles <= (MAX_INDEX_CIRCLES_IN_GROUP_RANGE.max + 1));
   InitColorMaps();
   ResetColorMaps();
 }
@@ -954,7 +950,7 @@ auto ShapeColorizer::ResetColorMaps() noexcept -> void
   ResetColorMixMode();
   ResetColorMapsLists();
 
-  m_stripeWidth = m_data.goomRand->GetRandInRange(MIN_STRIPE_WIDTH, MAX_STRIPE_WIDTH + 1);
+  m_stripeWidth = m_data.goomRand->GetRandInRange(STRIPE_WIDTH_RANGE);
 }
 
 inline auto ShapeColorizer::ResetColorMapsLists() noexcept -> void
@@ -1234,8 +1230,8 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
   };
 }
 
-inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
-    -> Pixel
+inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor,
+                                          const Pixel& color) const noexcept -> Pixel
 {
   return ColorMaps::GetColorMix(oldColor, color, m_oldT());
 }

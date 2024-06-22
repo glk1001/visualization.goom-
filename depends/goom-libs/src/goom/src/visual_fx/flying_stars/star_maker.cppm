@@ -13,13 +13,16 @@ import :StarTypesContainer;
 import :StarColorsMaker;
 import :Stars;
 
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
 class StarMaker
 {
 public:
-  explicit StarMaker(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit StarMaker(const IGoomRand& goomRand) noexcept;
 
   struct StarProperties
   {
@@ -35,7 +38,7 @@ public:
   [[nodiscard]] auto MakeNewStar() noexcept -> Star;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   const IStarType* m_starType{};
   uint32_t m_numStarsToMake = 0U;
   IStarType::SetupParams m_starSetupParams{};
@@ -58,7 +61,7 @@ inline auto StarMaker::MoreStarsToMake() const noexcept -> bool
   return m_numStarsToMake > 0;
 }
 
-StarMaker::StarMaker(const UTILS::MATH::IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
+StarMaker::StarMaker(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
 
@@ -106,10 +109,9 @@ auto StarMaker::GetNewStarParams(const float starPathAngle) const noexcept -> St
 {
   const auto initialPosition = ToPoint2dFlt(m_starSetupParams.startPos);
 
-  static constexpr auto MIN_PATH_LENGTH = 0.01F;
-  static constexpr auto MAX_PATH_LENGTH = 2.00F;
-  const auto starPathLength             = m_starSetupParams.nominalPathLength *
-                              m_goomRand->GetRandInRange(MIN_PATH_LENGTH, MAX_PATH_LENGTH);
+  static constexpr auto PATH_LENGTH_RANGE = NumberRange{0.01F, 2.00F};
+  const auto starPathLength =
+      m_starSetupParams.nominalPathLength * m_goomRand->GetRandInRange(PATH_LENGTH_RANGE);
   static constexpr auto LENGTH_OFFSET = -0.2F;
   const auto initialVelocity          = Vec2dFlt{starPathLength * std::cos(starPathAngle),
                                         LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};

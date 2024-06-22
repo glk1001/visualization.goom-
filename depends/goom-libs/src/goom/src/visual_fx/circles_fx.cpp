@@ -38,6 +38,7 @@ using CIRCLES::DotPaths;
 using FX_UTILS::RandomPixelBlender;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::Weights;
 
@@ -86,16 +87,13 @@ private:
   RandomPixelBlender m_pixelBlender;
   auto UpdatePixelBlender() noexcept -> void;
 
-  static constexpr uint32_t MIN_BLANK_AT_TARGET_TIME = 1;
-  static constexpr uint32_t MAX_BLANK_AT_TARGET_TIME = 5;
-  uint32_t m_blankAtTargetTime                       = m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_BLANK_AT_TARGET_TIME, MAX_BLANK_AT_TARGET_TIME + 1);
+  static constexpr auto BLANK_AT_TARGET_TIME_RANGE = NumberRange{1U, 5U};
+  uint32_t m_blankAtTargetTime =
+      m_fxHelper->GetGoomRand().GetRandInRange(BLANK_AT_TARGET_TIME_RANGE);
   Timer m_blankAtTargetTimer{m_fxHelper->GetGoomTime(), m_blankAtTargetTime, true};
 
-  static constexpr uint32_t MIN_PAUSE_AT_START_TIME = 0;
-  static constexpr uint32_t MAX_PAUSE_AT_START_TIME = 0;
-  uint32_t m_pauseAtStartTime                       = m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_PAUSE_AT_START_TIME, MAX_PAUSE_AT_START_TIME + 1);
+  static constexpr auto PAUSE_AT_START_TIME_RANGE = NumberRange{0U, 0U};
+  uint32_t m_pauseAtStartTime = m_fxHelper->GetGoomRand().GetRandInRange(PAUSE_AT_START_TIME_RANGE);
   Timer m_pauseAtStartTimer{m_fxHelper->GetGoomTime(), m_pauseAtStartTime, true};
 };
 
@@ -250,10 +248,9 @@ inline auto CirclesFx::CirclesFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidp
 inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
     const Point2dInt& zoomMidpoint) const noexcept -> Point2dInt
 {
-  static constexpr auto MIN_LERP = 0.0F;
-  static constexpr auto MAX_LERP = 1.0F;
-  const auto midLerp             = m_fxHelper->GetGoomRand().GetRandInRange(MIN_LERP, MAX_LERP);
-  const auto newCircleCentre     = lerp(m_screenCentre, zoomMidpoint, midLerp);
+  static constexpr auto LERP_RANGE = NumberRange{0.0F, 1.0F};
+  const auto midLerp               = m_fxHelper->GetGoomRand().GetRandInRange(LERP_RANGE);
+  const auto newCircleCentre       = lerp(m_screenCentre, zoomMidpoint, midLerp);
 
   const auto minPoint = Point2dInt{m_fxHelper->GetDimensions().GetIntWidth() / 10,
                                    m_fxHelper->GetDimensions().GetIntHeight() / 10};
@@ -319,10 +316,8 @@ inline auto CirclesFx::CirclesFxImpl::UpdateStates() noexcept -> void
     return;
   }
 
-  m_blankAtTargetTime = m_fxHelper->GetGoomRand().GetRandInRange(MIN_BLANK_AT_TARGET_TIME,
-                                                                 MAX_BLANK_AT_TARGET_TIME + 1);
-  m_pauseAtStartTime  = m_fxHelper->GetGoomRand().GetRandInRange(MIN_PAUSE_AT_START_TIME,
-                                                                MAX_PAUSE_AT_START_TIME + 1);
+  m_blankAtTargetTime = m_fxHelper->GetGoomRand().GetRandInRange(BLANK_AT_TARGET_TIME_RANGE);
+  m_pauseAtStartTime  = m_fxHelper->GetGoomRand().GetRandInRange(PAUSE_AT_START_TIME_RANGE);
 
   m_circleParamsBuilder.SetCircleStartMode(m_weightedCircleStartModes.GetRandomWeighted());
   m_circleParamsBuilder.SetCircleTargetMode(m_weightedCircleTargetModes.GetRandomWeighted());
@@ -350,17 +345,14 @@ inline auto CirclesFx::CirclesFxImpl::UpdateCirclePathParams() noexcept -> void
 inline auto CirclesFx::CirclesFxImpl::GetPathParams() const noexcept
     -> std::vector<OscillatingFunction::Params>
 {
-  static constexpr auto MIN_PATH_AMPLITUDE = 90.0F;
-  static constexpr auto MAX_PATH_AMPLITUDE = 110.0F;
-  static constexpr auto MIN_PATH_X_FREQ    = 0.9F;
-  static constexpr auto MAX_PATH_X_FREQ    = 2.0F;
-  static constexpr auto MIN_PATH_Y_FREQ    = 0.9F;
-  static constexpr auto MAX_PATH_Y_FREQ    = 2.0F;
+  static constexpr auto PATH_AMPLITUDE_RANGE = NumberRange{90.0F, 110.0F};
+  static constexpr auto PATH_X_FREQ_RANGE    = NumberRange{0.9F, 2.0F};
+  static constexpr auto PATH_Y_FREQ_RANGE    = NumberRange{0.9F, 2.0F};
 
   const auto params = OscillatingFunction::Params{
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_PATH_X_FREQ, MAX_PATH_X_FREQ),
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_PATH_Y_FREQ, MAX_PATH_Y_FREQ),
+      m_fxHelper->GetGoomRand().GetRandInRange(PATH_AMPLITUDE_RANGE),
+      m_fxHelper->GetGoomRand().GetRandInRange(PATH_X_FREQ_RANGE),
+      m_fxHelper->GetGoomRand().GetRandInRange(PATH_Y_FREQ_RANGE),
   };
 
   auto pathParams = std::vector<OscillatingFunction::Params>(NUM_CIRCLES);

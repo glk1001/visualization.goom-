@@ -13,13 +13,20 @@ import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::OscillatingFunction;
+using GOOM::UTILS::MATH::OscillatingPath;
+using GOOM::UTILS::MATH::StartAndEndPos;
+using GOOM::UTILS::MATH::TValue;
+
 namespace GOOM::VISUAL_FX::L_SYSTEM
 {
 
 class LSysPath
 {
 public:
-  explicit LSysPath(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit LSysPath(const IGoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetPathStart() const noexcept -> const Point2dInt&;
   auto SetPathStart(const Point2dInt& pathStart) noexcept -> void;
@@ -33,7 +40,7 @@ public:
   [[nodiscard]] auto GetNextPathPosition() const noexcept -> Point2dInt;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
 
   static constexpr auto DEFAULT_PATH_NUM_STEPS = 100U;
   uint32_t m_pathNumSteps                      = DEFAULT_PATH_NUM_STEPS;
@@ -43,12 +50,12 @@ private:
   bool m_newLSysPathTarget = false;
   struct PathsToAndFrom
   {
-    UTILS::MATH::OscillatingPath pathToTarget;
-    UTILS::MATH::OscillatingPath pathFromTarget;
+    OscillatingPath pathToTarget;
+    OscillatingPath pathFromTarget;
   };
   std::unique_ptr<PathsToAndFrom> m_pathsToAndFrom = GetPathsToAndFrom();
   [[nodiscard]] auto GetPathsToAndFrom() const noexcept -> std::unique_ptr<PathsToAndFrom>;
-  [[nodiscard]] auto GetPathParams() const noexcept -> UTILS::MATH::OscillatingFunction::Params;
+  [[nodiscard]] auto GetPathParams() const noexcept -> OscillatingFunction::Params;
   enum class Direction : UnderlyingEnumType
   {
     TO_TARGET,
@@ -74,12 +81,6 @@ inline auto LSysPath::GetPathTarget() const noexcept -> const Point2dInt&
 {
   return m_lSysPathTarget;
 }
-
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::OscillatingFunction;
-using UTILS::MATH::OscillatingPath;
-using UTILS::MATH::StartAndEndPos;
-using UTILS::MATH::TValue;
 
 LSysPath::LSysPath(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
@@ -145,17 +146,14 @@ auto LSysPath::GetPathsToAndFrom() const noexcept -> std::unique_ptr<PathsToAndF
 
 auto LSysPath::GetPathParams() const noexcept -> OscillatingFunction::Params
 {
-  static constexpr auto MIN_PATH_AMPLITUDE = 90.0F;
-  static constexpr auto MAX_PATH_AMPLITUDE = 110.0F;
-  static constexpr auto MIN_PATH_X_FREQ    = 0.9F;
-  static constexpr auto MAX_PATH_X_FREQ    = 2.0F;
-  static constexpr auto MIN_PATH_Y_FREQ    = 0.9F;
-  static constexpr auto MAX_PATH_Y_FREQ    = 2.0F;
+  static constexpr auto PATH_AMPLITUDE_RANGE = NumberRange{90.0F, 110.0F};
+  static constexpr auto PATH_X_FREQ_RANGE    = NumberRange{0.9F, 2.0F};
+  static constexpr auto PATH_Y_FREQ_RANGE    = NumberRange{0.9F, 2.0F};
 
   return {
-      m_goomRand->GetRandInRange(MIN_PATH_AMPLITUDE, MAX_PATH_AMPLITUDE),
-      m_goomRand->GetRandInRange(MIN_PATH_X_FREQ, MAX_PATH_X_FREQ),
-      m_goomRand->GetRandInRange(MIN_PATH_Y_FREQ, MAX_PATH_Y_FREQ),
+      m_goomRand->GetRandInRange(PATH_AMPLITUDE_RANGE),
+      m_goomRand->GetRandInRange(PATH_X_FREQ_RANGE),
+      m_goomRand->GetRandInRange(PATH_Y_FREQ_RANGE),
   };
 }
 

@@ -134,8 +134,7 @@ inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
   m_srceHueShift = GetLerpedValue();
   m_lerpT.Reset(0.0F);
 
-  static constexpr auto MAX_CHANGE = TWO_PI;
-  m_destHueShift = std::fmod(m_srceHueShift + m_goomRand->GetRandInRange(0.0F, MAX_CHANGE), TWO_PI);
+  m_destHueShift = std::fmod(m_srceHueShift + m_goomRand->GetRandInRange(0.0F, TWO_PI), TWO_PI);
   LogInfo("Reset m_destHueShift = {}.", m_destHueShift);
 }
 

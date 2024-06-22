@@ -28,26 +28,39 @@ import Goom.Lib.Point2d;
 import :StarColors;
 import :Stars;
 
+using GOOM::DRAW::IGoomDraw;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::DRAW::SHAPE_DRAWERS::BitmapDrawer;
+using GOOM::DRAW::SHAPE_DRAWERS::CircleDrawer;
+using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
+using GOOM::UTILS::GRAPHICS::GetColorMultiply;
+using GOOM::UTILS::GRAPHICS::ImageBitmap;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::IncrementedValue;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
 class StarDrawer
 {
 public:
-  StarDrawer(DRAW::IGoomDraw& draw,
-             const UTILS::MATH::IGoomRand& goomRand,
-             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
+  StarDrawer(IGoomDraw& draw,
+             const IGoomRand& goomRand,
+             const SmallImageBitmaps& smallBitmaps) noexcept;
 
   auto ChangeDrawMode() noexcept -> void;
 
   auto DrawStar(const Star& star, float speedFactor) noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
-  DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer;
-  DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer;
-  DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints m_lineDrawer;
+  const IGoomRand* m_goomRand;
+  const SmallImageBitmaps* m_smallBitmaps;
+  BitmapDrawer m_bitmapDrawer;
+  CircleDrawer m_circleDrawer;
+  LineDrawerClippedEndPoints m_lineDrawer;
 
   enum class DrawElementTypes : UnderlyingEnumType
   {
@@ -98,17 +111,12 @@ private:
   uint32_t m_currentMaxNumParts                    = MAX_NUM_PARTS;
   auto ChangeMaxNumParts() noexcept -> void;
 
-  static constexpr uint32_t MIN_DOT_SIZE = 3;
-  static constexpr uint32_t MAX_DOT_SIZE = 5;
-  static_assert(MAX_DOT_SIZE <= UTILS::GRAPHICS::SmallImageBitmaps::MAX_IMAGE_SIZE,
-                "Max dot size mismatch.");
-  [[nodiscard]] auto GetImageBitmap(uint32_t size) const noexcept
-      -> const UTILS::GRAPHICS::ImageBitmap&;
+  static constexpr auto DOT_SIZE_RANGE = NumberRange{3U, 5U};
+  static_assert(DOT_SIZE_RANGE.max <= SmallImageBitmaps::MAX_IMAGE_SIZE);
+  [[nodiscard]] auto GetImageBitmap(uint32_t size) const noexcept -> const ImageBitmap&;
 
-  using DrawFunc = std::function<void(Point2dInt point1,
-                                      Point2dInt point2,
-                                      uint32_t elementSize,
-                                      const DRAW::MultiplePixels& colors)>;
+  using DrawFunc = std::function<void(
+      Point2dInt point1, Point2dInt point2, uint32_t elementSize, const MultiplePixels& colors)>;
   UTILS::EnumMap<DrawElementTypes, DrawFunc> m_drawFuncs;
   auto DrawStar(const Star& star, float speedFactor, const DrawFunc& drawFunc) const noexcept
       -> void;
@@ -123,15 +131,15 @@ private:
   auto DrawParticleCircle(const Point2dInt& point1,
                           const Point2dInt& point2,
                           uint32_t elementSize,
-                          const DRAW::MultiplePixels& colors) noexcept -> void;
+                          const MultiplePixels& colors) noexcept -> void;
   auto DrawParticleLine(const Point2dInt& point1,
                         const Point2dInt& point2,
                         uint32_t elementSize,
-                        const DRAW::MultiplePixels& colors) noexcept -> void;
+                        const MultiplePixels& colors) noexcept -> void;
   auto DrawParticleDot(const Point2dInt& point1,
                        const Point2dInt& point2,
                        uint32_t elementSize,
-                       const DRAW::MultiplePixels& colors) noexcept -> void;
+                       const MultiplePixels& colors) noexcept -> void;
 };
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS
@@ -177,16 +185,6 @@ inline auto StarDrawer::DrawStar(const Star& star, const float speedFactor) noex
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
-
-using DRAW::IGoomDraw;
-using DRAW::MultiplePixels;
-using DRAW::SHAPE_DRAWERS::BitmapDrawer;
-using UTILS::GRAPHICS::GetColorMultiply;
-using UTILS::GRAPHICS::ImageBitmap;
-using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::IncrementedValue;
-using UTILS::MATH::TValue;
 
 StarDrawer::StarDrawer(IGoomDraw& draw,
                        const IGoomRand& goomRand,
@@ -317,7 +315,7 @@ inline auto StarDrawer::GetNumPartsAndElementSize(const float tAge) const noexce
 {
   if (static constexpr auto T_OLD_AGE = 0.95F; tAge > T_OLD_AGE)
   {
-    return {m_currentMaxNumParts, m_goomRand->GetRandInRange(MIN_DOT_SIZE, MAX_DOT_SIZE + 1)};
+    return {m_currentMaxNumParts, m_goomRand->GetRandInRange(DOT_SIZE_RANGE)};
   }
 
   static constexpr auto MIN_ELEMENT_SIZE = 1U;
@@ -366,7 +364,7 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt& point1,
 inline auto StarDrawer::GetImageBitmap(const uint32_t size) const noexcept -> const ImageBitmap&
 {
   return m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                        std::clamp(size, MIN_DOT_SIZE, MAX_DOT_SIZE));
+                                        std::clamp(size, DOT_SIZE_RANGE.min, DOT_SIZE_RANGE.max));
 }
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS

@@ -34,6 +34,7 @@ using DRAW::SHAPE_DRAWERS::TextDrawer;
 using UTILS::MATH::GetFltFraction;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 using UTILS::TEXT::GetLeftAlignedPenForCentringStringAt;
 using UTILS::TEXT::GetLinesOfWords;
 
@@ -70,6 +71,9 @@ static constexpr auto FONT_INFO = std::array{
     FontInfo{           "verdana.ttf",  1.0F},
 };
 
+static constexpr auto FONT_INFO_INDEX_RANGE =
+    NumberRange{0U, static_cast<uint32_t>(FONT_INFO.size()) - 1};
+
 inline auto GoomTitleDisplayer::GetSelectedFontPath() const -> std::string
 {
   return join_paths(m_fontDirectory, FONT_INFO.at(m_fontInfoIndex).fontFilename);
@@ -92,7 +96,7 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_screenWidth{draw.GetDimensions().GetIntWidth()},
     m_screenHeight{draw.GetDimensions().GetIntHeight()},
     m_fontDirectory{fontDirectory},
-    m_fontInfoIndex{m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(FONT_INFO.size()))}
+    m_fontInfoIndex{m_goomRand->GetRandInRange(FONT_INFO_INDEX_RANGE)}
 {
   m_textDrawer->SetFontFile(GetSelectedFontPath());
   m_textDrawer->SetFontSize(GetSelectedFontSize());

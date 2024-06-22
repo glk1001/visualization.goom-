@@ -13,6 +13,19 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::GRAPHICS::GetColorAddPixelBlend;
+using GOOM::UTILS::GRAPHICS::GetColorAlphaAndAddBlend;
+using GOOM::UTILS::GRAPHICS::GetColorAlphaBlend;
+using GOOM::UTILS::GRAPHICS::GetColorMultiplyPixelBlend;
+using GOOM::UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
+using GOOM::UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
+using GOOM::UTILS::GRAPHICS::GetPixelWithNewAlpha;
+using GOOM::UTILS::GRAPHICS::GetSameLumaMixPixelBlend;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
@@ -38,17 +51,16 @@ public:
   static constexpr auto DEFAULT_ALPHA_AND_ADD_WEIGHT = 20.0F;
   static constexpr auto DEFAULT_PIXEL_BLEND_TYPE     = PixelBlendType::ALPHA;
 
-  explicit RandomPixelBlender(const UTILS::MATH::IGoomRand& goomRand) noexcept;
-  RandomPixelBlender(
-      const UTILS::MATH::IGoomRand& goomRand,
-      const UTILS::MATH::Weights<PixelBlendType>::EventWeightPairs& weights) noexcept;
+  explicit RandomPixelBlender(const IGoomRand& goomRand) noexcept;
+  RandomPixelBlender(const IGoomRand& goomRand,
+                     const Weights<PixelBlendType>::EventWeightPairs& weights) noexcept;
 
   auto Update() noexcept -> void;
 
   struct PixelBlenderParams
   {
     bool useRandomBlender{};
-    FX_UTILS::RandomPixelBlender::PixelBlendType forceBlenderType{};
+    PixelBlendType forceBlenderType{};
   };
   auto SetPixelBlendType(const PixelBlenderParams& pixelBlenderParams) noexcept -> void;
   auto SetPixelBlendType(PixelBlendType pixelBlendType) noexcept -> void;
@@ -59,20 +71,18 @@ public:
       -> PixelBlendType;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  UTILS::MATH::Weights<PixelBlendType> m_pixelBlendTypeWeights;
+  const IGoomRand* m_goomRand;
+  Weights<PixelBlendType> m_pixelBlendTypeWeights;
   PixelBlendType m_nextPixelBlendType                      = DEFAULT_PIXEL_BLEND_TYPE;
   DRAW::IGoomDraw::PixelBlendFunc m_previousPixelBlendFunc = GetNextPixelBlendFunc();
   DRAW::IGoomDraw::PixelBlendFunc m_nextPixelBlendFunc     = m_previousPixelBlendFunc;
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
-  static constexpr auto MIN_LERP_STEPS                     = 50U;
-  static constexpr auto MAX_LERP_STEPS                     = 500U;
-  UTILS::MATH::TValue m_lerpT{
-      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, MIN_LERP_STEPS}
+  static constexpr auto LERP_STEPS_RANGE                   = NumberRange{50U, 500U};
+  TValue m_lerpT{
+      {TValue::StepType::SINGLE_CYCLE, LERP_STEPS_RANGE.min}
   };
 
-  static const UTILS::MATH::Weights<PixelBlendType>::EventWeightPairs
-      DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS;
+  static const Weights<PixelBlendType>::EventWeightPairs DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS;
 
   auto SetPixelBlendFunc(PixelBlendType pixelBlendType) noexcept -> void;
   using PixelBlendFunc = DRAW::IGoomDraw::PixelBlendFunc;
@@ -84,9 +94,8 @@ private:
   [[nodiscard]] static auto GetColorMultiplyPixelBlendFunc() -> PixelBlendFunc;
   [[nodiscard]] static auto GetAlphaPixelBlendFunc() -> PixelBlendFunc;
   [[nodiscard]] static auto GetAlphaAndAddPixelBlendFunc() -> PixelBlendFunc;
-  static constexpr auto MAX_LUMA_MIX_T = 1.0F;
-  static constexpr auto MIN_LUMA_MIX_T = 0.3F;
-  float m_lumaMixT                     = MIN_LUMA_MIX_T;
+  static constexpr auto LUMA_MIX_T_RANGE = NumberRange{0.3F, 1.0F};
+  float m_lumaMixT                       = LUMA_MIX_T_RANGE.min;
   [[nodiscard]] static auto GetSameLumaMixPixelBlendFunc(float lumaMixT) -> PixelBlendFunc;
 };
 
@@ -110,17 +119,6 @@ inline auto RandomPixelBlender::GetCurrentPixelBlendFunc() const noexcept
 {
   return m_currentPixelBlendFunc;
 }
-
-using UTILS::GRAPHICS::GetColorAddPixelBlend;
-using UTILS::GRAPHICS::GetColorAlphaAndAddBlend;
-using UTILS::GRAPHICS::GetColorAlphaBlend;
-using UTILS::GRAPHICS::GetColorMultiplyPixelBlend;
-using UTILS::GRAPHICS::GetDarkenOnlyPixelBlend;
-using UTILS::GRAPHICS::GetLightenOnlyPixelBlend;
-using UTILS::GRAPHICS::GetPixelWithNewAlpha;
-using UTILS::GRAPHICS::GetSameLumaMixPixelBlend;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::Weights;
 
 const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
     // NOLINTNEXTLINE(cert-err58-cpp): How to fix this?
@@ -182,7 +180,7 @@ auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) 
 {
   const auto previousPixelBlendType = m_nextPixelBlendType;
 
-  m_lumaMixT               = m_goomRand->GetRandInRange(MIN_LUMA_MIX_T, MAX_LUMA_MIX_T);
+  m_lumaMixT               = m_goomRand->GetRandInRange(LUMA_MIX_T_RANGE);
   m_previousPixelBlendFunc = m_nextPixelBlendFunc;
   m_nextPixelBlendType     = pixelBlendType;
 
@@ -192,7 +190,7 @@ auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) 
     m_currentPixelBlendFunc = GetLerpedPixelBlendFunc();
   }
 
-  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(MIN_LERP_STEPS, MAX_LERP_STEPS + 1U));
+  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(LERP_STEPS_RANGE));
   m_lerpT.Reset();
 }
 

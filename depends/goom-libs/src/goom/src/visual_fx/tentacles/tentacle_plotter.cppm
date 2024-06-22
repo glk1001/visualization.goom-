@@ -17,6 +17,13 @@ import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import :Tentacle3d;
 
+using GOOM::DRAW::IGoomDraw;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::UTILS::GRAPHICS::LineClipper;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::TValue;
+
 namespace GOOM::VISUAL_FX::TENTACLES
 {
 
@@ -24,45 +31,42 @@ class TentaclePlotter
 {
 public:
   TentaclePlotter() noexcept = delete;
-  TentaclePlotter(DRAW::IGoomDraw& draw, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept;
 
   auto UpdateCameraPosition() noexcept -> void;
   auto SetTentacleLineThickness(uint8_t lineThickness) noexcept -> void;
 
-  using GetColorsFunc = std::function<DRAW::MultiplePixels(float nodeT)>;
+  using GetColorsFunc = std::function<MultiplePixels(float nodeT)>;
   auto SetGetColorsFunc(const GetColorsFunc& getColorsFunc) noexcept -> void;
-  auto SetEndDotColors(const DRAW::MultiplePixels& endDotColors) noexcept -> void;
+  auto SetEndDotColors(const MultiplePixels& endDotColors) noexcept -> void;
   auto SetNodeTOffset(float value) noexcept -> void;
 
   auto Plot3D(const Tentacle3D& tentacle) noexcept -> void;
 
 private:
-  DRAW::IGoomDraw* m_draw;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  IGoomDraw* m_draw;
+  const IGoomRand* m_goomRand;
   Vec2dFlt m_screenCentre = ToVec2dFlt(m_draw->GetDimensions().GetCentrePoint());
 
   DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer{*m_draw};
   DRAW::SHAPE_DRAWERS::CircleDrawer m_circleDrawer{*m_draw};
 
-  using LineClipper = UTILS::GRAPHICS::LineClipper;
   LineClipper m_lineClipper{GetLineClipRectangle(1U)};
   [[nodiscard]] auto GetLineClipRectangle(uint8_t lineThickness) const noexcept -> Rectangle2dInt;
 
   GetColorsFunc m_getColors;
-  DRAW::MultiplePixels m_endDotColors{};
+  MultiplePixels m_endDotColors{};
   float m_nodeTOffset = 0.0F;
 
-  static constexpr auto PROJECTION_DISTANCE = 170.0F;
-  static constexpr auto MIN_CAMERA_X_OFFSET = -10.0F;
-  static constexpr auto MAX_CAMERA_X_OFFSET = +10.0F;
-  static constexpr auto MIN_CAMERA_Y_OFFSET = -10.0F;
-  static constexpr auto MAX_CAMERA_Y_OFFSET = +10.0F;
-  static constexpr auto MIN_CAMERA_Z_OFFSET = +04.0F; // Don't make this any smaller
-  static constexpr auto MAX_CAMERA_Z_OFFSET = +10.1F;
-  static_assert(MIN_CAMERA_X_OFFSET < MAX_CAMERA_X_OFFSET);
-  static_assert(MIN_CAMERA_Y_OFFSET < MAX_CAMERA_Y_OFFSET);
-  static_assert(MIN_CAMERA_Z_OFFSET < MAX_CAMERA_Z_OFFSET);
-  V3dFlt m_cameraPosition{0.0F, 0.0F, MIN_CAMERA_Z_OFFSET};
+  static constexpr auto PROJECTION_DISTANCE   = 170.0F;
+  static constexpr auto CAMERA_X_OFFSET_RANGE = NumberRange{-10.0F, +10.0F};
+  static constexpr auto CAMERA_Y_OFFSET_RANGE = NumberRange{-10.0F, +10.0F};
+  static constexpr auto CAMERA_Z_OFFSET_RANGE = NumberRange{+04.0F, // Don't make this any smaller
+                                                            +10.1F};
+  static_assert(CAMERA_X_OFFSET_RANGE.min < CAMERA_X_OFFSET_RANGE.max);
+  static_assert(CAMERA_Y_OFFSET_RANGE.min < CAMERA_Y_OFFSET_RANGE.max);
+  static_assert(CAMERA_Z_OFFSET_RANGE.min < CAMERA_Z_OFFSET_RANGE.max);
+  V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET_RANGE.min};
 
   auto PlotPoints(const std::vector<V3dFlt>& points3D) -> void;
   struct Line2DInt
@@ -107,14 +111,10 @@ inline auto TentaclePlotter::SetNodeTOffset(const float value) noexcept -> void
 
 inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void
 {
-  m_cameraPosition = {m_goomRand->GetRandInRange(MIN_CAMERA_X_OFFSET, MAX_CAMERA_X_OFFSET),
-                      m_goomRand->GetRandInRange(MIN_CAMERA_Y_OFFSET, MAX_CAMERA_Y_OFFSET),
-                      m_goomRand->GetRandInRange(MIN_CAMERA_Z_OFFSET, MAX_CAMERA_Z_OFFSET)};
+  m_cameraPosition = {m_goomRand->GetRandInRange(CAMERA_X_OFFSET_RANGE),
+                      m_goomRand->GetRandInRange(CAMERA_Y_OFFSET_RANGE),
+                      m_goomRand->GetRandInRange(CAMERA_Z_OFFSET_RANGE)};
 }
-
-using DRAW::IGoomDraw;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::TValue;
 
 TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
   : m_draw{&draw}, m_goomRand{&goomRand}

@@ -24,6 +24,7 @@ import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Paths;
@@ -57,6 +58,7 @@ using TUBES::TubeDrawFuncs;
 using UTILS::Timer;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::OscillatingFunction;
 using UTILS::MATH::OscillatingPath;
 using UTILS::MATH::SMALL_FLOAT;
@@ -103,22 +105,16 @@ constexpr auto MAX_COLORMAP_TIME = 1000U;
 constexpr auto MIN_BRIGHTNESS_FACTOR = 0.01F;
 constexpr auto MAX_BRIGHTNESS_FACTOR = 0.20F;
 
-constexpr auto MIN_JITTER_TIME         = 50U;
-constexpr auto MAX_JITTER_TIME         = 500U;
+constexpr auto JITTER_TIME_RANGE       = NumberRange{50U, 500U};
 constexpr auto MIN_SHAPE_JITTER_OFFSET = 10.0F;
 constexpr auto MAX_SHAPE_JITTER_OFFSET = 20.0F;
 
-constexpr auto MIN_DECREASED_SPEED_TIME = 100U;
-constexpr auto MAX_DECREASED_SPEED_TIME = 500U;
-constexpr auto MIN_INCREASED_SPEED_TIME = 100U;
-constexpr auto MAX_INCREASED_SPEED_TIME = 500U;
-constexpr auto MIN_NORMAL_SPEED_TIME    = 20U;
-constexpr auto MAX_NORMAL_SPEED_TIME    = 50U;
+constexpr auto DECREASED_SPEED_TIME_RANGE = NumberRange{100U, 500U};
+constexpr auto INCREASED_SPEED_TIME_RANGE = NumberRange{100U, 500U};
+constexpr auto NORMAL_SPEED_TIME_RANGE    = NumberRange{20U, 50U};
 
-constexpr auto MIN_STAY_IN_CENTRE_TIME        = 1000U;
-constexpr auto MAX_STAY_IN_CENTRE_TIME        = 1000U;
-constexpr auto MIN_STAY_AWAY_FROM_CENTRE_TIME = 100U;
-constexpr auto MAX_STAY_AWAY_FROM_CENTRE_TIME = 100U;
+constexpr auto STAY_IN_CENTRE_TIME_RANGE        = NumberRange{1000U, 1000U};
+constexpr auto STAY_AWAY_FROM_CENTRE_TIME_RANGE = NumberRange{100U, 100U};
 
 constexpr auto PROB_RESET_COLOR_MAPS       = 1.0F / 3.0F;
 constexpr auto PROB_DECREASE_SPEED         = 1.0F / 5.0F;
@@ -196,7 +192,8 @@ private:
   };
   [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
   Timer m_allStayInCentreTimer{m_fxHelper->GetGoomTime(), 1};
-  Timer m_allStayAwayFromCentreTimer{m_fxHelper->GetGoomTime(), MAX_STAY_AWAY_FROM_CENTRE_TIME};
+  Timer m_allStayAwayFromCentreTimer{m_fxHelper->GetGoomTime(),
+                                     STAY_AWAY_FROM_CENTRE_TIME_RANGE.max};
   auto IncrementAllJoinCentreT() -> void;
   [[nodiscard]] auto GetTransformedCentreVector(uint32_t tubeId, const Point2dInt& centre) const
       -> Vec2dInt;
@@ -781,13 +778,13 @@ auto TubesFx::TubeFxImpl::IncrementAllJoinCentreT() -> void
 
   if (m_allJoinCentreT() >= (1.0F - SMALL_FLOAT))
   {
-    m_allStayInCentreTimer.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
-        MIN_STAY_IN_CENTRE_TIME, MAX_STAY_IN_CENTRE_TIME + 1));
+    m_allStayInCentreTimer.SetTimeLimitAndResetToZero(
+        m_fxHelper->GetGoomRand().GetRandInRange(STAY_IN_CENTRE_TIME_RANGE));
   }
   else if (m_allJoinCentreT() <= (0.0F + SMALL_FLOAT))
   {
-    m_allStayAwayFromCentreTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
-        MIN_STAY_AWAY_FROM_CENTRE_TIME, MAX_STAY_AWAY_FROM_CENTRE_TIME + 1));
+    m_allStayAwayFromCentreTimer.SetTimeLimitAndResetToZero(
+        m_fxHelper->GetGoomRand().GetRandInRange(STAY_AWAY_FROM_CENTRE_TIME_RANGE));
   }
 
   m_allJoinCentreT.Increment();
@@ -800,8 +797,8 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube) -> void
     tube.DecreaseCentreSpeed();
     tube.DecreaseCircleSpeed();
 
-    m_changedSpeedTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
-        MIN_DECREASED_SPEED_TIME, MAX_DECREASED_SPEED_TIME + 1));
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(
+        m_fxHelper->GetGoomRand().GetRandInRange(DECREASED_SPEED_TIME_RANGE));
   }
   else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NORMAL_SPEED))
   {
@@ -809,15 +806,15 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube) -> void
     tube.SetCircleSpeed(Tube::NORMAL_CIRCLE_SPEED);
 
     m_changedSpeedTimer.SetTimeLimitAndResetToZero(
-        m_fxHelper->GetGoomRand().GetRandInRange(MIN_NORMAL_SPEED_TIME, MAX_NORMAL_SPEED_TIME + 1));
+        m_fxHelper->GetGoomRand().GetRandInRange(NORMAL_SPEED_TIME_RANGE));
   }
   else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_RANDOM_INCREASE_SPEED))
   {
     tube.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
 
-    m_changedSpeedTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
-        MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(
+        m_fxHelper->GetGoomRand().GetRandInRange(INCREASED_SPEED_TIME_RANGE));
   }
 }
 
@@ -828,8 +825,8 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForHigherVolumes(Tube& tube) -> void
     tube.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
 
-    m_changedSpeedTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
-        MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(
+        m_fxHelper->GetGoomRand().GetRandInRange(INCREASED_SPEED_TIME_RANGE));
   }
 }
 
@@ -846,7 +843,7 @@ auto TubesFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube) -> void
     tube.SetMaxJitterOffset(maxJitter);
     m_shapeJitterT.Increment();
     m_jitterTimer.SetTimeLimitAndResetToZero(
-        m_fxHelper->GetGoomRand().GetRandInRange(MIN_JITTER_TIME, MAX_JITTER_TIME + 1));
+        m_fxHelper->GetGoomRand().GetRandInRange(JITTER_TIME_RANGE));
   }
 }
 

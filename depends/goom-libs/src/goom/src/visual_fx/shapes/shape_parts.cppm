@@ -29,6 +29,23 @@ import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import :ShapePaths;
 
+using GOOM::COLOR::GetUnweightedRandomColorMaps;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::UTILS::StepSpeed;
+using GOOM::UTILS::MATH::AngleParams;
+using GOOM::UTILS::MATH::CircleFunction;
+using GOOM::UTILS::MATH::CirclePath;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::IsEven;
+using GOOM::UTILS::MATH::IsOdd;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::SMALL_FLOAT;
+using GOOM::UTILS::MATH::Transform2d;
+using GOOM::UTILS::MATH::TransformedPath;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::TWO_PI;
+
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
@@ -57,11 +74,9 @@ public:
   auto operator=(const ShapePart&) -> ShapePart& = delete;
   auto operator=(ShapePart&&) -> ShapePart&      = delete;
 
-  auto SetWeightedMainColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
-      -> void;
-  auto SetWeightedLowColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept -> void;
-  auto SetWeightedInnerColorMaps(const COLOR::WeightedRandomColorMaps& weightedMaps) noexcept
-      -> void;
+  auto SetWeightedMainColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
+  auto SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept -> void;
 
   auto SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void;
 
@@ -75,7 +90,7 @@ public:
     float brightnessAttenuation{};
     bool firstShapePathAtMeetingPoint{};
     bool varyDotRadius{};
-    DRAW::MultiplePixels meetingPointColors;
+    MultiplePixels meetingPointColors;
   };
   auto Draw(const DrawParams& drawParams) noexcept -> void;
 
@@ -86,7 +101,7 @@ public:
   auto UseRandomShapePathsNumSteps() noexcept -> void;
   auto UseFixedShapePathsNumSteps(float tMinMaxLerp) noexcept -> void;
   auto UseEvenShapePartNumsForDirection(bool val) -> void;
-  [[nodiscard]] static auto GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetNewRandomMinMaxLerpT(const IGoomRand& goomRand,
                                                     float oldTMinMaxLerp) noexcept -> float;
 
   [[nodiscard]] auto GetNumShapePaths() const noexcept -> uint32_t;
@@ -101,7 +116,7 @@ private:
   PixelChannelType m_defaultAlpha;
 
   float m_currentTMinMaxLerp;
-  UTILS::StepSpeed m_shapePathsStepSpeed;
+  StepSpeed m_shapePathsStepSpeed;
   auto SetShapePathsNumSteps() noexcept -> void;
 
   int32_t m_minShapeDotRadius;
@@ -109,22 +124,20 @@ private:
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
   int32_t m_extremeMaxShapeDotRadius = EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
   bool m_useExtremeMaxShapeDotRadius = false;
-  static constexpr auto MIN_MAX_DOT_RADIUS_STEPS  = MinMaxValues<uint32_t>{100U, 200U};
-  static constexpr float INITIAL_DOT_RADIUS_SPEED = 0.5F;
-  UTILS::StepSpeed m_dotRadiusStepSpeed{MIN_MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
-  UTILS::MATH::TValue m_dotRadiusT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
-       m_dotRadiusStepSpeed.GetCurrentNumSteps()}
+  static constexpr auto MIN_MAX_DOT_RADIUS_STEPS = MinMaxValues{100U, 200U};
+  static constexpr auto INITIAL_DOT_RADIUS_SPEED = 0.5F;
+  StepSpeed m_dotRadiusStepSpeed{MIN_MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
+  TValue m_dotRadiusT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
   };
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
 
-  static constexpr float MIN_INNER_COLOR_MIX_T = 0.1F;
-  static constexpr float MAX_INNER_COLOR_MIX_T = 0.9F;
+  static constexpr auto INNER_COLOR_MIX_T_RANGE = NumberRange{0.1F, 0.9F};
   struct ColorInfo
   {
-    COLOR::WeightedRandomColorMaps mainColorMaps;
-    COLOR::WeightedRandomColorMaps lowColorMaps;
-    COLOR::WeightedRandomColorMaps innerColorMaps;
+    WeightedRandomColorMaps mainColorMaps;
+    WeightedRandomColorMaps lowColorMaps;
+    WeightedRandomColorMaps innerColorMaps;
     float innerColorMix;
   };
   [[nodiscard]] auto GetInitialColorInfo() const noexcept -> ColorInfo;
@@ -152,7 +165,7 @@ private:
   [[nodiscard]] auto SetMegaColorChangeOff() noexcept -> bool;
 
   uint32_t m_shapePartNum;
-  static constexpr uint32_t MIN_NUM_SHAPE_PATHS = 4;
+  static constexpr auto MIN_NUM_SHAPE_PATHS = 4U;
   uint32_t m_maxNumShapePaths;
   uint32_t m_totalNumShapeParts;
   std::vector<ShapePath> m_shapePaths;
@@ -177,23 +190,22 @@ private:
   struct ShapeFunctionParams
   {
     float radius{};
-    UTILS::MATH::AngleParams angleParams;
-    UTILS::MATH::CircleFunction::Direction direction{};
+    AngleParams angleParams;
+    CircleFunction::Direction direction{};
   };
   float m_minRadiusFraction;
   float m_maxRadiusFraction;
   static constexpr auto DEFAULT_NUM_STEPS = 100U;
-  UTILS::MATH::TValue m_radiusFractionT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_NUM_STEPS}
+  TValue m_radiusFractionT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_NUM_STEPS}
   };
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
-  [[nodiscard]] auto GetCircleDirection() const noexcept -> UTILS::MATH::CircleFunction::Direction;
+  [[nodiscard]] auto GetCircleDirection() const noexcept -> CircleFunction::Direction;
   [[nodiscard]] auto GetShapePathColorInfo() const noexcept -> ShapePath::ColorInfo;
   [[nodiscard]] static auto GetCirclePath(float radius,
-                                          UTILS::MATH::CircleFunction::Direction direction,
-                                          uint32_t numSteps) noexcept -> UTILS::MATH::CirclePath;
-  [[nodiscard]] static auto GetCircleFunction(const ShapeFunctionParams& params)
-      -> UTILS::MATH::CircleFunction;
+                                          CircleFunction::Direction direction,
+                                          uint32_t numSteps) noexcept -> CirclePath;
+  [[nodiscard]] static auto GetCircleFunction(const ShapeFunctionParams& params) -> CircleFunction;
 };
 
 static_assert(std::is_nothrow_move_constructible_v<ShapePart>);
@@ -236,18 +248,6 @@ inline auto ShapePart::SetRandomizedShapePaths() noexcept -> void
   m_shapePaths = GetRandomizedShapePaths();
 }
 
-using COLOR::GetUnweightedRandomColorMaps;
-using COLOR::WeightedRandomColorMaps;
-using UTILS::MATH::AngleParams;
-using UTILS::MATH::CircleFunction;
-using UTILS::MATH::CirclePath;
-using UTILS::MATH::IsEven;
-using UTILS::MATH::IsOdd;
-using UTILS::MATH::Transform2d;
-using UTILS::MATH::TransformedPath;
-using UTILS::MATH::TValue;
-using UTILS::MATH::TWO_PI;
-
 ShapePart::ShapePart(FxHelper& fxHelper,
                      const Params& params,
                      const PixelChannelType defaultAlpha) noexcept
@@ -283,7 +283,7 @@ auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
   return {GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
           GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
           GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
-          m_fxHelper->GetGoomRand().GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T)};
+          m_fxHelper->GetGoomRand().GetRandInRange(INNER_COLOR_MIX_T_RANGE)};
 }
 
 auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
@@ -363,19 +363,15 @@ auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
   const auto numShapePaths =
       m_fxHelper->GetGoomRand().GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
 
-  static constexpr auto MIN_MIN_SCALE         = 0.9F;
-  static constexpr auto MAX_MIN_SCALE         = 1.0F;
-  static constexpr auto MIN_MAX_SCALE         = 1.0F + UTILS::MATH::SMALL_FLOAT;
-  static constexpr auto MAX_MAX_SCALE         = 1.5F;
+  static constexpr auto MIN_SCALE_RANGE       = NumberRange{0.9F, 1.0F};
+  static constexpr auto MAX_SCALE_RANGE       = NumberRange{1.0F + SMALL_FLOAT, 1.5F};
   static constexpr auto PROB_SCALE_EQUALS_ONE = 0.9F;
 
   const auto probScaleEqualsOne = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_SCALE_EQUALS_ONE);
   const auto minScale =
-      probScaleEqualsOne ? 1.0F
-                         : m_fxHelper->GetGoomRand().GetRandInRange(MIN_MIN_SCALE, MAX_MIN_SCALE);
+      probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange(MIN_SCALE_RANGE);
   const auto maxScale =
-      probScaleEqualsOne ? 1.0F
-                         : m_fxHelper->GetGoomRand().GetRandInRange(MIN_MAX_SCALE, MAX_MAX_SCALE);
+      probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange(MAX_SCALE_RANGE);
 
   return GetShapePaths(numShapePaths, {minScale, maxScale});
 }
@@ -512,9 +508,7 @@ auto ShapePart::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedM
 auto ShapePart::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
-  m_colorInfo.innerColorMix =
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_INNER_COLOR_MIX_T, MAX_INNER_COLOR_MIX_T);
-
+  m_colorInfo.innerColorMix  = m_fxHelper->GetGoomRand().GetRandInRange(INNER_COLOR_MIX_T_RANGE);
   m_colorInfo.innerColorMaps = weightedMaps;
 
   UpdateShapesInnerColorMaps();

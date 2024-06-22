@@ -55,6 +55,7 @@ import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.GoomRand;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
@@ -98,7 +99,9 @@ using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
 using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::GoomRand;
+using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsBetween;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
 using VISUAL_FX::FxHelper;
 
@@ -152,7 +155,7 @@ private:
   GoomSoundEvents m_goomSoundEvents{m_goomTime, m_soundInfo};
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
-  GoomRand m_goomRand{};
+  std::unique_ptr<IGoomRand> m_goomRand = std::make_unique<GoomRand>();
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers{
       m_multiBufferDraw, m_goomInfo.GetDimensions(), GetColorAlphaNoAddBlend};
@@ -165,10 +168,9 @@ private:
   auto UpdateFrameData() -> void;
   auto UpdateFilterPos() noexcept -> void;
 
-  static constexpr auto MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES = 100U;
-  static constexpr auto MAX_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES = 1000U;
+  static constexpr auto TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE = NumberRange{100U, 1000U};
   Timer m_pos1Pos2MixFreqChangeTimer{
-      m_goomTime, MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES, false};
+      m_goomTime, TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE.min, false};
   static constexpr auto POS1_POS2_MIX_FREQ_TRANSITION_TIME = 200U;
   TValue m_pos1Pos2TransitionLerpFactor{
       TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
@@ -188,10 +190,10 @@ private:
   auto UpdateFilterSettings() -> void;
 
   GoomMusicSettingsReactor m_musicSettingsReactor{
-      m_goomInfo, m_goomRand, m_visualFx, m_filterSettingsService};
+      m_goomInfo, *m_goomRand, m_visualFx, m_filterSettingsService};
 
   SmallImageBitmaps m_smallBitmaps;
-  GoomRandomStateHandler m_stateHandler{m_goomRand};
+  GoomRandomStateHandler m_stateHandler{*m_goomRand};
   NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_goomInfo.GetDimensions().GetWidth(), m_goomInfo.GetDimensions().GetHeight()}
   };
@@ -340,18 +342,19 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
     m_fxHelper{m_multiBufferDraw,
                m_goomInfo,
-               m_goomRand,
+               *m_goomRand,
                *m_goomLogger,
                m_blend2dDoubleGoomBuffers.GetBlend2dContexts()},
-    m_filterSettingsService{m_goomInfo, m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
+    m_filterSettingsService{
+        m_goomInfo, *m_goomRand, resourcesDirectory, CreateZoomAdjustmentEffect},
     m_filterBuffersService{m_goomInfo,
                            m_normalizedCoordsConverter,
                            std::make_unique<FilterZoomVector>(m_goomInfo.GetDimensions().GetWidth(),
                                                               resourcesDirectory,
-                                                              m_goomRand)},
+                                                              *m_goomRand)},
     m_smallBitmaps{resourcesDirectory},
     m_visualFx{m_parallel, m_fxHelper, m_smallBitmaps, resourcesDirectory, m_stateHandler},
-    m_goomTitleDisplayer{m_goomTextOutput, m_goomRand, GetFontDirectory(resourcesDirectory)},
+    m_goomTitleDisplayer{m_goomTextOutput, *m_goomRand, GetFontDirectory(resourcesDirectory)},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
   UTILS::SetGoomLogger(*m_goomLogger);
@@ -432,14 +435,14 @@ auto GoomControl::GoomControlImpl::UpdatePos1Pos2MixFreq() noexcept -> void
     return;
   }
 
-  m_pos1Pos2MixFreqChangeTimer.SetTimeLimitAndResetToZero(m_goomRand.GetRandInRange(
-      MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES, MAX_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES));
+  m_pos1Pos2MixFreqChangeTimer.SetTimeLimitAndResetToZero(
+      m_goomRand->GetRandInRange(TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE));
   m_pos1Pos2MixFreqChangeTimer.ResetToZero();
   m_pos1Pos2TransitionLerpFactor.Reset(0.0F);
 
   m_previousPos1Pos2MixFreq = m_frameData->filterPosArrays.filterPos1Pos2FreqMixFreq;
-  m_targetPos1Pos2MixFreq   = m_goomRand.GetRandInRange(FilterPosArrays::MIN_POS1_POS2_MIX_FREQ,
-                                                      FilterPosArrays::MAX_POS1_POS2_MIX_FREQ);
+  m_targetPos1Pos2MixFreq   = m_goomRand->GetRandInRange(FilterPosArrays::MIN_POS1_POS2_MIX_FREQ,
+                                                       FilterPosArrays::MAX_POS1_POS2_MIX_FREQ);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void

@@ -15,6 +15,7 @@ module Goom.VisualFx.LSystemFx;
 
 import LSys.Rand;
 import Goom.Draw.GoomDrawBase;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;
@@ -34,6 +35,7 @@ using FX_UTILS::RandomPixelBlender;
 using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::NumberRange;
 
 using ::LSYS::SetRandFunc;
 
@@ -79,12 +81,10 @@ private:
       -> std::string;
 
   std::vector<LSystem*> m_activeLSystems{m_lSystems.at(0).get()};
-  static constexpr auto MIN_TIME_TO_KEEP_ACTIVE_LSYS = 200U;
-  static constexpr auto MAX_TIME_TO_KEEP_ACTIVE_LSYS = 1000U;
+  static constexpr auto TIME_TO_KEEP_ACTIVE_LSYS_RANGE = NumberRange{200U, 1000U};
   Timer m_timeForTheseActiveLSys{
       m_fxHelper->GetGoomTime(),
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_TIME_TO_KEEP_ACTIVE_LSYS,
-                                               MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U)};
+      m_fxHelper->GetGoomRand().GetRandInRange(TIME_TO_KEEP_ACTIVE_LSYS_RANGE)};
 
   static constexpr auto MIN_NUM_ROTATE_DEGREES_STEPS = 50U;
   static constexpr auto MAX_NUM_ROTATE_DEGREES_STEPS = 500U;
@@ -303,12 +303,12 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
   //LogInfo("Setting new active l-systems.");
 
   m_activeLSystems.clear();
+
   const auto lSystemIndex = m_fxHelper->GetGoomRand().GetRandInRange(0U, NUM_L_SYSTEMS);
-  //const auto lSystemIndex = 1U;
-  // m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
-  m_timeForTheseActiveLSys.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
+
+  m_timeForTheseActiveLSys.SetTimeLimitAndResetToZero(
+      m_fxHelper->GetGoomRand().GetRandInRange(TIME_TO_KEEP_ACTIVE_LSYS_RANGE));
 }
 
 auto LSystemFx::LSystemFxImpl::Start() -> void
