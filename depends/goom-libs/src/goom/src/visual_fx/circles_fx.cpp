@@ -292,7 +292,7 @@ inline auto CirclesFx::CirclesFxImpl::DrawCircles() noexcept -> void
 
   if (m_circles->HasPositionTJustHitEndBoundary())
   {
-    m_blankAtTargetTimer.SetTimeLimit(m_blankAtTargetTime);
+    m_blankAtTargetTimer.SetTimeLimitAndResetToZero(m_blankAtTargetTime);
   }
 }
 
@@ -307,7 +307,7 @@ inline auto CirclesFx::CirclesFxImpl::IncrementTs() noexcept -> void
 
   if (m_circles->HasPositionTJustHitStartBoundary())
   {
-    m_pauseAtStartTimer.SetTimeLimit(m_pauseAtStartTime);
+    m_pauseAtStartTimer.SetTimeLimitAndResetToZero(m_pauseAtStartTime);
   }
 }
 

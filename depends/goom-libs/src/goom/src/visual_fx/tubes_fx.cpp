@@ -594,7 +594,7 @@ auto TubesFx::TubeFxImpl::UpdateColorMaps() -> void
     if (m_colorMapTimer.Finished() and
         m_fxHelper->GetGoomRand().ProbabilityOf(PROB_RESET_COLOR_MAPS))
     {
-      m_colorMapTimer.SetTimeLimit(
+      m_colorMapTimer.SetTimeLimitAndResetToZero(
           m_fxHelper->GetGoomRand().GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1));
       tube.ResetColorMaps();
       tube.SetBrightnessFactor(
@@ -786,7 +786,7 @@ auto TubesFx::TubeFxImpl::IncrementAllJoinCentreT() -> void
   }
   else if (m_allJoinCentreT() <= (0.0F + SMALL_FLOAT))
   {
-    m_allStayAwayFromCentreTimer.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
+    m_allStayAwayFromCentreTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
         MIN_STAY_AWAY_FROM_CENTRE_TIME, MAX_STAY_AWAY_FROM_CENTRE_TIME + 1));
   }
 
@@ -800,7 +800,7 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube) -> void
     tube.DecreaseCentreSpeed();
     tube.DecreaseCircleSpeed();
 
-    m_changedSpeedTimer.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
         MIN_DECREASED_SPEED_TIME, MAX_DECREASED_SPEED_TIME + 1));
   }
   else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NORMAL_SPEED))
@@ -808,7 +808,7 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube) -> void
     tube.SetCentreSpeed(Tube::NORMAL_CENTRE_SPEED);
     tube.SetCircleSpeed(Tube::NORMAL_CIRCLE_SPEED);
 
-    m_changedSpeedTimer.SetTimeLimit(
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(
         m_fxHelper->GetGoomRand().GetRandInRange(MIN_NORMAL_SPEED_TIME, MAX_NORMAL_SPEED_TIME + 1));
   }
   else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_RANDOM_INCREASE_SPEED))
@@ -816,7 +816,7 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForLowerVolumes(Tube& tube) -> void
     tube.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
 
-    m_changedSpeedTimer.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
         MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
   }
 }
@@ -828,7 +828,7 @@ auto TubesFx::TubeFxImpl::ChangeSpeedForHigherVolumes(Tube& tube) -> void
     tube.IncreaseCentreSpeed();
     tube.IncreaseCircleSpeed();
 
-    m_changedSpeedTimer.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
+    m_changedSpeedTimer.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
         MIN_INCREASED_SPEED_TIME, MAX_INCREASED_SPEED_TIME + 1));
   }
 }
@@ -845,7 +845,7 @@ auto TubesFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube) -> void
         std::round(std::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
     tube.SetMaxJitterOffset(maxJitter);
     m_shapeJitterT.Increment();
-    m_jitterTimer.SetTimeLimit(
+    m_jitterTimer.SetTimeLimitAndResetToZero(
         m_fxHelper->GetGoomRand().GetRandInRange(MIN_JITTER_TIME, MAX_JITTER_TIME + 1));
   }
 }

@@ -603,7 +603,7 @@ auto Tube::TubeImpl::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weig
 auto Tube::TubeImpl::ResetColorMaps() noexcept -> void
 {
   m_colorizer->ResetColorMaps();
-  m_circleGroupTimer.SetTimeLimit(
+  m_circleGroupTimer.SetTimeLimitAndResetToZero(
       m_data.goomRand->GetRandInRange(MIN_NUM_CIRCLES_IN_GROUP, MAX_NUM_CIRCLES_IN_GROUP));
 }
 
@@ -783,7 +783,7 @@ inline auto Tube::TubeImpl::UpdateTimers() noexcept -> void
   if (m_lowColorTypeTimer.Finished())
   {
     m_currentLowColorType = m_lowColorTypes.GetRandomWeighted();
-    m_lowColorTypeTimer.SetTimeLimit(
+    m_lowColorTypeTimer.SetTimeLimitAndResetToZero(
         m_data.goomRand->GetRandInRange(MIN_LOW_COLOR_TYPE_TIME, MAX_LOW_COLOR_TYPE_TIME + 1));
   }
 }

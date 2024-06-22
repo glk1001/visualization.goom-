@@ -137,7 +137,7 @@ inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
 
 inline auto HueShiftLerper::StopLerpAndSetHueShiftOff() noexcept -> void
 {
-  m_lerpOffTimer.SetTimeLimit(
+  m_lerpOffTimer.SetTimeLimitAndResetToZero(
       m_goomRand->GetRandInRange(m_lerpData.minLerpOffTime, m_lerpData.maxLerpOffTime + 1));
   LogInfo("LerpT = {}. Set off timer {}", m_lerpT(), m_lerpOffTimer.GetTimeLeft());
 

@@ -432,7 +432,7 @@ auto GoomControl::GoomControlImpl::UpdatePos1Pos2MixFreq() noexcept -> void
     return;
   }
 
-  m_pos1Pos2MixFreqChangeTimer.SetTimeLimit(m_goomRand.GetRandInRange(
+  m_pos1Pos2MixFreqChangeTimer.SetTimeLimitAndResetToZero(m_goomRand.GetRandInRange(
       MIN_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES, MAX_TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES));
   m_pos1Pos2MixFreqChangeTimer.ResetToZero();
   m_pos1Pos2TransitionLerpFactor.Reset(0.0F);

@@ -96,7 +96,7 @@ auto ChromaFactorLerper::ChangeChromaFactorRange() noexcept -> void
   m_lerpT.Reset(0.0F);
 
   m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(MIN_NUM_LERP_ON_STEPS, MAX_NUM_LERP_ON_STEPS));
-  m_lerpConstTimer.SetTimeLimit(
+  m_lerpConstTimer.SetTimeLimitAndResetToZero(
       m_goomRand->GetRandInRange(MIN_LERP_CONST_TIME, MAX_LERP_CONST_TIME));
 }
 

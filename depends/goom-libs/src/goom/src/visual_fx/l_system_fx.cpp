@@ -307,7 +307,7 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
   //const auto lSystemIndex = 1U;
   // m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
-  m_timeForTheseActiveLSys.SetTimeLimit(m_fxHelper->GetGoomRand().GetRandInRange(
+  m_timeForTheseActiveLSys.SetTimeLimitAndResetToZero(m_fxHelper->GetGoomRand().GetRandInRange(
       MIN_TIME_TO_KEEP_ACTIVE_LSYS, MAX_TIME_TO_KEEP_ACTIVE_LSYS + 1U));
 }
 

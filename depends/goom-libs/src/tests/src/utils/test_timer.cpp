@@ -136,6 +136,40 @@ TEST_CASE("Timer Limit Change")
   REQUIRE(timer.Finished());
   REQUIRE(timer.GetTimeElapsed() == NEW_TIME_LIMIT);
   REQUIRE(timer.GetTimeLeft() == 0);
+
+  timer.ResetToZero();
+  timer.SetTimeLimit(TIME_LIMIT);
+  REQUIRE(not timer.JustFinished());
+  REQUIRE(not timer.Finished());
+  REQUIRE(timer.GetTimeElapsed() == 0);
+  REQUIRE(timer.GetTimeLeft() == TIME_LIMIT);
+
+  goomTime.UpdateTime();
+  REQUIRE(not timer.JustFinished());
+  REQUIRE(not timer.Finished());
+  REQUIRE(timer.GetTimeElapsed() == 1);
+  REQUIRE(timer.GetTimeLeft() == (TIME_LIMIT - 1));
+
+  timer.SetTimeLimitAndResetToZero(NEW_TIME_LIMIT);
+
+  REQUIRE(not timer.JustFinished());
+  REQUIRE(not timer.Finished());
+  REQUIRE(timer.GetTimeElapsed() == 0);
+  REQUIRE(timer.GetTimeLeft() == NEW_TIME_LIMIT);
+
+  UpdateTime(goomTime, NEW_TIME_LIMIT - 1);
+
+  goomTime.UpdateTime();
+  REQUIRE(timer.JustFinished());
+  REQUIRE(timer.Finished());
+  REQUIRE(timer.GetTimeElapsed() == NEW_TIME_LIMIT);
+  REQUIRE(timer.GetTimeLeft() == 0);
+
+  goomTime.UpdateTime();
+  REQUIRE(not timer.JustFinished());
+  REQUIRE(timer.Finished());
+  REQUIRE(timer.GetTimeElapsed() == NEW_TIME_LIMIT);
+  REQUIRE(timer.GetTimeLeft() == 0);
 }
 
 TEST_CASE("Timer Set To Finished")
