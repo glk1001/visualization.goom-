@@ -37,7 +37,6 @@ auto Timer::GetTimeLeft() const noexcept -> uint64_t
 
 auto Timer::SetTimeLimit(const uint64_t timeLimit, const bool setToFinished) noexcept -> void
 {
-  m_startTime  = m_goomTime->GetCurrentTime();
   m_timeLimit  = timeLimit;
   m_targetTime = m_startTime + timeLimit;
   m_finished   = setToFinished;
@@ -161,6 +160,7 @@ auto OnOffTimer::ChangeStateToOff() -> void
 
   if (not m_offAction())
   {
+    m_onTimer.ResetToZero();
     m_onTimer.SetTimeLimit(m_timerCounts.numOnCountAfterFailedOff);
     Ensures(not m_onTimer.Finished());
     Ensures(m_offTimer.Finished());
@@ -168,6 +168,7 @@ auto OnOffTimer::ChangeStateToOff() -> void
   }
 
   m_onTimer.SetToFinished();
+  m_offTimer.ResetToZero();
   m_offTimer.SetTimeLimit(m_timerCounts.numOffCount);
   m_timerState = TimerState::OFF_TIMER_ACTIVE;
 
@@ -181,6 +182,7 @@ auto OnOffTimer::ChangeStateToOn() -> void
 
   if (not m_onAction())
   {
+    m_offTimer.ResetToZero();
     m_offTimer.SetTimeLimit(m_timerCounts.numOffCountAfterFailedOn);
     Ensures(not m_offTimer.Finished());
     Ensures(m_onTimer.Finished());
@@ -188,6 +190,7 @@ auto OnOffTimer::ChangeStateToOn() -> void
   }
 
   m_offTimer.SetToFinished();
+  m_onTimer.ResetToZero();
   m_onTimer.SetTimeLimit(m_timerCounts.numOnCount);
   m_timerState = TimerState::ON_TIMER_ACTIVE;
 

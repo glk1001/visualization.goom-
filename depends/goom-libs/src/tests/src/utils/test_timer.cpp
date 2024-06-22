@@ -1,8 +1,13 @@
 // NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
 
+#undef NO_LOGGING
+
+#include "goom/goom_logger.h"
+
 #include <catch2/catch_test_macros.hpp>
 #include <cstdint>
 
+import Goom.Utils.DebuggingLogger;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
 
@@ -104,15 +109,21 @@ TEST_CASE("Timer Limit Change")
   REQUIRE(timer.GetTimeElapsed() == 0);
   REQUIRE(timer.GetTimeLeft() == TIME_LIMIT);
 
+  goomTime.UpdateTime();
+  REQUIRE(not timer.JustFinished());
+  REQUIRE(not timer.Finished());
+  REQUIRE(timer.GetTimeElapsed() == 1);
+  REQUIRE(timer.GetTimeLeft() == (TIME_LIMIT - 1));
+
   static constexpr auto NEW_TIME_LIMIT = 10U;
   timer.SetTimeLimit(NEW_TIME_LIMIT);
 
   REQUIRE(not timer.JustFinished());
   REQUIRE(not timer.Finished());
-  REQUIRE(timer.GetTimeElapsed() == 0);
-  REQUIRE(timer.GetTimeLeft() == NEW_TIME_LIMIT);
+  REQUIRE(timer.GetTimeElapsed() == 1);
+  REQUIRE(timer.GetTimeLeft() == NEW_TIME_LIMIT - 1);
 
-  UpdateTime(goomTime, NEW_TIME_LIMIT - 1);
+  UpdateTime(goomTime, NEW_TIME_LIMIT - 2);
 
   goomTime.UpdateTime();
   REQUIRE(timer.JustFinished());
@@ -202,26 +213,46 @@ TEST_CASE("OnOffTimer")
   onOffTimer.SetActions({onAction, offAction});
 
   // Run 'on' timer.
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.StartOnTimer();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
+  REQUIRE(not onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
+  REQUIRE(onOffTimer.GetOnTimer().GetTimeLeft() == NUM_ON_COUNT);
   REQUIRE(onActionCalled);
   REQUIRE(not offActionCalled);
   onActionCalled = false;
-  UpdateTime(goomTime, NUM_ON_COUNT);
+  UpdateTime(goomTime, 1U);
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().GetTimeLeft() == (NUM_ON_COUNT - 1U));
+  UpdateTime(goomTime, NUM_ON_COUNT - 1U);
   REQUIRE(not offActionCalled);
   REQUIRE(not onActionCalled);
   onOffTimer.Update();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(not onOffTimer.GetOffTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().GetTimeLeft() == NUM_OFF_COUNT);
   REQUIRE(not onActionCalled);
   REQUIRE(offActionCalled);
 
   // Should now have switched to 'off' timer.
   onActionCalled  = false;
   offActionCalled = false;
-  UpdateTime(goomTime, NUM_OFF_COUNT);
+  UpdateTime(goomTime, 1U);
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
+  REQUIRE(onOffTimer.GetOffTimer().GetTimeLeft() == (NUM_OFF_COUNT - 1U));
+  UpdateTime(goomTime, NUM_OFF_COUNT - 1U);
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.Update();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
+  REQUIRE(not onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
   REQUIRE(onActionCalled);
   REQUIRE(not offActionCalled);
 
@@ -229,9 +260,15 @@ TEST_CASE("OnOffTimer")
   onActionCalled  = false;
   offActionCalled = false;
   onOffTimer.Reset();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.StartOffTimer();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(not onOffTimer.GetOffTimer().Finished());
   REQUIRE(not onActionCalled);
   REQUIRE(offActionCalled);
   offActionCalled = false;
@@ -239,6 +276,9 @@ TEST_CASE("OnOffTimer")
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.Update();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
+  REQUIRE(not onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
   REQUIRE(onActionCalled);
   REQUIRE(not offActionCalled);
 
@@ -249,6 +289,9 @@ TEST_CASE("OnOffTimer")
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.Update();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(not onOffTimer.GetOffTimer().Finished());
   REQUIRE(not onActionCalled);
   REQUIRE(offActionCalled);
 
@@ -260,11 +303,17 @@ TEST_CASE("OnOffTimer")
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.StartOffTimer();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(not onOffTimer.GetOffTimer().Finished());
   REQUIRE(not onActionCalled);
   REQUIRE(offActionCalled);
   onActionCalled  = false;
   offActionCalled = false;
   onOffTimer.Stop();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
   REQUIRE(onActionCalled);
   REQUIRE(not offActionCalled);
 
@@ -272,6 +321,9 @@ TEST_CASE("OnOffTimer")
   onActionCalled  = false;
   offActionCalled = false;
   onOffTimer.Stop();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
+  REQUIRE(onOffTimer.GetOnTimer().Finished());
+  REQUIRE(onOffTimer.GetOffTimer().Finished());
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
 }
@@ -308,9 +360,11 @@ TEST_CASE("OnOffTimer with fails")
 
   onOffTimer.SetActions({onAction, offAction});
 
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.StartOnTimer();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
   REQUIRE(onActionCalled);
   REQUIRE(not offActionCalled);
   onActionCalled = false;
@@ -318,17 +372,20 @@ TEST_CASE("OnOffTimer with fails")
   REQUIRE(not onActionCalled);
   REQUIRE(not offActionCalled);
   onOffTimer.Update();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
   REQUIRE(not onActionCalled);
   REQUIRE(offActionCalled);
 
   // Run 'on' timer with failed 'off' action.
   onOffTimer.Reset();
   onOffTimer.SetTimerCounts(TIMER_COUNTS);
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
   onActionCalled  = false;
   onActionReturn  = true;
   offActionCalled = false;
   offActionReturn = false;
   onOffTimer.StartOnTimer();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
   REQUIRE(onActionCalled);
   REQUIRE(not offActionCalled);
   onActionCalled  = false;
@@ -339,12 +396,14 @@ TEST_CASE("OnOffTimer with fails")
   REQUIRE(offActionCalled);
 
   // Still running 'on' timer because 'off' action failed.
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::ON_TIMER_ACTIVE);
   onActionCalled  = false;
   onActionReturn  = true;
   offActionCalled = false;
   offActionReturn = true;
   UpdateTime(goomTime, NUM_ON_COUNT_AFTER_FAILED_OFF);
   onOffTimer.Update();
+  REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::OFF_TIMER_ACTIVE);
   REQUIRE(not onActionCalled);
   REQUIRE(offActionCalled);
 

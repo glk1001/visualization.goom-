@@ -7,11 +7,13 @@
 #include <ostream>
 #include <string>
 
+import Goom.Utils.DebuggingLogger;
 import Goom.Lib.GoomControl;
 
 using Catch::Session;
 using GOOM::GoomControl;
 using GOOM::GoomLogger;
+using GOOM::UTILS::SetGoomLogger;
 
 auto main(int argc, char* argv[]) -> int
 {
@@ -23,6 +25,8 @@ auto main(int argc, char* argv[]) -> int
   SetLogLevel(*goomLogger, GoomLogger::LogLevel::INFO);
   SetLogLevelForFiles(*goomLogger, GoomLogger::LogLevel::INFO);
   LogStart(*goomLogger);
+
+  SetGoomLogger(*goomLogger);
 
   LogInfo(*goomLogger, "Start unit tests...");
 
