@@ -26,20 +26,7 @@ public:
   auto Start() -> void;
   auto NewCycle() -> void;
 
-  auto ChangeFilterSettings() -> void;
-  auto ChangeFilterModeIfMusicChanges() -> void;
-
-  // gros frein si la musique est calme
-  // big break if the music is quiet
-  auto BigBreakIfMusicIsCalm() -> void;
-
-  // tout ceci ne sera fait qu'en cas de non-blocage
-  // all this will only be done in case of non-blocking
-  auto BigUpdateIfNotLocked() -> void;
-
-  // baisser regulierement la vitesse
-  // steadily lower the speed
-  auto RegularlyLowerTheSpeed() -> void;
+  auto UpdateSettings() -> void;
 
   [[nodiscard]] auto GetNameValueParams() const -> UTILS::NameValuePairs;
 
@@ -69,19 +56,34 @@ private:
   auto ChangeState() -> void;
   auto DoChangeState() -> void;
 
+  auto ChangeFilterSettings() -> void;
+  auto ChangeFilterModeIfMusicChanges() -> void;
+
+  // gros frein si la musique est calme
+  // big break if the music is quiet
+  auto BigBreakIfMusicIsCalm() -> void;
+
+  // tout ceci ne sera fait qu'en cas de non-blocage
+  // all this will only be done in case of non-blocking
+  auto BigUpdateIfNotLocked() -> void;
+
+  // baisser regulierement la vitesse
+  // steadily lower the speed
+  auto RegularlyLowerTheSpeed() -> void;
+
   // Changement d'effet de zoom !
-  auto BigNormalUpdate() -> void;
-  auto MegaLentUpdate() -> void;
-  auto BigUpdate() -> void;
-  auto BigBreak() -> void;
-  auto ChangeFilterMode() -> void;
+  auto DoBigNormalUpdate() -> void;
+  auto DoMegaLentUpdate() -> void;
+  auto DoBigUpdate() -> void;
+  auto DoBigBreak() -> void;
+  auto DoChangeFilterMode() -> void;
   auto CheckIfUpdateFilterSettingsNow() -> void;
   auto ChangeFilterExtraSettings() -> void;
   auto UpdateFilterSettings() -> void;
-  auto UpdateTransformBufferLerpData() -> void;
-  auto SetNewTransformBufferLerpDataBasedOnSpeed() -> void;
+  auto DoUpdateTransformBufferLerpData() -> void;
+  auto DoSetNewTransformBufferLerpDataBasedOnSpeed() -> void;
   auto ChangeTransformBufferLerpToEnd() -> void;
-  auto ChangeRotation() -> void;
+  auto DoChangeRotation() -> void;
   auto ChangeSpeedReverse() -> void;
   auto ChangeVitesse() -> void;
   auto ChangeStopSpeeds() -> void;
