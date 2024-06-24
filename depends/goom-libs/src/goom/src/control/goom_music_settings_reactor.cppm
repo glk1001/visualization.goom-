@@ -36,12 +36,12 @@ private:
   GoomAllVisualFx* m_visualFx;
   FILTER_FX::FilterSettingsService* m_filterSettingsService;
 
-  static constexpr uint32_t NORMAL_UPDATE_LOCK_TIME                = 50;
-  static constexpr uint32_t REVERSE_SPEED_AND_STOP_SPEED_LOCK_TIME = 75;
-  static constexpr uint32_t REVERSE_SPEED_LOCK_TIME                = 100;
-  static constexpr uint32_t MEGA_LENT_LOCK_TIME_INCREASE           = 50;
-  static constexpr uint32_t CHANGE_VITESSE_LOCK_TIME_INCREASE      = 50;
-  static constexpr uint32_t CHANGE_SWITCH_VALUES_LOCK_TIME         = 150;
+  static constexpr auto NORMAL_UPDATE_LOCK_TIME                  = 50U;
+  static constexpr auto SLOWER_SPEED_AND_SPEED_FORWARD_LOCK_TIME = 75U;
+  static constexpr auto REVERSE_SPEED_LOCK_TIME                  = 100U;
+  static constexpr auto MEGA_LENT_LOCK_TIME_INCREASE             = 50U;
+  static constexpr auto CHANGE_VITESSE_LOCK_TIME_INCREASE        = 50U;
+  static constexpr auto CHANGE_LERP_TO_END_LOCK_TIME             = 150U;
   GoomLock m_lock; // pour empecher de nouveaux changements
 
   static constexpr auto MIN_MAX_TIME_BETWEEN_ZOOM_EFFECTS_CHANGE = 300;
@@ -56,8 +56,10 @@ private:
   auto ChangeState() -> void;
   auto DoChangeState() -> void;
 
-  auto ChangeRotation() -> void;
   auto ChangeFilterSettings() -> void;
+
+  auto ChangeTransformBufferLerpData() -> void;
+  auto ChangeRotation() -> void;
   auto ChangeFilterModeIfMusicChanges() -> void;
 
   // gros frein si la musique est calme
@@ -81,14 +83,18 @@ private:
   [[nodiscard]] auto UpdateFilterSettingsNow() const noexcept -> bool;
   auto DoUpdateFilterSettingsNow() -> void;
   auto ChangeFilterExtraSettings() -> void;
-  auto UpdateFilterSettings() -> void;
+  auto DoChangeFilterExtraSettings() -> void;
   auto DoUpdateTransformBufferLerpData() -> void;
   auto DoSetNewTransformBufferLerpDataBasedOnSpeed() -> void;
   auto ChangeTransformBufferLerpToEnd() -> void;
   auto DoSetTransformBufferLerpToEnd() -> void;
   auto DoChangeRotation() -> void;
   auto ChangeSpeedReverse() -> void;
+  auto DoChangeSpeedSlowAndForward() -> void;
+  auto DoChangeSpeedReverse() -> void;
   auto ChangeVitesse() -> void;
+  auto DoSetSlowerSpeedAndToggleReverse() -> void;
+  auto DoChangeSpeed(uint32_t currentVitesse, uint32_t newVitesse) -> void;
   auto ChangeStopSpeeds() -> void;
 
   static constexpr auto PROB_CHANGE_FILTER_MODE                       = 0.05F;
