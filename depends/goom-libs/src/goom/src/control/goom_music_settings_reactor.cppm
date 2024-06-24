@@ -56,6 +56,7 @@ private:
   auto ChangeState() -> void;
   auto DoChangeState() -> void;
 
+  auto ChangeRotation() -> void;
   auto ChangeFilterSettings() -> void;
   auto ChangeFilterModeIfMusicChanges() -> void;
 
@@ -77,12 +78,14 @@ private:
   auto DoBigUpdate() -> void;
   auto DoBigBreak() -> void;
   auto DoChangeFilterMode() -> void;
-  auto CheckIfUpdateFilterSettingsNow() -> void;
+  [[nodiscard]] auto UpdateFilterSettingsNow() const noexcept -> bool;
+  auto DoUpdateFilterSettingsNow() -> void;
   auto ChangeFilterExtraSettings() -> void;
   auto UpdateFilterSettings() -> void;
   auto DoUpdateTransformBufferLerpData() -> void;
   auto DoSetNewTransformBufferLerpDataBasedOnSpeed() -> void;
   auto ChangeTransformBufferLerpToEnd() -> void;
+  auto DoSetTransformBufferLerpToEnd() -> void;
   auto DoChangeRotation() -> void;
   auto ChangeSpeedReverse() -> void;
   auto ChangeVitesse() -> void;
