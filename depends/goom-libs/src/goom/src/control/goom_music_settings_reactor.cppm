@@ -56,8 +56,6 @@ private:
   auto ChangeState() -> void;
   auto DoChangeState() -> void;
 
-  auto ChangeFilterSettings() -> void;
-
   auto ChangeTransformBufferLerpData() -> void;
   auto ChangeRotation() -> void;
   auto ChangeFilterModeIfMusicChanges() -> void;
