@@ -176,6 +176,7 @@ auto GoomVisualization::Start(const int numChannels) -> void
           m_glScene->GetFramebufferHeight());
   LogInfo(*m_goomLogger, "Shader Dir               : '{}'.", m_glScene->GetShaderDir());
   LogInfo(*m_goomLogger, "Brightness Adjust        : {:.2f}.", m_glScene->GetBrightnessAdjust());
+  LogInfo(*m_goomLogger, "Dump directory           : {}.", m_goomControl->GetDumpDirectory());
 
   InitAudioValues(numChannels);
   InitSceneFrameData();
