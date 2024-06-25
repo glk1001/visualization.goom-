@@ -211,7 +211,7 @@ auto GoomMusicSettingsReactor::DoBigNormalUpdate() -> void
   ChangeState();
   ChangeSpeedReverse();
   ChangeStopSpeeds();
-  DoChangeRotation();
+  ChangeRotation();
   ChangeFilterExtraSettings();
   ChangeVitesse();
   ChangeTransformBufferLerpToEnd();
