@@ -44,6 +44,7 @@ public:
   [[maybe_unused]] auto SetNoZooms(bool value) -> void;
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
+  [[nodiscard]] auto GetDumpDirectory() const noexcept -> const std::string&;
 
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;

@@ -140,6 +140,7 @@ public:
   auto SetNoZooms(bool value) -> void;
   auto SetShowGoomState(bool value) -> void;
   auto SetDumpDirectory(const std::string& dumpDirectory) -> void;
+  [[nodiscard]] auto GetDumpDirectory() const noexcept -> const std::string&;
 
   auto SetFrameData(FrameData& frameData) -> void;
   auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
@@ -160,6 +161,7 @@ private:
   Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers{
       m_multiBufferDraw, m_goomInfo.GetDimensions(), GetColorAlphaNoAddBlend};
   FxHelper m_fxHelper;
+  std::string m_dumpDirectory;
 
   auto Blend2dClearAll() -> void;
   auto AddBlend2dImagesToGoomBuffers() -> void;
@@ -234,7 +236,6 @@ private:
 
 #ifdef DO_GOOM_STATE_DUMP
   std::unique_ptr<GoomStateDump> m_goomStateDump{};
-  std::string m_dumpDirectory{};
   auto StartGoomStateDump() -> void;
   auto UpdateGoomStateDump() -> void;
   auto FinishGoomStateDump() -> void;
@@ -267,6 +268,11 @@ auto GoomControl::SetShowGoomState(const bool value) -> void
 auto GoomControl::SetDumpDirectory(const std::string& dumpDirectory) -> void
 {
   m_pimpl->SetDumpDirectory(dumpDirectory);
+}
+
+auto GoomControl::GetDumpDirectory() const noexcept -> const std::string&
+{
+  return m_pimpl->GetDumpDirectory();
 }
 
 auto GoomControl::Start() -> void
@@ -455,18 +461,17 @@ inline auto GoomControl::GoomControlImpl::SetShowGoomState(const bool value) -> 
   m_showGoomState = value;
 }
 
-#ifdef DO_GOOM_STATE_DUMP
 inline auto GoomControl::GoomControlImpl::SetDumpDirectory(const std::string& dumpDirectory) -> void
 {
   m_dumpDirectory = dumpDirectory;
+
+  m_musicSettingsReactor.SetDumpDirectory(m_dumpDirectory);
 }
-#else
-inline auto GoomControl::GoomControlImpl::SetDumpDirectory(
-    [[maybe_unused]] const std::string& dumpDirectory) -> void
+
+inline auto GoomControl::GoomControlImpl::GetDumpDirectory() const noexcept -> const std::string&
 {
-  // #define not set
+  return m_dumpDirectory;
 }
-#endif
 
 inline auto GoomControl::GoomControlImpl::GetFrameData() const noexcept -> const FrameData&
 {
@@ -519,6 +524,8 @@ inline auto GoomControl::GoomControlImpl::Finish() -> void
 #ifdef DO_GOOM_STATE_DUMP
   FinishGoomStateDump();
 #endif
+
+  m_musicSettingsReactor.Finish();
 
   m_visualFx.Finish();
   m_filterBuffersService.Finish();
