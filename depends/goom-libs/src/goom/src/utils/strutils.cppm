@@ -30,11 +30,15 @@ auto FindAndReplaceAll(std::string& dataStr,
 
 [[nodiscard]] auto ImageBufferIndexToString(int32_t imageWidth, size_t bufferIndex) -> std::string;
 
-[[nodiscard]] auto StringSplit(const std::string& str, const std::string_view& delim)
-    -> std::vector<std::string>;
+[[nodiscard]] auto StringSplit(const std::string& str,
+                               const std::string_view& delim) -> std::vector<std::string>;
 
 [[nodiscard]] auto StringJoin(const std::vector<std::string>& strings,
                               const std::string_view& delim) -> std::string;
+
+template<typename T, class UnaryOp>
+[[nodiscard]] auto ToStrings(const std::vector<T>& array,
+                             UnaryOp toString) -> std::vector<std::string>;
 
 auto LTrim(std::string& str) noexcept -> void;
 auto RTrim(std::string& str) noexcept -> void;
@@ -49,9 +53,8 @@ auto Trim(std::string& str) noexcept -> void;
 auto PutFileLines(const std::string& filepath, const std::vector<std::string>& lines) -> void;
 auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines) -> void;
 
-[[nodiscard]] auto GetFileLinesWithExpandedIncludes(const std::string& includeDir,
-                                                    const std::string& filepath)
-    -> std::vector<std::string>;
+[[nodiscard]] auto GetFileLinesWithExpandedIncludes(
+    const std::string& includeDir, const std::string& filepath) -> std::vector<std::string>;
 [[nodiscard]] auto GetFileLinesWithExpandedIncludes(const std::string& includeDir,
                                                     const std::vector<std::string>& inLines)
     -> std::vector<std::string>;
@@ -100,6 +103,16 @@ inline auto TrimAndCopy(std::string str) noexcept -> std::string
 {
   Trim(str);
   return str;
+}
+
+template<typename T, class UnaryOp>
+auto ToStrings(const std::vector<T>& array, const UnaryOp toString) -> std::vector<std::string>
+{
+  auto output = std::vector<std::string>(array.size());
+
+  std::ranges::transform(array, begin(output), toString);
+
+  return output;
 }
 
 } // namespace GOOM::UTILS
@@ -164,8 +177,8 @@ auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-auto GetFileLinesWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
-    -> std::vector<std::string>
+auto GetFileLinesWithExpandedIncludes(const std::string& includeDir,
+                                      const std::string& filepath) -> std::vector<std::string>
 {
   const auto parentFileDir = std::filesystem::path(filepath).parent_path().string();
   return GetExpandedFileLines(includeDir, parentFileDir, GetFileLines(filepath));
@@ -202,8 +215,8 @@ auto ImageBufferIndexToString(const int32_t imageWidth, const size_t bufferIndex
   return std::format("{:5d}, {:5d}", x, y);
 }
 
-auto StringJoin(const std::vector<std::string>& strings, const std::string_view& delim)
-    -> std::string
+auto StringJoin(const std::vector<std::string>& strings,
+                const std::string_view& delim) -> std::string
 {
   auto joinedStr = std::string{};
 
