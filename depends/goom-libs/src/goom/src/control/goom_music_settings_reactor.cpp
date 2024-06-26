@@ -49,19 +49,20 @@ static constexpr auto MEGA_LENT_LOCK_TIME_INCREASE             = 50U;
 static constexpr auto CHANGE_VITESSE_LOCK_TIME_INCREASE        = 50U;
 static constexpr auto CHANGE_LERP_TO_END_LOCK_TIME             = 150U;
 
-static constexpr auto PROB_CHANGE_FILTER_MODE                       = 0.05F;
 static constexpr auto PROB_CHANGE_STATE                             = 0.50F;
+static constexpr auto PROB_CHANGE_FILTER_MODE                       = 0.05F;
+static constexpr auto PROB_CHANGE_FILTER_EXTRA_SETTINGS             = 0.90F;
 static constexpr auto PROB_CHANGE_TO_MEGA_LENT_MODE                 = 1.0F / 700.F;
-static constexpr auto PROB_SLOW_FILTER_SETTINGS_UPDATE              = 0.5F;
+static constexpr auto PROB_SLOW_FILTER_SETTINGS_UPDATE              = 0.50F;
 static constexpr auto PROB_FILTER_REVERSE_ON                        = 0.10F;
 static constexpr auto PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED        = 0.20F;
 static constexpr auto PROB_FILTER_VITESSE_STOP_SPEED_MINUS_1        = 0.20F;
 static constexpr auto PROB_FILTER_VITESSE_STOP_SPEED                = 0.10F;
 static constexpr auto PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE = 0.05F;
 static constexpr auto PROB_FILTER_TOGGLE_ROTATION                   = 0.125F;
-static constexpr auto PROB_FILTER_INCREASE_ROTATION                 = 0.25F;
+static constexpr auto PROB_FILTER_INCREASE_ROTATION                 = 0.250F;
 static constexpr auto PROB_FILTER_DECREASE_ROTATION                 = 0.875F;
-static constexpr auto PROB_FILTER_STOP_ROTATION                     = 0.25F;
+static constexpr auto PROB_FILTER_STOP_ROTATION                     = 0.250F;
 
 enum class ChangeEvents : UnderlyingEnumType
 {
@@ -135,7 +136,7 @@ private:
   auto BigUpdateIfNotLocked() -> void;
   auto LowerTheSpeedMaybe() -> void;
   auto ChangeRotationMaybe() -> void;
-  auto ChangeFilterExtraSettings() -> void;
+  auto ChangeFilterExtraSettingsMaybe() -> void;
   auto ChangeTransformBufferLerpDataMaybe() -> void;
   auto ChangeTransformBufferLerpToEndMaybe() -> void;
   auto ChangeVitesseMaybe() -> void;
@@ -274,9 +275,9 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DumpChangeEventData
 {
   if constexpr (COLLECT_EVENT_STATS)
   {
-    if (static constexpr auto SMALL_TIME = 10U;
+    if (static constexpr auto DONT_CARE_SMALL_TIME = 10U;
         m_allChangeEvents.empty() or m_dumpDirectory.empty() or
-        (m_goomInfo->GetTime().GetCurrentTime() < SMALL_TIME))
+        (m_goomInfo->GetTime().GetCurrentTime() < DONT_CARE_SMALL_TIME))
     {
       return;
     }
@@ -493,8 +494,14 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeRotationMaybe
   DoChangeRotationMaybe();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterExtraSettings() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterExtraSettingsMaybe()
+    -> void
 {
+  if (not m_goomRand->ProbabilityOf(PROB_CHANGE_FILTER_EXTRA_SETTINGS))
+  {
+    return;
+  }
+
   DoChangeFilterExtraSettings();
 }
 
@@ -611,7 +618,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigNormalUpdate()
   RestoreZoomInMaybe();
   ChangeStopSpeedsMaybe();
   ChangeRotationMaybe();
-  ChangeFilterExtraSettings();
+  ChangeFilterExtraSettingsMaybe();
   ChangeVitesseMaybe();
   ChangeTransformBufferLerpToEndMaybe();
   m_visualFx->ChangeAllFxColorMaps();
