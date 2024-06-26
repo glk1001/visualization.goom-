@@ -117,7 +117,7 @@ public:
 
 protected:
   [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
-  void SetFilterMode(ZoomFilterMode filterMode);
+  auto SetFilterMode(ZoomFilterMode filterMode) -> void;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
   [[nodiscard]] auto GetGoomRand() const -> const IGoomRand&;
   virtual auto SetDefaultSettings() -> void;
