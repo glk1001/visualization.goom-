@@ -6,12 +6,6 @@ set(VIS_GOOM_TARGET_NAME "visualization.goom-pp")
 set(VIS_GOOM_ADDON_VERSION "20.1.1")
 string(TOLOWER ${CMAKE_SYSTEM_NAME} PLATFORM)
 
-option(ENABLE_TESTING "Enable unit testing" OFF)
-
-set(GOOM_LIBS_RELDIR depends/goom-libs)
-set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR}/${GOOM_LIBS_RELDIR})
-set(GOOM_DIR "${GOOM_LIBS_DIR}/src/goom")
-set(GOOM_INCLUDE_DIR "${GOOM_DIR}/include")
 set(GOOM_ADDON_FILES_DIR "${PROJECT_SOURCE_DIR}/visualization.goom-pp")
 set(GOOM_RESOURCES_DIR "${GOOM_ADDON_FILES_DIR}/resources")
 
@@ -25,7 +19,6 @@ set(GOOM_BUILD_DIR "${CMAKE_BINARY_DIR}")
 if (NOT EXISTS "${GOOM_BUILD_DIR}")
     message(FATAL_ERROR "Could not find goom build directory \"${GOOM_BUILD_DIR}\".")
 endif ()
-
 set(CMAKE_INSTALL_PREFIX "${GOOM_BUILD_DIR}/kodi-vis-goom-addon")
 
 set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -35,7 +28,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SCRIPTS_PATH})
 
 include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
@@ -44,6 +36,7 @@ include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
 include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
 include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
+include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
@@ -56,15 +49,8 @@ endif ()
 CPMAddPackage("gh:g-truc/glm#1.0.1")
 set(GLM_INCLUDE_DIR "${glm_SOURCE_DIR}")
 
-if (NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
-    find_package(OpenGl REQUIRED)
-    set(DEPLIBS ${OPENGL_LIBRARIES})
-    add_definitions(${OPENGL_DEFINITIONS})
-else ()
-    find_package(OpenGLES 3.2 REQUIRED)
-    set(DEPLIBS ${OPENGLES_LIBRARIES})
-    add_definitions(${OPENGLES_DEFINITIONS})
-endif ()
+find_package(OpenGl REQUIRED)
+add_definitions(${OPENGL_DEFINITIONS})
 
 
 # Let the Goom code know we're building using Kodi. There are Kodi
@@ -93,12 +79,10 @@ string(REPLACE "-DNDEBUG" ""
 include(ProjectOptions.cmake)
 vis_goom_pp_get_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS vis_goom_pp_PROJECT_WARNINGS)
 
-# Include the Goom libs cmake files here, before the (horrible) global
-# compiler settings (needed for Kodi addon builder).
-add_subdirectory(${GOOM_LIBS_RELDIR})
+
+add_subdirectory(depends/goom-libs)
 
 
-include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 add_compile_options(${vis_goom_pp_PROJECT_WARNINGS})
 #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
@@ -113,16 +97,9 @@ set(VIS_GOOM_HEADERS
     src/Main.h
 )
 
-list(APPEND DEPLIBS goom::lib libs::vivid blend2d::blend2d)
-
 add_library(${VIS_GOOM_TARGET_NAME} SHARED
             ${VIS_GOOM_HEADERS}
             ${VIS_GOOM_SOURCES}
-)
-add_dependencies(${VIS_GOOM_TARGET_NAME}
-                 goom::lib
-                 libs::vivid
-                 blend2d::blend2d
 )
 
 target_sources(${VIS_GOOM_TARGET_NAME}
@@ -141,11 +118,7 @@ target_sources(${VIS_GOOM_TARGET_NAME}
                src/slot_producer_consumer.cppm
 )
 
-target_link_libraries(${VIS_GOOM_TARGET_NAME} PRIVATE ${DEPLIBS})
-target_include_directories(${VIS_GOOM_TARGET_NAME}
-                           PRIVATE
-                           ${GOOM_INCLUDE_DIR}
-)
+target_link_libraries(${VIS_GOOM_TARGET_NAME} PRIVATE goom::lib)
 target_include_directories(${VIS_GOOM_TARGET_NAME}
                            SYSTEM PRIVATE
                            ${GLM_INCLUDE_DIR}
@@ -154,7 +127,7 @@ target_include_directories(${VIS_GOOM_TARGET_NAME}
 
 # Force the build time into the compiled binaries.
 set(GOOM_BUILD_TIME_FILES
-    ${GOOM_LIBS_DIR}/src/goom/src/utils/build_time.cppm
+    ${GOOM_LIB_BUILD_TIME_FILE}
     ${PROJECT_SOURCE_DIR}/src/build_time.cpp
 )
 add_custom_target(goom_build_time ALL DEPENDS ${GOOM_BUILD_TIME_FILES})
@@ -212,12 +185,9 @@ message(STATUS "Vis.goom: C++ compile features       = \"${goom_addon_compile_fe
 message(STATUS "Vis.goom: C++ compile options        = \"${goom_addon_compile_options}\".")
 message(STATUS "Vis.goom: ENABLE_TESTING             = \"${ENABLE_TESTING}\".")
 message(STATUS "Vis.goom: GOOM_BUILD_DIR             = \"${GOOM_BUILD_DIR}\".")
-message(STATUS "Vis.goom: GOOM_INCLUDE_DIR           = \"${GOOM_INCLUDE_DIR}\".")
-message(STATUS "Vis.goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
 message(STATUS "Vis.goom: GOOM_ADDON_FILES_DIR       = \"${GOOM_ADDON_FILES_DIR}\".")
 message(STATUS "Vis.goom: GOOM_RESOURCES_DIR         = \"${GOOM_RESOURCES_DIR}\".")
 message(STATUS "Vis.goom: KODI_ROOT_DIR              = \"${KODI_ROOT_DIR}\".")
 message(STATUS "Vis.goom: KODI_INCLUDE_DIR           = \"${KODI_INCLUDE_DIR}\".")
+message(STATUS "Vis.goom: OPENGL_INCLUDE_DIR         = \"${OPENGL_INCLUDE_DIR}\".")
 message(STATUS "Vis.Goom: OPENGL_DEFINITIONS         = \"${OPENGL_DEFINITIONS}\".")
-message(STATUS "Vis.Goom: OPENGLES_DEFINITIONS       = \"${OPENGLES_DEFINITIONS}\".")
-message(STATUS "Vis.goom: DEPLIBS                    = \"${DEPLIBS}\".")

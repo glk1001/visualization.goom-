@@ -11,6 +11,12 @@ endif ()
 if (NOT blend2d_SOURCE_DIR)
     message(FATAL_ERROR "\"blend2d_SOURCE_DIR\" must be defined.")
 endif ()
+if (NOT goom_SOURCE_DIR)
+    message(FATAL_ERROR "\"goom_SOURCE_DIR\" must be defined.")
+endif ()
+if (NOT "${goom_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/src")
+    message(FATAL_ERROR "\"goom_SOURCE_DIR\" != \"${CMAKE_CURRENT_SOURCE_DIR}/src\".")
+endif ()
 
 if (WIN32)
     add_definitions(-D_WIN32PC)
@@ -404,30 +410,33 @@ target_sources(goom
                src/plugin_info.cppm
 )
 
-add_dependencies(goom
-                 libs::vivid
-                 blend2d::blend2d
+target_link_libraries(goom
+                      INTERFACE
+                      libs::vivid
+                      blend2d::blend2d
 )
 
-
 target_include_directories(goom
-                           PRIVATE
+                           PUBLIC
                            ${GOOM_LIBS_DIR}/src/goom/include
+                           PRIVATE
                            ${GOOM_LIBS_DIR}/src/goom/src/utils
                            ${GOOM_LIBS_DIR}/src/goom/src
 )
 
 target_include_directories(goom
-                           SYSTEM PRIVATE
-                           ${GOOM_LIBS_DIR}/src/bezier/include
+                           SYSTEM PUBLIC
+                           ${GOOM_LIBS_DIR}/lib/vivid
                            ${GOOM_LIBS_DIR}/src/vivid/include
                            ${GOOM_LIBS_DIR}/lib/libdivide
-                           ${GOOM_LIBS_DIR}/lib/perlin_noise/include
+                           ${GOOM_LIBS_DIR}/lib/perlin_noise
+                           ${magic_enum_INCLUDE_DIR}
+                           ${GLM_INCLUDE_DIR}
+                           SYSTEM PRIVATE
+                           ${GOOM_LIBS_DIR}/src/bezier/include
                            ${LSys_SOURCE_DIR}/include/lsys
                            ${blend2d_SOURCE_DIR}/src
-                           ${magic_enum_INCLUDE_DIR}
                            ${FREETYPE_INCLUDE_DIRS}
-                           ${GLM_INCLUDE_DIR}
 )
 
 vis_goom_pp_set_project_warnings(vis_goom_pp_WARNINGS_AS_ERRORS goom)
@@ -445,6 +454,7 @@ message(STATUS "Goom: C++ compile features       = \"${goom_compile_features}\".
 message(STATUS "Goom: C++ compile options        = \"${goom_compile_options}\".")
 message(STATUS "Goom: SOME_WARNINGS_OFF_FOR_LSYS = \"${SOME_WARNINGS_OFF_FOR_LSYS}\".")
 message(STATUS "Goom: GOOM_LIBS_DIR              = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Goom: goom_SOURCE_DIR            = \"${goom_SOURCE_DIR}\".")
 message(STATUS "Goom: blend2d_SOURCE_DIR         = \"${blend2d_SOURCE_DIR}\".")
 message(STATUS "Goom: GLM_INCLUDE_DIR            = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom: FREETYPE_INCLUDE_DIRS      = \"${FREETYPE_INCLUDE_DIRS}\".")

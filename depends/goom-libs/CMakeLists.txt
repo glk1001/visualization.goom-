@@ -95,6 +95,10 @@ else ()
     endif ()
 endif ()
 
+set(goom_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/goom/src)
+set(GOOM_LIB_BUILD_TIME_FILE ${goom_SOURCE_DIR}/utils/build_time.cppm PARENT_SCOPE)
+
+add_subdirectory(src)
 
 message(STATUS "Goom-libs: Cmake version                  = \"${CMAKE_VERSION}\"")
 message(STATUS "Goom-libs: Cmake generator                = \"${CMAKE_GENERATOR}\"")
@@ -113,9 +117,8 @@ message(STATUS "Goom-libs: C++ extensions                 = \"${CMAKE_CXX_EXTENS
 message(STATUS "Goom-libs: BUILD_SHARED_LIBS              = \"${BUILD_SHARED_LIBS}\".")
 message(STATUS "Goom-libs: ENABLE_TESTING                 = \"${ENABLE_TESTING}\".")
 message(STATUS "Goom-libs: GOOM_LIBS_DIR                  = \"${GOOM_LIBS_DIR}\".")
+message(STATUS "Goom-libs: goom_SOURCE_DIR                = \"${goom_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: blend2d_SOURCE_DIR             = \"${blend2d_SOURCE_DIR}\".")
 message(STATUS "Goom-libs: GLM_INCLUDE_DIR                = \"${GLM_INCLUDE_DIR}\".")
 message(STATUS "Goom-libs: FREETYPE_INCLUDE_DIRS          = \"${FREETYPE_INCLUDE_DIRS}\".")
 message(STATUS "Goom-libs: magic_enum_INCLUDE_DIR         = \"${magic_enum_INCLUDE_DIR}\".")
-
-add_subdirectory(src)

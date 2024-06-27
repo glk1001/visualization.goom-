@@ -41,24 +41,12 @@ add_executable(${GOOM_LIB_TESTS_NAME}
 
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            PRIVATE
-                           ${GOOM_LIBS_DIR}/src/goom/include
-                           ${GOOM_LIBS_DIR}/src/goom/include/goom
-                           ${GOOM_LIBS_DIR}/src/goom/src
-)
-target_include_directories(${GOOM_LIB_TESTS_NAME}
-                           SYSTEM PRIVATE
-                           ${GOOM_LIBS_DIR}/lib/vivid/include
-                           ${GOOM_LIBS_DIR}/lib/libdivide
-                           ${GOOM_LIBS_DIR}/lib/perlin_noise
-                           ${magic_enum_INCLUDE_DIR}
-                           ${GLM_INCLUDE_DIR}
+                           ${goom_SOURCE_DIR}
 )
 
 target_link_libraries(${GOOM_LIB_TESTS_NAME}
                       PRIVATE
-                      goom
-                      vivid
-                      blend2d::blend2d
+                      goom::lib
                       Catch2::Catch2
                       ${CMAKE_THREAD_LIBS_INIT}
 )
