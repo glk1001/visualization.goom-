@@ -1,10 +1,6 @@
-module;
-
-#include <vector>
-
 export module Goom.Control.GoomStateHandler;
 
-import Goom.Control.GoomStates;
+import Goom.Control.GoomDrawables;
 
 export namespace GOOM::CONTROL
 {
@@ -12,8 +8,6 @@ export namespace GOOM::CONTROL
 class IGoomStateHandler
 {
 public:
-  using DrawablesState = std::vector<GoomDrawables>;
-
   IGoomStateHandler() noexcept                                   = default;
   IGoomStateHandler(const IGoomStateHandler&) noexcept           = delete;
   IGoomStateHandler(IGoomStateHandler&&) noexcept                = delete;
@@ -23,8 +17,7 @@ public:
 
   virtual void ChangeToNextState() = 0;
 
-  [[nodiscard]] virtual auto GetCurrentState() const -> GoomStates = 0;
-  [[nodiscard]] auto GetCurrentDrawables() const -> DrawablesState;
+  [[nodiscard]] virtual auto GetCurrentState() const noexcept -> const GoomDrawablesState& = 0;
 };
 
 } // namespace GOOM::CONTROL

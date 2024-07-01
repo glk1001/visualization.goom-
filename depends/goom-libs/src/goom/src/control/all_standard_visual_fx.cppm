@@ -10,9 +10,9 @@ module;
 export module Goom.Control.GoomAllVisualFx:AllStandardVisualFx;
 
 import Goom.Color.RandomColorMaps;
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomEffects;
 import Goom.Control.GoomStateHandler;
-import Goom.Control.GoomStates;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
@@ -38,19 +38,28 @@ import Goom.Lib.Point2d;
 import Goom.Lib.SoundInfo;
 import :VisualFxColorMaps;
 
+using GOOM::UTILS::EnumMap;
+using GOOM::UTILS::Parallel;
+using GOOM::UTILS::Stopwatch;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::VISUAL_FX::FxHelper;
+using GOOM::VISUAL_FX::IVisualFx;
+using GOOM::VISUAL_FX::LinesFx;
+using GOOM::VISUAL_FX::ShaderFx;
+
 export namespace GOOM::CONTROL
 {
 
 class AllStandardVisualFx
 {
 public:
-  AllStandardVisualFx(UTILS::Parallel& parallel,
-                      VISUAL_FX::FxHelper& fxHelper,
-                      const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
+  AllStandardVisualFx(Parallel& parallel,
+                      FxHelper& fxHelper,
+                      const SmallImageBitmaps& smallBitmaps,
                       const std::string& resourcesDirectory) noexcept;
 
-  [[nodiscard]] auto GetCurrentGoomDrawables() const -> const IGoomStateHandler::DrawablesState&;
-  auto SetCurrentGoomDrawables(const IGoomStateHandler::DrawablesState& goomDrawablesSet) -> void;
+  [[nodiscard]] auto GetCurrentDrawablesState() const -> const GoomDrawablesState&;
+  auto SetCurrentDrawablesState(const GoomDrawablesState& goomDrawablesState) -> void;
 
   auto ChangeColorMaps() -> void;
   [[nodiscard]] static auto GetActiveColorMapsNames() -> std::unordered_set<std::string>;
@@ -64,27 +73,27 @@ public:
   auto RefreshAllFx() -> void;
   auto SuspendFx() -> void;
   auto ResumeFx() -> void;
-  auto ChangeAllFxPixelBlenders(
-      const VISUAL_FX::IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void;
+  auto ChangeAllFxPixelBlenders(const IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept
+      -> void;
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void;
 
   [[nodiscard]] auto GetFrameMiscData() const noexcept -> const MiscData&;
   auto SetFrameMiscData(MiscData& miscData) noexcept -> void;
   auto ApplyCurrentStateToImageBuffers(const AudioSamples& soundData) -> void;
-  auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) -> void;
+  auto ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void;
 
   [[nodiscard]] auto GetLinesFx() noexcept -> VISUAL_FX::LinesFx&;
 
   auto ChangeShaderVariables() -> void;
 
 private:
-  std::unique_ptr<VISUAL_FX::ShaderFx> m_shaderFx;
-  UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>> m_drawablesMap;
-  [[nodiscard]] static auto GetDrawablesMap(UTILS::Parallel& parallel,
-                                            VISUAL_FX::FxHelper& fxHelper,
-                                            const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
+  std::unique_ptr<ShaderFx> m_shaderFx;
+  EnumMap<GoomDrawables, std::unique_ptr<IVisualFx>> m_drawablesMap;
+  [[nodiscard]] static auto GetDrawablesMap(Parallel& parallel,
+                                            FxHelper& fxHelper,
+                                            const SmallImageBitmaps& smallBitmaps,
                                             const std::string& resourcesDirectory)
-      -> UTILS::EnumMap<GoomDrawables, std::unique_ptr<VISUAL_FX::IVisualFx>>;
+      -> EnumMap<GoomDrawables, std::unique_ptr<IVisualFx>>;
   VisualFxColorMaps m_visualFxColorMaps;
   MiscData* m_frameMiscData = nullptr;
   auto ChangeDotsColorMaps() noexcept -> void;
@@ -93,7 +102,7 @@ private:
   auto ChangeStarsColorMaps() noexcept -> void;
   auto ChangeTentaclesColorMaps() noexcept -> void;
 
-  IGoomStateHandler::DrawablesState m_currentGoomDrawables;
+  GoomDrawablesState m_currentDrawablesState;
   ResetCurrentDrawBuffSettingsFunc m_resetCurrentDrawBuffSettingsFunc;
   auto ResetDrawBuffSettings(GoomDrawables fx) -> void;
 
@@ -109,16 +118,14 @@ private:
 namespace GOOM::CONTROL
 {
 
-inline auto AllStandardVisualFx::GetCurrentGoomDrawables() const
-    -> const IGoomStateHandler::DrawablesState&
+inline auto AllStandardVisualFx::GetCurrentDrawablesState() const -> const GoomDrawablesState&
 {
-  return m_currentGoomDrawables;
+  return m_currentDrawablesState;
 }
 
-inline void AllStandardVisualFx::SetCurrentGoomDrawables(
-    const IGoomStateHandler::DrawablesState& goomDrawablesSet)
+inline void AllStandardVisualFx::SetCurrentDrawablesState(const GoomDrawablesState& goomDrawablesState)
 {
-  m_currentGoomDrawables = goomDrawablesSet;
+  m_currentDrawablesState = goomDrawablesState;
 }
 
 inline void AllStandardVisualFx::SetResetDrawBuffSettingsFunc(
@@ -166,21 +173,14 @@ namespace GOOM::CONTROL
 
 using CONTROL::GoomDrawables;
 using UTILS::NUM;
-using UTILS::Parallel;
-using UTILS::Stopwatch;
-using UTILS::GRAPHICS::SmallImageBitmaps;
 using VISUAL_FX::CirclesFx;
 using VISUAL_FX::FlyingStarsFx;
-using VISUAL_FX::FxHelper;
 using VISUAL_FX::GoomDotsFx;
 using VISUAL_FX::IfsDancersFx;
 using VISUAL_FX::ImageFx;
-using VISUAL_FX::IVisualFx;
-using VISUAL_FX::LinesFx;
 using VISUAL_FX::LSystemFx;
 using VISUAL_FX::ParticlesFx;
 using VISUAL_FX::RaindropsFx;
-using VISUAL_FX::ShaderFx;
 using VISUAL_FX::ShapesFx;
 using VISUAL_FX::TentaclesFx;
 using VISUAL_FX::TubesFx;
@@ -236,21 +236,21 @@ auto AllStandardVisualFx::Finish() -> void
 
 auto AllStandardVisualFx::RefreshAllFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
+  std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->Refresh(); });
 }
 
 auto AllStandardVisualFx::SuspendFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
+  std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->Suspend(); });
 }
 
 auto AllStandardVisualFx::ResumeFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
+  std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
@@ -258,15 +258,15 @@ auto AllStandardVisualFx::ResumeFx() -> void
 auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
     const IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
-                        [this, &pixelBlenderParams](const auto currentlyDrawable) {
-                          m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams);
-                        });
+  std::ranges::for_each(
+      m_currentDrawablesState.GetDrawables(),
+      [this, &pixelBlenderParams](const auto currentlyDrawable)
+      { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams); });
 }
 
 auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
+  std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this, &zoomMidpoint](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
 }
@@ -291,8 +291,8 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
 
 auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
-                        [this](const auto& drawable)
+  std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
+                        [this](const auto drawable)
                         {
                           auto& visualFx = *m_drawablesMap[drawable];
                           visualFx.SetFrameMiscData(*m_frameMiscData);
@@ -301,8 +301,8 @@ auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
 
 auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soundData) -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables,
-                        [this, &soundData](const auto& drawable)
+  std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
+                        [this, &soundData](const auto drawable)
                         {
                           auto& visualFx = *m_drawablesMap[drawable];
 

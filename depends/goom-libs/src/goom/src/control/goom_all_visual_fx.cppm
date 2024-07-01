@@ -9,8 +9,8 @@ module;
 
 export module Goom.Control.GoomAllVisualFx;
 
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomStateHandler;
-import Goom.Control.GoomStates;
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
 import Goom.Utils.Graphics.SmallImageBitmaps;
@@ -26,6 +26,14 @@ import Goom.Lib.SPimpl;
 import :AllStandardVisualFx;
 import :VisualFxColorMaps;
 
+using GOOM::UTILS::Parallel;
+using GOOM::UTILS::Stopwatch;
+using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::Weights;
+using GOOM::VISUAL_FX::FxHelper;
+using GOOM::VISUAL_FX::IVisualFx;
+
 export namespace GOOM::CONTROL
 {
 
@@ -33,9 +41,9 @@ class GoomAllVisualFx
 {
 public:
   GoomAllVisualFx() noexcept = delete;
-  GoomAllVisualFx(UTILS::Parallel& parallel,
-                  VISUAL_FX::FxHelper& fxHelper,
-                  const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
+  GoomAllVisualFx(Parallel& parallel,
+                  FxHelper& fxHelper,
+                  const SmallImageBitmaps& smallBitmaps,
                   const std::string& resourcesDirectory,
                   IGoomStateHandler& goomStateHandler) noexcept;
 
@@ -47,7 +55,6 @@ public:
   auto SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void;
 
   auto SetNextState() noexcept -> void;
-  [[nodiscard]] auto GetCurrentState() const noexcept -> GoomStates;
   [[nodiscard]] auto GetCurrentStateName() const noexcept -> std::string_view;
 
   using ResetDrawBuffSettingsFunc = std::function<void(const FXBuffSettings& settings)>;
@@ -60,19 +67,19 @@ public:
   [[nodiscard]] auto GetFrameMiscData() const noexcept -> const MiscData&;
   auto SetFrameMiscData(MiscData& miscData) noexcept -> void;
   auto ApplyCurrentStateToImageBuffers(const AudioSamples& soundData) noexcept -> void;
-  auto ApplyEndEffectIfNearEnd(const UTILS::Stopwatch::TimeValues& timeValues) noexcept -> void;
+  auto ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) noexcept -> void;
 
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::unordered_set<std::string>;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   [[maybe_unused]] GoomLogger* m_goomLogger;
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
 
   IGoomStateHandler* m_goomStateHandler;
   bool m_allowMultiThreadedStates = true;
   auto ChangeState() noexcept -> void;
-  IGoomStateHandler::DrawablesState m_currentGoomDrawables;
+  GoomDrawablesState m_currentDrawablesState;
 
   ResetDrawBuffSettingsFunc m_resetDrawBuffSettings;
   auto ResetCurrentDrawBuffSettings(GoomDrawables fx) noexcept -> void;
@@ -80,8 +87,7 @@ private:
 
   VisualFxColorMaps m_visualFxColorMaps{*m_goomRand};
 
-  [[nodiscard]] auto GetNextPixelBlenderParams() const noexcept
-      -> VISUAL_FX::IVisualFx::PixelBlenderParams;
+  [[nodiscard]] auto GetNextPixelBlenderParams() const noexcept -> IVisualFx::PixelBlenderParams;
   enum class GlobalBlendType : UnderlyingEnumType
   {
     NONRANDOM,
@@ -91,7 +97,7 @@ private:
   static constexpr auto NONRANDOM_WEIGHT    = 50.0F;
   static constexpr auto SYNC_RANDOM_WEIGHT  = 50.0F;
   static constexpr auto ASYNC_RANDOM_WEIGHT = 50.0F;
-  UTILS::MATH::Weights<GlobalBlendType> m_globalBlendTypeWeight{
+  Weights<GlobalBlendType> m_globalBlendTypeWeight{
       *m_goomRand,
       {{GlobalBlendType::NONRANDOM, NONRANDOM_WEIGHT},
                   {GlobalBlendType::SYNC_RANDOM, SYNC_RANDOM_WEIGHT},
@@ -122,14 +128,9 @@ inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(
   m_resetDrawBuffSettings = func;
 }
 
-inline auto GoomAllVisualFx::GetCurrentState() const noexcept -> GoomStates
-{
-  return m_goomStateHandler->GetCurrentState();
-}
-
 inline auto GoomAllVisualFx::GetCurrentStateName() const noexcept -> std::string_view
 {
-  return GoomStateInfo::GetStateInfo(m_goomStateHandler->GetCurrentState()).name;
+  return m_goomStateHandler->GetCurrentState().GetName();
 }
 
 } // namespace GOOM::CONTROL

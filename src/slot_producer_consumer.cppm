@@ -1,8 +1,6 @@
 module;
 
-#ifdef DEBUG_LOGGING
 #include "goom/goom_logger.h"
-#endif
 
 #include <chrono>
 #include <condition_variable>
@@ -20,8 +18,6 @@ import Goom.Lib.AssertUtils;
 
 export namespace GOOM
 {
-
-class GoomLogger;
 
 template<typename TResource>
 class SlotProducerConsumer

@@ -1,14 +1,13 @@
 module;
 
-//#undef NO_LOGGING
-
+#include <algorithm>
 #include <string>
 #include <unordered_set>
 
 module Goom.Control.GoomAllVisualFx;
 
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomStateHandler;
-import Goom.Control.GoomStates;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.FrameData;
@@ -61,27 +60,27 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   m_allStandardVisualFx->SuspendFx();
 
   static constexpr auto MAX_TRIES = 10U;
-  const auto oldState             = m_goomStateHandler->GetCurrentState();
+  const auto oldStateId           = m_goomStateHandler->GetCurrentState().GetId();
 
   for (auto numTry = 0U; numTry < MAX_TRIES; ++numTry)
   {
     m_goomStateHandler->ChangeToNextState();
 
     if ((not m_allowMultiThreadedStates) and
-        GoomStateInfo::IsMultiThreaded(m_goomStateHandler->GetCurrentState()))
+        m_goomStateHandler->GetCurrentState().IsMultiThreaded())
     {
       continue;
     }
 
-    // Pick a different state if possible
-    if (oldState != m_goomStateHandler->GetCurrentState())
+    // Pick a different state if possible.
+    if (not m_goomStateHandler->GetCurrentState().HasSameId(oldStateId))
     {
       break;
     }
   }
 
-  m_currentGoomDrawables = m_goomStateHandler->GetCurrentDrawables();
-  m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
+  m_currentDrawablesState = m_goomStateHandler->GetCurrentState();
+  m_allStandardVisualFx->SetCurrentDrawablesState(m_currentDrawablesState);
   m_allStandardVisualFx->ChangeShaderVariables();
 
   m_allStandardVisualFx->GetLinesFx().ResetLineModes();
@@ -97,8 +96,7 @@ inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const noexcept
     -> FXBuffSettings
 {
-  const auto buffIntensity = m_goomRand->GetRandInRange(
-      GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler->GetCurrentState(), fx));
+  const auto buffIntensity = m_goomStateHandler->GetCurrentState().GetBuffIntensity(fx);
   // Careful here. > 1 reduces smearing.
   static constexpr auto INTENSITY_FACTOR = 1.0F;
   return {INTENSITY_FACTOR * buffIntensity};

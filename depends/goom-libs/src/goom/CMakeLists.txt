@@ -91,6 +91,7 @@ set(GoomColor_source_files
 set(GoomControl_modules
     src/control/all_standard_visual_fx.cppm
     src/control/goom_all_visual_fx.cppm
+    src/control/goom_drawables.cppm
     src/control/goom_effects.cppm
     src/control/goom_lock.cppm
     src/control/goom_message_displayer.cppm
@@ -100,7 +101,6 @@ set(GoomControl_modules
     src/control/goom_state_dump.cppm
     src/control/goom_state_handler.cppm
     src/control/goom_state_monitor.cppm
-    src/control/goom_states.cppm
     src/control/goom_title_displayer.cppm
     src/control/state_and_filter_consts.cppm
     src/control/visual_fx_color_maps.cppm
@@ -110,14 +110,13 @@ set(GoomControl_modules
 
 set(GoomControl_source_files
     src/control/goom_all_visual_fx.cpp
+    src/control/goom_drawables.cpp
     src/control/goom_message_displayer.cpp
     src/control/goom_music_settings_reactor.cpp
     src/control/goom_random_state_handler.cpp
     src/control/goom_sound_events.cpp
     src/control/goom_state_dump.cpp
-    src/control/goom_state_handler.cpp
     src/control/goom_state_monitor.cpp
-    src/control/goom_states.cpp
     src/control/goom_title_displayer.cpp
 )
 

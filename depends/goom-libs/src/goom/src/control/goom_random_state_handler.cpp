@@ -1,7 +1,12 @@
+module;
+
+#include <algorithm>
+#include <cstdint>
+#include <ranges>
+#include <vector>
+
 module Goom.Control.GoomRandomStateHandler;
 
-import Goom.Control.GoomStates;
-import Goom.Control.StateAndFilterConsts;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.AssertUtils;
@@ -9,240 +14,256 @@ import Goom.Lib.AssertUtils;
 namespace GOOM::CONTROL
 {
 
-using CONTROL::USE_FORCED_GOOM_STATE;
+using UTILS::EnumMap;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 
+static constexpr auto BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, NumberRange<float>>{{{
+    {GoomDrawables::CIRCLES, {0.50F, 0.80F}},
+    {GoomDrawables::DOTS, {0.40F, 0.70F}},
+    {GoomDrawables::IFS, {0.40F, 0.70F}},
+    {GoomDrawables::L_SYSTEM, {0.70F, 0.80F}},
+    {GoomDrawables::LINES, {0.50F, 0.70F}},
+    {GoomDrawables::IMAGE, {0.05F, 0.30F}},
+    {GoomDrawables::PARTICLES, {0.50F, 0.80F}},
+    {GoomDrawables::RAINDROPS, {0.60F, 0.80F}},
+    {GoomDrawables::SHAPES, {0.50F, 0.80F}},
+    {GoomDrawables::STARS, {0.50F, 0.60F}},
+    {GoomDrawables::TENTACLES, {0.30F, 0.50F}},
+    {GoomDrawables::TUBES, {0.70F, 0.80F}},
+}}};
 
-// For debugging:
+static constexpr auto PROB_SINGLE_DRAWABLE = EnumMap<GoomDrawables, float>{{{
+    {GoomDrawables::CIRCLES, 1.0F},
+    {GoomDrawables::DOTS, 1.0F},
+    {GoomDrawables::IFS, 1.0F},
+    {GoomDrawables::L_SYSTEM, 1.0F},
+    {GoomDrawables::LINES, 1.0F},
+    {GoomDrawables::IMAGE, 0.0F},
+    {GoomDrawables::PARTICLES, 1.0F},
+    {GoomDrawables::RAINDROPS, 1.0F},
+    {GoomDrawables::SHAPES, 1.0F},
+    {GoomDrawables::STARS, 1.0F},
+    {GoomDrawables::TENTACLES, 1.0F},
+    {GoomDrawables::TUBES, 1.0F},
+}}};
 
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::CIRCLES_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS_RAINDROPS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IFS_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_IMAGE_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES_STAR_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TENTACLES_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_LINES_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_STARS_TENTACLES_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::DOTS_TENTACLES_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_IMAGE;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_LINES_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_PARTICLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_STARS_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TENTACLES_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IFS_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_LINES_STARS_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_RAINDROPS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_RAINDROPS_SHAPES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::IMAGE_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_PARTICLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_STARS;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::LINES_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::L_SYSTEM_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::PARTICLES_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::PARTICLES_TENTACLES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::PARTICLES_TUBES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::RAINDROPS_ONLY;
-static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::SHAPES_STARS_LINES;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::STARS_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::TENTACLES_ONLY;
-//static constexpr auto FORCED_GOOM_STATE = GoomStates::TUBES_ONLY;
+static constexpr auto FRESH_STATE_WEIGHT         = 7.0F;
+static constexpr auto NON_REPEAT_STATE_WEIGHT    = 7.0F;
+static constexpr auto ADD_EXTRA_DRAWABLE_WEIGHT  = 4.0F;
+static constexpr auto ADD_REMOVE_DRAWABLE_WEIGHT = 1.0F;
+static constexpr auto REMOVE_DRAWABLE_WEIGHT     = 1.0F;
 
-// End debugging
-
-
-static constexpr auto CIRCLES_ONLY_WEIGHT                 = 050.0F;
-static constexpr auto CIRCLES_IFS_WEIGHT                  = 200.0F;
-static constexpr auto CIRCLES_IMAGE_WEIGHT                = 050.0F;
-static constexpr auto CIRCLES_IMAGE_STARS_WEIGHT          = 200.0F;
-static constexpr auto CIRCLES_IMAGE_STARS_L_SYSTEM_WEIGHT = 300.0F;
-static constexpr auto CIRCLES_LINES_WEIGHT                = 200.0F;
-static constexpr auto CIRCLES_STARS_TUBES_WEIGHT          = 100.0F;
-static constexpr auto CIRCLES_TENTACLES_WEIGHT            = 200.0F;
-static constexpr auto DOTS_IFS_WEIGHT                     = 300.0F;
-static constexpr auto DOTS_IFS_RAINDROPS_WEIGHT           = 100.0F;
-static constexpr auto DOTS_IFS_STARS_WEIGHT               = 300.0F;
-static constexpr auto DOTS_IMAGE_RAINDROPS_WEIGHT         = 050.0F;
-static constexpr auto DOTS_IMAGE_RAINDROPS_STARS_WEIGHT   = 100.0F;
-static constexpr auto DOTS_IMAGE_STARS_WEIGHT             = 200.0F;
-static constexpr auto DOTS_IMAGE_STARS_L_SYSTEM_WEIGHT    = 001.0F;
-static constexpr auto DOTS_LINES_WEIGHT                   = 200.0F;
-static constexpr auto DOTS_LINES_RAINDROPS_STARS_WEIGHT   = 040.0F;
-static constexpr auto DOTS_LINES_STARS_TENTACLES_WEIGHT   = 001.0F;
-static constexpr auto DOTS_LINES_TENTACLES_TUBES_WEIGHT   = 001.0F;
-static constexpr auto DOTS_LINES_TUBES_WEIGHT             = 200.0F;
-static constexpr auto DOTS_ONLY_WEIGHT                    = 300.0F;
-static constexpr auto DOTS_RAINDROPS_STARS_WEIGHT         = 100.0F;
-static constexpr auto DOTS_STARS_WEIGHT                   = 100.0F;
-static constexpr auto DOTS_STARS_L_SYSTEM_WEIGHT          = 050.0F;
-static constexpr auto DOTS_STARS_TENTACLES_TUBES_WEIGHT   = 001.0F;
-static constexpr auto DOTS_TENTACLES_TUBES_WEIGHT         = 001.0F;
-static constexpr auto IFS_IMAGE_WEIGHT                    = 100.0F;
-static constexpr auto IFS_IMAGE_RAINDROPS_SHAPES_WEIGHT   = 100.0F;
-static constexpr auto IFS_IMAGE_SHAPES_WEIGHT             = 100.0F;
-static constexpr auto IFS_LINES_RAINDROPS_STARS_WEIGHT    = 200.0F;
-static constexpr auto IFS_LINES_STARS_WEIGHT              = 200.0F;
-static constexpr auto IFS_ONLY_WEIGHT                     = 100.0F;
-static constexpr auto IFS_PARTICLES_WEIGHT                = 300.0F;
-static constexpr auto IFS_RAINDROPS_WEIGHT                = 100.0F;
-static constexpr auto IFS_RAINDROPS_SHAPES_WEIGHT         = 100.0F;
-static constexpr auto IFS_RAINDROPS_STARS_WEIGHT          = 100.0F;
-static constexpr auto IFS_SHAPES_WEIGHT                   = 100.0F;
-static constexpr auto IFS_STARS_WEIGHT                    = 200.0F;
-static constexpr auto IFS_STARS_TENTACLES_WEIGHT          = 070.0F;
-static constexpr auto IFS_TENTACLES_WEIGHT                = 070.0F;
-static constexpr auto IFS_TENTACLES_TUBES_WEIGHT          = 070.0F;
-static constexpr auto IFS_TUBES_WEIGHT                    = 200.0F;
-static constexpr auto IMAGE_LINES_WEIGHT                  = 100.0F;
-static constexpr auto IMAGE_LINES_RAINDROPS_WEIGHT        = 100.0F;
-static constexpr auto IMAGE_LINES_SHAPES_WEIGHT           = 100.0F;
-static constexpr auto IMAGE_LINES_STARS_TENTACLES_WEIGHT  = 100.0F;
-static constexpr auto IMAGE_ONLY_WEIGHT                   = 001.0F;
-static constexpr auto IMAGE_RAINDROPS_WEIGHT              = 100.0F;
-static constexpr auto IMAGE_RAINDROPS_SHAPES_WEIGHT       = 100.0F;
-static constexpr auto IMAGE_SHAPES_WEIGHT                 = 100.0F;
-static constexpr auto IMAGE_SHAPES_L_SYSTEM_WEIGHT        = 100.0F;
-static constexpr auto IMAGE_SHAPES_STARS_WEIGHT           = 100.0F;
-static constexpr auto IMAGE_SHAPES_TUBES_WEIGHT           = 100.0F;
-static constexpr auto IMAGE_STARS_WEIGHT                  = 200.0F;
-static constexpr auto IMAGE_STARS_L_SYSTEM_WEIGHT         = 250.0F;
-static constexpr auto IMAGE_TENTACLES_WEIGHT              = 070.0F;
-static constexpr auto IMAGE_TUBES_WEIGHT                  = 200.0F;
-static constexpr auto L_SYSTEM_ONLY_WEIGHT                = 100.0F;
-static constexpr auto LINES_ONLY_WEIGHT                   = 100.0F;
-static constexpr auto LINES_PARTICLES_WEIGHT              = 300.0F;
-static constexpr auto LINES_RAINDROPS_WEIGHT              = 100.0F;
-static constexpr auto LINES_SHAPES_STARS_WEIGHT           = 200.0F;
-static constexpr auto LINES_STARS_WEIGHT                  = 100.0F;
-static constexpr auto LINES_TENTACLES_WEIGHT              = 200.0F;
-static constexpr auto PARTICLES_ONLY_WEIGHT               = 100.0F;
-static constexpr auto PARTICLES_TENTACLES_WEIGHT          = 300.0F;
-static constexpr auto PARTICLES_TUBES_WEIGHT              = 300.0F;
-static constexpr auto RAINDROPS_ONLY_WEIGHT               = 010.0F;
-static constexpr auto SHAPES_ONLY_WEIGHT                  = 001.0F;
-static constexpr auto SHAPES_STARS_WEIGHT                 = 200.0F;
-static constexpr auto SHAPES_TUBES_WEIGHT                 = 200.0F;
-static constexpr auto STARS_ONLY_WEIGHT                   = 001.0F;
-static constexpr auto TENTACLES_ONLY_WEIGHT               = 001.0F;
-static constexpr auto TUBES_ONLY_WEIGHT                   = 001.0F;
-
+static constexpr auto ONE_WEIGHT   = 1.0F;
+static constexpr auto TWO_WEIGHT   = 3.0F;
+static constexpr auto THREE_WEIGHT = 3.0F;
+static constexpr auto FOUR_WEIGHT  = 2.0F;
+static constexpr auto FIVE_WEIGHT  = 1.0F;
 
 GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
-  : m_weightedStates{
+  : m_goomRand{&goomRand},
+    m_weightedChangeTypes{
         goomRand,
         {
-          {GoomStates::CIRCLES_ONLY, CIRCLES_ONLY_WEIGHT},
-          {GoomStates::CIRCLES_IFS, CIRCLES_IFS_WEIGHT},
-          {GoomStates::CIRCLES_IMAGE, CIRCLES_IMAGE_WEIGHT},
-          {GoomStates::CIRCLES_IMAGE_STARS, CIRCLES_IMAGE_STARS_WEIGHT},
-          {GoomStates::CIRCLES_IMAGE_STARS_L_SYSTEM, CIRCLES_IMAGE_STARS_L_SYSTEM_WEIGHT},
-          {GoomStates::CIRCLES_LINES, CIRCLES_LINES_WEIGHT},
-          {GoomStates::CIRCLES_STARS_TUBES, CIRCLES_STARS_TUBES_WEIGHT},
-          {GoomStates::CIRCLES_TENTACLES, CIRCLES_TENTACLES_WEIGHT},
-
-          {GoomStates::DOTS_IFS, DOTS_IFS_WEIGHT},
-          {GoomStates::DOTS_IFS_RAINDROPS, DOTS_IFS_RAINDROPS_WEIGHT},
-          {GoomStates::DOTS_IFS_STARS, DOTS_IFS_STARS_WEIGHT},
-          {GoomStates::DOTS_IMAGE_RAINDROPS, DOTS_IMAGE_RAINDROPS_WEIGHT},
-          {GoomStates::DOTS_IMAGE_RAINDROPS_STARS, DOTS_IMAGE_RAINDROPS_STARS_WEIGHT},
-          {GoomStates::DOTS_IMAGE_STARS, DOTS_IMAGE_STARS_WEIGHT},
-          {GoomStates::DOTS_IMAGE_STARS_L_SYSTEM, DOTS_IMAGE_STARS_L_SYSTEM_WEIGHT},
-          {GoomStates::DOTS_LINES, DOTS_LINES_WEIGHT},
-          {GoomStates::DOTS_LINES_RAINDROPS_STARS, DOTS_LINES_RAINDROPS_STARS_WEIGHT},
-          {GoomStates::DOTS_LINES_STARS_TENTACLES, DOTS_LINES_STARS_TENTACLES_WEIGHT},
-          {GoomStates::DOTS_LINES_TENTACLES_TUBES, DOTS_LINES_TENTACLES_TUBES_WEIGHT},
-          {GoomStates::DOTS_LINES_TUBES, DOTS_LINES_TUBES_WEIGHT},
-          {GoomStates::DOTS_ONLY, DOTS_ONLY_WEIGHT},
-          {GoomStates::DOTS_RAINDROPS_STARS, DOTS_RAINDROPS_STARS_WEIGHT},
-          {GoomStates::DOTS_STARS, DOTS_STARS_WEIGHT},
-          {GoomStates::DOTS_STARS_L_SYSTEM, DOTS_STARS_L_SYSTEM_WEIGHT},
-          {GoomStates::DOTS_STARS_TENTACLES_TUBES, DOTS_STARS_TENTACLES_TUBES_WEIGHT},
-          {GoomStates::DOTS_TENTACLES_TUBES, DOTS_TENTACLES_TUBES_WEIGHT},
-
-          {GoomStates::IFS_IMAGE, IFS_IMAGE_WEIGHT},
-          {GoomStates::IFS_IMAGE_RAINDROPS_SHAPES, IFS_IMAGE_RAINDROPS_SHAPES_WEIGHT},
-          {GoomStates::IFS_IMAGE_SHAPES, IFS_IMAGE_SHAPES_WEIGHT},
-          {GoomStates::IFS_LINES_RAINDROPS_STARS, IFS_LINES_RAINDROPS_STARS_WEIGHT},
-          {GoomStates::IFS_LINES_STARS, IFS_LINES_STARS_WEIGHT},
-          {GoomStates::IFS_ONLY, IFS_ONLY_WEIGHT},
-          {GoomStates::IFS_PARTICLES, IFS_PARTICLES_WEIGHT},
-          {GoomStates::IFS_RAINDROPS, IFS_RAINDROPS_WEIGHT},
-          {GoomStates::IFS_RAINDROPS_SHAPES, IFS_RAINDROPS_SHAPES_WEIGHT},
-          {GoomStates::IFS_RAINDROPS_STARS, IFS_RAINDROPS_STARS_WEIGHT},
-          {GoomStates::IFS_SHAPES, IFS_SHAPES_WEIGHT},
-          {GoomStates::IFS_STARS, IFS_STARS_WEIGHT},
-          {GoomStates::IFS_STARS_TENTACLES, IFS_STARS_TENTACLES_WEIGHT},
-          {GoomStates::IFS_TENTACLES, IFS_TENTACLES_WEIGHT},
-          {GoomStates::IFS_TENTACLES_TUBES, IFS_TENTACLES_TUBES_WEIGHT},
-          {GoomStates::IFS_TUBES, IFS_TUBES_WEIGHT},
-
-          {GoomStates::IMAGE_LINES, IMAGE_LINES_WEIGHT},
-          {GoomStates::IMAGE_LINES_RAINDROPS, IMAGE_LINES_RAINDROPS_WEIGHT},
-          {GoomStates::IMAGE_LINES_SHAPES, IMAGE_LINES_SHAPES_WEIGHT},
-          {GoomStates::IMAGE_LINES_STARS_TENTACLES, IMAGE_LINES_STARS_TENTACLES_WEIGHT},
-          {GoomStates::IMAGE_ONLY, IMAGE_ONLY_WEIGHT},
-          {GoomStates::IMAGE_RAINDROPS, IMAGE_RAINDROPS_WEIGHT},
-          {GoomStates::IMAGE_RAINDROPS_SHAPES, IMAGE_RAINDROPS_SHAPES_WEIGHT},
-          {GoomStates::IMAGE_SHAPES, IMAGE_SHAPES_WEIGHT},
-          {GoomStates::IMAGE_SHAPES_L_SYSTEM, IMAGE_SHAPES_L_SYSTEM_WEIGHT},
-          {GoomStates::IMAGE_SHAPES_STARS, IMAGE_SHAPES_STARS_WEIGHT},
-          {GoomStates::IMAGE_SHAPES_TUBES, IMAGE_SHAPES_TUBES_WEIGHT},
-          {GoomStates::IMAGE_STARS, IMAGE_STARS_WEIGHT},
-          {GoomStates::IMAGE_STARS_L_SYSTEM, IMAGE_STARS_L_SYSTEM_WEIGHT},
-          {GoomStates::IMAGE_TENTACLES, IMAGE_TENTACLES_WEIGHT},
-          {GoomStates::IMAGE_TUBES, IMAGE_TUBES_WEIGHT},
-
-          {GoomStates::L_SYSTEM_ONLY, L_SYSTEM_ONLY_WEIGHT},
-
-          {GoomStates::LINES_ONLY, LINES_ONLY_WEIGHT},
-          {GoomStates::LINES_PARTICLES, LINES_PARTICLES_WEIGHT},
-          {GoomStates::LINES_RAINDROPS, LINES_RAINDROPS_WEIGHT},
-          {GoomStates::LINES_SHAPES_STARS, LINES_SHAPES_STARS_WEIGHT},
-          {GoomStates::LINES_STARS, LINES_STARS_WEIGHT},
-          {GoomStates::LINES_TENTACLES, LINES_TENTACLES_WEIGHT},
-
-          {GoomStates::PARTICLES_ONLY, PARTICLES_ONLY_WEIGHT},
-          {GoomStates::PARTICLES_TENTACLES, PARTICLES_TENTACLES_WEIGHT},
-          {GoomStates::PARTICLES_TUBES, PARTICLES_TUBES_WEIGHT},
-
-          {GoomStates::RAINDROPS_ONLY, RAINDROPS_ONLY_WEIGHT},
-          {GoomStates::SHAPES_ONLY, SHAPES_ONLY_WEIGHT},
-          {GoomStates::SHAPES_STARS, SHAPES_STARS_WEIGHT},
-          {GoomStates::SHAPES_TUBES, SHAPES_TUBES_WEIGHT},
-
-          {GoomStates::STARS_ONLY, STARS_ONLY_WEIGHT},
-
-          {GoomStates::TENTACLES_ONLY, TENTACLES_ONLY_WEIGHT},
-
-          {GoomStates::TUBES_ONLY, TUBES_ONLY_WEIGHT},
-          }
-}
+            {ChangeType::FRESH_STATE,         FRESH_STATE_WEIGHT},
+            {ChangeType::NON_REPEAT_STATE,    NON_REPEAT_STATE_WEIGHT},
+            {ChangeType::ADD_EXTRA_DRAWABLE,  ADD_EXTRA_DRAWABLE_WEIGHT},
+            {ChangeType::ADD_REMOVE_DRAWABLE, ADD_REMOVE_DRAWABLE_WEIGHT},
+            {ChangeType::REMOVE_DRAWABLE,     REMOVE_DRAWABLE_WEIGHT},
+        }
+    },
+    m_weightedNumDrawables{
+        goomRand,
+        {
+            {NumDrawables::ONE,   ONE_WEIGHT},
+            {NumDrawables::TWO,   TWO_WEIGHT},
+            {NumDrawables::THREE, THREE_WEIGHT},
+            {NumDrawables::FOUR,  FOUR_WEIGHT},
+            {NumDrawables::FIVE,  FIVE_WEIGHT},
+        }
+    }
 {
-  Ensures(m_weightedStates.GetNumElements() == NUM<GoomStates>);
+  ChangeToFreshState();
 }
 
-void GoomRandomStateHandler::ChangeToNextState()
+auto GoomRandomStateHandler::GetFullDrawablesPool(const IGoomRand& goomRand)
+    -> std::vector<GoomDrawables>
 {
-  if constexpr (USE_FORCED_GOOM_STATE)
+  auto fullPool = std::vector<GoomDrawables>(NUM<GoomDrawables>);
+
+  for (auto i = 0U; i < NUM<GoomDrawables>; ++i)
   {
-    m_currentState = FORCED_GOOM_STATE;
+    fullPool[i] = static_cast<GoomDrawables>(i);
+  }
+
+  goomRand.Shuffle(fullPool);
+
+  return fullPool;
+}
+
+auto GoomRandomStateHandler::ChangeToNextState() -> void
+{
+  switch (m_weightedChangeTypes.GetRandomWeighted())
+  {
+    case ChangeType::FRESH_STATE:
+      ChangeToFreshState();
+      break;
+    case ChangeType::NON_REPEAT_STATE:
+      ChangeToNonRepeatState();
+      break;
+    case ChangeType::ADD_EXTRA_DRAWABLE:
+      AddExtraDrawableToCurrentState();
+      break;
+    case ChangeType::ADD_REMOVE_DRAWABLE:
+      AddRemoveDrawableToCurrentState();
+      break;
+    case ChangeType::REMOVE_DRAWABLE:
+      RemoveDrawableFromCurrentState();
+      break;
+  }
+}
+
+auto GoomRandomStateHandler::ChangeToFreshState() -> void
+{
+  m_drawablesPool = GetFullDrawablesPool(*m_goomRand);
+
+  ChangeToNewState(GetNextNumDrawables());
+}
+
+auto GoomRandomStateHandler::ChangeToNonRepeatState() -> void
+{
+  if (m_drawablesPool.empty())
+  {
+    ChangeToFreshState();
     return;
   }
 
-  m_currentState = m_weightedStates.GetRandomWeighted();
+  const auto numRandomDrawables =
+      std::min(GetNextNumDrawables(), static_cast<uint32_t>(m_drawablesPool.size()));
+
+  ChangeToNewState(numRandomDrawables);
+}
+
+auto GoomRandomStateHandler::ChangeToNewState(const uint32_t numRandomDrawables) -> void
+{
+  const auto randomDrawables = GetNextRandomDrawables(numRandomDrawables);
+  const auto buffIntensities = GetBuffIntensities(randomDrawables);
+
+  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
+}
+
+auto GoomRandomStateHandler::AddExtraDrawableToCurrentState() -> void
+{
+  if (m_drawablesPool.empty() or
+      (m_currentDrawablesState.GetDrawables().size() >= MAX_NUM_DRAWABLES))
+  {
+    ChangeToFreshState();
+    return;
+  }
+
+  Expects(not m_drawablesPool.empty());
+
+  const auto randomDrawable = GetRandomDrawablesFromPool(1);
+  const auto buffIntensity  = GetBuffIntensities(randomDrawable);
+
+  auto randomDrawables = m_currentDrawablesState.GetDrawables();
+  randomDrawables.emplace_back(randomDrawable[0]);
+
+  auto buffIntensities = m_currentDrawablesState.GetDrawablesBuffIntensities();
+  buffIntensities.emplace_back(buffIntensity[0]);
+
+  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
+}
+
+auto GoomRandomStateHandler::AddRemoveDrawableToCurrentState() -> void
+{
+  if (m_drawablesPool.empty())
+  {
+    ChangeToFreshState();
+    return;
+  }
+
+  const auto randomDrawable = GetRandomDrawablesFromPool(1);
+  const auto buffIntensity  = GetBuffIntensities(randomDrawable);
+
+  auto randomDrawables = m_currentDrawablesState.GetDrawables();
+  m_drawablesPool.insert(begin(m_drawablesPool), randomDrawables.back());
+  randomDrawables.back() = randomDrawable[0];
+
+  auto buffIntensities   = m_currentDrawablesState.GetDrawablesBuffIntensities();
+  buffIntensities.back() = buffIntensity[0];
+
+  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
+}
+
+auto GoomRandomStateHandler::RemoveDrawableFromCurrentState() -> void
+{
+  auto randomDrawables = m_currentDrawablesState.GetDrawables();
+  if (randomDrawables.size() == 1)
+  {
+    ChangeToFreshState();
+    return;
+  }
+
+  m_drawablesPool.insert(begin(m_drawablesPool), randomDrawables.back());
+  randomDrawables.pop_back();
+
+  auto buffIntensities = m_currentDrawablesState.GetDrawablesBuffIntensities();
+  buffIntensities.pop_back();
+
+  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
+}
+
+auto GoomRandomStateHandler::GetNextNumDrawables() const -> uint32_t
+{
+  return static_cast<uint32_t>(m_weightedNumDrawables.GetRandomWeighted()) + 1;
+}
+
+auto GoomRandomStateHandler::GetNextRandomDrawables(const uint32_t numDrawables)
+    -> std::vector<GoomDrawables>
+{
+  auto randomDrawables = GetRandomDrawablesFromPool(numDrawables);
+
+  static constexpr auto MAX_TRIES = 10U;
+  for (auto i = 0U; i < MAX_TRIES; ++i)
+  {
+    if ((numDrawables > 1) or m_goomRand->ProbabilityOf(PROB_SINGLE_DRAWABLE[randomDrawables[0]]))
+    {
+      break;
+    }
+    if (m_drawablesPool.empty())
+    {
+      break;
+    }
+    m_drawablesPool.insert(begin(m_drawablesPool), randomDrawables[0]);
+    randomDrawables = GetRandomDrawablesFromPool(numDrawables);
+  }
+
+  return randomDrawables;
+}
+
+auto GoomRandomStateHandler::GetRandomDrawablesFromPool(const uint32_t numDrawables)
+    -> std::vector<GoomDrawables>
+{
+  Expects(numDrawables > 0);
+  Expects(numDrawables <= m_drawablesPool.size());
+
+  auto randomDrawables =
+      std::vector<GoomDrawables>{cend(m_drawablesPool) - numDrawables, cend(m_drawablesPool)};
+
+  m_drawablesPool.erase(cend(m_drawablesPool) - numDrawables, cend(m_drawablesPool));
+
+  return randomDrawables;
+}
+
+auto GoomRandomStateHandler::GetBuffIntensities(
+    const std::vector<GoomDrawables>& drawables) const noexcept -> std::vector<float>
+{
+  return std::ranges::to<std::vector<float>>(
+      drawables | std::views::transform(
+                      [this](const auto drawable)
+                      { return m_goomRand->GetRandInRange(BUFF_INTENSITY_RANGES[drawable]); }));
 }
 
 } // namespace GOOM::CONTROL
