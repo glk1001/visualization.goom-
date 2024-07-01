@@ -60,13 +60,14 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   m_allStandardVisualFx->SuspendFx();
 
   static constexpr auto MAX_TRIES = 10U;
-  const auto oldState             = m_goomStateHandler->GetCurrentState();
+  const auto& oldState            = m_goomStateHandler->GetCurrentState();
 
   for (auto numTry = 0U; numTry < MAX_TRIES; ++numTry)
   {
     m_goomStateHandler->ChangeToNextState();
 
-    if ((not m_allowMultiThreadedStates) and IsMultiThreaded(m_goomStateHandler->GetCurrentState()))
+    if ((not m_allowMultiThreadedStates) and
+        m_goomStateHandler->GetCurrentState().IsMultiThreaded())
     {
       continue;
     }
@@ -95,11 +96,8 @@ inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const noexcept
     -> FXBuffSettings
 {
-  const auto drawablesInfo =
-      std::ranges::find_if(m_goomStateHandler->GetCurrentState().drawablesInfo,
-                           [&fx](const auto& drawableInfo) { return drawableInfo.fx == fx; });
-  Expects(drawablesInfo != m_goomStateHandler->GetCurrentState().drawablesInfo.cend());
-  const auto buffIntensity = m_goomRand->GetRandInRange(drawablesInfo->buffIntensityRange);
+  const auto buffIntensity =
+      m_goomRand->GetRandInRange(m_goomStateHandler->GetCurrentState().GetBuffIntensityRange(fx));
   // Careful here. > 1 reduces smearing.
   static constexpr auto INTENSITY_FACTOR = 1.0F;
   return {INTENSITY_FACTOR * buffIntensity};

@@ -130,7 +130,7 @@ inline auto GoomAllVisualFx::SetResetDrawBuffSettingsFunc(
 
 inline auto GoomAllVisualFx::GetCurrentStateName() const noexcept -> std::string_view
 {
-  return m_goomStateHandler->GetCurrentState().name;
+  return m_goomStateHandler->GetCurrentState().GetName();
 }
 
 } // namespace GOOM::CONTROL

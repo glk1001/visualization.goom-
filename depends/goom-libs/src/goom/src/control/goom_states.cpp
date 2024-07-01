@@ -1,8 +1,5 @@
 module;
 
-//#undef NO_LOGGING
-
-#include <algorithm>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -255,7 +252,10 @@ auto GoomStateInfo::GetStateInfoMap() noexcept -> StateInfoMap
   {
     const auto goomState = static_cast<GoomStates>(i);
     statesArray.emplace_back(StateInfoMap::KeyValue{
-        goomState, {STATE_NAMES[goomState], GetDrawablesInfo(goomState)}
+        goomState,
+        GoomDrawablesState{std::string{STATE_NAMES[goomState]},
+                           GetStateDrawables()[goomState],
+                           GetDrawablesBuffIntensityRanges(goomState)}
     });
   }
 
@@ -264,30 +264,17 @@ auto GoomStateInfo::GetStateInfoMap() noexcept -> StateInfoMap
 
 const GoomStateInfo::StateInfoMap GoomStateInfo::STATE_INFO_MAP = GetStateInfoMap();
 
-auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<DrawableInfo>
+auto GoomStateInfo::GetDrawablesBuffIntensityRanges(const GoomStates goomState)
+    -> std::vector<BuffIntensityRange>
 {
-  auto drawablesInfo = std::vector<DrawableInfo>{};
+  auto drawablesBuffIntensityRanges = std::vector<BuffIntensityRange>{};
 
   for (const auto& drawable : GetStateDrawables()[goomState])
   {
-    drawablesInfo.emplace_back(DrawableInfo{drawable, DEFAULT_BUFF_INTENSITY_RANGES[drawable]});
+    drawablesBuffIntensityRanges.emplace_back(DEFAULT_BUFF_INTENSITY_RANGES[drawable]);
   }
 
-  return drawablesInfo;
-}
-
-auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const GoomDrawables fx)
-    -> BuffIntensityRange
-{
-  for (const auto& drawableInfo : GetDrawablesState(goomState).drawablesInfo)
-  {
-    if (drawableInfo.fx == fx)
-    {
-      return drawableInfo.buffIntensityRange;
-    }
-  }
-
-  FailFast();
+  return drawablesBuffIntensityRanges;
 }
 
 } // namespace GOOM::CONTROL

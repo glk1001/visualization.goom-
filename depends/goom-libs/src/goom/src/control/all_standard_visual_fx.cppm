@@ -239,39 +239,39 @@ auto AllStandardVisualFx::Finish() -> void
 
 auto AllStandardVisualFx::RefreshAllFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables.drawablesInfo,
+  std::ranges::for_each(m_currentGoomDrawables.GetDrawables(),
                         [this](const auto currentlyDrawable)
-                        { m_drawablesMap[currentlyDrawable.fx]->Refresh(); });
+                        { m_drawablesMap[currentlyDrawable]->Refresh(); });
 }
 
 auto AllStandardVisualFx::SuspendFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables.drawablesInfo,
+  std::ranges::for_each(m_currentGoomDrawables.GetDrawables(),
                         [this](const auto currentlyDrawable)
-                        { m_drawablesMap[currentlyDrawable.fx]->Suspend(); });
+                        { m_drawablesMap[currentlyDrawable]->Suspend(); });
 }
 
 auto AllStandardVisualFx::ResumeFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables.drawablesInfo,
+  std::ranges::for_each(m_currentGoomDrawables.GetDrawables(),
                         [this](const auto currentlyDrawable)
-                        { m_drawablesMap[currentlyDrawable.fx]->Resume(); });
+                        { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
 
 auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
     const IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
   std::ranges::for_each(
-      m_currentGoomDrawables.drawablesInfo,
+      m_currentGoomDrawables.GetDrawables(),
       [this, &pixelBlenderParams](const auto currentlyDrawable)
-      { m_drawablesMap[currentlyDrawable.fx]->ChangePixelBlender(pixelBlenderParams); });
+      { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams); });
 }
 
 auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables.drawablesInfo,
+  std::ranges::for_each(m_currentGoomDrawables.GetDrawables(),
                         [this, &zoomMidpoint](const auto currentlyDrawable)
-                        { m_drawablesMap[currentlyDrawable.fx]->SetZoomMidpoint(zoomMidpoint); });
+                        { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
 }
 
 auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::string>
@@ -294,24 +294,24 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
 
 auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables.drawablesInfo,
-                        [this](const auto& drawableInfo)
+  std::ranges::for_each(m_currentGoomDrawables.GetDrawables(),
+                        [this](const auto currentlyDrawable)
                         {
-                          auto& visualFx = *m_drawablesMap[drawableInfo.fx];
+                          auto& visualFx = *m_drawablesMap[currentlyDrawable];
                           visualFx.SetFrameMiscData(*m_frameMiscData);
                         });
 }
 
 auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soundData) -> void
 {
-  std::ranges::for_each(m_currentGoomDrawables.drawablesInfo,
-                        [this, &soundData](const auto& drawableInfo)
+  std::ranges::for_each(m_currentGoomDrawables.GetDrawables(),
+                        [this, &soundData](const auto currentlyDrawable)
                         {
-                          auto& visualFx = *m_drawablesMap[drawableInfo.fx];
+                          auto& visualFx = *m_drawablesMap[currentlyDrawable];
 
                           visualFx.SetSoundData(soundData);
 
-                          ResetDrawBuffSettings(drawableInfo.fx);
+                          ResetDrawBuffSettings(currentlyDrawable);
                           visualFx.ApplyToImageBuffers();
                         });
 }

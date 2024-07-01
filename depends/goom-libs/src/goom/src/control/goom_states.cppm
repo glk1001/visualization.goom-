@@ -98,14 +98,13 @@ public:
   GoomStateInfo() noexcept = delete;
 
   [[nodiscard]] static auto GetDrawablesState(GoomStates goomState) -> const GoomDrawablesState&;
-  [[nodiscard]] static auto GetBuffIntensityRange(GoomStates goomState, GoomDrawables fx)
-      -> BuffIntensityRange;
 
 private:
   using StateInfoMap = UTILS::EnumMap<GoomStates, GoomDrawablesState>;
   static const StateInfoMap STATE_INFO_MAP;
   [[nodiscard]] static auto GetStateInfoMap() noexcept -> StateInfoMap;
-  [[nodiscard]] static auto GetDrawablesInfo(GoomStates goomState) -> std::vector<DrawableInfo>;
+  [[nodiscard]] static auto GetDrawablesBuffIntensityRanges(GoomStates goomState)
+      -> std::vector<BuffIntensityRange>;
 };
 
 } // namespace GOOM::CONTROL
