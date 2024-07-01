@@ -32,10 +32,13 @@ module;
 module Goom.Lib.GoomControl;
 
 import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomMessageDisplayer;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomSoundEvents;
+import Goom.Control.GoomRandomFixedStateHandler;
 import Goom.Control.GoomRandomStateHandler;
+import Goom.Control.GoomStateHandler;
 import Goom.Control.GoomStateMonitor;
 import Goom.Control.GoomTitleDisplayer;
 import Goom.Draw.GoomDrawToBuffer;
@@ -76,12 +79,16 @@ using CONTROL::GoomStateDump;
 #endif
 
 using CONTROL::GoomAllVisualFx;
+using CONTROL::GoomDrawables;
+using CONTROL::GoomDrawablesState;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
+using CONTROL::GoomRandomFixedStateHandler;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomSoundEvents;
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
+using CONTROL::IGoomStateHandler;
 using DRAW::GoomDrawToSingleBuffer;
 using DRAW::GoomDrawToTwoBuffers;
 using FILTER_FX::FilterBuffersService;
@@ -120,6 +127,33 @@ private:
   static constexpr auto MIN_UPDATE_NUM_TO_LOG       = static_cast<uint64_t>(0);
   static constexpr auto MAX_UPDATE_NUM_TO_LOG       = static_cast<uint64_t>(1000000000);
 };
+
+class GoomStateHandler : public IGoomStateHandler
+{
+public:
+  explicit GoomStateHandler(const IGoomRand& goomRand);
+  auto ChangeToNextState() -> void override;
+  [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
+
+private:
+  GoomRandomStateHandler m_goomRandomStateHandler;
+  GoomRandomFixedStateHandler m_goomRandomFixedStateHandler;
+};
+
+GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand)
+  : m_goomRandomStateHandler{goomRand}, m_goomRandomFixedStateHandler{goomRand}
+{
+}
+
+auto GoomStateHandler::ChangeToNextState() -> void
+{
+  m_goomRandomFixedStateHandler.ChangeToNextState();
+}
+
+auto GoomStateHandler::GetCurrentState() const noexcept -> const GoomDrawablesState&
+{
+  return m_goomRandomFixedStateHandler.GetCurrentState();
+}
 
 class GoomControl::GoomControlImpl
 {
@@ -195,7 +229,7 @@ private:
       m_goomInfo, *m_goomRand, m_visualFx, m_filterSettingsService};
 
   SmallImageBitmaps m_smallBitmaps;
-  GoomRandomStateHandler m_stateHandler{*m_goomRand};
+  GoomStateHandler m_stateHandler{*m_goomRand};
   NormalizedCoordsConverter m_normalizedCoordsConverter{
       {m_goomInfo.GetDimensions().GetWidth(), m_goomInfo.GetDimensions().GetHeight()}
   };
@@ -300,8 +334,8 @@ auto GoomControl::SetFrameData(FrameData& frameData) -> void
   m_pimpl->SetFrameData(frameData);
 }
 
-auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
-    -> void
+auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples,
+                                    const std::string& message) -> void
 {
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }

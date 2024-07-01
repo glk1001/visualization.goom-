@@ -96,6 +96,7 @@ set(GoomControl_modules
     src/control/goom_lock.cppm
     src/control/goom_message_displayer.cppm
     src/control/goom_music_settings_reactor.cppm
+    src/control/goom_random_fixed_state_handler.cppm
     src/control/goom_random_state_handler.cppm
     src/control/goom_sound_events.cppm
     src/control/goom_state_dump.cppm
@@ -113,6 +114,7 @@ set(GoomControl_source_files
     src/control/goom_all_visual_fx.cpp
     src/control/goom_message_displayer.cpp
     src/control/goom_music_settings_reactor.cpp
+    src/control/goom_random_fixed_state_handler.cpp
     src/control/goom_random_state_handler.cpp
     src/control/goom_sound_events.cpp
     src/control/goom_state_dump.cpp
