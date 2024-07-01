@@ -36,21 +36,6 @@ constexpr auto DEFAULT_BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, BuffIntens
     {GoomDrawables::TUBES, {0.70F, 0.80F}},
 }}};
 
-constexpr auto STATE_MULTI_THREADED = EnumMap<GoomDrawables, bool>{{{
-    {GoomDrawables::CIRCLES, false},
-    {GoomDrawables::DOTS, false},
-    {GoomDrawables::IFS, false},
-    {GoomDrawables::L_SYSTEM, false},
-    {GoomDrawables::LINES, false},
-    {GoomDrawables::IMAGE, true},
-    {GoomDrawables::PARTICLES, false},
-    {GoomDrawables::RAINDROPS, false},
-    {GoomDrawables::SHAPES, false},
-    {GoomDrawables::STARS, false},
-    {GoomDrawables::TENTACLES, false},
-    {GoomDrawables::TUBES, false},
-}}};
-
 constexpr auto STATE_NAMES = EnumMap<GoomStates, std::string_view>{{{
     {GoomStates::CIRCLES_ONLY, "Circles Only"},
     {GoomStates::CIRCLES_IFS, "Circles and IFS"},
@@ -291,19 +276,10 @@ auto GoomStateInfo::GetDrawablesInfo(const GoomStates goomState) -> std::vector<
   return drawablesInfo;
 }
 
-auto GoomStateInfo::IsMultiThreaded(const GoomStates goomState) -> bool
-{
-  const auto& goomDrawables = GetStateDrawables()[goomState];
-
-  return std::any_of(cbegin(goomDrawables),
-                     cend(goomDrawables),
-                     [](const auto& goomDrawable) { return STATE_MULTI_THREADED[goomDrawable]; });
-}
-
 auto GoomStateInfo::GetBuffIntensityRange(const GoomStates goomState, const GoomDrawables fx)
     -> BuffIntensityRange
 {
-  for (const auto& drawableInfo : GetStateInfo(goomState).drawablesInfo)
+  for (const auto& drawableInfo : GetDrawablesState(goomState).drawablesInfo)
   {
     if (drawableInfo.fx == fx)
     {

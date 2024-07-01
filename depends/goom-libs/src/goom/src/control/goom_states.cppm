@@ -6,6 +6,7 @@ module;
 
 export module Goom.Control.GoomStates;
 
+import Goom.Control.GoomDrawables;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.GoomTypes;
@@ -91,47 +92,17 @@ enum class GoomStates : UnderlyingEnumType
   TUBES_ONLY,
 };
 
-enum class GoomDrawables : UnderlyingEnumType
-{
-  CIRCLES = 0,
-  DOTS,
-  IFS,
-  IMAGE,
-  L_SYSTEM,
-  LINES,
-  PARTICLES,
-  RAINDROPS,
-  SHAPES,
-  STARS,
-  TENTACLES,
-  TUBES,
-};
-
-using BuffIntensityRange = UTILS::MATH::NumberRange<float>;
-
 class GoomStateInfo
 {
 public:
-  struct DrawableInfo
-  {
-    GoomDrawables fx{};
-    BuffIntensityRange buffIntensityRange{};
-  };
-  struct StateInfo
-  {
-    std::string_view name;
-    std::vector<DrawableInfo> drawablesInfo;
-  };
-
   GoomStateInfo() noexcept = delete;
 
-  [[nodiscard]] static auto GetStateInfo(GoomStates goomState) -> const StateInfo&;
+  [[nodiscard]] static auto GetDrawablesState(GoomStates goomState) -> const GoomDrawablesState&;
   [[nodiscard]] static auto GetBuffIntensityRange(GoomStates goomState, GoomDrawables fx)
       -> BuffIntensityRange;
-  [[nodiscard]] static auto IsMultiThreaded(GoomStates goomState) -> bool;
 
 private:
-  using StateInfoMap = UTILS::EnumMap<GoomStates, StateInfo>;
+  using StateInfoMap = UTILS::EnumMap<GoomStates, GoomDrawablesState>;
   static const StateInfoMap STATE_INFO_MAP;
   [[nodiscard]] static auto GetStateInfoMap() noexcept -> StateInfoMap;
   [[nodiscard]] static auto GetDrawablesInfo(GoomStates goomState) -> std::vector<DrawableInfo>;
@@ -142,7 +113,8 @@ private:
 namespace GOOM::CONTROL
 {
 
-inline auto GoomStateInfo::GetStateInfo(const GoomStates goomState) -> const StateInfo&
+inline auto GoomStateInfo::GetDrawablesState(const GoomStates goomState)
+    -> const GoomDrawablesState&
 {
   return STATE_INFO_MAP[goomState];
 }

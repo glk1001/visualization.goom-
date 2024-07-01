@@ -1,14 +1,13 @@
 module;
 
-//#undef NO_LOGGING
-
+#include <algorithm>
 #include <string>
 #include <unordered_set>
 
 module Goom.Control.GoomAllVisualFx;
 
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomStateHandler;
-import Goom.Control.GoomStates;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.FrameData;
@@ -67,8 +66,7 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   {
     m_goomStateHandler->ChangeToNextState();
 
-    if ((not m_allowMultiThreadedStates) and
-        GoomStateInfo::IsMultiThreaded(m_goomStateHandler->GetCurrentState()))
+    if ((not m_allowMultiThreadedStates) and IsMultiThreaded(m_goomStateHandler->GetCurrentState()))
     {
       continue;
     }
@@ -80,7 +78,7 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
     }
   }
 
-  m_currentGoomDrawables = m_goomStateHandler->GetCurrentDrawables();
+  m_currentGoomDrawables = m_goomStateHandler->GetCurrentState();
   m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
   m_allStandardVisualFx->ChangeShaderVariables();
 
@@ -97,8 +95,11 @@ inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const noexcept
     -> FXBuffSettings
 {
-  const auto buffIntensity = m_goomRand->GetRandInRange(
-      GoomStateInfo::GetBuffIntensityRange(m_goomStateHandler->GetCurrentState(), fx));
+  const auto drawablesInfo =
+      std::ranges::find_if(m_goomStateHandler->GetCurrentState().drawablesInfo,
+                           [&fx](const auto& drawableInfo) { return drawableInfo.fx == fx; });
+  Expects(drawablesInfo != m_goomStateHandler->GetCurrentState().drawablesInfo.cend());
+  const auto buffIntensity = m_goomRand->GetRandInRange(drawablesInfo->buffIntensityRange);
   // Careful here. > 1 reduces smearing.
   static constexpr auto INTENSITY_FACTOR = 1.0F;
   return {INTENSITY_FACTOR * buffIntensity};

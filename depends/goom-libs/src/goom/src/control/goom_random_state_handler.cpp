@@ -234,7 +234,7 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
   Ensures(m_weightedStates.GetNumElements() == NUM<GoomStates>);
 }
 
-void GoomRandomStateHandler::ChangeToNextState()
+auto GoomRandomStateHandler::ChangeToNextState() -> void
 {
   if constexpr (USE_FORCED_GOOM_STATE)
   {

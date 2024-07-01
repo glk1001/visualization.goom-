@@ -1,8 +1,12 @@
 export module Goom.Control.GoomRandomStateHandler;
 
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomStateHandler;
 import Goom.Control.GoomStates;
 import Goom.Utils.Math.GoomRandBase;
+
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::Weights;
 
 export namespace GOOM::CONTROL
 {
@@ -10,14 +14,14 @@ export namespace GOOM::CONTROL
 class GoomRandomStateHandler : public IGoomStateHandler
 {
 public:
-  explicit GoomRandomStateHandler(const UTILS::MATH::IGoomRand& goomRand);
+  explicit GoomRandomStateHandler(const IGoomRand& goomRand);
 
-  void ChangeToNextState() override;
+  auto ChangeToNextState() -> void override;
 
-  [[nodiscard]] auto GetCurrentState() const -> GoomStates override;
+  [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
 
 private:
-  UTILS::MATH::Weights<GoomStates> m_weightedStates;
+  Weights<GoomStates> m_weightedStates;
   GoomStates m_currentState{};
 };
 
@@ -26,9 +30,9 @@ private:
 namespace GOOM::CONTROL
 {
 
-inline auto GoomRandomStateHandler::GetCurrentState() const -> GoomStates
+inline auto GoomRandomStateHandler::GetCurrentState() const noexcept -> const GoomDrawablesState&
 {
-  return m_currentState;
+  return GoomStateInfo::GetDrawablesState(m_currentState);
 }
 
 } // namespace GOOM::CONTROL
