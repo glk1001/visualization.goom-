@@ -1,5 +1,6 @@
 // NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
 
+#include <algorithm>
 #include <array>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_message.hpp>
@@ -70,6 +71,18 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 // NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
+TEST_CASE("Shuffle")
+{
+  static constexpr auto TEST_VEC = std::array{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  const auto goomRand = GoomRand{};
+  auto vec            = TEST_VEC;
+  goomRand.Shuffle(vec);
+  REQUIRE(vec != TEST_VEC);
+  std::ranges::sort(vec);
+  REQUIRE(vec == TEST_VEC);
+}
+
 TEST_CASE("Weighted Events")
 {
   const auto goomRand    = GoomRand{};

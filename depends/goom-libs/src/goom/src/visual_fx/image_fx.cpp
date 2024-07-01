@@ -335,8 +335,8 @@ auto ImageFx::ImageFxImpl::InitImage() -> void
       "pretty-flowers.jpg",
   };
   auto randImageIndexes = std::array<size_t, s_IMAGE_FILENAMES.size()>{};
-  std::iota(begin(randImageIndexes), end(randImageIndexes), 0);
-  m_fxHelper->GetGoomRand().Shuffle(begin(randImageIndexes), end(randImageIndexes));
+  std::ranges::iota(randImageIndexes, 0);
+  m_fxHelper->GetGoomRand().Shuffle(randImageIndexes);
 
   const auto imageDir              = join_paths(m_resourcesDirectory, IMAGE_FX_DIR);
   static constexpr auto MAX_IMAGES = 5U;

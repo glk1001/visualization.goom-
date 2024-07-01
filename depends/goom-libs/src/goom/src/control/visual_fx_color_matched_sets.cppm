@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <numeric>
@@ -256,8 +257,8 @@ auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(const Groups group1,
 
   // Change every second map entry to 'func2'.
   auto indexes = std::array<size_t, NUM<GoomEffect>>{};
-  std::iota(begin(indexes), end(indexes), 0);
-  goomRand.Shuffle(begin(indexes), end(indexes));
+  std::ranges::iota(indexes, 0);
+  goomRand.Shuffle(indexes);
   static constexpr auto INC_BY_2 = 2U;
   for (auto i = 0U; i < NUM<GoomEffect>; i += INC_BY_2)
   {

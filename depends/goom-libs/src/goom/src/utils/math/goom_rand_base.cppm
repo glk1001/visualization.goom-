@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -39,14 +40,14 @@ public:
   // Return random number in the range n0 <= n < n1.
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
-  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept
-      -> uint32_t                                                                             = 0;
+  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0,
+                                            uint32_t n1) const noexcept -> uint32_t           = 0;
   [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t = 0;
   [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float       = 0;
   [[nodiscard]] virtual auto GetRandInRange(double n0, double n1) const noexcept -> double    = 0;
 
-  template<class RandomIt>
-  void Shuffle(RandomIt first, RandomIt last) const noexcept;
+  template<std::ranges::random_access_range Range>
+  auto Shuffle(Range& range) const noexcept -> void;
 
   [[nodiscard]] virtual auto ProbabilityOf(float x) const noexcept -> bool = 0;
 };
@@ -148,13 +149,16 @@ auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept
   return GetRandInRange(numberRange.min, numberRange.max);
 }
 
-template<class RandomIt>
-auto IGoomRand::Shuffle(RandomIt first, RandomIt last) const noexcept -> void
+template<std::ranges::random_access_range Range>
+auto IGoomRand::Shuffle(Range& range) const noexcept -> void
 {
-  const auto n = last - first;
-  for (auto i = n - 1; i > 0; --i)
+  auto first = std::ranges::begin(range);
+  auto last  = std::ranges::end(range);
+
+  for (auto i = last - first - 1; i > 0; --i)
   {
-    //HELP!!    std::swap(first[i], first[GetRandInRange(0, static_cast<int32_t>(i + 1))]);
+    using std::swap;
+    swap(first[i], first[GetRandInRange(0U, static_cast<uint32_t>(i) + 1)]);
   }
 }
 
