@@ -80,7 +80,7 @@ auto GoomAllVisualFx::ChangeState() noexcept -> void
   }
 
   m_currentGoomDrawables = m_goomStateHandler->GetCurrentState();
-  m_allStandardVisualFx->SetCurrentGoomDrawables(m_currentGoomDrawables);
+  m_allStandardVisualFx->SetCurrentDrawablesState(m_currentGoomDrawables);
   m_allStandardVisualFx->ChangeShaderVariables();
 
   m_allStandardVisualFx->GetLinesFx().ResetLineModes();

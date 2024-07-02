@@ -147,12 +147,14 @@ GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand)
 
 auto GoomStateHandler::ChangeToNextState() -> void
 {
-  m_goomRandomFixedStateHandler.ChangeToNextState();
+  // m_goomRandomFixedStateHandler.ChangeToNextState();
+  m_goomRandomStateHandler.ChangeToNextState();
 }
 
 auto GoomStateHandler::GetCurrentState() const noexcept -> const GoomDrawablesState&
 {
-  return m_goomRandomFixedStateHandler.GetCurrentState();
+  //return m_goomRandomFixedStateHandler.GetCurrentState();
+  return m_goomRandomStateHandler.GetCurrentState();
 }
 
 class GoomControl::GoomControlImpl

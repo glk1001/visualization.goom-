@@ -43,6 +43,8 @@ public:
 
   [[nodiscard]] auto GetName() const noexcept -> const std::string&;
   [[nodiscard]] auto GetDrawables() const noexcept -> const std::vector<GoomDrawables>&;
+  [[nodiscard]] auto GetBuffIntensityRanges() const noexcept
+      -> const std::vector<BuffIntensityRange>&;
 
   [[nodiscard]] auto GetBuffIntensityRange(GoomDrawables goomDrawable) const noexcept
       -> BuffIntensityRange;
@@ -90,6 +92,12 @@ inline auto GoomDrawablesState::GetName() const noexcept -> const std::string&
 inline auto GoomDrawablesState::GetDrawables() const noexcept -> const std::vector<GoomDrawables>&
 {
   return m_drawables;
+}
+
+inline auto GoomDrawablesState::GetBuffIntensityRanges() const noexcept
+    -> const std::vector<BuffIntensityRange>&
+{
+  return m_drawablesBuffIntensityRanges;
 }
 
 } // namespace GOOM::CONTROL
