@@ -1,7 +1,6 @@
 module;
 
 #include <cstdint>
-#include <string>
 #include <vector>
 
 export module Goom.Control.GoomRandomStateHandler;
@@ -14,7 +13,6 @@ import Goom.Lib.GoomTypes;
 
 using GOOM::UTILS::NUM;
 using GOOM::UTILS::MATH::IGoomRand;
-using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::Weights;
 
 export namespace GOOM::CONTROL
@@ -30,7 +28,7 @@ public:
   [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
 
 private:
-  const IGoomRand* m_goomRand{};
+  const IGoomRand* m_goomRand;
 
   enum class ChangeType : UnderlyingEnumType
   {
@@ -39,7 +37,7 @@ private:
     ADD_REMOVE_DRAWABLE,
     REMOVE_DRAWABLE,
   };
-  Weights<ChangeType> m_weightedChangeTypes{};
+  Weights<ChangeType> m_weightedChangeTypes;
   auto ChangeToFreshState() -> void;
   auto AddExtraDrawableToCurrentState() -> void;
   auto AddRemoveDrawableToCurrentState() -> void;
@@ -49,10 +47,8 @@ private:
   [[nodiscard]] auto GetRandomDrawablesFromPool(uint32_t numDrawables)
       -> std::vector<GoomDrawables>;
   [[nodiscard]] auto GetNextRandomDrawables(uint32_t numDrawables) -> std::vector<GoomDrawables>;
-  [[nodiscard]] auto GetDrawablesStateName(
-      const std::vector<GoomDrawables>& drawables) const noexcept -> std::string;
-  [[nodiscard]] auto GetBuffIntensityRanges(const std::vector<GoomDrawables>& drawables)
-      const noexcept -> std::vector<BuffIntensityRange>;
+  [[nodiscard]] auto GetBuffIntensities(const std::vector<GoomDrawables>& drawables) const noexcept
+      -> std::vector<float>;
 
   std::vector<GoomDrawables> m_drawablesPool;
   [[nodiscard]] static auto GetFullDrawablesPool(const IGoomRand& goomRand)

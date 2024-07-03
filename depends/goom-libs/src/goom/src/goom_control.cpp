@@ -36,7 +36,6 @@ import Goom.Control.GoomDrawables;
 import Goom.Control.GoomMessageDisplayer;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomSoundEvents;
-import Goom.Control.GoomRandomFixedStateHandler;
 import Goom.Control.GoomRandomStateHandler;
 import Goom.Control.GoomStateHandler;
 import Goom.Control.GoomStateMonitor;
@@ -83,7 +82,6 @@ using CONTROL::GoomDrawables;
 using CONTROL::GoomDrawablesState;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
-using CONTROL::GoomRandomFixedStateHandler;
 using CONTROL::GoomRandomStateHandler;
 using CONTROL::GoomSoundEvents;
 using CONTROL::GoomStateMonitor;
@@ -137,23 +135,19 @@ public:
 
 private:
   GoomRandomStateHandler m_goomRandomStateHandler;
-  GoomRandomFixedStateHandler m_goomRandomFixedStateHandler;
 };
 
-GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand)
-  : m_goomRandomStateHandler{goomRand}, m_goomRandomFixedStateHandler{goomRand}
+GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand) : m_goomRandomStateHandler{goomRand}
 {
 }
 
 auto GoomStateHandler::ChangeToNextState() -> void
 {
-  // m_goomRandomFixedStateHandler.ChangeToNextState();
   m_goomRandomStateHandler.ChangeToNextState();
 }
 
 auto GoomStateHandler::GetCurrentState() const noexcept -> const GoomDrawablesState&
 {
-  //return m_goomRandomFixedStateHandler.GetCurrentState();
   return m_goomRandomStateHandler.GetCurrentState();
 }
 

@@ -1,21 +1,18 @@
 module;
 
-#include <algorithm>
-#include <print>
+#include <bitset>
 #include <string>
 #include <vector>
 
 export module Goom.Control.GoomDrawables;
 
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
-import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
+
+using GOOM::UTILS::NUM;
 
 export namespace GOOM::CONTROL
 {
-
-using BuffIntensityRange = UTILS::MATH::NumberRange<float>;
 
 enum class GoomDrawables : UnderlyingEnumType
 {
@@ -37,56 +34,44 @@ class GoomDrawablesState
 {
 public:
   GoomDrawablesState() noexcept = default;
-  GoomDrawablesState(const std::string& stateName,
-                     const std::vector<GoomDrawables>& drawablesFx,
-                     const std::vector<BuffIntensityRange>& drawablesBuffIntensityRanges) noexcept;
+  GoomDrawablesState(const std::vector<GoomDrawables>& drawables,
+                     const std::vector<float>& drawablesBuffIntensities) noexcept;
 
   [[nodiscard]] auto GetName() const noexcept -> const std::string&;
   [[nodiscard]] auto GetDrawables() const noexcept -> const std::vector<GoomDrawables>&;
-  [[nodiscard]] auto GetBuffIntensityRanges() const noexcept
-      -> const std::vector<BuffIntensityRange>&;
+  [[nodiscard]] auto GetDrawablesBuffIntensities() const noexcept -> const std::vector<float>&;
 
-  [[nodiscard]] auto GetBuffIntensityRange(GoomDrawables goomDrawable) const noexcept
-      -> BuffIntensityRange;
+  [[nodiscard]] auto GetBuffIntensity(GoomDrawables goomDrawable) const noexcept -> float;
 
   [[nodiscard]] auto IsMultiThreaded() const noexcept -> bool;
 
 private:
-  std::string m_stateName;
   std::vector<GoomDrawables> m_drawables;
-  std::vector<BuffIntensityRange> m_drawablesBuffIntensityRanges;
+  std::vector<float> m_drawablesBuffIntensities;
+
+  std::bitset<NUM<GoomDrawables>> m_drawablesAsBitset;
+  [[nodiscard]] static auto GetDrawablesAsBitset(
+      const std::vector<GoomDrawables>& drawables) noexcept -> std::bitset<NUM<GoomDrawables>>;
+  friend auto operator==(const GoomDrawablesState& state1,
+                         const GoomDrawablesState& state2) noexcept -> bool;
+
+  mutable std::string m_stateName;
+  [[nodiscard]] static auto GetDrawablesStateName(
+      const std::vector<GoomDrawables>& drawables) noexcept -> std::string;
 };
 
 [[nodiscard]] auto operator==(const GoomDrawablesState& state1,
                               const GoomDrawablesState& state2) noexcept -> bool;
-
-[[nodiscard]] auto IsMultiThreaded(GoomDrawablesState goomDrawablesState) -> bool;
 
 } // namespace GOOM::CONTROL
 
 namespace GOOM::CONTROL
 {
 
-inline GoomDrawablesState::GoomDrawablesState(
-    const std::string& stateName,
-    const std::vector<GoomDrawables>& drawablesFx,
-    const std::vector<BuffIntensityRange>& drawablesBuffIntensityRanges) noexcept
-  : m_stateName{stateName},
-    m_drawables{drawablesFx},
-    m_drawablesBuffIntensityRanges{drawablesBuffIntensityRanges}
-{
-  Expects(drawablesFx.size() == drawablesBuffIntensityRanges.size());
-}
-
 inline auto operator==(const GoomDrawablesState& state1,
                        const GoomDrawablesState& state2) noexcept -> bool
 {
-  return state1.GetName() == state2.GetName();
-}
-
-inline auto GoomDrawablesState::GetName() const noexcept -> const std::string&
-{
-  return m_stateName;
+  return state1.m_drawablesAsBitset == state2.m_drawablesAsBitset;
 }
 
 inline auto GoomDrawablesState::GetDrawables() const noexcept -> const std::vector<GoomDrawables>&
@@ -94,52 +79,10 @@ inline auto GoomDrawablesState::GetDrawables() const noexcept -> const std::vect
   return m_drawables;
 }
 
-inline auto GoomDrawablesState::GetBuffIntensityRanges() const noexcept
-    -> const std::vector<BuffIntensityRange>&
+inline auto GoomDrawablesState::GetDrawablesBuffIntensities() const noexcept
+    -> const std::vector<float>&
 {
-  return m_drawablesBuffIntensityRanges;
-}
-
-} // namespace GOOM::CONTROL
-
-module :private;
-
-namespace GOOM::CONTROL
-{
-
-auto GoomDrawablesState::GetBuffIntensityRange(GoomDrawables goomDrawable) const noexcept
-    -> BuffIntensityRange
-{
-  for (auto i = 0U; i < m_drawables.size(); ++i)
-  {
-    if (m_drawables.at(i) == goomDrawable)
-    {
-      return m_drawablesBuffIntensityRanges.at(i);
-    }
-  }
-
-  FailFast();
-}
-
-auto GoomDrawablesState::IsMultiThreaded() const noexcept -> bool
-{
-  static constexpr auto STATE_MULTI_THREADED = UTILS::EnumMap<GoomDrawables, bool>{{{
-      {GoomDrawables::CIRCLES, false},
-      {GoomDrawables::DOTS, false},
-      {GoomDrawables::IFS, false},
-      {GoomDrawables::L_SYSTEM, false},
-      {GoomDrawables::LINES, false},
-      {GoomDrawables::IMAGE, true},
-      {GoomDrawables::PARTICLES, false},
-      {GoomDrawables::RAINDROPS, false},
-      {GoomDrawables::SHAPES, false},
-      {GoomDrawables::STARS, false},
-      {GoomDrawables::TENTACLES, false},
-      {GoomDrawables::TUBES, false},
-  }}};
-
-  return std::ranges::any_of(m_drawables,
-                             [](const auto& drawable) { return STATE_MULTI_THREADED[drawable]; });
+  return m_drawablesBuffIntensities;
 }
 
 } // namespace GOOM::CONTROL

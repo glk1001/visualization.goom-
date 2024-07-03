@@ -96,8 +96,7 @@ inline auto GoomAllVisualFx::ResetCurrentDrawBuffSettings(const GoomDrawables fx
 inline auto GoomAllVisualFx::GetCurrentBuffSettings(const GoomDrawables fx) const noexcept
     -> FXBuffSettings
 {
-  const auto buffIntensity =
-      m_goomRand->GetRandInRange(m_goomStateHandler->GetCurrentState().GetBuffIntensityRange(fx));
+  const auto buffIntensity = m_goomStateHandler->GetCurrentState().GetBuffIntensity(fx);
   // Careful here. > 1 reduces smearing.
   static constexpr auto INTENSITY_FACTOR = 1.0F;
   return {INTENSITY_FACTOR * buffIntensity};
