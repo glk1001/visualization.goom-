@@ -33,6 +33,7 @@ module Goom.Lib.GoomControl;
 
 import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomDrawables;
+import Goom.Control.GoomFavouriteStatesHandler;
 import Goom.Control.GoomMessageDisplayer;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomSoundEvents;
@@ -80,6 +81,7 @@ using CONTROL::GoomStateDump;
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomDrawables;
 using CONTROL::GoomDrawablesState;
+using CONTROL::GoomFavouriteStatesHandler;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
@@ -134,21 +136,38 @@ public:
   [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
 
 private:
+  const IGoomRand* m_goomRand;
+  static constexpr auto PROB_USE_FAVOURITE_STATES_HANDLER = 0.1F;
+  GoomFavouriteStatesHandler m_goomFavouriteStatesHandler;
   GoomRandomStateHandler m_goomRandomStateHandler;
+  IGoomStateHandler* m_currentGoomStateHandler;
 };
 
-GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand) : m_goomRandomStateHandler{goomRand}
+GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand)
+  : m_goomRand{&goomRand},
+    m_goomFavouriteStatesHandler{goomRand},
+    m_goomRandomStateHandler{goomRand},
+    m_currentGoomStateHandler{&m_goomRandomStateHandler}
 {
 }
 
 auto GoomStateHandler::ChangeToNextState() -> void
 {
-  m_goomRandomStateHandler.ChangeToNextState();
+  if (m_goomRand->ProbabilityOf(PROB_USE_FAVOURITE_STATES_HANDLER))
+  {
+    m_currentGoomStateHandler = &m_goomFavouriteStatesHandler;
+  }
+  else
+  {
+    m_currentGoomStateHandler = &m_goomRandomStateHandler;
+  }
+
+  m_currentGoomStateHandler->ChangeToNextState();
 }
 
 auto GoomStateHandler::GetCurrentState() const noexcept -> const GoomDrawablesState&
 {
-  return m_goomRandomStateHandler.GetCurrentState();
+  return m_currentGoomStateHandler->GetCurrentState();
 }
 
 class GoomControl::GoomControlImpl
@@ -330,8 +349,8 @@ auto GoomControl::SetFrameData(FrameData& frameData) -> void
   m_pimpl->SetFrameData(frameData);
 }
 
-auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples,
-                                    const std::string& message) -> void
+auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
+    -> void
 {
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }
