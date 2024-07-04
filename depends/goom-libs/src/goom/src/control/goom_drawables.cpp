@@ -3,6 +3,7 @@ module;
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -11,7 +12,6 @@ module Goom.Control.GoomDrawables;
 
 import Goom.Utils.EnumUtils;
 import Goom.Lib.AssertUtils;
-import Goom.Lib.GoomTypes;
 
 namespace GOOM::CONTROL
 {
@@ -28,15 +28,6 @@ GoomDrawablesState::GoomDrawablesState(const std::vector<GoomDrawables>& drawabl
   Ensures(drawables.size() == m_drawablesAsBitset.count());
 }
 
-auto GoomDrawablesState::GetName() const noexcept -> const std::string&
-{
-  if (m_stateName.empty())
-  {
-    m_stateName = GetDrawablesStateName(m_drawables);
-  }
-  return m_stateName;
-}
-
 auto GoomDrawablesState::GetDrawablesAsBitset(const std::vector<GoomDrawables>& drawables) noexcept
     -> std::bitset<NUM<GoomDrawables>>
 {
@@ -48,6 +39,15 @@ auto GoomDrawablesState::GetDrawablesAsBitset(const std::vector<GoomDrawables>& 
   }
 
   return drawablesAsBitset;
+}
+
+auto GoomDrawablesState::GetName() const noexcept -> const std::string&
+{
+  if (m_stateName.empty())
+  {
+    m_stateName = GetDrawablesStateName(m_drawables);
+  }
+  return m_stateName;
 }
 
 auto GoomDrawablesState::GetDrawablesStateName(const std::vector<GoomDrawables>& drawables) noexcept
@@ -68,15 +68,12 @@ auto GoomDrawablesState::GetDrawablesStateName(const std::vector<GoomDrawables>&
       {GoomDrawables::TUBES, "TUBES"},
   }}};
 
-  auto stateName = std::string{};
+  static constexpr auto DELIM = std::string_view{"_"};
 
-  for (auto i = 0U; i < drawables.size(); ++i)
-  {
-    stateName += std::string{DRAWABLE_NAMES[drawables[i]]} + "_";
-  }
-  stateName.pop_back();
-
-  return stateName;
+  return std::ranges::to<std::string>(
+      drawables |
+      std::views::transform([](const auto drawable) { return DRAWABLE_NAMES[drawable]; }) |
+      std::views::join_with(DELIM));
 }
 
 auto GoomDrawablesState::GetBuffIntensity(GoomDrawables goomDrawable) const noexcept -> float
