@@ -1,6 +1,8 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
+#include <ranges>
 #include <vector>
 
 module Goom.Control.GoomRandomStateHandler;
@@ -16,15 +18,17 @@ using UTILS::EnumMap;
 using UTILS::NUM;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto FRESH_STATE_WEIGHT         = 6.0F;
-static constexpr auto ADD_EXTRA_DRAWABLE_WEIGHT  = 2.0F;
+static constexpr auto FRESH_STATE_WEIGHT         = 7.0F;
+static constexpr auto NON_REPEAT_STATE_WEIGHT    = 7.0F;
+static constexpr auto ADD_EXTRA_DRAWABLE_WEIGHT  = 4.0F;
 static constexpr auto ADD_REMOVE_DRAWABLE_WEIGHT = 1.0F;
 static constexpr auto REMOVE_DRAWABLE_WEIGHT     = 1.0F;
-static constexpr auto ONE_WEIGHT                 = 1.0F;
-static constexpr auto TWO_WEIGHT                 = 3.0F;
-static constexpr auto THREE_WEIGHT               = 3.0F;
-static constexpr auto FOUR_WEIGHT                = 2.0F;
-static constexpr auto FIVE_WEIGHT                = 1.0F;
+
+static constexpr auto ONE_WEIGHT   = 1.0F;
+static constexpr auto TWO_WEIGHT   = 3.0F;
+static constexpr auto THREE_WEIGHT = 3.0F;
+static constexpr auto FOUR_WEIGHT  = 2.0F;
+static constexpr auto FIVE_WEIGHT  = 1.0F;
 
 GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
   : m_goomRand{&goomRand},
@@ -32,6 +36,7 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
         goomRand,
         {
             {ChangeType::FRESH_STATE,         FRESH_STATE_WEIGHT},
+            {ChangeType::NON_REPEAT_STATE,    NON_REPEAT_STATE_WEIGHT},
             {ChangeType::ADD_EXTRA_DRAWABLE,  ADD_EXTRA_DRAWABLE_WEIGHT},
             {ChangeType::ADD_REMOVE_DRAWABLE, ADD_REMOVE_DRAWABLE_WEIGHT},
             {ChangeType::REMOVE_DRAWABLE,     REMOVE_DRAWABLE_WEIGHT},
@@ -73,6 +78,9 @@ auto GoomRandomStateHandler::ChangeToNextState() -> void
     case ChangeType::FRESH_STATE:
       ChangeToFreshState();
       break;
+    case ChangeType::NON_REPEAT_STATE:
+      ChangeToNonRepeatState();
+      break;
     case ChangeType::ADD_EXTRA_DRAWABLE:
       AddExtraDrawableToCurrentState();
       break;
@@ -89,16 +97,35 @@ auto GoomRandomStateHandler::ChangeToFreshState() -> void
 {
   m_drawablesPool = GetFullDrawablesPool(*m_goomRand);
 
-  const auto numRandomDrawables = GetNextNumDrawables();
-  const auto randomDrawables    = GetNextRandomDrawables(numRandomDrawables);
-  const auto buffIntensities    = GetBuffIntensities(randomDrawables);
+  ChangeToNewState(GetNextNumDrawables());
+}
+
+auto GoomRandomStateHandler::ChangeToNonRepeatState() -> void
+{
+  if (m_drawablesPool.empty())
+  {
+    ChangeToFreshState();
+    return;
+  }
+
+  const auto numRandomDrawables =
+      std::min(GetNextNumDrawables(), static_cast<uint32_t>(m_drawablesPool.size()));
+
+  ChangeToNewState(numRandomDrawables);
+}
+
+auto GoomRandomStateHandler::ChangeToNewState(const uint32_t numRandomDrawables) -> void
+{
+  const auto randomDrawables = GetNextRandomDrawables(numRandomDrawables);
+  const auto buffIntensities = GetBuffIntensities(randomDrawables);
 
   m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
 }
 
 auto GoomRandomStateHandler::AddExtraDrawableToCurrentState() -> void
 {
-  if (m_currentDrawablesState.GetDrawables().size() >= MAX_NUM_DRAWABLES)
+  if (m_drawablesPool.empty() or
+      (m_currentDrawablesState.GetDrawables().size() >= MAX_NUM_DRAWABLES))
   {
     ChangeToFreshState();
     return;
@@ -120,12 +147,41 @@ auto GoomRandomStateHandler::AddExtraDrawableToCurrentState() -> void
 
 auto GoomRandomStateHandler::AddRemoveDrawableToCurrentState() -> void
 {
-  ChangeToFreshState();
+  if (m_drawablesPool.empty())
+  {
+    ChangeToFreshState();
+    return;
+  }
+
+  const auto randomDrawable = GetRandomDrawablesFromPool(1);
+  const auto buffIntensity  = GetBuffIntensities(randomDrawable);
+
+  auto randomDrawables   = m_currentDrawablesState.GetDrawables();
+  m_drawablesPool.insert(begin(m_drawablesPool), randomDrawables.back());
+  randomDrawables.back() = randomDrawable[0];
+
+  auto buffIntensities   = m_currentDrawablesState.GetDrawablesBuffIntensities();
+  buffIntensities.back() = buffIntensity[0];
+
+  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
 }
 
 auto GoomRandomStateHandler::RemoveDrawableFromCurrentState() -> void
 {
-  ChangeToFreshState();
+  auto randomDrawables = m_currentDrawablesState.GetDrawables();
+  if (randomDrawables.size() == 1)
+  {
+    ChangeToFreshState();
+    return;
+  }
+
+  m_drawablesPool.insert(begin(m_drawablesPool), randomDrawables.back());
+  randomDrawables.pop_back();
+
+  auto buffIntensities = m_currentDrawablesState.GetDrawablesBuffIntensities();
+  buffIntensities.pop_back();
+
+  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
 }
 
 auto GoomRandomStateHandler::GetNextNumDrawables() const -> uint32_t
@@ -203,14 +259,10 @@ auto GoomRandomStateHandler::GetBuffIntensities(
       {GoomDrawables::TUBES, {0.70F, 0.80F}},
   }}};
 
-  auto buffIntensities = std::vector<float>(drawables.size());
-
-  for (auto i = 0U; i < drawables.size(); ++i)
-  {
-    buffIntensities[i] = m_goomRand->GetRandInRange(BUFF_INTENSITY_RANGES[drawables[i]]);
-  }
-
-  return buffIntensities;
+  return std::ranges::to<std::vector<float>>(
+      drawables | std::views::transform(
+                      [this](const auto drawable)
+                      { return m_goomRand->GetRandInRange(BUFF_INTENSITY_RANGES[drawable]); }));
 }
 
 } // namespace GOOM::CONTROL

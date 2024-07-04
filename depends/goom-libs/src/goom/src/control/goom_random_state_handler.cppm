@@ -33,15 +33,18 @@ private:
   enum class ChangeType : UnderlyingEnumType
   {
     FRESH_STATE,
+    NON_REPEAT_STATE,
     ADD_EXTRA_DRAWABLE,
     ADD_REMOVE_DRAWABLE,
     REMOVE_DRAWABLE,
   };
   Weights<ChangeType> m_weightedChangeTypes;
   auto ChangeToFreshState() -> void;
+  auto ChangeToNonRepeatState() -> void;
   auto AddExtraDrawableToCurrentState() -> void;
   auto AddRemoveDrawableToCurrentState() -> void;
   auto RemoveDrawableFromCurrentState() -> void;
+  auto ChangeToNewState(uint32_t numRandomDrawables) -> void;
 
   GoomDrawablesState m_currentDrawablesState{};
   [[nodiscard]] auto GetRandomDrawablesFromPool(uint32_t numDrawables)
