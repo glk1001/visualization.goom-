@@ -49,8 +49,9 @@ public:
   auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
 
-  auto DrawDot(const Point2dInt& pos, uint32_t diameter, const MultiplePixels& colors) noexcept
-      -> void;
+  auto DrawDot(const Point2dInt& pos,
+               uint32_t diameter,
+               const MultiplePixels& colors) noexcept -> void;
 
 private:
   const IGoomRand* m_goomRand;
@@ -241,8 +242,9 @@ inline auto DotDrawer::DrawBitmapDot(const Point2dInt& position,
     return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetMainColor(colors), m_bgndMainColorMixT);
   };
 
-  const auto getLowColor = [this, &colors, &diameter](const Point2dInt& bitmapPoint,
-                                                      const Pixel& bgnd) {
+  const auto getLowColor =
+      [this, &colors, &diameter](const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  {
     return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT);
   };
 

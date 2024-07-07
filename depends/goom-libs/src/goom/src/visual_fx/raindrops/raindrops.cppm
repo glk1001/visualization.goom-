@@ -175,8 +175,8 @@ Raindrops::Raindrops(FxHelper& fxHelper,
 }
 
 auto Raindrops::GetNewRaindropPositionParams(
-    const Rectangle2dInt& rectangle2D, const Point2dInt& targetRectangleWeightPoint) const noexcept
-    -> RaindropPositions::Params
+    const Rectangle2dInt& rectangle2D,
+    const Point2dInt& targetRectangleWeightPoint) const noexcept -> RaindropPositions::Params
 {
   RaindropPositions::Params raindropPositionParams;
 
@@ -412,8 +412,8 @@ auto Raindrops::DrawCircleAroundWeightPoint() noexcept -> void
                          radius);
 }
 
-auto Raindrops::DrawRaindrop(const Raindrop& raindrop, const MultiplePixels& colors) noexcept
-    -> void
+auto Raindrops::DrawRaindrop(const Raindrop& raindrop,
+                             const MultiplePixels& colors) noexcept -> void
 {
   const auto position = m_raindropPositions.GetPosition(raindrop.dropNum);
   const auto radius   = static_cast<double>(raindrop.growthRadius());

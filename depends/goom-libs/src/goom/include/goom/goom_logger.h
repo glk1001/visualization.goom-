@@ -84,8 +84,8 @@ inline auto GoomLogger::SetLogFile(const std::string_view& logF) -> void
   m_logFile = logF;
 }
 
-inline auto GoomLogger::AddHandler(const std::string_view& name, const HandlerFunc& handlerFunc)
-    -> void
+inline auto GoomLogger::AddHandler(const std::string_view& name,
+                                   const HandlerFunc& handlerFunc) -> void
 {
   for (const auto& handler : m_handlers)
   {
@@ -312,8 +312,8 @@ inline auto SetLogLevel(GOOM::GoomLogger& logger, const GOOM::GoomLogger::LogLev
   logger.SetHandlersLogLevel(lvl);
 }
 
-inline auto SetLogLevelForFiles(GOOM::GoomLogger& logger, const GOOM::GoomLogger::LogLevel lvl)
-    -> void
+inline auto SetLogLevelForFiles(GOOM::GoomLogger& logger,
+                                const GOOM::GoomLogger::LogLevel lvl) -> void
 {
   logger.SetFileLogLevel(lvl);
 }

@@ -105,8 +105,8 @@ private:
                                    const Pixel& color,
                                    uint32_t radius,
                                    const Pixel& bgnd) const -> Pixel;
-  [[nodiscard]] static auto IsImagePointCloseToMiddle(const Point2dInt& point, uint32_t radius)
-      -> bool;
+  [[nodiscard]] static auto IsImagePointCloseToMiddle(const Point2dInt& point,
+                                                      uint32_t radius) -> bool;
   [[nodiscard]] static auto GetMargin(uint32_t radius) -> size_t;
   [[nodiscard]] auto GetMiddleColor() const -> Pixel;
 
@@ -242,9 +242,9 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
        centrePos, DEFAULT_ANGLE_PARAMS,
        HYPOTROCHOID_PARAMS3),
        std::make_unique<LissajousPath>(
-       std::move(lissajousPositionT), centrePos, DEFAULT_ANGLE_PARAMS, LISSAJOUS_PATH_PARAMS),
+           std::move(lissajousPositionT), centrePos, DEFAULT_ANGLE_PARAMS, LISSAJOUS_PATH_PARAMS),
        std::make_unique<EpicycloidPath>(
-       std::move(epicycloidPositionT), centrePos, DEFAULT_ANGLE_PARAMS, EPICYCLOID_PARAMS)}
+           std::move(epicycloidPositionT), centrePos, DEFAULT_ANGLE_PARAMS, EPICYCLOID_PARAMS)}
   };
 }
 
@@ -363,8 +363,8 @@ inline auto GoomDotsFx::GoomDotsFxImpl::UpdatePixelBlender() noexcept -> void
   m_pixelBlender.Update();
 }
 
-inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum, const float t) const
-    -> Pixel
+inline auto GoomDotsFx::GoomDotsFxImpl::GetDotColor(const size_t dotNum,
+                                                    const float t) const -> Pixel
 {
   if (m_usePrimaryColors.at(dotNum))
   {

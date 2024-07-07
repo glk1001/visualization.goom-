@@ -249,7 +249,7 @@ auto ComplexRational::GetSimpleZeroesAndPoles() noexcept -> Params::ZeroesAndPol
   static constexpr auto ZERO0_PT = static_cast<FltCalcType>(0.1F);
   static constexpr auto ZERO1_PT = static_cast<FltCalcType>(1.0F);
   const auto zeroes              = std::vector<std::complex<FltCalcType>>{
-  //{ZERO, ZERO},
+      //{ZERO, ZERO},
       {+ZERO0_PT, +ZERO0_PT},
       {-ZERO0_PT, +ZERO0_PT},
       {-ZERO0_PT, -ZERO0_PT},

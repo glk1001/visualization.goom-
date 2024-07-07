@@ -58,8 +58,8 @@ namespace
 {
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-auto GetAbsoluteIncludeDir(const std::string& includeDir, const std::string& inFilename)
-    -> std::string
+auto GetAbsoluteIncludeDir(const std::string& includeDir,
+                           const std::string& inFilename) -> std::string
 {
   if (not includeDir.empty())
   {
@@ -80,8 +80,8 @@ auto PutFileWithExpandedIncludes(const std::string& includeDir,
                       UTILS::GetFileLinesWithExpandedIncludes(absoluteIncludeDir, inFilepath));
 }
 
-auto GetFileWithExpandedIncludes(const std::string& includeDir, const std::string& filepath)
-    -> std::vector<std::string>
+auto GetFileWithExpandedIncludes(const std::string& includeDir,
+                                 const std::string& filepath) -> std::vector<std::string>
 {
   const auto absoluteIncludeDir = GetAbsoluteIncludeDir(includeDir, filepath);
 

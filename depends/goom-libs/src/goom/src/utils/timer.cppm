@@ -19,8 +19,8 @@ public:
 
   [[nodiscard]] auto GetTimeLeft() const noexcept -> uint64_t;
   auto SetTimeLimit(uint64_t timeLimit, bool setToFinished = false) noexcept -> void;
-  auto SetTimeLimitAndResetToZero(uint64_t newTimeLimit, bool setToFinished = false) noexcept
-      -> void;
+  auto SetTimeLimitAndResetToZero(uint64_t newTimeLimit,
+                                  bool setToFinished = false) noexcept -> void;
   auto ResetToZero() noexcept -> void;
   auto SetToFinished() noexcept -> void;
 

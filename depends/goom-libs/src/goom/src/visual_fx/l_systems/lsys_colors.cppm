@@ -64,12 +64,12 @@ public:
   auto ChangeColors() noexcept -> void;
   auto SetLineWidth(uint8_t lineWidth) noexcept -> void;
 
-  [[nodiscard]] auto GetColors(uint32_t colorNum, uint32_t lSysColor) const noexcept
-      -> MultiplePixels;
-  [[nodiscard]] static auto GetBrightness(float baseBrightness, uint32_t lSysColor) noexcept
-      -> float;
-  [[nodiscard]] auto GetColorNumToUse(uint32_t givenColorNum, uint32_t lSysColor) const noexcept
-      -> uint32_t;
+  [[nodiscard]] auto GetColors(uint32_t colorNum,
+                               uint32_t lSysColor) const noexcept -> MultiplePixels;
+  [[nodiscard]] static auto GetBrightness(float baseBrightness,
+                                          uint32_t lSysColor) noexcept -> float;
+  [[nodiscard]] auto GetColorNumToUse(uint32_t givenColorNum,
+                                      uint32_t lSysColor) const noexcept -> uint32_t;
   auto IncrementColorTs() noexcept -> void;
 
   [[nodiscard]] auto GetCurrentColorTs() const noexcept -> const std::vector<TValue>&;
@@ -272,8 +272,8 @@ auto LSysColors::IncrementColorTs() noexcept -> void
   std::ranges::for_each(m_currentThickerColorTs, [](auto& colorT) { colorT.Increment(); });
 }
 
-auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) const noexcept
-    -> MultiplePixels
+auto LSysColors::GetColors(const uint32_t colorNum,
+                           const uint32_t lSysColor) const noexcept -> MultiplePixels
 {
   static constexpr auto MAIN_BRIGHTNESS = 1.5F;
   static constexpr auto LOW_BRIGHTNESS  = 3.0F;
@@ -312,8 +312,8 @@ auto LSysColors::GetColors(const uint32_t colorNum, const uint32_t lSysColor) co
   return MakePixels(mainColor, lowColor);
 }
 
-inline auto LSysColors::GetBrightness(const float baseBrightness, const uint32_t lSysColor) noexcept
-    -> float
+inline auto LSysColors::GetBrightness(const float baseBrightness,
+                                      const uint32_t lSysColor) noexcept -> float
 {
   return lSysColor != 1U ? baseBrightness : (HALF * baseBrightness);
 }

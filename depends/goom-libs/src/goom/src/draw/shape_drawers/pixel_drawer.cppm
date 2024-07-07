@@ -31,8 +31,8 @@ inline PixelDrawer::PixelDrawer(IGoomDraw& draw) noexcept : m_draw{&draw}
 {
 }
 
-inline auto PixelDrawer::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept
-    -> void
+inline auto PixelDrawer::DrawPixels(const Point2dInt& point,
+                                    const MultiplePixels& colors) noexcept -> void
 {
   m_draw->DrawPixels(point, colors);
 }

@@ -50,8 +50,8 @@ SmallImageBitmaps::SmallImageBitmaps(const std::string& resourcesDirectory)
 
 SmallImageBitmaps::~SmallImageBitmaps() noexcept = default;
 
-auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) const
-    -> const ImageBitmap&
+auto SmallImageBitmaps::GetImageBitmap(const ImageNames name,
+                                       const size_t res) const -> const ImageBitmap&
 {
   auto imageRes = res;
   if (IsEven(imageRes))
@@ -62,15 +62,14 @@ auto SmallImageBitmaps::GetImageBitmap(const ImageNames name, const size_t res) 
   return *m_bitmapImages.at(GetImageKey(name, imageRes));
 }
 
-auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name,
-                                          const size_t sizeOfImageSquare) const
-    -> std::unique_ptr<const ImageBitmap>
+auto SmallImageBitmaps::GetImageBitmapPtr(const ImageNames name, const size_t sizeOfImageSquare)
+    const -> std::unique_ptr<const ImageBitmap>
 {
   return std::make_unique<const ImageBitmap>(GetImageFilename(name, sizeOfImageSquare));
 }
 
-inline auto SmallImageBitmaps::GetImageKey(const ImageNames name, const size_t sizeOfImageSquare)
-    -> std::string
+inline auto SmallImageBitmaps::GetImageKey(const ImageNames name,
+                                           const size_t sizeOfImageSquare) -> std::string
 {
   return std::format("{}_{:02}", IMAGE_NAMES.at(static_cast<size_t>(name)), sizeOfImageSquare);
 }

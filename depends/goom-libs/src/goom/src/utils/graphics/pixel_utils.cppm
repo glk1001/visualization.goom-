@@ -17,26 +17,27 @@ inline constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR = channel_limits<uint32_t>::m
                                        uint32_t green,
                                        uint32_t blue,
                                        uint32_t alpha) noexcept -> Pixel;
-[[nodiscard]] constexpr auto MakePixel(float red, float green, float blue, float alpha) noexcept
-    -> Pixel;
+[[nodiscard]] constexpr auto MakePixel(float red,
+                                       float green,
+                                       float blue,
+                                       float alpha) noexcept -> Pixel;
 
-[[nodiscard]] constexpr auto GetPixelWithNewAlpha(const Pixel& pixel, PixelChannelType newAlpha)
-    -> Pixel;
+[[nodiscard]] constexpr auto GetPixelWithNewAlpha(const Pixel& pixel,
+                                                  PixelChannelType newAlpha) -> Pixel;
 
 [[nodiscard]] constexpr auto GetColorAdd(const Pixel& color1,
                                          const Pixel& color2,
                                          PixelChannelType newAlpha) -> Pixel;
-[[nodiscard]] constexpr auto GetColorChannelAdd(PixelChannelType ch1, PixelChannelType ch2)
-    -> uint32_t;
+[[nodiscard]] constexpr auto GetColorChannelAdd(PixelChannelType ch1,
+                                                PixelChannelType ch2) -> uint32_t;
 
 [[nodiscard]] constexpr auto GetColorMultiply(const Pixel& color1,
                                               const Pixel& color2,
                                               PixelChannelType newAlpha) -> Pixel;
 [[nodiscard]] constexpr auto GetColorChannelMultiply(PixelChannelType ch1,
                                                      PixelChannelType ch2) noexcept -> uint32_t;
-[[nodiscard]] constexpr auto GetChannelColorMultiplyByScalar(uint32_t scalar,
-                                                             PixelChannelType channelVal) noexcept
-    -> uint32_t;
+[[nodiscard]] constexpr auto GetChannelColorMultiplyByScalar(
+    uint32_t scalar, PixelChannelType channelVal) noexcept -> uint32_t;
 
 [[nodiscard]] constexpr auto GetColorMin(const Pixel& color1,
                                          const Pixel& color2,
@@ -50,12 +51,14 @@ inline constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR = channel_limits<uint32_t>::m
 namespace GOOM::UTILS::GRAPHICS
 {
 
-constexpr auto MakePixel(uint32_t red, uint32_t green, uint32_t blue, uint32_t alpha) noexcept
-    -> Pixel
+constexpr auto MakePixel(uint32_t red,
+                         uint32_t green,
+                         uint32_t blue,
+                         uint32_t alpha) noexcept -> Pixel
 {
-  red = std::min(red, MAX_CHANNEL_VALUE_HDR);
+  red   = std::min(red, MAX_CHANNEL_VALUE_HDR);
   green = std::min(green, MAX_CHANNEL_VALUE_HDR);
-  blue = std::min(blue, MAX_CHANNEL_VALUE_HDR);
+  blue  = std::min(blue, MAX_CHANNEL_VALUE_HDR);
   alpha = std::min<uint32_t>(alpha, MAX_ALPHA);
 
   return Pixel{static_cast<PixelChannelType>(red),
@@ -93,8 +96,8 @@ constexpr auto GetColorAdd(const Pixel& color1,
   return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newAlpha);
 }
 
-constexpr auto GetColorChannelAdd(const PixelChannelType ch1, const PixelChannelType ch2)
-    -> uint32_t
+constexpr auto GetColorChannelAdd(const PixelChannelType ch1,
+                                  const PixelChannelType ch2) -> uint32_t
 {
   return static_cast<uint32_t>(ch1) + static_cast<uint32_t>(ch2);
 }
@@ -117,9 +120,8 @@ constexpr auto GetColorChannelMultiply(const PixelChannelType ch1,
          channel_limits<uint32_t>::max();
 }
 
-constexpr auto GetChannelColorMultiplyByScalar(const uint32_t scalar,
-                                               const PixelChannelType channelVal) noexcept
-    -> uint32_t
+constexpr auto GetChannelColorMultiplyByScalar(
+    const uint32_t scalar, const PixelChannelType channelVal) noexcept -> uint32_t
 {
   constexpr auto CHANNEL_COLOR_SCALAR_DIVISOR_EXP = UTILS::MATH::Log2(CHANNEL_COLOR_SCALAR_DIVISOR);
 

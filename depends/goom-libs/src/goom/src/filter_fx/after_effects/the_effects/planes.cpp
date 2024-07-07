@@ -243,8 +243,8 @@ auto Planes::GetAdjustedIntAmplitude(const IGoomRand& goomRand,
   return adjustedIntAmplitude;
 }
 
-auto Planes::GetRandomEffectMultiplier(const IGoomRand& goomRand, const bool muchSpiralling)
-    -> Amplitude
+auto Planes::GetRandomEffectMultiplier(const IGoomRand& goomRand,
+                                       const bool muchSpiralling) -> Amplitude
 {
   auto effectMultiplier = Amplitude{};
 

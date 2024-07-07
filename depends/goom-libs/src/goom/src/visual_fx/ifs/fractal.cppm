@@ -75,8 +75,8 @@ private:
   [[nodiscard]] auto GetCurrentIfsPoints() -> const std::vector<IfsPoint>&;
   auto DrawFractal() -> void;
   auto Trace(uint32_t curDepth, const FltPoint& point0) -> void;
-  [[nodiscard]] static auto AreSimilarPoints(const FltPoint& point1, const FltPoint& point2)
-      -> bool;
+  [[nodiscard]] static auto AreSimilarPoints(const FltPoint& point1,
+                                             const FltPoint& point2) -> bool;
   auto UpdateHits(const Similitude& simi, const FltPoint& point) -> void;
 };
 

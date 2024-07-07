@@ -45,8 +45,9 @@ using DefaultParams = LSYS::Interpreter::DefaultParams;
 
 template<>
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-auto lerp(const DefaultParams& val1, const DefaultParams& val2, const float t) noexcept
-    -> DefaultParams
+auto lerp(const DefaultParams& val1,
+          const DefaultParams& val2,
+          const float t) noexcept -> DefaultParams
 {
   return {
       std::lerp(val1.turnAngleInDegrees, val2.turnAngleInDegrees, t),
@@ -171,20 +172,17 @@ private:
   [[nodiscard]] static auto GetLSysModelSet(const PluginInfo& goomInfo,
                                             const std::string& lSysDirectory,
                                             const LSystemFile& lSystemFile) -> LSysModelSet;
-  [[nodiscard]] static auto GetLSystemFilename(const std::string& lSystemDirectory,
-                                               const LSystemFile& lSystemFile) noexcept
-      -> std::string;
-  [[nodiscard]] static auto GetBoundsFilename(const std::string& lSystemDirectory,
-                                              const LSystemFile& lSystemFile) noexcept
-      -> std::string;
+  [[nodiscard]] static auto GetLSystemFilename(
+      const std::string& lSystemDirectory, const LSystemFile& lSystemFile) noexcept -> std::string;
+  [[nodiscard]] static auto GetBoundsFilename(
+      const std::string& lSystemDirectory, const LSystemFile& lSystemFile) noexcept -> std::string;
   struct BoundingBox2d
   {
     GOOM::Point2dFlt min;
     GOOM::Point2dFlt max;
   };
-  [[nodiscard]] static auto GetBoundingBox2d(float expandBounds,
-                                             const ::LSYS::BoundingBox3d& boundingBox3d) noexcept
-      -> BoundingBox2d;
+  [[nodiscard]] static auto GetBoundingBox2d(
+      float expandBounds, const ::LSYS::BoundingBox3d& boundingBox3d) noexcept -> BoundingBox2d;
 
   LSysColors m_lSysColors;
   LSysGeometry m_lSysGeometry;

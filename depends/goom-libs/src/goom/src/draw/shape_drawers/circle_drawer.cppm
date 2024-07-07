@@ -18,8 +18,9 @@ class CircleDrawer
 public:
   explicit CircleDrawer(IGoomDraw& draw) noexcept;
 
-  auto DrawCircle(const Point2dInt& centre, int32_t radius, const MultiplePixels& colors) noexcept
-      -> void;
+  auto DrawCircle(const Point2dInt& centre,
+                  int32_t radius,
+                  const MultiplePixels& colors) noexcept -> void;
   auto DrawFilledCircle(const Point2dInt& centre,
                         int32_t radius,
                         const MultiplePixels& colors) noexcept -> void;

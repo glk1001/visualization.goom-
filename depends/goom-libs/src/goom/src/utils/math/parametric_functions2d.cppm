@@ -256,8 +256,8 @@ private:
   Point2dFlt m_startPos;
   Point2dFlt m_endPos;
   [[nodiscard]] auto GetAdjustedStartPos(const Point2dFlt& startPos) const noexcept -> Point2dFlt;
-  [[nodiscard]] auto GetOscillatingPoint(const Point2dFlt& linearPoint, float t) const noexcept
-      -> Point2dFlt;
+  [[nodiscard]] auto GetOscillatingPoint(const Point2dFlt& linearPoint,
+                                         float t) const noexcept -> Point2dFlt;
   [[nodiscard]] auto GetOscillatingOffset(float t) const noexcept -> Vec2dFlt;
 };
 
@@ -312,8 +312,8 @@ inline auto SpiralFunction::GetPointData(const float t) const noexcept -> PointD
   return {point, angle};
 }
 
-inline auto SpiralFunction::GetSpiralPoint(const float radius, const float angle) noexcept
-    -> Point2dFlt
+inline auto SpiralFunction::GetSpiralPoint(const float radius,
+                                           const float angle) noexcept -> Point2dFlt
 {
   return Point2dFlt{+radius * std::cos(angle), -radius * std::sin(angle)};
 }

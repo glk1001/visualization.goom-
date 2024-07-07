@@ -54,8 +54,8 @@ private:
   UTILS::GRAPHICS::BezierDrawer* m_bezierDrawer;
   PetalColoring* m_petalColoring;
   float m_rotation = 0.0F;
-  [[nodiscard]] static auto GetBezierPetal(const Point2dInt& origin, uint32_t offset)
-      -> Bezier::Bezier<3>;
+  [[nodiscard]] static auto GetBezierPetal(const Point2dInt& origin,
+                                           uint32_t offset) -> Bezier::Bezier<3>;
 };
 
 } // namespace GOOM::VISUAL_FX::SHAPES
@@ -112,8 +112,8 @@ auto BezierFlower::Draw(const uint32_t numPetals,
   }
 }
 
-inline auto BezierFlower::GetBezierPetal(const Point2dInt& origin, const uint32_t offset)
-    -> Bezier::Bezier<3>
+inline auto BezierFlower::GetBezierPetal(const Point2dInt& origin,
+                                         const uint32_t offset) -> Bezier::Bezier<3>
 {
   const auto originX   = static_cast<float>(origin.x);
   const auto originY   = static_cast<float>(origin.y);

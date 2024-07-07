@@ -15,8 +15,9 @@ using GOOM::COLOR::GetBrighterColor;
 using GOOM::DRAW::MultiplePixels;
 using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 
-auto DrawTestPattern(IGoomDraw& draw, const Point2dInt& centre, const Dimensions& dimensions)
-    -> void
+auto DrawTestPattern(IGoomDraw& draw,
+                     const Point2dInt& centre,
+                     const Dimensions& dimensions) -> void
 {
   const auto lineThickness = 3;
   const auto width         = dimensions.GetIntWidth();

@@ -29,7 +29,7 @@ public:
   auto SetFramebufferDimensions(const WindowDimensions& windowDimensions) noexcept -> void;
 
   // Load textures, initialize shaders, etc.
-  virtual auto InitScene() -> void             = 0;
+  virtual auto InitScene() -> void    = 0;
   virtual auto DestroyScene() -> void = 0;
 
   // Draw your scene.

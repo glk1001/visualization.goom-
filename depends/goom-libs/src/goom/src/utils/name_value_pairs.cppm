@@ -67,8 +67,9 @@ template<typename T>
 
 
 template<typename T>
-auto GetPair(const std::string& paramGroup, const std::string& paramName, const T& paramValue)
-    -> NameValuePair
+auto GetPair(const std::string& paramGroup,
+             const std::string& paramName,
+             const T& paramValue) -> NameValuePair
 {
   return {paramGroup + "::" + paramName, to_string(paramValue)};
 }

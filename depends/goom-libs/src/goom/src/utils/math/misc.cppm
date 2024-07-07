@@ -169,8 +169,9 @@ template<typename T>
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto UnorderedClamp(const T& val, const T& val1, const T& val2) noexcept
-    -> T
+[[nodiscard]] constexpr auto UnorderedClamp(const T& val,
+                                            const T& val1,
+                                            const T& val2) noexcept -> T
 {
   if (val1 > val2)
   {
@@ -299,8 +300,8 @@ constexpr auto RangeMapper::operator()(const double x0,
 }
 
 template<typename T>
-[[nodiscard]] constexpr auto operator-(const T value, const Fraction<T>& frac) noexcept
-    -> Fraction<T>
+[[nodiscard]] constexpr auto operator-(const T value,
+                                       const Fraction<T>& frac) noexcept -> Fraction<T>
 {
   return {(value * frac.m_denominator) - frac.m_numerator, frac.m_denominator};
 }

@@ -19,19 +19,20 @@ struct V3dFlt
   float y = 0.0;
   float z = 0.0;
 };
-[[nodiscard]] constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept
-    -> V3dFlt;
-[[nodiscard]] constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, float t) noexcept
-    -> V3dFlt;
+[[nodiscard]] constexpr auto operator+(const V3dFlt& point1,
+                                       const V3dFlt& point2) noexcept -> V3dFlt;
+[[nodiscard]] constexpr auto lerp(const V3dFlt& point1,
+                                  const V3dFlt& point2,
+                                  float t) noexcept -> V3dFlt;
 
 class Tentacle3D
 {
 public:
   Tentacle3D() noexcept = delete;
   explicit Tentacle3D(std::unique_ptr<Tentacle2D> tentacle) noexcept;
-  Tentacle3D(const Tentacle3D&) noexcept = delete;
-  Tentacle3D(Tentacle3D&&) noexcept      = default;
-  ~Tentacle3D() noexcept = default;
+  Tentacle3D(const Tentacle3D&) noexcept           = delete;
+  Tentacle3D(Tentacle3D&&) noexcept                = default;
+  ~Tentacle3D() noexcept                           = default;
   auto operator=(const Tentacle3D&) -> Tentacle3D& = delete;
   auto operator=(Tentacle3D&&) -> Tentacle3D&      = delete;
 

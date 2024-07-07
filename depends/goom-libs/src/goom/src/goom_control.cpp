@@ -349,8 +349,8 @@ auto GoomControl::SetFrameData(FrameData& frameData) -> void
   m_pimpl->SetFrameData(frameData);
 }
 
-auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
-    -> void
+auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples,
+                                    const std::string& message) -> void
 {
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }

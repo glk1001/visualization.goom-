@@ -80,8 +80,8 @@ public:
                              std::span<const T> buffer,
                              const Formatters& formatters = Formatters{}) -> void;
 
-  [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename, HeaderT& header)
-      -> bool;
+  [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename,
+                                                HeaderT& header) -> bool;
 
 protected:
   auto IncCurrentBufferNum() noexcept -> void;
@@ -173,8 +173,8 @@ auto BufferSaver<T, HeaderT>::DefaultGetBufferIndexString(const size_t bufferInd
 }
 
 template<class T, class HeaderT>
-auto BufferSaver<T, HeaderT>::Write(const std::span<const T> buffer, const bool binaryFormat)
-    -> void
+auto BufferSaver<T, HeaderT>::Write(const std::span<const T> buffer,
+                                    const bool binaryFormat) -> void
 {
   const auto ignore = HeaderT{};
   Write(ignore, buffer, binaryFormat);
@@ -228,8 +228,10 @@ auto BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
   if (not file.good())
   {
     throw std::runtime_error(std::format(
+        "Could not open file '{}' for binary writing. Error: {}.",
+        filename,
         // NOLINTNEXTLINE(concurrency-mt-unsafe)
-        "Could not open file '{}' for binary writing. Error: {}.", filename, strerror(errno)));
+        strerror(errno)));
   }
   WriteBinary(file, tag, header, buffer);
 }
@@ -295,8 +297,10 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
   if (not file.good())
   {
     throw std::runtime_error(std::format(
+        "Could not open file '{}' for text writing. Error: {}.",
+        filename,
         // NOLINTNEXTLINE(concurrency-mt-unsafe)
-        "Could not open file '{}' for text writing. Error: {}.", filename, strerror(errno)));
+        strerror(errno)));
   }
   WriteFormatted(file, tag, header, buffer, formatters);
 }

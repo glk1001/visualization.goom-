@@ -13,7 +13,7 @@ if [[ "${COMPILER_VERSION}" == "" ]]; then
   declare -r CLANG_FORMAT_EXE="clang-format"
 else
 #  declare -r CLANG_FORMAT_EXE="clang-format-${COMPILER_VERSION}"
-  declare -r CLANG_FORMAT_EXE="clang-format-17"
+  declare -r CLANG_FORMAT_EXE="clang-format-18"
 fi
 declare -r CLANG_FORMAT_LOG="/tmp/goom-clang-format.log"
 

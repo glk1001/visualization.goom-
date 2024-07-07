@@ -72,8 +72,9 @@ public:
 
   [[nodiscard]] virtual auto GetRandomGroup() const noexcept -> ColorMapGroup;
 
-  [[nodiscard]] auto GetRandomColor(const IColorMap& colorMap, float t0, float t1) const noexcept
-      -> Pixel;
+  [[nodiscard]] auto GetRandomColor(const IColorMap& colorMap,
+                                    float t0,
+                                    float t1) const noexcept -> Pixel;
 
 protected:
   [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&;

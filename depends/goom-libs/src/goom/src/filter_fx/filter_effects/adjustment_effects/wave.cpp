@@ -316,8 +316,8 @@ auto Wave::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValueP
   return NameValuePairs();
 }
 
-auto Wave::GetAngle(const float sqDistFromZero, const NormalizedCoords& coords) const noexcept
-    -> float
+auto Wave::GetAngle(const float sqDistFromZero,
+                    const NormalizedCoords& coords) const noexcept -> float
 {
   switch (m_params.angleEffect)
   {

@@ -157,13 +157,15 @@ inline auto DotDrawer::DrawDot(const uint32_t dotSize,
     return;
   }
 
-  const auto getColor1 = [&brightness, &colors]([[maybe_unused]] const Point2dInt& bitmapPoint,
-                                                const Pixel& bgnd) {
+  const auto getColor1 =
+      [&brightness, &colors]([[maybe_unused]] const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  {
     return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors.color1), colors.color1.A());
   };
 
-  const auto getColor2 = [&brightness, &colors]([[maybe_unused]] const Point2dInt& bitmapPoint,
-                                                const Pixel& bgnd) {
+  const auto getColor2 =
+      [&brightness, &colors]([[maybe_unused]] const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  {
     return GetColorMultiply(bgnd, GetBrighterColor(brightness, colors.color2), colors.color2.A());
   };
 

@@ -52,9 +52,8 @@ private:
   const UTILS::MATH::IGoomRand* m_goomRand;
   Params m_params;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
-  [[nodiscard]] auto GetYOnlyZoomAdjustmentMultiplier(YOnlyEffect effect,
-                                                      const NormalizedCoords& coords) const noexcept
-      -> float;
+  [[nodiscard]] auto GetYOnlyZoomAdjustmentMultiplier(
+      YOnlyEffect effect, const NormalizedCoords& coords) const noexcept -> float;
 };
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

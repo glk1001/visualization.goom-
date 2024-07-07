@@ -91,17 +91,15 @@ private:
                                             const Point2dInt& zoomMidpoint,
                                             uint32_t screenWidth) -> Params;
 
-  [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitude& adjustedIntAmplitude,
-                                                  const Amplitude& effectMultiplier)
-      -> PlaneEffects;
+  [[nodiscard]] static auto GetRandomPlaneEffects(
+      const IntAmplitude& adjustedIntAmplitude, const Amplitude& effectMultiplier) -> PlaneEffects;
   [[nodiscard]] static auto GetRandomPlaneEffects(const UTILS::MATH::IGoomRand& goomRand,
                                                   PlaneEffectEvents planeEffectsEvent,
                                                   bool muchSpiralling,
                                                   const Point2dInt& zoomMidpoint,
                                                   uint32_t screenWidth) -> PlaneEffects;
-  [[nodiscard]] static auto GetRandomIntAmplitude(const UTILS::MATH::IGoomRand& goomRand,
-                                                  PlaneEffectEvents planeEffectsEvent)
-      -> IntAmplitude;
+  [[nodiscard]] static auto GetRandomIntAmplitude(
+      const UTILS::MATH::IGoomRand& goomRand, PlaneEffectEvents planeEffectsEvent) -> IntAmplitude;
   [[nodiscard]] static auto GetAdjustedIntAmplitude(const UTILS::MATH::IGoomRand& goomRand,
                                                     const IntAmplitude& intAmplitude,
                                                     const Point2dInt& zoomMidpoint,

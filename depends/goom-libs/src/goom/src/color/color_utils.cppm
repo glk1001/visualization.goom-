@@ -21,8 +21,8 @@ template<typename T>
 [[nodiscard]] constexpr auto GetColorAverage(size_t num, const T& colors) -> Pixel;
 
 [[nodiscard]] constexpr auto GetBrighterColorInt(uint32_t brightness, const Pixel& color) -> Pixel;
-[[nodiscard, maybe_unused]] constexpr auto GetBrighterColorInt(float brightness, const Pixel&)
-    -> Pixel = delete;
+[[nodiscard, maybe_unused]] constexpr auto GetBrighterColorInt(float brightness,
+                                                               const Pixel&) -> Pixel = delete;
 [[nodiscard]] constexpr auto GetBrighterChannelColor(uint32_t brightness,
                                                      PixelChannelType channelVal) -> uint32_t;
 inline constexpr auto MIN_BRIGHTNESS = 0.0F;
@@ -30,10 +30,12 @@ inline constexpr auto MAX_BRIGHTNESS = 50.0F;
 [[nodiscard]] auto GetBrighterColor(float brightness, const Pixel& color) -> Pixel;
 [[nodiscard]] auto GetBrighterColor(uint32_t brightness, const Pixel&) -> Pixel = delete;
 
-[[nodiscard]] constexpr auto GetRgbColorChannelLerp(int32_t ch1, int32_t ch2, int32_t intT)
-    -> PixelChannelType;
-[[nodiscard]] inline auto GetRgbColorLerp(const Pixel& color1, const Pixel& color2, float t)
-    -> Pixel;
+[[nodiscard]] constexpr auto GetRgbColorChannelLerp(int32_t ch1,
+                                                    int32_t ch2,
+                                                    int32_t intT) -> PixelChannelType;
+[[nodiscard]] inline auto GetRgbColorLerp(const Pixel& color1,
+                                          const Pixel& color2,
+                                          float t) -> Pixel;
 
 [[nodiscard]] constexpr auto GetLuma(const Pixel& color) -> float;
 
@@ -60,8 +62,8 @@ enum class SimpleColors : UnderlyingEnumType
   GOLDEN_BELL,
   BLACK,
 };
-[[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor, PixelChannelType alpha)
-    -> Pixel;
+[[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor,
+                                            PixelChannelType alpha) -> Pixel;
 
 } // namespace GOOM::COLOR
 
@@ -122,8 +124,8 @@ constexpr auto GetBrighterColorInt(const uint32_t brightness, const Pixel& color
   return UTILS::GRAPHICS::MakePixel(newR, newG, newB, newA);
 }
 
-constexpr auto GetBrighterChannelColor(const uint32_t brightness, const PixelChannelType channelVal)
-    -> uint32_t
+constexpr auto GetBrighterChannelColor(const uint32_t brightness,
+                                       const PixelChannelType channelVal) -> uint32_t
 {
   return UTILS::GRAPHICS::GetChannelColorMultiplyByScalar(brightness, channelVal);
 }
@@ -139,8 +141,9 @@ inline auto GetBrighterColor(const float brightness, const Pixel& color) -> Pixe
       static_cast<uint32_t>(std::round((brightness * MAX_COLOR_VALUE) + SMALL_VALUE)), color);
 }
 
-constexpr auto GetRgbColorChannelLerp(const int32_t ch1, const int32_t ch2, const int32_t intT)
-    -> PixelChannelType
+constexpr auto GetRgbColorChannelLerp(const int32_t ch1,
+                                      const int32_t ch2,
+                                      const int32_t intT) -> PixelChannelType
 {
   constexpr auto MAX_COL_VAL_32 = static_cast<int32_t>(MAX_COLOR_VAL);
   const auto lerpVal            = ((MAX_COL_VAL_32 * ch1) + (intT * (ch2 - ch1))) / MAX_COL_VAL_32;

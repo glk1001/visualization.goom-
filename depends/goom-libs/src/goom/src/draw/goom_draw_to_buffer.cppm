@@ -23,12 +23,12 @@ public:
   auto SetBuffer(PixelBuffer& buff) noexcept -> void;
 
   [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
-  auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
-      -> void override;
+  auto DrawPixelsUnblended(const Point2dInt& point,
+                           const MultiplePixels& colors) noexcept -> void override;
 
 protected:
-  auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
-      -> void override;
+  auto DrawPixelsToDevice(const Point2dInt& point,
+                          const MultiplePixels& colors) noexcept -> void override;
 
 private:
   [[maybe_unused]] GoomLogger* m_goomLogger;
@@ -47,12 +47,12 @@ public:
   auto SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept -> void;
 
   [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
-  auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
-      -> void override;
+  auto DrawPixelsUnblended(const Point2dInt& point,
+                           const MultiplePixels& colors) noexcept -> void override;
 
 protected:
-  auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
-      -> void override;
+  auto DrawPixelsToDevice(const Point2dInt& point,
+                          const MultiplePixels& colors) noexcept -> void override;
 
 private:
   [[maybe_unused]] GoomLogger* m_goomLogger;
@@ -87,16 +87,14 @@ inline auto GoomDrawToSingleBuffer::GetPixel(const Point2dInt& point) const noex
   return (*m_buffer)(point.x, point.y);
 }
 
-inline auto GoomDrawToSingleBuffer::DrawPixelsUnblended(const Point2dInt& point,
-                                                        const MultiplePixels& colors) noexcept
-    -> void
+inline auto GoomDrawToSingleBuffer::DrawPixelsUnblended(
+    const Point2dInt& point, const MultiplePixels& colors) noexcept -> void
 {
   (*m_buffer)(point.x, point.y) = colors.color1;
 }
 
-inline auto GoomDrawToSingleBuffer::DrawPixelsToDevice(const Point2dInt& point,
-                                                       const MultiplePixels& colors) noexcept
-    -> void
+inline auto GoomDrawToSingleBuffer::DrawPixelsToDevice(
+    const Point2dInt& point, const MultiplePixels& colors) noexcept -> void
 {
   const auto buffPos = m_buffer->GetBuffPos(point.x, point.y);
 
@@ -124,8 +122,8 @@ inline auto GoomDrawToTwoBuffers::GetBuffer2() noexcept -> PixelBuffer&
   return *m_buffer2;
 }
 
-inline auto GoomDrawToTwoBuffers::SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept
-    -> void
+inline auto GoomDrawToTwoBuffers::SetBuffers(PixelBuffer& buffer1,
+                                             PixelBuffer& buffer2) noexcept -> void
 {
   Expects(buffer1.GetWidth() == GetDimensions().GetWidth());
   Expects(buffer2.GetWidth() == GetDimensions().GetWidth());

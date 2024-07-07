@@ -338,8 +338,8 @@ private:
                        std::span<Pixel> buffer,
                        float lumAverage = 0.0F) const -> void;
   auto SaveFilterPosBuffer(const std::string& filename, uint32_t textureIndex) -> void;
-  auto SaveFilterPosBuffer(const std::string& filename, std::span<FilterPosBuffersXY> buffer) const
-      -> void;
+  auto SaveFilterPosBuffer(const std::string& filename,
+                           std::span<FilterPosBuffersXY> buffer) const -> void;
 #endif
 };
 
@@ -405,8 +405,8 @@ auto CopyBuffer(const std::span<const Point2dFlt> srce, std::span<Point2dFlt> de
 }
 
 // TODO(glk) - Move this into goom filters?
-auto InitFilterPosBuffer(const Dimensions& dimensions, std::span<Point2dFlt> tranBufferFlt) noexcept
-    -> void
+auto InitFilterPosBuffer(const Dimensions& dimensions,
+                         std::span<Point2dFlt> tranBufferFlt) noexcept -> void
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
 
@@ -1011,7 +1011,7 @@ auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
-        UNIFORM_PREV_FRAME_T_MIX, m_frameDataArray.at(pboIndex).miscData.prevFrameTMix);
+      UNIFORM_PREV_FRAME_T_MIX, m_frameDataArray.at(pboIndex).miscData.prevFrameTMix);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_TIME, static_cast<uint32_t>(m_frameDataArray.at(pboIndex).miscData.goomTime));
 }

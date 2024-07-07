@@ -12,8 +12,8 @@ import Goom.Lib.SPimpl;
 import Goom.PluginInfo;
 
 using GOOM::FILTER_FX::FilterSettingsService;
-using GOOM::UTILS::MATH::IGoomRand;
 using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::IGoomRand;
 
 export namespace GOOM::CONTROL
 {

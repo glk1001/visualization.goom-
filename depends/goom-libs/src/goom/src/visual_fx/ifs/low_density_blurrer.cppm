@@ -72,8 +72,8 @@ public:
 
   auto SetNeighbourMixFactor(float neighbourMixFactor) noexcept -> void;
 
-  auto DoBlur(std::vector<IfsPoint>& lowDensityPoints, uint32_t maxLowDensityCount) noexcept
-      -> void;
+  auto DoBlur(std::vector<IfsPoint>& lowDensityPoints,
+              uint32_t maxLowDensityCount) noexcept -> void;
 
 private:
   IGoomDraw* m_draw;

@@ -31,9 +31,8 @@ auto PutFileWithExpandedIncludes(const std::string& includeDir,
                                  const std::string& inFilepath,
                                  const std::string& outFilepath) -> void;
 
-[[nodiscard]] auto GetFileWithExpandedIncludes(const std::string& includeDir,
-                                               const std::string& filepath)
-    -> std::vector<std::string>;
+[[nodiscard]] auto GetFileWithExpandedIncludes(
+    const std::string& includeDir, const std::string& filepath) -> std::vector<std::string>;
 
 } // namespace GOOM
 

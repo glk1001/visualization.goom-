@@ -215,9 +215,8 @@ inline auto LineDrawer<DrawPixelPolicy>::DrawThickLine(const Point2dInt& point1,
 
   const auto brightness = (0.8F * 2.0F) / static_cast<float>(m_thickness);
 
-  const auto plot = [this, &brightness, &colors](const int32_t x, const int32_t y) {
-    m_drawPixel.DrawPixels({x, y}, brightness, colors);
-  };
+  const auto plot = [this, &brightness, &colors](const int32_t x, const int32_t y)
+  { m_drawPixel.DrawPixels({x, y}, brightness, colors); };
 
   const auto getWidth =
       [this]([[maybe_unused]] const int32_t pointNum, [[maybe_unused]] const int32_t lineLength)

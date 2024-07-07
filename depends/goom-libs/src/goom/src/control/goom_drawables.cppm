@@ -61,8 +61,8 @@ private:
       const std::vector<GoomDrawables>& drawables) noexcept -> DrawablesBitset;
 
   mutable std::string m_stateName;
-  [[nodiscard]] static auto GetDrawablesStateName(
-      const std::vector<GoomDrawables>& drawables) -> std::string;
+  [[nodiscard]] static auto GetDrawablesStateName(const std::vector<GoomDrawables>& drawables)
+      -> std::string;
 };
 
 } // namespace GOOM::CONTROL

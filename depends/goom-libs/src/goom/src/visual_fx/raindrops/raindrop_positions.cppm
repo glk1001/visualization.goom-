@@ -88,10 +88,8 @@ private:
                                                      uint32_t minRadius,
                                                      uint32_t maxRadius) const noexcept
       -> std::vector<Point2dInt>;
-  [[nodiscard]] auto GetPositionsOnCircle(uint32_t num,
-                                          const Point2dInt& centre,
-                                          uint32_t radius) const noexcept
-      -> std::vector<Point2dInt>;
+  [[nodiscard]] auto GetPositionsOnCircle(uint32_t num, const Point2dInt& centre, uint32_t radius)
+      const noexcept -> std::vector<Point2dInt>;
 
   auto SetNewTargetRectangleWeightPoint(const Point2dInt& targetRectangleWeightPoint) noexcept
       -> void;

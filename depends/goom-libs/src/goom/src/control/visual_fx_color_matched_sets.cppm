@@ -248,10 +248,8 @@ auto VisualFxColorMatchedSets::GetOneGroupColorMatchedSet(const Groups group) no
   return oneGroupArray;
 }
 
-auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(const Groups group1,
-                                                           const IGoomRand& goomRand,
-                                                           const Groups group2) noexcept
-    -> ColorMatchedSet
+auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(
+    const Groups group1, const IGoomRand& goomRand, const Groups group2) noexcept -> ColorMatchedSet
 {
   auto matchedSet = GetOneGroupColorMatchedSet(group1);
 

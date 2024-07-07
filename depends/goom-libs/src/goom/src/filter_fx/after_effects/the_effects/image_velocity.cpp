@@ -43,8 +43,8 @@ auto ImageVelocity::SetRandomParams() -> void
   m_imageDisplacementList.SetParams({
       {xAmplitude,
        m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
-       ? xAmplitude
-       : m_goomRand->GetRandInRange(AMPLITUDE_RANGE)},
+           ? xAmplitude
+           : m_goomRand->GetRandInRange(AMPLITUDE_RANGE)},
       xColorCutoff,
       m_goomRand->ProbabilityOf(PROB_XY_COLOR_CUTOFFS_EQUAL)
           ? xColorCutoff

@@ -465,8 +465,8 @@ auto TValue::SetNumSteps(const uint32_t numSteps) noexcept -> void
 }
 
 
-inline auto TValue::HandleBoundary(const float continueValue, const FloatSign floatSign) noexcept
-    -> void
+inline auto TValue::HandleBoundary(const float continueValue,
+                                   const FloatSign floatSign) noexcept -> void
 {
   m_t = continueValue;
 

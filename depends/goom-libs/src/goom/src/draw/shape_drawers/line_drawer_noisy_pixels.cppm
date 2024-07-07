@@ -53,8 +53,9 @@ private:
     auto SetUseMainColorsForNoise(bool useMainColorsForNoise) noexcept -> void;
     auto SetUseMainPointWithoutNoise(bool useMainPointWithoutNoise) noexcept -> void;
 
-    auto DrawPixels(const Point2dInt& point, float brightness, MultiplePixels colors) noexcept
-        -> void;
+    auto DrawPixels(const Point2dInt& point,
+                    float brightness,
+                    MultiplePixels colors) noexcept -> void;
 
   private:
     IGoomDraw* m_draw;
@@ -71,12 +72,14 @@ private:
     static constexpr auto PROB_PURE_NOISE = 0.5F;
     bool m_usePureNoise                   = m_goomRand->ProbabilityOf(PROB_PURE_NOISE);
     auto SetBrightnessValues() noexcept -> void;
-    auto DrawMainPoint(const Point2dInt& point, float brightness, MultiplePixels& colors) noexcept
-        -> void;
-    auto DrawNoisePoints(const Point2dInt& point, float brightness, MultiplePixels& colors) noexcept
-        -> void;
-    auto DrawPureNoisePoints(const Point2dInt& point, const MultiplePixels& colors) noexcept
-        -> void;
+    auto DrawMainPoint(const Point2dInt& point,
+                       float brightness,
+                       MultiplePixels& colors) noexcept -> void;
+    auto DrawNoisePoints(const Point2dInt& point,
+                         float brightness,
+                         MultiplePixels& colors) noexcept -> void;
+    auto DrawPureNoisePoints(const Point2dInt& point,
+                             const MultiplePixels& colors) noexcept -> void;
 
     using NoisePerPixelList                         = std::vector<int32_t>;
     static constexpr auto NUM_NOISE_PER_PIXEL_LISTS = 5U;
@@ -84,8 +87,8 @@ private:
     uint32_t m_currentNoisePerPixelIndex = 0U;
     auto SetNoisePerPixel() noexcept -> void;
     auto IncrementCurrentNoisePerPixelIndex() noexcept -> void;
-    auto DrawPatternedNoisePoints(const Point2dInt& point, const MultiplePixels& colors) noexcept
-        -> void;
+    auto DrawPatternedNoisePoints(const Point2dInt& point,
+                                  const MultiplePixels& colors) noexcept -> void;
   };
 
   LineDrawer<NoisyPixelDrawer> m_lineDrawer;

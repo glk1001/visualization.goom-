@@ -20,9 +20,9 @@ class FractalHits
 {
 public:
   explicit FractalHits(const Dimensions& dimensions) noexcept;
-  FractalHits(const FractalHits&) noexcept = default;
-  FractalHits(FractalHits&&) noexcept      = default;
-  ~FractalHits() noexcept = default;
+  FractalHits(const FractalHits&) noexcept                    = default;
+  FractalHits(FractalHits&&) noexcept                         = default;
+  ~FractalHits() noexcept                                     = default;
   auto operator=(const FractalHits&) noexcept -> FractalHits& = delete;
   auto operator=(FractalHits&&) noexcept -> FractalHits&      = delete;
 

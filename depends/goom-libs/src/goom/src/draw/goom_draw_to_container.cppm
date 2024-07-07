@@ -47,8 +47,8 @@ public:
   auto ClearAll() noexcept -> void;
 
 protected:
-  auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
-      -> void override;
+  auto DrawPixelsToDevice(const Point2dInt& point,
+                          const MultiplePixels& colors) noexcept -> void override;
 
 private:
   std::vector<std::vector<ColorsList>> m_xyPixelList;

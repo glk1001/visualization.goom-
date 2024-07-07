@@ -28,10 +28,10 @@ struct LineProperties
   uint32_t numPoints;
   uint32_t length;
 };
-[[nodiscard]] auto GetHorizontalLinePoints(const LineProperties& lineProperties, float yValue)
-    -> std::vector<LinePoint>;
-[[nodiscard]] auto GetVerticalLinePoints(const LineProperties& lineProperties, float xValue)
-    -> std::vector<LinePoint>;
+[[nodiscard]] auto GetHorizontalLinePoints(const LineProperties& lineProperties,
+                                           float yValue) -> std::vector<LinePoint>;
+[[nodiscard]] auto GetVerticalLinePoints(const LineProperties& lineProperties,
+                                         float xValue) -> std::vector<LinePoint>;
 [[nodiscard]] auto GetCircularLinePoints(uint32_t numPoints,
                                          const Dimensions& dimensions,
                                          float radius) -> std::vector<LinePoint>;
@@ -47,8 +47,8 @@ using UTILS::MATH::HALF_PI;
 using UTILS::MATH::TWO_PI;
 
 template<typename T>
-auto SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, const uint32_t numPointsToSmooth)
-    -> void
+auto SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints,
+                               const uint32_t numPointsToSmooth) -> void
 {
   Expects(numPointsToSmooth > 0);
   Expects(numPointsToSmooth < circlePoints.size());
@@ -79,8 +79,8 @@ auto SmoothTheCircleJoinAtEnds(std::vector<T>& circlePoints, const uint32_t numP
   Ensures(circlePoints[0].point.y == circlePoints[circlePoints.size() - 1].point.y);
 }
 
-auto GetHorizontalLinePoints(const LineProperties& lineProperties, const float yValue)
-    -> std::vector<LinePoint>
+auto GetHorizontalLinePoints(const LineProperties& lineProperties,
+                             const float yValue) -> std::vector<LinePoint>
 {
   Expects(lineProperties.numPoints > 1);
 
@@ -101,8 +101,8 @@ auto GetHorizontalLinePoints(const LineProperties& lineProperties, const float y
   return linePoints;
 }
 
-auto GetVerticalLinePoints(const LineProperties& lineProperties, const float xValue)
-    -> std::vector<LinePoint>
+auto GetVerticalLinePoints(const LineProperties& lineProperties,
+                           const float xValue) -> std::vector<LinePoint>
 {
   Expects(lineProperties.numPoints > 1);
 

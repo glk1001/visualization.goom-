@@ -44,9 +44,8 @@ public:
 
   [[nodiscard]] auto GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 
-  [[nodiscard]] auto GetMultiplierEffect(const NormalizedCoords& coords,
-                                         const Vec2dFlt& zoomAdjustment) const noexcept
-      -> Point2dFlt;
+  [[nodiscard]] auto GetMultiplierEffect(
+      const NormalizedCoords& coords, const Vec2dFlt& zoomAdjustment) const noexcept -> Point2dFlt;
 
   [[nodiscard]] auto GetAfterEffectsVelocity(const NormalizedCoords& coords,
                                              float sqDistFromZero,
@@ -83,8 +82,8 @@ private:
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-constexpr auto ZoomVectorEffects::IsValidMultiplierRange(
-    const NumberRange<float>& range) noexcept -> bool
+constexpr auto ZoomVectorEffects::IsValidMultiplierRange(const NumberRange<float>& range) noexcept
+    -> bool
 {
   if (MIN_ALLOWED_BASE_ZOOM_ADJUSTMENT >
       GetBaseZoomAdjustment(range.min * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F))

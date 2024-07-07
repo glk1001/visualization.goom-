@@ -61,8 +61,8 @@ private:
   COLOR::ColorAdjustment m_colorAdjust{
       {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
-  [[nodiscard]] auto GetColorCorrection(float brightness, const Pixel& color) const noexcept
-      -> Pixel;
+  [[nodiscard]] auto GetColorCorrection(float brightness,
+                                        const Pixel& color) const noexcept -> Pixel;
 
   [[nodiscard]] auto GetColors(float t) const noexcept -> DRAW::MultiplePixels;
   [[nodiscard]] auto GetReversedMixColors(float t) const noexcept -> DRAW::MultiplePixels;

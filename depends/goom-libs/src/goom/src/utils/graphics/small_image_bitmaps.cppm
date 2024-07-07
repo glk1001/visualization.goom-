@@ -42,8 +42,8 @@ public:
 private:
   std::string m_resourcesDirectory;
   std::map<std::string, std::unique_ptr<const ImageBitmap>, std::less<>> m_bitmapImages;
-  auto GetImageBitmapPtr(ImageNames name, size_t sizeOfImageSquare) const
-      -> std::unique_ptr<const ImageBitmap>;
+  auto GetImageBitmapPtr(ImageNames name,
+                         size_t sizeOfImageSquare) const -> std::unique_ptr<const ImageBitmap>;
   static auto GetImageKey(ImageNames name, size_t sizeOfImageSquare) -> std::string;
   auto GetImageFilename(ImageNames name, size_t sizeOfImageSquare) const -> std::string;
 };

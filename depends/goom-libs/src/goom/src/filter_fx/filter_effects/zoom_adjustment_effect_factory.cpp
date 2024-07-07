@@ -121,8 +121,8 @@ auto CreateFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
   }
 }
 
-auto GetFuncOfMode(const ZoomFilterMode baseFilterMode, const IGoomRand& goomRand) noexcept
-    -> ZoomFilterMode
+auto GetFuncOfMode(const ZoomFilterMode baseFilterMode,
+                   const IGoomRand& goomRand) noexcept -> ZoomFilterMode
 {
   static constexpr auto MAX_RETRIES = 10U;
 

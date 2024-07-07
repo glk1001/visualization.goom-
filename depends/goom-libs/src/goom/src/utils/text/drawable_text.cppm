@@ -12,8 +12,8 @@ import Goom.Lib.Point2d;
 export namespace GOOM::UTILS::TEXT
 {
 
-[[nodiscard]] auto GetLinesOfWords(const std::string& text, uint32_t maxLineLength)
-    -> std::vector<std::string>;
+[[nodiscard]] auto GetLinesOfWords(const std::string& text,
+                                   uint32_t maxLineLength) -> std::vector<std::string>;
 
 [[nodiscard]] auto GetLeftAlignedPenForCentringStringAt(DRAW::SHAPE_DRAWERS::TextDrawer& textDrawer,
                                                         const std::string& text,

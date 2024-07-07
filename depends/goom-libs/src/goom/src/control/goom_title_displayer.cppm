@@ -62,7 +62,7 @@ private:
   COLOR::ColorMapPtrWrapper m_textColorMap{m_randomColorMaps.GetRandomColorMap()};
   COLOR::ColorMapPtrWrapper m_textOutlineColorMap{m_randomColorMaps.GetRandomColorMap()};
   COLOR::ColorMapPtrWrapper m_charColorMap{
-    m_randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
+      m_randomColorMaps.GetRandomColorMap(COLOR::ColorMapGroup::DIVERGING_BLACK)};
   void DrawText(const std::string& text);
   [[nodiscard]] auto GetColorT() const -> float;
   [[nodiscard]] auto GetFontCharColorMixT() const -> float;
@@ -84,8 +84,9 @@ private:
   [[nodiscard]] auto GetFinalPhaseInteriorColor(const Point2dInt& point,
                                                 float fontCharColorMixT,
                                                 const Dimensions& charDimensions) const -> Pixel;
-  [[nodiscard]] auto GetOutlineColor(int32_t x, const FontTs& fontTs, int32_t charWidth) const
-      -> Pixel;
+  [[nodiscard]] auto GetOutlineColor(int32_t x,
+                                     const FontTs& fontTs,
+                                     int32_t charWidth) const -> Pixel;
 
   [[nodiscard]] auto GetCharSpacing() const -> float;
   void UpdateColorMaps();
@@ -111,7 +112,7 @@ private:
 
   static constexpr float TEXT_GAMMA = 1.0F / 2.0F;
   COLOR::ColorAdjustment m_textColorAdjust{
-        {TEXT_GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+      {TEXT_GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 };
 

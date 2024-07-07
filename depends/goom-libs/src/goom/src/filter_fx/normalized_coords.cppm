@@ -54,14 +54,12 @@ struct CoordsAndVelocity
   NormalizedCoords velocity;
 };
 
-[[nodiscard]] constexpr auto operator+(const NormalizedCoords& coords1,
-                                       const NormalizedCoords& coords2) noexcept
-    -> NormalizedCoords;
-[[nodiscard]] constexpr auto operator-(const NormalizedCoords& coords1,
-                                       const NormalizedCoords& coords2) noexcept
-    -> NormalizedCoords;
-[[nodiscard]] constexpr auto operator*(float scalar, const NormalizedCoords& coords) noexcept
-    -> NormalizedCoords;
+[[nodiscard]] constexpr auto operator+(
+    const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept -> NormalizedCoords;
+[[nodiscard]] constexpr auto operator-(
+    const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept -> NormalizedCoords;
+[[nodiscard]] constexpr auto operator*(float scalar,
+                                       const NormalizedCoords& coords) noexcept -> NormalizedCoords;
 [[nodiscard]] constexpr auto SqDistance(const NormalizedCoords& coords1,
                                         const NormalizedCoords& coords2) noexcept -> float;
 [[nodiscard]] constexpr auto SqDistanceFromZero(const NormalizedCoords& coords) noexcept -> float;
@@ -249,29 +247,29 @@ constexpr auto NormalizedCoords::operator*=(const float scalar) noexcept -> Norm
   return *this;
 }
 
-constexpr auto operator+(const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept
-    -> NormalizedCoords
+constexpr auto operator+(const NormalizedCoords& coords1,
+                         const NormalizedCoords& coords2) noexcept -> NormalizedCoords
 {
   auto coords3 = coords1;
   return coords3 += coords2;
 }
 
-constexpr auto operator-(const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept
-    -> NormalizedCoords
+constexpr auto operator-(const NormalizedCoords& coords1,
+                         const NormalizedCoords& coords2) noexcept -> NormalizedCoords
 {
   auto coords3 = coords1;
   return coords3 -= coords2;
 }
 
-constexpr auto operator*(const float scalar, const NormalizedCoords& coords) noexcept
-    -> NormalizedCoords
+constexpr auto operator*(const float scalar,
+                         const NormalizedCoords& coords) noexcept -> NormalizedCoords
 {
   auto coords1 = coords;
   return coords1 *= scalar;
 }
 
-constexpr auto SqDistance(const NormalizedCoords& coords1, const NormalizedCoords& coords2) noexcept
-    -> float
+constexpr auto SqDistance(const NormalizedCoords& coords1,
+                          const NormalizedCoords& coords2) noexcept -> float
 {
   return UTILS::MATH::SqDistanceFromZero(coords1.GetX() - coords2.GetX(),
                                          coords1.GetY() - coords2.GetY());
@@ -316,8 +314,8 @@ constexpr auto Viewport::GetViewportWidth() const noexcept -> float
   return m_viewportWidth;
 }
 
-[[nodiscard]] inline auto operator==(const Viewport& viewport1, const Viewport& viewport2) noexcept
-    -> bool
+[[nodiscard]] inline auto operator==(const Viewport& viewport1,
+                                     const Viewport& viewport2) noexcept -> bool
 {
   return UTILS::MATH::FloatsEqual(viewport1.m_xScale, viewport2.m_xScale) and
          UTILS::MATH::FloatsEqual(viewport1.m_yScale, viewport2.m_yScale) and
@@ -325,8 +323,8 @@ constexpr auto Viewport::GetViewportWidth() const noexcept -> float
          UTILS::MATH::FloatsEqual(viewport1.m_yOffset, viewport2.m_yOffset);
 }
 
-[[nodiscard]] inline auto operator!=(const Viewport& viewport1, const Viewport& viewport2) noexcept
-    -> bool
+[[nodiscard]] inline auto operator!=(const Viewport& viewport1,
+                                     const Viewport& viewport2) noexcept -> bool
 {
   return not(viewport1 == viewport2);
 }

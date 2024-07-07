@@ -19,8 +19,9 @@ class PixelDrawerNoClipping
 public:
   explicit PixelDrawerNoClipping(IGoomDraw& draw) noexcept : m_draw{&draw} {}
 
-  auto DrawPixels(const Point2dInt& point, const float brightness, MultiplePixels colors) noexcept
-      -> void
+  auto DrawPixels(const Point2dInt& point,
+                  const float brightness,
+                  MultiplePixels colors) noexcept -> void
   {
     BrightenColors(brightness, colors);
     m_draw->DrawPixels(point, colors);

@@ -123,7 +123,8 @@ inline auto AllStandardVisualFx::GetCurrentDrawablesState() const -> const GoomD
   return m_currentDrawablesState;
 }
 
-inline void AllStandardVisualFx::SetCurrentDrawablesState(const GoomDrawablesState& goomDrawablesState)
+inline void AllStandardVisualFx::SetCurrentDrawablesState(
+    const GoomDrawablesState& goomDrawablesState)
 {
   m_currentDrawablesState = goomDrawablesState;
 }

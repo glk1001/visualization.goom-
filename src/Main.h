@@ -106,6 +106,5 @@ private:
 #ifdef GOOM_DEBUG
   [[noreturn]]
 #endif
-  auto
-  HandleError(const std::string& errorMsg) -> void;
+  auto HandleError(const std::string& errorMsg) -> void;
 };

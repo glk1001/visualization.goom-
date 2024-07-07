@@ -33,8 +33,8 @@ inline auto GoomRand::GetNRand(const uint32_t n1) const noexcept -> uint32_t
   return RAND::GetNRand(n1);
 }
 
-inline auto GoomRand::GetRandInRange(const uint32_t n0, const uint32_t n1) const noexcept
-    -> uint32_t
+inline auto GoomRand::GetRandInRange(const uint32_t n0,
+                                     const uint32_t n1) const noexcept -> uint32_t
 {
   return RAND::GetRandInRange(n0, n1);
 }

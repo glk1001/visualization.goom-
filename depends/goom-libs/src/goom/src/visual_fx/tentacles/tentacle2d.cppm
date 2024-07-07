@@ -94,9 +94,8 @@ private:
   [[nodiscard]] auto GetDampedValue(size_t nodeNum, double value) const -> double;
 
   using DampingFuncPtr = std::unique_ptr<UTILS::MATH::IDampingFunction>;
-  [[nodiscard]] static auto CreateDampingFunc(double basePreviousYWeight,
-                                              const LinearDimensions& xDimensions) noexcept
-      -> DampingFuncPtr;
+  [[nodiscard]] static auto CreateDampingFunc(
+      double basePreviousYWeight, const LinearDimensions& xDimensions) noexcept -> DampingFuncPtr;
   [[nodiscard]] static auto CreateExpDampingFunc(const LinearDimensions& xDimensions) noexcept
       -> DampingFuncPtr;
   [[nodiscard]] static auto CreateLinearDampingFunc(const LinearDimensions& xDimensions) noexcept

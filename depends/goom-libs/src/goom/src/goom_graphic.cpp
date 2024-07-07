@@ -27,8 +27,8 @@ auto PixelBuffer::SetPixelBuffer(const Buffer& buffer) noexcept -> void
   m_buff = buffer;
 }
 
-auto PixelBuffer::SetPixelBuffer(const Buffer& buffer, const Dimensions& dimensions) noexcept
-    -> void
+auto PixelBuffer::SetPixelBuffer(const Buffer& buffer,
+                                 const Dimensions& dimensions) noexcept -> void
 {
   Expects(buffer.size() == dimensions.GetSize());
 

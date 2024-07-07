@@ -107,8 +107,8 @@ private:
   bool m_changeDirectionPending = false;
   static auto IncrementPositionT(std::vector<OscillatingPath>& paths) noexcept -> void;
   [[nodiscard]] auto GetStepSize() const noexcept -> float;
-  auto CheckReverse(Direction currentDirection, const std::vector<OscillatingPath>& paths) noexcept
-      -> void;
+  auto CheckReverse(Direction currentDirection,
+                    const std::vector<OscillatingPath>& paths) noexcept -> void;
   [[nodiscard]] static auto GetOppositeDirection(Direction direction) noexcept -> Direction;
   [[nodiscard]] auto GetSmallRandomOffset() const noexcept -> Vec2dInt;
 };

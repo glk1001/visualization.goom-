@@ -35,9 +35,8 @@ struct XyZoomFactor
                                         const Vec2dFlt& velocity) noexcept -> Vec2dFlt;
 [[nodiscard]] auto GetXyZoomFactor(const NormalizedCoords& coords,
                                    const LerpToOneTs& lerpToOneTs) noexcept -> XyZoomFactor;
-[[nodiscard]] auto GetDiscontinuousXyZoomFactor(const NormalizedCoords& coords,
-                                                const LerpToOneTs& lerpToOneTs) noexcept
-    -> XyZoomFactor;
+[[nodiscard]] auto GetDiscontinuousXyZoomFactor(
+    const NormalizedCoords& coords, const LerpToOneTs& lerpToOneTs) noexcept -> XyZoomFactor;
 
 class RandomViewport
 {
@@ -202,14 +201,14 @@ inline auto GetVelocityByZoomLerpedToNegOne(const NormalizedCoords& coords,
   return GetAppliedZoomFactor(GetDiscontinuousXyZoomFactor(coords, lerpToOneTs), velocity);
 }
 
-inline auto GetAppliedZoomFactor(const XyZoomFactor& zoomFactor, const Vec2dFlt& velocity) noexcept
-    -> Vec2dFlt
+inline auto GetAppliedZoomFactor(const XyZoomFactor& zoomFactor,
+                                 const Vec2dFlt& velocity) noexcept -> Vec2dFlt
 {
   return {zoomFactor.xFactor * velocity.x, zoomFactor.yFactor * velocity.y};
 }
 
-inline auto GetXyZoomFactor(const NormalizedCoords& coords, const LerpToOneTs& lerpToOneTs) noexcept
-    -> XyZoomFactor
+inline auto GetXyZoomFactor(const NormalizedCoords& coords,
+                            const LerpToOneTs& lerpToOneTs) noexcept -> XyZoomFactor
 {
   return {
       std::lerp(coords.GetX(), 1.0F, lerpToOneTs.xLerpT),

@@ -117,8 +117,9 @@ TEST_CASE("repeatable random sequence")
 }
 
 template<typename ValType>
-auto GetMinMax(const size_t numLoop, const ValType& nMin, const ValType& nMax)
-    -> std::tuple<ValType, ValType>
+auto GetMinMax(const size_t numLoop,
+               const ValType& nMin,
+               const ValType& nMax) -> std::tuple<ValType, ValType>
 {
   auto min = std::numeric_limits<ValType>::max();
   auto max = std::numeric_limits<ValType>::min();

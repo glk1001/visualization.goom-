@@ -54,21 +54,15 @@ export namespace GOOM::UTILS::MATH
 
 template<typename T>
 concept Lerpable = requires(const T& val1, const T& val2, float t) {
-  {
-    lerp(val1, val2, t)
-  } -> std::same_as<T>;
+  { lerp(val1, val2, t) } -> std::same_as<T>;
 };
 template<typename T>
 concept Matchable = requires(const T& val, const T& val1, const T& val2) {
-  {
-    GetMatching(val, val1, val2)
-  } -> std::same_as<float>;
+  { GetMatching(val, val1, val2) } -> std::same_as<float>;
 };
 template<typename T>
 concept Clampable = requires(const T& val, const T& val1, const T& val2) {
-  {
-    Clamped(val, val1, val2)
-  } -> std::same_as<T>;
+  { Clamped(val, val1, val2) } -> std::same_as<T>;
 };
 
 template<typename T>
@@ -114,8 +108,9 @@ private:
     requires Lerpable<T>;
   [[nodiscard]] static auto Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
     requires Clampable<T>;
-  [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
-      -> float
+  [[nodiscard]] static auto GetMatchingT(const T& val,
+                                         const T& val1,
+                                         const T& val2) noexcept -> float
     requires Matchable<T>;
 };
 

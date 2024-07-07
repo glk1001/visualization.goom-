@@ -72,8 +72,8 @@ private:
   static constexpr auto MAX_BLEND2D_CHANNEL = 256U;
   static constexpr auto CHANNEL_MULTIPLIER  = 50U;
   [[nodiscard]] auto GetGoomPixel(uint32_t blend2dColor) const noexcept -> Pixel;
-  [[nodiscard]] auto GetBlendedPixel(uint32_t blend2dColor, const Pixel& pixel) const noexcept
-      -> Pixel;
+  [[nodiscard]] auto GetBlendedPixel(uint32_t blend2dColor,
+                                     const Pixel& pixel) const noexcept -> Pixel;
 };
 
 struct Blend2dContexts
