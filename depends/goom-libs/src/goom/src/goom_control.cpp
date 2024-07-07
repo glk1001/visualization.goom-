@@ -12,6 +12,8 @@
 
 module;
 
+//#define DO_GOOM_STATE_DUMP
+
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
 #include "goom/goom_logger.h"
@@ -23,11 +25,6 @@ module;
 #include <memory>
 #include <string>
 #include <utility>
-
-#ifdef DO_GOOM_STATE_DUMP
-#include "control/goom_state_dump.h"
-#include "utils/math/randutils.h"
-#endif
 
 module Goom.Lib.GoomControl;
 
@@ -71,6 +68,10 @@ import Goom.Lib.GoomTypes;
 import Goom.Lib.GoomUtils;
 import Goom.Lib.SPimpl;
 import Goom.PluginInfo;
+#ifdef DO_GOOM_STATE_DUMP
+import Goom.Control.GoomStateDump;
+import Goom.Utils.Math.RandUtils;
+#endif
 
 namespace GOOM
 {
@@ -348,8 +349,8 @@ auto GoomControl::SetFrameData(FrameData& frameData) -> void
   m_pimpl->SetFrameData(frameData);
 }
 
-auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples,
-                                    const std::string& message) -> void
+auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
+    -> void
 {
   m_pimpl->UpdateGoomBuffers(audioSamples, message);
 }

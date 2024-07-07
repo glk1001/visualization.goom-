@@ -1,6 +1,6 @@
-// #define DO_GOOM_STATE_DUMP
-
 module;
+
+//#define DO_GOOM_STATE_DUMP
 
 #undef NO_LOGGING // NOLINT: This maybe be defined on command line.
 
@@ -20,8 +20,8 @@ module Goom.Control.GoomStateDump;
 #ifdef DO_GOOM_STATE_DUMP
 
 import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomDrawables;
 import Goom.Control.GoomMusicSettingsReactor;
-import Goom.Control.GoomStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterSettingsService;
@@ -50,7 +50,7 @@ public:
   auto AddCurrentGoomTime(uint64_t goomTime) noexcept -> void;
   auto AddCurrentUpdateTime(uint32_t timeInMs) noexcept -> void;
 
-  auto AddCurrentGoomState(GoomStates goomState) noexcept -> void;
+  auto AddCurrentGoomState(const std::string_view& goomStateName) noexcept -> void;
   auto AddCurrentFilterMode(ZoomFilterMode filterMode) noexcept -> void;
   auto AddCurrentHypercosOverlay(HypercosOverlayMode hypercosOverlay) noexcept -> void;
   auto AddCurrentImageVelocityEffect(bool value) noexcept -> void;
@@ -70,7 +70,7 @@ public:
 
   [[nodiscard]] auto GetUpdateTimesInMs() const -> const std::vector<uint32_t>&;
 
-  [[nodiscard]] auto GetGoomStates() const -> const std::vector<uint8_t>&;
+  [[nodiscard]] auto GetGoomStates() const -> const std::vector<std::string>&;
   [[nodiscard]] auto GetFilterModes() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetHypercosOverlays() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetImageVelocityEffects() const -> const std::vector<uint8_t>&;
@@ -96,7 +96,7 @@ private:
 
   std::vector<uint64_t> m_goomTimes{};
   std::vector<uint32_t> m_updateTimesInMs{};
-  std::vector<uint8_t> m_goomStates{};
+  std::vector<std::string> m_goomStates{};
   std::vector<uint8_t> m_filterModes{};
   std::vector<uint8_t> m_hypercosOverlays{};
   std::vector<uint8_t> m_imageVelocityEffects{};
@@ -150,11 +150,11 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentUpdateTime(timeOfUpdateInMs);
   m_prevTimeHiRes = timeNow;
 
-  m_cumulativeState->AddCurrentGoomState(m_visualFx->GetCurrentState());
+  m_cumulativeState->AddCurrentGoomState(m_visualFx->GetCurrentStateName());
   m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService->GetCurrentFilterMode());
 
   m_cumulativeState->AddTransformBufferLerpFactor(
-      m_goomControl->GetFrameData().miscData.lerpFactor);
+      m_goomControl->GetFrameData().filterPosArrays.filterPosBuffersLerpFactor);
 
   const auto filterSettings        = m_filterSettingsService->GetFilterSettings();
   using AfterEffects               = FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
@@ -316,10 +316,10 @@ inline auto GoomStateDump::CumulativeState::AddCurrentUpdateTime(const uint32_t 
   m_updateTimesInMs.push_back(timeInMs);
 }
 
-inline auto GoomStateDump::CumulativeState::AddCurrentGoomState(const GoomStates goomState) noexcept
-    -> void
+inline auto GoomStateDump::CumulativeState::AddCurrentGoomState(
+    const std::string_view& goomStateName) noexcept -> void
 {
-  m_goomStates.push_back(static_cast<uint8_t>(goomState));
+  m_goomStates.emplace_back(goomStateName);
 }
 
 inline auto GoomStateDump::CumulativeState::AddCurrentFilterMode(
@@ -417,7 +417,7 @@ inline auto GoomStateDump::CumulativeState::GetUpdateTimesInMs() const
   return m_updateTimesInMs;
 }
 
-inline auto GoomStateDump::CumulativeState::GetGoomStates() const -> const std::vector<uint8_t>&
+inline auto GoomStateDump::CumulativeState::GetGoomStates() const -> const std::vector<std::string>&
 {
   return m_goomStates;
 }

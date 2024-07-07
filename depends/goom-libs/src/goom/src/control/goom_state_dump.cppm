@@ -1,27 +1,30 @@
 module;
 
+//#define DO_GOOM_STATE_DUMP
+
+#include "goom/goom_logger.h"
+
 #include <chrono>
 #include <cstdint>
 #include <string>
 #include <vector>
 
-// #define DO_GOOM_STATE_DUMP
-
 export module Goom.Control.GoomStateDump;
-
-namespace GOOM
-{
-class GoomControl;
-class GoomLogger;
-}
 
 #ifdef DO_GOOM_STATE_DUMP
 
+import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomStateHandler;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.Stopwatch;
+import Goom.Lib.GoomControl;
 import Goom.Lib.SoundInfo;
+import Goom.Lib.SPimpl;
+import Goom.PluginInfo;
+
+using GOOM::FILTER_FX::FilterSettingsService;
+using GOOM::UTILS::Stopwatch;
 
 export namespace GOOM::CONTROL
 {
@@ -34,11 +37,11 @@ public:
                 const GoomControl& goomControl,
                 const GoomAllVisualFx& visualFx,
                 const GoomMusicSettingsReactor& musicSettingsReactor,
-                const FILTER_FX::FilterSettingsService& filterSettingsService) noexcept;
+                const FilterSettingsService& filterSettingsService) noexcept;
 
   auto SetSongTitle(const std::string& songTitle) noexcept -> void;
   auto SetGoomSeed(uint64_t goomSeed) noexcept -> void;
-  auto SetStopWatch(const UTILS::Stopwatch& stopwatch) noexcept -> void;
+  auto SetStopWatch(const Stopwatch& stopwatch) noexcept -> void;
 
   auto Start() noexcept -> void;
 
@@ -52,7 +55,7 @@ private:
   GoomLogger* m_goomLogger;
   const GoomControl* m_goomControl;
   const GoomAllVisualFx* m_visualFx;
-  const FILTER_FX::FilterSettingsService* m_filterSettingsService;
+  const FilterSettingsService* m_filterSettingsService;
 
   using Ms = std::chrono::milliseconds;
   std::chrono::high_resolution_clock::time_point m_prevTimeHiRes{};
@@ -63,7 +66,7 @@ private:
   std::string m_songTitle{};
   std::string m_dateTime{};
   uint64_t m_goomSeed{};
-  const UTILS::Stopwatch* m_stopwatch{};
+  const Stopwatch* m_stopwatch{};
 
   std::string m_datedDirectory{};
   auto SetCurrentDatedDirectory(const std::string& parentDirectory) -> void;
@@ -89,7 +92,7 @@ inline auto GoomStateDump::SetGoomSeed(const uint64_t goomSeed) noexcept -> void
   m_goomSeed = goomSeed;
 }
 
-inline auto GoomStateDump::SetStopWatch(const UTILS::Stopwatch& stopwatch) noexcept -> void
+inline auto GoomStateDump::SetStopWatch(const Stopwatch& stopwatch) noexcept -> void
 {
   m_stopwatch = &stopwatch;
 }
