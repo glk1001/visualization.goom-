@@ -5,18 +5,17 @@ module;
 
 export module Goom.FilterFx.AfterEffects.AfterEffects;
 
+import Goom.FilterFx.AfterEffects.TheEffects.Hypercos;
+import Goom.FilterFx.AfterEffects.TheEffects.ImageVelocity;
+import Goom.FilterFx.AfterEffects.TheEffects.Noise;
+import Goom.FilterFx.AfterEffects.TheEffects.Planes;
+import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
+import Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
+import Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
 import Goom.Utils.Math.GoomRandBase;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
-
-class Hypercos;
-class ImageVelocity;
-class Noise;
-class Planes;
-class Rotation;
-class TanEffect;
-class XYLerpEffect;
 
 class AfterEffects
 {
