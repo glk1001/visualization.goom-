@@ -31,6 +31,7 @@ module Goom.Lib.GoomControl;
 import Goom.Control.GoomAllVisualFx;
 import Goom.Control.GoomDrawables;
 import Goom.Control.GoomFavouriteStatesHandler;
+import Goom.Control.GoomForcedStateHandler;
 import Goom.Control.GoomMessageDisplayer;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomSoundEvents;
@@ -38,6 +39,7 @@ import Goom.Control.GoomRandomStateHandler;
 import Goom.Control.GoomStateHandler;
 import Goom.Control.GoomStateMonitor;
 import Goom.Control.GoomTitleDisplayer;
+import Goom.Control.StateAndFilterConsts;
 import Goom.Draw.GoomDrawToBuffer;
 import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffectFactory;
 import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
@@ -82,6 +84,7 @@ using CONTROL::GoomStateDump;
 using CONTROL::GoomAllVisualFx;
 using CONTROL::GoomDrawablesState;
 using CONTROL::GoomFavouriteStatesHandler;
+using CONTROL::GoomForcedStateHandler;
 using CONTROL::GoomMessageDisplayer;
 using CONTROL::GoomMusicSettingsReactor;
 using CONTROL::GoomRandomStateHandler;
@@ -89,6 +92,7 @@ using CONTROL::GoomSoundEvents;
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
 using CONTROL::IGoomStateHandler;
+using CONTROL::USE_FORCED_GOOM_STATE;
 using DRAW::GoomDrawToSingleBuffer;
 using DRAW::GoomDrawToTwoBuffers;
 using FILTER_FX::FilterBuffersService;
@@ -138,28 +142,56 @@ public:
 private:
   const IGoomRand* m_goomRand;
   static constexpr auto PROB_USE_FAVOURITE_STATES_HANDLER = 0.1F;
+  GoomForcedStateHandler m_goomForcedStateHandler;
   GoomFavouriteStatesHandler m_goomFavouriteStatesHandler;
   GoomRandomStateHandler m_goomRandomStateHandler;
   IGoomStateHandler* m_currentGoomStateHandler;
+  [[nodiscard]] auto GetInitialStateHandler() noexcept -> IGoomStateHandler*;
 };
 
 GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand)
   : m_goomRand{&goomRand},
     m_goomFavouriteStatesHandler{goomRand},
     m_goomRandomStateHandler{goomRand},
-    m_currentGoomStateHandler{&m_goomRandomStateHandler}
+    m_currentGoomStateHandler{GetInitialStateHandler()}
 {
+}
+
+auto GoomStateHandler::GetInitialStateHandler() noexcept -> IGoomStateHandler*
+{
+  if constexpr (USE_FORCED_GOOM_STATE)
+  {
+    return &m_goomForcedStateHandler;
+  }
+  else
+  {
+    if (m_goomRand->ProbabilityOf(PROB_USE_FAVOURITE_STATES_HANDLER))
+    {
+      return &m_goomFavouriteStatesHandler;
+    }
+    else
+    {
+      return &m_goomRandomStateHandler;
+    }
+  }
 }
 
 auto GoomStateHandler::ChangeToNextState() -> void
 {
-  if (m_goomRand->ProbabilityOf(PROB_USE_FAVOURITE_STATES_HANDLER))
+  if constexpr (USE_FORCED_GOOM_STATE)
   {
-    m_currentGoomStateHandler = &m_goomFavouriteStatesHandler;
+    m_currentGoomStateHandler = &m_goomForcedStateHandler;
   }
   else
   {
-    m_currentGoomStateHandler = &m_goomRandomStateHandler;
+    if (m_goomRand->ProbabilityOf(PROB_USE_FAVOURITE_STATES_HANDLER))
+    {
+      m_currentGoomStateHandler = &m_goomFavouriteStatesHandler;
+    }
+    else
+    {
+      m_currentGoomStateHandler = &m_goomRandomStateHandler;
+    }
   }
 
   m_currentGoomStateHandler->ChangeToNextState();

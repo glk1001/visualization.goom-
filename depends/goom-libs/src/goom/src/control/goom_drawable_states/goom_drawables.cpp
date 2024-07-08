@@ -10,13 +10,11 @@ module;
 
 module Goom.Control.GoomDrawables;
 
-import Goom.Utils.EnumUtils;
+import Goom.Control.GoomDrawablesData;
 import Goom.Lib.AssertUtils;
 
 namespace GOOM::CONTROL
 {
-
-using UTILS::EnumMap;
 
 GoomDrawablesState::GoomDrawablesState(
     const std::vector<GoomDrawables>& drawables,
@@ -60,21 +58,6 @@ auto GoomDrawablesState::GetName() const -> const std::string&
 
 auto GoomDrawablesState::GetDrawablesStateName() const -> std::string
 {
-  static constexpr auto DRAWABLE_NAMES = EnumMap<GoomDrawables, std::string_view>{{{
-      {GoomDrawables::CIRCLES, "CIRCLS"},
-      {GoomDrawables::DOTS, "DOTS"},
-      {GoomDrawables::IFS, "IFS"},
-      {GoomDrawables::L_SYSTEM, "LSYS"},
-      {GoomDrawables::LINES, "LNS"},
-      {GoomDrawables::IMAGE, "IMG"},
-      {GoomDrawables::PARTICLES, "PART"},
-      {GoomDrawables::RAINDROPS, "DROPS"},
-      {GoomDrawables::SHAPES, "SHPS"},
-      {GoomDrawables::STARS, "STARS"},
-      {GoomDrawables::TENTACLES, "TENTCL"},
-      {GoomDrawables::TUBES, "TUBES"},
-  }}};
-
   static constexpr auto DELIM = std::string_view{"_"};
 
   return std::ranges::to<std::string>(
@@ -85,21 +68,6 @@ auto GoomDrawablesState::GetDrawablesStateName() const -> std::string
 
 auto GoomDrawablesState::IsMultiThreaded() const noexcept -> bool
 {
-  static constexpr auto STATE_MULTI_THREADED = EnumMap<GoomDrawables, bool>{{{
-      {GoomDrawables::CIRCLES, false},
-      {GoomDrawables::DOTS, false},
-      {GoomDrawables::IFS, false},
-      {GoomDrawables::L_SYSTEM, false},
-      {GoomDrawables::LINES, false},
-      {GoomDrawables::IMAGE, true},
-      {GoomDrawables::PARTICLES, false},
-      {GoomDrawables::RAINDROPS, false},
-      {GoomDrawables::SHAPES, false},
-      {GoomDrawables::STARS, false},
-      {GoomDrawables::TENTACLES, false},
-      {GoomDrawables::TUBES, false},
-  }}};
-
   return std::ranges::any_of(m_drawables,
                              [](const auto& drawable) { return STATE_MULTI_THREADED[drawable]; });
 }
