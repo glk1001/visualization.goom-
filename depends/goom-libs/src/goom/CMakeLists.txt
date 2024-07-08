@@ -90,7 +90,9 @@ set(GoomColor_source_files
 
 set(GoomControl_modules
     src/control/goom_drawable_states/goom_drawables.cppm
+    src/control/goom_drawable_states/goom_drawables_data.cppm
     src/control/goom_drawable_states/goom_favourite_states_handler.cppm
+    src/control/goom_drawable_states/goom_forced_state_handler.cppm
     src/control/goom_drawable_states/goom_random_state_handler.cppm
     src/control/goom_drawable_states/goom_state_handler.cppm
     src/control/all_standard_visual_fx.cppm
@@ -112,6 +114,7 @@ set(GoomControl_modules
 set(GoomControl_source_files
     src/control/goom_drawable_states/goom_drawables.cpp
     src/control/goom_drawable_states/goom_favourite_states_handler.cpp
+    src/control/goom_drawable_states/goom_forced_state_handler.cpp
     src/control/goom_drawable_states/goom_random_state_handler.cpp
     src/control/goom_all_visual_fx.cpp
     src/control/goom_message_displayer.cpp

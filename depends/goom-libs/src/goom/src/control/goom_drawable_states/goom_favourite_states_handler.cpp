@@ -6,6 +6,7 @@ module;
 module Goom.Control.GoomFavouriteStatesHandler;
 
 import Goom.Control.GoomDrawables;
+import Goom.Control.GoomDrawablesData;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 
@@ -14,24 +15,8 @@ namespace GOOM::CONTROL
 
 using UTILS::EnumMap;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::NumberRange;
 
 using enum GoomDrawables;
-
-static constexpr auto BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, NumberRange<float>>{{{
-    {GoomDrawables::CIRCLES, {0.50F, 0.80F}},
-    {GoomDrawables::DOTS, {0.40F, 0.70F}},
-    {GoomDrawables::IFS, {0.40F, 0.70F}},
-    {GoomDrawables::L_SYSTEM, {0.70F, 0.80F}},
-    {GoomDrawables::LINES, {0.50F, 0.70F}},
-    {GoomDrawables::IMAGE, {0.05F, 0.30F}},
-    {GoomDrawables::PARTICLES, {0.50F, 0.80F}},
-    {GoomDrawables::RAINDROPS, {0.60F, 0.80F}},
-    {GoomDrawables::SHAPES, {0.50F, 0.80F}},
-    {GoomDrawables::STARS, {0.50F, 0.60F}},
-    {GoomDrawables::TENTACLES, {0.30F, 0.50F}},
-    {GoomDrawables::TUBES, {0.70F, 0.80F}},
-}}};
 
 const EnumMap<GoomFavouriteStatesHandler::Favourites, std::vector<GoomDrawables>>
     // NOLINTNEXTLINE(cert-err58-cpp)

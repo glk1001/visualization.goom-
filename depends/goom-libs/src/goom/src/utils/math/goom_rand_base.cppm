@@ -5,6 +5,7 @@ module;
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <numeric>
 #include <type_traits>
 #include <vector>
 
@@ -23,6 +24,8 @@ struct NumberRange
   T min;
   T max;
 };
+template<typename T>
+[[nodiscard]] auto GetMidpoint(const NumberRange<T>& numberRange) noexcept;
 
 class IGoomRand
 {
@@ -138,6 +141,12 @@ private:
 
 namespace GOOM::UTILS::MATH
 {
+
+template<typename T>
+auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
+{
+  return std::midpoint(numberRange.min, numberRange.max);
+}
 
 template<typename T>
 auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T

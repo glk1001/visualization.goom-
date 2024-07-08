@@ -7,6 +7,7 @@ module;
 
 module Goom.Control.GoomRandomStateHandler;
 
+import Goom.Control.GoomDrawablesData;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.AssertUtils;
@@ -14,40 +15,8 @@ import Goom.Lib.AssertUtils;
 namespace GOOM::CONTROL
 {
 
-using UTILS::EnumMap;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
-using UTILS::MATH::NumberRange;
-
-static constexpr auto BUFF_INTENSITY_RANGES = EnumMap<GoomDrawables, NumberRange<float>>{{{
-    {GoomDrawables::CIRCLES, {0.50F, 0.80F}},
-    {GoomDrawables::DOTS, {0.40F, 0.70F}},
-    {GoomDrawables::IFS, {0.40F, 0.70F}},
-    {GoomDrawables::L_SYSTEM, {0.70F, 0.80F}},
-    {GoomDrawables::LINES, {0.50F, 0.70F}},
-    {GoomDrawables::IMAGE, {0.05F, 0.30F}},
-    {GoomDrawables::PARTICLES, {0.50F, 0.80F}},
-    {GoomDrawables::RAINDROPS, {0.60F, 0.80F}},
-    {GoomDrawables::SHAPES, {0.50F, 0.80F}},
-    {GoomDrawables::STARS, {0.50F, 0.60F}},
-    {GoomDrawables::TENTACLES, {0.30F, 0.50F}},
-    {GoomDrawables::TUBES, {0.70F, 0.80F}},
-}}};
-
-static constexpr auto PROB_SINGLE_DRAWABLE = EnumMap<GoomDrawables, float>{{{
-    {GoomDrawables::CIRCLES, 1.0F},
-    {GoomDrawables::DOTS, 1.0F},
-    {GoomDrawables::IFS, 1.0F},
-    {GoomDrawables::L_SYSTEM, 1.0F},
-    {GoomDrawables::LINES, 1.0F},
-    {GoomDrawables::IMAGE, 0.0F},
-    {GoomDrawables::PARTICLES, 1.0F},
-    {GoomDrawables::RAINDROPS, 1.0F},
-    {GoomDrawables::SHAPES, 1.0F},
-    {GoomDrawables::STARS, 1.0F},
-    {GoomDrawables::TENTACLES, 1.0F},
-    {GoomDrawables::TUBES, 1.0F},
-}}};
 
 static constexpr auto FRESH_STATE_WEIGHT         = 7.0F;
 static constexpr auto NON_REPEAT_STATE_WEIGHT    = 7.0F;
