@@ -60,9 +60,9 @@ GoomFavouriteStatesHandler::GoomFavouriteStatesHandler(const IGoomRand& goomRand
           {Favourites::PARTICLES_ONLY, PARTICLES_ONLY_WEIGHT},
           {Favourites::PARTICLES_IFS,  PARTICLES_IFS_WEIGHT},
         }
-  }
+  },
+  m_currentDrawablesState{GetGoomDrawablesState(m_weightedFavourites.GetRandomWeighted())}
 {
-  ChangeToFavourite(m_weightedFavourites.GetRandomWeighted());
 }
 
 auto GoomFavouriteStatesHandler::ChangeToNextState() -> void
@@ -81,13 +81,17 @@ auto GoomFavouriteStatesHandler::ChangeToNextState() -> void
   ChangeToFavourite(favourite);
 }
 
+auto GoomFavouriteStatesHandler::GetGoomDrawablesState(const Favourites favourite) const noexcept
+    -> GoomDrawablesState
+{
+  const auto& drawables = FAVOURITE_DRAWABLES[favourite];
+  return GoomDrawablesState{drawables, GetBuffIntensities(drawables)};
+}
+
 auto GoomFavouriteStatesHandler::ChangeToFavourite(const Favourites favourite) -> void
 {
-  m_currentFavourite = favourite;
-
-  const auto& drawables      = FAVOURITE_DRAWABLES[favourite];
-  const auto buffIntensities = GetBuffIntensities(drawables);
-  m_currentDrawablesState    = GoomDrawablesState{drawables, buffIntensities};
+  m_currentFavourite      = favourite;
+  m_currentDrawablesState = GetGoomDrawablesState(favourite);
 }
 
 auto GoomFavouriteStatesHandler::GetBuffIntensities(

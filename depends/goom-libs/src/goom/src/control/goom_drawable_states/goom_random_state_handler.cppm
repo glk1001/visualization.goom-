@@ -30,6 +30,15 @@ public:
 private:
   const IGoomRand* m_goomRand;
 
+  std::vector<GoomDrawables> m_drawablesPool;
+  [[nodiscard]] static auto GetFullDrawablesPool(const IGoomRand& goomRand)
+      -> std::vector<GoomDrawables>;
+  [[nodiscard]] auto GetRandomDrawablesFromPool(uint32_t numDrawables)
+      -> std::vector<GoomDrawables>;
+  [[nodiscard]] auto GetNextRandomDrawables(uint32_t numDrawables) -> std::vector<GoomDrawables>;
+  [[nodiscard]] auto GetBuffIntensities(const std::vector<GoomDrawables>& drawables) const noexcept
+      -> std::vector<float>;
+
   enum class ChangeType : UnderlyingEnumType
   {
     FRESH_STATE,
@@ -46,17 +55,6 @@ private:
   auto RemoveDrawableFromCurrentState() -> void;
   auto ChangeToNewState(uint32_t numRandomDrawables) -> void;
 
-  GoomDrawablesState m_currentDrawablesState;
-  [[nodiscard]] auto GetRandomDrawablesFromPool(uint32_t numDrawables)
-      -> std::vector<GoomDrawables>;
-  [[nodiscard]] auto GetNextRandomDrawables(uint32_t numDrawables) -> std::vector<GoomDrawables>;
-  [[nodiscard]] auto GetBuffIntensities(const std::vector<GoomDrawables>& drawables) const noexcept
-      -> std::vector<float>;
-
-  std::vector<GoomDrawables> m_drawablesPool;
-  [[nodiscard]] static auto GetFullDrawablesPool(const IGoomRand& goomRand)
-      -> std::vector<GoomDrawables>;
-
   enum class NumDrawables : UnderlyingEnumType
   {
     ONE,
@@ -72,6 +70,9 @@ private:
   auto MakeNewState(uint32_t numDrawables) noexcept -> void;
   auto AddDrawables(uint32_t numDrawables) noexcept -> void;
   auto RemoveDrawables(uint32_t numDrawables) noexcept -> void;
+
+  GoomDrawablesState m_currentDrawablesState;
+  [[nodiscard]] auto GetNewRandomState(uint32_t numRandomDrawables) -> GoomDrawablesState;
 };
 
 } // namespace GOOM::CONTROL

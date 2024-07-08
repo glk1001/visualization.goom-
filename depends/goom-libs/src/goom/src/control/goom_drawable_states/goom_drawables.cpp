@@ -18,40 +18,47 @@ namespace GOOM::CONTROL
 
 using UTILS::EnumMap;
 
-GoomDrawablesState::GoomDrawablesState(const std::vector<GoomDrawables>& drawables,
-                                       const std::vector<float>& drawablesBuffIntensities) noexcept
-  : m_drawables{drawables},
-    m_drawablesBuffIntensities{drawablesBuffIntensities},
-    m_drawablesAsBitset{GetDrawablesAsBitset(drawables)}
+GoomDrawablesState::GoomDrawablesState(
+    const std::vector<GoomDrawables>& drawables,
+    const std::vector<float>& drawablesBuffIntensitiesVec) noexcept
+  : m_drawables{drawables}, m_drawablesBuffIntensitiesVec{drawablesBuffIntensitiesVec}
 {
-  Expects(drawables.size() == drawablesBuffIntensities.size());
+  Expects(drawables.size() == drawablesBuffIntensitiesVec.size());
+
+  UpdateDrawablesAsBitset();
+  UpdateDrawablesBuffIntensities();
+
   Ensures(drawables.size() == m_drawablesAsBitset.count());
 }
 
-auto GoomDrawablesState::GetDrawablesAsBitset(const std::vector<GoomDrawables>& drawables) noexcept
-    -> DrawablesBitset
+auto GoomDrawablesState::UpdateDrawablesBuffIntensities() noexcept -> void
 {
-  auto drawablesAsBitset = DrawablesBitset{};
-
-  for (auto drawable : drawables)
+  for (auto i = 0U; i < m_drawables.size(); ++i)
   {
-    drawablesAsBitset[static_cast<uint32_t>(drawable)] = true;
+    m_drawablesBuffIntensities[m_drawables[i]] = m_drawablesBuffIntensitiesVec[i];
   }
+}
 
-  return drawablesAsBitset;
+auto GoomDrawablesState::UpdateDrawablesAsBitset() noexcept -> void
+{
+  m_drawablesAsBitset.reset();
+
+  for (auto drawable : m_drawables)
+  {
+    m_drawablesAsBitset[static_cast<uint32_t>(drawable)] = true;
+  }
 }
 
 auto GoomDrawablesState::GetName() const -> const std::string&
 {
   if (m_stateName.empty())
   {
-    m_stateName = GetDrawablesStateName(m_drawables);
+    m_stateName = GetDrawablesStateName();
   }
   return m_stateName;
 }
 
-auto GoomDrawablesState::GetDrawablesStateName(const std::vector<GoomDrawables>& drawables)
-    -> std::string
+auto GoomDrawablesState::GetDrawablesStateName() const -> std::string
 {
   static constexpr auto DRAWABLE_NAMES = EnumMap<GoomDrawables, std::string_view>{{{
       {GoomDrawables::CIRCLES, "CIRCLS"},
@@ -71,22 +78,9 @@ auto GoomDrawablesState::GetDrawablesStateName(const std::vector<GoomDrawables>&
   static constexpr auto DELIM = std::string_view{"_"};
 
   return std::ranges::to<std::string>(
-      drawables |
+      m_drawables |
       std::views::transform([](const auto drawable) { return DRAWABLE_NAMES[drawable]; }) |
       std::views::join_with(DELIM));
-}
-
-auto GoomDrawablesState::GetBuffIntensity(GoomDrawables goomDrawable) const noexcept -> float
-{
-  for (auto i = 0U; i < m_drawables.size(); ++i)
-  {
-    if (m_drawables.at(i) == goomDrawable)
-    {
-      return m_drawablesBuffIntensities.at(i);
-    }
-  }
-
-  FailFast();
 }
 
 auto GoomDrawablesState::IsMultiThreaded() const noexcept -> bool

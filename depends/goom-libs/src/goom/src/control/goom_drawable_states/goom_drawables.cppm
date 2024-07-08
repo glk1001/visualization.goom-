@@ -9,6 +9,7 @@ export module Goom.Control.GoomDrawables;
 import Goom.Utils.EnumUtils;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::EnumMap;
 using GOOM::UTILS::NUM;
 
 export namespace GOOM::CONTROL
@@ -37,7 +38,7 @@ class GoomDrawablesState
 public:
   GoomDrawablesState() noexcept = default;
   GoomDrawablesState(const std::vector<GoomDrawables>& drawables,
-                     const std::vector<float>& drawablesBuffIntensities) noexcept;
+                     const std::vector<float>& drawablesBuffIntensitiesVec) noexcept;
 
   [[nodiscard]] auto GetName() const -> const std::string&;
   [[nodiscard]] auto GetDrawables() const noexcept -> const std::vector<GoomDrawables>&;
@@ -54,15 +55,15 @@ public:
 
 private:
   std::vector<GoomDrawables> m_drawables;
-  std::vector<float> m_drawablesBuffIntensities;
+  std::vector<float> m_drawablesBuffIntensitiesVec;
+  EnumMap<GoomDrawables, float> m_drawablesBuffIntensities;
+  auto UpdateDrawablesBuffIntensities() noexcept -> void;
 
   DrawablesBitset m_drawablesAsBitset;
-  [[nodiscard]] static auto GetDrawablesAsBitset(
-      const std::vector<GoomDrawables>& drawables) noexcept -> DrawablesBitset;
+  auto UpdateDrawablesAsBitset() noexcept -> void;
 
   mutable std::string m_stateName;
-  [[nodiscard]] static auto GetDrawablesStateName(const std::vector<GoomDrawables>& drawables)
-      -> std::string;
+  [[nodiscard]] auto GetDrawablesStateName() const -> std::string;
 };
 
 } // namespace GOOM::CONTROL
@@ -93,7 +94,13 @@ inline auto GoomDrawablesState::HasSameId(const DrawablesBitset& id2) const noex
 inline auto GoomDrawablesState::GetDrawablesBuffIntensities() const noexcept
     -> const std::vector<float>&
 {
-  return m_drawablesBuffIntensities;
+  return m_drawablesBuffIntensitiesVec;
+}
+
+inline auto GoomDrawablesState::GetBuffIntensity(const GoomDrawables goomDrawable) const noexcept
+    -> float
+{
+  return m_drawablesBuffIntensities[goomDrawable];
 }
 
 } // namespace GOOM::CONTROL

@@ -253,7 +253,7 @@ auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(
 {
   auto matchedSet = GetOneGroupColorMatchedSet(group1);
 
-  // Change every second map entry to 'func2'.
+  // Change every second map entry to 'group2'.
   auto indexes = std::array<size_t, NUM<GoomEffect>>{};
   std::ranges::iota(indexes, 0);
   goomRand.Shuffle(indexes);

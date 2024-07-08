@@ -63,6 +63,7 @@ static constexpr auto FIVE_WEIGHT  = 1.0F;
 
 GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
   : m_goomRand{&goomRand},
+    m_drawablesPool{GetFullDrawablesPool(*m_goomRand)},
     m_weightedChangeTypes{
         goomRand,
         {
@@ -82,9 +83,9 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
             {NumDrawables::FOUR,  FOUR_WEIGHT},
             {NumDrawables::FIVE,  FIVE_WEIGHT},
         }
-    }
+    },
+    m_currentDrawablesState{GetNewRandomState(GetNextNumDrawables())}
 {
-  ChangeToFreshState();
 }
 
 auto GoomRandomStateHandler::GetFullDrawablesPool(const IGoomRand& goomRand)
@@ -147,10 +148,14 @@ auto GoomRandomStateHandler::ChangeToNonRepeatState() -> void
 
 auto GoomRandomStateHandler::ChangeToNewState(const uint32_t numRandomDrawables) -> void
 {
-  const auto randomDrawables = GetNextRandomDrawables(numRandomDrawables);
-  const auto buffIntensities = GetBuffIntensities(randomDrawables);
+  m_currentDrawablesState = GetNewRandomState(numRandomDrawables);
+}
 
-  m_currentDrawablesState = GoomDrawablesState{randomDrawables, buffIntensities};
+auto GoomRandomStateHandler::GetNewRandomState(const uint32_t numRandomDrawables)
+    -> GoomDrawablesState
+{
+  const auto randomDrawables = GetNextRandomDrawables(numRandomDrawables);
+  return GoomDrawablesState{randomDrawables, GetBuffIntensities(randomDrawables)};
 }
 
 auto GoomRandomStateHandler::AddExtraDrawableToCurrentState() -> void

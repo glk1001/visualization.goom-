@@ -28,7 +28,6 @@ public:
 
 private:
   const IGoomRand* m_goomRand;
-  GoomDrawablesState m_currentDrawablesState;
 
   enum class Favourites : UnderlyingEnumType
   {
@@ -44,6 +43,10 @@ private:
   auto ChangeToFavourite(Favourites favourite) -> void;
   [[nodiscard]] auto GetBuffIntensities(const std::vector<GoomDrawables>& drawables) const noexcept
       -> std::vector<float>;
+
+  GoomDrawablesState m_currentDrawablesState;
+  [[nodiscard]] auto GetGoomDrawablesState(Favourites favourite) const noexcept
+      -> GoomDrawablesState;
 };
 
 } // namespace GOOM::CONTROL
