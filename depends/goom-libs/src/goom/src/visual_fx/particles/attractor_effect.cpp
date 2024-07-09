@@ -45,43 +45,49 @@ static constexpr auto ATTRACTOR_POSITIONS = std::array{
     glm::vec4{0.0F, -0.75F, +0.00F, 1.0F},
 };
 
-static constexpr auto Z_GEN_POS = std::array<float, AttractorEffect::NUM_EMITTERS>{
+static constexpr auto Z_GEN_POS = std::array{
     -0.25F,
     +0.25F,
     +0.25F,
 };
+static_assert(Z_GEN_POS.size() == AttractorEffect::NUM_EMITTERS);
+
 struct GenPosAndMaxStartPosOffset
 {
   glm::vec4 pos;
   glm::vec4 startPosOffset;
 };
-static constexpr auto GEN_POS_AND_MAX_START_POS_OFFSETS =
-    std::array<GenPosAndMaxStartPosOffset, AttractorEffect::NUM_EMITTERS>{
-        GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[0], 0.0F},
-                                   glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
-        GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[1], 0.0F},
-                                   glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
-        GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[2], 0.0F},
-                                   glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
+static constexpr auto GEN_POS_AND_MAX_START_POS_OFFSETS = std::array{
+    GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[0], 0.0F},
+                               glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
+    GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[1], 0.0F},
+                               glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
+    GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[2], 0.0F},
+                               glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
 };
+static_assert(GEN_POS_AND_MAX_START_POS_OFFSETS.size() == AttractorEffect::NUM_EMITTERS);
 
-static constexpr auto POS_LIFETIME_FACTORS = std::array<float, AttractorEffect::NUM_EMITTERS>{
+static constexpr auto POS_LIFETIME_FACTORS = std::array{
     2.5F,
     2.0F,
     6.0F,
 };
+static_assert(POS_LIFETIME_FACTORS.size() == AttractorEffect::NUM_EMITTERS);
 
 static constexpr auto UPDATE_RADIUS   = 0.55F;
-static constexpr auto UPDATE_RADIUS_X = std::array<float, AttractorEffect::NUM_EMITTERS>{
+static constexpr auto UPDATE_RADIUS_X = std::array{
     +UPDATE_RADIUS,
     -UPDATE_RADIUS,
     -UPDATE_RADIUS,
 };
-static constexpr auto UPDATE_RADIUS_Y = std::array<float, AttractorEffect::NUM_EMITTERS>{
+static_assert(UPDATE_RADIUS_X.size() == AttractorEffect::NUM_EMITTERS);
+
+static constexpr auto UPDATE_RADIUS_Y = std::array{
     +UPDATE_RADIUS,
     +UPDATE_RADIUS,
     +UPDATE_RADIUS,
 };
+static_assert(UPDATE_RADIUS_Y.size() == AttractorEffect::NUM_EMITTERS);
 
 static constexpr auto EULER_ACCELERATION = glm::vec4{0.0F, 0.0F, 0.0F, 0.0F};
 
@@ -91,9 +97,12 @@ AttractorEffect::AttractorEffect(const size_t numParticles) noexcept
   : m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
     m_colorUpdater{std::make_shared<VelocityColorUpdater>(MIN_VELOCITY, MAX_VELOCITY)}
 {
-  //
-  // emitters:
-  //
+  AddEmitters();
+  AddUpdaters();
+}
+
+auto AttractorEffect::AddEmitters() noexcept -> void
+{
   const auto emitRate      = EMIT_RATE_FACTOR * static_cast<float>(m_system.GetNumAllParticles());
   const auto timeGenerator = std::make_shared<BasicTimeGenerator>(MIN_LIFETIME, MAX_LIFETIME);
   const auto velocityGenerator =
@@ -117,10 +126,10 @@ AttractorEffect::AttractorEffect(const size_t numParticles) noexcept
 
     m_system.AddEmitter(m_particleEmitters[i]);
   }
+}
 
-  //
-  // updaters:
-  //
+auto AttractorEffect::AddUpdaters() noexcept -> void
+{
   m_system.AddUpdater(m_colorUpdater);
 
   auto attractorUpdater = std::make_shared<AttractorUpdater>();
@@ -137,15 +146,7 @@ AttractorEffect::AttractorEffect(const size_t numParticles) noexcept
   m_system.AddUpdater(eulerUpdater);
 }
 
-auto AttractorEffect::SetMaxNumAliveParticles(const size_t maxNumAliveParticles) noexcept -> void
-{
-  for (auto& particleEmitter : m_particleEmitters)
-  {
-    particleEmitter->SetMaxNumAliveParticles(maxNumAliveParticles);
-  }
-}
-
-auto AttractorEffect::UpdateEffect(const double dt) -> void
+auto AttractorEffect::UpdateEffect(const double dt) noexcept -> void
 {
   static auto s_lifetime = 0.0F;
   s_lifetime += static_cast<float>(dt);
