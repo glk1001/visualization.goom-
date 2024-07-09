@@ -121,7 +121,7 @@ private:
 
   auto DotFilter(const Pixel& color, const Point2dInt& dotPosition, uint32_t radius) -> void;
 
-  static constexpr auto GAMMA = 1.3F; // Cancel the shader gamma
+  static constexpr auto GAMMA = 1.9F;
   ColorAdjustment m_colorAdjust{
       {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
@@ -447,12 +447,12 @@ auto GoomDotsFx::GoomDotsFxImpl::DotFilter(const Pixel& color,
 
   const auto getColor1 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
-    static constexpr auto MAIN_BRIGHTNESS = 5.0F;
+    static constexpr auto MAIN_BRIGHTNESS = 10.0F;
     return GetMixedColor(MAIN_BRIGHTNESS, bitmapPoint, color, radius, bgnd);
   };
   const auto getColor2 = [this, &radius, &color](const Point2dInt& bitmapPoint, const Pixel& bgnd)
   {
-    static constexpr auto LOW_BRIGHTNESS = 6.0F;
+    static constexpr auto LOW_BRIGHTNESS = 12.0F;
     return GetMixedColor(LOW_BRIGHTNESS, bitmapPoint, color, radius, bgnd);
   };
 

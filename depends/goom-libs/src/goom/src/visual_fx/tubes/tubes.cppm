@@ -176,8 +176,8 @@ enum class LowColorTypes : UnderlyingEnumType
 };
 static constexpr auto LOW_COLOR_TYPE_TIME_RANGE = NumberRange{100U, 1000U};
 
-static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 0.8F;
-static constexpr auto LIGHTER_COLOR_POWER     = 10.0F;
+static constexpr auto OUTER_CIRCLE_BRIGHTNESS = 1.0F;
+static constexpr auto LIGHTER_COLOR_POWER     = 100.0F;
 
 
 struct Shape
@@ -217,7 +217,7 @@ public:
 private:
   TubeData m_data;
 
-  static constexpr auto GAMMA = 1.0F;
+  static constexpr auto GAMMA = 1.9F;
   ColorAdjustment m_colorAdjust{
       {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };

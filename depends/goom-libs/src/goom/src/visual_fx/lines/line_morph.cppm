@@ -99,7 +99,7 @@ private:
   ConstColorMapSharedPtr m_currentColorMapPtr = nullptr;
   float m_currentBrightness                   = 1.0F;
 
-  static constexpr float GAMMA = 1.0F / 2.0F;
+  static constexpr float GAMMA = 1.9F;
   ColorAdjustment m_colorAdjust{
       {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
@@ -299,7 +299,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   if (m_lineLerpParam >= 1.0F)
   {
     m_srceLineParams.lineType              = m_destLineParams.lineType;
-    static constexpr auto BRIGHTNESS_RANGE = NumberRange{5.0F, 8.0F};
+    static constexpr auto BRIGHTNESS_RANGE = NumberRange{5.0F, 10.0F};
     m_currentBrightness                    = m_goomRand->GetRandInRange(BRIGHTNESS_RANGE);
   }
 
@@ -404,7 +404,7 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
 
     m_lineDrawer.DrawLine(point1, point2, colors);
 
-    static constexpr auto DOT_BRIGHTNESS = 1.5F;
+    static constexpr auto DOT_BRIGHTNESS = 3.0F;
     m_dotDrawer.DrawDot(point2, colors, DOT_BRIGHTNESS);
 
     point1 = point2;

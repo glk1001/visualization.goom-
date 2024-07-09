@@ -57,7 +57,7 @@ private:
   Pixel m_withinClusterMainColor;
   Pixel m_withinClusterLowColor;
 
-  static constexpr auto GAMMA = 1.0F / 2.0F;
+  static constexpr auto GAMMA = 1.4F;
   COLOR::ColorAdjustment m_colorAdjust{
       {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };

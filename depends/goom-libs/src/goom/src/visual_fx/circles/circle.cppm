@@ -149,7 +149,7 @@ private:
   auto DrawNextCircle() noexcept -> void;
   auto DrawNextCircleDots() noexcept -> void;
 
-  static constexpr auto GAMMA = 1.0F;
+  static constexpr auto GAMMA = 1.9F;
   COLOR::ColorAdjustment m_colorAdjustment{
       {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };

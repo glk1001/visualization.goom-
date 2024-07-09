@@ -16,6 +16,7 @@ module Goom.VisualFx.ParticlesFx;
 
 import Particles.Effects.Attractor;
 import Particles.Effects.Effect;
+import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;
 import Goom.Color.RandomColorMaps;
@@ -41,6 +42,7 @@ import Goom.Lib.SPimpl;
 namespace GOOM::VISUAL_FX
 {
 
+using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
 using COLOR::GetBrighterColor;
 using COLOR::WeightedRandomColorMaps;
@@ -107,7 +109,12 @@ private:
   uint32_t m_drawCircleFrequency         = 1U;
   float m_circleBrightness;
   static constexpr auto SINGLE_PIXEL_BRIGHTNESS_FACTOR = 5.0F;
-  float m_pixelBrightness = SINGLE_PIXEL_BRIGHTNESS_FACTOR * m_circleBrightness;
+  float m_pixelBrightness     = SINGLE_PIXEL_BRIGHTNESS_FACTOR * m_circleBrightness;
+  static constexpr auto GAMMA = 1.8F;
+  ColorAdjustment m_colorAdjustment{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  };
+
   const Camera* m_camera;
 
   [[nodiscard]] auto GetScreenPos(const glm::vec4& pos) const -> Point2dInt;
@@ -222,13 +229,15 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
 
     if (0 == (i % m_drawCircleFrequency))
     {
-      const auto brighterPixelColor = GetBrighterColor(m_circleBrightness, pixelColor);
-      static constexpr auto RADIUS  = 4;
+      const auto brighterPixelColor =
+          m_colorAdjustment.GetAdjustment(m_circleBrightness, pixelColor);
+      static constexpr auto RADIUS = 4;
       circleDrawer.DrawFilledCircle(screenPos, RADIUS, {brighterPixelColor, brighterPixelColor});
     }
     else
     {
-      const auto brighterPixelColor = GetBrighterColor(m_pixelBrightness, pixelColor);
+      const auto brighterPixelColor =
+          m_colorAdjustment.GetAdjustment(m_pixelBrightness, pixelColor);
       pixelDrawer.DrawPixelsClipped(screenPos, {brighterPixelColor, brighterPixelColor});
     }
   }

@@ -110,7 +110,7 @@ private:
   std::vector<TValue> m_currentThickerColorTs;
   auto ResetColorTs() noexcept -> void;
 
-  static constexpr auto GAMMA = 1.0F / 2.2F;
+  static constexpr auto GAMMA = 1.8F;
   COLOR::ColorAdjustment m_colorAdjust{
       {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
