@@ -1,6 +1,5 @@
 module;
 
-#include <ranges>
 #include <vector>
 
 module Goom.Control.GoomFavouriteStatesHandler;
@@ -70,22 +69,13 @@ auto GoomFavouriteStatesHandler::GetGoomDrawablesState(const Favourites favourit
     -> GoomDrawablesState
 {
   const auto& drawables = FAVOURITE_DRAWABLES[favourite];
-  return GoomDrawablesState{drawables, GetBuffIntensities(drawables)};
+  return GoomDrawablesState{drawables, GetRandInRangeBuffIntensities(*m_goomRand, drawables)};
 }
 
 auto GoomFavouriteStatesHandler::ChangeToFavourite(const Favourites favourite) -> void
 {
   m_currentFavourite      = favourite;
   m_currentDrawablesState = GetGoomDrawablesState(favourite);
-}
-
-auto GoomFavouriteStatesHandler::GetBuffIntensities(
-    const std::vector<GoomDrawables>& drawables) const noexcept -> std::vector<float>
-{
-  return std::ranges::to<std::vector<float>>(
-      drawables | std::views::transform(
-                      [this](const auto drawable)
-                      { return m_goomRand->GetRandInRange(BUFF_INTENSITY_RANGES[drawable]); }));
 }
 
 } // namespace GOOM::CONTROL

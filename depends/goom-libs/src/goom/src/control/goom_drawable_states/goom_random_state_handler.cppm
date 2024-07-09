@@ -71,8 +71,6 @@ private:
 
   GoomDrawablesState m_currentDrawablesState;
   [[nodiscard]] auto GetNewRandomState(uint32_t numRandomDrawables) -> GoomDrawablesState;
-  [[nodiscard]] auto GetBuffIntensities(const std::vector<GoomDrawables>& drawables) const noexcept
-      -> std::vector<float>;
 };
 
 } // namespace GOOM::CONTROL
