@@ -38,99 +38,97 @@ static constexpr auto MAX_END_COLOR   = glm::vec4{0.39F, 0.39F, 0.39F, 0.25F};
 static constexpr auto MIN_VELOCITY = glm::vec4{-0.5F, -0.5F, -0.5F, 0.0F};
 static constexpr auto MAX_VELOCITY = glm::vec4{+2.0F, +2.0F, +2.0F, 2.0F};
 
-static constexpr auto ATTRACTOR_POSITION0 = glm::vec4{0.0F, +0.00F, +0.75F, 1.0F};
-static constexpr auto ATTRACTOR_POSITION1 = glm::vec4{0.0F, +0.00F, -0.75F, 1.0F};
-static constexpr auto ATTRACTOR_POSITION2 = glm::vec4{0.0F, +0.75F, +0.00F, 1.0F};
-static constexpr auto ATTRACTOR_POSITION3 = glm::vec4{0.0F, -0.75F, +0.00F, 1.0F};
+static constexpr auto ATTRACTOR_POSITIONS = std::array{
+    glm::vec4{0.0F, +0.00F, +0.75F, 1.0F},
+    glm::vec4{0.0F, +0.00F, -0.75F, 1.0F},
+    glm::vec4{0.0F, +0.75F, +0.00F, 1.0F},
+    glm::vec4{0.0F, -0.75F, +0.00F, 1.0F},
+};
 
-static constexpr auto Z_GEN_POS0 = -0.25F;
-static constexpr auto Z_GEN_POS1 = +0.25F;
-static constexpr auto Z_GEN_POS2 = +0.25F;
+static constexpr auto Z_GEN_POS = std::array<float, AttractorEffect::NUM_EMITTERS>{
+    -0.25F,
+    +0.25F,
+    +0.25F,
+};
+struct GenPosAndMaxStartPosOffset
+{
+  glm::vec4 pos;
+  glm::vec4 startPosOffset;
+};
+static constexpr auto GEN_POS_AND_MAX_START_POS_OFFSETS =
+    std::array<GenPosAndMaxStartPosOffset, AttractorEffect::NUM_EMITTERS>{
+        GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[0], 0.0F},
+                                   glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
+        GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[1], 0.0F},
+                                   glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
+        GenPosAndMaxStartPosOffset{glm::vec4{0.0F, 0.0F, Z_GEN_POS[2], 0.0F},
+                                   glm::vec4{0.0F, 0.0F, 0.00F, 0.0F}},
+};
 
-static constexpr auto GEN_POS0              = glm::vec4{0.0F, 0.0F, Z_GEN_POS0, 0.0F};
-static constexpr auto MAX_START_POS_OFFSET0 = glm::vec4{0.0F, 0.0F, 0.00F, 0.0F};
-static constexpr auto GEN_POS1              = glm::vec4{0.0F, 0.0F, Z_GEN_POS1, 0.0F};
-static constexpr auto MAX_START_POS_OFFSET1 = glm::vec4{0.0F, 0.0F, 0.00F, 0.0F};
-static constexpr auto GEN_POS2              = glm::vec4{0.0F, 0.0F, Z_GEN_POS2, 0.0F};
-static constexpr auto MAX_START_POS_OFFSET2 = glm::vec4{0.0F, 0.0F, 0.00F, 0.0F};
+static constexpr auto POS_LIFETIME_FACTORS = std::array<float, AttractorEffect::NUM_EMITTERS>{
+    2.5F,
+    2.0F,
+    6.0F,
+};
 
-static constexpr auto POS_LIFETIME_FACTOR0 = 2.5F;
-static constexpr auto POS_LIFETIME_FACTOR1 = 2.0F;
-static constexpr auto POS_LIFETIME_FACTOR2 = 6.0F;
+static constexpr auto UPDATE_RADIUS   = 0.55F;
+static constexpr auto UPDATE_RADIUS_X = std::array<float, AttractorEffect::NUM_EMITTERS>{
+    +UPDATE_RADIUS,
+    -UPDATE_RADIUS,
+    -UPDATE_RADIUS,
+};
+static constexpr auto UPDATE_RADIUS_Y = std::array<float, AttractorEffect::NUM_EMITTERS>{
+    +UPDATE_RADIUS,
+    +UPDATE_RADIUS,
+    +UPDATE_RADIUS,
+};
 
 static constexpr auto EULER_ACCELERATION = glm::vec4{0.0F, 0.0F, 0.0F, 0.0F};
 
 static constexpr auto DEFAULT_NUM_PARTICLES = 250000UZ;
 
 AttractorEffect::AttractorEffect(const size_t numParticles) noexcept
-  : m_system{0 == numParticles ? DEFAULT_NUM_PARTICLES : numParticles},
-    m_colorGenerator{std::make_unique<BasicColorGenerator>(
-        MIN_START_COLOR, MAX_START_COLOR, MIN_END_COLOR, MAX_END_COLOR)},
-    m_attractorUpdater{std::make_shared<AttractorUpdater>()},
+  : m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
     m_colorUpdater{std::make_shared<VelocityColorUpdater>(MIN_VELOCITY, MAX_VELOCITY)}
 {
   //
-  // common
+  // emitters:
   //
-  const auto numParticlesToUse = m_system.GetNumAllParticles();
-
+  const auto emitRate      = EMIT_RATE_FACTOR * static_cast<float>(m_system.GetNumAllParticles());
+  const auto timeGenerator = std::make_shared<BasicTimeGenerator>(MIN_LIFETIME, MAX_LIFETIME);
   const auto velocityGenerator =
       std::make_shared<SphereVelocityGenerator>(MIN_SPHERE_VELOCITY, MAX_SPHERE_VELOCITY);
+  const auto colorGenerator = std::make_shared<BasicColorGenerator>(
+      MIN_START_COLOR, MAX_START_COLOR, MIN_END_COLOR, MAX_END_COLOR);
 
-  const auto timeGenerator = std::make_shared<BasicTimeGenerator>(MIN_LIFETIME, MAX_LIFETIME);
+  for (auto i = 0UZ; i < NUM_EMITTERS; ++i)
+  {
+    m_particleEmitters[i] = std::make_shared<ParticleEmitter>();
+    m_particleEmitters[i]->SetEmitRate(emitRate);
 
-  //
-  // emitter 0:
-  //
-  m_particleEmitters[0] = std::make_shared<ParticleEmitter>();
-  m_particleEmitters[0]->SetEmitRate(EMIT_RATE_FACTOR * static_cast<float>(numParticlesToUse));
+    m_positionGenerators[i] =
+        std::make_shared<BoxPositionGenerator>(GEN_POS_AND_MAX_START_POS_OFFSETS[i].pos,
+                                               GEN_POS_AND_MAX_START_POS_OFFSETS[i].startPosOffset);
+    m_particleEmitters[i]->AddGenerator(m_positionGenerators[i]);
 
-  m_positionGenerators[0] = std::make_shared<BoxPositionGenerator>(GEN_POS0, MAX_START_POS_OFFSET0);
-  m_particleEmitters[0]->AddGenerator(m_positionGenerators[0]);
+    m_particleEmitters[i]->AddGenerator(colorGenerator);
+    m_particleEmitters[i]->AddGenerator(velocityGenerator);
+    m_particleEmitters[i]->AddGenerator(timeGenerator);
 
-  m_particleEmitters[0]->AddGenerator(m_colorGenerator);
-  m_particleEmitters[0]->AddGenerator(velocityGenerator);
-  m_particleEmitters[0]->AddGenerator(timeGenerator);
-  m_system.AddEmitter(m_particleEmitters[0]);
-
-  //
-  // emitter 1:
-  //
-  m_particleEmitters[1] = std::make_shared<ParticleEmitter>();
-  m_particleEmitters[1]->SetEmitRate(EMIT_RATE_FACTOR * static_cast<float>(numParticlesToUse));
-
-  m_positionGenerators[1] = std::make_shared<BoxPositionGenerator>(GEN_POS1, MAX_START_POS_OFFSET1);
-  m_particleEmitters[1]->AddGenerator(m_positionGenerators[1]);
-
-  m_particleEmitters[1]->AddGenerator(m_colorGenerator);
-  m_particleEmitters[1]->AddGenerator(velocityGenerator);
-  m_particleEmitters[1]->AddGenerator(timeGenerator);
-  m_system.AddEmitter(m_particleEmitters[1]);
-
-  //
-  // emitter 2:
-  //
-  m_particleEmitters[2] = std::make_shared<ParticleEmitter>();
-  m_particleEmitters[2]->SetEmitRate(EMIT_RATE_FACTOR * static_cast<float>(numParticlesToUse));
-
-  m_positionGenerators[2] = std::make_shared<BoxPositionGenerator>(GEN_POS2, MAX_START_POS_OFFSET2);
-  m_particleEmitters[2]->AddGenerator(m_positionGenerators[2]);
-
-  m_particleEmitters[2]->AddGenerator(m_colorGenerator);
-  m_particleEmitters[2]->AddGenerator(velocityGenerator);
-  m_particleEmitters[2]->AddGenerator(timeGenerator);
-  m_system.AddEmitter(m_particleEmitters[2]);
+    m_system.AddEmitter(m_particleEmitters[i]);
+  }
 
   //
   // updaters:
   //
   m_system.AddUpdater(m_colorUpdater);
 
-  m_attractorUpdater->AddAttractorPosition(ATTRACTOR_POSITION0);
-  m_attractorUpdater->AddAttractorPosition(ATTRACTOR_POSITION1);
-  m_attractorUpdater->AddAttractorPosition(ATTRACTOR_POSITION2);
-  m_attractorUpdater->AddAttractorPosition(ATTRACTOR_POSITION3);
-  m_system.AddUpdater(m_attractorUpdater);
+  auto attractorUpdater = std::make_shared<AttractorUpdater>();
+  for (const auto& attractorPos : ATTRACTOR_POSITIONS)
+  {
+    attractorUpdater->AddAttractorPosition(attractorPos);
+  }
+  m_system.AddUpdater(attractorUpdater);
 
   const auto timeUpdater = std::make_shared<BasicTimeUpdater>();
   m_system.AddUpdater(timeUpdater);
@@ -152,27 +150,17 @@ auto AttractorEffect::UpdateEffect(const double dt) -> void
   static auto s_lifetime = 0.0F;
   s_lifetime += static_cast<float>(dt);
 
-  static constexpr auto RADIUS = 0.55F;
-
   const auto zScale = 1.0F;
 
-  m_positionGenerators[0]->SetPosition(
-      {+RADIUS * std::sin(s_lifetime * POS_LIFETIME_FACTOR0),
-       +RADIUS * std::cos(s_lifetime * POS_LIFETIME_FACTOR0),
-       zScale * Z_GEN_POS0 * std::cos(s_lifetime * POS_LIFETIME_FACTOR0),
-       0.0F});
+  for (auto i = 0UZ; i < NUM_EMITTERS; ++i)
+  {
+    const auto angle = s_lifetime * POS_LIFETIME_FACTORS[i];
 
-  m_positionGenerators[1]->SetPosition(
-      {-RADIUS * std::sin(s_lifetime * POS_LIFETIME_FACTOR1),
-       +RADIUS * std::cos(s_lifetime * POS_LIFETIME_FACTOR1),
-       zScale * Z_GEN_POS1 * std::cos(s_lifetime * POS_LIFETIME_FACTOR1),
-       0.0F});
-
-  m_positionGenerators[2]->SetPosition(
-      {-RADIUS * std::sin(s_lifetime * POS_LIFETIME_FACTOR2),
-       +RADIUS * std::cos(s_lifetime * POS_LIFETIME_FACTOR2),
-       zScale * Z_GEN_POS2 * std::cos(s_lifetime * POS_LIFETIME_FACTOR2),
-       0.0F});
+    m_positionGenerators[i]->SetPosition({UPDATE_RADIUS_X[i] * std::sin(angle),
+                                          UPDATE_RADIUS_Y[i] * std::cos(angle),
+                                          zScale * Z_GEN_POS[i] * std::cos(angle),
+                                          0.0F});
+  }
 }
 
 } // namespace GOOM::VISUAL_FX::PARTICLES
