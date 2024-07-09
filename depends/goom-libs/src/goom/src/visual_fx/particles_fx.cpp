@@ -14,8 +14,8 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
-import Particles.Effects.Attractor;
-import Particles.Effects.Effect;
+import Particles.Effect;
+import Goom.VisualFx.ParticlesFx.Particles.AttractorEffect;
 import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;
@@ -50,8 +50,8 @@ using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::CircleDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
-using PARTICLES::EFFECTS::AttractorEffect;
-using PARTICLES::EFFECTS::IEffect;
+using PARTICLES::AttractorEffect;
+using ::PARTICLES::EFFECTS::IEffect;
 using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;
@@ -207,10 +207,10 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
   auto circleDrawer = CircleDrawer{*m_draw};
   auto pixelDrawer  = PixelDrawer{*m_draw};
 
-  for (auto i = 0U; i < effect.GetSystem()->GetNumAliveParticles(); ++i)
+  for (auto i = 0U; i < effect.GetSystem().GetNumAliveParticles(); ++i)
   {
-    const auto pos       = effect.GetSystem()->GetFinalData()->GetPosition(i);
-    const auto color     = effect.GetSystem()->GetFinalData()->GetColor(i);
+    const auto pos       = effect.GetSystem().GetFinalData()->GetPosition(i);
+    const auto color     = effect.GetSystem().GetFinalData()->GetColor(i);
     const auto screenPos = GetScreenPos(pos);
 
     if ((screenPos.x < 0) or (screenPos.y < 0))
