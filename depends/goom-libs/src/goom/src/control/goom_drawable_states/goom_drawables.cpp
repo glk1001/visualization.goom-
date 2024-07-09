@@ -1,11 +1,7 @@
 module;
 
-#include <algorithm>
-#include <bitset>
 #include <cstdint>
-#include <ranges>
 #include <string>
-#include <string_view>
 #include <vector>
 
 module Goom.Control.GoomDrawables;
@@ -16,6 +12,8 @@ import Goom.Lib.AssertUtils;
 namespace GOOM::CONTROL
 {
 
+// Clang-tidy False negative - EnumMap m_drawablesBuffIntensities has a default constructor.
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 GoomDrawablesState::GoomDrawablesState(
     const std::vector<GoomDrawables>& drawables,
     const std::vector<float>& drawablesBuffIntensitiesVec) noexcept
@@ -51,25 +49,14 @@ auto GoomDrawablesState::GetName() const -> const std::string&
 {
   if (m_stateName.empty())
   {
-    m_stateName = GetDrawablesStateName();
+    m_stateName = GetDrawablesStateName(m_drawables);
   }
   return m_stateName;
 }
 
-auto GoomDrawablesState::GetDrawablesStateName() const -> std::string
-{
-  static constexpr auto DELIM = std::string_view{"_"};
-
-  return std::ranges::to<std::string>(
-      m_drawables |
-      std::views::transform([](const auto drawable) { return DRAWABLE_NAMES[drawable]; }) |
-      std::views::join_with(DELIM));
-}
-
 auto GoomDrawablesState::IsMultiThreaded() const noexcept -> bool
 {
-  return std::ranges::any_of(m_drawables,
-                             [](const auto& drawable) { return STATE_MULTI_THREADED[drawable]; });
+  return AreAnyMultiThreaded(m_drawables);
 }
 
 } // namespace GOOM::CONTROL

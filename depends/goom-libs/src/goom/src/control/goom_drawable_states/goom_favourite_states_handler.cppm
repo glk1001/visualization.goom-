@@ -41,8 +41,6 @@ private:
   Weights<Favourites> m_weightedFavourites;
   static const EnumMap<Favourites, std::vector<GoomDrawables>> FAVOURITE_DRAWABLES;
   auto ChangeToFavourite(Favourites favourite) -> void;
-  [[nodiscard]] auto GetBuffIntensities(const std::vector<GoomDrawables>& drawables) const noexcept
-      -> std::vector<float>;
 
   GoomDrawablesState m_currentDrawablesState;
   [[nodiscard]] auto GetGoomDrawablesState(Favourites favourite) const noexcept

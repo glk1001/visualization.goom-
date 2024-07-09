@@ -1,8 +1,6 @@
 module;
 
-#include <algorithm>
 #include <cstdint>
-#include <ranges>
 #include <vector>
 
 module Goom.Control.GoomRandomStateHandler;
@@ -124,7 +122,8 @@ auto GoomRandomStateHandler::GetNewRandomState(const uint32_t numRandomDrawables
     -> GoomDrawablesState
 {
   const auto randomDrawables = GetNextRandomDrawables(numRandomDrawables);
-  return GoomDrawablesState{randomDrawables, GetBuffIntensities(randomDrawables)};
+  return GoomDrawablesState{randomDrawables,
+                            GetRandInRangeBuffIntensities(*m_goomRand, randomDrawables)};
 }
 
 auto GoomRandomStateHandler::AddExtraDrawableToCurrentState() -> void
@@ -139,7 +138,7 @@ auto GoomRandomStateHandler::AddExtraDrawableToCurrentState() -> void
   Expects(not m_drawablesPool.empty());
 
   const auto randomDrawable = GetRandomDrawablesFromPool(1);
-  const auto buffIntensity  = GetBuffIntensities(randomDrawable);
+  const auto buffIntensity  = GetRandInRangeBuffIntensities(*m_goomRand, randomDrawable);
 
   auto randomDrawables = m_currentDrawablesState.GetDrawables();
   randomDrawables.emplace_back(randomDrawable[0]);
@@ -159,7 +158,7 @@ auto GoomRandomStateHandler::AddRemoveDrawableToCurrentState() -> void
   }
 
   const auto randomDrawable = GetRandomDrawablesFromPool(1);
-  const auto buffIntensity  = GetBuffIntensities(randomDrawable);
+  const auto buffIntensity  = GetRandInRangeBuffIntensities(*m_goomRand, randomDrawable);
 
   auto randomDrawables = m_currentDrawablesState.GetDrawables();
   m_drawablesPool.insert(begin(m_drawablesPool), randomDrawables.back());
@@ -202,7 +201,8 @@ auto GoomRandomStateHandler::GetNextRandomDrawables(const uint32_t numDrawables)
   static constexpr auto MAX_TRIES = 10U;
   for (auto i = 0U; i < MAX_TRIES; ++i)
   {
-    if ((numDrawables > 1) or m_goomRand->ProbabilityOf(PROB_SINGLE_DRAWABLE[randomDrawables[0]]))
+    if ((numDrawables > 1) or
+        m_goomRand->ProbabilityOf(GetProbCanBeSingleDrawable(randomDrawables[0])))
     {
       break;
     }
@@ -229,15 +229,6 @@ auto GoomRandomStateHandler::GetRandomDrawablesFromPool(const uint32_t numDrawab
   m_drawablesPool.erase(cend(m_drawablesPool) - numDrawables, cend(m_drawablesPool));
 
   return randomDrawables;
-}
-
-auto GoomRandomStateHandler::GetBuffIntensities(
-    const std::vector<GoomDrawables>& drawables) const noexcept -> std::vector<float>
-{
-  return std::ranges::to<std::vector<float>>(
-      drawables | std::views::transform(
-                      [this](const auto drawable)
-                      { return m_goomRand->GetRandInRange(BUFF_INTENSITY_RANGES[drawable]); }));
 }
 
 } // namespace GOOM::CONTROL

@@ -1,7 +1,6 @@
 module;
 
 #include <array>
-#include <ranges>
 #include <vector>
 
 module Goom.Control.GoomForcedStateHandler;
@@ -9,12 +8,9 @@ module Goom.Control.GoomForcedStateHandler;
 import Goom.Control.GoomDrawables;
 import Goom.Control.GoomDrawablesData;
 import Goom.Control.GoomStateHandler;
-import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::CONTROL
 {
-
-using UTILS::MATH::GetMidpoint;
 
 //static constexpr auto FORCED_STATE = std::array{GoomDrawables::DOTS};
 //static constexpr auto FORCED_STATE = std::array{GoomDrawables::TUBES};
@@ -33,15 +29,7 @@ GoomForcedStateHandler::GoomForcedStateHandler() noexcept
 auto GoomForcedStateHandler::GetGoomDrawablesState(
     const std::vector<GoomDrawables>& drawables) noexcept -> GoomDrawablesState
 {
-  return GoomDrawablesState{drawables, GetBuffIntensities(drawables)};
-}
-
-auto GoomForcedStateHandler::GetBuffIntensities(
-    const std::vector<GoomDrawables>& drawables) noexcept -> std::vector<float>
-{
-  return std::ranges::to<std::vector<float>>(
-      drawables | std::views::transform([](const auto drawable)
-                                        { return GetMidpoint(BUFF_INTENSITY_RANGES[drawable]); }));
+  return GoomDrawablesState{drawables, GetMidpointRangeBuffIntensities(drawables)};
 }
 
 } // namespace GOOM::CONTROL

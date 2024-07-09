@@ -23,8 +23,6 @@ private:
   GoomDrawablesState m_constDrawablesState;
   [[nodiscard]] static auto GetGoomDrawablesState(
       const std::vector<GoomDrawables>& drawables) noexcept -> GoomDrawablesState;
-  static auto GetBuffIntensities(
-      const std::vector<GoomDrawables>& drawables) noexcept -> std::vector<float>;
 };
 
 } // namespace GOOM::CONTROL

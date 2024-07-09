@@ -31,6 +31,8 @@ enum class GoomDrawables : UnderlyingEnumType
   TUBES,
 };
 
+// Clang-tidy False negative - EnumMap m_drawablesBuffIntensities has a default constructor.
+// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init,hicpp-member-init)
 class GoomDrawablesState
 {
   using DrawablesBitset = std::bitset<NUM<GoomDrawables>>;
@@ -63,7 +65,6 @@ private:
   auto UpdateDrawablesAsBitset() noexcept -> void;
 
   mutable std::string m_stateName;
-  [[nodiscard]] auto GetDrawablesStateName() const -> std::string;
 };
 
 } // namespace GOOM::CONTROL

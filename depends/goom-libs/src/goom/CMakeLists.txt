@@ -113,6 +113,7 @@ set(GoomControl_modules
 
 set(GoomControl_source_files
     src/control/goom_drawable_states/goom_drawables.cpp
+    src/control/goom_drawable_states/goom_drawables_data.cpp
     src/control/goom_drawable_states/goom_favourite_states_handler.cpp
     src/control/goom_drawable_states/goom_forced_state_handler.cpp
     src/control/goom_drawable_states/goom_random_state_handler.cpp
