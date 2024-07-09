@@ -25,7 +25,6 @@ class AttractorEffect : public IEffect
 {
 public:
   static constexpr auto NUM_EMITTERS = 3U;
-  static constexpr auto NUM_BOX_POS_GENERATORS = 3U;
 
   explicit AttractorEffect(size_t numParticles) noexcept;
 
@@ -43,12 +42,13 @@ private:
   ParticleSystem m_system;
 
   std::shared_ptr<VelocityColorUpdater> m_colorUpdater;
-
   std::array<std::shared_ptr<ParticleEmitter>, NUM_EMITTERS> m_particleEmitters;
+  std::array<std::shared_ptr<BoxPositionGenerator>, NUM_EMITTERS> m_positionGenerators;
 
-  std::array<std::shared_ptr<BoxPositionGenerator>, NUM_BOX_POS_GENERATORS> m_positionGenerators;
+  auto AddEmitters() noexcept -> void;
+  auto AddUpdaters() noexcept -> void;
 
-  auto UpdateEffect(double dt) -> void;
+  auto UpdateEffect(double dt) noexcept -> void;
 };
 
 } // namespace GOOM::VISUAL_FX::PARTICLES
@@ -69,6 +69,15 @@ inline auto AttractorEffect::SetTintColor(const glm::vec4& tintColor) noexcept -
 inline auto AttractorEffect::SetTintMixAmount(const float mixAmount) noexcept -> void
 {
   m_colorUpdater->SetTintMixAmount(mixAmount);
+}
+
+inline auto AttractorEffect::SetMaxNumAliveParticles(const size_t maxNumAliveParticles) noexcept
+    -> void
+{
+  for (auto& particleEmitter : m_particleEmitters)
+  {
+    particleEmitter->SetMaxNumAliveParticles(maxNumAliveParticles);
+  }
 }
 
 inline auto AttractorEffect::Update(const double dt) noexcept -> void
