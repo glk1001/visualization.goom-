@@ -27,10 +27,9 @@ public:
 
   auto Reset() noexcept -> void override;
 
-  auto SetTintColor([[maybe_unused]] const glm::vec4& tintColor) noexcept -> void override;
-  auto SetTintMixAmount([[maybe_unused]] const float mixAmount) noexcept -> void override;
-  auto SetMaxNumAliveParticles([[maybe_unused]] const size_t maxNumAliveParticles) noexcept
-      -> void override;
+  auto SetTintColor(const glm::vec4& tintColor) noexcept -> void override;
+  auto SetTintMixAmount(float mixAmount) noexcept -> void override;
+  auto SetMaxNumAliveParticles(size_t maxNumAliveParticles) noexcept -> void override;
 
   auto Update(double dt) noexcept -> void override;
 

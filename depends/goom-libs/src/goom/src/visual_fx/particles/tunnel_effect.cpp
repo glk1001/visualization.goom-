@@ -21,8 +21,10 @@ using ::PARTICLES::UPDATERS::BasicTimeUpdater;
 using ::PARTICLES::UPDATERS::EulerUpdater;
 using ::PARTICLES::UPDATERS::PositionColorUpdater;
 
+static constexpr auto DEFAULT_NUM_PARTICLES = 10000U;
+
 TunnelEffect::TunnelEffect(const size_t numParticles) noexcept
-  : m_system{0 == numParticles ? 10000 : numParticles}
+  : m_system{0 == numParticles ? DEFAULT_NUM_PARTICLES : numParticles}
 {
   const auto numParticlesToUse = m_system.GetNumAllParticles();
 

@@ -22,8 +22,10 @@ using ::PARTICLES::UPDATERS::EulerUpdater;
 using ::PARTICLES::UPDATERS::FloorUpdater;
 using ::PARTICLES::UPDATERS::VelocityColorUpdater;
 
+static constexpr auto DEFAULT_NUM_PARTICLES = 10000U;
+
 FountainEffect::FountainEffect(const size_t numParticles) noexcept
-  : m_system{0 == numParticles ? 10000 : numParticles}
+  : m_system{0 == numParticles ? DEFAULT_NUM_PARTICLES : numParticles}
 {
   const auto numParticlesToUse = m_system.GetNumAllParticles();
 

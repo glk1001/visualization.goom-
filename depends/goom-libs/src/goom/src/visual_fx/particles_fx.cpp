@@ -44,7 +44,6 @@ namespace GOOM::VISUAL_FX
 
 using COLOR::ColorAdjustment;
 using COLOR::ColorMapPtrWrapper;
-using COLOR::GetBrighterColor;
 using COLOR::WeightedRandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::CircleDrawer;
