@@ -27,6 +27,7 @@ import Goom.Utils.Graphics.Camera;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Graphics.PointUtils;
 import Goom.Utils.Graphics.SmallImageBitmaps;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
@@ -55,7 +56,9 @@ using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 using UTILS::MATH::U_HALF;
@@ -66,16 +69,12 @@ struct EffectData
 {
   std::shared_ptr<IEffect> effect;
   const char* name{};
-  uint32_t numParticles             = 1U;
-  uint32_t minMaxNumAliveParticles  = 1U;
-  uint32_t maxMaxNumAliveParticles  = 1U;
-  float minMixAmount                = 1.0F;
-  float maxMixAmount                = 1.0F;
-  float brightness                  = 1.0F;
-  float minDeltaTime                = 1.0;
-  float maxDeltaTime                = 1.0;
-  uint32_t minNumUpdatesBeforeReset = 1U;
-  uint32_t maxNumUpdatesBeforeReset = 1U;
+  uint32_t numParticles = 1U;
+  float brightness      = 1.0F;
+  NumberRange<uint32_t> numAliveParticlesRange{1U, 1U};
+  NumberRange<float> mixAmountRange{1.0F, 1.0F};
+  NumberRange<float> deltaTimeRange{1.0F, 1.0F};
+  NumberRange<uint32_t> numUpdatesBeforeResetRange{1U, 1U};
   Camera::Properties cameraProperties{};
 };
 
@@ -122,17 +121,21 @@ private:
 class EffectFactory
 {
 public:
-  [[nodiscard]] static auto Create(const char* name) -> EffectData;
+  [[nodiscard]] static auto Create(const IGoomRand& goomRand, const char* name) -> EffectData;
 };
 
-auto EffectFactory::Create(const char* const name) -> EffectData
+auto EffectFactory::Create(const IGoomRand& goomRand, const char* const name) -> EffectData
 {
-  static constexpr auto DEFAULT_MIN_DELTA_TIME               = 1.0F / 120.0F;
-  static constexpr auto DEFAULT_MAX_DELTA_TIME               = 1.0F / 30.0F;
-  static constexpr auto DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET = 150U;
-  static constexpr auto DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET = 250U;
-  static constexpr auto DEFAULT_MIN_MIX_AMOUNT               = 0.75F;
-  static constexpr auto DEFAULT_MAX_MIX_AMOUNT               = 1.00F;
+  static constexpr auto DEFAULT_NUM_PARTICLES = 20000U;
+  static constexpr auto DEFAULT_WORLD_SCALE   = 0.5F;
+  static constexpr auto DEFAULT_BRIGHTNESS    = 2.50F;
+
+  static constexpr auto DEFAULT_NUM_ALIVE_PARTICLES_RANGE =
+      NumberRange{U_HALF * DEFAULT_NUM_PARTICLES, DEFAULT_NUM_PARTICLES};
+  static constexpr auto DEFAULT_MIX_AMOUNT_RANGE = NumberRange{0.05F, 0.95F};
+  static constexpr auto DEFAULT_DELTA_TIME_RANGE = NumberRange{1.0F / 120.0F, 1.0F / 30.0F};
+  static constexpr auto DEFAULT_NUM_UPDATES_BEFORE_RESET_RANGE = NumberRange{150U, 250U};
+
   static constexpr auto DEFAULT_FIELD_OF_VIEW_DEGREES =
       Camera::Properties::DEFAULT_FIELD_OF_VIEW_DEGREES;
   static constexpr auto DEFAULT_NEAR_Z_CLIP_PLANE = Camera::Properties::DEFAULT_NEAR_Z_CLIP_PLANE;
@@ -140,31 +143,25 @@ auto EffectFactory::Create(const char* const name) -> EffectData
   static constexpr auto DEFAULT_EYE_POSITION      = glm::vec3{0.0F, 0.0F, -100.0F};
   static constexpr auto DEFAULT_TARGET_POSITION   = glm::vec3{0.0F, 0.0F, 0.0F};
 
-  static constexpr auto NUM_PARTICLES = 20000U;
-  static constexpr auto WORLD_SCALE   = 0.5F;
-  static constexpr auto BRIGHTNESS    = 2.50F;
-  const auto effect                   = std::make_shared<AttractorEffect>(NUM_PARTICLES);
+  const auto effect = std::make_shared<AttractorEffect>(goomRand, DEFAULT_NUM_PARTICLES);
+
   return {
-      .effect                   = effect,
-      .name                     = name,
-      .numParticles             = NUM_PARTICLES,
-      .minMaxNumAliveParticles  = U_HALF * NUM_PARTICLES,
-      .maxMaxNumAliveParticles  = NUM_PARTICLES,
-      .minMixAmount             = DEFAULT_MIN_MIX_AMOUNT,
-      .maxMixAmount             = DEFAULT_MAX_MIX_AMOUNT,
-      .brightness               = BRIGHTNESS,
-      .minDeltaTime             = DEFAULT_MIN_DELTA_TIME,
-      .maxDeltaTime             = DEFAULT_MAX_DELTA_TIME,
-      .minNumUpdatesBeforeReset = DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET,
-      .maxNumUpdatesBeforeReset = DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET,
-      .cameraProperties         = {
-                                   .scale              = WORLD_SCALE,
-                                   .fieldOfViewDegrees = DEFAULT_FIELD_OF_VIEW_DEGREES,
-                                   .nearZClipPlane     = DEFAULT_NEAR_Z_CLIP_PLANE,
-                                   .farZClipPlane      = DEFAULT_FAR_Z_CLIP_PLANE,
-                                   .eyePosition        = DEFAULT_EYE_POSITION,
-                                   .targetPosition     = DEFAULT_TARGET_POSITION,
-                                   }
+      .effect                     = effect,
+      .name                       = name,
+      .numParticles               = DEFAULT_NUM_PARTICLES,
+      .brightness                 = DEFAULT_BRIGHTNESS,
+      .numAliveParticlesRange     = DEFAULT_NUM_ALIVE_PARTICLES_RANGE,
+      .mixAmountRange             = DEFAULT_MIX_AMOUNT_RANGE,
+      .deltaTimeRange             = DEFAULT_DELTA_TIME_RANGE,
+      .numUpdatesBeforeResetRange = DEFAULT_NUM_UPDATES_BEFORE_RESET_RANGE,
+      .cameraProperties           = {
+                                     .scale              = DEFAULT_WORLD_SCALE,
+                                     .fieldOfViewDegrees = DEFAULT_FIELD_OF_VIEW_DEGREES,
+                                     .nearZClipPlane     = DEFAULT_NEAR_Z_CLIP_PLANE,
+                                     .farZClipPlane      = DEFAULT_FAR_Z_CLIP_PLANE,
+                                     .eyePosition        = DEFAULT_EYE_POSITION,
+                                     .targetPosition     = DEFAULT_TARGET_POSITION,
+                                     }
   };
 }
 
@@ -301,13 +298,12 @@ private:
 
   ColorMapPtrWrapper m_tintMainColorMap{nullptr};
   ColorMapPtrWrapper m_tintLowColorMap{nullptr};
-  static constexpr auto TINT_COLORS_NUM_STEPS = 100U;
+  static constexpr auto TINT_COLORS_NUM_STEPS_RANGE = NumberRange{10U, 100U};
   TValue m_tintColorT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS}
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS_RANGE.min}
   };
 
-  static constexpr auto MIN_DRAW_CIRCLE_FREQUENCY = 5U;
-  static constexpr auto MAX_DRAW_CIRCLE_FREQUENCY = 100U;
+  static constexpr auto DRAW_CIRCLE_FREQUENCY_RANGE = NumberRange{5U, 100U};
 
   EffectData m_effectData;
   uint32_t m_numUpdatesBeforeReset;
@@ -381,11 +377,10 @@ ParticlesFx::ParticlesFxImpl::ParticlesFxImpl(
     FxHelper& fxHelper, [[maybe_unused]] const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper},
     //m_smallBitmaps{&smallBitmaps},
-    m_effectData{EffectFactory::Create("attractor")},
-    m_numUpdatesBeforeReset{fxHelper.GetGoomRand().GetRandInRange(
-        m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset + 1)},
-    m_deltaTime{m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.minDeltaTime,
-                                                         m_effectData.maxDeltaTime)},
+    m_effectData{EffectFactory::Create(m_fxHelper->GetGoomRand(), "attractor")},
+    m_numUpdatesBeforeReset{
+        fxHelper.GetGoomRand().GetRandInRange(m_effectData.numUpdatesBeforeResetRange)},
+    m_deltaTime{m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.deltaTimeRange)},
     m_camera{m_effectData.cameraProperties, fxHelper.GetDimensions()},
     m_renderer{fxHelper.GetDraw(), fxHelper.GetGoomLogger(), m_effectData.brightness, m_camera}
 {
@@ -395,13 +390,15 @@ inline auto ParticlesFx::ParticlesFxImpl::ResetEffect() noexcept -> void
 {
   m_effectData.effect->Reset();
 
-  m_effectData.effect->SetMaxNumAliveParticles(m_fxHelper->GetGoomRand().GetRandInRange(
-      m_effectData.minMaxNumAliveParticles, m_effectData.maxMaxNumAliveParticles + 1U));
-  m_effectData.effect->SetTintMixAmount(m_fxHelper->GetGoomRand().GetRandInRange(
-      m_effectData.minMixAmount, m_effectData.maxMixAmount));
+  m_effectData.effect->SetMaxNumAliveParticles(
+      m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.numAliveParticlesRange));
+  m_effectData.effect->SetTintMixAmount(
+      m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.mixAmountRange));
 
-  m_numUpdatesBeforeReset = m_fxHelper->GetGoomRand().GetRandInRange(
-      m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset + 1U);
+  m_numUpdatesBeforeReset =
+      m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.numAliveParticlesRange);
+
+  m_tintColorT.SetNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(TINT_COLORS_NUM_STEPS_RANGE));
 
   ChangeEffectSpeed();
 }
@@ -415,11 +412,13 @@ inline auto ParticlesFx::ParticlesFxImpl::ChangeEffectSpeed() noexcept -> void
 
   if (not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_INCREASE_SPEED))
   {
-    m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(m_deltaTime, m_effectData.maxDeltaTime);
+    m_deltaTime =
+        m_fxHelper->GetGoomRand().GetRandInRange(m_deltaTime, m_effectData.deltaTimeRange.max);
   }
   else
   {
-    m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.minDeltaTime, m_deltaTime);
+    m_deltaTime =
+        m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.deltaTimeRange.min, m_deltaTime);
   }
 }
 
@@ -437,8 +436,8 @@ inline auto ParticlesFx::ParticlesFxImpl::SetWeightedColorMaps(
   m_tintLowColorMap =
       WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha}.GetRandomColorMap();
 
-  m_renderer.SetDrawCircleFrequency(m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_DRAW_CIRCLE_FREQUENCY, MAX_DRAW_CIRCLE_FREQUENCY + 1));
+  m_renderer.SetDrawCircleFrequency(
+      m_fxHelper->GetGoomRand().GetRandInRange(DRAW_CIRCLE_FREQUENCY_RANGE));
 }
 
 inline auto ParticlesFx::ParticlesFxImpl::ChangePixelBlender(

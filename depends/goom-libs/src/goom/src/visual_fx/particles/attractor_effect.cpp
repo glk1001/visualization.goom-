@@ -8,6 +8,7 @@ module Goom.VisualFx.ParticlesFx.Particles.AttractorEffect;
 
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
+import Goom.Utils.Math.GoomRandBase;
 
 namespace GOOM::VISUAL_FX::PARTICLES
 {
@@ -20,23 +21,24 @@ using ::PARTICLES::GENERATORS::SphereVelocityGenerator;
 using ::PARTICLES::UPDATERS::AttractorUpdater;
 using ::PARTICLES::UPDATERS::BasicTimeUpdater;
 using ::PARTICLES::UPDATERS::EulerUpdater;
+using ::PARTICLES::UPDATERS::IColorUpdater;
+using ::PARTICLES::UPDATERS::PositionColorUpdater;
 using ::PARTICLES::UPDATERS::VelocityColorUpdater;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 
-static constexpr auto EMIT_RATE_FACTOR = 0.1F;
+static constexpr auto EMIT_RATE_FACTOR_RANGE = NumberRange{0.1F, 0.9F};
 
 static constexpr auto MIN_SPHERE_VELOCITY = 0.1F;
-static constexpr auto MAX_SPHERE_VELOCITY = 0.1F;
+static constexpr auto MAX_SPHERE_VELOCITY = 0.5F;
 
 static constexpr auto MIN_LIFETIME = 2.0F;
-static constexpr auto MAX_LIFETIME = 100.0F;
+static constexpr auto MAX_LIFETIME = 200.0F;
 
-static constexpr auto MIN_START_COLOR = glm::vec4{0.39F, 0.39F, 0.39F, 1.00F};
-static constexpr auto MAX_START_COLOR = glm::vec4{0.69F, 0.69F, 0.69F, 1.00F};
-static constexpr auto MIN_END_COLOR   = glm::vec4{0.09F, 0.09F, 0.09F, 0.00F};
-static constexpr auto MAX_END_COLOR   = glm::vec4{0.39F, 0.39F, 0.39F, 0.25F};
-
-static constexpr auto MIN_VELOCITY = glm::vec4{-0.5F, -0.5F, -0.5F, 0.0F};
-static constexpr auto MAX_VELOCITY = glm::vec4{+2.0F, +2.0F, +2.0F, 2.0F};
+static constexpr auto MIN_START_COLOR = glm::vec4{0.10F, 0.10F, 0.10F, 1.00F};
+static constexpr auto MAX_START_COLOR = glm::vec4{0.90F, 0.90F, 0.90F, 1.00F};
+static constexpr auto MIN_END_COLOR   = glm::vec4{0.05F, 0.05F, 0.05F, 0.00F};
+static constexpr auto MAX_END_COLOR   = glm::vec4{0.30F, 0.30F, 0.30F, 0.25F};
 
 static constexpr auto ATTRACTOR_POSITIONS = std::array{
     glm::vec4{0.0F, +0.00F, +0.75F, 1.0F},
@@ -89,21 +91,72 @@ static constexpr auto UPDATE_RADIUS_Y = std::array{
 };
 static_assert(UPDATE_RADIUS_Y.size() == AttractorEffect::NUM_EMITTERS);
 
-static constexpr auto EULER_ACCELERATION = glm::vec4{0.0F, 0.0F, 0.0F, 0.0F};
+static constexpr auto PROB_BIG_EULER_ACCELERATION    = 0.05F;
+static constexpr auto PROB_EQUAL_EULER_ACCELERATION  = 0.95F;
+static constexpr auto SMALL_EULER_ACCELERATION_RANGE = NumberRange{0.0F, 0.1F};
+static constexpr auto BIG_EULER_ACCELERATION_RANGE   = NumberRange{0.1F, 10.0F};
+
+static constexpr auto PROB_POS_COLOR_UPDATER = 0.5F;
+
+static constexpr auto MIN_COLOR_POSITION = glm::vec4{-0.5F, -0.5F, -0.5F, 0.0F};
+static constexpr auto MAX_COLOR_POSITION = glm::vec4{+2.0F, +3.0F, +3.0F, 2.0F};
+
+static constexpr auto MIN_VELOCITY = glm::vec4{-0.5F, -0.5F, -0.5F, 0.0F};
+static constexpr auto MAX_VELOCITY = glm::vec4{+2.0F, +2.0F, +2.0F, 2.0F};
 
 static constexpr auto DEFAULT_NUM_PARTICLES = 250000U;
 
-AttractorEffect::AttractorEffect(const size_t numParticles) noexcept
-  : m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
-    m_colorUpdater{std::make_shared<VelocityColorUpdater>(MIN_VELOCITY, MAX_VELOCITY)}
+AttractorEffect::AttractorEffect(const IGoomRand& goomRand, const size_t numParticles) noexcept
+  : m_goomRand{&goomRand},
+    m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
+    m_colorUpdater{MakeColorUpdater()},
+    m_eulerUpdater{std::make_shared<EulerUpdater>(GetNewEulerAcceleration())}
 {
   AddEmitters();
   AddUpdaters();
 }
 
+auto AttractorEffect::MakeColorUpdater() const noexcept -> std::shared_ptr<IColorUpdater>
+{
+  if (m_goomRand->ProbabilityOf(PROB_POS_COLOR_UPDATER))
+  {
+    return std::make_shared<PositionColorUpdater>(MIN_COLOR_POSITION, MAX_COLOR_POSITION);
+  }
+  return std::make_shared<VelocityColorUpdater>(MIN_VELOCITY, MAX_VELOCITY);
+}
+
+auto AttractorEffect::GetNewEmitRate() const noexcept -> float
+{
+  return m_goomRand->GetRandInRange(EMIT_RATE_FACTOR_RANGE) *
+         static_cast<float>(m_system.GetNumAllParticles());
+}
+
+auto AttractorEffect::GetNewEulerAcceleration() const noexcept -> glm::vec4
+{
+  if (m_goomRand->ProbabilityOf(PROB_EQUAL_EULER_ACCELERATION))
+  {
+    const auto eulerAcceleration = m_goomRand->ProbabilityOf(PROB_BIG_EULER_ACCELERATION)
+                                       ? m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE)
+                                       : m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE);
+    return {eulerAcceleration, eulerAcceleration, eulerAcceleration, 0.0F};
+  }
+
+  if (m_goomRand->ProbabilityOf(PROB_BIG_EULER_ACCELERATION))
+  {
+    return {m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE),
+            m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE),
+            m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE),
+            0.0F};
+  }
+  return {m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE),
+          m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE),
+          m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE),
+          0.0F};
+}
+
 auto AttractorEffect::AddEmitters() noexcept -> void
 {
-  const auto emitRate      = EMIT_RATE_FACTOR * static_cast<float>(m_system.GetNumAllParticles());
+  const auto emitRate      = GetNewEmitRate();
   const auto timeGenerator = std::make_shared<BasicTimeGenerator>(MIN_LIFETIME, MAX_LIFETIME);
   const auto velocityGenerator =
       std::make_shared<SphereVelocityGenerator>(MIN_SPHERE_VELOCITY, MAX_SPHERE_VELOCITY);
@@ -131,6 +184,7 @@ auto AttractorEffect::AddEmitters() noexcept -> void
 auto AttractorEffect::AddUpdaters() noexcept -> void
 {
   m_system.AddUpdater(m_colorUpdater);
+  m_system.AddUpdater(m_eulerUpdater);
 
   auto attractorUpdater = std::make_shared<AttractorUpdater>();
   for (const auto& attractorPos : ATTRACTOR_POSITIONS)
@@ -141,9 +195,25 @@ auto AttractorEffect::AddUpdaters() noexcept -> void
 
   const auto timeUpdater = std::make_shared<BasicTimeUpdater>();
   m_system.AddUpdater(timeUpdater);
+}
 
-  const auto eulerUpdater = std::make_shared<EulerUpdater>(EULER_ACCELERATION);
-  m_system.AddUpdater(eulerUpdater);
+auto AttractorEffect::Reset() noexcept -> void
+{
+  m_system.Reset();
+
+  const auto oldColorUpdater = m_colorUpdater;
+  m_colorUpdater             = MakeColorUpdater();
+  m_system.ReplaceUpdater(oldColorUpdater, m_colorUpdater);
+
+  const auto oldEulerUpdater = m_eulerUpdater;
+  m_eulerUpdater             = std::make_shared<EulerUpdater>(GetNewEulerAcceleration());
+  m_system.ReplaceUpdater(oldEulerUpdater, m_eulerUpdater);
+
+  const auto emitRate = GetNewEmitRate();
+  for (auto i = 0U; i < NUM_EMITTERS; ++i)
+  {
+    m_particleEmitters.at(i)->SetEmitRate(emitRate);
+  }
 }
 
 auto AttractorEffect::UpdateEffect(const double dt) noexcept -> void
