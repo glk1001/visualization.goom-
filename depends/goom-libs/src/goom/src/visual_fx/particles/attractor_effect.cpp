@@ -25,10 +25,10 @@ using ::PARTICLES::UPDATERS::VelocityColorUpdater;
 static constexpr auto EMIT_RATE_FACTOR = 0.1F;
 
 static constexpr auto MIN_SPHERE_VELOCITY = 0.1F;
-static constexpr auto MAX_SPHERE_VELOCITY = 0.1F;
+static constexpr auto MAX_SPHERE_VELOCITY = 0.5F;
 
 static constexpr auto MIN_LIFETIME = 2.0F;
-static constexpr auto MAX_LIFETIME = 100.0F;
+static constexpr auto MAX_LIFETIME = 200.0F;
 
 static constexpr auto MIN_START_COLOR = glm::vec4{0.39F, 0.39F, 0.39F, 1.00F};
 static constexpr auto MAX_START_COLOR = glm::vec4{0.69F, 0.69F, 0.69F, 1.00F};
