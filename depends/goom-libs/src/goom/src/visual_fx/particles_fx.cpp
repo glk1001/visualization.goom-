@@ -128,12 +128,12 @@ public:
 
 auto EffectFactory::Create(const char* const name) -> EffectData
 {
-  static constexpr auto DEFAULT_MIN_DELTA_TIME               = 1.0F / 120.0F;
-  static constexpr auto DEFAULT_MAX_DELTA_TIME               = 1.0F / 30.0F;
+  static constexpr auto DEFAULT_MIN_DELTA_TIME               = 1.0F / 3.0F;
+  static constexpr auto DEFAULT_MAX_DELTA_TIME               = 1.0F / 2.0F;
   static constexpr auto DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET = 150U;
   static constexpr auto DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET = 250U;
-  static constexpr auto DEFAULT_MIN_MIX_AMOUNT               = 0.75F;
-  static constexpr auto DEFAULT_MAX_MIX_AMOUNT               = 1.00F;
+  static constexpr auto DEFAULT_MIN_MIX_AMOUNT               = 0.5F;
+  static constexpr auto DEFAULT_MAX_MIX_AMOUNT               = 0.6F;
   static constexpr auto DEFAULT_FIELD_OF_VIEW_DEGREES =
       Camera::Properties::DEFAULT_FIELD_OF_VIEW_DEGREES;
   static constexpr auto DEFAULT_NEAR_Z_CLIP_PLANE = Camera::Properties::DEFAULT_NEAR_Z_CLIP_PLANE;
