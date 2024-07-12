@@ -302,7 +302,7 @@ private:
 
   ColorMapPtrWrapper m_tintMainColorMap{nullptr};
   ColorMapPtrWrapper m_tintLowColorMap{nullptr};
-  static constexpr auto TINT_COLORS_NUM_STEPS = 20U;
+  static constexpr auto TINT_COLORS_NUM_STEPS = 10U;
   TValue m_tintColorT{
       {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS}
   };

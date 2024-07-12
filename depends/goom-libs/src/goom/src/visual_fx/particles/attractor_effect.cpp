@@ -30,8 +30,8 @@ static constexpr auto MAX_SPHERE_VELOCITY = 0.5F;
 static constexpr auto MIN_LIFETIME = 2.0F;
 static constexpr auto MAX_LIFETIME = 200.0F;
 
-static constexpr auto MIN_START_COLOR = glm::vec4{0.39F, 0.39F, 0.39F, 1.00F};
-static constexpr auto MAX_START_COLOR = glm::vec4{0.69F, 0.69F, 0.69F, 1.00F};
+static constexpr auto MIN_START_COLOR = glm::vec4{0.19F, 0.19F, 0.19F, 1.00F};
+static constexpr auto MAX_START_COLOR = glm::vec4{0.89F, 0.89F, 0.89F, 1.00F};
 static constexpr auto MIN_END_COLOR   = glm::vec4{0.09F, 0.09F, 0.09F, 0.00F};
 static constexpr auto MAX_END_COLOR   = glm::vec4{0.39F, 0.39F, 0.39F, 0.25F};
 
