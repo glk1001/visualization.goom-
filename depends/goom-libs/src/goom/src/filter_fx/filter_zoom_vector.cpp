@@ -45,7 +45,6 @@ auto FilterZoomVector::GetZoomPoint(const NormalizedCoords& coords) const noexce
 }
 
 inline auto FilterZoomVector::GetFilterEffectsZoomPoint(
-    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     const NormalizedCoords& coords) const noexcept -> NormalizedCoords
 {
   const auto zoomAdjustment = m_zoomVectorEffects.GetZoomAdjustment(coords);
