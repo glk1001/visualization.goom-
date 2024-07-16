@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <vector>
 
 import Goom.Tests.Utils.Math.RandHelper;
@@ -80,14 +81,17 @@ TEST_CASE("uint32_t min max get random")
   const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
   REQUIRE(countsResults1.min == N_MIN1);
   REQUIRE(countsResults1.max == N_MAX1 - 1);
-  REQUIRE(countsResults1.counts.size() == (N_MAX1 - N_MIN1));
+  UNSCOPED_INFO(std::format("minCountAt = {}", countsResults1.minCountAt));
+  UNSCOPED_INFO(std::format("maxCountAt = {}", countsResults1.maxCountAt));
+  REQUIRE(countsResults1.minCount == countsResults1.maxCount);
+  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
 
   static constexpr auto N_MIN2 = 0U;
   static constexpr auto N_MAX2 = 120U;
   const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
   REQUIRE(countsResults2.min == N_MIN2);
   REQUIRE(countsResults2.max == N_MAX2 - 1);
-  REQUIRE(countsResults2.counts.size() == (N_MAX2 - N_MIN2));
+  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
 
   REQUIRE(5U == GetRandInRange(5U, 6U));
 }
@@ -103,28 +107,28 @@ TEST_CASE("int32_t min max get random")
   const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
   REQUIRE(countsResults1.min == N_MIN1);
   REQUIRE(countsResults1.max == N_MAX1 - 1);
-  REQUIRE(countsResults1.counts.size() == (N_MAX1 - N_MIN1));
+  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
 
   static constexpr auto N_MIN2 = -999;
   static constexpr auto N_MAX2 = -50;
   const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
   REQUIRE(countsResults2.min == N_MIN2);
   REQUIRE(countsResults2.max == N_MAX2 - 1);
-  REQUIRE(countsResults2.counts.size() == (N_MAX2 - N_MIN2));
+  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
 
   static constexpr auto N_MIN3 = 1;
   static constexpr auto N_MAX3 = 999;
   const auto countsResults3    = GetCountResults(NUM_LOOPS, N_MIN3, N_MAX3, RAND_IN_RANGE);
   REQUIRE(countsResults3.min == N_MIN3);
   REQUIRE(countsResults3.max == N_MAX3 - 1);
-  REQUIRE(countsResults3.counts.size() == (N_MAX3 - N_MIN3));
+  REQUIRE(countsResults3.numCounts == (N_MAX3 - N_MIN3));
 
   static constexpr auto N_MIN4 = 0;
   static constexpr auto N_MAX4 = 635;
   const auto countsResults4    = GetCountResults(NUM_LOOPS, N_MIN4, N_MAX4, RAND_IN_RANGE);
   REQUIRE(countsResults4.min == N_MIN4);
   REQUIRE(countsResults4.max == N_MAX4 - 1);
-  REQUIRE(countsResults4.counts.size() == (N_MAX4 - N_MIN4));
+  REQUIRE(countsResults4.numCounts == (N_MAX4 - N_MIN4));
 
   REQUIRE(5 == GetRandInRange(5, 6));
   REQUIRE(-6 == GetRandInRange(-6, -5));
@@ -145,21 +149,21 @@ TEST_CASE("float min max get random")
   const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
   REQUIRE(countsResults1.min == Approx(N_MIN1).margin(SMALL_VAL));
   REQUIRE(countsResults1.max == Approx(N_MAX1).margin(SMALL_VAL));
-  REQUIRE(countsResults1.counts.size() > REASONABLE_FLOAT_COUNT);
+  REQUIRE(countsResults1.numCounts > REASONABLE_FLOAT_COUNT);
 
   static constexpr auto N_MIN2 = -1.0F;
   static constexpr auto N_MAX2 = 0.0F;
   const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
   REQUIRE(countsResults2.min == Approx(N_MIN2).margin(SMALL_VAL));
   REQUIRE(countsResults2.max == Approx(N_MAX2).margin(SMALL_VAL));
-  REQUIRE(countsResults2.counts.size() > REASONABLE_FLOAT_COUNT);
+  REQUIRE(countsResults2.numCounts > REASONABLE_FLOAT_COUNT);
 
   static constexpr auto N_MIN3 = -10.0F;
   static constexpr auto N_MAX3 = +10.0F;
   const auto countsResults3    = GetCountResults(NUM_LOOPS, N_MIN3, N_MAX3, RAND_IN_RANGE);
   REQUIRE(countsResults3.min == Approx(N_MIN3).margin(SMALL_VAL));
   REQUIRE(countsResults3.max == Approx(N_MAX3).margin(SMALL_VAL));
-  REQUIRE(countsResults3.counts.size() > REASONABLE_FLOAT_COUNT);
+  REQUIRE(countsResults3.numCounts > REASONABLE_FLOAT_COUNT);
 
   static constexpr auto POS = 5.0F;
   static constexpr auto NEG = -6.0F;
