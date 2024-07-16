@@ -3,7 +3,7 @@ module;
 #include <cstdint>
 #include <functional>
 #include <limits>
-#include <map>
+#include <unordered_map>
 
 export module Goom.Tests.Utils.Math.RandHelper;
 
@@ -26,22 +26,22 @@ export namespace GOOM::UNIT_TESTS
 {
 
 template<typename T, typename GetRandInRangeFunc>
-auto GetCountResults(const size_t numLoop,
+auto GetCountResults(const size_t numLoops,
                      const T nMin,
                      const T nMax,
                      const GetRandInRangeFunc& getRandInRange) -> CountResults<T>
 {
   auto countResults = CountResults<T>{};
 
-  std::map<T, uint32_t> counts{};
-  for (auto i = 0U; i < numLoop; ++i)
+  std::unordered_map<T, uint32_t> counts{};
+  for (auto i = 0U; i < numLoops; ++i)
   {
     const auto rand = getRandInRange(nMin, nMax);
 
-    ++counts[rand];
-
     countResults.min = std::min(countResults.min, rand);
     countResults.max = std::max(countResults.max, rand);
+
+    ++counts[rand];
 
     if (countResults.minCount > counts[rand])
     {
