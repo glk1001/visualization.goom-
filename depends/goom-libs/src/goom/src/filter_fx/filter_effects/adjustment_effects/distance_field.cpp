@@ -38,9 +38,9 @@ using UTILS::MATH::U_HALF;
 
 static constexpr auto MIN_GRID_WIDTH         = 4U;
 static constexpr auto DEFAULT_GRID_WIDTH     = MIN_GRID_WIDTH;
-static constexpr auto GRID_WIDTH_RANGE_MODE0 = NumberRange<uint32_t>{4U, 16U};
-static constexpr auto GRID_WIDTH_RANGE_MODE1 = NumberRange<uint32_t>{16U, 32U};
-static constexpr auto GRID_WIDTH_RANGE_MODE2 = NumberRange<uint32_t>{32U, 64U};
+static constexpr auto GRID_WIDTH_RANGE_MODE0 = NumberRange{4U, 15U};
+static constexpr auto GRID_WIDTH_RANGE_MODE1 = NumberRange{16U, 31U};
+static constexpr auto GRID_WIDTH_RANGE_MODE2 = NumberRange{32U, 63U};
 static_assert(GRID_WIDTH_RANGE_MODE0.min >= MIN_GRID_WIDTH);
 static_assert(GRID_WIDTH_RANGE_MODE1.min > GRID_WIDTH_RANGE_MODE0.min);
 static_assert(GRID_WIDTH_RANGE_MODE2.min > GRID_WIDTH_RANGE_MODE1.min);
@@ -67,7 +67,7 @@ static constexpr auto FULL_AMPLITUDE_FACTOR            = 2.0F;
 static constexpr auto PARTIAL_DIAMOND_AMPLITUDE_FACTOR = 0.1F;
 
 static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange<float>{0.0F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto PROB_AMPLITUDES_EQUAL              = 0.50F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL         = 0.95F;

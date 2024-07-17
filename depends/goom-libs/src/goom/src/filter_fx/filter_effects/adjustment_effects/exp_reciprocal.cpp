@@ -31,20 +31,20 @@ using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::TWO_PI;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange<float>{0.01F, 0.11F};
+static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.01F, 0.11F};
 
 static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange<float>{0.0F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_MAGNIFY_AND_ROTATE = std::complex<float>{0.0F, 0.0F};
-static constexpr auto ROTATE_RANGE               = NumberRange<float>{0.0F, TWO_PI};
-static constexpr auto MAGNIFY_RANGE              = NumberRange<float>{0.95F, 1.05F};
+static constexpr auto ROTATE_RANGE               = NumberRange{0.0F, TWO_PI};
+static constexpr auto MAGNIFY_RANGE              = NumberRange{0.95F, 1.05F};
 
 static constexpr auto DEFAULT_RECIPROCAL_EXPONENT = 3.0F;
-static constexpr auto RECIPROCAL_EXPONENT_RANGE   = NumberRange<uint32_t>{3, 6};
+static constexpr auto RECIPROCAL_EXPONENT_RANGE   = NumberRange{3U, 6U};
 
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
-static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange<float>{1.0F, 100.0F};
+static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,

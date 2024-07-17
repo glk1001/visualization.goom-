@@ -33,6 +33,25 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::COLOR::ColorAdjustment;
+using GOOM::COLOR::ColorMapPtrWrapper;
+using GOOM::COLOR::ColorMapsGrid;
+using GOOM::COLOR::GetBrighterColor;
+using GOOM::COLOR::GetUnweightedRandomColorMaps;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::DRAW::MultiplePixels;
+using GOOM::DRAW::ReversePixels;
+using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels;
+using GOOM::UTILS::EnumMap;
+using GOOM::UTILS::MATH::AngleParams;
+using GOOM::UTILS::MATH::CirclePath;
+using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::ModDecrement;
+using GOOM::UTILS::MATH::ModIncrement;
+using GOOM::UTILS::MATH::OscillatingFunction;
+using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
@@ -54,11 +73,11 @@ public:
   Circle(FxHelper& fxHelper,
          const Helper& helper,
          const Params& circleParams,
-         const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept;
+         const OscillatingFunction::Params& pathParams) noexcept;
 
-  auto SetWeightedColorMaps(const COLOR::WeightedRandomColorMaps& weightedMainMaps,
-                            const COLOR::WeightedRandomColorMaps& weightedLowMaps) noexcept -> void;
-  auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept -> void;
+  auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainMaps,
+                            const WeightedRandomColorMaps& weightedLowMaps) noexcept -> void;
+  auto SetPathParams(const OscillatingFunction::Params& pathParams) noexcept -> void;
   [[nodiscard]] auto GetCurrentDirection() const noexcept -> DotPaths::Direction;
   auto ChangeDirection(DotPaths::Direction newDirection) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
@@ -75,7 +94,7 @@ public:
 private:
   FxHelper* m_fxHelper;
   Helper m_helper;
-  DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels m_lineDrawer;
+  LineDrawerNoisyPixels m_lineDrawer;
 
   [[nodiscard]] auto IsSpecialUpdateNum() const noexcept -> bool;
   [[nodiscard]] auto IsSpecialLineUpdateNum() const noexcept -> bool;
@@ -92,13 +111,13 @@ private:
   class CircleDots
   {
   public:
-    CircleDots(const UTILS::MATH::IGoomRand& goomRand,
+    CircleDots(const IGoomRand& goomRand,
                const Helper& helper,
                const Params& circleParams,
-               const UTILS::MATH::OscillatingFunction::Params& pathParams,
+               const OscillatingFunction::Params& pathParams,
                uint32_t numDots) noexcept;
 
-    auto SetPathParams(const UTILS::MATH::OscillatingFunction::Params& pathParams) noexcept -> void;
+    auto SetPathParams(const OscillatingFunction::Params& pathParams) noexcept -> void;
     auto ResetNumDots(uint32_t numDots) noexcept -> void;
 
     [[nodiscard]] auto GetNumDots() const noexcept -> uint32_t;
@@ -107,14 +126,13 @@ private:
     [[nodiscard]] auto GetDotDiameters() const noexcept -> const DotDiameters&;
     [[nodiscard]] auto GetDotDiameters() noexcept -> DotDiameters&;
     [[nodiscard]] auto GetTLineColorStep() const noexcept -> float;
-    [[nodiscard]] auto GetNumMaps() const noexcept
-        -> const UTILS::EnumMap<GridColorRange, uint32_t>&;
+    [[nodiscard]] auto GetNumMaps() const noexcept -> const EnumMap<GridColorRange, uint32_t>&;
 
   private:
-    const UTILS::MATH::IGoomRand* m_goomRand;
+    const IGoomRand* m_goomRand;
     const Helper* m_helper;
     Params m_circleParams;
-    UTILS::MATH::OscillatingFunction::Params m_pathParams;
+    OscillatingFunction::Params m_pathParams;
 
     uint32_t m_numDots;
 
@@ -130,8 +148,8 @@ private:
     float m_tLineColorStep;
     [[nodiscard]] auto GetNewTLineColorStep() const noexcept -> float;
 
-    UTILS::EnumMap<GridColorRange, uint32_t> m_numMaps;
-    [[nodiscard]] auto GetNewNumMaps() const noexcept -> UTILS::EnumMap<GridColorRange, uint32_t>;
+    EnumMap<GridColorRange, uint32_t> m_numMaps;
+    [[nodiscard]] auto GetNewNumMaps() const noexcept -> EnumMap<GridColorRange, uint32_t>;
   };
   CircleDots m_circleDots;
 
@@ -150,8 +168,8 @@ private:
   auto DrawNextCircleDots() noexcept -> void;
 
   static constexpr auto GAMMA = 1.9F;
-  COLOR::ColorAdjustment m_colorAdjustment{
-      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+  ColorAdjustment m_colorAdjustment{
+      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 
   float m_globalBrightnessFactor = 1.0F;
@@ -172,46 +190,42 @@ private:
                                   float tLineColor) noexcept -> float;
   auto DrawDot(uint32_t dotNum,
                const Point2dInt& pos,
-               const DRAW::MultiplePixels& colors) noexcept -> void;
+               const MultiplePixels& colors) noexcept -> void;
   auto DrawConnectingLine(const Point2dInt& position1,
                           const Point2dInt& position2,
                           float lineBrightness,
                           float tDotColor) noexcept -> void;
 
-  COLOR::WeightedRandomColorMaps m_mainColorMaps;
-  COLOR::WeightedRandomColorMaps m_lowColorMaps;
-  COLOR::ColorMapPtrWrapper m_linesMainColorMap{nullptr};
-  COLOR::ColorMapPtrWrapper m_linesLowColorMap{nullptr};
+  WeightedRandomColorMaps m_mainColorMaps;
+  WeightedRandomColorMaps m_lowColorMaps;
+  ColorMapPtrWrapper m_linesMainColorMap{nullptr};
+  ColorMapPtrWrapper m_linesLowColorMap{nullptr};
   uint32_t m_numRotatingColors = 0;
-  std::vector<COLOR::ColorMapPtrWrapper> m_rotatingMainColorMaps;
-  std::vector<COLOR::ColorMapPtrWrapper> m_rotatingLowColorMaps;
+  std::vector<ColorMapPtrWrapper> m_rotatingMainColorMaps;
+  std::vector<ColorMapPtrWrapper> m_rotatingLowColorMaps;
   std::vector<uint32_t> m_rotatingDotNums;
   static constexpr uint32_t NUM_ROTATING_COLOR_STEPS = 100U;
-  UTILS::MATH::TValue m_rotatingColorsT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_ROTATING_COLOR_STEPS}
+  TValue m_rotatingColorsT{
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_ROTATING_COLOR_STEPS}
   };
   auto UpdateRotatingColorMaps() noexcept -> void;
 
   GridColorRange m_currentGridColorRange = GridColorRange::ONE;
-  GOOM::UTILS::MATH::Weights<GridColorRange> m_weightedGridColorRanges;
+  Weights<GridColorRange> m_weightedGridColorRanges;
   uint32_t m_numDifferentGridMaps                 = 1U;
-  COLOR::ColorMapsGrid m_mainColorMapsGrid        = GetMainColorMapsGrid();
-  COLOR::ColorMapsGrid m_lowColorMapsGrid         = GetLowColorMapsGrid();
+  ColorMapsGrid m_mainColorMapsGrid               = GetMainColorMapsGrid();
+  ColorMapsGrid m_lowColorMapsGrid                = GetLowColorMapsGrid();
   static constexpr float DEFAULT_COLOR_GRID_MIX_T = 0.5F;
   float m_currentColorGridMixT                    = DEFAULT_COLOR_GRID_MIX_T;
   auto UpdateNumDifferentGridMaps() noexcept -> void;
-  [[nodiscard]] auto GetMainColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid;
-  [[nodiscard]] auto GetLowColorMapsGrid() const noexcept -> COLOR::ColorMapsGrid;
-  [[nodiscard]] auto GetHorizontalMainColorMaps() const noexcept
-      -> std::vector<COLOR::ColorMapPtrWrapper>;
-  [[nodiscard]] auto GetVerticalMainColorMaps() const noexcept
-      -> std::vector<COLOR::ColorMapPtrWrapper>;
-  [[nodiscard]] auto GetHorizontalLowColorMaps() const noexcept
-      -> std::vector<COLOR::ColorMapPtrWrapper>;
-  [[nodiscard]] auto GetVerticalLowColorMaps() const noexcept
-      -> std::vector<COLOR::ColorMapPtrWrapper>;
-  [[nodiscard]] auto GetAllDotColorMaps(const COLOR::WeightedRandomColorMaps& baseRandomColorMaps)
-      const noexcept -> std::vector<COLOR::ColorMapPtrWrapper>;
+  [[nodiscard]] auto GetMainColorMapsGrid() const noexcept -> ColorMapsGrid;
+  [[nodiscard]] auto GetLowColorMapsGrid() const noexcept -> ColorMapsGrid;
+  [[nodiscard]] auto GetHorizontalMainColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>;
+  [[nodiscard]] auto GetVerticalMainColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>;
+  [[nodiscard]] auto GetHorizontalLowColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>;
+  [[nodiscard]] auto GetVerticalLowColorMaps() const noexcept -> std::vector<ColorMapPtrWrapper>;
+  [[nodiscard]] auto GetAllDotColorMaps(const WeightedRandomColorMaps& baseRandomColorMaps)
+      const noexcept -> std::vector<ColorMapPtrWrapper>;
 
   [[nodiscard]] auto GetColorMixT(float tX, float tY) const noexcept -> float;
   struct AllDotColors
@@ -222,7 +236,7 @@ private:
   [[nodiscard]] auto GetAllDotColors() const noexcept -> AllDotColors;
   [[nodiscard]] auto GetSingleDotColors(uint32_t dotNum,
                                         const AllDotColors& allDotColors,
-                                        float dotBrightness) const noexcept -> DRAW::MultiplePixels;
+                                        float dotBrightness) const noexcept -> MultiplePixels;
   [[nodiscard]] auto GetCorrectedColor(float brightness,
                                        const Pixel& color) const noexcept -> Pixel;
 };
@@ -306,7 +320,7 @@ inline auto Circle::CircleDots::GetTLineColorStep() const noexcept -> float
 }
 
 inline auto Circle::CircleDots::GetNumMaps() const noexcept
-    -> const UTILS::EnumMap<GridColorRange, uint32_t>&
+    -> const EnumMap<GridColorRange, uint32_t>&
 {
   return m_numMaps;
 }
@@ -317,22 +331,6 @@ module :private;
 
 namespace GOOM::VISUAL_FX::CIRCLES
 {
-
-using COLOR::ColorMapPtrWrapper;
-using COLOR::ColorMapsGrid;
-using COLOR::GetBrighterColor;
-using COLOR::GetUnweightedRandomColorMaps;
-using COLOR::WeightedRandomColorMaps;
-using DRAW::MultiplePixels;
-using DRAW::ReversePixels;
-using UTILS::EnumMap;
-using UTILS::MATH::AngleParams;
-using UTILS::MATH::CirclePath;
-using UTILS::MATH::IGoomRand;
-using UTILS::MATH::ModDecrement;
-using UTILS::MATH::ModIncrement;
-using UTILS::MATH::OscillatingFunction;
-using UTILS::MATH::TValue;
 
 static constexpr auto DOT_MAIN_COLOR_BRIGHTNESS_FACTOR     = 0.1F;
 static constexpr auto DOT_LOW_COLOR_BRIGHTNESS_FACTOR      = 2.0F;

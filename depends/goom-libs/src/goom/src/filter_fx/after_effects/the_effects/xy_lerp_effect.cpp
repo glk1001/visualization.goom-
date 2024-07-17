@@ -21,7 +21,7 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_T_FREQ   = 1.0F;
-static constexpr auto T_FREQ_RANGE     = NumberRange<float>{1.0F, 10.0F};
+static constexpr auto T_FREQ_RANGE     = NumberRange{1.0F, 10.0F};
 static constexpr auto PROB_FLIP_Y_SIGN = 0.5F;
 static constexpr auto PROB_FLIP_XY     = 0.5F;
 

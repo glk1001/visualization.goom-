@@ -8,28 +8,32 @@ import Goom.Utils.Math.GoomRandBase;
 import :VisualFxColorMatchedSets;
 import :VisualFxWeightedColorMaps;
 
+using GOOM::COLOR::RandomColorMapsGroups;
+using GOOM::COLOR::WeightedRandomColorMaps;
+using GOOM::UTILS::NUM;
+using GOOM::UTILS::MATH::IGoomRand;
+
 export namespace GOOM::CONTROL
 {
 
 class VisualFxColorMaps
 {
 public:
-  explicit VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand);
+  explicit VisualFxColorMaps(const IGoomRand& goomRand);
 
   auto ChangeRandomColorMaps() -> void;
 
   [[nodiscard]] auto GetCurrentRandomColorMaps(GoomEffect goomEffect) const
-      -> COLOR::WeightedRandomColorMaps;
+      -> WeightedRandomColorMaps;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
-  COLOR::RandomColorMapsGroups m_randomColorMapsGroups{*m_goomRand};
+  const IGoomRand* m_goomRand;
+  RandomColorMapsGroups m_randomColorMapsGroups{*m_goomRand};
   VisualFxColorMatchedSets m_visualFxColorMatchedSets{*m_goomRand};
   VisualFxWeightedColorMaps m_visualFxWeightedColorMaps{*m_goomRand};
   [[nodiscard]] auto GetNextRandomColorMapsGroup(GoomEffect goomEffect) const
-      -> COLOR::RandomColorMapsGroups::Groups;
-  [[nodiscard]] auto GetNextCompletelyRandomColorMapsGroup() const
-      -> COLOR::RandomColorMapsGroups::Groups;
+      -> RandomColorMapsGroups::Groups;
+  [[nodiscard]] auto GetNextCompletelyRandomColorMapsGroup() const -> RandomColorMapsGroups::Groups;
 };
 
 } // namespace GOOM::CONTROL
@@ -37,8 +41,7 @@ private:
 namespace GOOM::CONTROL
 {
 
-inline VisualFxColorMaps::VisualFxColorMaps(const UTILS::MATH::IGoomRand& goomRand)
-  : m_goomRand{&goomRand}
+inline VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand) : m_goomRand{&goomRand}
 {
 }
 
@@ -48,7 +51,7 @@ inline auto VisualFxColorMaps::ChangeRandomColorMaps() -> void
 }
 
 inline auto VisualFxColorMaps::GetCurrentRandomColorMaps(const GoomEffect goomEffect) const
-    -> COLOR::WeightedRandomColorMaps
+    -> WeightedRandomColorMaps
 {
   return m_randomColorMapsGroups.GetWeightedRandomColorMapsForGroup(
       GetNextRandomColorMapsGroup(goomEffect));
@@ -60,7 +63,7 @@ namespace GOOM::CONTROL
 {
 
 inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goomEffect) const
-    -> COLOR::RandomColorMapsGroups::Groups
+    -> RandomColorMapsGroups::Groups
 {
   //  COLOR::RandomColorMapsGroups randomColorMapsGroups{m_goomRand};
   //  const auto group = COLOR::RandomColorMapsGroups::Groups::PURPLE_STANDARD_MAPS;
@@ -81,10 +84,10 @@ inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goom
 }
 
 inline auto VisualFxColorMaps::GetNextCompletelyRandomColorMapsGroup() const
-    -> COLOR::RandomColorMapsGroups::Groups
+    -> RandomColorMapsGroups::Groups
 {
-  return static_cast<COLOR::RandomColorMapsGroups::Groups>(
-      m_goomRand->GetRandInRange(0U, UTILS::NUM<COLOR::RandomColorMapsGroups::Groups>));
+  return static_cast<RandomColorMapsGroups::Groups>(
+      m_goomRand->GetRandInRange(0U, NUM<RandomColorMapsGroups::Groups>));
 }
 
 } // namespace GOOM::CONTROL

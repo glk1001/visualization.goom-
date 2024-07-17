@@ -15,9 +15,9 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto AMPLITUDE_RANGE    = NumberRange<float>{0.0025F, 0.0500F};
-static constexpr auto COLOR_CUTOFF_RANGE = NumberRange<float>{0.1F, 0.9F};
-static constexpr auto ZOOM_FACTOR_RANGE  = NumberRange<float>{0.5F, 1.0F};
+static constexpr auto AMPLITUDE_RANGE    = NumberRange{0.0025F, 0.0500F};
+static constexpr auto COLOR_CUTOFF_RANGE = NumberRange{0.1F, 0.9F};
+static constexpr auto ZOOM_FACTOR_RANGE  = NumberRange{0.5F, 1.0F};
 
 static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.5F;

@@ -11,6 +11,8 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::IGoomRand;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -19,7 +21,7 @@ class FunctionOfFunction : public IZoomAdjustmentEffect
   using FuncEffect = std::unique_ptr<IZoomAdjustmentEffect>;
 
 public:
-  FunctionOfFunction(const UTILS::MATH::IGoomRand& goomRand,
+  FunctionOfFunction(const IGoomRand& goomRand,
                      const std::string& name,
                      FuncEffect&& funcOf,
                      FuncEffect&& func) noexcept;
@@ -33,7 +35,7 @@ public:
       -> UTILS::NameValuePairs override;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
   std::string m_name;
   FuncEffect m_funcOf;
   FuncEffect m_func;

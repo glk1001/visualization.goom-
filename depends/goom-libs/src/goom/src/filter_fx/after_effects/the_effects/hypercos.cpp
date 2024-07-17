@@ -35,16 +35,16 @@ static constexpr auto DEFAULT_REVERSE = false;
 
 static constexpr auto X_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
 static constexpr auto Y_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
-static constexpr auto FREQUENCY_FACTOR_RANGE          = NumberRange<float>{5.0F, 100.0F};
-static constexpr auto BIG_FREQUENCY_FACTOR_RANGE      = NumberRange<float>{5.0F, 500.0F};
-static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE = NumberRange<float>{1000.0F, 10000.0F};
+static constexpr auto FREQUENCY_FACTOR_RANGE          = NumberRange{5.0F, 100.0F};
+static constexpr auto BIG_FREQUENCY_FACTOR_RANGE      = NumberRange{5.0F, 500.0F};
+static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE = NumberRange{1000.0F, 10000.0F};
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto AMPLITUDE_RANGE =
-    NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 1.1F * X_DEFAULT_AMPLITUDE};
+    NumberRange{0.1F * X_DEFAULT_AMPLITUDE, 1.1F * X_DEFAULT_AMPLITUDE};
 static constexpr auto BIG_AMPLITUDE_RANGE =
-    NumberRange<float>{0.1F * X_DEFAULT_AMPLITUDE, 10.1F * X_DEFAULT_AMPLITUDE};
+    NumberRange{0.1F * X_DEFAULT_AMPLITUDE, 10.1F * X_DEFAULT_AMPLITUDE};
 
 static constexpr auto PROB_FREQUENCY_FACTORS_EQUAL = 0.5F;
 static constexpr auto PROB_REVERSE                 = 0.5F;

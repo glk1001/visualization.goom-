@@ -32,13 +32,13 @@ using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange<float>{0.025F, 1.00F};
+static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.025F, 1.00F};
 
 static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange<float>{0.0F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
-static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange<float>{1.0F, 100.0F};
+static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,

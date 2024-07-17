@@ -28,22 +28,22 @@ using UTILS::MATH::RAND::GOOM_RAND_MAX;
 using UTILS::MATH::RAND::GetRandSeed;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange<float>{0.05F, 1.5F};
+static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.05F, 1.5F};
 
 static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.0F, 0.0F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange<float>{0.0F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_NOISE_FREQUENCY_FACTOR = 1.0F;
-static constexpr auto NOISE_FREQUENCY_FACTOR_RANGE   = NumberRange<float>{0.1F, 2.0F};
+static constexpr auto NOISE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.1F, 2.0F};
 
 static constexpr auto DEFAULT_ANGLE_FREQUENCY_FACTOR = 1.0F;
-static constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE   = NumberRange<float>{0.1F, 2.0F};
+static constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.1F, 2.0F};
 
 static constexpr auto DEFAULT_OCTAVES = 1;
-static constexpr auto OCTAVES_RANGE   = NumberRange<int32_t>{1, 5};
+static constexpr auto OCTAVES_RANGE   = NumberRange{1, 5};
 
 static constexpr auto DEFAULT_PERSISTENCE = 1.0F;
-static constexpr auto PERSISTENCE_RANGE   = NumberRange<float>{0.1F, 1.0F};
+static constexpr auto PERSISTENCE_RANGE   = NumberRange{0.1F, 1.0F};
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL        = 0.98F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL      = 0.95F;

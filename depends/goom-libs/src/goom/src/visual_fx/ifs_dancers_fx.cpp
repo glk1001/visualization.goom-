@@ -136,13 +136,13 @@ private:
   auto DrawNextIfsPoints() noexcept -> void;
   auto DrawPoint(float t, const IfsPoint& ifsPoint, float tMix) noexcept -> void;
 
-  static constexpr float PROB_DRAW_LOW_DENSITY_POINTS = 0.1F;
+  static constexpr auto PROB_DRAW_LOW_DENSITY_POINTS = 0.1F;
   bool m_drawLowDensityPoints                         = false;
   static constexpr uint32_t MAX_DENSITY_COUNT         = 20;
   static constexpr uint32_t MIN_DENSITY_COUNT         = 5;
   uint32_t m_lowDensityCount                          = MIN_DENSITY_COUNT;
   LowDensityBlurrer m_blurrer;
-  static constexpr uint32_t BLUR_WIDTH                     = 3;
+  static constexpr auto BLUR_WIDTH                         = 3U;
   static constexpr auto DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
   float m_lowDensityBlurThreshold                          = DEFAULT_LOW_DENSITY_BLUR_THRESHOLD;
   auto DrawLowDensityPoints(size_t numPointsAlreadyDrawn,

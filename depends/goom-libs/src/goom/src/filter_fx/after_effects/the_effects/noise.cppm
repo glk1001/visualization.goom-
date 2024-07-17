@@ -8,20 +8,22 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::IGoomRand;
+
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class Noise
 {
 public:
-  explicit Noise(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Noise(const IGoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
   struct Params
   {
@@ -33,7 +35,8 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const IGoomRand* m_goomRand;
+
   // For noise amplitude, take the reciprocal of these.
   static constexpr float NOISE_MIN = 40.0F;
   static constexpr float NOISE_MAX = 120.0F;
