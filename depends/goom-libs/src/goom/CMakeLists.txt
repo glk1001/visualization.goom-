@@ -253,6 +253,8 @@ set(GoomUtils_modules
     src/utils/graphics/point_utils.cppm
     src/utils/graphics/small_image_bitmaps.cppm
     src/utils/graphics/test_patterns.cppm
+    src/utils/math/rand/rand_gen.cppm
+    src/utils/math/rand/randutils.cppm
     src/utils/math/damping_functions.cppm
     src/utils/math/goom_rand.cppm
     src/utils/math/goom_rand_base.cppm
@@ -260,7 +262,6 @@ set(GoomUtils_modules
     src/utils/math/misc.cppm
     src/utils/math/parametric_functions2d.cppm
     src/utils/math/paths.cppm
-    src/utils/math/randutils.cppm
     src/utils/math/t_values.cppm
     src/utils/math/transform2d.cppm
     src/utils/text/drawable_text.cppm
@@ -290,6 +291,8 @@ set(GoomUtils_source_files
     src/utils/graphics/small_image_bitmaps.cpp
     src/utils/graphics/stb_image.h
     src/utils/graphics/test_patterns.cpp
+    src/utils/math/rand/rand_gen.cpp
+    src/utils/math/rand/xoshiro.hpp
     src/utils/math/parametric_functions2d.cpp
     src/utils/math/paths.cpp
     src/utils/text/drawable_text.cpp

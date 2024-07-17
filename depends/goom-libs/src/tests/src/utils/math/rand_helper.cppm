@@ -1,9 +1,12 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <limits>
+//#include <map>
 #include <numeric>
+//#include <print>
 #include <unordered_map>
 
 export module Goom.Tests.Utils.Math.RandHelper;
@@ -35,6 +38,7 @@ auto GetCountResults(const size_t numLoops,
 {
   auto countResults = CountResults<T>{};
 
+  //using CountMap = std::map<T, uint32_t>;
   using CountMap = std::unordered_map<T, uint32_t>;
   auto counts    = CountMap{};
   for (auto i = 0U; i < numLoops; ++i)
@@ -45,20 +49,15 @@ auto GetCountResults(const size_t numLoops,
     countResults.max = std::max(countResults.max, rand);
 
     ++counts[rand];
-
-    if (countResults.minCount > counts[rand])
-    {
-      countResults.minCount   = counts[rand];
-      countResults.minCountAt = rand;
-    }
-    if (countResults.maxCount < counts[rand])
-    {
-      countResults.maxCount   = counts[rand];
-      countResults.maxCountAt = rand;
-    }
   }
 
-  countResults.numCounts = static_cast<uint32_t>(counts.size());
+  countResults.numCounts  = static_cast<uint32_t>(counts.size());
+  const auto lowest       = std::ranges::min_element(counts, {}, &CountMap::value_type::second);
+  const auto highest      = std::ranges::max_element(counts, {}, &CountMap::value_type::second);
+  countResults.minCountAt = lowest->first;
+  countResults.minCount   = lowest->second;
+  countResults.maxCountAt = highest->first;
+  countResults.maxCount   = highest->second;
 
   countResults.sumOfAllCounts =
       std::accumulate(cbegin(counts),
@@ -66,6 +65,11 @@ auto GetCountResults(const size_t numLoops,
                       0U,
                       [](const uint32_t value, const typename CountMap::value_type& element)
                       { return value + element.second; });
+  //
+  // for (const auto& keyValue : counts)
+  // {
+  //   std::println("{}: {}", keyValue.first, keyValue.second);
+  // }
 
   return countResults;
 }
