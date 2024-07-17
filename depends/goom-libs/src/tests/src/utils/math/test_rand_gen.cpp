@@ -7,7 +7,7 @@
 #include <limits>
 
 import Goom.Tests.Utils.Math.RandHelper;
-import Goom.Utils.Math.RandGen;
+import Goom.Utils.Math.Rand.RandGen;
 
 namespace GOOM::UNIT_TESTS
 {

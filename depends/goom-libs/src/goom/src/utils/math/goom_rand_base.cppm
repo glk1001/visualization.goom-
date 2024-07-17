@@ -13,6 +13,7 @@ export module Goom.Utils.Math.GoomRandBase;
 
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.Misc;
+import Goom.Utils.Math.Rand.RandUtils;
 import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::MATH
@@ -61,7 +62,7 @@ public:
   virtual ~IGoomRand() noexcept                           = default;
 
   // Return random integer in the range 0 <= n < n1.
-  [[nodiscard]] virtual auto GetNRand(uint32_t n1) const noexcept -> uint32_t = 0;
+  [[nodiscard]] auto GetNRand(uint32_t n1) const noexcept -> uint32_t;
 
   // Return random number in the range n0 <= n < n1.
   template<typename T>
@@ -70,15 +71,14 @@ public:
   template<std::ranges::random_access_range Range>
   auto Shuffle(Range& range) const noexcept -> void;
 
-  [[nodiscard]] virtual auto ProbabilityOf(float x) const noexcept -> bool = 0;
+  [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool;
 
-protected:
+private:
   // Return random number in the range n0 <= n <= n1.
-  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0,
-                                            uint32_t n1) const noexcept -> uint32_t           = 0;
-  [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t = 0;
-  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float       = 0;
-  [[nodiscard]] virtual auto GetRandInRange(double n0, double n1) const noexcept -> double    = 0;
+  [[nodiscard]] auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept -> uint32_t;
+  [[nodiscard]] auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t;
+  [[nodiscard]] auto GetRandInRange(float n0, float n1) const noexcept -> float;
+  [[nodiscard]] auto GetRandInRange(double n0, double n1) const noexcept -> double;
 };
 
 template<EnumType E>
@@ -213,6 +213,37 @@ auto IGoomRand::Shuffle(Range& range) const noexcept -> void
     using std::swap;
     swap(first[i], first[GetRandInRange(0U, static_cast<uint32_t>(i) + 1)]);
   }
+}
+
+inline auto IGoomRand::GetNRand(const uint32_t n1) const noexcept -> uint32_t
+{
+  return RAND::GetNRand(n1);
+}
+
+inline auto IGoomRand::GetRandInRange(const uint32_t n0, const uint32_t n1) const noexcept
+    -> uint32_t
+{
+  return RAND::GetRandInRange(n0, n1);
+}
+
+inline auto IGoomRand::GetRandInRange(const int32_t n0, const int32_t n1) const noexcept -> int32_t
+{
+  return RAND::GetRandInRange(n0, n1);
+}
+
+inline auto IGoomRand::GetRandInRange(const float n0, const float n1) const noexcept -> float
+{
+  return RAND::GetRandInRange(n0, n1);
+}
+
+inline auto IGoomRand::GetRandInRange(const double n0, const double n1) const noexcept -> double
+{
+  return RAND::GetRandInRange(n0, n1);
+}
+
+inline auto IGoomRand::ProbabilityOf(const float x) const noexcept -> bool
+{
+  return RAND::ProbabilityOf(x);
 }
 
 template<EnumType E>

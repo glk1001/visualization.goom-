@@ -10,7 +10,7 @@
 #include <vector>
 
 import Goom.Tests.Utils.Math.RandHelper;
-import Goom.Utils.Math.RandUtils;
+import Goom.Utils.Math.Rand.RandUtils;
 
 namespace GOOM::UNIT_TESTS
 {

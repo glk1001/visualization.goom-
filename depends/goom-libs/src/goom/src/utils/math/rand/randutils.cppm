@@ -3,9 +3,9 @@ module;
 #include <cmath>
 #include <cstdint>
 
-export module Goom.Utils.Math.RandUtils;
+export module Goom.Utils.Math.Rand.RandUtils;
 
-import Goom.Utils.Math.RandGen;
+import Goom.Utils.Math.Rand.RandGen;
 import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::MATH::RAND
