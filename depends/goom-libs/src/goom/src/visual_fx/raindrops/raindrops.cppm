@@ -51,8 +51,7 @@ namespace GOOM::VISUAL_FX::RAINDROPS
 class Raindrops
 {
 public:
-  static constexpr auto MIN_NUM_RAINDROPS   = 50U;
-  static constexpr auto MAX_NUM_RAINDROPS   = 100U;
+  static constexpr auto NUM_RAINDROPS_RANGE = NumberRange{50U, 100U};
   static constexpr auto NUM_START_RAINDROPS = 60U;
 
   Raindrops(FxHelper& fxHelper,
@@ -259,9 +258,9 @@ auto Raindrops::GetNewRaindrop(const uint32_t dropNum) const noexcept -> Raindro
   const auto numGrowthSteps = m_fxHelper->GetGoomRand().GetRandInRange(GROWTH_STEPS_RANGE);
 
   const auto startingRadius = m_fxHelper->GetGoomRand().GetRandInRange(
-      m_raindropParams.minStartingRadius, m_raindropParams.maxStartingRadius);
-  const auto maxGrowthRadius =
-      m_fxHelper->GetGoomRand().GetRandInRange(startingRadius, m_raindropParams.maxGrowthRadius);
+      NumberRange{m_raindropParams.minStartingRadius, m_raindropParams.maxStartingRadius});
+  const auto maxGrowthRadius = m_fxHelper->GetGoomRand().GetRandInRange(
+      NumberRange{startingRadius, m_raindropParams.maxGrowthRadius});
 
   static constexpr auto STEP_TYPE            = TValue::StepType::CONTINUOUS_REVERSIBLE;
   static constexpr auto LINE_THICKNESS_RANGE = NumberRange{1U, MAX_LINE_THICKNESS};

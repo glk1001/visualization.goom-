@@ -63,10 +63,10 @@ private:
   static constexpr auto CAMERA_Y_OFFSET_RANGE = NumberRange{-10.0F, +10.0F};
   static constexpr auto CAMERA_Z_OFFSET_RANGE = NumberRange{+04.0F, // Don't make this any smaller
                                                             +10.1F};
-  static_assert(CAMERA_X_OFFSET_RANGE.min < CAMERA_X_OFFSET_RANGE.max);
-  static_assert(CAMERA_Y_OFFSET_RANGE.min < CAMERA_Y_OFFSET_RANGE.max);
-  static_assert(CAMERA_Z_OFFSET_RANGE.min < CAMERA_Z_OFFSET_RANGE.max);
-  V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET_RANGE.min};
+  static_assert(CAMERA_X_OFFSET_RANGE.Min() < CAMERA_X_OFFSET_RANGE.Max());
+  static_assert(CAMERA_Y_OFFSET_RANGE.Min() < CAMERA_Y_OFFSET_RANGE.Max());
+  static_assert(CAMERA_Z_OFFSET_RANGE.Min() < CAMERA_Z_OFFSET_RANGE.Max());
+  V3dFlt m_cameraPosition{0.0F, 0.0F, CAMERA_Z_OFFSET_RANGE.Min()};
 
   auto PlotPoints(const std::vector<V3dFlt>& points3D) -> void;
   struct Line2DInt

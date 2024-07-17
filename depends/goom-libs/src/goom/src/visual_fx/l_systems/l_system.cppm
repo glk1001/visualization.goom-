@@ -438,9 +438,9 @@ auto LSystem::InitNextLSysInterpreter() -> void
 
   m_lSysModuleList = nullptr;
 
-  const auto numLSysCopies =
-      m_fxHelper->GetGoomRand().GetRandInRange(m_lSysModelSet.lSysOverrides.minNumLSysCopies,
-                                               m_lSysModelSet.lSysOverrides.maxNumLSysCopies + 1U);
+  const auto numLSysCopies = m_fxHelper->GetGoomRand().GetRandInRange(
+      NumberRange{m_lSysModelSet.lSysOverrides.minNumLSysCopies,
+                  m_lSysModelSet.lSysOverrides.maxNumLSysCopies});
 
   m_lSysDraw.SetNumLSysCopies(numLSysCopies);
   SwitchLineDrawers();
@@ -453,11 +453,11 @@ auto LSystem::InitNextLSysInterpreter() -> void
   m_lSysGeometry.SetYScaleNumSteps(
       m_fxHelper->GetGoomRand().GetRandInRange(Y_SCALE_ADJUST_STEPS_RANGE));
   m_lSysGeometry.SetRotateDegreesAdjustNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(
-      m_lSysModelSet.lSysOverrides.minNumRotateDegreeSteps,
-      m_lSysModelSet.lSysOverrides.maxNumRotateDegreeSteps + 1));
+      NumberRange{m_lSysModelSet.lSysOverrides.minNumRotateDegreeSteps,
+                  m_lSysModelSet.lSysOverrides.maxNumRotateDegreeSteps}));
   m_lSysGeometry.SetSpinDegreesAdjustNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(
-      m_lSysModelSet.lSysOverrides.minNumSpinDegreeSteps,
-      m_lSysModelSet.lSysOverrides.maxNumSpinDegreeSteps + 1));
+      NumberRange{m_lSysModelSet.lSysOverrides.minNumSpinDegreeSteps,
+                  m_lSysModelSet.lSysOverrides.maxNumSpinDegreeSteps}));
 
   m_lSysPath.SetPathNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(PATH_NUM_STEPS_RANGE));
 
@@ -465,8 +465,8 @@ auto LSystem::InitNextLSysInterpreter() -> void
   m_lSysColors.SetNumColors(numLSysCopies);
   m_lSysColors.ChangeColors();
 
-  m_maxGen = m_fxHelper->GetGoomRand().GetRandInRange(m_lSysModelSet.lSysOverrides.minMaxGen,
-                                                      m_lSysModelSet.lSysOverrides.maxMaxGen + 1U);
+  m_maxGen = m_fxHelper->GetGoomRand().GetRandInRange(
+      NumberRange{m_lSysModelSet.lSysOverrides.minMaxGen, m_lSysModelSet.lSysOverrides.maxMaxGen});
 
   SetNewDefaultInterpreterParams();
   ResetModelNamedArgs();
@@ -539,16 +539,16 @@ inline auto LSystem::GetRandomDefaultInterpreterParams() const noexcept
   return {
       m_lSysModelSet.lSysProperties.turnAngle *
           m_fxHelper->GetGoomRand().GetRandInRange(
-              m_lSysModelSet.lSysOverrides.minDefaultTurnAngleInDegreesFactor,
-              m_lSysModelSet.lSysOverrides.maxDefaultTurnAngleInDegreesFactor),
+              NumberRange{m_lSysModelSet.lSysOverrides.minDefaultTurnAngleInDegreesFactor,
+                          m_lSysModelSet.lSysOverrides.maxDefaultTurnAngleInDegreesFactor}),
       m_lSysModelSet.lSysProperties.lineWidth *
           m_fxHelper->GetGoomRand().GetRandInRange(
-              m_lSysModelSet.lSysOverrides.minDefaultLineWidthFactor,
-              m_lSysModelSet.lSysOverrides.maxDefaultLineWidthFactor),
+              NumberRange{m_lSysModelSet.lSysOverrides.minDefaultLineWidthFactor,
+                          m_lSysModelSet.lSysOverrides.maxDefaultLineWidthFactor}),
       m_lSysModelSet.lSysProperties.lineDistance *
           m_fxHelper->GetGoomRand().GetRandInRange(
-              m_lSysModelSet.lSysOverrides.minDefaultDistanceFactor,
-              m_lSysModelSet.lSysOverrides.maxDefaultDistanceFactor),
+              NumberRange{m_lSysModelSet.lSysOverrides.minDefaultDistanceFactor,
+                          m_lSysModelSet.lSysOverrides.maxDefaultDistanceFactor}),
   };
 }
 
@@ -598,7 +598,8 @@ inline auto LSystem::ResetModelNamedArgs() -> void
   for (const auto& namedArg : m_lSysModelSet.lSysOverrides.namedArgs)
   {
     m_lSysModelSet.lSysModel->ResetArgument(
-        namedArg.name, Value{m_fxHelper->GetGoomRand().GetRandInRange(namedArg.min, namedArg.max)});
+        namedArg.name,
+        Value{m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{namedArg.min, namedArg.max})});
   }
 }
 

@@ -73,7 +73,7 @@ private:
       -> const std::set<WeightedRandomColorMaps::ColorMapTypes>&;
   mutable uint32_t m_countSinceColorMapChange            = 0;
   static constexpr auto COLOR_MAP_CHANGE_COMPLETED_RANGE = NumberRange{500U, 1000U};
-  uint32_t m_colorMapChangeCompleted                     = COLOR_MAP_CHANGE_COMPLETED_RANGE.min;
+  uint32_t m_colorMapChangeCompleted = COLOR_MAP_CHANGE_COMPLETED_RANGE.Min();
 
   IfsDancersFx::ColorMode m_colorMode                  = IfsDancersFx::ColorMode::MAP_COLORS;
   IfsDancersFx::ColorMode m_forcedColorMode            = IfsDancersFx::ColorMode::_NULL;

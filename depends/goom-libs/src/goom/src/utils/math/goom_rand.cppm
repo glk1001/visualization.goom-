@@ -15,12 +15,13 @@ class GoomRand : public IGoomRand
 public:
   [[nodiscard]] auto GetNRand(uint32_t n1) const noexcept -> uint32_t override;
 
+  [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool override;
+
+protected:
   [[nodiscard]] auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept -> uint32_t override;
   [[nodiscard]] auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t override;
   [[nodiscard]] auto GetRandInRange(float n0, float n1) const noexcept -> float override;
   [[nodiscard]] auto GetRandInRange(double n0, double n1) const noexcept -> double override;
-
-  [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool override;
 };
 
 } // namespace GOOM::UTILS::MATH

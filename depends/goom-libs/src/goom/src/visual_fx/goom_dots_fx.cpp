@@ -54,6 +54,7 @@ using UTILS::MATH::IncrementedValue;
 using UTILS::MATH::IPath;
 using UTILS::MATH::LissajousFunction;
 using UTILS::MATH::LissajousPath;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::Weights;
@@ -287,7 +288,8 @@ auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
   if (static constexpr auto PROB_PRIMARY_COLOR = 0.1F;
       m_fxHelper->GetGoomRand().ProbabilityOf(PROB_PRIMARY_COLOR))
   {
-    return GetDotPrimaryColor(m_fxHelper->GetGoomRand().GetRandInRange(0U, NUM_DOT_TYPES));
+    return GetDotPrimaryColor(
+        m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{0U, NUM_DOT_TYPES - 1}));
   }
 
   static constexpr auto MIN_MIX_T = 0.1F;
@@ -330,7 +332,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ApplyToImageBuffers() -> void
       (0 == m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom()))
   {
     ChangeColors();
-    radius = m_fxHelper->GetGoomRand().GetRandInRange(radius, (U_HALF * MAX_DOT_SIZE) + 1);
+    radius = m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{radius, U_HALF * MAX_DOT_SIZE});
     SetNextCurrentBitmapName();
   }
 

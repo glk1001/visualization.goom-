@@ -198,42 +198,32 @@ auto ComplexRational::GetNextZeroesAndPoles() const noexcept -> Params::ZeroesAn
     return GetSimpleZeroesAndPoles();
   }
 
-  static constexpr auto MIN_ZEROES_INNER_RADIUS = 0.1F;
-  static constexpr auto MAX_ZEROES_INNER_RADIUS = 0.3F;
-  static constexpr auto MIN_ZEROES_OUTER_RADIUS = 0.1F;
-  static constexpr auto MAX_ZEROES_OUTER_RADIUS = 0.3F;
-  static constexpr auto MIN_ZEROES_RADIUS       = 0.5F;
-  static constexpr auto MAX_ZEROES_RADIUS       = 1.0F;
+  static constexpr auto ZEROES_INNER_RADIUS_RANGE = NumberRange{0.1F, 0.3F};
+  static constexpr auto ZEROES_OUTER_RADIUS_RANGE = NumberRange{0.1F, 0.3F};
+  static constexpr auto ZEROES_RADIUS_RANGE       = NumberRange{0.5F, 1.0F};
 
-  static constexpr auto MIN_POLES_RADIUS = 1.5F;
-  static constexpr auto MAX_POLES_RADIUS = 2.0F;
+  static constexpr auto POLES_RADIUS_RANGE = NumberRange{1.5F, 2.0F};
 
-  static constexpr auto MIN_INNER_ZEROES = 3U;
-  static constexpr auto MAX_INNER_ZEROES = 5U;
-  static constexpr auto MIN_OUTER_ZEROES = 5U;
-  static constexpr auto MAX_OUTER_ZEROES = 6U;
-  static constexpr auto MIN_ZEROES       = 3U;
-  static constexpr auto MAX_ZEROES       = 10U;
+  static constexpr auto INNER_ZEROES_RANGE = NumberRange{3U, 5U};
+  static constexpr auto OUTER_ZEROES_RANGE = NumberRange{5U, 6U};
+  static constexpr auto ZEROES_RANGE       = NumberRange{3U, 10U};
 
-  static constexpr auto MIN_POLES = 4U;
-  static constexpr auto MAX_POLES = 8U;
+  static constexpr auto POLES_RANGE = NumberRange{4U, 8U};
 
-  const auto numPoles    = m_goomRand->GetRandInRange(MIN_POLES, MAX_POLES + 1);
-  const auto polesRadius = m_goomRand->GetRandInRange(MIN_POLES_RADIUS, MAX_POLES_RADIUS);
+  const auto numPoles    = m_goomRand->GetRandInRange(POLES_RANGE);
+  const auto polesRadius = m_goomRand->GetRandInRange(POLES_RADIUS_RANGE);
 
   if (not m_goomRand->ProbabilityOf(PROB_USE_INNER_ZEROES))
   {
-    const auto numZeroes    = m_goomRand->GetRandInRange(MIN_ZEROES, MAX_ZEROES + 1);
-    const auto zeroesRadius = m_goomRand->GetRandInRange(MIN_ZEROES_RADIUS, MAX_ZEROES_RADIUS);
+    const auto numZeroes    = m_goomRand->GetRandInRange(ZEROES_RANGE);
+    const auto zeroesRadius = m_goomRand->GetRandInRange(ZEROES_RADIUS_RANGE);
     return {GetPointSpread(numZeroes, zeroesRadius), GetPointSpread(numPoles, polesRadius)};
   }
 
-  const auto numInnerZeroes = m_goomRand->GetRandInRange(MIN_INNER_ZEROES, MAX_INNER_ZEROES + 1);
-  const auto numOuterZeroes = m_goomRand->GetRandInRange(MIN_OUTER_ZEROES, MAX_OUTER_ZEROES + 1);
-  const auto innerZeroesRadius =
-      m_goomRand->GetRandInRange(MIN_ZEROES_INNER_RADIUS, MAX_ZEROES_INNER_RADIUS);
-  const auto outerZeroesRadius =
-      m_goomRand->GetRandInRange(MIN_ZEROES_OUTER_RADIUS, MAX_ZEROES_OUTER_RADIUS);
+  const auto numInnerZeroes    = m_goomRand->GetRandInRange(INNER_ZEROES_RANGE);
+  const auto numOuterZeroes    = m_goomRand->GetRandInRange(OUTER_ZEROES_RANGE);
+  const auto innerZeroesRadius = m_goomRand->GetRandInRange(ZEROES_INNER_RADIUS_RANGE);
+  const auto outerZeroesRadius = m_goomRand->GetRandInRange(ZEROES_OUTER_RADIUS_RANGE);
 
   const auto innerZeroes = GetPointSpread(numInnerZeroes, innerZeroesRadius);
   const auto outerZeroes = GetPointSpread(numOuterZeroes, outerZeroesRadius);

@@ -37,6 +37,7 @@ using GOOM::UTILS::MATH::IGoomRand;
 using GOOM::UTILS::MATH::IncrementedValue;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::UNIT_RANGE;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {
@@ -49,9 +50,8 @@ public:
   auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
 
-  auto DrawDot(const Point2dInt& pos,
-               uint32_t diameter,
-               const MultiplePixels& colors) noexcept -> void;
+  auto DrawDot(const Point2dInt& pos, uint32_t diameter, const MultiplePixels& colors) noexcept
+      -> void;
 
 private:
   const IGoomRand* m_goomRand;
@@ -76,7 +76,7 @@ private:
   bool m_doCircleDotShapes = true;
   ColorMapPtrWrapper m_outerCircleDotColorMap{nullptr};
   static constexpr auto OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE = NumberRange{0.1F, 0.9F};
-  float m_outerCircleDotColorMix                           = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.min;
+  float m_outerCircleDotColorMix = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.Min();
 
   auto DrawBitmapDot(const Point2dInt& position,
                      uint32_t diameter,
@@ -116,13 +116,14 @@ inline auto DotDrawer::SetGlobalBrightnessFactor(const float val) noexcept -> vo
 
 inline auto DotDrawer::GetRandomDecorationType() const noexcept -> DecorationType
 {
-  return static_cast<DecorationType>(m_goomRand->GetRandInRange(0U, NUM<DecorationType>));
+  return static_cast<DecorationType>(
+      m_goomRand->GetRandInRange(NumberRange{0U, NUM<DecorationType> - 1}));
 }
 
 inline auto DotDrawer::GetRandomDifferentColor(const RandomColorMaps& weightedMaps) const noexcept
     -> Pixel
 {
-  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange(0.0F, 1.0F));
+  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange(UNIT_RANGE));
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
@@ -242,9 +243,8 @@ inline auto DotDrawer::DrawBitmapDot(const Point2dInt& position,
     return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetMainColor(colors), m_bgndMainColorMixT);
   };
 
-  const auto getLowColor =
-      [this, &colors, &diameter](const Point2dInt& bitmapPoint, const Pixel& bgnd)
-  {
+  const auto getLowColor = [this, &colors, &diameter](const Point2dInt& bitmapPoint,
+                                                      const Pixel& bgnd) {
     return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT);
   };
 

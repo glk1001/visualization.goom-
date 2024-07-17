@@ -300,7 +300,7 @@ private:
   ColorMapPtrWrapper m_tintLowColorMap{nullptr};
   static constexpr auto TINT_COLORS_NUM_STEPS_RANGE = NumberRange{10U, 100U};
   TValue m_tintColorT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS_RANGE.min}
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS_RANGE.Min()}
   };
 
   static constexpr auto DRAW_CIRCLE_FREQUENCY_RANGE = NumberRange{5U, 100U};
@@ -412,13 +412,13 @@ inline auto ParticlesFx::ParticlesFxImpl::ChangeEffectSpeed() noexcept -> void
 
   if (not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_INCREASE_SPEED))
   {
-    m_deltaTime =
-        m_fxHelper->GetGoomRand().GetRandInRange(m_deltaTime, m_effectData.deltaTimeRange.max);
+    m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(
+        NumberRange{m_deltaTime, m_effectData.deltaTimeRange.Max()});
   }
   else
   {
-    m_deltaTime =
-        m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.deltaTimeRange.min, m_deltaTime);
+    m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(
+        NumberRange{m_effectData.deltaTimeRange.Min(), m_deltaTime});
   }
 }
 

@@ -9,6 +9,8 @@ export module Goom.VisualFx.CirclesFx.DotDiameters;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.AssertUtils;
 
+using GOOM::UTILS::MATH::NumberRange;
+
 export namespace GOOM::VISUAL_FX::CIRCLES
 {
 
@@ -100,23 +102,23 @@ auto DotDiameters::ChangeDiameters() noexcept -> void
 
 auto DotDiameters::ChangeToFixedDiameters() noexcept -> void
 {
-  const auto fixedDiameter = m_goomRand->GetRandInRange(m_minDiameter, m_maxDiameter + 1);
+  const auto fixedDiameter = m_goomRand->GetRandInRange(NumberRange{m_minDiameter, m_maxDiameter});
 
   std::fill(begin(m_diameters), end(m_diameters), fixedDiameter);
 }
 
 auto DotDiameters::ChangeToVariableDiameters() noexcept -> void
 {
-  const auto smallDiameter = m_goomRand->GetRandInRange(m_minDiameter, m_maxDiameter - 1);
+  const auto smallDiameter =
+      m_goomRand->GetRandInRange(NumberRange{m_minDiameter, m_maxDiameter - 2});
 
   static constexpr auto INCREASED_DIAMETER = 3U;
   const auto minLargerDiameter = std::min(m_maxDiameter, smallDiameter + INCREASED_DIAMETER);
-  const auto largerDotDiameter = m_goomRand->GetRandInRange(minLargerDiameter, m_maxDiameter + 1);
+  const auto largerDotDiameter =
+      m_goomRand->GetRandInRange(NumberRange{minLargerDiameter, m_maxDiameter});
 
-  static constexpr auto MIN_LARGER_DIAMETER_FREQ = 2U;
-  static constexpr auto MAX_LARGER_DIAMETER_FREQ = 5U;
-  const auto largerDiameterEvery =
-      m_goomRand->GetRandInRange(MIN_LARGER_DIAMETER_FREQ, MAX_LARGER_DIAMETER_FREQ + 1);
+  static constexpr auto LARGER_DIAMETER_FREQ_RANGE = NumberRange{2U, 5U};
+  const auto largerDiameterEvery = m_goomRand->GetRandInRange(LARGER_DIAMETER_FREQ_RANGE);
 
   for (auto i = 1U; i < m_numDots; ++i)
   {

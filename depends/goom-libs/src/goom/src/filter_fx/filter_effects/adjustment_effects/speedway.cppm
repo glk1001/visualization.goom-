@@ -13,6 +13,8 @@ import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::NumberRange;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -121,15 +123,13 @@ inline auto Speedway::GetMode1ZoomAdjustment(const NormalizedCoords& coords,
   auto xAdd = -1.0F;
   if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_RANDOM_X_ADD))
   {
-    static constexpr auto MIN_NEGATIVE_X_ADD  = -1.9F;
-    static constexpr auto MAX_NEGATIVE_X_ADD  = -0.5F;
-    static constexpr auto MIN_POSITIVE_X_ADD  = +0.5F;
-    static constexpr auto MAX_POSITIVE_X_ADD  = +1.9F;
-    static constexpr auto PROB_NEGATIVE_X_ADD = 0.5F;
+    static constexpr auto NEGATIVE_X_ADD_RANGE = NumberRange{-1.9F, -0.5F};
+    static constexpr auto POSITIVE_X_ADD_RANGE = NumberRange{+0.5F, +1.9F};
+    static constexpr auto PROB_NEGATIVE_X_ADD  = 0.5F;
 
     xAdd = m_goomRand->ProbabilityOf(PROB_NEGATIVE_X_ADD)
-               ? m_goomRand->GetRandInRange(MIN_NEGATIVE_X_ADD, MAX_NEGATIVE_X_ADD)
-               : m_goomRand->GetRandInRange(MIN_POSITIVE_X_ADD, MAX_POSITIVE_X_ADD);
+               ? m_goomRand->GetRandInRange(NEGATIVE_X_ADD_RANGE)
+               : m_goomRand->GetRandInRange(POSITIVE_X_ADD_RANGE);
   }
   else if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
   {

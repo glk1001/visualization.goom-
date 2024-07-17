@@ -12,6 +12,7 @@ using GOOM::COLOR::RandomColorMapsGroups;
 using GOOM::COLOR::WeightedRandomColorMaps;
 using GOOM::UTILS::NUM;
 using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
 
 export namespace GOOM::CONTROL
 {
@@ -87,7 +88,7 @@ inline auto VisualFxColorMaps::GetNextCompletelyRandomColorMapsGroup() const
     -> RandomColorMapsGroups::Groups
 {
   return static_cast<RandomColorMapsGroups::Groups>(
-      m_goomRand->GetRandInRange(0U, NUM<RandomColorMapsGroups::Groups>));
+      m_goomRand->GetRandInRange(NumberRange{0U, NUM<RandomColorMapsGroups::Groups> - 1}));
 }
 
 } // namespace GOOM::CONTROL

@@ -79,7 +79,7 @@ private:
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
   static constexpr auto LERP_STEPS_RANGE                   = NumberRange{50U, 500U};
   TValue m_lerpT{
-      {TValue::StepType::SINGLE_CYCLE, LERP_STEPS_RANGE.min}
+      {TValue::StepType::SINGLE_CYCLE, LERP_STEPS_RANGE.Min()}
   };
 
   static const Weights<PixelBlendType>::EventWeightPairs DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS;
@@ -95,7 +95,7 @@ private:
   [[nodiscard]] static auto GetAlphaPixelBlendFunc() -> PixelBlendFunc;
   [[nodiscard]] static auto GetAlphaAndAddPixelBlendFunc() -> PixelBlendFunc;
   static constexpr auto LUMA_MIX_T_RANGE = NumberRange{0.3F, 1.0F};
-  float m_lumaMixT                       = LUMA_MIX_T_RANGE.min;
+  float m_lumaMixT                       = LUMA_MIX_T_RANGE.Min();
   [[nodiscard]] static auto GetSameLumaMixPixelBlendFunc(float lumaMixT) -> PixelBlendFunc;
 };
 

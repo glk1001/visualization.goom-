@@ -15,9 +15,11 @@ import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
 using GOOM::UTILS::Timer;
+using GOOM::UTILS::MATH::FULL_CIRCLE_RANGE;
 using GOOM::UTILS::MATH::IGoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
+using GOOM::UTILS::MATH::TWO_PI;
 
 namespace GOOM::VISUAL_FX::SHADERS
 {
@@ -77,16 +79,14 @@ inline auto HueShiftLerper::GetLerpedValue() const noexcept -> float
   return m_currentHueShift;
 }
 
-using UTILS::MATH::TWO_PI;
-
 HueShiftLerper::HueShiftLerper(const PluginInfo& goomInfo,
                                const IGoomRand& goomRand,
                                const Params& params) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_params{params},
-    m_lerpT{{TValue::StepType::SINGLE_CYCLE, m_params.numLerpStepsRange.min}},
-    m_lerpConstTimer{m_goomInfo->GetTime(), m_params.lerpConstTimeRange.min, false}
+    m_lerpT{{TValue::StepType::SINGLE_CYCLE, m_params.numLerpStepsRange.Min()}},
+    m_lerpConstTimer{m_goomInfo->GetTime(), m_params.lerpConstTimeRange.Min(), false}
 {
 }
 
@@ -134,7 +134,8 @@ inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
   m_srceHueShift = GetLerpedValue();
   m_lerpT.Reset(0.0F);
 
-  m_destHueShift = std::fmod(m_srceHueShift + m_goomRand->GetRandInRange(0.0F, TWO_PI), TWO_PI);
+  m_destHueShift =
+      std::fmod(m_srceHueShift + m_goomRand->GetRandInRange(FULL_CIRCLE_RANGE), TWO_PI);
   LogInfo("Reset m_destHueShift = {}.", m_destHueShift);
 }
 

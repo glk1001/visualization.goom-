@@ -12,6 +12,8 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.Point2d;
 
 using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::UNIT_RANGE;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -40,13 +42,11 @@ private:
   FuncEffect m_funcOf;
   FuncEffect m_func;
 
-  static constexpr auto MIN_FUNC_TO_FUNC_OF_LERP_VALUE = 0.00F;
-  static constexpr auto MAX_FUNC_TO_FUNC_OF_LERP_VALUE = 0.75F;
-  float m_funcToFuncOfLerpValue                        = MIN_FUNC_TO_FUNC_OF_LERP_VALUE;
+  static constexpr auto FUNC_TO_FUNC_OF_LERP_VALUE_RANGE = NumberRange{0.00F, 0.75F};
+  float m_funcToFuncOfLerpValue                          = FUNC_TO_FUNC_OF_LERP_VALUE_RANGE.Min();
 
-  static constexpr auto MIN_COORDS_TO_FUNC_COORDS_LERP_VALUE = 0.0F;
-  static constexpr auto MAX_COORDS_TO_FUNC_COORDS_LERP_VALUE = 1.0F;
-  float m_coordsToFuncCoordsLerpValue                        = MIN_COORDS_TO_FUNC_COORDS_LERP_VALUE;
+  static constexpr auto COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE = UNIT_RANGE;
+  float m_coordsToFuncCoordsLerpValue = COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE.Min();
 
   static constexpr auto PROB_USE_FULL_FUNC_OF = 0.1F;
   bool m_useFullFuncOf                        = false;

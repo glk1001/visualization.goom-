@@ -48,6 +48,7 @@ using GOOM::UTILS::MATH::CirclePath;
 using GOOM::UTILS::MATH::IGoomRand;
 using GOOM::UTILS::MATH::ModDecrement;
 using GOOM::UTILS::MATH::ModIncrement;
+using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::OscillatingFunction;
 using GOOM::UTILS::MATH::TValue;
 using GOOM::UTILS::MATH::Weights;
@@ -153,8 +154,7 @@ private:
   };
   CircleDots m_circleDots;
 
-  static constexpr auto MIN_NUM_DOTS = 30U;
-  static constexpr auto MAX_NUM_DOTS = 50U;
+  static constexpr auto NUM_DOTS_RANGE = NumberRange{30U, 50U};
   [[nodiscard]] auto GetNewNumDots() const noexcept -> uint32_t;
   bool m_resetNumDotsRequired = false;
   auto ResetNumDots() noexcept -> void;
@@ -341,12 +341,10 @@ static constexpr auto NEAR_START_BRIGHTNESS_FACTOR         = 0.25F;
 static constexpr auto NEAR_END_BRIGHTNESS_VALUE            = 0.001F;
 static constexpr auto SPECIAL_NUM_BRIGHTNESS_INCREASE      = 1.5F;
 static constexpr auto SPECIAL_NUM_LINE_BRIGHTNESS_INCREASE = 2.0F;
-static constexpr auto MIN_COLOR_GRID_MIX_T                 = 0.1F;
-static constexpr auto MAX_COLOR_GRID_MIX_T                 = 0.9F;
+static constexpr auto COLOR_GRID_MIX_T_RANGE               = NumberRange{0.1F, 0.9F};
 static constexpr auto PROB_NO_ROTATING_COLORS              = 0.9F;
 static constexpr auto PROB_DOT_ROTATE_INCREMENT            = 0.5F;
-static constexpr auto MIN_NUM_ROTATING_COLORS              = 1U;
-static constexpr auto MAX_NUM_ROTATING_COLORS              = 2U;
+static constexpr auto NUM_ROTATING_COLORS_RANGE            = NumberRange{1U, 2U};
 static constexpr auto CLOSE_TO_START_T                     = 0.1F;
 static constexpr auto CLOSE_TO_END_T                       = 0.2F;
 
@@ -496,10 +494,10 @@ Circle::Circle(FxHelper& fxHelper,
 
 inline auto Circle::GetNewNumDots() const noexcept -> uint32_t
 {
-  static_assert(UTILS::MATH::IsEven(MIN_NUM_DOTS));
-  static_assert(UTILS::MATH::IsEven(MAX_NUM_DOTS));
+  static_assert(UTILS::MATH::IsEven(NUM_DOTS_RANGE.Min()));
+  static_assert(UTILS::MATH::IsEven(NUM_DOTS_RANGE.Max()));
 
-  auto numDots = m_fxHelper->GetGoomRand().GetRandInRange(MIN_NUM_DOTS, MAX_NUM_DOTS + 1);
+  auto numDots = m_fxHelper->GetGoomRand().GetRandInRange(NUM_DOTS_RANGE);
   if (not UTILS::MATH::IsEven(numDots))
   {
     numDots += 1;
@@ -585,10 +583,10 @@ inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<Colo
 
 auto Circle::UpdateRotatingColorMaps() noexcept -> void
 {
-  const auto newNumRotatingColors = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NO_ROTATING_COLORS)
-                                        ? 0U
-                                        : m_fxHelper->GetGoomRand().GetRandInRange(
-                                              MIN_NUM_ROTATING_COLORS, MAX_NUM_ROTATING_COLORS + 1);
+  const auto newNumRotatingColors =
+      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NO_ROTATING_COLORS)
+          ? 0U
+          : m_fxHelper->GetGoomRand().GetRandInRange(NUM_ROTATING_COLORS_RANGE);
 
   if (m_numRotatingColors == newNumRotatingColors)
   {
@@ -601,7 +599,8 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   m_rotatingDotNums.resize(m_numRotatingColors);
   for (auto& dotNum : m_rotatingDotNums)
   {
-    dotNum = m_fxHelper->GetGoomRand().GetRandInRange(0U, m_circleDots.GetNumDots());
+    dotNum =
+        m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{0U, m_circleDots.GetNumDots() - 1});
   }
 
   m_rotatingMainColorMaps.resize(m_numRotatingColors, ColorMapPtrWrapper{nullptr});
@@ -650,8 +649,7 @@ auto Circle::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainMap
   UpdateRotatingColorMaps();
 
   UpdateNumDifferentGridMaps();
-  m_currentColorGridMixT =
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_COLOR_GRID_MIX_T, MAX_COLOR_GRID_MIX_T);
+  m_currentColorGridMixT = m_fxHelper->GetGoomRand().GetRandInRange(COLOR_GRID_MIX_T_RANGE);
   m_mainColorMapsGrid.SetColorMaps(GetHorizontalMainColorMaps(), GetVerticalMainColorMaps());
   m_lowColorMapsGrid.SetColorMaps(GetHorizontalLowColorMaps(), GetVerticalLowColorMaps());
 

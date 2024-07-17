@@ -5,8 +5,11 @@ module;
 
 export module Goom.Lib.FrameData;
 
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
+
+using GOOM::UTILS::MATH::NumberRange;
 
 export namespace GOOM
 {
@@ -19,9 +22,8 @@ struct FilterPosArrays
 {
   std::span<Point2dFlt> filterDestPos;
   float filterPosBuffersLerpFactor                 = 0.0F;
-  static constexpr auto MIN_POS1_POS2_MIX_FREQ     = 0.001F;
-  static constexpr auto MAX_POS1_POS2_MIX_FREQ     = 0.010F;
-  static constexpr auto DEFAULT_POS1_POS2_MIX_FREQ = 0.01F;
+  static constexpr auto POS1_POS2_MIX_FREQ_RANGE   = NumberRange{0.001F, 0.010F};
+  static constexpr auto DEFAULT_POS1_POS2_MIX_FREQ = POS1_POS2_MIX_FREQ_RANGE.Max();
   float filterPos1Pos2FreqMixFreq                  = 0.0F;
   bool filterDestPosNeedsUpdating                  = false;
 };

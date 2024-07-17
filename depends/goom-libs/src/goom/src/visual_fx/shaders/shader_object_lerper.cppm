@@ -74,19 +74,16 @@ ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
     m_lerpT{{TValue::StepType::CONTINUOUS_REVERSIBLE, m_params.initialNumLerpSteps}},
     m_lerpConstTimer{m_goomInfo->GetTime(), m_params.initialLerpConstTime, false}
 {
-  Expects(m_params.valueRange.min < m_params.valueRange.max);
   Expects(m_params.minValueRangeDist > 0.0F);
-  Expects(m_params.valueRange.max - m_params.valueRange.min >= m_params.minValueRangeDist);
+  Expects(m_params.valueRange.Range() >= m_params.minValueRangeDist);
 
-  Expects(0 < m_params.numLerpStepsRange.min);
-  Expects(m_params.numLerpStepsRange.min < m_params.numLerpStepsRange.max);
-  Expects(m_params.numLerpStepsRange.min <= m_params.initialNumLerpSteps);
-  Expects(m_params.initialNumLerpSteps <= m_params.numLerpStepsRange.max);
+  Expects(0 < m_params.numLerpStepsRange.Min());
+  Expects(m_params.numLerpStepsRange.Min() <= m_params.initialNumLerpSteps);
+  Expects(m_params.initialNumLerpSteps <= m_params.numLerpStepsRange.Max());
 
-  Expects(0 < m_params.lerpConstTimeRange.min);
-  Expects(m_params.lerpConstTimeRange.min < m_params.lerpConstTimeRange.max);
-  Expects(m_params.lerpConstTimeRange.min <= m_params.initialLerpConstTime);
-  Expects(m_params.initialLerpConstTime <= m_params.lerpConstTimeRange.max);
+  Expects(0 < m_params.lerpConstTimeRange.Min());
+  Expects(m_params.lerpConstTimeRange.Min() <= m_params.initialLerpConstTime);
+  Expects(m_params.initialLerpConstTime <= m_params.lerpConstTimeRange.Max());
 }
 
 auto ShaderObjectLerper::Update() noexcept -> void

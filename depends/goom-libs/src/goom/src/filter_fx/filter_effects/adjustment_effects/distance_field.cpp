@@ -41,9 +41,9 @@ static constexpr auto DEFAULT_GRID_WIDTH     = MIN_GRID_WIDTH;
 static constexpr auto GRID_WIDTH_RANGE_MODE0 = NumberRange{4U, 15U};
 static constexpr auto GRID_WIDTH_RANGE_MODE1 = NumberRange{16U, 31U};
 static constexpr auto GRID_WIDTH_RANGE_MODE2 = NumberRange{32U, 63U};
-static_assert(GRID_WIDTH_RANGE_MODE0.min >= MIN_GRID_WIDTH);
-static_assert(GRID_WIDTH_RANGE_MODE1.min > GRID_WIDTH_RANGE_MODE0.min);
-static_assert(GRID_WIDTH_RANGE_MODE2.min > GRID_WIDTH_RANGE_MODE1.min);
+static_assert(GRID_WIDTH_RANGE_MODE0.Min() >= MIN_GRID_WIDTH);
+static_assert(GRID_WIDTH_RANGE_MODE1.Min() > GRID_WIDTH_RANGE_MODE0.Min());
+static_assert(GRID_WIDTH_RANGE_MODE2.Min() > GRID_WIDTH_RANGE_MODE1.Min());
 
 static constexpr auto DEFAULT_GRID_TYPE = DistanceField::GridType::FULL;
 static constexpr auto DEFAULT_GRID_SCALE =
@@ -168,7 +168,8 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
 auto DistanceField::GetGridWidth(const GridType gridType,
                                  const GridWidthRange& gridWidthRange) const noexcept -> uint32_t
 {
-  if ((gridType == GridType::PARTIAL_RANDOM) and (gridWidthRange.min == GRID_WIDTH_RANGE_MODE0.min))
+  if ((gridType == GridType::PARTIAL_RANDOM) and
+      (gridWidthRange.Min() == GRID_WIDTH_RANGE_MODE0.Min()))
   {
     // For random grid type, wider range looks better.
     return m_goomRand->GetRandInRange(GRID_WIDTH_RANGE_MODE1);

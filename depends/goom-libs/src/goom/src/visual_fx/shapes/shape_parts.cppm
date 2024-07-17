@@ -234,8 +234,8 @@ inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goo
                                                const float oldTMinMaxLerp) noexcept -> float
 {
   static constexpr auto SMALL_OFFSET = 0.2F;
-  return goomRand.GetRandInRange(std::max(0.0F, -SMALL_OFFSET + oldTMinMaxLerp),
-                                 std::min(1.0F, oldTMinMaxLerp + SMALL_OFFSET));
+  return goomRand.GetRandInRange(NumberRange{std::max(0.0F, -SMALL_OFFSET + oldTMinMaxLerp),
+                                             std::min(1.0F, oldTMinMaxLerp + SMALL_OFFSET)});
 }
 
 inline auto ShapePart::UseEvenShapePartNumsForDirection(const bool val) -> void
@@ -360,8 +360,8 @@ inline auto ShapePart::GetTransform2d(const Vec2dFlt& targetPoint,
 
 auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
 {
-  const auto numShapePaths =
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths + 1);
+  const auto numShapePaths = m_fxHelper->GetGoomRand().GetRandInRange(
+      NumberRange{MIN_NUM_SHAPE_PATHS, m_maxNumShapePaths});
 
   static constexpr auto MIN_SCALE_RANGE       = NumberRange{0.9F, 1.0F};
   static constexpr auto MAX_SCALE_RANGE       = NumberRange{1.0F + SMALL_FLOAT, 1.5F};

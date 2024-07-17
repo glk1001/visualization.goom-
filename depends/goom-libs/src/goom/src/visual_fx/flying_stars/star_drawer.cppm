@@ -112,7 +112,7 @@ private:
   auto ChangeMaxNumParts() noexcept -> void;
 
   static constexpr auto DOT_SIZE_RANGE = NumberRange{3U, 5U};
-  static_assert(DOT_SIZE_RANGE.max <= SmallImageBitmaps::MAX_IMAGE_SIZE);
+  static_assert(DOT_SIZE_RANGE.Max() <= SmallImageBitmaps::MAX_IMAGE_SIZE);
   [[nodiscard]] auto GetImageBitmap(uint32_t size) const noexcept -> const ImageBitmap&;
 
   using DrawFunc = std::function<void(
@@ -277,10 +277,10 @@ inline auto StarDrawer::GetPartMultiplier() const noexcept -> float
 {
   if (m_currentActualDrawElement == DrawElementTypes::LINES)
   {
-    return m_goomRand->GetRandInRange(1.0F, GetLineMaxPartMultiplier());
+    return m_goomRand->GetRandInRange(NumberRange{1.0F, GetLineMaxPartMultiplier()});
   }
 
-  return m_goomRand->GetRandInRange(1.0F, GetMaxPartMultiplier());
+  return m_goomRand->GetRandInRange(NumberRange{1.0F, GetMaxPartMultiplier()});
 }
 
 inline auto StarDrawer::GetMaxPartMultiplier() const noexcept -> float
@@ -365,7 +365,7 @@ inline auto StarDrawer::DrawParticleDot(const Point2dInt& point1,
 inline auto StarDrawer::GetImageBitmap(const uint32_t size) const noexcept -> const ImageBitmap&
 {
   return m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::CIRCLE,
-                                        std::clamp(size, DOT_SIZE_RANGE.min, DOT_SIZE_RANGE.max));
+                                        std::clamp(size, DOT_SIZE_RANGE.Min(), DOT_SIZE_RANGE.Max()));
 }
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS

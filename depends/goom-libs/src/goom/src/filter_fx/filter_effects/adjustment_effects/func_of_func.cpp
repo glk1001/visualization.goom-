@@ -13,6 +13,7 @@ import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
+
 using UTILS::MATH::IGoomRand;
 
 FunctionOfFunction::FunctionOfFunction(const IGoomRand& goomRand,
@@ -28,11 +29,10 @@ auto FunctionOfFunction::SetRandomParams() noexcept -> void
   m_func->SetRandomParams();
   m_funcOf->SetRandomParams();
 
-  m_funcToFuncOfLerpValue =
-      m_goomRand->GetRandInRange(MIN_FUNC_TO_FUNC_OF_LERP_VALUE, MAX_FUNC_TO_FUNC_OF_LERP_VALUE);
+  m_funcToFuncOfLerpValue = m_goomRand->GetRandInRange(FUNC_TO_FUNC_OF_LERP_VALUE_RANGE);
 
-  m_coordsToFuncCoordsLerpValue = m_goomRand->GetRandInRange(MIN_COORDS_TO_FUNC_COORDS_LERP_VALUE,
-                                                             MAX_COORDS_TO_FUNC_COORDS_LERP_VALUE);
+  m_coordsToFuncCoordsLerpValue =
+      m_goomRand->GetRandInRange(COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE);
 
   m_useFullFuncOf = m_goomRand->ProbabilityOf(PROB_USE_FULL_FUNC_OF);
 }

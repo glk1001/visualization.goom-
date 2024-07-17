@@ -18,6 +18,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 
 static constexpr auto X_DEFAULT_EFFECT = YOnly::YOnlyEffect::X_SIN_Y_SIN;
 static constexpr auto Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;
@@ -52,12 +53,13 @@ YOnly::YOnly(const IGoomRand& goomRand) noexcept
 
 auto YOnly::SetRandomParams() noexcept -> void
 {
-  const auto xEffect = static_cast<YOnlyEffect>(
-      m_goomRand->GetRandInRange(static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
-  const auto yEffect = m_goomRand->ProbabilityOf(PROB_Y_ONLY_STRICT)
-                           ? YOnlyEffect::NONE
-                           : static_cast<YOnlyEffect>(m_goomRand->GetRandInRange(
-                                 static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect>));
+  static constexpr auto Y_ONLY_EFFECT_RANGE =
+      NumberRange{static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect> - 1};
+  const auto xEffect = static_cast<YOnlyEffect>(m_goomRand->GetRandInRange(Y_ONLY_EFFECT_RANGE));
+  const auto yEffect =
+      m_goomRand->ProbabilityOf(PROB_Y_ONLY_STRICT)
+          ? YOnlyEffect::NONE
+          : static_cast<YOnlyEffect>(m_goomRand->GetRandInRange(Y_ONLY_EFFECT_RANGE));
 
   const auto xFreqFactor = m_goomRand->GetRandInRange(FREQ_FACTOR_RANGE.xRange);
   const auto yFreqFactor = m_goomRand->ProbabilityOf(PROB_FREQ_EQUAL)

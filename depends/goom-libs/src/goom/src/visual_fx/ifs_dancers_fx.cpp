@@ -96,9 +96,8 @@ public:
   auto UpdateLowDensityThreshold() noexcept -> void;
 
 private:
-  static constexpr int32_t MIN_CYCLE_LENGTH = 1000;
-  static constexpr int32_t MAX_CYCLE_LENGTH = 2000;
-  int32_t m_cycleLength                     = MIN_CYCLE_LENGTH;
+  static constexpr auto CYCLE_LENGTH_RANGE = NumberRange{1000, 2000};
+  int32_t m_cycleLength                    = CYCLE_LENGTH_RANGE.Min();
 
   FxHelper* m_fxHelper;
   BitmapDrawer m_bitmapDrawer;
@@ -137,10 +136,9 @@ private:
   auto DrawPoint(float t, const IfsPoint& ifsPoint, float tMix) noexcept -> void;
 
   static constexpr auto PROB_DRAW_LOW_DENSITY_POINTS = 0.1F;
-  bool m_drawLowDensityPoints                         = false;
-  static constexpr uint32_t MAX_DENSITY_COUNT         = 20;
-  static constexpr uint32_t MIN_DENSITY_COUNT         = 5;
-  uint32_t m_lowDensityCount                          = MIN_DENSITY_COUNT;
+  bool m_drawLowDensityPoints                        = false;
+  static constexpr auto DENSITY_COUNT_RANGE          = NumberRange{5U, 20U};
+  uint32_t m_lowDensityCount                         = DENSITY_COUNT_RANGE.Min();
   LowDensityBlurrer m_blurrer;
   static constexpr auto BLUR_WIDTH                         = 3U;
   static constexpr auto DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
@@ -324,8 +322,10 @@ inline auto IfsDancersFx::IfsDancersFxImpl::ChangeSpeed() noexcept -> void
   static constexpr auto MIN_SPEED_AMP    = 1.1F;
   static constexpr auto MAX_SPEED_AMP    = 5.1F;
   static constexpr auto MAX_SPEED_WEIGHT = 10.0F;
-  const auto speedAmp                    = std::min(
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_SPEED_AMP, MAX_SPEED_WEIGHT), MAX_SPEED_AMP);
+
+  const auto speedAmp = std::min(
+      m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{MIN_SPEED_AMP, MAX_SPEED_WEIGHT}),
+      MAX_SPEED_AMP);
   const auto accelFactor =
       1.0F / (1.1F - m_fxHelper->GetSoundEvents().GetSoundInfo().GetAcceleration());
 
@@ -425,7 +425,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() noexcept -> void
   }
 
   m_cycle       = 0;
-  m_cycleLength = m_fxHelper->GetGoomRand().GetRandInRange(MIN_CYCLE_LENGTH, MAX_CYCLE_LENGTH + 1);
+  m_cycleLength = m_fxHelper->GetGoomRand().GetRandInRange(CYCLE_LENGTH_RANGE);
 
   UpdateLowDensityBlurThreshold();
 
@@ -584,10 +584,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
   }
   else
   {
-    static constexpr auto MIN_MIX_FACTOR = 0.9F;
-    static constexpr auto MAX_MIX_FACTOR = 1.0F;
-    m_blurrer.SetNeighbourMixFactor(
-        m_fxHelper->GetGoomRand().GetRandInRange(MIN_MIX_FACTOR, MAX_MIX_FACTOR));
+    static constexpr auto MIX_FACTOR_RANGE = NumberRange{0.9F, 1.0F};
+    m_blurrer.SetNeighbourMixFactor(m_fxHelper->GetGoomRand().GetRandInRange(MIX_FACTOR_RANGE));
   }
 
   m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
@@ -595,8 +593,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() noexcept -> void
 {
-  m_lowDensityCount =
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_DENSITY_COUNT, MAX_DENSITY_COUNT);
+  m_lowDensityCount = m_fxHelper->GetGoomRand().GetRandInRange(DENSITY_COUNT_RANGE);
 
   m_blurrer.SetWidth(GetNewBlurWidth());
 }
@@ -604,7 +601,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() noexcept
 inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const noexcept -> uint32_t
 {
   static constexpr auto NUM_WIDTHS         = 3U;
-  static constexpr auto WIDTH_RANGE        = (MAX_DENSITY_COUNT - MIN_DENSITY_COUNT) / NUM_WIDTHS;
+  static constexpr auto WIDTH_RANGE        = DENSITY_COUNT_RANGE.Range() / NUM_WIDTHS;
   static constexpr auto DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
 
   static constexpr auto LARGE_BLUR_WIDTH  = 7U;
@@ -613,11 +610,11 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const noexcept -> 
 
   auto blurWidth = SMALL_BLUR_WIDTH;
 
-  if (m_lowDensityCount <= (MIN_DENSITY_COUNT + WIDTH_RANGE))
+  if (m_lowDensityCount <= (DENSITY_COUNT_RANGE.Min() + WIDTH_RANGE))
   {
     blurWidth = LARGE_BLUR_WIDTH;
   }
-  else if (m_lowDensityCount <= (MIN_DENSITY_COUNT + DOUBLE_WIDTH_RANGE))
+  else if (m_lowDensityCount <= (DENSITY_COUNT_RANGE.Min() + DOUBLE_WIDTH_RANGE))
   {
     blurWidth = MEDIUM_BLUR_WIDTH;
   }

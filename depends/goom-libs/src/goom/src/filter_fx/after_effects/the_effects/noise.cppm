@@ -10,6 +10,7 @@ import Goom.Utils.Math.GoomRandBase;
 
 using GOOM::UTILS::NameValuePairs;
 using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::NumberRange;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
@@ -38,8 +39,7 @@ private:
   const IGoomRand* m_goomRand;
 
   // For noise amplitude, take the reciprocal of these.
-  static constexpr float NOISE_MIN = 40.0F;
-  static constexpr float NOISE_MAX = 120.0F;
+  static constexpr auto NOISE_RANGE = NumberRange{40.0F, 120.0F};
   Params m_params;
 };
 
@@ -50,9 +50,10 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 
 inline auto Noise::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto amp = m_params.noiseFactor / m_goomRand->GetRandInRange(NOISE_MIN, NOISE_MAX);
-  return velocity + NormalizedCoords{m_goomRand->GetRandInRange(-amp, +amp),
-                                     m_goomRand->GetRandInRange(-amp, +amp)};
+  const auto amp = m_params.noiseFactor / m_goomRand->GetRandInRange(NOISE_RANGE);
+
+  return velocity + NormalizedCoords{m_goomRand->GetRandInRange(NumberRange{-amp, +amp}),
+                                     m_goomRand->GetRandInRange(NumberRange{-amp, +amp})};
 }
 
 inline auto Noise::GetParams() const -> const Params&

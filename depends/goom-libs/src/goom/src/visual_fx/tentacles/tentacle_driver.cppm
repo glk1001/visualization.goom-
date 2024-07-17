@@ -361,8 +361,8 @@ auto TentacleDriver::ChangeTentacleColorMaps() -> void
 {
   ChangeSegmentMixes();
 
-  m_tentacleGroupSize = m_goomRand->GetRandInRange(MIN_TENTACLE_GROUP_SIZE,
-                                                   static_cast<uint32_t>(m_tentacles.size()));
+  m_tentacleGroupSize = m_goomRand->GetRandInRange(
+      NumberRange{MIN_TENTACLE_GROUP_SIZE, static_cast<uint32_t>(m_tentacles.size() - 1)});
 
   m_useThickLines = m_goomRand->ProbabilityOf(PROB_THICK_LINES);
 }

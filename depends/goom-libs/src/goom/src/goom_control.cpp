@@ -250,7 +250,7 @@ private:
 
   static constexpr auto TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE = NumberRange{100U, 1000U};
   Timer m_pos1Pos2MixFreqChangeTimer{
-      m_goomTime, TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE.min, false};
+      m_goomTime, TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE.Min(), false};
   static constexpr auto POS1_POS2_MIX_FREQ_TRANSITION_TIME = 200U;
   TValue m_pos1Pos2TransitionLerpFactor{
       TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
@@ -525,8 +525,7 @@ auto GoomControl::GoomControlImpl::UpdatePos1Pos2MixFreq() noexcept -> void
   m_pos1Pos2TransitionLerpFactor.Reset(0.0F);
 
   m_previousPos1Pos2MixFreq = m_frameData->filterPosArrays.filterPos1Pos2FreqMixFreq;
-  m_targetPos1Pos2MixFreq   = m_goomRand->GetRandInRange(FilterPosArrays::MIN_POS1_POS2_MIX_FREQ,
-                                                       FilterPosArrays::MAX_POS1_POS2_MIX_FREQ);
+  m_targetPos1Pos2MixFreq   = m_goomRand->GetRandInRange(FilterPosArrays::POS1_POS2_MIX_FREQ_RANGE);
 }
 
 inline auto GoomControl::GoomControlImpl::SetNoZooms(const bool value) -> void
