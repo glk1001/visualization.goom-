@@ -48,6 +48,9 @@ TEST_CASE("repeatable random sequence")
     fltSeq2[i] = GetRandInRange(0.0F, 1.0F);
   }
 
+  UNSCOPED_INFO(std::format("GetRandSeed() = {}", GetRandSeed()));
+  REQUIRE(seq1 == seq2);
+
   SetRandSeed(SEED + 1);
   REQUIRE((SEED + 1) == GetRandSeed());
   auto seq3    = std::vector<uint32_t>(NUM_LOOPS);
@@ -58,7 +61,6 @@ TEST_CASE("repeatable random sequence")
     fltSeq3[i] = GetRandInRange(0.0F, 1.0F);
   }
 
-  REQUIRE(seq1 == seq2);
   REQUIRE(seq1 != seq3);
 
   REQUIRE(fltSeq1 == fltSeq2);
@@ -75,24 +77,30 @@ TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr auto NUM_LOOPS = 150000U;
+  static constexpr auto NUM_LOOPS = 1000'000U;
+  SetRandSeed(10);
 
   static constexpr auto N_MIN1 = 999U;
   static constexpr auto N_MAX1 = 10001U;
   const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
   REQUIRE(countsResults1.min == N_MIN1);
   REQUIRE(countsResults1.max == N_MAX1 - 1);
-  UNSCOPED_INFO(std::format("minCountAt = {}", countsResults1.minCountAt));
-  UNSCOPED_INFO(std::format("maxCountAt = {}", countsResults1.maxCountAt));
-  //REQUIRE(countsResults1.minCount == countsResults1.maxCount);
   REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
+  REQUIRE(countsResults1.sumOfAllCounts == NUM_LOOPS);
+  // UNSCOPED_INFO(std::format("minCountAt = {}", countsResults1.minCountAt));
+  // UNSCOPED_INFO(std::format("maxCountAt = {}", countsResults1.maxCountAt));
+  // REQUIRE(countsResults1.minCount == countsResults1.maxCount);
 
   static constexpr auto N_MIN2 = 0U;
-  static constexpr auto N_MAX2 = 120U;
+  static constexpr auto N_MAX2 = 100U;
   const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
   REQUIRE(countsResults2.min == N_MIN2);
   REQUIRE(countsResults2.max == N_MAX2 - 1);
   REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
+  REQUIRE(countsResults2.sumOfAllCounts == NUM_LOOPS);
+  UNSCOPED_INFO(std::format("minCountAt = {}", countsResults2.minCountAt));
+  UNSCOPED_INFO(std::format("maxCountAt = {}", countsResults2.maxCountAt));
+  //REQUIRE(countsResults2.minCount == countsResults2.maxCount);
 
   REQUIRE(5U == GetRandInRange(5U, 6U));
 
@@ -168,7 +176,7 @@ TEST_CASE("float min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr auto NUM_LOOPS              = 1000000U;
+  static constexpr auto NUM_LOOPS              = 1000002U;
   static constexpr auto REASONABLE_FLOAT_COUNT = 950000U;
 
   static constexpr auto SMALL_VAL = 0.0002F;

@@ -24,7 +24,7 @@ using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
-using UTILS::MATH::RAND::G_RAND_MAX;
+using UTILS::MATH::RAND::GOOM_RAND_MAX;
 using UTILS::MATH::RAND::GetRandSeed;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
@@ -82,8 +82,8 @@ auto PerlinNoise::GetRandSeedForPerlinNoise() -> PerlinSeedType
 
 auto PerlinNoise::SetRandomParams() noexcept -> void
 {
-  m_perlinNoise.reseed(m_goomRand->GetNRand(G_RAND_MAX));
-  m_perlinNoise2.reseed(m_goomRand->GetNRand(G_RAND_MAX));
+  m_perlinNoise.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
+  m_perlinNoise2.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
 
   const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
   const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
