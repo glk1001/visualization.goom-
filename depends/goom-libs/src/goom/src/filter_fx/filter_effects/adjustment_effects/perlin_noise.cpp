@@ -11,7 +11,7 @@ import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRandBase;
-import Goom.Utils.Math.RandUtils;
+import Goom.Utils.Math.Rand.RandUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS

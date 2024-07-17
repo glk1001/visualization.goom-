@@ -12,7 +12,7 @@ module;
 export module Goom.Tests.Utils.Math.RandHelper;
 
 import Goom.Utils.Math.GoomRandBase;
-import Goom.Utils.Math.RandUtils;
+import Goom.Utils.Math.Rand.RandUtils;
 
 template<typename T>
 struct CountResults

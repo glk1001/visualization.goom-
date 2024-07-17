@@ -18,7 +18,7 @@ import Goom.FilterFx.FilterBuffers;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.Utils.Math.GoomRand;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.GoomTime;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
@@ -35,7 +35,7 @@ using FILTER_FX::NormalizedCoords;
 using FILTER_FX::NormalizedCoordsConverter;
 using FILTER_FX::ZoomFilterBuffers;
 using UTILS::GoomTime;
-using UTILS::MATH::GoomRand;
+using UTILS::MATH::IGoomRand;
 
 class TestFilterBuffers : public ZoomFilterBuffers
 {
@@ -69,7 +69,7 @@ constexpr auto WIDTH  = LARGE_WIDTH / 10U;
 constexpr auto HEIGHT = LARGE_HEIGHT / 10U;
 #endif
 constexpr auto* RESOURCES_DIRECTORY = "";
-const auto GOOM_RAND                = GoomRand{};
+const auto GOOM_RAND                = IGoomRand{};
 
 const auto SOUND_INFO   = SoundInfo{};
 const auto GOOM_TIME    = GoomTime{};

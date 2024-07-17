@@ -2,7 +2,6 @@ module;
 
 #include <cstdint>
 #include <filesystem>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -10,7 +9,7 @@ module Goom.Lib.GoomUtils;
 
 import Goom.Utils.StrUtils;
 import Goom.Utils.BuildTime;
-import Goom.Utils.Math.RandUtils;
+import Goom.Utils.Math.Rand.RandUtils;
 import Goom.Lib.CompilerVersions;
 import Goom.Lib.GoomVersion;
 

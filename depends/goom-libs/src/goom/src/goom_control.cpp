@@ -56,7 +56,6 @@ import Goom.Utils.Timer;
 import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
@@ -109,7 +108,6 @@ using UTILS::Timer;
 using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
 using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::GoomRand;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsBetween;
 using UTILS::MATH::NumberRange;
@@ -234,7 +232,7 @@ private:
   GoomSoundEvents m_goomSoundEvents{m_goomTime, m_soundInfo};
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
-  std::unique_ptr<IGoomRand> m_goomRand = std::make_unique<GoomRand>();
+  std::unique_ptr<IGoomRand> m_goomRand = std::make_unique<IGoomRand>();
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers{
       m_multiBufferDraw, m_goomInfo.GetDimensions(), GetColorAlphaNoAddBlend};

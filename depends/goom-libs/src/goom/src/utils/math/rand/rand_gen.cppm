@@ -3,7 +3,7 @@ module;
 #include <cstdint>
 #include <limits>
 
-export module Goom.Utils.Math.RandGen;
+export module Goom.Utils.Math.Rand.RandGen;
 
 export namespace GOOM::UTILS::MATH::RAND::GEN
 {

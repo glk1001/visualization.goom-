@@ -4,7 +4,7 @@ module;
 
 #include <cstdint>
 
-module Goom.Utils.Math.RandGen;
+module Goom.Utils.Math.Rand.RandGen;
 
 namespace GOOM::UTILS::MATH::RAND::GEN
 {
