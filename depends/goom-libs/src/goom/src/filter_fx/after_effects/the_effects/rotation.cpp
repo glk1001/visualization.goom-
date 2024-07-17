@@ -21,11 +21,11 @@ using UTILS::MATH::NumberRange;
 using UTILS::MATH::PI;
 
 static constexpr auto DEFAULT_ROTATE_SPEED        = 0.0F;
-static constexpr auto ROTATE_SPEED_RANGE          = NumberRange<float>{-0.5F, +0.5F};
+static constexpr auto ROTATE_SPEED_RANGE          = NumberRange{-0.5F, +0.5F};
 static constexpr auto PROB_EQUAL_XY_ROTATE_SPEEDS = 0.8F;
 
 static constexpr auto DEFAULT_ROTATE_ANGLE = PI / 4.0F;
-static constexpr auto ANGLE_RANGE = NumberRange<float>{(1.0F / 8.0F) * PI, (3.0F / 8.0F) * PI};
+static constexpr auto ANGLE_RANGE          = NumberRange{(1.0F / 8.0F) * PI, (3.0F / 8.0F) * PI};
 
 Rotation::Rotation(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},

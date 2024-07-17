@@ -26,25 +26,25 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange<float>{0.01F, 0.11F};
+static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.01F, 0.11F};
 
 static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange<float>{0.5F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.5F, 1.0F};
 
 static constexpr auto DEFAULT_A = 1.0F;
-static constexpr auto A_RANGE   = NumberRange<float>{0.5F, 1.5F};
+static constexpr auto A_RANGE   = NumberRange{0.5F, 1.5F};
 
 static constexpr auto DEFAULT_B = 1.0F;
-static constexpr auto B_RANGE   = NumberRange<float>{0.5F, 1.5F};
+static constexpr auto B_RANGE   = NumberRange{0.5F, 1.5F};
 
 static constexpr auto DEFAULT_C = 1.0F;
-static constexpr auto C_RANGE   = NumberRange<float>{0.5F, 1.5F};
+static constexpr auto C_RANGE   = NumberRange{0.5F, 1.5F};
 
 static constexpr auto DEFAULT_D = -1.0F;
-static constexpr auto D_RANGE   = NumberRange<float>{-1.5F, -0.5F};
+static constexpr auto D_RANGE   = NumberRange{-1.5F, -0.5F};
 
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
-static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange<float>{1.0F, 100.0F};
+static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,

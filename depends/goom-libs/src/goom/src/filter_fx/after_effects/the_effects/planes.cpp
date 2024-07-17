@@ -25,11 +25,11 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::PI;
 
-static constexpr auto SMALL_EFFECTS_RANGE          = NumberRange<int32_t>{-2, +2 + 1};
-static constexpr auto MEDIUM_EFFECTS_RANGE         = NumberRange<int32_t>{-5, +5 + 1};
-static constexpr auto LARGE_EFFECTS_RANGE          = NumberRange<int32_t>{-7, +7 + 1};
-static constexpr auto VERY_LARGE_EFFECTS_RANGE     = NumberRange<int32_t>{-9, +9 + 1};
-static constexpr auto VERY_LARGE_POS_EFFECTS_RANGE = NumberRange<int32_t>{+5, +12 + 1};
+static constexpr auto SMALL_EFFECTS_RANGE          = NumberRange{-2, +2 + 1};
+static constexpr auto MEDIUM_EFFECTS_RANGE         = NumberRange{-5, +5 + 1};
+static constexpr auto LARGE_EFFECTS_RANGE          = NumberRange{-7, +7 + 1};
+static constexpr auto VERY_LARGE_EFFECTS_RANGE     = NumberRange{-9, +9 + 1};
+static constexpr auto VERY_LARGE_POS_EFFECTS_RANGE = NumberRange{+5, +12 + 1};
 
 static constexpr auto PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE = 0.2F;
 static constexpr auto PROB_ZERO_VERTICAL_FOR_LARGE_RANGE        = 0.2F;
@@ -40,28 +40,28 @@ static constexpr auto PROB_OPPOSITES_FOR_MEDIUM_EFFECTS         = 0.9F;
 // @since June 2001
 // clang-format off
 static constexpr auto
-  HORIZONTAL_EFFECTS_MULTIPLIER_RANGE            = NumberRange<float>{0.0015F, 0.0035F};
+  HORIZONTAL_EFFECTS_MULTIPLIER_RANGE            = NumberRange{0.0015F, 0.0035F};
 static constexpr auto
-  HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = NumberRange<float>{0.0015F, 0.0351F};
+  HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = NumberRange{0.0015F, 0.0351F};
 // clang-format on
 
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_FREQ      = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE        = NumberRange<float>{0.1F, 5.01F};
+static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE        = NumberRange{0.1F, 5.01F};
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE   = NumberRange<float>{0.1F, 5.01F};
+static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE   = NumberRange{0.1F, 5.01F};
 
 // V Plane:
 // clang-format off
 static constexpr auto
-  VERTICAL_EFFECTS_AMPLITUDE_RANGE            = NumberRange<float>{0.0015F, 0.0035F};
+  VERTICAL_EFFECTS_AMPLITUDE_RANGE            = NumberRange{0.0015F, 0.0035F};
 static constexpr auto
-  VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = NumberRange<float>{0.0015F, 0.0351F};
+  VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = NumberRange{0.0015F, 0.0351F};
 // clang-format on
 
 static constexpr auto DEFAULT_VERTICAL_SWIRL_FREQ      = 1.0F;
-static constexpr auto VERTICAL_SWIRL_FREQ_RANGE        = NumberRange<float>{0.1F, 30.01F};
+static constexpr auto VERTICAL_SWIRL_FREQ_RANGE        = NumberRange{0.1F, 30.01F};
 static constexpr auto DEFAULT_VERTICAL_SWIRL_AMPLITUDE = 1.0F;
-static constexpr auto VERTICAL_SWIRL_AMPLITUDE_RANGE   = NumberRange<float>{0.1F, 30.01F};
+static constexpr auto VERTICAL_SWIRL_AMPLITUDE_RANGE   = NumberRange{0.1F, 30.01F};
 
 static constexpr auto PROB_PLANE_AMPLITUDES_EQUAL       = 0.75F;
 static constexpr auto PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.50F;

@@ -17,7 +17,7 @@ using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_NOISE_FACTOR = 0.01F;
-static constexpr auto NOISE_FACTOR_RANGE   = NumberRange<float>{0.001F, 0.100F};
+static constexpr auto NOISE_FACTOR_RANGE   = NumberRange{0.001F, 0.100F};
 
 Noise::Noise(const IGoomRand& goomRand) noexcept
   : m_goomRand{&goomRand}, m_params{DEFAULT_NOISE_FACTOR}

@@ -886,7 +886,7 @@ auto FilterSettingsService::SetBaseZoomAdjustmentFactorMultiplier() noexcept -> 
   }
 
   // TODO(glk) Lerp between old and new?
-  static constexpr auto MULTIPLIER_RANGE = NumberRange<float>{0.1F, 5.0F};
+  static constexpr auto MULTIPLIER_RANGE = NumberRange{0.1F, 5.0F};
   static_assert(ZoomVectorEffects::IsValidMultiplierRange(MULTIPLIER_RANGE));
 
   m_filterSettings.filterEffectsSettings.baseZoomAdjustmentFactorMultiplier =
@@ -895,7 +895,7 @@ auto FilterSettingsService::SetBaseZoomAdjustmentFactorMultiplier() noexcept -> 
 
 auto FilterSettingsService::SetAfterEffectsVelocityMultiplier() noexcept -> void
 {
-  static constexpr auto CONTRIBUTION_RANGE = NumberRange<float>{0.1F, 1.0F};
+  static constexpr auto CONTRIBUTION_RANGE = NumberRange{0.1F, 1.0F};
 
   m_filterSettings.filterEffectsSettings.afterEffectsVelocityMultiplier =
       m_goomRand->GetRandInRange(CONTRIBUTION_RANGE);

@@ -27,17 +27,17 @@ using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
 static constexpr auto DEFAULT_COT_MIX  = 1.1F;
-static constexpr auto COT_MIX_RANGE    = NumberRange<float>{0.6F, 1.6F};
+static constexpr auto COT_MIX_RANGE    = NumberRange{0.6F, 1.6F};
 static constexpr auto TAN_ONLY_WEIGHT  = 500.0F;
 static constexpr auto COT_ONLY_WEIGHT  = 1.0F;
 static constexpr auto COT_MIX_WEIGHT   = 50.0F;
 
 static constexpr auto DEFAULT_AMPLITUDE        = 1.0F;
-static constexpr auto AMPLITUDE_RANGE          = NumberRange<float>{0.10F, 1.11F};
+static constexpr auto AMPLITUDE_RANGE          = NumberRange{0.10F, 1.11F};
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 
 static constexpr auto DEFAULT_LIMITING_FACTOR = 0.75F;
-static constexpr auto LIMITING_FACTOR_RANGE   = NumberRange<float>{0.10F, 0.85F};
+static constexpr auto LIMITING_FACTOR_RANGE   = NumberRange{0.10F, 0.85F};
 
 TanEffect::TanEffect(const IGoomRand& goomRand)
   : m_goomRand{&goomRand},
