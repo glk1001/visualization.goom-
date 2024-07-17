@@ -62,7 +62,7 @@ private:
   static constexpr auto WEIGHT_POINT_CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
   static constexpr auto WEIGHT_POINT_STEPS_RANGE              = NumberRange{10U, 20U};
   TValue m_rectangleWeightPointT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, WEIGHT_POINT_STEPS_RANGE.min}
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, WEIGHT_POINT_STEPS_RANGE.Min()}
   };
 
   static constexpr auto NUM_RAINDROP_POSITION_INCREMENTS = 100U;

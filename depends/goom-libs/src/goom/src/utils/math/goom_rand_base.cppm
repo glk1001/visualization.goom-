@@ -19,13 +19,36 @@ export namespace GOOM::UTILS::MATH
 {
 
 template<typename T>
-struct NumberRange
+class NumberRange
 {
-  T min;
-  T max;
+public:
+  constexpr NumberRange() = default;
+  constexpr NumberRange(T min, T max) noexcept;
+
+  [[nodiscard]] constexpr auto Min() const noexcept -> T;
+  [[nodiscard]] constexpr auto Max() const noexcept -> T;
+  [[nodiscard]] constexpr auto Range() const noexcept -> T;
+
+private:
+  T m_min;
+  T m_max;
 };
+
 template<typename T>
-[[nodiscard]] auto GetMidpoint(const NumberRange<T>& numberRange) noexcept;
+NumberRange(T, T) -> NumberRange<T>;
+
+template<typename T>
+constexpr NumberRange<T>::NumberRange(const T min, const T max) noexcept : m_min{min}, m_max{max}
+{
+  Expects(min <= max);
+}
+
+inline constexpr auto UNIT_RANGE        = NumberRange{0.0F, 1.0F};
+inline constexpr auto FULL_CIRCLE_RANGE = NumberRange{0.0F, TWO_PI};
+inline constexpr auto HALF_CIRCLE_RANGE = NumberRange{0.0F, PI};
+
+template<typename T>
+[[nodiscard]] constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept;
 
 class IGoomRand
 {
@@ -43,16 +66,19 @@ public:
   // Return random number in the range n0 <= n < n1.
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
-  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0,
-                                            uint32_t n1) const noexcept -> uint32_t           = 0;
-  [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t = 0;
-  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float       = 0;
-  [[nodiscard]] virtual auto GetRandInRange(double n0, double n1) const noexcept -> double    = 0;
 
   template<std::ranges::random_access_range Range>
   auto Shuffle(Range& range) const noexcept -> void;
 
   [[nodiscard]] virtual auto ProbabilityOf(float x) const noexcept -> bool = 0;
+
+protected:
+  // Return random number in the range n0 <= n <= n1.
+  [[nodiscard]] virtual auto GetRandInRange(uint32_t n0,
+                                            uint32_t n1) const noexcept -> uint32_t           = 0;
+  [[nodiscard]] virtual auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t = 0;
+  [[nodiscard]] virtual auto GetRandInRange(float n0, float n1) const noexcept -> float       = 0;
+  [[nodiscard]] virtual auto GetRandInRange(double n0, double n1) const noexcept -> double    = 0;
 };
 
 template<EnumType E>
@@ -143,9 +169,27 @@ namespace GOOM::UTILS::MATH
 {
 
 template<typename T>
-auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
+constexpr auto NumberRange<T>::Min() const noexcept -> T
 {
-  return std::midpoint(numberRange.min, numberRange.max);
+  return m_min;
+}
+
+template<typename T>
+constexpr auto NumberRange<T>::Max() const noexcept -> T
+{
+  return m_max;
+}
+
+template<typename T>
+constexpr auto NumberRange<T>::Range() const noexcept -> T
+{
+  return Max() - Min();
+}
+
+template<typename T>
+constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
+{
+  return std::midpoint(numberRange.Min(), numberRange.Max());
 }
 
 template<typename T>
@@ -153,9 +197,9 @@ auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept
 {
   if (std::is_integral<T>())
   {
-    return GetRandInRange(numberRange.min, numberRange.max + 1);
+    return GetRandInRange(numberRange.Min(), numberRange.Max() + 1);
   }
-  return GetRandInRange(numberRange.min, numberRange.max);
+  return GetRandInRange(numberRange.Min(), numberRange.Max());
 }
 
 template<std::ranges::random_access_range Range>
@@ -241,7 +285,7 @@ auto Weights<E>::GetRandomWeighted() const noexcept -> E
 {
   Expects(NUM<E> == m_weightData.weightArray.size());
 
-  auto randVal = m_goomRand->GetRandInRange(0.0F, m_sumOfWeights);
+  auto randVal = m_goomRand->GetRandInRange(NumberRange{0.0F, m_sumOfWeights});
 
   for (auto i = 0U; i < m_weightData.weightArray.size(); ++i)
   {
@@ -263,7 +307,7 @@ auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
 
   const auto sumOfWeights = m_sumOfWeights - m_weightData.weightArray[static_cast<size_t>(given)];
 
-  auto randVal = m_goomRand->GetRandInRange(0.0F, sumOfWeights);
+  auto randVal = m_goomRand->GetRandInRange(NumberRange{0.0F, sumOfWeights});
 
   for (auto i = 0U; i < m_weightData.weightArray.size(); ++i)
   {

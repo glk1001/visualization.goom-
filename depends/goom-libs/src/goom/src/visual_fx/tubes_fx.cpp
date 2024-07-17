@@ -99,15 +99,12 @@ constexpr auto COMMON_CIRCLE_PATH_PARAMS   = OscillatingFunction::Params{10.0F, 
   };
 }
 
-constexpr auto MIN_COLORMAP_TIME = 100U;
-constexpr auto MAX_COLORMAP_TIME = 1000U;
+constexpr auto COLORMAP_TIME_RANGE = NumberRange{100U, 1000U};
 
-constexpr auto MIN_BRIGHTNESS_FACTOR = 0.01F;
-constexpr auto MAX_BRIGHTNESS_FACTOR = 0.20F;
+constexpr auto BRIGHTNESS_FACTOR_RANGE = NumberRange{0.01F, 0.20F};
 
-constexpr auto JITTER_TIME_RANGE       = NumberRange{50U, 500U};
-constexpr auto MIN_SHAPE_JITTER_OFFSET = 10.0F;
-constexpr auto MAX_SHAPE_JITTER_OFFSET = 20.0F;
+constexpr auto JITTER_TIME_RANGE   = NumberRange{50U, 500U};
+constexpr auto SHAPE_JITTER_OFFSET = NumberRange{10.0F, 20.0F};
 
 constexpr auto DECREASED_SPEED_TIME_RANGE = NumberRange{100U, 500U};
 constexpr auto INCREASED_SPEED_TIME_RANGE = NumberRange{100U, 500U};
@@ -193,7 +190,7 @@ private:
   [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
   Timer m_allStayInCentreTimer{m_fxHelper->GetGoomTime(), 1};
   Timer m_allStayAwayFromCentreTimer{m_fxHelper->GetGoomTime(),
-                                     STAY_AWAY_FROM_CENTRE_TIME_RANGE.max};
+                                     STAY_AWAY_FROM_CENTRE_TIME_RANGE.Max()};
   auto IncrementAllJoinCentreT() -> void;
   [[nodiscard]] auto GetTransformedCentreVector(uint32_t tubeId,
                                                 const Point2dInt& centre) const -> Vec2dInt;
@@ -206,9 +203,8 @@ private:
       {JITTER_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
 
-  Timer m_colorMapTimer{
-      m_fxHelper->GetGoomTime(),
-      m_fxHelper->GetGoomRand().GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1)};
+  Timer m_colorMapTimer{m_fxHelper->GetGoomTime(),
+                        m_fxHelper->GetGoomRand().GetRandInRange(COLORMAP_TIME_RANGE)};
   Timer m_changedSpeedTimer{m_fxHelper->GetGoomTime(), 1};
   Timer m_jitterTimer{m_fxHelper->GetGoomTime(), 1};
   auto InitTubes() -> void;
@@ -592,10 +588,9 @@ auto TubesFx::TubeFxImpl::UpdateColorMaps() -> void
         m_fxHelper->GetGoomRand().ProbabilityOf(PROB_RESET_COLOR_MAPS))
     {
       m_colorMapTimer.SetTimeLimitAndResetToZero(
-          m_fxHelper->GetGoomRand().GetRandInRange(MIN_COLORMAP_TIME, MAX_COLORMAP_TIME + 1));
+          m_fxHelper->GetGoomRand().GetRandInRange(COLORMAP_TIME_RANGE));
       tube.ResetColorMaps();
-      tube.SetBrightnessFactor(
-          m_fxHelper->GetGoomRand().GetRandInRange(MIN_BRIGHTNESS_FACTOR, MAX_BRIGHTNESS_FACTOR));
+      tube.SetBrightnessFactor(m_fxHelper->GetGoomRand().GetRandInRange(BRIGHTNESS_FACTOR_RANGE));
     }
   }
 }
@@ -696,11 +691,11 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
   m_drawToContainer.IterateChangedCoordsNewToOld(
       [this, &brightnessAttenuation](const Point2dInt& point, const ColorsList& colorsList)
       {
-        const auto jitterAmount =
-            !m_prevShapesJitter ? 0
-                                : m_fxHelper->GetGoomRand().GetRandInRange(
-                                      -PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT + 1);
-        const auto newPoint = Point2dInt{
+        const auto jitterAmount = not m_prevShapesJitter
+                                      ? 0
+                                      : m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{
+                                            -PREV_SHAPES_JITTER_AMOUNT, PREV_SHAPES_JITTER_AMOUNT});
+        const auto newPoint     = Point2dInt{
             GetClipped(point.x + jitterAmount, m_fxHelper->GetDimensions().GetIntWidth() - 1),
             GetClipped(point.y + jitterAmount, m_fxHelper->GetDimensions().GetIntHeight() - 1)};
 
@@ -838,8 +833,8 @@ auto TubesFx::TubeFxImpl::ChangeJitterOffsets(Tube& tube) -> void
   }
   else
   {
-    const auto maxJitter = static_cast<int32_t>(
-        std::round(std::lerp(MIN_SHAPE_JITTER_OFFSET, MAX_SHAPE_JITTER_OFFSET, m_shapeJitterT())));
+    const auto maxJitter = static_cast<int32_t>(std::round(
+        std::lerp(SHAPE_JITTER_OFFSET.Min(), SHAPE_JITTER_OFFSET.Max(), m_shapeJitterT())));
     tube.SetMaxJitterOffset(maxJitter);
     m_shapeJitterT.Increment();
     m_jitterTimer.SetTimeLimitAndResetToZero(

@@ -165,7 +165,7 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(FxHelper& fxHelper,
     },
     m_pixelBlender{m_fxHelper->GetGoomRand()}
 {
-  m_activeStars.reserve(TOTAL_NUM_ACTIVE_STARS_RANGE.max);
+  m_activeStars.reserve(TOTAL_NUM_ACTIVE_STARS_RANGE.Max());
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetCurrentStarTypeColorMapsNames() const noexcept
@@ -259,7 +259,8 @@ auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 
 auto FlyingStarsFx::FlyingStarsImpl::DrawStars() noexcept -> void
 {
-  const auto speedFactor = m_fxHelper->GetGoomRand().GetRandInRange(0.1F, 10.0F);
+  static constexpr auto SPEED_FACTOR_RANGE = NumberRange{0.1F, 10.0F};
+  const auto speedFactor = m_fxHelper->GetGoomRand().GetRandInRange(SPEED_FACTOR_RANGE);
 
   for (auto& star : m_activeStars)
   {

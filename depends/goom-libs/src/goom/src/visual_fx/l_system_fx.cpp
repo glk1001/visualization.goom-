@@ -36,6 +36,7 @@ using L_SYSTEM::LSystem;
 using UTILS::Timer;
 using UTILS::GRAPHICS::SmallImageBitmaps;
 using UTILS::MATH::NumberRange;
+using UTILS::MATH::UNIT_RANGE;
 
 using ::LSYS::SetRandFunc;
 
@@ -304,7 +305,8 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
 
   m_activeLSystems.clear();
 
-  const auto lSystemIndex = m_fxHelper->GetGoomRand().GetRandInRange(0U, NUM_L_SYSTEMS);
+  const auto lSystemIndex =
+      m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{0U, NUM_L_SYSTEMS - 1});
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
 
   m_timeForTheseActiveLSys.SetTimeLimitAndResetToZero(
@@ -313,7 +315,7 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
 
 auto LSystemFx::LSystemFxImpl::Start() -> void
 {
-  SetRandFunc([this]() { return m_fxHelper->GetGoomRand().GetRandInRange(0.0, 1.0); });
+  SetRandFunc([this]() { return m_fxHelper->GetGoomRand().GetRandInRange(UNIT_RANGE); });
 
   std::ranges::for_each(m_lSystems,
                         [this](auto& lSystem)

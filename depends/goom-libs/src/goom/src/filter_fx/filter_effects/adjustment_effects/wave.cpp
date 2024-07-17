@@ -15,9 +15,9 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using FILTER_UTILS::RandomViewport;
 using UTILS::NameValuePairs;
+using UTILS::MATH::HALF_CIRCLE_RANGE;
 using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
-using UTILS::MATH::PI;
 
 using enum Wave::WaveEffect;
 
@@ -221,7 +221,7 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
   const auto freqFactor              = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
   const auto amplitude               = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
   const auto reducerCoeff            = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
-  const auto spiralRotateBaseAngle   = m_goomRand->GetRandInRange(0.0F, PI);
+  const auto spiralRotateBaseAngle   = m_goomRand->GetRandInRange(HALF_CIRCLE_RANGE);
   const auto useModifiedATanAngle    = m_goomRand->ProbabilityOf(PROB_USE_MODIFIED_ATAN_ANGLE);
   const auto modifiedATanAngleFactor = m_goomRand->GetRandInRange(MODIFIED_ATAN_ANGLE_FACTOR_RANGE);
 

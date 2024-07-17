@@ -120,7 +120,8 @@ private:
   GoomLock m_lock; // pour empecher de nouveaux changements
 
   static constexpr auto MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE = NumberRange{300, 500};
-  int32_t m_maxTimeBetweenFilterSettingsChange = MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.min;
+  int32_t m_maxTimeBetweenFilterSettingsChange =
+      MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.Min();
   int32_t m_numUpdatesSinceLastFilterSettingsChange = 0;
   uint32_t m_previousZoomSpeed                      = FILTER_FX::Vitesse::STOP_SPEED;
 
@@ -426,7 +427,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::Start() -> void
 {
   m_timeInState                             = 0;
   m_numUpdatesSinceLastFilterSettingsChange = 0;
-  m_maxTimeBetweenFilterSettingsChange      = MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.min;
+  m_maxTimeBetweenFilterSettingsChange      = MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.Min();
   m_previousZoomSpeed                       = FILTER_FX::Vitesse::STOP_SPEED;
 
   ClearChangeEventData();

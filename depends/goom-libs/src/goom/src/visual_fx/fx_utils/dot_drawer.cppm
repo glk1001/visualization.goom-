@@ -18,6 +18,8 @@ import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::NumberRange;
+
 export namespace GOOM::VISUAL_FX::FX_UTILS
 {
 
@@ -125,9 +127,10 @@ auto DotDrawer::ChangeDotSizes() noexcept -> void
   static_assert(MAX_DOT_SIZE <= (MAX_IMAGE_DOT_SIZE - 1U));
   m_currentDotSize = GetNextDotSize(MAX_DOT_SIZE);
 
-  static constexpr auto PROB_BEADED_LOOK = 0.15F;
-  m_beadedLook                           = m_goomRand->ProbabilityOf(PROB_BEADED_LOOK);
-  m_maxBeadedDotSize = m_goomRand->GetRandInRange(MAX_DOT_SIZE + 1, MAX_IMAGE_DOT_SIZE + 1);
+  static constexpr auto PROB_BEADED_LOOK      = 0.15F;
+  static constexpr auto BEADED_DOT_SIZE_RANGE = NumberRange{MAX_DOT_SIZE + 1, MAX_IMAGE_DOT_SIZE};
+  m_beadedLook                                = m_goomRand->ProbabilityOf(PROB_BEADED_LOOK);
+  m_maxBeadedDotSize                          = m_goomRand->GetRandInRange(BEADED_DOT_SIZE_RANGE);
 }
 
 auto DotDrawer::DrawDot(const DotSizes dotSize,

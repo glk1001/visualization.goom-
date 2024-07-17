@@ -156,8 +156,8 @@ auto RaindropsFx::RaindropsFxImpl::SetNumRaindrops() noexcept -> void
     return;
   }
 
-  m_raindrops->SetNumRaindrops(m_fxHelper->GetGoomRand().GetRandInRange(
-      Raindrops::MIN_NUM_RAINDROPS, Raindrops::MAX_NUM_RAINDROPS + 1));
+  m_raindrops->SetNumRaindrops(
+      m_fxHelper->GetGoomRand().GetRandInRange(Raindrops::NUM_RAINDROPS_RANGE));
 }
 
 auto RaindropsFx::RaindropsFxImpl::SetRaindropsWeightedColorMaps() noexcept -> void

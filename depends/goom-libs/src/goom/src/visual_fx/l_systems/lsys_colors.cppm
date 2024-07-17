@@ -105,7 +105,7 @@ private:
 
   static constexpr auto NUM_COLOR_STEPS_RANGE         = NumberRange{10U, 100U};
   static constexpr auto NUM_THICKER_COLOR_STEPS_RANGE = NumberRange{10U, 1000U};
-  uint32_t m_currentMaxNumColorSteps                  = NUM_COLOR_STEPS_RANGE.max;
+  uint32_t m_currentMaxNumColorSteps                  = NUM_COLOR_STEPS_RANGE.Max();
   std::vector<TValue> m_currentColorTs;
   std::vector<TValue> m_currentThickerColorTs;
   auto ResetColorTs() noexcept -> void;
@@ -253,13 +253,15 @@ auto LSysColors::SetSimpleColors() noexcept -> void
 
 auto LSysColors::ResetColorTs() noexcept -> void
 {
-  const auto numColorSteps =
-      m_goomRand->GetRandInRange(NUM_COLOR_STEPS_RANGE.min, m_currentMaxNumColorSteps + 1U);
+  const auto numColorSteps = m_goomRand->GetRandInRange(
+      NumberRange{NUM_COLOR_STEPS_RANGE.Min(), m_currentMaxNumColorSteps});
+
   std::ranges::for_each(m_currentColorTs,
                         [&numColorSteps](auto& colorT) { colorT.SetNumSteps(numColorSteps); });
   std::ranges::for_each(m_currentColorTs, [](auto& colorT) { colorT.Reset(0.0F); });
 
   const auto numThickerColorSteps = m_goomRand->GetRandInRange(NUM_THICKER_COLOR_STEPS_RANGE);
+
   std::ranges::for_each(m_currentThickerColorTs,
                         [&numThickerColorSteps](auto& colorT)
                         { colorT.SetNumSteps(numThickerColorSteps); });

@@ -129,7 +129,7 @@ private:
   // This factor gives the maximum height to the peaks of the audio samples lines.
   // This value seems pleasing.
   static constexpr auto MAX_NORMALIZED_PEAK_RANGE = NumberRange{100.0F, 400.0F};
-  float m_maxNormalizedPeak                       = MAX_NORMALIZED_PEAK_RANGE.min;
+  float m_maxNormalizedPeak                       = MAX_NORMALIZED_PEAK_RANGE.Min();
 
   FX_UTILS::DotDrawer m_dotDrawer;
   float m_audioRange    = 0.0F;

@@ -14,6 +14,7 @@ module Goom.VisualFx.ShapesFx;
 
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.PointUtils;
+import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
@@ -33,6 +34,7 @@ using SHAPES::Shape;
 using UTILS::Timer;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::MATH::IncrementedValue;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
@@ -81,12 +83,10 @@ private:
   static constexpr uint32_t TIME_BEFORE_SYNCHRONISED_CHANGE = 5000;
   Timer m_synchronisedShapeChangesTimer{m_fxHelper->GetGoomTime(), TIME_BEFORE_SYNCHRONISED_CHANGE};
 
-  static constexpr uint32_t MIN_INCREMENTS_PER_UPDATE = 1;
-  static constexpr uint32_t MAX_INCREMENTS_PER_UPDATE = 100;
-  static_assert(0 < MIN_INCREMENTS_PER_UPDATE);
-  static_assert(MIN_INCREMENTS_PER_UPDATE <= MAX_INCREMENTS_PER_UPDATE);
-  uint32_t m_numIncrementsPerUpdate = m_fxHelper->GetGoomRand().GetRandInRange(
-      MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+  static constexpr auto INCREMENTS_PER_UPDATE_RANGE = NumberRange{1U, 100U};
+  static_assert(0 < INCREMENTS_PER_UPDATE_RANGE.Min());
+  uint32_t m_numIncrementsPerUpdate =
+      m_fxHelper->GetGoomRand().GetRandInRange(INCREMENTS_PER_UPDATE_RANGE);
   auto UpdateShapeEffects() noexcept -> void;
   auto UpdateShapeSpeeds() noexcept -> void;
   auto SetShapeSpeeds() noexcept -> void;
@@ -206,8 +206,8 @@ inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
   if (static constexpr auto PROB_UPDATE_NUM_INCREMENTS = 0.1F;
       m_fxHelper->GetGoomRand().ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
   {
-    m_numIncrementsPerUpdate = m_fxHelper->GetGoomRand().GetRandInRange(
-        MIN_INCREMENTS_PER_UPDATE, MAX_INCREMENTS_PER_UPDATE + 1);
+    m_numIncrementsPerUpdate =
+        m_fxHelper->GetGoomRand().GetRandInRange(INCREMENTS_PER_UPDATE_RANGE);
   }
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.01F;
@@ -304,13 +304,14 @@ auto ShapesFx::ShapesFxImpl::GetRandomZoomMidpoints(const Point2dInt& zoomMidpoi
   shapeZoomMidpoints.at(0) = zoomMidpoint;
 
   static constexpr auto MARGIN = 20;
-  const auto width             = m_fxHelper->GetDimensions().GetIntWidth() - MARGIN;
-  const auto height            = m_fxHelper->GetDimensions().GetIntHeight() - MARGIN;
+  const auto xMax              = m_fxHelper->GetDimensions().GetIntWidth() - MARGIN - 1;
+  const auto yMax              = m_fxHelper->GetDimensions().GetIntHeight() - MARGIN - 1;
 
   for (auto i = 1U; i < NUM_SHAPES; ++i)
   {
-    shapeZoomMidpoints.at(i) = {m_fxHelper->GetGoomRand().GetRandInRange(MARGIN, width),
-                                m_fxHelper->GetGoomRand().GetRandInRange(MARGIN, height)};
+    shapeZoomMidpoints.at(i) = {
+        m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{MARGIN, xMax}),
+        m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{MARGIN, yMax})};
   }
 
   return shapeZoomMidpoints;

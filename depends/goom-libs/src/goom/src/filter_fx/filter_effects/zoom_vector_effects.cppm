@@ -86,22 +86,22 @@ constexpr auto ZoomVectorEffects::IsValidMultiplierRange(const NumberRange<float
     -> bool
 {
   if (MIN_ALLOWED_BASE_ZOOM_ADJUSTMENT >
-      GetBaseZoomAdjustment(range.min * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F))
+      GetBaseZoomAdjustment(range.Min() * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F))
   {
     return false;
   }
   if (MIN_ALLOWED_BASE_ZOOM_ADJUSTMENT >
-      GetBaseZoomAdjustment(range.max * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F))
+      GetBaseZoomAdjustment(range.Max() * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, -1.0F))
   {
     return false;
   }
   if (MAX_ALLOWED_BASE_ZOOM_ADJUSTMENT <
-      GetBaseZoomAdjustment(range.min * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, +1.0F))
+      GetBaseZoomAdjustment(range.Min() * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, +1.0F))
   {
     return false;
   }
   if (MAX_ALLOWED_BASE_ZOOM_ADJUSTMENT <
-      GetBaseZoomAdjustment(range.max * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, +1.0F))
+      GetBaseZoomAdjustment(range.Max() * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, +1.0F))
   {
     return false;
   }

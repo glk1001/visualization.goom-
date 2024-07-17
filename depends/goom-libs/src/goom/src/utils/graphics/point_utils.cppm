@@ -12,6 +12,8 @@ import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::MATH::NumberRange;
+
 export namespace GOOM::UTILS::GRAPHICS
 {
 
@@ -86,8 +88,8 @@ inline auto GetRandomPoint(const UTILS::MATH::IGoomRand& goomRand,
   Expects(rectangle2D.topLeft.y <= rectangle2D.bottomRight.y);
 
   return {
-      goomRand.GetRandInRange(rectangle2D.topLeft.x, rectangle2D.bottomRight.x + 1),
-      goomRand.GetRandInRange(rectangle2D.topLeft.y, rectangle2D.bottomRight.y + 1),
+      goomRand.GetRandInRange(NumberRange{rectangle2D.topLeft.x, rectangle2D.bottomRight.x}),
+      goomRand.GetRandInRange(NumberRange{rectangle2D.topLeft.y, rectangle2D.bottomRight.y}),
   };
 }
 

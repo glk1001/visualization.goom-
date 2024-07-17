@@ -50,6 +50,8 @@ static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE        = NumberRange{0.1F, 5.0
 static constexpr auto DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
 static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE   = NumberRange{0.1F, 5.01F};
 
+static constexpr auto SWIRL_TYPE_RANGE = NumberRange{1U, NUM<Planes::PlaneSwirlType> - 1};
+
 // V Plane:
 // clang-format off
 static constexpr auto
@@ -291,8 +293,7 @@ inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& g
 {
   auto swirlEffects = PlaneSwirlEffects{};
 
-  swirlEffects.swirlType =
-      static_cast<PlaneSwirlType>(goomRand.GetRandInRange(1U, NUM<PlaneSwirlType>));
+  swirlEffects.swirlType = static_cast<PlaneSwirlType>(goomRand.GetRandInRange(SWIRL_TYPE_RANGE));
 
   swirlEffects.frequencyFactor.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_FREQ_RANGE);
   swirlEffects.frequencyFactor.y = goomRand.ProbabilityOf(PROB_SWIRL_FREQ_EQUAL)

@@ -63,7 +63,7 @@ private:
   TValue m_speedTransitionT{
       {TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
   };
-  uint32_t m_maxCountTimesSpeed = MAX_COUNT_TIMES_SPEED_RANGE.max;
+  uint32_t m_maxCountTimesSpeed = MAX_COUNT_TIMES_SPEED_RANGE.Max();
 
   FractalHits m_hits1;
   FractalHits m_hits2;

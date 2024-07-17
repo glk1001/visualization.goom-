@@ -10,6 +10,7 @@
 #include <format>
 #include <map>
 
+import Goom.Tests.Utils.Math.RandHelper;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.GoomRand;
@@ -24,6 +25,8 @@ using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
 using UTILS::MATH::GoomRand;
+using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 using UTILS::MATH::Weights;
 
 namespace
@@ -71,6 +74,57 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 // NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
+
+TEST_CASE("NumberRange")
+{
+  static constexpr auto N_MIN1 = 999U;
+  static constexpr auto N_MAX1 = 10001U;
+  static constexpr auto RANGE  = NumberRange{N_MIN1, N_MAX1};
+
+  STATIC_REQUIRE(RANGE.Min() == N_MIN1);
+  STATIC_REQUIRE(RANGE.Max() == N_MAX1);
+  STATIC_REQUIRE(RANGE.Range() == N_MAX1 - N_MIN1);
+}
+
+TEST_CASE("NumberRange min max get random")
+{
+  // After a big enough loop, a good random distribution should have
+  // covered the entire range: nMin <= n <= nMax
+  static constexpr auto NUM_RANGE_LOOPS                  = 100'000U;
+  static constexpr auto ACCEPTABLE_OUT_OF_UNIFORM_MARGIN = 300U;
+
+  const auto goomRand      = GoomRand{};
+  const auto& goomRandBase = static_cast<const IGoomRand&>(goomRand);
+  const auto randInRange   = [&goomRandBase](const auto min, const auto max)
+  { return goomRandBase.GetRandInRange(NumberRange{min, max - 1}); };
+
+  static constexpr auto N_MIN1 = 999U;
+  static constexpr auto N_MAX1 = 10001U;
+  const auto countsResults1    = GetCountResults(NUM_RANGE_LOOPS, N_MIN1, N_MAX1, randInRange);
+  REQUIRE(countsResults1.min == N_MIN1);
+  REQUIRE(countsResults1.max == N_MAX1 - 1);
+  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
+  UNSCOPED_INFO(std::format(
+      "minCount = {}, minCountAt = {}", countsResults1.minCount, countsResults1.minCountAt));
+  UNSCOPED_INFO(std::format(
+      "maxCount = {}, maxCountAt = {}", countsResults1.maxCount, countsResults1.maxCountAt));
+  REQUIRE(countsResults1.maxCount - countsResults1.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
+
+  static constexpr auto N_MIN2 = 0U;
+  static constexpr auto N_MAX2 = 120U;
+  const auto countsResults2    = GetCountResults(NUM_RANGE_LOOPS, N_MIN2, N_MAX2, randInRange);
+  REQUIRE(countsResults2.min == N_MIN2);
+  REQUIRE(countsResults2.max == N_MAX2 - 1);
+  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
+  UNSCOPED_INFO(std::format(
+      "minCount = {}, minCountAt = {}", countsResults2.minCount, countsResults2.minCountAt));
+  UNSCOPED_INFO(std::format(
+      "maxCount = {}, maxCountAt = {}", countsResults2.maxCount, countsResults2.maxCountAt));
+  REQUIRE(countsResults2.maxCount - countsResults2.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
+
+  REQUIRE(5U == goomRandBase.GetRandInRange(NumberRange{5U, 5U}));
+}
+
 TEST_CASE("Shuffle")
 {
   static constexpr auto TEST_VEC = std::array{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

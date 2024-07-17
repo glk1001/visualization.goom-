@@ -16,7 +16,7 @@ namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
 using UTILS::MATH::IGoomRand;
-
+using UTILS::MATH::NumberRange;
 
 LineDrawerNoisyPixels::NoisyPixelDrawer::NoisyPixelDrawer(IGoomDraw& draw,
                                                           const IGoomRand& goomRand,
@@ -41,7 +41,7 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoisePerPixel() noexcept -> voi
     noiseList.resize(static_cast<size_t>(m_numNoisePixelsPerPixel));
     for (auto i = 0U; i < noiseList.size(); ++i)
     {
-      noiseList[i] = m_goomRand->GetRandInRange(-m_noiseRadius, m_noiseRadius + 1);
+      noiseList[i] = m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius});
     }
   }
 }
@@ -95,9 +95,10 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPureNoisePoints(
 {
   for (auto i = 0; i < m_numNoisePixelsPerPixel; ++i)
   {
-    const auto noisePoint =
-        Point2dInt{point.x + m_goomRand->GetRandInRange(-m_noiseRadius, +m_noiseRadius + 1),
-                   point.y + m_goomRand->GetRandInRange(-m_noiseRadius, +m_noiseRadius + 1)};
+    const auto noisePoint = Point2dInt{
+        point.x + m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius}),
+        point.y + m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius})};
+
     m_draw->DrawClippedPixels(noisePoint, colors);
   }
 }

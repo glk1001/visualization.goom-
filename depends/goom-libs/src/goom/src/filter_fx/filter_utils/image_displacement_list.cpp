@@ -19,6 +19,7 @@ namespace GOOM::FILTER_FX::FILTER_UTILS
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::IGoomRand;
+using UTILS::MATH::NumberRange;
 
 static constexpr auto IMAGE_FILENAMES = std::array{
     "checkerboard.jpg",
@@ -53,8 +54,8 @@ ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirecto
 
 auto ImageDisplacementList::SetRandomImageDisplacement() -> void
 {
-  m_currentImageDisplacementIndex =
-      m_goomRand->GetRandInRange(0U, static_cast<uint32_t>(m_imageDisplacements.size()));
+  m_currentImageDisplacementIndex = m_goomRand->GetRandInRange(
+      NumberRange{0U, static_cast<uint32_t>(m_imageDisplacements.size() - 1)});
 }
 
 auto ImageDisplacementList::GetImageFilename(const std::string& imageFilename) const -> std::string

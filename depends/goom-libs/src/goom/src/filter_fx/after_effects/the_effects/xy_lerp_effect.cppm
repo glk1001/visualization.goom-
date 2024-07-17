@@ -11,6 +11,8 @@ import Goom.Utils.Math.GoomRandBase;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::MATH::NumberRange;
+
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
@@ -93,10 +95,9 @@ inline auto XYLerpEffect::SetParams(const Params& params) -> void
 inline auto XYLerpEffect::GetT(const float sqDistFromZero,
                                const NormalizedCoords& velocity) const -> float
 {
-  static constexpr auto MODE0_OFFSET     = 5.5F;
-  static constexpr auto MODE0_FREQ       = 2.0F;
-  static constexpr auto MODE1_MIN_FACTOR = 0.99F;
-  static constexpr auto MODE1_MAX_FACTOR = 1.01F;
+  static constexpr auto MODE0_OFFSET       = 5.5F;
+  static constexpr auto MODE0_FREQ         = 2.0F;
+  static constexpr auto MODE1_FACTOR_RANGE = NumberRange{0.99F, 1.01F};
 
   switch (m_params.mode)
   {
@@ -105,7 +106,7 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero,
                       (MODE0_OFFSET + std::sin(MODE0_FREQ * sqDistFromZero)));
     case Modes::MODE1:
       return std::cos((m_params.tFreq * sqDistFromZero) *
-                      m_goomRand->GetRandInRange(MODE1_MIN_FACTOR, MODE1_MAX_FACTOR));
+                      m_goomRand->GetRandInRange(NumberRange{MODE1_FACTOR_RANGE}));
     case Modes::MODE2:
       return -(1.0F / UTILS::MATH::HALF_PI) *
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
