@@ -12,9 +12,9 @@ import Goom.Utils.Math.Rand.RandGen;
 namespace GOOM::UNIT_TESTS
 {
 
+using UTILS::MATH::RAND::GEN::GEN_RAND_MAX;
 using UTILS::MATH::RAND::GEN::Generate;
 using UTILS::MATH::RAND::GEN::GetRandSeed;
-using UTILS::MATH::RAND::GEN::GOOM_RAND_MAX;
 using UTILS::MATH::RAND::GEN::SetRandSeed;
 
 // NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
@@ -30,7 +30,7 @@ TEST_CASE("Lemire")
   static_assert(M_UINT64 > std::numeric_limits<uint32_t>::max());
 
   static constexpr auto M_UINT64_TRUNC32 = static_cast<uint32_t>(M_UINT64);
-  static constexpr auto M_UINT64_MOD_MAX = M_UINT64 % (static_cast<u_int64_t>(GOOM_RAND_MAX) + 1U);
+  static constexpr auto M_UINT64_MOD_MAX = M_UINT64 % (static_cast<u_int64_t>(GEN_RAND_MAX) + 1U);
   STATIC_REQUIRE(M_UINT64_TRUNC32 == M_UINT64_MOD_MAX);
 
   // Check -s % s
@@ -38,11 +38,11 @@ TEST_CASE("Lemire")
   static_assert(M_UINT32 < std::numeric_limits<uint32_t>::max());
 
   static constexpr auto M_UINT32_COMPLEMENT   = -M_UINT32;
-  static constexpr auto GOOM_RAND_MAX_MINUS_M = GOOM_RAND_MAX - M_UINT32;
+  static constexpr auto GOOM_RAND_MAX_MINUS_M = GEN_RAND_MAX - M_UINT32;
   static_assert(M_UINT32_COMPLEMENT == (GOOM_RAND_MAX_MINUS_M + 1));
 
   static constexpr auto M_UINT32_MOD        = -M_UINT32 % M_UINT32;
-  static constexpr auto GOOM_RAND_MAX_MOD_M = GOOM_RAND_MAX % M_UINT32;
+  static constexpr auto GOOM_RAND_MAX_MOD_M = GEN_RAND_MAX % M_UINT32;
   STATIC_REQUIRE(M_UINT32_MOD == (GOOM_RAND_MAX_MOD_M + 1));
 }
 
