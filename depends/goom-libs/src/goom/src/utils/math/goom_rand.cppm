@@ -24,24 +24,24 @@ class NumberRange
 {
 public:
   constexpr NumberRange() = default;
-  constexpr NumberRange(T min, T max) noexcept;
+  constexpr NumberRange(T minT, T maxT) noexcept;
 
   [[nodiscard]] constexpr auto Min() const noexcept -> T;
   [[nodiscard]] constexpr auto Max() const noexcept -> T;
   [[nodiscard]] constexpr auto Range() const noexcept -> T;
 
-private:
-  T m_min;
-  T m_max;
+  T min; // NOLINT(misc-non-private-member-variables-in-classes)
+  T max; // NOLINT(misc-non-private-member-variables-in-classes)
 };
 
 template<typename T>
 NumberRange(T, T) -> NumberRange<T>;
 
 template<typename T>
-constexpr NumberRange<T>::NumberRange(const T min, const T max) noexcept : m_min{min}, m_max{max}
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+constexpr NumberRange<T>::NumberRange(const T minT, const T maxT) noexcept : min{minT}, max{maxT}
 {
-  Expects(min <= max);
+  Expects(minT <= maxT);
 }
 
 inline constexpr auto UNIT_RANGE        = NumberRange{0.0F, 1.0F};
@@ -168,13 +168,13 @@ namespace GOOM::UTILS::MATH
 template<typename T>
 constexpr auto NumberRange<T>::Min() const noexcept -> T
 {
-  return m_min;
+  return min;
 }
 
 template<typename T>
 constexpr auto NumberRange<T>::Max() const noexcept -> T
 {
-  return m_max;
+  return max;
 }
 
 template<typename T>
