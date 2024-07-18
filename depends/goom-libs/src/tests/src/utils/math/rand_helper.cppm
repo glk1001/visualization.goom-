@@ -2,7 +2,6 @@ module;
 
 #include <algorithm>
 #include <cstdint>
-#include <functional>
 #include <limits>
 //#include <map>
 #include <numeric>
@@ -11,8 +10,10 @@ module;
 
 export module Goom.Tests.Utils.Math.RandHelper;
 
-import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Rand.RandUtils;
+
+export namespace GOOM::UNIT_TESTS
+{
 
 template<typename T>
 struct CountResults
@@ -27,13 +28,10 @@ struct CountResults
   T maxCountAt{};
 };
 
-export namespace GOOM::UNIT_TESTS
-{
-
 template<typename T, typename GetRandInRangeFunc>
 auto GetCountResults(const size_t numLoops,
                      const T nMin,
-                     const T nMax,
+                     const T nRange,
                      const GetRandInRangeFunc& getRandInRange) -> CountResults<T>
 {
   auto countResults = CountResults<T>{};
@@ -43,7 +41,7 @@ auto GetCountResults(const size_t numLoops,
   auto counts    = CountMap{};
   for (auto i = 0U; i < numLoops; ++i)
   {
-    const auto rand = getRandInRange(nMin, nMax);
+    const auto rand = getRandInRange(nMin, nRange);
 
     countResults.min = std::min(countResults.min, rand);
     countResults.max = std::max(countResults.max, rand);

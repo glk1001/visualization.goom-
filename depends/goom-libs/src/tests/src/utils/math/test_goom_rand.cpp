@@ -68,6 +68,18 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
   return eventCounts;
 }
 
+constexpr auto GOOM_RAND = GoomRand{};
+
+template<typename T>
+auto GetRangeCountResults(const size_t numLoops,
+                          const NumberRange<T> numberRange) -> CountResults<T>
+{
+  const auto randInRange = [](const auto n0, const auto nRange)
+  { return GOOM_RAND.GetRandInRange(NumberRange<T>{n0, n0 + nRange - 1}); };
+
+  return GetCountResults(numLoops, numberRange.Min(), numberRange.Range() + 1, randInRange);
+}
+
 } // namespace
 
 // NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
@@ -91,45 +103,41 @@ TEST_CASE("NumberRange min max get random")
   static constexpr auto NUM_RANGE_LOOPS                  = 100'000U;
   static constexpr auto ACCEPTABLE_OUT_OF_UNIFORM_MARGIN = 300U;
 
-  const auto goomRand      = GoomRand{};
-  const auto& goomRandBase = static_cast<const GoomRand&>(goomRand);
-  const auto randInRange   = [&goomRandBase](const auto min, const auto max)
-  { return goomRandBase.GetRandInRange(NumberRange{min, max - 1}); };
-
-  static constexpr auto N_MIN1 = 999U;
-  static constexpr auto N_MAX1 = 10001U;
-  const auto countsResults1    = GetCountResults(NUM_RANGE_LOOPS, N_MIN1, N_MAX1, randInRange);
+  static constexpr auto N_MIN1   = 999U;
+  static constexpr auto N_MAX1   = 10001U;
+  static constexpr auto N_RANGE1 = NumberRange{N_MIN1, N_MAX1};
+  const auto countsResults1      = GetRangeCountResults(NUM_RANGE_LOOPS, N_RANGE1);
   REQUIRE(countsResults1.min == N_MIN1);
-  REQUIRE(countsResults1.max == N_MAX1 - 1);
-  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
+  REQUIRE(countsResults1.max == N_MAX1);
+  REQUIRE(countsResults1.numCounts == (N_RANGE1.Range() + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults1.minCount, countsResults1.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults1.maxCount, countsResults1.maxCountAt));
   REQUIRE(countsResults1.maxCount - countsResults1.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN2 = 0U;
-  static constexpr auto N_MAX2 = 120U;
-  const auto countsResults2    = GetCountResults(NUM_RANGE_LOOPS, N_MIN2, N_MAX2, randInRange);
+  static constexpr auto N_MIN2   = 0U;
+  static constexpr auto N_MAX2   = 120U;
+  static constexpr auto N_RANGE2 = NumberRange{N_MIN2, N_MAX2};
+  const auto countsResults2      = GetRangeCountResults(NUM_RANGE_LOOPS, N_RANGE2);
   REQUIRE(countsResults2.min == N_MIN2);
-  REQUIRE(countsResults2.max == N_MAX2 - 1);
-  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
+  REQUIRE(countsResults2.max == N_MAX2);
+  REQUIRE(countsResults2.numCounts == (N_RANGE2.Range() + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults2.minCount, countsResults2.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults2.maxCount, countsResults2.maxCountAt));
   REQUIRE(countsResults2.maxCount - countsResults2.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  REQUIRE(5U == goomRandBase.GetRandInRange(NumberRange{5U, 5U}));
+  REQUIRE(5U == GOOM_RAND.GetRandInRange(NumberRange{5U, 5U}));
 }
 
 TEST_CASE("Shuffle")
 {
   static constexpr auto TEST_VEC = std::array{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-  const auto goomRand = GoomRand{};
-  auto vec            = TEST_VEC;
-  goomRand.Shuffle(vec);
+  auto vec = TEST_VEC;
+  GOOM_RAND.Shuffle(vec);
   REQUIRE(vec != TEST_VEC);
   std::ranges::sort(vec);
   REQUIRE(vec == TEST_VEC);
@@ -137,14 +145,13 @@ TEST_CASE("Shuffle")
 
 TEST_CASE("Weighted Events")
 {
-  const auto goomRand    = GoomRand{};
   const auto weightPairs = Weights<Events>::EventWeightPairs{
       {Events::EVENT1, 05.0F},
       {Events::EVENT2, 02.0F},
       {Events::EVENT3, 10.0F},
       {Events::EVENT4, 06.0F},
   };
-  const auto weightedEvents          = Weights<Events>{goomRand, weightPairs};
+  const auto weightedEvents          = Weights<Events>{GOOM_RAND, weightPairs};
   static constexpr auto EXPECTED_SUM = 23.0;
 
   SECTION("Unconditional weights")
@@ -182,7 +189,7 @@ TEST_CASE("Weighted Events")
         {PREVIOUS_EVENT, s_EVENT3_WEIGHT_MULTIPLIERS}
     };
     const auto conditionalWeightedEvents =
-        ConditionalWeights<Events>{goomRand, weightPairs, s_WEIGHT_MULTIPLIERS};
+        ConditionalWeights<Events>{GOOM_RAND, weightPairs, s_WEIGHT_MULTIPLIERS};
     const auto conditionalSumOfWeights =
         static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(PREVIOUS_EVENT));
     static constexpr auto EXPECTED_SUM_FOR_GIVEN = 5.0 + (2.0 * 10.0) + 6.0;
@@ -221,7 +228,7 @@ TEST_CASE("Weighted Events")
 
   SECTION("DisallowEventsSameAsGiven = true")
   {
-    const auto conditionalWeightedEvents = ConditionalWeights<Events>{goomRand, weightPairs, true};
+    const auto conditionalWeightedEvents = ConditionalWeights<Events>{GOOM_RAND, weightPairs, true};
 
     const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
 
@@ -233,9 +240,8 @@ TEST_CASE("Weighted Events")
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Weighted Events Corner Cases")
 {
-  const auto goomRand       = GoomRand{};
   const auto weightedEvents = Weights<Events>{
-      goomRand,
+      GOOM_RAND,
       {
         {Events::EVENT1, 0.0F},
         {Events::EVENT2, 1.0F},
