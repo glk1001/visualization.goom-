@@ -11,7 +11,7 @@ module;
 
 module Goom.VisualFx.RaindropsFx:RaindropPositions;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;

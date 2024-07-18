@@ -17,7 +17,7 @@ import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
@@ -36,7 +36,7 @@ using GOOM::DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using GOOM::DRAW::SHAPE_DRAWERS::PixelDrawer;
 using GOOM::UTILS::GRAPHICS::ImageBitmap;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::Sq;
 using GOOM::UTILS::MATH::U_HALF;
@@ -59,7 +59,7 @@ class LowDensityBlurrer
 public:
   LowDensityBlurrer() noexcept = delete;
   LowDensityBlurrer(IGoomDraw& draw,
-                    const IGoomRand& goomRand,
+                    const GoomRand& goomRand,
                     uint32_t width,
                     const Colorizer& colorizer,
                     const SmallImageBitmaps& smallBitmaps) noexcept;
@@ -79,7 +79,7 @@ private:
   IGoomDraw* m_draw;
   BitmapDrawer m_bitmapDrawer{*m_draw};
   PixelDrawer m_pixelDrawer{*m_draw};
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   uint32_t m_width;
   size_t m_widthSquared = Sq(static_cast<size_t>(m_width));
   const SmallImageBitmaps* m_smallBitmaps;
@@ -132,7 +132,7 @@ inline auto LowDensityBlurrer::SetNeighbourMixFactor(const float neighbourMixFac
 }
 
 LowDensityBlurrer::LowDensityBlurrer(IGoomDraw& draw,
-                                     const IGoomRand& goomRand,
+                                     const GoomRand& goomRand,
                                      const uint32_t width,
                                      const Colorizer& colorizer,
                                      const SmallImageBitmaps& smallBitmaps) noexcept

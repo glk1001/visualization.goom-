@@ -5,7 +5,7 @@ module;
 
 export module Goom.Lib.FrameData;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
 

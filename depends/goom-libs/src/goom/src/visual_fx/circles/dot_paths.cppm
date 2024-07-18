@@ -8,7 +8,7 @@ module;
 
 export module Goom.VisualFx.CirclesFx.DotPaths;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Paths;
@@ -16,7 +16,7 @@ import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::IPath;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::OscillatingFunction;
@@ -47,7 +47,7 @@ public:
     OscillatingFunction::Params dotPathParamsFromTarget;
   };
 
-  DotPaths(const IGoomRand& goomRand,
+  DotPaths(const GoomRand& goomRand,
            uint32_t numDots,
            DotStartsToAndFrom&& dotStartsToAndFrom,
            const DotTargetsToAndFrom& dotTargetsToAndFrom,
@@ -82,7 +82,7 @@ public:
   [[nodiscard]] auto GetNextDotPositions() const noexcept -> std::vector<Point2dInt>;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   uint32_t m_numDots;
   DotStartsToAndFrom m_dotStartsToAndFrom;
   DotTargetsToAndFrom m_dotTargetsToAndFrom;
@@ -310,7 +310,7 @@ module :private;
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-DotPaths::DotPaths(const IGoomRand& goomRand,
+DotPaths::DotPaths(const GoomRand& goomRand,
                    const uint32_t numDots,
                    DotStartsToAndFrom&& dotStartsToAndFrom,
                    const DotTargetsToAndFrom& dotTargetsToAndFrom,

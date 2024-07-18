@@ -16,7 +16,7 @@ import LSys.Module;
 import LSys.ParsedModel;
 import LSys.Value;
 import LSys.Vector;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;

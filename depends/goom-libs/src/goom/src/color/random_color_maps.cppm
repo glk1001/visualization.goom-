@@ -9,7 +9,7 @@ export module Goom.Color.RandomColorMaps;
 
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
@@ -22,7 +22,7 @@ class RandomColorMaps : public ColorMaps
 public:
   RandomColorMaps() noexcept = default;
   RandomColorMaps(PixelChannelType defaultAlpha,
-                  const UTILS::MATH::IGoomRand& goomRand,
+                  const UTILS::MATH::GoomRand& goomRand,
                   const std::string& colorMapsName = "") noexcept;
   RandomColorMaps(const RandomColorMaps&)                    = default;
   RandomColorMaps(RandomColorMaps&&)                         = default;
@@ -77,12 +77,12 @@ public:
                                     float t1) const noexcept -> Pixel;
 
 protected:
-  [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::GoomRand&;
   [[nodiscard]] auto GetRandomColorMapNameFromGroup(ColorMapGroup colorMapGroup) const noexcept
       -> COLOR_DATA::ColorMapName;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand = nullptr;
+  const UTILS::MATH::GoomRand* m_goomRand = nullptr;
   std::string m_colorMapsName;
 
   static constexpr float MIN_ROTATION_POINT = 0.5F;
@@ -110,7 +110,7 @@ class WeightedRandomColorMaps : public RandomColorMaps
 public:
   WeightedRandomColorMaps() noexcept = default;
   WeightedRandomColorMaps(PixelChannelType defaultAlpha,
-                          const UTILS::MATH::IGoomRand& goomRand,
+                          const UTILS::MATH::GoomRand& goomRand,
                           const UTILS::MATH::Weights<ColorMapGroup>& weights,
                           const std::string& colorMapsName = "") noexcept;
   WeightedRandomColorMaps(const WeightedRandomColorMaps& weightedRandomColorMaps,
@@ -135,7 +135,7 @@ inline auto RandomColorMaps::IsActive() const noexcept -> bool
 }
 
 inline RandomColorMaps::RandomColorMaps(const PixelChannelType defaultAlpha,
-                                        const UTILS::MATH::IGoomRand& goomRand,
+                                        const UTILS::MATH::GoomRand& goomRand,
                                         const std::string& colorMapsName) noexcept
   : ColorMaps{defaultAlpha}, m_goomRand{&goomRand}, m_colorMapsName{colorMapsName}
 {
@@ -164,7 +164,7 @@ inline auto RandomColorMaps::GetColorMapsName() const noexcept -> const std::str
   return m_colorMapsName;
 }
 
-inline auto RandomColorMaps::GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&
+inline auto RandomColorMaps::GetGoomRand() const noexcept -> const UTILS::MATH::GoomRand&
 {
   Expects(m_goomRand != nullptr);
   // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.UndefReturn)

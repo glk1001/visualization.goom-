@@ -2,13 +2,13 @@ module Goom.FilterFx.FilterEffects.AdjustmentEffects.CrystalBall;
 
 import Goom.FilterFx.CommonTypes;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 static constexpr auto DEFAULT_AMPLITUDE     = 0.1F;
 static constexpr auto AMPLITUDE_RANGE_MODE0 = AmplitudeRange{
@@ -44,7 +44,7 @@ static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 1.00F;
 static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 1.00F;
 static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
-CrystalBall::CrystalBall(const Modes mode, const IGoomRand& goomRand) noexcept
+CrystalBall::CrystalBall(const Modes mode, const GoomRand& goomRand) noexcept
   : m_mode{mode},
     m_goomRand{&goomRand},
     m_params{

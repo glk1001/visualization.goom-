@@ -9,7 +9,7 @@ import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
@@ -25,7 +25,7 @@ public:
   };
 
   AfterEffectState(const UTILS::GoomTime& goomTime,
-                   const UTILS::MATH::IGoomRand& goomRand,
+                   const UTILS::MATH::GoomRand& goomRand,
                    bool turnedOn,
                    const AfterEffectProperties& effectProperties) noexcept;
 
@@ -36,7 +36,7 @@ public:
   [[nodiscard]] auto IsTurnedOn() const -> bool;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   float m_probabilityOfEffectRepeated;
   bool m_turnedOn;
   UTILS::Timer m_offTimer;
@@ -64,7 +64,7 @@ public:
   using AfterEffectsProbabilityMap = UTILS::EnumMap<AfterEffectsTypes, float>;
 
   AfterEffectsStates(const UTILS::GoomTime& goomTime,
-                     const UTILS::MATH::IGoomRand& goomRand,
+                     const UTILS::MATH::GoomRand& goomRand,
                      const AfterEffectsProbabilityMap& repeatProbabilities,
                      const AfterEffectsOffTimeMap& offTimes) noexcept;
   AfterEffectsStates(const AfterEffectsStates&) noexcept = delete;

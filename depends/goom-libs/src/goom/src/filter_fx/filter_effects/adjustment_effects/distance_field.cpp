@@ -16,7 +16,7 @@ import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
@@ -29,8 +29,8 @@ using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::HALF;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::IsEven;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::Sq;
@@ -79,7 +79,7 @@ static constexpr auto GRID_TYPE_PARTIAL_X_WEIGHT       = 10.0F;
 static constexpr auto GRID_TYPE_PARTIAL_DIAMOND_WEIGHT = 10.0F;
 static constexpr auto GRID_TYPE_PARTIAL_RANDOM_WEIGHT  = 10.0F;
 
-DistanceField::DistanceField(const Modes mode, const IGoomRand& goomRand) noexcept
+DistanceField::DistanceField(const Modes mode, const GoomRand& goomRand) noexcept
   : m_mode{mode},
     m_goomRand{&goomRand},
     m_weightedEffects{

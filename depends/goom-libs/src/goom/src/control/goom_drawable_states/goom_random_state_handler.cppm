@@ -8,11 +8,11 @@ export module Goom.Control.GoomRandomStateHandler;
 import Goom.Control.GoomDrawables;
 import Goom.Control.GoomStateHandler;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
 using GOOM::UTILS::NUM;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::Weights;
 
 export namespace GOOM::CONTROL
@@ -21,17 +21,17 @@ export namespace GOOM::CONTROL
 class GoomRandomStateHandler : public IGoomStateHandler
 {
 public:
-  explicit GoomRandomStateHandler(const IGoomRand& goomRand);
+  explicit GoomRandomStateHandler(const GoomRand& goomRand);
 
   auto ChangeToNextState() -> void override;
 
   [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   std::vector<GoomDrawables> m_drawablesPool;
-  [[nodiscard]] static auto GetFullDrawablesPool(const IGoomRand& goomRand)
+  [[nodiscard]] static auto GetFullDrawablesPool(const GoomRand& goomRand)
       -> std::vector<GoomDrawables>;
   [[nodiscard]] auto GetRandomDrawablesFromPool(uint32_t numDrawables)
       -> std::vector<GoomDrawables>;

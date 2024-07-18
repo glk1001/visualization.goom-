@@ -8,7 +8,7 @@ module Goom.VisualFx.ParticlesFx.Particles.AttractorEffect;
 
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::VISUAL_FX::PARTICLES
 {
@@ -24,7 +24,7 @@ using ::PARTICLES::UPDATERS::EulerUpdater;
 using ::PARTICLES::UPDATERS::IColorUpdater;
 using ::PARTICLES::UPDATERS::PositionColorUpdater;
 using ::PARTICLES::UPDATERS::VelocityColorUpdater;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto EMIT_RATE_FACTOR_RANGE = NumberRange{0.1F, 0.9F};
@@ -106,7 +106,7 @@ static constexpr auto MAX_VELOCITY = glm::vec4{+2.0F, +2.0F, +2.0F, 2.0F};
 
 static constexpr auto DEFAULT_NUM_PARTICLES = 250000U;
 
-AttractorEffect::AttractorEffect(const IGoomRand& goomRand, const size_t numParticles) noexcept
+AttractorEffect::AttractorEffect(const GoomRand& goomRand, const size_t numParticles) noexcept
   : m_goomRand{&goomRand},
     m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
     m_colorUpdater{MakeColorUpdater()},

@@ -5,7 +5,7 @@ module;
 module Goom.FilterFx.AfterEffects.TheEffects.Noise;
 
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
@@ -13,13 +13,13 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_NOISE_FACTOR = 0.01F;
 static constexpr auto NOISE_FACTOR_RANGE   = NumberRange{0.001F, 0.100F};
 
-Noise::Noise(const IGoomRand& goomRand) noexcept
+Noise::Noise(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand}, m_params{DEFAULT_NOISE_FACTOR}
 {
 }

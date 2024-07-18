@@ -11,7 +11,7 @@ module;
 
 export module Goom.Tests.Utils.Math.RandHelper;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Rand.RandUtils;
 
 template<typename T>

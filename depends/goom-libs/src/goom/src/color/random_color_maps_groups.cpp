@@ -2,7 +2,7 @@ module Goom.Color.RandomColorMapsGroups;
 
 import Goom.Color.ColorMaps;
 import Goom.Color.RandomColorMaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomGraphic;
 
 namespace GOOM::COLOR
@@ -10,7 +10,7 @@ namespace GOOM::COLOR
 
 using COLOR::ColorMapGroup;
 using COLOR::WeightedRandomColorMaps;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::Weights;
 
 namespace
@@ -21,7 +21,7 @@ constexpr auto DEFAULT_ALPHA = MAX_ALPHA;
 namespace IMPL
 {
 
-auto GetAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetAllMapsUnweighted(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllMapsUnweighted";
 
@@ -36,7 +36,7 @@ auto GetAllMapsUnweighted(const IGoomRand& goomRand) noexcept -> WeightedRandomC
   };
 }
 
-auto GetAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetAllStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllStandardMaps";
 
@@ -68,7 +68,7 @@ auto GetAllStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomCol
   };
 }
 
-auto GetAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetAllSlimMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "AllSlimMaps";
 
@@ -100,7 +100,7 @@ auto GetAllSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMa
   };
 }
 
-auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetMostlySequentialStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialStandardMaps";
 
@@ -132,7 +132,7 @@ auto GetMostlySequentialStandardMaps(const IGoomRand& goomRand) noexcept -> Weig
   };
 }
 
-auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetMostlySequentialSlimMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "MostlySequentialSlimMaps";
 
@@ -164,7 +164,7 @@ auto GetMostlySequentialSlimMaps(const IGoomRand& goomRand) noexcept -> Weighted
   };
 }
 
-auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetSlightlyDivergingStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingStandardMaps";
 
@@ -196,7 +196,7 @@ auto GetSlightlyDivergingStandardMaps(const IGoomRand& goomRand) noexcept -> Wei
   };
 }
 
-auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetSlightlyDivergingSlimMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SlightlyDivergingSlimMaps";
 
@@ -228,7 +228,7 @@ auto GetSlightlyDivergingSlimMaps(const IGoomRand& goomRand) noexcept -> Weighte
   };
 }
 
-auto GetBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetBlueStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "BlueStandardMaps";
 
@@ -243,7 +243,7 @@ auto GetBlueStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomCo
   };
 }
 
-auto GetRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetRedStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "RedStandardMaps";
 
@@ -258,7 +258,7 @@ auto GetRedStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomCol
   };
 }
 
-auto GetGreenStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetGreenStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "GreenStandardMaps";
 
@@ -273,7 +273,7 @@ auto GetGreenStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomC
   };
 }
 
-auto GetYellowStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetYellowStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "YellowStandardMaps";
 
@@ -288,7 +288,7 @@ auto GetYellowStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandom
   };
 }
 
-auto GetOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetOrangeStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "OrangeStandardMaps";
 
@@ -303,7 +303,7 @@ auto GetOrangeStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandom
   };
 }
 
-auto GetPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetPurpleStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "PurpleStandardMaps";
 
@@ -318,7 +318,7 @@ auto GetPurpleStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandom
   };
 }
 
-auto GetCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetCitiesStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "CitiesStandardMaps";
 
@@ -333,7 +333,7 @@ auto GetCitiesStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandom
   };
 }
 
-auto GetSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetSeasonsStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "SeasonsStandardMaps";
 
@@ -348,7 +348,7 @@ auto GetSeasonsStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRando
   };
 }
 
-auto GetHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetHeatStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "HeatStandardMaps";
 
@@ -363,7 +363,7 @@ auto GetHeatStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomCo
   };
 }
 
-auto GetColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetColdStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "ColdStandardMaps";
 
@@ -378,7 +378,7 @@ auto GetColdStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomCo
   };
 }
 
-auto GetPastelStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetPastelStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "PastelStandardMaps";
 
@@ -393,7 +393,7 @@ auto GetPastelStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandom
   };
 }
 
-auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetDivergingBlackStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "DivergingBlackStandardMaps";
 
@@ -408,7 +408,7 @@ auto GetDivergingBlackStandardMaps(const IGoomRand& goomRand) noexcept -> Weight
   };
 }
 
-auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+auto GetWesAndersonMaps(const UTILS::MATH::GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   static constexpr auto* MAPS_NAME = "WesAndersonMaps";
 
@@ -426,7 +426,7 @@ auto GetWesAndersonMaps(const UTILS::MATH::IGoomRand& goomRand) noexcept -> Weig
 } // namespace IMPL
 } // namespace
 
-RandomColorMapsGroups::RandomColorMapsGroups(const IGoomRand& goomRand) noexcept
+RandomColorMapsGroups::RandomColorMapsGroups(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand}
 {
 }

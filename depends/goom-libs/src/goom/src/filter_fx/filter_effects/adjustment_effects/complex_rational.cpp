@@ -12,7 +12,7 @@ import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.Point2d;
 
@@ -25,7 +25,7 @@ using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::TValue;
@@ -58,7 +58,7 @@ static constexpr auto PROB_USE_MODULATOR_CONTOURS      = 0.10F;
 static constexpr auto PROB_USE_SIMPLE_ZEROES_AND_POLES = 0.50F;
 static constexpr auto PROB_USE_INNER_ZEROES            = 0.25F;
 
-ComplexRational::ComplexRational(const IGoomRand& goomRand) noexcept
+ComplexRational::ComplexRational(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{

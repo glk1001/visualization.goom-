@@ -7,7 +7,7 @@ module;
 module Goom.FilterFx.FilterUtils.ImageDisplacementList;
 
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomConfigPaths;
 import Goom.Lib.GoomPaths;
 import Goom.Lib.GoomUtils;
@@ -18,7 +18,7 @@ namespace GOOM::FILTER_FX::FILTER_UTILS
 
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto IMAGE_FILENAMES = std::array{
@@ -38,7 +38,7 @@ static constexpr auto IMAGE_FILENAMES = std::array{
 };
 
 ImageDisplacementList::ImageDisplacementList(const std::string& resourcesDirectory,
-                                             const IGoomRand& goomRand)
+                                             const GoomRand& goomRand)
   : m_resourcesDirectory{resourcesDirectory}, m_goomRand{&goomRand}
 {
   if (m_resourcesDirectory.empty())

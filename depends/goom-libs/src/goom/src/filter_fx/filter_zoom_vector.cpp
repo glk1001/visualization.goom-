@@ -18,12 +18,12 @@ namespace GOOM::FILTER_FX
 
 using FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 FilterZoomVector::FilterZoomVector(
     const uint32_t screenWidth,
     const std::string& resourcesDirectory,
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     const ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects) noexcept
   : m_zoomVectorEffects{screenWidth, resourcesDirectory, goomRand, getAfterEffects}
 {

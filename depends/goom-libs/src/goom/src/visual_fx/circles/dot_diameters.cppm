@@ -6,7 +6,7 @@ module;
 
 export module Goom.VisualFx.CirclesFx.DotDiameters;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 
 using GOOM::UTILS::MATH::NumberRange;
@@ -24,14 +24,14 @@ public:
     uint32_t maxDiameter;
   };
 
-  DotDiameters(const UTILS::MATH::IGoomRand& goomRand, const DotProperties& dotProperties) noexcept;
+  DotDiameters(const UTILS::MATH::GoomRand& goomRand, const DotProperties& dotProperties) noexcept;
 
   auto ChangeDiameters() noexcept -> void;
 
   [[nodiscard]] auto GetDiameters() const noexcept -> const std::vector<uint32_t>&;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   uint32_t m_numDots;
 
   static constexpr uint32_t MIN_DIAMETER_EXTRA = 2;
@@ -68,7 +68,7 @@ module :private;
 namespace GOOM::VISUAL_FX::CIRCLES
 {
 
-DotDiameters::DotDiameters(const UTILS::MATH::IGoomRand& goomRand,
+DotDiameters::DotDiameters(const UTILS::MATH::GoomRand& goomRand,
                            const DotProperties& dotProperties) noexcept
   : m_goomRand{&goomRand},
     m_numDots{dotProperties.numDots},

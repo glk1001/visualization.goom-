@@ -8,13 +8,13 @@ module Goom.VisualFx.LSystemFx:LSysGeom;
 
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 using GOOM::UTILS::MATH::DEGREES_360;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::IncrementedValue;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::ToRadians;
@@ -26,7 +26,7 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 class LSysGeometry
 {
 public:
-  LSysGeometry(const IGoomRand& goomRand, float xScale, float yScale) noexcept;
+  LSysGeometry(const GoomRand& goomRand, float xScale, float yScale) noexcept;
 
   auto SetNumLSysCopies(uint32_t numLSysCopies) noexcept -> void;
   auto SetVerticalMoveMaxMin(float verticalMoveMin, float verticalMoveMax) noexcept -> void;
@@ -46,7 +46,7 @@ public:
   [[nodiscard]] auto GetVerticalMove() const noexcept -> const IncrementedValue<float>&;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   float m_xScale;
   float m_yScale;
   uint32_t m_numLSysCopies = 1U;
@@ -155,7 +155,7 @@ inline auto LSysGeometry::GetVerticalMove() const noexcept
   return m_verticalMove;
 }
 
-LSysGeometry::LSysGeometry(const UTILS::MATH::IGoomRand& goomRand,
+LSysGeometry::LSysGeometry(const UTILS::MATH::GoomRand& goomRand,
                            const float xScale,
                            const float yScale) noexcept
   : m_goomRand{&goomRand}, m_xScale{xScale}, m_yScale{yScale}

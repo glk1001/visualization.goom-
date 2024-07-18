@@ -6,14 +6,14 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysPaths;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Paths;
 import Goom.Utils.Math.TValues;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::OscillatingFunction;
 using GOOM::UTILS::MATH::OscillatingPath;
@@ -26,7 +26,7 @@ namespace GOOM::VISUAL_FX::L_SYSTEM
 class LSysPath
 {
 public:
-  explicit LSysPath(const IGoomRand& goomRand) noexcept;
+  explicit LSysPath(const GoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetPathStart() const noexcept -> const Point2dInt&;
   auto SetPathStart(const Point2dInt& pathStart) noexcept -> void;
@@ -40,7 +40,7 @@ public:
   [[nodiscard]] auto GetNextPathPosition() const noexcept -> Point2dInt;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   static constexpr auto DEFAULT_PATH_NUM_STEPS = 100U;
   uint32_t m_pathNumSteps                      = DEFAULT_PATH_NUM_STEPS;
@@ -82,7 +82,7 @@ inline auto LSysPath::GetPathTarget() const noexcept -> const Point2dInt&
   return m_lSysPathTarget;
 }
 
-LSysPath::LSysPath(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
+LSysPath::LSysPath(const GoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
 

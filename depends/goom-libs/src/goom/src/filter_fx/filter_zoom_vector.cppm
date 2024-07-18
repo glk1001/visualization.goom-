@@ -11,7 +11,7 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.FilterFx.ZoomVector;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 export namespace GOOM::FILTER_FX
 {
@@ -21,7 +21,7 @@ class FilterZoomVector : public IZoomVector
 public:
   FilterZoomVector(uint32_t screenWidth,
                    const std::string& resourcesDirectory,
-                   const UTILS::MATH::IGoomRand& goomRand,
+                   const UTILS::MATH::GoomRand& goomRand,
                    const FILTER_EFFECTS::ZoomVectorEffects::GetAfterEffectsFunc& getAfterEffects =
                        FILTER_EFFECTS::ZoomVectorEffects::GetStandardAfterEffects) noexcept;
 

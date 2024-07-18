@@ -12,7 +12,7 @@ import Goom.FilterFx.AfterEffects.TheEffects.Planes;
 import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
 import Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
@@ -59,7 +59,7 @@ private:
   std::unique_ptr<XYLerpEffect> m_xyLerpEffect;
 };
 
-[[nodiscard]] auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,
+[[nodiscard]] auto GetStandardAfterEffects(const UTILS::MATH::GoomRand& goomRand,
                                            const std::string& resourcesDirectory) -> AfterEffects;
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

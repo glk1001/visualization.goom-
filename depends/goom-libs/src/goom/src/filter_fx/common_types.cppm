@@ -4,7 +4,7 @@ module;
 
 export module Goom.FilterFx.CommonTypes;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 export namespace GOOM::FILTER_FX
 {

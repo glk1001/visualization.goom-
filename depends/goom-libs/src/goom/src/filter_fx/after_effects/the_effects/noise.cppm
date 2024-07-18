@@ -6,10 +6,10 @@ export module Goom.FilterFx.AfterEffects.TheEffects.Noise;
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 using GOOM::UTILS::NameValuePairs;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
@@ -18,7 +18,7 @@ export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class Noise
 {
 public:
-  explicit Noise(const IGoomRand& goomRand) noexcept;
+  explicit Noise(const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() -> void;
 
@@ -36,7 +36,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   // For noise amplitude, take the reciprocal of these.
   static constexpr auto NOISE_RANGE = NumberRange{40.0F, 120.0F};

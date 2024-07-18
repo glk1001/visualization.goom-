@@ -7,7 +7,7 @@ module Goom.VisualFx.LSystemFx:LineDrawerManager;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
 import Goom.Draw.ShaperDrawers.LineDrawerWithEffects;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
@@ -19,7 +19,7 @@ class LineDrawerManager
   using ILineDrawerWithEffects = DRAW::SHAPE_DRAWERS::ILineDrawerWithEffects;
 
 public:
-  LineDrawerManager(DRAW::IGoomDraw& draw, const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  LineDrawerManager(DRAW::IGoomDraw& draw, const UTILS::MATH::GoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetLineDrawer() const noexcept -> const ILineDrawerWithEffects&;
   [[nodiscard]] auto GetLineDrawer() noexcept -> ILineDrawerWithEffects&;
@@ -36,7 +36,7 @@ public:
   auto Update() noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
 
   using LineDrawerWithMovingNoiseEffect = DRAW::SHAPE_DRAWERS::LineDrawerWithMovingNoiseEffect;
 
@@ -72,7 +72,7 @@ inline auto LineDrawerManager::GetLineDrawer() noexcept -> ILineDrawerWithEffect
 
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::LineDrawerMovingNoise;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 static constexpr auto LINE_BRIGHTNESS_FACTOR = 2.0F;
 
@@ -81,7 +81,7 @@ static constexpr auto SWITCH_LINE_DRAWER_TYPE_MOVING_WEIGHT = 0.5F;
 static constexpr auto SWITCH_LINE_DRAWER_TYPE_NONE_WEIGHT   = 0.1F;
 
 // clang-format off
-LineDrawerManager::LineDrawerManager(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
+LineDrawerManager::LineDrawerManager(IGoomDraw& draw, const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_lineDrawerWithMovingNoiseEffect{
         LineDrawerMovingNoise{draw,

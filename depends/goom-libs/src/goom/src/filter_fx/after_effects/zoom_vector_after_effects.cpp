@@ -12,7 +12,7 @@ import Goom.FilterFx.AfterEffects.TheEffects.Planes;
 import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
 import Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.FilterFx.AfterEffects.AfterEffects;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;

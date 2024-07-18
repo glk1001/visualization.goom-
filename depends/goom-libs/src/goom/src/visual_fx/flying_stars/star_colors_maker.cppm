@@ -4,7 +4,7 @@ module;
 
 module Goom.VisualFx.FlyingStarsFx:StarColorsMaker;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import :StarColors;
 
@@ -14,7 +14,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 class StarColorsMaker
 {
 public:
-  StarColorsMaker(const UTILS::MATH::IGoomRand& goomRand,
+  StarColorsMaker(const UTILS::MATH::GoomRand& goomRand,
                   const StarColors::ColorMapsSet& colorMapsSet) noexcept;
 
   auto SetColorMapSet(const StarColors::ColorMapsSet& colorMapsSet) noexcept -> void;
@@ -23,7 +23,7 @@ public:
   [[nodiscard]] auto GetNewStarColors(float withinClusterT) const noexcept -> StarColors;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
 
   static constexpr auto COLOR_MODE_MIX_COLORS_WEIGHT         = 30.0F;
   static constexpr auto COLOR_MODE_REVERSE_MIX_COLORS_WEIGHT = 15.0F;
@@ -40,7 +40,7 @@ private:
 namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
-StarColorsMaker::StarColorsMaker(const UTILS::MATH::IGoomRand& goomRand,
+StarColorsMaker::StarColorsMaker(const UTILS::MATH::GoomRand& goomRand,
                                  const StarColors::ColorMapsSet& colorMapsSet) noexcept
   : m_goomRand{&goomRand},
     m_colorModeWeights{

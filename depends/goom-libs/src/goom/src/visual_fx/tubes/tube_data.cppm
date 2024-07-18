@@ -8,7 +8,7 @@ module Goom.VisualFx.TubesFx:TubeData;
 import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.GoomTime;
 import Goom.Lib.Point2d;
 
@@ -39,7 +39,7 @@ struct TubeData
   uint32_t screenWidth                   = 0U;
   uint32_t screenHeight                  = 0U;
   const UTILS::GoomTime* goomTime        = nullptr;
-  const UTILS::MATH::IGoomRand* goomRand = nullptr;
+  const UTILS::MATH::GoomRand* goomRand = nullptr;
   COLOR::WeightedRandomColorMaps mainColorMaps;
   COLOR::WeightedRandomColorMaps lowColorMaps;
   float radiusEdgeOffset = 0.0F;

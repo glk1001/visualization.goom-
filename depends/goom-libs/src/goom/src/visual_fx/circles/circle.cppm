@@ -18,7 +18,7 @@ import Goom.Color.RandomColorMapsGroups;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Paths;
@@ -45,7 +45,7 @@ using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerNoisyPixels;
 using GOOM::UTILS::EnumMap;
 using GOOM::UTILS::MATH::AngleParams;
 using GOOM::UTILS::MATH::CirclePath;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::ModDecrement;
 using GOOM::UTILS::MATH::ModIncrement;
 using GOOM::UTILS::MATH::NumberRange;
@@ -112,7 +112,7 @@ private:
   class CircleDots
   {
   public:
-    CircleDots(const IGoomRand& goomRand,
+    CircleDots(const GoomRand& goomRand,
                const Helper& helper,
                const Params& circleParams,
                const OscillatingFunction::Params& pathParams,
@@ -130,7 +130,7 @@ private:
     [[nodiscard]] auto GetNumMaps() const noexcept -> const EnumMap<GridColorRange, uint32_t>&;
 
   private:
-    const IGoomRand* m_goomRand;
+    const GoomRand* m_goomRand;
     const Helper* m_helper;
     Params m_circleParams;
     OscillatingFunction::Params m_pathParams;
@@ -359,7 +359,7 @@ static constexpr auto GRID_COLOR_RANGE_HIGH_WEIGHT   = 01.0F;
 static constexpr auto CIRCLE_NOISE_RADIUS     = 10U;
 static constexpr auto NUM_CIRCLE_NOISE_PIXELS = 5U;
 
-Circle::CircleDots::CircleDots(const IGoomRand& goomRand,
+Circle::CircleDots::CircleDots(const GoomRand& goomRand,
                                const Helper& helper,
                                const Params& circleParams,
                                const UTILS::MATH::OscillatingFunction::Params& pathParams,

@@ -8,7 +8,7 @@ export module Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
@@ -25,7 +25,7 @@ public:
   };
 
   LineDrawerNoisyPixels(IGoomDraw& draw,
-                        const UTILS::MATH::IGoomRand& goomRand,
+                        const UTILS::MATH::GoomRand& goomRand,
                         const NoiseParams& noiseParams) noexcept;
 
   auto SetNoiseParams(const NoiseParams& noiseParams) noexcept -> void;
@@ -44,7 +44,7 @@ private:
   {
   public:
     NoisyPixelDrawer(IGoomDraw& draw,
-                     const UTILS::MATH::IGoomRand& goomRand,
+                     const UTILS::MATH::GoomRand& goomRand,
                      const NoiseParams& noiseParams) noexcept;
 
     auto SetNoiseParams(const NoiseParams& noiseParams) noexcept -> void;
@@ -59,7 +59,7 @@ private:
 
   private:
     IGoomDraw* m_draw;
-    const UTILS::MATH::IGoomRand* m_goomRand;
+    const UTILS::MATH::GoomRand* m_goomRand;
     float m_brightnessReducer       = 1.0F;
     float m_brightnessFactor        = 1.0F;
     float m_overallBrightnessFactor = 1.0F;

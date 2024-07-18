@@ -4,14 +4,14 @@ import Goom.Color.RandomColorMaps;
 import Goom.Color.RandomColorMapsGroups;
 import Goom.Control.GoomEffects;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import :VisualFxColorMatchedSets;
 import :VisualFxWeightedColorMaps;
 
 using GOOM::COLOR::RandomColorMapsGroups;
 using GOOM::COLOR::WeightedRandomColorMaps;
 using GOOM::UTILS::NUM;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 
 export namespace GOOM::CONTROL
@@ -20,7 +20,7 @@ export namespace GOOM::CONTROL
 class VisualFxColorMaps
 {
 public:
-  explicit VisualFxColorMaps(const IGoomRand& goomRand);
+  explicit VisualFxColorMaps(const GoomRand& goomRand);
 
   auto ChangeRandomColorMaps() -> void;
 
@@ -28,7 +28,7 @@ public:
       -> WeightedRandomColorMaps;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   RandomColorMapsGroups m_randomColorMapsGroups{*m_goomRand};
   VisualFxColorMatchedSets m_visualFxColorMatchedSets{*m_goomRand};
   VisualFxWeightedColorMaps m_visualFxWeightedColorMaps{*m_goomRand};
@@ -42,7 +42,7 @@ private:
 namespace GOOM::CONTROL
 {
 
-inline VisualFxColorMaps::VisualFxColorMaps(const IGoomRand& goomRand) : m_goomRand{&goomRand}
+inline VisualFxColorMaps::VisualFxColorMaps(const GoomRand& goomRand) : m_goomRand{&goomRand}
 {
 }
 

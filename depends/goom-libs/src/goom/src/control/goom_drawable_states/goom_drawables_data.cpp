@@ -10,14 +10,14 @@ module Goom.Control.GoomDrawablesData;
 
 import Goom.Control.GoomDrawables;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::CONTROL
 {
 
 using UTILS::EnumMap;
 using UTILS::MATH::GetMidpoint;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DRAWABLE_NAMES = EnumMap<GoomDrawables, std::string_view>{{{
@@ -90,7 +90,7 @@ auto GetDrawablesStateName(const std::vector<GoomDrawables>& drawables) -> std::
       std::views::join_with(DELIM));
 }
 
-auto GetRandInRangeBuffIntensities(const IGoomRand& goomRand,
+auto GetRandInRangeBuffIntensities(const GoomRand& goomRand,
                                    const std::vector<GoomDrawables>& drawables) noexcept
     -> std::vector<float>
 {

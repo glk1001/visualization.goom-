@@ -13,7 +13,7 @@ import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
@@ -45,7 +45,7 @@ public:
   };
 
   DotDrawer(DRAW::IGoomDraw& draw,
-            const UTILS::MATH::IGoomRand& goomRand,
+            const UTILS::MATH::GoomRand& goomRand,
             const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps,
             const WeightProperties& weightProperties) noexcept;
 
@@ -60,7 +60,7 @@ public:
                float brightness) noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   const UTILS::GRAPHICS::SmallImageBitmaps* m_smallBitmaps;
   DRAW::SHAPE_DRAWERS::BitmapDrawer m_bitmapDrawer;
 
@@ -106,10 +106,10 @@ using UTILS::NUM;
 using UTILS::GRAPHICS::GetColorMultiply;
 using UTILS::GRAPHICS::ImageBitmap;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 DotDrawer::DotDrawer(DRAW::IGoomDraw& draw,
-                     const IGoomRand& goomRand,
+                     const GoomRand& goomRand,
                      const SmallImageBitmaps& smallBitmaps,
                      const WeightProperties& weightProperties) noexcept
   : m_goomRand{&goomRand},

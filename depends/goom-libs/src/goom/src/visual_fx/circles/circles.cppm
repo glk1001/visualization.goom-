@@ -8,7 +8,7 @@ export module Goom.VisualFx.CirclesFx.Circles;
 
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.VisualFx.CirclesFx.BitmapGetter;
 import Goom.VisualFx.CirclesFx.Circle;
@@ -46,7 +46,7 @@ public:
 
 private:
   const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   BitmapGetter m_bitmapGetter;
 
   uint32_t m_numCircles;

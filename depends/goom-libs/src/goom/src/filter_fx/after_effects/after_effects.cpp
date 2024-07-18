@@ -13,12 +13,12 @@ import Goom.FilterFx.AfterEffects.TheEffects.Planes;
 import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
 import Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 AfterEffects::AfterEffects(std::unique_ptr<Hypercos>&& hypercos,
                            std::unique_ptr<ImageVelocity>&& imageVelocity,
@@ -39,7 +39,7 @@ AfterEffects::AfterEffects(std::unique_ptr<Hypercos>&& hypercos,
 
 AfterEffects::~AfterEffects() noexcept = default;
 
-auto GetStandardAfterEffects(const IGoomRand& goomRand,
+auto GetStandardAfterEffects(const GoomRand& goomRand,
                              const std::string& resourcesDirectory) -> AfterEffects
 {
   return {

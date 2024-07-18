@@ -20,7 +20,7 @@ import Goom.FilterFx.FilterConsts;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.PluginInfo;
 
@@ -37,10 +37,10 @@ using UTILS::EnumMap;
 using UTILS::GetFilledEnumMap;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::I_HALF;
 using UTILS::MATH::I_QUARTER;
 using UTILS::MATH::I_THREE_QUARTERS;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
@@ -266,7 +266,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   return DEFAULT_AFTER_EFFECTS_OFF_TIMES;
 }
 
-[[nodiscard]] auto GetWeightedFilterEvents(const IGoomRand& goomRand)
+[[nodiscard]] auto GetWeightedFilterEvents(const GoomRand& goomRand)
     -> ConditionalWeights<ZoomFilterMode>
 {
   static constexpr auto AMULET_MODE_WEIGHT             = 10.0F;
@@ -632,7 +632,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 // NOLINTEND(readability-function-cognitive-complexity)
 
 [[nodiscard]] auto GetFilterModeData(
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     const std::string& resourcesDirectory,
     const FilterSettingsService::CreateZoomAdjustmentEffectFunc& createZoomAdjustmentEffect)
     -> FilterSettingsService::FilterModeEnumMap
@@ -667,7 +667,7 @@ auto GetFilterModeName(const ZoomFilterMode filterMode) noexcept -> std::string_
 }
 
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
-                                             const IGoomRand& goomRand,
+                                             const GoomRand& goomRand,
                                              const std::string& resourcesDirectory,
                                              const CreateZoomAdjustmentEffectFunc&
                                                  createZoomAdjustmentEffect)

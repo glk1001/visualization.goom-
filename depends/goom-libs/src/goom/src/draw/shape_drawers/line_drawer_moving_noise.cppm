@@ -6,7 +6,7 @@ export module Goom.Draw.ShaperDrawers.LineDrawerMovingNoise;
 
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
@@ -19,7 +19,7 @@ class LineDrawerMovingNoise
 {
 public:
   LineDrawerMovingNoise(IGoomDraw& draw,
-                        const UTILS::MATH::IGoomRand& goomRand,
+                        const UTILS::MATH::GoomRand& goomRand,
                         const MinMaxValues<uint8_t>& minMaxNoiseRadius,
                         uint32_t numNoiseRadiusSteps,
                         const MinMaxValues<uint8_t>& minMaxNumNoisePixels,

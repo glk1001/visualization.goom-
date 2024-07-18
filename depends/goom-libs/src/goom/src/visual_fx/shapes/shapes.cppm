@@ -11,7 +11,7 @@ module Goom.VisualFx.ShapesFx:Shapes;
 import Goom.Color.ColorMaps;
 import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
@@ -70,7 +70,7 @@ public:
   auto SetFixedShapeNumSteps() noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
 
   static constexpr uint32_t NUM_SHAPE_PARTS = 10;
   std::vector<ShapePart> m_shapeParts;

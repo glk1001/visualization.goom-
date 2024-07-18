@@ -15,7 +15,7 @@ module Goom.VisualFx.CirclesFx;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.VisualFx.CirclesFx.Circle;
 import Goom.VisualFx.CirclesFx.CircleParamsBuilder;

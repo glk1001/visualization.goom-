@@ -15,7 +15,7 @@ export module Goom.VisualFx.FlyingStarsFx:StarTypesContainer;
 import Goom.Color.RandomColorMaps;
 import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
@@ -29,7 +29,7 @@ using GOOM::COLOR::WeightedRandomColorMaps;
 using GOOM::COLOR::COLOR_DATA::ColorMapName;
 using GOOM::UTILS::NUM;
 using GOOM::UTILS::MATH::I_HALF;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::PI;
 using GOOM::UTILS::MATH::Sq;
@@ -79,7 +79,7 @@ class StarType; // NOLINT(readability-identifier-naming): Seems to be a clang-ti
 class StarTypesContainer
 {
 public:
-  StarTypesContainer(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept;
+  StarTypesContainer(const PluginInfo& goomInfo, const GoomRand& goomRand) noexcept;
   StarTypesContainer(const StarTypesContainer&) noexcept                    = delete;
   StarTypesContainer(StarTypesContainer&&) noexcept                         = delete;
   ~StarTypesContainer() noexcept                                            = default;
@@ -122,7 +122,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 class StarType : public IStarType
 {
 public:
-  StarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept;
+  StarType(const PluginInfo& goomInfo, const GoomRand& goomRand) noexcept;
 
   [[nodiscard]] auto GetStarColorsMaker() const noexcept -> const StarColorsMaker& override;
   auto UpdateFixedColorMapNames() noexcept -> void override;
@@ -130,7 +130,7 @@ public:
 
 protected:
   [[nodiscard]] auto GetGoomInfo() const noexcept -> const PluginInfo& { return *m_goomInfo; }
-  [[nodiscard]] auto GetGoomRand() const noexcept -> const IGoomRand& { return *m_goomRand; }
+  [[nodiscard]] auto GetGoomRand() const noexcept -> const GoomRand& { return *m_goomRand; }
   [[nodiscard]] auto GetZoomMidpoint() const noexcept -> Point2dInt { return m_zoomMidpoint; }
   [[nodiscard]] auto GetHalfWidth() const noexcept -> int32_t { return m_halfWidth; }
   [[nodiscard]] auto GetHalfHeight() const noexcept -> int32_t { return m_halfHeight; }
@@ -144,7 +144,7 @@ protected:
 
 private:
   const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   int32_t m_halfWidth;
   int32_t m_halfHeight;
   float m_xMax;
@@ -229,7 +229,7 @@ public:
 } // namespace
 
 StarTypesContainer::StarTypesContainer(const PluginInfo& goomInfo,
-                                       const IGoomRand& goomRand) noexcept
+                                       const GoomRand& goomRand) noexcept
   : m_starTypesList{
         std::make_unique<FireworksStarType>(goomInfo, goomRand),
         std::make_unique<RainStarType>(goomInfo, goomRand),
@@ -303,7 +303,7 @@ static const auto DEFAULT_COLOR_MAP_TYPES = WeightedRandomColorMaps::GetAllColor
 
 static constexpr auto Y_DISTANCE_OUT_OF_SCREEN_RANGE = NumberRange{10, 50};
 
-StarType::StarType(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
+StarType::StarType(const PluginInfo& goomInfo, const GoomRand& goomRand) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_halfWidth{I_HALF * goomInfo.GetDimensions().GetIntWidth()},

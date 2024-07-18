@@ -14,7 +14,7 @@ module Goom.VisualFx.ShapesFx;
 
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.PointUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;

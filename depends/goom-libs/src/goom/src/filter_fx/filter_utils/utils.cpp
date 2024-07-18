@@ -5,17 +5,17 @@ module;
 module Goom.FilterFx.FilterUtils.Utils;
 
 import Goom.FilterFx.NormalizedCoords;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 
 namespace GOOM::FILTER_FX::FILTER_UTILS
 {
 
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::HALF;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 
-RandomViewport::RandomViewport(const IGoomRand& goomRand, const Bounds& bounds) noexcept
+RandomViewport::RandomViewport(const GoomRand& goomRand, const Bounds& bounds) noexcept
   : m_goomRand{&goomRand}, m_bounds{bounds}
 {
 }

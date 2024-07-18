@@ -6,14 +6,14 @@ module;
 export module Goom.VisualFx.FlyingStarsFx:StarMaker;
 
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 import :StarTypesContainer;
 import :StarColorsMaker;
 import :Stars;
 
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 
 namespace GOOM::VISUAL_FX::FLYING_STARS
@@ -22,7 +22,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 class StarMaker
 {
 public:
-  explicit StarMaker(const IGoomRand& goomRand) noexcept;
+  explicit StarMaker(const GoomRand& goomRand) noexcept;
 
   struct StarProperties
   {
@@ -38,7 +38,7 @@ public:
   [[nodiscard]] auto MakeNewStar() noexcept -> Star;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   const IStarType* m_starType{};
   uint32_t m_numStarsToMake = 0U;
   IStarType::SetupParams m_starSetupParams{};
@@ -61,7 +61,7 @@ inline auto StarMaker::MoreStarsToMake() const noexcept -> bool
   return m_numStarsToMake > 0;
 }
 
-StarMaker::StarMaker(const IGoomRand& goomRand) noexcept : m_goomRand{&goomRand}
+StarMaker::StarMaker(const GoomRand& goomRand) noexcept : m_goomRand{&goomRand}
 {
 }
 

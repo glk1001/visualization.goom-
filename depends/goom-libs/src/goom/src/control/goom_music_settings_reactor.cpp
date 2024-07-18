@@ -37,7 +37,7 @@ using UTILS::NameValuePairs;
 using UTILS::NUM;
 using UTILS::StringJoin;
 using UTILS::ToStrings;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto COLLECT_EVENT_STATS = true;
@@ -97,7 +97,7 @@ class GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl
 {
 public:
   GoomMusicSettingsReactorImpl(const PluginInfo& goomInfo,
-                               const IGoomRand& goomRand,
+                               const GoomRand& goomRand,
                                GoomAllVisualFx& visualFx,
                                FilterSettingsService& filterSettingsService) noexcept;
 
@@ -113,7 +113,7 @@ public:
 
 private:
   const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   GoomAllVisualFx* m_visualFx;
   FilterSettingsService* m_filterSettingsService;
   std::string m_dumpDirectory;
@@ -203,7 +203,7 @@ private:
 
 GoomMusicSettingsReactor::GoomMusicSettingsReactor(
     const PluginInfo& goomInfo,
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     GoomAllVisualFx& visualFx,
     FilterSettingsService& filterSettingsService) noexcept
   : m_pimpl{spimpl::make_unique_impl<GoomMusicSettingsReactorImpl>(
@@ -407,7 +407,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DumpChangeEventData
 
 GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::GoomMusicSettingsReactorImpl(
     const PluginInfo& goomInfo,
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     GoomAllVisualFx& visualFx,
     FilterSettingsService& filterSettingsService) noexcept
   : m_goomInfo{&goomInfo},

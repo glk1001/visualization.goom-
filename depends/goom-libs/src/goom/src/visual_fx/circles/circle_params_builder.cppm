@@ -5,7 +5,7 @@ module;
 
 export module Goom.VisualFx.CirclesFx.CircleParamsBuilder;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.CirclesFx.Circle;
 import Goom.VisualFx.FxHelper;

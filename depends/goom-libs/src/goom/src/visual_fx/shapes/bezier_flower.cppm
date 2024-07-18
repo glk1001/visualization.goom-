@@ -11,7 +11,7 @@ import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.BezierDrawer;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
@@ -23,7 +23,7 @@ namespace GOOM::VISUAL_FX::SHAPES
 class PetalColoring
 {
 public:
-  explicit PetalColoring(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit PetalColoring(const UTILS::MATH::GoomRand& goomRand) noexcept;
 
   void SetNumPetals(uint32_t numPetals);
 
@@ -32,7 +32,7 @@ public:
   [[nodiscard]] auto GetCurrentDotColorMap() const -> const COLOR::IColorMap&;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   uint32_t m_numPetals = 0;
   std::vector<COLOR::ColorMapPtrWrapper> m_lineColorMaps;
   std::vector<COLOR::ColorMapPtrWrapper> m_dotColorMaps;
@@ -63,7 +63,7 @@ private:
 namespace GOOM::VISUAL_FX::SHAPES
 {
 
-inline PetalColoring::PetalColoring(const UTILS::MATH::IGoomRand& goomRand) noexcept
+inline PetalColoring::PetalColoring(const UTILS::MATH::GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand}
 {
 }

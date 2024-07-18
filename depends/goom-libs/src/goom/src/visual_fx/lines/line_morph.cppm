@@ -16,7 +16,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.AssertUtils;
@@ -39,7 +39,7 @@ using GOOM::DRAW::MultiplePixels;
 using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 using GOOM::UTILS::NUM;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::SMALL_FLOAT;
 using GOOM::VISUAL_FX::FX_UTILS::DotSizes;
@@ -67,7 +67,7 @@ public:
 
   LineMorph(IGoomDraw& draw,
             const PluginInfo& goomInfo,
-            const IGoomRand& goomRand,
+            const GoomRand& goomRand,
             const SmallImageBitmaps& smallBitmaps,
             const SrceDestLineParams& srceDestLineParams,
             PixelChannelType defaultAlpha) noexcept;
@@ -92,7 +92,7 @@ private:
   IGoomDraw* m_draw;
   LineDrawerClippedEndPoints m_lineDrawer{*m_draw};
   const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   PixelChannelType m_defaultAlpha;
 
   WeightedRandomColorMaps m_colorMaps;
@@ -187,7 +187,7 @@ static constexpr auto NORMAL_DOT_SIZE08_WEIGHT = 10.0F;
 
 LineMorph::LineMorph(IGoomDraw& draw,
                      const PluginInfo& goomInfo,
-                     const IGoomRand& goomRand,
+                     const GoomRand& goomRand,
                      const SmallImageBitmaps& smallBitmaps,
                      const SrceDestLineParams& srceDestLineParams,
                      const PixelChannelType defaultAlpha) noexcept

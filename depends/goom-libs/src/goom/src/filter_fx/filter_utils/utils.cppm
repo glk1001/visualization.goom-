@@ -5,7 +5,7 @@ module;
 export module Goom.FilterFx.FilterUtils.Utils;
 
 import Goom.FilterFx.NormalizedCoords;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
@@ -71,7 +71,7 @@ public:
   static constexpr auto DEFAULT_PROB_NO_VIEWPORT     = 0.1F;
   static constexpr auto DEFAULT_PROB_SQUARE_VIEWPORT = 0.8F;
 
-  RandomViewport(const UTILS::MATH::IGoomRand& goomRand, const Bounds& bounds) noexcept;
+  RandomViewport(const UTILS::MATH::GoomRand& goomRand, const Bounds& bounds) noexcept;
 
   [[nodiscard]] auto GetProbNoViewport() const noexcept -> float;
   auto SetProbNoViewport(float probNoViewport) noexcept -> void;
@@ -95,7 +95,7 @@ public:
   [[nodiscard]] auto GetRandomViewport() const noexcept -> Viewport;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   float m_probNoViewport     = DEFAULT_PROB_NO_VIEWPORT;
   float m_probSquareViewport = DEFAULT_PROB_SQUARE_VIEWPORT;
 

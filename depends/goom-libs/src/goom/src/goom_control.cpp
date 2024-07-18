@@ -56,7 +56,7 @@ import Goom.Utils.Timer;
 import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Graphics.PixelBlend;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;
@@ -108,7 +108,7 @@ using UTILS::Timer;
 using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
 using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::IsBetween;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
@@ -133,12 +133,12 @@ private:
 class GoomStateHandler : public IGoomStateHandler
 {
 public:
-  explicit GoomStateHandler(const IGoomRand& goomRand);
+  explicit GoomStateHandler(const GoomRand& goomRand);
   auto ChangeToNextState() -> void override;
   [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   static constexpr auto PROB_USE_FAVOURITE_STATES_HANDLER = 0.1F;
   GoomForcedStateHandler m_goomForcedStateHandler;
   GoomFavouriteStatesHandler m_goomFavouriteStatesHandler;
@@ -147,7 +147,7 @@ private:
   [[nodiscard]] auto GetInitialStateHandler() noexcept -> IGoomStateHandler*;
 };
 
-GoomStateHandler::GoomStateHandler(const IGoomRand& goomRand)
+GoomStateHandler::GoomStateHandler(const GoomRand& goomRand)
   : m_goomRand{&goomRand},
     m_goomFavouriteStatesHandler{goomRand},
     m_goomRandomStateHandler{goomRand},
@@ -232,7 +232,7 @@ private:
   GoomSoundEvents m_goomSoundEvents{m_goomTime, m_soundInfo};
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
-  std::unique_ptr<IGoomRand> m_goomRand = std::make_unique<IGoomRand>();
+  std::unique_ptr<GoomRand> m_goomRand = std::make_unique<GoomRand>();
   GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
   Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers{
       m_multiBufferDraw, m_goomInfo.GetDimensions(), GetColorAlphaNoAddBlend};

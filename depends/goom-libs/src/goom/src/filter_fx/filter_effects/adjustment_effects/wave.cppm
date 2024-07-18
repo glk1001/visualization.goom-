@@ -8,7 +8,7 @@ import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
@@ -25,7 +25,7 @@ public:
     ATAN_ANGLE_EFFECT_MODE0,
     ATAN_ANGLE_EFFECT_MODE1,
   };
-  Wave(Modes mode, const UTILS::MATH::IGoomRand& goomRand);
+  Wave(Modes mode, const UTILS::MATH::GoomRand& goomRand);
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -75,7 +75,7 @@ protected:
 
 private:
   Modes m_mode;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   FILTER_UTILS::RandomViewport m_randomViewport;
   UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
   Params m_params;

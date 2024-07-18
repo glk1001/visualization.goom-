@@ -3,7 +3,7 @@ module;
 export module Goom.Color.RandomColorMapsGroups;
 
 import Goom.Color.RandomColorMaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
@@ -13,7 +13,7 @@ export namespace GOOM::COLOR
 class RandomColorMapsGroups
 {
 public:
-  explicit RandomColorMapsGroups(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit RandomColorMapsGroups(const UTILS::MATH::GoomRand& goomRand) noexcept;
 
   enum class Groups : UnderlyingEnumType
   {
@@ -43,13 +43,13 @@ public:
       -> WeightedRandomColorMaps;
 
   [[nodiscard]] static auto GetUnweightedRandomColorMaps(
-      const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps;
+      const UTILS::MATH::GoomRand& goomRand) noexcept -> WeightedRandomColorMaps;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
 };
 
-[[nodiscard]] auto GetUnweightedRandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+[[nodiscard]] auto GetUnweightedRandomColorMaps(const UTILS::MATH::GoomRand& goomRand,
                                                 PixelChannelType defaultAlpha) noexcept
     -> WeightedRandomColorMaps;
 
@@ -58,7 +58,7 @@ private:
 namespace GOOM::COLOR
 {
 
-[[nodiscard]] inline auto GetUnweightedRandomColorMaps(const UTILS::MATH::IGoomRand& goomRand,
+[[nodiscard]] inline auto GetUnweightedRandomColorMaps(const UTILS::MATH::GoomRand& goomRand,
                                                        const PixelChannelType defaultAlpha) noexcept
     -> WeightedRandomColorMaps
 {
@@ -66,7 +66,7 @@ namespace GOOM::COLOR
 }
 
 inline auto RandomColorMapsGroups::GetUnweightedRandomColorMaps(
-    const UTILS::MATH::IGoomRand& goomRand) noexcept -> WeightedRandomColorMaps
+    const UTILS::MATH::GoomRand& goomRand) noexcept -> WeightedRandomColorMaps
 {
   return RandomColorMapsGroups{goomRand}.GetWeightedRandomColorMapsForGroup(
       Groups::ALL_MAPS_UNWEIGHTED);

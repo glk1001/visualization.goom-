@@ -14,7 +14,7 @@ import Goom.Control.GoomStateHandler;
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.VisualFxBase;
 import Goom.VisualFx.FxHelper;
 import Goom.Lib.FrameData;
@@ -29,7 +29,7 @@ import :VisualFxColorMaps;
 using GOOM::UTILS::Parallel;
 using GOOM::UTILS::Stopwatch;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::Weights;
 using GOOM::VISUAL_FX::FxHelper;
 using GOOM::VISUAL_FX::IVisualFx;
@@ -72,7 +72,7 @@ public:
   [[nodiscard]] static auto GetCurrentColorMapsNames() noexcept -> std::unordered_set<std::string>;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   [[maybe_unused]] GoomLogger* m_goomLogger;
   spimpl::unique_impl_ptr<AllStandardVisualFx> m_allStandardVisualFx;
 

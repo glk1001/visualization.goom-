@@ -11,7 +11,7 @@ module Goom.VisualFx.IfsDancersFx:Fractal;
 import Goom.Color.RandomColorMaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 import :FractalHits;
@@ -19,7 +19,7 @@ import :Similitudes;
 
 using GOOM::COLOR::WeightedRandomColorMaps;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 using GOOM::UTILS::MATH::U_HALF;
@@ -31,7 +31,7 @@ class Fractal
 {
 public:
   Fractal(const Dimensions& dimensions,
-          const IGoomRand& goomRand,
+          const GoomRand& goomRand,
           const SmallImageBitmaps& smallBitmaps);
 
   auto Init() -> void;
@@ -47,7 +47,7 @@ public:
 
 private:
   Similitudes m_similitudes;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   Flt m_halfWidth;
   Flt m_halfHeight;
@@ -91,7 +91,7 @@ inline auto Fractal::GetMaxHitCount() const -> uint32_t
 }
 
 Fractal::Fractal(const Dimensions& dimensions,
-                 const IGoomRand& goomRand,
+                 const GoomRand& goomRand,
                  const SmallImageBitmaps& smallBitmaps)
   : m_similitudes{goomRand, smallBitmaps},
     m_goomRand{&goomRand},

@@ -9,7 +9,7 @@ import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -17,7 +17,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
 using UTILS::NameValuePairs;
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto X_DEFAULT_EFFECT = YOnly::YOnlyEffect::X_SIN_Y_SIN;
@@ -41,7 +41,7 @@ static constexpr auto PROB_Y_ONLY_STRICT   = 0.9F;
 static constexpr auto PROB_FREQ_EQUAL      = 0.9F;
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.9F;
 
-YOnly::YOnly(const IGoomRand& goomRand) noexcept
+YOnly::YOnly(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_params{
         {X_DEFAULT_EFFECT,      Y_DEFAULT_EFFECT},

@@ -8,7 +8,7 @@ import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterConsts;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
@@ -22,7 +22,7 @@ static constexpr auto DEFAULT_TAN_EFFECT              = false;
 static constexpr auto DEFAULT_XY_LERP_EFFECT          = false;
 
 AfterEffectsStates::AfterEffectsStates(const UTILS::GoomTime& goomTime,
-                                       const UTILS::MATH::IGoomRand& goomRand,
+                                       const UTILS::MATH::GoomRand& goomRand,
                                        const AfterEffectsProbabilityMap& repeatProbabilities,
                                        const AfterEffectsOffTimeMap& offTimes) noexcept
   : m_hypercosOverlayEffect{
@@ -163,7 +163,7 @@ auto AfterEffectsStates::CheckForPendingOffTimers() -> void
 }
 
 inline AfterEffectState::AfterEffectState(const UTILS::GoomTime& goomTime,
-                                          const UTILS::MATH::IGoomRand& goomRand,
+                                          const UTILS::MATH::GoomRand& goomRand,
                                           const bool turnedOn,
                                           const AfterEffectProperties& effectProperties) noexcept
   : m_goomRand{&goomRand},

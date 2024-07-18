@@ -5,14 +5,14 @@ module;
 module Goom.FilterFx.AfterEffects.TheEffects.ImageVelocity;
 
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 using UTILS::GetFullParamGroup;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto AMPLITUDE_RANGE    = NumberRange{0.0025F, 0.0500F};
@@ -23,7 +23,7 @@ static constexpr auto PROB_XY_COLOR_CUTOFFS_EQUAL = 0.5F;
 static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.5F;
 static constexpr auto PROB_ZOOM_FACTORS_EQUAL     = 0.5F;
 
-ImageVelocity::ImageVelocity(const IGoomRand& goomRand, const std::string& resourcesDirectory)
+ImageVelocity::ImageVelocity(const GoomRand& goomRand, const std::string& resourcesDirectory)
   : m_goomRand{&goomRand}, m_imageDisplacementList{resourcesDirectory, *m_goomRand}
 {
   if (!resourcesDirectory.empty())
