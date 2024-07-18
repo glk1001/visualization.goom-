@@ -268,7 +268,7 @@ inline auto FilterSettingsService::SetMaxZoomAdjustment() -> void
 {
   static constexpr auto SPEED_FACTOR_RANGE = NumberRange{0.5F, 1.0F};
   m_filterSettings.filterEffectsSettings.maxZoomAdjustment =
-      m_goomRand->GetRandInRange(SPEED_FACTOR_RANGE) * MAX_MAX_ZOOM_ADJUSTMENT;
+      m_goomRand->GetRandInRange<SPEED_FACTOR_RANGE>() * MAX_MAX_ZOOM_ADJUSTMENT;
 }
 
 inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void

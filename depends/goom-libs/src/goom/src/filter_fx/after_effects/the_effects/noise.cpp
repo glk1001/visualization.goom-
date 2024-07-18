@@ -26,7 +26,7 @@ Noise::Noise(const GoomRand& goomRand) noexcept
 
 auto Noise::SetRandomParams() -> void
 {
-  SetParams({m_goomRand->GetRandInRange(NOISE_FACTOR_RANGE)});
+  SetParams({m_goomRand->GetRandInRange<NOISE_FACTOR_RANGE>()});
 }
 
 auto Noise::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

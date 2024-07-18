@@ -272,11 +272,11 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ChangeColors() -> void
   for (auto& usePrimaryColor : m_usePrimaryColors)
   {
     static constexpr auto PROB_USE_PRIMARY_COLOR = 0.3F;
-    usePrimaryColor = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_USE_PRIMARY_COLOR);
+    usePrimaryColor = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_USE_PRIMARY_COLOR>();
   }
 
   static constexpr auto PROB_USE_MIDDLE_COLOR = 0.05F;
-  m_useMiddleColor = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_USE_MIDDLE_COLOR);
+  m_useMiddleColor = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_USE_MIDDLE_COLOR>();
   if (m_useMiddleColor)
   {
     m_middleColor = GetMiddleColor();
@@ -286,10 +286,10 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ChangeColors() -> void
 auto GoomDotsFx::GoomDotsFxImpl::GetMiddleColor() const -> Pixel
 {
   if (static constexpr auto PROB_PRIMARY_COLOR = 0.1F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_PRIMARY_COLOR))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_PRIMARY_COLOR>())
   {
     return GetDotPrimaryColor(
-        m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{0U, NUM_DOT_TYPES - 1}));
+        m_fxHelper->GetGoomRand().GetRandInRange<NumberRange{0U, NUM_DOT_TYPES - 1}>());
   }
 
   static constexpr auto MIN_MIX_T = 0.1F;
@@ -328,7 +328,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::ApplyToImageBuffers() -> void
 
   auto radius = MIN_DOT_SIZE / 2U;
   if (static constexpr auto PROB_CHANGE_DOT_COLORS = 0.25F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_DOT_COLORS) or
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_CHANGE_DOT_COLORS>() or
       (0 == m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom()))
   {
     ChangeColors();
@@ -397,7 +397,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::SetNextCurrentBitmapName() -> void
   {
     SetFlowerBitmap();
   }
-  else if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MORE_FLOWERS))
+  else if (m_fxHelper->GetGoomRand().ProbabilityOf<PROB_MORE_FLOWERS>())
   {
     m_numFlowersInRow = 1;
     SetFlowerBitmap();
@@ -423,7 +423,7 @@ inline auto GoomDotsFx::GoomDotsFxImpl::SetNonFlowerBitmap() -> void
 {
   static constexpr auto PROB_SPHERE = 0.7F;
 
-  if (m_fxHelper->GetGoomRand().ProbabilityOf(PROB_SPHERE))
+  if (m_fxHelper->GetGoomRand().ProbabilityOf<PROB_SPHERE>())
   {
     m_currentBitmapName = SmallImageBitmaps::ImageNames::SPHERE;
   }

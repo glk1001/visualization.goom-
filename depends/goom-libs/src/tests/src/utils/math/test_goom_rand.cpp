@@ -70,14 +70,13 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
 constexpr auto GOOM_RAND = GoomRand{};
 
-template<typename T>
-auto GetRangeCountResults(const size_t numLoops,
-                          const NumberRange<T> numberRange) -> CountResults<T>
+template<NumberRange numberRange> // NOLINT(readability-identifier-naming)
+auto GetRangeCountResults(const size_t numLoops) -> CountResults<decltype(numberRange.min)>
 {
   const auto randInRange = [](const auto n0, const auto nRange)
-  { return GOOM_RAND.GetRandInRange(NumberRange<T>{n0, n0 + nRange - 1}); };
+  { return GOOM_RAND.GetRandInRange(NumberRange<decltype(numberRange.min)>{n0, n0 + nRange - 1}); };
 
-  return GetCountResults(numLoops, numberRange.Min(), numberRange.Range() + 1, randInRange);
+  return GetCountResults(numLoops, numberRange.min, numberRange.rangePlus1, randInRange);
 }
 
 } // namespace
@@ -91,9 +90,9 @@ TEST_CASE("NumberRange")
   static constexpr auto N_MAX1 = 10001U;
   static constexpr auto RANGE  = NumberRange{N_MIN1, N_MAX1};
 
-  STATIC_REQUIRE(RANGE.Min() == N_MIN1);
-  STATIC_REQUIRE(RANGE.Max() == N_MAX1);
-  STATIC_REQUIRE(RANGE.Range() == N_MAX1 - N_MIN1);
+  STATIC_REQUIRE(RANGE.min == N_MIN1);
+  STATIC_REQUIRE(RANGE.max == N_MAX1);
+  STATIC_REQUIRE(RANGE.range == N_MAX1 - N_MIN1);
 }
 
 TEST_CASE("NumberRange min max get random")
@@ -106,10 +105,10 @@ TEST_CASE("NumberRange min max get random")
   static constexpr auto N_MIN1   = 999U;
   static constexpr auto N_MAX1   = 10001U;
   static constexpr auto N_RANGE1 = NumberRange{N_MIN1, N_MAX1};
-  const auto countsResults1      = GetRangeCountResults(NUM_RANGE_LOOPS, N_RANGE1);
+  const auto countsResults1      = GetRangeCountResults<N_RANGE1>(NUM_RANGE_LOOPS);
   REQUIRE(countsResults1.min == N_MIN1);
   REQUIRE(countsResults1.max == N_MAX1);
-  REQUIRE(countsResults1.numCounts == (N_RANGE1.Range() + 1));
+  REQUIRE(countsResults1.numCounts == (N_RANGE1.range + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults1.minCount, countsResults1.minCountAt));
   UNSCOPED_INFO(std::format(
@@ -119,10 +118,10 @@ TEST_CASE("NumberRange min max get random")
   static constexpr auto N_MIN2   = 0U;
   static constexpr auto N_MAX2   = 120U;
   static constexpr auto N_RANGE2 = NumberRange{N_MIN2, N_MAX2};
-  const auto countsResults2      = GetRangeCountResults(NUM_RANGE_LOOPS, N_RANGE2);
+  const auto countsResults2      = GetRangeCountResults<N_RANGE2>(NUM_RANGE_LOOPS);
   REQUIRE(countsResults2.min == N_MIN2);
   REQUIRE(countsResults2.max == N_MAX2);
-  REQUIRE(countsResults2.numCounts == (N_RANGE2.Range() + 1));
+  REQUIRE(countsResults2.numCounts == (N_RANGE2.range + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults2.minCount, countsResults2.minCountAt));
   UNSCOPED_INFO(std::format(

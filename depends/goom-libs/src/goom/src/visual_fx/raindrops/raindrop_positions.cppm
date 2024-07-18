@@ -62,7 +62,7 @@ private:
   static constexpr auto WEIGHT_POINT_CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
   static constexpr auto WEIGHT_POINT_STEPS_RANGE              = NumberRange{10U, 20U};
   TValue m_rectangleWeightPointT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, WEIGHT_POINT_STEPS_RANGE.Min()}
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, WEIGHT_POINT_STEPS_RANGE.min}
   };
 
   static constexpr auto NUM_RAINDROP_POSITION_INCREMENTS = 100U;
@@ -157,7 +157,7 @@ auto RaindropPositions::SetNewTargetRectangleWeightPoint(
   m_params.targetRectangleWeightPoint =
       GetAcceptableTargetRectangleWeightPoint(targetRectangleWeightPoint);
   m_rectangleWeightPointT.SetNumSteps(
-      m_fxHelper->GetGoomRand().GetRandInRange(WEIGHT_POINT_STEPS_RANGE));
+      m_fxHelper->GetGoomRand().GetRandInRange<WEIGHT_POINT_STEPS_RANGE>());
   m_rectangleWeightPointT.Reset();
 }
 

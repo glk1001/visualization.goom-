@@ -300,7 +300,7 @@ private:
   ColorMapPtrWrapper m_tintLowColorMap{nullptr};
   static constexpr auto TINT_COLORS_NUM_STEPS_RANGE = NumberRange{10U, 100U};
   TValue m_tintColorT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS_RANGE.Min()}
+      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS_RANGE.min}
   };
 
   static constexpr auto DRAW_CIRCLE_FREQUENCY_RANGE = NumberRange{5U, 100U};
@@ -398,27 +398,27 @@ inline auto ParticlesFx::ParticlesFxImpl::ResetEffect() noexcept -> void
   m_numUpdatesBeforeReset =
       m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.numAliveParticlesRange);
 
-  m_tintColorT.SetNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(TINT_COLORS_NUM_STEPS_RANGE));
+  m_tintColorT.SetNumSteps(m_fxHelper->GetGoomRand().GetRandInRange<TINT_COLORS_NUM_STEPS_RANGE>());
 
   ChangeEffectSpeed();
 }
 
 inline auto ParticlesFx::ParticlesFxImpl::ChangeEffectSpeed() noexcept -> void
 {
-  if (not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_SPEED))
+  if (not m_fxHelper->GetGoomRand().ProbabilityOf<PROB_CHANGE_SPEED>())
   {
     return;
   }
 
-  if (not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_INCREASE_SPEED))
+  if (not m_fxHelper->GetGoomRand().ProbabilityOf<PROB_INCREASE_SPEED>())
   {
     m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(
-        NumberRange{m_deltaTime, m_effectData.deltaTimeRange.Max()});
+        NumberRange{m_deltaTime, m_effectData.deltaTimeRange.max});
   }
   else
   {
     m_deltaTime = m_fxHelper->GetGoomRand().GetRandInRange(
-        NumberRange{m_effectData.deltaTimeRange.Min(), m_deltaTime});
+        NumberRange{m_effectData.deltaTimeRange.min, m_deltaTime});
   }
 }
 
@@ -437,7 +437,7 @@ inline auto ParticlesFx::ParticlesFxImpl::SetWeightedColorMaps(
       WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha}.GetRandomColorMap();
 
   m_renderer.SetDrawCircleFrequency(
-      m_fxHelper->GetGoomRand().GetRandInRange(DRAW_CIRCLE_FREQUENCY_RANGE));
+      m_fxHelper->GetGoomRand().GetRandInRange<DRAW_CIRCLE_FREQUENCY_RANGE>());
 }
 
 inline auto ParticlesFx::ParticlesFxImpl::ChangePixelBlender(

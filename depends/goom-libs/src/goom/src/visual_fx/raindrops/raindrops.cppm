@@ -200,8 +200,8 @@ auto Raindrops::GetNewSourceRectangleWeightPoint(const Point2dInt& focusPoint) c
             m_fxHelper->GetDimensions().GetIntHeight() - focusPoint.y};
   }
 
-  const auto xSign = m_fxHelper->GetGoomRand().ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
-  const auto ySign = m_fxHelper->GetGoomRand().ProbabilityOf(UTILS::MATH::HALF) ? -1 : +1;
+  const auto xSign = m_fxHelper->GetGoomRand().ProbabilityOf<UTILS::MATH::HALF>() ? -1 : +1;
+  const auto ySign = m_fxHelper->GetGoomRand().ProbabilityOf<UTILS::MATH::HALF>() ? -1 : +1;
   return {m_screenCentre.x + (xSign * (m_fxHelper->GetDimensions().GetIntWidth() / 4)),
           m_screenCentre.y + (ySign * (m_fxHelper->GetDimensions().GetIntHeight() / 4))};
 }
@@ -214,7 +214,7 @@ auto Raindrops::GetNewRaindropParams(const Rectangle2dInt& rectangle2D) const no
   const auto maxEnclosingRadius = static_cast<float>(U_HALF * GetMinSideLength(rectangle2D));
 
   raindropParams.numConcentricCircles =
-      m_fxHelper->GetGoomRand().GetRandInRange(NUM_CONCENTRIC_CIRCLES_RANGE);
+      m_fxHelper->GetGoomRand().GetRandInRange<NUM_CONCENTRIC_CIRCLES_RANGE>();
   raindropParams.maxStartingRadius = RADIUS_TO_RECT_SIDE_FRAC * maxEnclosingRadius;
   raindropParams.minStartingRadius = MIN_TO_MAX_RADIUS_FRAC * raindropParams.maxStartingRadius;
 
@@ -255,7 +255,7 @@ auto Raindrops::GetNewRaindrop(const uint32_t dropNum) const noexcept -> Raindro
   const auto dropCentrePoint     = m_raindropPositions.GetPosition(dropNum);
   const auto fracFromWeightPoint = GetFracFromWeightPoint(dropCentrePoint);
 
-  const auto numGrowthSteps = m_fxHelper->GetGoomRand().GetRandInRange(GROWTH_STEPS_RANGE);
+  const auto numGrowthSteps = m_fxHelper->GetGoomRand().GetRandInRange<GROWTH_STEPS_RANGE>();
 
   const auto startingRadius = m_fxHelper->GetGoomRand().GetRandInRange(
       NumberRange{m_raindropParams.minStartingRadius, m_raindropParams.maxStartingRadius});
@@ -267,7 +267,7 @@ auto Raindrops::GetNewRaindrop(const uint32_t dropNum) const noexcept -> Raindro
 
   return {
       dropNum,
-      static_cast<uint8_t>(m_fxHelper->GetGoomRand().GetRandInRange(LINE_THICKNESS_RANGE)),
+      static_cast<uint8_t>(m_fxHelper->GetGoomRand().GetRandInRange<LINE_THICKNESS_RANGE>()),
       fracFromWeightPoint,
       IncrementedValue<float>{startingRadius, maxGrowthRadius, STEP_TYPE, numGrowthSteps},
       m_randomMainColorMaps.GetRandomColorMap(),
@@ -291,7 +291,7 @@ auto Raindrops::UpdateAnyPendingNumRaindrops() noexcept -> void
   }
 
   m_raindropParams.numConcentricCircles =
-      m_fxHelper->GetGoomRand().GetRandInRange(NUM_CONCENTRIC_CIRCLES_RANGE);
+      m_fxHelper->GetGoomRand().GetRandInRange<NUM_CONCENTRIC_CIRCLES_RANGE>();
 
   const auto acceptableNumRaindrops = GetAcceptableNumRaindrops(m_pendingNewNumRaindrops);
 

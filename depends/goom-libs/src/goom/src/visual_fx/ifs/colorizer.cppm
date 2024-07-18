@@ -73,7 +73,7 @@ private:
       -> const std::set<WeightedRandomColorMaps::ColorMapTypes>&;
   mutable uint32_t m_countSinceColorMapChange            = 0;
   static constexpr auto COLOR_MAP_CHANGE_COMPLETED_RANGE = NumberRange{500U, 1000U};
-  uint32_t m_colorMapChangeCompleted = COLOR_MAP_CHANGE_COMPLETED_RANGE.Min();
+  uint32_t m_colorMapChangeCompleted = COLOR_MAP_CHANGE_COMPLETED_RANGE.min;
 
   IfsDancersFx::ColorMode m_colorMode                  = IfsDancersFx::ColorMode::MAP_COLORS;
   IfsDancersFx::ColorMode m_forcedColorMode            = IfsDancersFx::ColorMode::_NULL;
@@ -191,7 +191,7 @@ inline auto Colorizer::GetNextColorMapTypes() const noexcept
     -> const std::set<WeightedRandomColorMaps::ColorMapTypes>&
 {
   static constexpr auto PROB_NO_EXTRA_COLOR_MAP_TYPES = 0.9F;
-  return m_goomRand->ProbabilityOf(PROB_NO_EXTRA_COLOR_MAP_TYPES)
+  return m_goomRand->ProbabilityOf<PROB_NO_EXTRA_COLOR_MAP_TYPES>()
              ? WeightedRandomColorMaps::GetNoColorMapsTypes()
              : WeightedRandomColorMaps::GetAllColorMapsTypes();
 }
@@ -217,8 +217,8 @@ auto Colorizer::ChangeColorMaps() -> void
 {
   UpdateMixerMaps();
 
-  m_colorMapChangeCompleted  = m_goomRand->GetRandInRange(COLOR_MAP_CHANGE_COMPLETED_RANGE);
-  m_tAwayFromBaseColor       = m_goomRand->GetRandInRange(T_AWAY_FROM_BASE_COLOR_RANGE);
+  m_colorMapChangeCompleted  = m_goomRand->GetRandInRange<COLOR_MAP_CHANGE_COMPLETED_RANGE>();
+  m_tAwayFromBaseColor       = m_goomRand->GetRandInRange<T_AWAY_FROM_BASE_COLOR_RANGE>();
   m_countSinceColorMapChange = m_colorMapChangeCompleted;
 }
 
@@ -296,7 +296,7 @@ inline auto Colorizer::GetMapColorsTBaseMix() const -> float
   }
 
   static constexpr auto T_BASE_MIX_RANGE = NumberRange{0.3F, 0.5F};
-  return m_goomRand->GetRandInRange(T_BASE_MIX_RANGE);
+  return m_goomRand->GetRandInRange<T_BASE_MIX_RANGE>();
 }
 
 inline auto Colorizer::GetSineMixColor(const float tX, const float tY) const -> Pixel

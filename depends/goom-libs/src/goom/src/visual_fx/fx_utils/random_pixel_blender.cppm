@@ -79,7 +79,7 @@ private:
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
   static constexpr auto LERP_STEPS_RANGE                   = NumberRange{50U, 500U};
   TValue m_lerpT{
-      {TValue::StepType::SINGLE_CYCLE, LERP_STEPS_RANGE.Min()}
+      {TValue::StepType::SINGLE_CYCLE, LERP_STEPS_RANGE.min}
   };
 
   static const Weights<PixelBlendType>::EventWeightPairs DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS;
@@ -95,7 +95,7 @@ private:
   [[nodiscard]] static auto GetAlphaPixelBlendFunc() -> PixelBlendFunc;
   [[nodiscard]] static auto GetAlphaAndAddPixelBlendFunc() -> PixelBlendFunc;
   static constexpr auto LUMA_MIX_T_RANGE = NumberRange{0.3F, 1.0F};
-  float m_lumaMixT                       = LUMA_MIX_T_RANGE.Min();
+  float m_lumaMixT                       = LUMA_MIX_T_RANGE.min;
   [[nodiscard]] static auto GetSameLumaMixPixelBlendFunc(float lumaMixT) -> PixelBlendFunc;
 };
 
@@ -180,7 +180,7 @@ auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) 
 {
   const auto previousPixelBlendType = m_nextPixelBlendType;
 
-  m_lumaMixT               = m_goomRand->GetRandInRange(LUMA_MIX_T_RANGE);
+  m_lumaMixT               = m_goomRand->GetRandInRange<LUMA_MIX_T_RANGE>();
   m_previousPixelBlendFunc = m_nextPixelBlendFunc;
   m_nextPixelBlendType     = pixelBlendType;
 
@@ -190,7 +190,7 @@ auto RandomPixelBlender::SetPixelBlendFunc(const PixelBlendType pixelBlendType) 
     m_currentPixelBlendFunc = GetLerpedPixelBlendFunc();
   }
 
-  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(LERP_STEPS_RANGE));
+  m_lerpT.SetNumSteps(m_goomRand->GetRandInRange<LERP_STEPS_RANGE>());
   m_lerpT.Reset();
 }
 

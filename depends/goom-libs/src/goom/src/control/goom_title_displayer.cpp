@@ -96,7 +96,7 @@ GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
     m_screenWidth{draw.GetDimensions().GetIntWidth()},
     m_screenHeight{draw.GetDimensions().GetIntHeight()},
     m_fontDirectory{fontDirectory},
-    m_fontInfoIndex{m_goomRand->GetRandInRange(FONT_INFO_INDEX_RANGE)}
+    m_fontInfoIndex{m_goomRand->GetRandInRange<FONT_INFO_INDEX_RANGE>()}
 {
   m_textDrawer->SetFontFile(GetSelectedFontPath());
   m_textDrawer->SetFontSize(GetSelectedFontSize());

@@ -54,8 +54,8 @@ StarColorsMaker::StarColorsMaker(const UTILS::MATH::GoomRand& goomRand,
     m_nextStarColorProperties{
             .colorMapsSet =colorMapsSet,
             .colorMode = m_colorModeWeights.GetRandomWeighted(),
-            .reverseWithinClusterMix = m_goomRand->ProbabilityOf(PROB_REVERSE_WITHIN_CLUSTER_MIX),
-            .similarLowColors = m_goomRand->ProbabilityOf(PROB_SIMILAR_LOW_COLORS)
+            .reverseWithinClusterMix = m_goomRand->ProbabilityOf<PROB_REVERSE_WITHIN_CLUSTER_MIX>(),
+            .similarLowColors = m_goomRand->ProbabilityOf<PROB_SIMILAR_LOW_COLORS>()
     }
 {
   Expects(colorMapsSet.currentMainColorMapPtr != nullptr);
@@ -84,8 +84,8 @@ auto StarColorsMaker::ChangeColorMode() noexcept -> void
   m_nextStarColorProperties =
       StarColors::ColorProperties{oldColorMapsSet,
                                   m_colorModeWeights.GetRandomWeighted(),
-                                  m_goomRand->ProbabilityOf(PROB_REVERSE_WITHIN_CLUSTER_MIX),
-                                  m_goomRand->ProbabilityOf(PROB_SIMILAR_LOW_COLORS)};
+                                  m_goomRand->ProbabilityOf<PROB_REVERSE_WITHIN_CLUSTER_MIX>(),
+                                  m_goomRand->ProbabilityOf<PROB_SIMILAR_LOW_COLORS>()};
 }
 
 inline auto StarColorsMaker::GetNewStarColors(const float withinClusterT) const noexcept

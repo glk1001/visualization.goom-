@@ -50,7 +50,7 @@ namespace GOOM::FILTER_FX::AFTER_EFFECTS
 
 inline auto Noise::GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords
 {
-  const auto amp = m_params.noiseFactor / m_goomRand->GetRandInRange(NOISE_RANGE);
+  const auto amp = m_params.noiseFactor / m_goomRand->GetRandInRange<NOISE_RANGE>();
 
   return velocity + NormalizedCoords{m_goomRand->GetRandInRange(NumberRange{-amp, +amp}),
                                      m_goomRand->GetRandInRange(NumberRange{-amp, +amp})};

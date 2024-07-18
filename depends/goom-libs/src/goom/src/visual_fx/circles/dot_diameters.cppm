@@ -90,7 +90,7 @@ auto DotDiameters::GetInitialDiameters(const NumDotsAndMaxDiameter& numDotsAndMa
 
 auto DotDiameters::ChangeDiameters() noexcept -> void
 {
-  if (m_goomRand->ProbabilityOf(PROB_FIXED_DIAMETER))
+  if (m_goomRand->ProbabilityOf<PROB_FIXED_DIAMETER>())
   {
     ChangeToFixedDiameters();
   }
@@ -118,7 +118,7 @@ auto DotDiameters::ChangeToVariableDiameters() noexcept -> void
       m_goomRand->GetRandInRange(NumberRange{minLargerDiameter, m_maxDiameter});
 
   static constexpr auto LARGER_DIAMETER_FREQ_RANGE = NumberRange{2U, 5U};
-  const auto largerDiameterEvery = m_goomRand->GetRandInRange(LARGER_DIAMETER_FREQ_RANGE);
+  const auto largerDiameterEvery = m_goomRand->GetRandInRange<LARGER_DIAMETER_FREQ_RANGE>();
 
   for (auto i = 1U; i < m_numDots; ++i)
   {

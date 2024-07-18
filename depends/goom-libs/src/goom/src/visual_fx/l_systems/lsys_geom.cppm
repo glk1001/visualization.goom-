@@ -189,8 +189,8 @@ auto LSysGeometry::GetTransformAdjustArray() const noexcept -> std::vector<Trans
   {
     static constexpr auto X_SCALE_RANGE = NumberRange{0.8F, 1.0F};
     static constexpr auto Y_SCALE_RANGE = NumberRange{0.9F, 1.1F};
-    transformAdjust.xScale              = m_goomRand->GetRandInRange(X_SCALE_RANGE);
-    transformAdjust.yScale              = m_goomRand->GetRandInRange(Y_SCALE_RANGE);
+    transformAdjust.xScale              = m_goomRand->GetRandInRange<X_SCALE_RANGE>();
+    transformAdjust.yScale              = m_goomRand->GetRandInRange<Y_SCALE_RANGE>();
     transformAdjust.rotateDegrees       = t() * DEGREES_360;
     transformAdjust.translate           = {0.0F, 0.0F};
 

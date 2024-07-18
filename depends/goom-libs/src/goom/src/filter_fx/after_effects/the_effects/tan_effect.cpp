@@ -57,14 +57,14 @@ TanEffect::TanEffect(const GoomRand& goomRand)
 auto TanEffect::SetRandomParams() -> void
 {
   const auto tanType = m_tanEffectWeights.GetRandomWeighted();
-  const auto cotMix  = m_goomRand->GetRandInRange(COT_MIX_RANGE);
+  const auto cotMix  = m_goomRand->GetRandInRange<COT_MIX_RANGE>();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto limitingFactor = m_goomRand->GetRandInRange(LIMITING_FACTOR_RANGE);
+  const auto limitingFactor = m_goomRand->GetRandInRange<LIMITING_FACTOR_RANGE>();
 
   LogInfo("tanType = {}, cotMix = {}", EnumToString(tanType), cotMix); // NOLINT
   LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude); // NOLINT

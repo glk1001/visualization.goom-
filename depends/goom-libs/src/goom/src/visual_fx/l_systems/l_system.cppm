@@ -420,7 +420,7 @@ auto LSystem::UpdateLSysModel() noexcept -> void
 
   if (static constexpr auto PROB_NEW_LSYS_INTERPRETER = 0.5F;
       m_timeForThisLSysInterpreter.Finished() and
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NEW_LSYS_INTERPRETER))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_NEW_LSYS_INTERPRETER>())
   {
     InitNextLSysInterpreter();
   }
@@ -449,9 +449,9 @@ auto LSystem::InitNextLSysInterpreter() -> void
   m_lSysGeometry.SetVerticalMoveMaxMin(m_lSysModelSet.lSysOverrides.verticalMoveMin,
                                        m_lSysModelSet.lSysOverrides.verticalMoveMax);
   m_lSysGeometry.SetVerticalMoveNumSteps(
-      m_fxHelper->GetGoomRand().GetRandInRange(VERTICAL_MOVE_STEPS_RANGE));
+      m_fxHelper->GetGoomRand().GetRandInRange<VERTICAL_MOVE_STEPS_RANGE>());
   m_lSysGeometry.SetYScaleNumSteps(
-      m_fxHelper->GetGoomRand().GetRandInRange(Y_SCALE_ADJUST_STEPS_RANGE));
+      m_fxHelper->GetGoomRand().GetRandInRange<Y_SCALE_ADJUST_STEPS_RANGE>());
   m_lSysGeometry.SetRotateDegreesAdjustNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(
       NumberRange{m_lSysModelSet.lSysOverrides.minNumRotateDegreeSteps,
                   m_lSysModelSet.lSysOverrides.maxNumRotateDegreeSteps}));
@@ -459,7 +459,7 @@ auto LSystem::InitNextLSysInterpreter() -> void
       NumberRange{m_lSysModelSet.lSysOverrides.minNumSpinDegreeSteps,
                   m_lSysModelSet.lSysOverrides.maxNumSpinDegreeSteps}));
 
-  m_lSysPath.SetPathNumSteps(m_fxHelper->GetGoomRand().GetRandInRange(PATH_NUM_STEPS_RANGE));
+  m_lSysPath.SetPathNumSteps(m_fxHelper->GetGoomRand().GetRandInRange<PATH_NUM_STEPS_RANGE>());
 
   m_lSysColors.SetProbabilityOfSimpleColors(m_lSysModelSet.lSysOverrides.probabilityOfSimpleColors);
   m_lSysColors.SetNumColors(numLSysCopies);
@@ -509,7 +509,7 @@ inline auto LSystem::UpdateInterpreterParams() noexcept -> void
   }
 
   if (static constexpr auto PROB_NEW_DEFAULT_PARAMS = 0.5F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NEW_DEFAULT_PARAMS))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_NEW_DEFAULT_PARAMS>())
   {
     m_defaultInterpreterParams.SetValues(m_defaultInterpreterParams(),
                                          GetRandomDefaultInterpreterParams());
@@ -557,12 +557,12 @@ inline auto LSystem::ResetLSysParams() noexcept -> void
   //LogInfo("Reset lsys params.");
 
   if (static constexpr auto PROB_CHANGE_ROTATE_DIRECTION = 0.00001F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_ROTATE_DIRECTION))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_CHANGE_ROTATE_DIRECTION>())
   {
     m_lSysGeometry.ReverseRotateDirection();
   }
   if (static constexpr auto PROB_CHANGE_SPIN_DIRECTION = 0.00001F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_SPIN_DIRECTION))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_CHANGE_SPIN_DIRECTION>())
   {
     m_lSysGeometry.ReverseSpinDirection();
   }

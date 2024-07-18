@@ -158,7 +158,7 @@ inline auto Shape::GetFirstShapePathPositionT() const noexcept -> float
 inline auto Shape::SetShapeNumSteps() noexcept -> void
 {
   if (static constexpr auto PROB_FIXED_NUM_STEPS = 0.95F;
-      m_goomRand->ProbabilityOf(PROB_FIXED_NUM_STEPS))
+      m_goomRand->ProbabilityOf<PROB_FIXED_NUM_STEPS>())
   {
     SetFixedShapeNumSteps();
   }
@@ -236,7 +236,7 @@ auto Shape::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMap
 auto Shape::SetZoomMidpoint(const Point2dInt& zoomMidpoint) noexcept -> void
 {
   if (static constexpr auto PROB_ACCEPT_NEW_MIDPOINT = 0.8F;
-      not m_goomRand->ProbabilityOf(PROB_ACCEPT_NEW_MIDPOINT))
+      not m_goomRand->ProbabilityOf<PROB_ACCEPT_NEW_MIDPOINT>())
   {
     return;
   }
@@ -308,7 +308,7 @@ auto Shape::DoRandomChanges() noexcept -> void
 {
   static constexpr auto PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION = 0.5F;
   const auto useEvenPartNumsForDirection =
-      m_goomRand->ProbabilityOf(PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION);
+      m_goomRand->ProbabilityOf<PROB_USE_EVEN_PART_NUMS_FOR_DIRECTION>();
 
   std::ranges::for_each(m_shapeParts,
                         [&useEvenPartNumsForDirection](ShapePart& shapePart)

@@ -1,7 +1,5 @@
 module;
 
-//#undef NO_LOGGING
-
 #include <complex>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;
@@ -85,26 +83,26 @@ auto Mobius::SetRandomParams() noexcept -> void
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
                                ? xLerpToOneT
-                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
-  const auto a = m_goomRand->GetRandInRange(A_RANGE);
-  const auto b = m_goomRand->GetRandInRange(B_RANGE);
-  const auto c = m_goomRand->GetRandInRange(C_RANGE);
-  const auto d = m_goomRand->GetRandInRange(D_RANGE);
+  const auto a = m_goomRand->GetRandInRange<A_RANGE>();
+  const auto b = m_goomRand->GetRandInRange<B_RANGE>();
+  const auto c = m_goomRand->GetRandInRange<C_RANGE>();
+  const auto d = m_goomRand->GetRandInRange<D_RANGE>();
 
-  const auto noInverseSquare        = m_goomRand->ProbabilityOf(PROB_NO_INVERSE_SQUARE);
-  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf(PROB_USE_NORMALIZED_AMPLITUDE);
-  const auto useModulatorContours   = m_goomRand->ProbabilityOf(PROB_USE_MODULATOR_CONTOURS);
+  const auto noInverseSquare        = m_goomRand->ProbabilityOf<PROB_NO_INVERSE_SQUARE>();
+  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf<PROB_USE_NORMALIZED_AMPLITUDE>();
+  const auto useModulatorContours   = m_goomRand->ProbabilityOf<PROB_USE_MODULATOR_CONTOURS>();
   const auto modulatorPeriod =
-      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange(MODULATOR_PERIOD_RANGE);
+      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange<MODULATOR_PERIOD_RANGE>();
 
   SetParams({
       viewport,

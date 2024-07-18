@@ -42,28 +42,28 @@ auto Speedway::SetRandomParams() noexcept -> void
 
 auto Speedway::SetMode0RandomParams() noexcept -> void
 {
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.xRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDE_EQUAL) ? +1.0F : -1.0F;
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE.xRange>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDE_EQUAL>() ? +1.0F : -1.0F;
 
   SetParams({xAmplitude, yAmplitude});
 }
 
 auto Speedway::SetMode1RandomParams() noexcept -> void
 {
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.xRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE.xRange>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDE_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE.yRange);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE.yRange>();
 
   SetParams({xAmplitude, yAmplitude});
 }
 
 auto Speedway::SetMode2RandomParams() noexcept -> void
 {
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.xRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDE_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE.xRange>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDE_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE.yRange);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE.yRange>();
 
   SetParams({xAmplitude, yAmplitude});
 }

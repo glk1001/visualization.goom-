@@ -28,8 +28,9 @@ using GOOM::COLOR::GetUnweightedRandomColorMaps;
 using GOOM::COLOR::WeightedRandomColorMaps;
 using GOOM::COLOR::COLOR_DATA::ColorMapName;
 using GOOM::UTILS::NUM;
-using GOOM::UTILS::MATH::I_HALF;
+using GOOM::UTILS::MATH::FULL_CIRCLE_RANGE;
 using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::I_HALF;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::PI;
 using GOOM::UTILS::MATH::Sq;
@@ -176,8 +177,8 @@ private:
 
   static constexpr auto MIN_GRAVITY_RANGE = NumberRange{+0.005F, +0.010F};
   static constexpr auto MAX_GRAVITY_RANGE = NumberRange{+0.050F, +0.090F};
-  float m_minGravity                      = MIN_GRAVITY_RANGE.Max();
-  float m_maxGravity                      = MAX_GRAVITY_RANGE.Max();
+  float m_minGravity                      = MIN_GRAVITY_RANGE.max;
+  float m_maxGravity                      = MAX_GRAVITY_RANGE.max;
 
   friend class StarTypesContainer;
   auto ChangeColorMode() noexcept -> void;
@@ -361,21 +362,21 @@ inline auto StarType::SetWeightedColorMaps(
 auto StarType::UpdateWindAndGravity() noexcept -> void
 {
   if (static constexpr auto PROB_NEW_WIND_AND_GRAVITY = 0.10F;
-      not m_goomRand->ProbabilityOf(PROB_NEW_WIND_AND_GRAVITY))
+      not m_goomRand->ProbabilityOf<PROB_NEW_WIND_AND_GRAVITY>())
   {
     return;
   }
 
-  m_minSideWind = m_goomRand->GetRandInRange(MIN_SIDE_WIND_RANGE);
-  m_maxSideWind = m_goomRand->GetRandInRange(MAX_SIDE_WIND_RANGE);
-  m_minGravity  = m_goomRand->GetRandInRange(MIN_GRAVITY_RANGE);
-  m_maxGravity  = m_goomRand->GetRandInRange(MAX_GRAVITY_RANGE);
+  m_minSideWind = m_goomRand->GetRandInRange<MIN_SIDE_WIND_RANGE>();
+  m_maxSideWind = m_goomRand->GetRandInRange<MAX_SIDE_WIND_RANGE>();
+  m_minGravity  = m_goomRand->GetRandInRange<MIN_GRAVITY_RANGE>();
+  m_maxGravity  = m_goomRand->GetRandInRange<MAX_GRAVITY_RANGE>();
 }
 
 auto StarType::GetColorMapsSet() const noexcept -> StarColors::ColorMapsSet
 {
   if (static constexpr auto PROB_RANDOM_COLOR_MAPS = 0.5F;
-      m_goomRand->ProbabilityOf(PROB_RANDOM_COLOR_MAPS))
+      m_goomRand->ProbabilityOf<PROB_RANDOM_COLOR_MAPS>())
   {
     return {
         GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
@@ -436,7 +437,7 @@ inline auto StarType::GetFixedLowColorMapName() const noexcept -> ColorMapName
 inline auto StarType::GetTAgeInc() const noexcept -> float
 {
   const auto numStepsToReachMaxAge =
-      GetGoomRand().GetRandInRange(NUM_STEPS_TO_REACH_MAX_AGE_RANGE) *
+      GetGoomRand().GetRandInRange<NUM_STEPS_TO_REACH_MAX_AGE_RANGE>() *
       (1.0F - GetGoomInfo().GetSoundEvents().GetGoomPower());
 
   return 1.0F / numStepsToReachMaxAge;
@@ -488,13 +489,15 @@ auto RainStarType::GetRandomizedSetupParams(const float defaultPathLength) const
   SetupParams setupParams;
 
   static constexpr auto SPREAD_FRACTION_OF_WIDTH = 0.5F;
+  static constexpr auto SPREAD_FRACTION_OF_WIDTH_RANGE =
+      NumberRange{-SPREAD_FRACTION_OF_WIDTH, SPREAD_FRACTION_OF_WIDTH};
 
-  const auto xFracOfHalfWidth = 1.0F + GetGoomRand().GetRandInRange(NumberRange{
-                                           -SPREAD_FRACTION_OF_WIDTH, SPREAD_FRACTION_OF_WIDTH});
+  const auto xFracOfHalfWidth =
+      1.0F + GetGoomRand().GetRandInRange<SPREAD_FRACTION_OF_WIDTH_RANGE>();
   setupParams.startPos.x =
       static_cast<int32_t>(xFracOfHalfWidth * static_cast<float_t>(GetHalfWidth()));
 
-  setupParams.startPos.y = -GetGoomRand().GetRandInRange(Y_DISTANCE_OUT_OF_SCREEN_RANGE);
+  setupParams.startPos.y = -GetGoomRand().GetRandInRange<Y_DISTANCE_OUT_OF_SCREEN_RANGE>();
 
   static constexpr auto LENGTH_FACTOR = 1.5F;
   setupParams.nominalPathLength       = LENGTH_FACTOR * defaultPathLength;
@@ -519,14 +522,16 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
   SetupParams setupParams;
 
   static constexpr auto SPREAD_FRACTION_OF_WIDTH = 0.25F;
+  static constexpr auto SPREAD_FRACTION_OF_WIDTH_RANGE =
+      NumberRange{-SPREAD_FRACTION_OF_WIDTH, SPREAD_FRACTION_OF_WIDTH};
 
-  const auto xFracOfHalfWidth = 1.0F + GetGoomRand().GetRandInRange(NumberRange{
-                                           -SPREAD_FRACTION_OF_WIDTH, SPREAD_FRACTION_OF_WIDTH});
+  const auto xFracOfHalfWidth =
+      1.0F + GetGoomRand().GetRandInRange<SPREAD_FRACTION_OF_WIDTH_RANGE>();
   setupParams.startPos.x =
       static_cast<int32_t>(xFracOfHalfWidth * static_cast<float_t>(GetHalfWidth()));
 
   setupParams.startPos.y = GetGoomInfo().GetDimensions().GetIntHeight() +
-                           GetGoomRand().GetRandInRange(Y_DISTANCE_OUT_OF_SCREEN_RANGE);
+                           GetGoomRand().GetRandInRange<Y_DISTANCE_OUT_OF_SCREEN_RANGE>();
 
   setupParams.nominalPathLength = 1.0F + defaultPathLength;
 
@@ -548,9 +553,9 @@ auto FountainStarType::GetRandomizedSetupParams(const float defaultPathLength) c
 auto FireworksStarType::GetRandomizedStarPathAngle(
     [[maybe_unused]] const Point2dInt& startPos) const noexcept -> float
 {
-  static constexpr auto ANGLE_RANGE = NumberRange{0.0F, TWO_PI};
+  static constexpr auto ANGLE_RANGE = FULL_CIRCLE_RANGE;
 
-  return GetGoomRand().GetRandInRange(ANGLE_RANGE);
+  return GetGoomRand().GetRandInRange<ANGLE_RANGE>();
 }
 
 auto RainStarType::GetRandomizedStarPathAngle(const Point2dInt& startPos) const noexcept -> float

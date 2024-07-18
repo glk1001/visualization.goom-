@@ -102,32 +102,29 @@ auto Hypercos::SetDefaultParams() -> void
 
 auto Hypercos::SetMode0RandomParams() -> void
 {
-  const auto hypercosMax =
-      std::lerp(FREQUENCY_FACTOR_RANGE.Min(), FREQUENCY_FACTOR_RANGE.Max(), 0.15F);
+  const auto hypercosMax = std::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.15F);
 
   SetHypercosEffect(
-      HypercosOverlayMode::MODE0, {FREQUENCY_FACTOR_RANGE.Min(), hypercosMax}, AMPLITUDE_RANGE);
+      HypercosOverlayMode::MODE0, {FREQUENCY_FACTOR_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
 }
 
 auto Hypercos::SetMode1RandomParams() -> void
 {
-  const auto hypercosMin =
-      std::lerp(FREQUENCY_FACTOR_RANGE.Min(), FREQUENCY_FACTOR_RANGE.Max(), 0.20F);
+  const auto hypercosMin = std::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.20F);
 
   SetHypercosEffect(
-      HypercosOverlayMode::MODE1, {hypercosMin, FREQUENCY_FACTOR_RANGE.Max()}, AMPLITUDE_RANGE);
+      HypercosOverlayMode::MODE1, {hypercosMin, FREQUENCY_FACTOR_RANGE.max}, AMPLITUDE_RANGE);
 }
 
 auto Hypercos::SetMode2RandomParams() -> void
 {
   const auto amplitudeRange =
-      m_goomRand->ProbabilityOf(PROB_BIG_AMPLITUDE_RANGE) ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
+      m_goomRand->ProbabilityOf<PROB_BIG_AMPLITUDE_RANGE>() ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
-  const auto hypercosMin =
-      std::lerp(FREQUENCY_FACTOR_RANGE.Min(), FREQUENCY_FACTOR_RANGE.Max(), 0.50F);
+  const auto hypercosMin = std::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.50F);
 
   SetHypercosEffect(
-      HypercosOverlayMode::MODE2, {hypercosMin, BIG_FREQUENCY_FACTOR_RANGE.Max()}, amplitudeRange);
+      HypercosOverlayMode::MODE2, {hypercosMin, BIG_FREQUENCY_FACTOR_RANGE.max}, amplitudeRange);
 }
 
 auto Hypercos::SetMode3RandomParams() -> void
@@ -140,14 +137,14 @@ auto Hypercos::SetHypercosEffect(const HypercosOverlayMode overlay,
                                  const NumberRange<float>& amplitudeRange) -> void
 {
   const auto xFrequencyFactor = m_goomRand->GetRandInRange(freqRange);
-  const auto yFrequencyFactor = m_goomRand->ProbabilityOf(PROB_FREQUENCY_FACTORS_EQUAL)
+  const auto yFrequencyFactor = m_goomRand->ProbabilityOf<PROB_FREQUENCY_FACTORS_EQUAL>()
                                     ? xFrequencyFactor
                                     : m_goomRand->GetRandInRange(freqRange);
 
-  const auto reverse = m_goomRand->ProbabilityOf(PROB_REVERSE);
+  const auto reverse = m_goomRand->ProbabilityOf<PROB_REVERSE>();
 
   const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
                               ? xAmplitude
                               : m_goomRand->GetRandInRange(amplitudeRange);
 

@@ -85,29 +85,29 @@ auto PerlinNoise::SetRandomParams() noexcept -> void
   m_perlinNoise.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
   m_perlinNoise2.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
                                ? xLerpToOneT
-                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
-  const auto xNoiseFrequencyFactor = m_goomRand->GetRandInRange(NOISE_FREQUENCY_FACTOR_RANGE);
-  const auto yNoiseFrequencyFactor = m_goomRand->ProbabilityOf(PROB_XY_NOISE_FREQUENCIES_EQUAL)
+  const auto xNoiseFrequencyFactor = m_goomRand->GetRandInRange<NOISE_FREQUENCY_FACTOR_RANGE>();
+  const auto yNoiseFrequencyFactor = m_goomRand->ProbabilityOf<PROB_XY_NOISE_FREQUENCIES_EQUAL>()
                                          ? xNoiseFrequencyFactor
-                                         : m_goomRand->GetRandInRange(NOISE_FREQUENCY_FACTOR_RANGE);
+                                         : m_goomRand->GetRandInRange<NOISE_FREQUENCY_FACTOR_RANGE>();
 
-  const auto xAngleFrequencyFactor = m_goomRand->GetRandInRange(ANGLE_FREQUENCY_FACTOR_RANGE);
-  const auto yAngleFrequencyFactor = m_goomRand->ProbabilityOf(PROB_XY_ANGLE_FREQUENCIES_EQUAL)
+  const auto xAngleFrequencyFactor = m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
+  const auto yAngleFrequencyFactor = m_goomRand->ProbabilityOf<PROB_XY_ANGLE_FREQUENCIES_EQUAL>()
                                          ? xAngleFrequencyFactor
-                                         : m_goomRand->GetRandInRange(ANGLE_FREQUENCY_FACTOR_RANGE);
+                                         : m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
 
-  const auto octaves = m_goomRand->GetRandInRange(OCTAVES_RANGE);
+  const auto octaves = m_goomRand->GetRandInRange<OCTAVES_RANGE>();
 
-  const auto persistence = m_goomRand->GetRandInRange(PERSISTENCE_RANGE);
+  const auto persistence = m_goomRand->GetRandInRange<PERSISTENCE_RANGE>();
 
   SetParams({
       {           xAmplitude,            yAmplitude},

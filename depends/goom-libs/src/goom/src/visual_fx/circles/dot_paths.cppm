@@ -393,7 +393,7 @@ auto DotPaths::GetNextDotPositions(const std::vector<OscillatingPath>& dotPath) 
 inline auto DotPaths::GetSmallRandomOffset() const noexcept -> Vec2dInt
 {
   static constexpr auto VARIATION_RANGE = NumberRange{-5, +5};
-  return {m_goomRand->GetRandInRange(VARIATION_RANGE), m_goomRand->GetRandInRange(VARIATION_RANGE)};
+  return {m_goomRand->GetRandInRange<VARIATION_RANGE>(), m_goomRand->GetRandInRange<VARIATION_RANGE>()};
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

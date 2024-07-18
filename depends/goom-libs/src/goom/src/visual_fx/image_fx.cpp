@@ -290,7 +290,7 @@ inline auto ImageFx::ImageFxImpl::SetWeightedColorMaps(
     const WeightedColorMaps& weightedColorMaps) noexcept -> void
 {
   m_colorMaps            = WeightedRandomColorMaps{weightedColorMaps.mainColorMaps, m_defaultAlpha};
-  m_pixelColorIsDominant = m_fxHelper->GetGoomRand().ProbabilityOf(0.0F);
+  m_pixelColorIsDominant = m_fxHelper->GetGoomRand().ProbabilityOf<0.0F>(); // TODO(glk): ??
   m_randBrightnessFactor = GetNewRandBrightnessFactor();
 }
 
@@ -299,14 +299,14 @@ inline auto ImageFx::ImageFxImpl::GetNewRandBrightnessFactor() const -> float
   static constexpr auto FACTOR_RANGE = NumberRange{0.5F, 2.0F};
   const auto maxRadiusSq             = Sq(m_maxRadius);
 
-  return 1.0F / (m_fxHelper->GetGoomRand().GetRandInRange(FACTOR_RANGE) * maxRadiusSq);
+  return 1.0F / (m_fxHelper->GetGoomRand().GetRandInRange<FACTOR_RANGE>() * maxRadiusSq);
 }
 
 inline auto ImageFx::ImageFxImpl::Resume() -> void
 {
   static constexpr auto MIN_BRIGHTNESS = 0.1F;
   const auto brightnessFactor =
-      m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{MIN_BRIGHTNESS, 1.0F});
+      m_fxHelper->GetGoomRand().GetRandInRange<NumberRange{MIN_BRIGHTNESS, 1.0F}>();
   m_brightnessBase = brightnessFactor * DEFAULT_BRIGHTNESS_BASE;
 }
 
@@ -360,7 +360,7 @@ auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
 {
   static constexpr auto MIN_RADIUS_FRACTION = 0.7F;
   const auto randMaxRadius =
-      m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{MIN_RADIUS_FRACTION, 1.0F}) *
+      m_fxHelper->GetGoomRand().GetRandInRange<NumberRange{MIN_RADIUS_FRACTION, 1.0F}>() *
       m_maxRadius;
 
   const auto numChunks       = m_currentImage->GetNumChunks();
@@ -377,7 +377,7 @@ auto ImageFx::ImageFxImpl::ResetStartPositions() -> void
     const auto radiusRange = NumberRange{10.0F, maxRadiusAdj};
     const auto radius      = m_fxHelper->GetGoomRand().GetRandInRange(radiusRange);
 
-    const auto theta = m_fxHelper->GetGoomRand().GetRandInRange(THETA_RANGE);
+    const auto theta = m_fxHelper->GetGoomRand().GetRandInRange<THETA_RANGE>();
 
     const auto startPos =
         m_screenCentre + Vec2dInt{static_cast<int32_t>((std::cos(theta) * radius)),
@@ -393,10 +393,10 @@ inline auto ImageFx::ImageFxImpl::GetChunkFloatingStartPosition(const size_t i) 
 {
   static constexpr auto MARGIN              = 20.0F;
   static constexpr auto RADIUS_FACTOR_RANGE = NumberRange{0.025F, 0.5F};
-  const auto aRadius = (m_fxHelper->GetGoomRand().GetRandInRange(RADIUS_FACTOR_RANGE) *
+  const auto aRadius = (m_fxHelper->GetGoomRand().GetRandInRange<RADIUS_FACTOR_RANGE>() *
                         static_cast<float>(m_availableWidth)) -
                        MARGIN;
-  const auto bRadius = (m_fxHelper->GetGoomRand().GetRandInRange(RADIUS_FACTOR_RANGE) *
+  const auto bRadius = (m_fxHelper->GetGoomRand().GetRandInRange<RADIUS_FACTOR_RANGE>() *
                         static_cast<float>(m_availableHeight)) -
                        MARGIN;
   const auto theta =

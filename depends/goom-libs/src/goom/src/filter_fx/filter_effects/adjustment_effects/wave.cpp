@@ -85,7 +85,7 @@ static constexpr auto WAVE_COT_COS_EFFECT_WEIGHT  = 001.0F;
 
 inline auto Wave::GetSqDistEffect() const noexcept -> Wave::AngleEffect
 {
-  if (m_goomRand->ProbabilityOf(PROB_SPIRAL_SQ_DIST_EFFECT))
+  if (m_goomRand->ProbabilityOf<PROB_SPIRAL_SQ_DIST_EFFECT>())
   {
     return AngleEffect::SQ_DIST_AND_SPIRAL;
   }
@@ -156,7 +156,7 @@ auto Wave::SetSqDistAngleEffectMode0RandomParams() noexcept -> void
 
 auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
 {
-  if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
+  if (m_goomRand->ProbabilityOf<PROB_ALLOW_STRANGE_WAVE_VALUES>())
   {
     SetWaveModeSettings({GetSqDistEffect(),
                          SMALL_FREQ_FACTOR_RANGE,
@@ -185,7 +185,7 @@ auto Wave::SetAtanAngleEffectMode0RandomParams() noexcept -> void
 
 auto Wave::SetAtanAngleEffectMode1RandomParams() noexcept -> void
 {
-  if (m_goomRand->ProbabilityOf(PROB_ALLOW_STRANGE_WAVE_VALUES))
+  if (m_goomRand->ProbabilityOf<PROB_ALLOW_STRANGE_WAVE_VALUES>())
   {
     SetWaveModeSettings({AngleEffect::ATAN,
                          SMALL_FREQ_FACTOR_RANGE,
@@ -207,23 +207,24 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
-  const auto waveEffectsEqual = m_goomRand->ProbabilityOf(PROB_WAVE_XY_EFFECTS_EQUAL);
+  const auto waveEffectsEqual = m_goomRand->ProbabilityOf<PROB_WAVE_XY_EFFECTS_EQUAL>();
 
   const auto xWaveEffect = m_weightedEffects.GetRandomWeighted();
   const auto yWaveEffect = waveEffectsEqual ? xWaveEffect : m_weightedEffects.GetRandomWeighted();
 
-  const auto sqDistPower = m_goomRand->GetRandInRange(SQ_DIST_POWER_RANGE);
+  const auto sqDistPower = m_goomRand->GetRandInRange<SQ_DIST_POWER_RANGE>();
 
-  const auto periodicFactor          = GetPeriodicFactor(xWaveEffect,
+  const auto periodicFactor        = GetPeriodicFactor(xWaveEffect,
                                                 yWaveEffect,
                                                 waveModeSettings.periodicFactorRange,
                                                 waveModeSettings.sinCosPeriodicFactorRange);
-  const auto freqFactor              = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
-  const auto amplitude               = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
-  const auto reducerCoeff            = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
-  const auto spiralRotateBaseAngle   = m_goomRand->GetRandInRange(HALF_CIRCLE_RANGE);
-  const auto useModifiedATanAngle    = m_goomRand->ProbabilityOf(PROB_USE_MODIFIED_ATAN_ANGLE);
-  const auto modifiedATanAngleFactor = m_goomRand->GetRandInRange(MODIFIED_ATAN_ANGLE_FACTOR_RANGE);
+  const auto freqFactor            = m_goomRand->GetRandInRange(waveModeSettings.freqFactorRange);
+  const auto amplitude             = m_goomRand->GetRandInRange(waveModeSettings.amplitudeRange);
+  const auto reducerCoeff          = GetReducerCoeff(xWaveEffect, yWaveEffect, periodicFactor);
+  const auto spiralRotateBaseAngle = m_goomRand->GetRandInRange<HALF_CIRCLE_RANGE>();
+  const auto useModifiedATanAngle  = m_goomRand->ProbabilityOf<PROB_USE_MODIFIED_ATAN_ANGLE>();
+  const auto modifiedATanAngleFactor =
+      m_goomRand->GetRandInRange<MODIFIED_ATAN_ANGLE_FACTOR_RANGE>();
 
   SetParams({.viewport                = viewport,
              .xWaveEffect             = xWaveEffect,
@@ -248,16 +249,16 @@ inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
     case WAVE_SIN_EFFECT:
     case WAVE_COS_EFFECT:
     case WAVE_SIN_COS_EFFECT:
-      return m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE);
+      return m_goomRand->GetRandInRange<REDUCER_COEFF_RANGE>();
     case WAVE_TAN_EFFECT:
     case WAVE_COT_EFFECT:
-      return m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE);
+      return m_goomRand->GetRandInRange<TAN_REDUCER_COEFF_RANGE>();
     case WAVE_TAN_SIN_EFFECT:
     case WAVE_TAN_COS_EFFECT:
     case WAVE_COT_SIN_EFFECT:
     case WAVE_COT_COS_EFFECT:
-      return std::lerp(m_goomRand->GetRandInRange(TAN_REDUCER_COEFF_RANGE),
-                       m_goomRand->GetRandInRange(REDUCER_COEFF_RANGE),
+      return std::lerp(m_goomRand->GetRandInRange<TAN_REDUCER_COEFF_RANGE>(),
+                       m_goomRand->GetRandInRange<REDUCER_COEFF_RANGE>(),
                        periodicFactor);
   }
 }
@@ -268,12 +269,12 @@ inline auto Wave::GetPeriodicFactor(
     const NumberRange<float>& periodicFactorRange,
     const NumberRange<float>& sinCosPeriodicFactorRange) const noexcept -> float
 {
-  if (m_goomRand->ProbabilityOf(PROB_NO_PERIODIC_FACTOR))
+  if (m_goomRand->ProbabilityOf<PROB_NO_PERIODIC_FACTOR>())
   {
     return xWaveEffect == WAVE_SIN_COS_EFFECT ? DEFAULT_SIN_COS_PERIODIC_FACTOR
                                               : DEFAULT_PERIODIC_FACTOR;
   }
-  if (m_goomRand->ProbabilityOf(PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT))
+  if (m_goomRand->ProbabilityOf<PROB_PERIODIC_FACTOR_USES_X_WAVE_EFFECT>())
   {
     return m_goomRand->GetRandInRange(xWaveEffect == WAVE_SIN_COS_EFFECT ? sinCosPeriodicFactorRange
                                                                          : periodicFactorRange);
@@ -349,7 +350,7 @@ auto Wave::GetSqDistSpiralRotateAngle(const float sqDistFromZero,
                                       const NormalizedCoords& coords) const noexcept -> float
 {
   const auto spiralRotateAngle =
-      m_goomRand->GetRandInRange(SPIRAL_ROTATE_FACTOR_RANGE) * m_params.spiralRotateBaseAngle;
+      m_goomRand->GetRandInRange<SPIRAL_ROTATE_FACTOR_RANGE>() * m_params.spiralRotateBaseAngle;
   const auto sinSpiralRotateAngle = std::sin(spiralRotateAngle);
   const auto cosSpiralRotateAngle = std::cos(spiralRotateAngle);
   const auto x = (coords.GetX() * cosSpiralRotateAngle) - (coords.GetY() * sinSpiralRotateAngle);

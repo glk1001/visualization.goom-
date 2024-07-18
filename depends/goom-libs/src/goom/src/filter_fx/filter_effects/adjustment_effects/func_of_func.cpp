@@ -29,12 +29,12 @@ auto FunctionOfFunction::SetRandomParams() noexcept -> void
   m_func->SetRandomParams();
   m_funcOf->SetRandomParams();
 
-  m_funcToFuncOfLerpValue = m_goomRand->GetRandInRange(FUNC_TO_FUNC_OF_LERP_VALUE_RANGE);
+  m_funcToFuncOfLerpValue = m_goomRand->GetRandInRange<FUNC_TO_FUNC_OF_LERP_VALUE_RANGE>();
 
   m_coordsToFuncCoordsLerpValue =
-      m_goomRand->GetRandInRange(COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE);
+      m_goomRand->GetRandInRange<COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE>();
 
-  m_useFullFuncOf = m_goomRand->ProbabilityOf(PROB_USE_FULL_FUNC_OF);
+  m_useFullFuncOf = m_goomRand->ProbabilityOf<PROB_USE_FULL_FUNC_OF>();
 }
 
 auto FunctionOfFunction::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept

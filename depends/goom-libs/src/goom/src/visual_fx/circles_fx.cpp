@@ -89,11 +89,12 @@ private:
 
   static constexpr auto BLANK_AT_TARGET_TIME_RANGE = NumberRange{1U, 5U};
   uint32_t m_blankAtTargetTime =
-      m_fxHelper->GetGoomRand().GetRandInRange(BLANK_AT_TARGET_TIME_RANGE);
+      m_fxHelper->GetGoomRand().GetRandInRange<BLANK_AT_TARGET_TIME_RANGE>();
   Timer m_blankAtTargetTimer{m_fxHelper->GetGoomTime(), m_blankAtTargetTime, true};
 
   static constexpr auto PAUSE_AT_START_TIME_RANGE = NumberRange{0U, 0U};
-  uint32_t m_pauseAtStartTime = m_fxHelper->GetGoomRand().GetRandInRange(PAUSE_AT_START_TIME_RANGE);
+  uint32_t m_pauseAtStartTime =
+      m_fxHelper->GetGoomRand().GetRandInRange<PAUSE_AT_START_TIME_RANGE>();
   Timer m_pauseAtStartTimer{m_fxHelper->GetGoomTime(), m_pauseAtStartTime, true};
 };
 
@@ -249,7 +250,7 @@ inline auto CirclesFx::CirclesFxImpl::GetNextCircleCentre(
     const Point2dInt& zoomMidpoint) const noexcept -> Point2dInt
 {
   static constexpr auto LERP_RANGE = NumberRange{0.0F, 1.0F};
-  const auto midLerp               = m_fxHelper->GetGoomRand().GetRandInRange(LERP_RANGE);
+  const auto midLerp               = m_fxHelper->GetGoomRand().GetRandInRange<LERP_RANGE>();
   const auto newCircleCentre       = lerp(m_screenCentre, zoomMidpoint, midLerp);
 
   const auto minPoint = Point2dInt{m_fxHelper->GetDimensions().GetIntWidth() / 10,
@@ -316,8 +317,8 @@ inline auto CirclesFx::CirclesFxImpl::UpdateStates() noexcept -> void
     return;
   }
 
-  m_blankAtTargetTime = m_fxHelper->GetGoomRand().GetRandInRange(BLANK_AT_TARGET_TIME_RANGE);
-  m_pauseAtStartTime  = m_fxHelper->GetGoomRand().GetRandInRange(PAUSE_AT_START_TIME_RANGE);
+  m_blankAtTargetTime = m_fxHelper->GetGoomRand().GetRandInRange<BLANK_AT_TARGET_TIME_RANGE>();
+  m_pauseAtStartTime  = m_fxHelper->GetGoomRand().GetRandInRange<PAUSE_AT_START_TIME_RANGE>();
 
   m_circleParamsBuilder.SetCircleStartMode(m_weightedCircleStartModes.GetRandomWeighted());
   m_circleParamsBuilder.SetCircleTargetMode(m_weightedCircleTargetModes.GetRandomWeighted());
@@ -350,9 +351,9 @@ inline auto CirclesFx::CirclesFxImpl::GetPathParams() const noexcept
   static constexpr auto PATH_Y_FREQ_RANGE    = NumberRange{0.9F, 2.0F};
 
   const auto params = OscillatingFunction::Params{
-      m_fxHelper->GetGoomRand().GetRandInRange(PATH_AMPLITUDE_RANGE),
-      m_fxHelper->GetGoomRand().GetRandInRange(PATH_X_FREQ_RANGE),
-      m_fxHelper->GetGoomRand().GetRandInRange(PATH_Y_FREQ_RANGE),
+      m_fxHelper->GetGoomRand().GetRandInRange<PATH_AMPLITUDE_RANGE>(),
+      m_fxHelper->GetGoomRand().GetRandInRange<PATH_X_FREQ_RANGE>(),
+      m_fxHelper->GetGoomRand().GetRandInRange<PATH_Y_FREQ_RANGE>(),
   };
 
   auto pathParams = std::vector<OscillatingFunction::Params>(NUM_CIRCLES);

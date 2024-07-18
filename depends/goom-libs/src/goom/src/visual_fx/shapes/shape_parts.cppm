@@ -283,7 +283,7 @@ auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
   return {GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
           GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
           GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
-          m_fxHelper->GetGoomRand().GetRandInRange(INNER_COLOR_MIX_T_RANGE)};
+          m_fxHelper->GetGoomRand().GetRandInRange<INNER_COLOR_MIX_T_RANGE>()};
 }
 
 auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
@@ -367,11 +367,11 @@ auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
   static constexpr auto MAX_SCALE_RANGE       = NumberRange{1.0F + SMALL_FLOAT, 1.5F};
   static constexpr auto PROB_SCALE_EQUALS_ONE = 0.9F;
 
-  const auto probScaleEqualsOne = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_SCALE_EQUALS_ONE);
+  const auto probScaleEqualsOne = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_SCALE_EQUALS_ONE>();
   const auto minScale =
-      probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange(MIN_SCALE_RANGE);
+      probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange<MIN_SCALE_RANGE>();
   const auto maxScale =
-      probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange(MAX_SCALE_RANGE);
+      probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange<MAX_SCALE_RANGE>();
 
   return GetShapePaths(numShapePaths, {minScale, maxScale});
 }
@@ -508,7 +508,7 @@ auto ShapePart::SetWeightedLowColorMaps(const WeightedRandomColorMaps& weightedM
 auto ShapePart::SetWeightedInnerColorMaps(const WeightedRandomColorMaps& weightedMaps) noexcept
     -> void
 {
-  m_colorInfo.innerColorMix  = m_fxHelper->GetGoomRand().GetRandInRange(INNER_COLOR_MIX_T_RANGE);
+  m_colorInfo.innerColorMix  = m_fxHelper->GetGoomRand().GetRandInRange<INNER_COLOR_MIX_T_RANGE>();
   m_colorInfo.innerColorMaps = weightedMaps;
 
   UpdateShapesInnerColorMaps();
@@ -649,7 +649,7 @@ inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 {
   if (static constexpr auto PROB_MEGA_COLOR_CHANGE_ON = 0.1F;
-      not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MEGA_COLOR_CHANGE_ON))
+      not m_fxHelper->GetGoomRand().ProbabilityOf<PROB_MEGA_COLOR_CHANGE_ON>())
   {
     return false;
   }
@@ -660,7 +660,7 @@ inline auto ShapePart::SetMegaColorChangeOn() noexcept -> bool
 inline auto ShapePart::SetMegaColorChangeOff() noexcept -> bool
 {
   if (static constexpr auto PROB_MEGA_COLOR_CHANGE_OFF = 0.9F;
-      not m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MEGA_COLOR_CHANGE_OFF))
+      not m_fxHelper->GetGoomRand().ProbabilityOf<PROB_MEGA_COLOR_CHANGE_OFF>())
   {
     return false;
   }
@@ -674,7 +674,7 @@ inline auto ShapePart::ChangeAllColorMapsNow() noexcept -> void
 
   static constexpr auto PROB_USE_EXTREME_MAX_DOT_RADIUS = 0.5F;
   m_useExtremeMaxShapeDotRadius =
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_USE_EXTREME_MAX_DOT_RADIUS);
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_USE_EXTREME_MAX_DOT_RADIUS>();
 }
 
 auto ShapePart::Update() noexcept -> void

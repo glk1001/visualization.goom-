@@ -82,17 +82,17 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
                                   const SqDistOffsetRange& sqDistOffsetRange) noexcept -> void
 {
   const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange.xRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
                               ? xAmplitude
                               : m_goomRand->GetRandInRange(amplitudeRange.yRange);
 
   const auto xSqDistMult = m_goomRand->GetRandInRange(sqDistMultRange.xRange);
-  const auto ySqDistMult = m_goomRand->ProbabilityOf(PROB_XY_SQ_DIST_MULT_EQUAL)
+  const auto ySqDistMult = m_goomRand->ProbabilityOf<PROB_XY_SQ_DIST_MULT_EQUAL>()
                                ? xSqDistMult
                                : m_goomRand->GetRandInRange(sqDistMultRange.yRange);
 
   const auto xSqDistOffset = m_goomRand->GetRandInRange(sqDistOffsetRange.xRange);
-  const auto ySqDistOffset = m_goomRand->ProbabilityOf(PROB_XY_SQ_DIST_OFFSET_EQUAL)
+  const auto ySqDistOffset = m_goomRand->ProbabilityOf<PROB_XY_SQ_DIST_OFFSET_EQUAL>()
                                  ? xSqDistOffset
                                  : m_goomRand->GetRandInRange(sqDistOffsetRange.yRange);
 

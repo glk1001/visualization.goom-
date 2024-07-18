@@ -19,6 +19,7 @@ import Goom.Lib.AssertUtils;
 export namespace GOOM::UTILS::MATH
 {
 
+// NOLINTBEGIN(misc-non-private-member-variables-in-classes): Need class as non-type template param.
 template<typename T>
 class NumberRange
 {
@@ -26,20 +27,20 @@ public:
   constexpr NumberRange() = default;
   constexpr NumberRange(T minT, T maxT) noexcept;
 
-  [[nodiscard]] constexpr auto Min() const noexcept -> T;
-  [[nodiscard]] constexpr auto Max() const noexcept -> T;
-  [[nodiscard]] constexpr auto Range() const noexcept -> T;
-
-  T min; // NOLINT(misc-non-private-member-variables-in-classes)
-  T max; // NOLINT(misc-non-private-member-variables-in-classes)
+  T min;
+  T max;
+  T range;
+  T rangePlus1;
 };
+// NOLINTEND(misc-non-private-member-variables-in-classes)
 
 template<typename T>
 NumberRange(T, T) -> NumberRange<T>;
 
 template<typename T>
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-constexpr NumberRange<T>::NumberRange(const T minT, const T maxT) noexcept : min{minT}, max{maxT}
+constexpr NumberRange<T>::NumberRange(const T minT, const T maxT) noexcept
+  : min{minT}, max{maxT}, range{maxT - minT}, rangePlus1{range + 1}
 {
   Expects(minT <= maxT);
 }
@@ -54,15 +55,17 @@ template<typename T>
 class GoomRand
 {
 public:
-  // Return random number in the range n0 <= n < n1.
-  template<typename T, NumberRange<T> numberRange>
-  [[nodiscard]] auto GetRandInRange() const noexcept -> T;
+  // Return random number in the range [numberRange.min, numberRange.max].
+  template<NumberRange numberRange>
+  [[nodiscard]] auto GetRandInRange() const noexcept -> decltype(numberRange.min);
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
 
   template<std::ranges::random_access_range Range>
   auto Shuffle(Range& range) const noexcept -> void;
 
+  template<float x> // NOLINT: readability-identifier-naming
+  [[nodiscard]] auto ProbabilityOf() const noexcept -> bool;
   [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool;
 
   // Return a random integer in the range [0, n).
@@ -84,8 +87,8 @@ class Weights
 public:
   struct KeyValue
   {
-    E key;
-    float weight;
+    E key{};
+    float weight{};
   };
   using EventWeightPairs = std::vector<KeyValue>;
 
@@ -166,27 +169,9 @@ namespace GOOM::UTILS::MATH
 {
 
 template<typename T>
-constexpr auto NumberRange<T>::Min() const noexcept -> T
-{
-  return min;
-}
-
-template<typename T>
-constexpr auto NumberRange<T>::Max() const noexcept -> T
-{
-  return max;
-}
-
-template<typename T>
-constexpr auto NumberRange<T>::Range() const noexcept -> T
-{
-  return Max() - Min();
-}
-
-template<typename T>
 constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
 {
-  return std::midpoint(numberRange.Min(), numberRange.Max());
+  return std::midpoint(numberRange.min, numberRange.max);
 }
 
 // NOLINTBEGIN(readability-convert-member-functions-to-static)
@@ -203,29 +188,44 @@ auto GoomRand::Shuffle(Range& range) const noexcept -> void
   }
 }
 
-inline auto GoomRand::ProbabilityOf(const float x) const noexcept -> bool
+template<float x> // NOLINT(readability-identifier-naming)
+auto GoomRand::ProbabilityOf() const noexcept -> bool
 {
-  return GetRandInRange(0.0F, 1.0F) <= x;
+  static_assert(0.0F <= x);
+  static_assert(x <= 1.0F);
+  return GetRandInRange<UNIT_RANGE>() <= x;
 }
 
-template<typename T, NumberRange<T> numberRange>
-[[nodiscard]] auto GoomRand::GetRandInRange() const noexcept -> T
+auto GoomRand::ProbabilityOf(const float x) const noexcept -> bool
 {
-  if constexpr (not std::is_integral<T>())
+  return GetRandInRange<UNIT_RANGE>() <= x;
+}
+
+template<NumberRange numberRange> // NOLINT(readability-identifier-naming)
+[[nodiscard]] auto GoomRand::GetRandInRange() const noexcept -> decltype(numberRange.min)
+{
+  if constexpr (not std::is_integral<decltype(numberRange.min)>())
   {
-    // Get floating point integer.
-    return GetRandInRange(numberRange.Min(), numberRange.Range());
-  }
-  else
-  {
-    // Get random integer.
-    if constexpr (0 == numberRange.Range())
+    // Get random floating point number.
+    if constexpr (numberRange.range < SMALL_FLOAT)
     {
-      return numberRange.Min();
+      return numberRange.min;
     }
     else
     {
-      return GetRandInRange(numberRange.Min(), numberRange.Range() + 1);
+      return GetRandInRange(numberRange.min, numberRange.range);
+    }
+  }
+  else
+  {
+    // Get random integer number.
+    if constexpr (0 == numberRange.range)
+    {
+      return numberRange.min;
+    }
+    else
+    {
+      return GetRandInRange(numberRange.min, numberRange.rangePlus1);
     }
   }
 }
@@ -233,20 +233,18 @@ template<typename T, NumberRange<T> numberRange>
 template<typename T>
 auto GoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T
 {
+  // NOLINTBEGIN(clang-analyzer-core.CallAndMessage): False positive.
   if constexpr (not std::is_integral<T>())
   {
-    // Get floating point integer.
-    return GetRandInRange(numberRange.Min(), numberRange.Range());
+    // Get random floating point number.
+    return GetRandInRange(numberRange.min, numberRange.range);
   }
   else
   {
-    // Get random integer.
-    if (0 == numberRange.Range())
-    {
-      return numberRange.Min();
-    }
-    return GetRandInRange(numberRange.Min(), numberRange.Range() + 1);
+    // Get random integer number.
+    return GetRandInRange(numberRange.min, numberRange.rangePlus1);
   }
+  // NOLINTEND(clang-analyzer-core.CallAndMessage)
 }
 
 inline auto GoomRand::GetNRand(const uint32_t n) const noexcept -> uint32_t

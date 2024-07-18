@@ -165,7 +165,7 @@ auto LowDensityBlurrer::SetColorMode(const BlurrerColorMode colorMode) noexcept 
   m_colorMode = colorMode;
 
   static constexpr auto PROB_USE_BITMAPS = 0.1F;
-  m_currentImageBitmap = GetImageBitmap(m_goomRand->ProbabilityOf(PROB_USE_BITMAPS));
+  m_currentImageBitmap = GetImageBitmap(m_goomRand->ProbabilityOf<PROB_USE_BITMAPS>());
 }
 
 auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const noexcept -> const ImageBitmap*
@@ -176,7 +176,7 @@ auto LowDensityBlurrer::GetImageBitmap(const bool useBitmaps) const noexcept -> 
   }
 
   static constexpr auto RES_RANGE = NumberRange{3U, 7U};
-  const auto bitmapRes            = m_goomRand->GetRandInRange(RES_RANGE);
+  const auto bitmapRes            = m_goomRand->GetRandInRange<RES_RANGE>();
 
   return &m_smallBitmaps->GetImageBitmap(SmallImageBitmaps::ImageNames::SPHERE, bitmapRes);
 }

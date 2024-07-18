@@ -127,7 +127,7 @@ auto Planes::GetRandomParams(const GoomRand& goomRand,
                              const Point2dInt& zoomMidpoint,
                              const uint32_t screenWidth) -> Params
 {
-  const auto muchSpiralling = goomRand.ProbabilityOf(PROB_MUCH_SPIRALLING);
+  const auto muchSpiralling = goomRand.ProbabilityOf<PROB_MUCH_SPIRALLING>();
 
   return {
       GetRandomPlaneEffects(goomRand, planeEffectsEvent, muchSpiralling, zoomMidpoint, screenWidth),
@@ -190,35 +190,35 @@ auto Planes::GetRandomIntAmplitude(const GoomRand& goomRand,
       intAmplitude.y = 0;
       break;
     case PlaneEffectEvents::SMALL_EFFECTS:
-      intAmplitude.x = goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
-      intAmplitude.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_SMALL_EFFECTS)
+      intAmplitude.x = goomRand.GetRandInRange<SMALL_EFFECTS_RANGE>();
+      intAmplitude.y = goomRand.ProbabilityOf<PROB_OPPOSITES_FOR_SMALL_EFFECTS>()
                            ? (-intAmplitude.x + 1)
-                           : goomRand.GetRandInRange(SMALL_EFFECTS_RANGE);
+                           : goomRand.GetRandInRange<SMALL_EFFECTS_RANGE>();
       break;
     case PlaneEffectEvents::MEDIUM_EFFECTS:
-      intAmplitude.x = goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
-      intAmplitude.y = goomRand.ProbabilityOf(PROB_OPPOSITES_FOR_MEDIUM_EFFECTS)
+      intAmplitude.x = goomRand.GetRandInRange<MEDIUM_EFFECTS_RANGE>();
+      intAmplitude.y = goomRand.ProbabilityOf<PROB_OPPOSITES_FOR_MEDIUM_EFFECTS>()
                            ? (-intAmplitude.x + 1)
-                           : goomRand.GetRandInRange(MEDIUM_EFFECTS_RANGE);
+                           : goomRand.GetRandInRange<MEDIUM_EFFECTS_RANGE>();
       break;
     case PlaneEffectEvents::LARGE_EFFECTS:
-      intAmplitude.x = goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
-      intAmplitude.y = goomRand.ProbabilityOf(PROB_ZERO_VERTICAL_FOR_LARGE_RANGE)
+      intAmplitude.x = goomRand.GetRandInRange<LARGE_EFFECTS_RANGE>();
+      intAmplitude.y = goomRand.ProbabilityOf<PROB_ZERO_VERTICAL_FOR_LARGE_RANGE>()
                            ? 0
-                           : goomRand.GetRandInRange(LARGE_EFFECTS_RANGE);
+                           : goomRand.GetRandInRange<LARGE_EFFECTS_RANGE>();
       break;
     case PlaneEffectEvents::VERY_LARGE_EFFECTS:
-      intAmplitude.x = goomRand.ProbabilityOf(PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE)
+      intAmplitude.x = goomRand.ProbabilityOf<PROB_ZERO_HORIZONTAL_FOR_VERY_LARGE_RANGE>()
                            ? 0
-                           : goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
-      intAmplitude.y = goomRand.GetRandInRange(VERY_LARGE_EFFECTS_RANGE);
+                           : goomRand.GetRandInRange<VERY_LARGE_EFFECTS_RANGE>();
+      intAmplitude.y = goomRand.GetRandInRange<VERY_LARGE_EFFECTS_RANGE>();
       break;
     case PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS:
-      intAmplitude.y = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
+      intAmplitude.y = goomRand.GetRandInRange<VERY_LARGE_POS_EFFECTS_RANGE>();
       intAmplitude.x = -intAmplitude.y + 1;
       break;
     case PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS:
-      intAmplitude.x = goomRand.GetRandInRange(VERY_LARGE_POS_EFFECTS_RANGE);
+      intAmplitude.x = goomRand.GetRandInRange<VERY_LARGE_POS_EFFECTS_RANGE>();
       intAmplitude.y = -intAmplitude.x + 1;
       break;
   }
@@ -236,7 +236,7 @@ auto Planes::GetAdjustedIntAmplitude(const GoomRand& goomRand,
   if ((1 == zoomMidpoint.x) || (zoomMidpoint.x == static_cast<int32_t>(screenWidth - 1)))
   {
     adjustedIntAmplitude.y = 0;
-    if (goomRand.ProbabilityOf(PROB_ZERO_HORIZONTAL_PLANE_EFFECT))
+    if (goomRand.ProbabilityOf<PROB_ZERO_HORIZONTAL_PLANE_EFFECT>())
     {
       adjustedIntAmplitude.x = 0;
     }
@@ -250,19 +250,19 @@ auto Planes::GetRandomEffectMultiplier(const GoomRand& goomRand,
 {
   auto effectMultiplier = Amplitude{};
 
-  effectMultiplier.x = muchSpiralling
-                           ? goomRand.GetRandInRange(HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE)
-                           : goomRand.GetRandInRange(HORIZONTAL_EFFECTS_MULTIPLIER_RANGE);
+  effectMultiplier.x =
+      muchSpiralling ? goomRand.GetRandInRange<HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE>()
+                     : goomRand.GetRandInRange<HORIZONTAL_EFFECTS_MULTIPLIER_RANGE>();
 
-  if (goomRand.ProbabilityOf(PROB_PLANE_AMPLITUDES_EQUAL))
+  if (goomRand.ProbabilityOf<PROB_PLANE_AMPLITUDES_EQUAL>())
   {
     effectMultiplier.y = effectMultiplier.x;
   }
   else
   {
-    effectMultiplier.y = muchSpiralling
-                             ? goomRand.GetRandInRange(VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE)
-                             : goomRand.GetRandInRange(VERTICAL_EFFECTS_AMPLITUDE_RANGE);
+    effectMultiplier.y =
+        muchSpiralling ? goomRand.GetRandInRange<VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE>()
+                       : goomRand.GetRandInRange<VERTICAL_EFFECTS_AMPLITUDE_RANGE>();
   }
 
   return effectMultiplier;
@@ -271,7 +271,7 @@ auto Planes::GetRandomEffectMultiplier(const GoomRand& goomRand,
 auto Planes::GetRandomSwirlEffects(const UTILS::MATH::GoomRand& goomRand,
                                    const bool muchSpiralling) -> PlaneSwirlEffects
 {
-  if (muchSpiralling || goomRand.ProbabilityOf(PROB_NO_SWIRL))
+  if (muchSpiralling || goomRand.ProbabilityOf<PROB_NO_SWIRL>())
   {
     return GetZeroSwirlEffects();
   }
@@ -293,17 +293,17 @@ inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::GoomRand& go
 {
   auto swirlEffects = PlaneSwirlEffects{};
 
-  swirlEffects.swirlType = static_cast<PlaneSwirlType>(goomRand.GetRandInRange(SWIRL_TYPE_RANGE));
+  swirlEffects.swirlType = static_cast<PlaneSwirlType>(goomRand.GetRandInRange<SWIRL_TYPE_RANGE>());
 
-  swirlEffects.frequencyFactor.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_FREQ_RANGE);
-  swirlEffects.frequencyFactor.y = goomRand.ProbabilityOf(PROB_SWIRL_FREQ_EQUAL)
+  swirlEffects.frequencyFactor.x = goomRand.GetRandInRange<HORIZONTAL_SWIRL_FREQ_RANGE>();
+  swirlEffects.frequencyFactor.y = goomRand.ProbabilityOf<PROB_SWIRL_FREQ_EQUAL>()
                                        ? swirlEffects.frequencyFactor.x
-                                       : goomRand.GetRandInRange(VERTICAL_SWIRL_FREQ_RANGE);
+                                       : goomRand.GetRandInRange<VERTICAL_SWIRL_FREQ_RANGE>();
 
-  swirlEffects.amplitude.x = goomRand.GetRandInRange(HORIZONTAL_SWIRL_AMPLITUDE_RANGE);
-  swirlEffects.amplitude.y = goomRand.ProbabilityOf(PROB_SWIRL_AMPLITUDES_EQUAL)
+  swirlEffects.amplitude.x = goomRand.GetRandInRange<HORIZONTAL_SWIRL_AMPLITUDE_RANGE>();
+  swirlEffects.amplitude.y = goomRand.ProbabilityOf<PROB_SWIRL_AMPLITUDES_EQUAL>()
                                  ? swirlEffects.amplitude.x
-                                 : goomRand.GetRandInRange(VERTICAL_SWIRL_AMPLITUDE_RANGE);
+                                 : goomRand.GetRandInRange<VERTICAL_SWIRL_AMPLITUDE_RANGE>();
 
   return swirlEffects;
 }

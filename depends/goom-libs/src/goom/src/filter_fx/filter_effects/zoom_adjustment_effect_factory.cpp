@@ -130,7 +130,7 @@ auto GetFuncOfMode(const ZoomFilterMode baseFilterMode,
   {
     static constexpr auto FILTER_MODE_RANGE = NumberRange{0U, NUM<ZoomFilterMode> - 1};
     if (const auto funcOfMode =
-            static_cast<ZoomFilterMode>(goomRand.GetRandInRange<uint32_t, FILTER_MODE_RANGE>());
+            static_cast<ZoomFilterMode>(goomRand.GetRandInRange<FILTER_MODE_RANGE>());
         IsAllowedFuncOfMode(funcOfMode, baseFilterMode))
     {
       return funcOfMode;
@@ -167,7 +167,7 @@ auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
     return CreateFuncZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory);
   }
 
-  if (static constexpr auto PROB_FUNC_OF_FUNC = 0.5F; goomRand.ProbabilityOf(PROB_FUNC_OF_FUNC))
+  if (static constexpr auto PROB_FUNC_OF_FUNC = 0.5F; goomRand.ProbabilityOf<PROB_FUNC_OF_FUNC>())
   {
     return CreateFuncOfFuncZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory);
   }

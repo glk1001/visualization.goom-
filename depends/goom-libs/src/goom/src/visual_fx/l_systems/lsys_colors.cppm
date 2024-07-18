@@ -105,7 +105,7 @@ private:
 
   static constexpr auto NUM_COLOR_STEPS_RANGE         = NumberRange{10U, 100U};
   static constexpr auto NUM_THICKER_COLOR_STEPS_RANGE = NumberRange{10U, 1000U};
-  uint32_t m_currentMaxNumColorSteps                  = NUM_COLOR_STEPS_RANGE.Max();
+  uint32_t m_currentMaxNumColorSteps                  = NUM_COLOR_STEPS_RANGE.max;
   std::vector<TValue> m_currentColorTs;
   std::vector<TValue> m_currentThickerColorTs;
   auto ResetColorTs() noexcept -> void;
@@ -239,7 +239,7 @@ auto LSysColors::SetSimpleColors() noexcept -> void
 
   m_useSimpleColors = true;
 
-  if (static constexpr auto PROB_USE_SHADE = 0.5F; m_goomRand->ProbabilityOf(PROB_USE_SHADE))
+  if (static constexpr auto PROB_USE_SHADE = 0.5F; m_goomRand->ProbabilityOf<PROB_USE_SHADE>())
   {
     m_simpleColorGet = [this](const uint32_t colorNum, const float t)
     { return m_simpleColorsList.at(colorNum).GetShade(t); };
@@ -254,13 +254,13 @@ auto LSysColors::SetSimpleColors() noexcept -> void
 auto LSysColors::ResetColorTs() noexcept -> void
 {
   const auto numColorSteps = m_goomRand->GetRandInRange(
-      NumberRange{NUM_COLOR_STEPS_RANGE.Min(), m_currentMaxNumColorSteps});
+      NumberRange{NUM_COLOR_STEPS_RANGE.min, m_currentMaxNumColorSteps});
 
   std::ranges::for_each(m_currentColorTs,
                         [&numColorSteps](auto& colorT) { colorT.SetNumSteps(numColorSteps); });
   std::ranges::for_each(m_currentColorTs, [](auto& colorT) { colorT.Reset(0.0F); });
 
-  const auto numThickerColorSteps = m_goomRand->GetRandInRange(NUM_THICKER_COLOR_STEPS_RANGE);
+  const auto numThickerColorSteps = m_goomRand->GetRandInRange<NUM_THICKER_COLOR_STEPS_RANGE>();
 
   std::ranges::for_each(m_currentThickerColorTs,
                         [&numThickerColorSteps](auto& colorT)
@@ -331,8 +331,8 @@ inline auto LSysColors::GetColorNumToUse(const uint32_t givenColorNum,
 
 auto LSysColors::SetMainColorMaps() noexcept -> void
 {
-  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange(SATURATION_RANGE),
-                                             m_goomRand->GetRandInRange(LIGHTNESS_RANGE)};
+  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange<SATURATION_RANGE>(),
+                                             m_goomRand->GetRandInRange<LIGHTNESS_RANGE>()};
 
   auto& colorMapsList = m_currentMainColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
@@ -363,8 +363,8 @@ auto LSysColors::SetMainColorMaps() noexcept -> void
 
 auto LSysColors::SetLowColorMaps() noexcept -> void
 {
-  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange(SATURATION_RANGE),
-                                             m_goomRand->GetRandInRange(LIGHTNESS_RANGE)};
+  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange<SATURATION_RANGE>(),
+                                             m_goomRand->GetRandInRange<LIGHTNESS_RANGE>()};
 
   auto& colorMapsList = m_currentLowColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
@@ -395,8 +395,8 @@ auto LSysColors::SetLowColorMaps() noexcept -> void
 
 auto LSysColors::SetThickerMainColorMaps() noexcept -> void
 {
-  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange(SATURATION_RANGE),
-                                             m_goomRand->GetRandInRange(LIGHTNESS_RANGE)};
+  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange<SATURATION_RANGE>(),
+                                             m_goomRand->GetRandInRange<LIGHTNESS_RANGE>()};
 
   auto& colorMapsList = m_currentThickerMainColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);
@@ -426,8 +426,8 @@ auto LSysColors::SetThickerMainColorMaps() noexcept -> void
 
 auto LSysColors::SetThickerLowColorMaps() noexcept -> void
 {
-  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange(SATURATION_RANGE),
-                                             m_goomRand->GetRandInRange(LIGHTNESS_RANGE)};
+  const auto tintProperties = TintProperties{m_goomRand->GetRandInRange<SATURATION_RANGE>(),
+                                             m_goomRand->GetRandInRange<LIGHTNESS_RANGE>()};
 
   auto& colorMapsList = m_currentThickerLowColorMapList;
   //Expects(colorMaps.size() >= NUM_MAIN_COLORS);

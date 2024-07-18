@@ -726,14 +726,14 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
       }
     }
 {
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ >= MULTIPLIER_EFFECT_FREQ_RANGE.Min());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ <= MULTIPLIER_EFFECT_FREQ_RANGE.Max());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ >= MULTIPLIER_EFFECT_FREQ_RANGE.Min());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ <= MULTIPLIER_EFFECT_FREQ_RANGE.Max());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE >= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.Min());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.Max());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE >= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.Min());
-  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.Max());
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ >= MULTIPLIER_EFFECT_FREQ_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_FREQ <= MULTIPLIER_EFFECT_FREQ_RANGE.max);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ >= MULTIPLIER_EFFECT_FREQ_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_FREQ <= MULTIPLIER_EFFECT_FREQ_RANGE.max);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE >= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.max);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE >= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.min);
+  static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.max);
   static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS >= 0.0F);
   static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS <= 1.0F);
 }
@@ -798,7 +798,7 @@ auto FilterSettingsService::ResetRandomFilterMultiplierEffect() -> void
   auto& multiplierEffectsSettings =
       m_filterSettings.filterEffectsSettings.filterMultiplierEffectsSettings;
 
-  if (not m_goomRand->ProbabilityOf(PROB_ACTIVE_MULTIPLIER_EFFECT))
+  if (not m_goomRand->ProbabilityOf<PROB_ACTIVE_MULTIPLIER_EFFECT>())
   {
     multiplierEffectsSettings.isActive = false;
   }
@@ -806,30 +806,30 @@ auto FilterSettingsService::ResetRandomFilterMultiplierEffect() -> void
   {
     multiplierEffectsSettings.isActive = true;
 
-    multiplierEffectsSettings.xFreq = m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_FREQ_RANGE);
-    if (m_goomRand->ProbabilityOf(PROB_MULTIPLIER_EFFECT_FREQUENCIES_EQUAL))
+    multiplierEffectsSettings.xFreq = m_goomRand->GetRandInRange<MULTIPLIER_EFFECT_FREQ_RANGE>();
+    if (m_goomRand->ProbabilityOf<PROB_MULTIPLIER_EFFECT_FREQUENCIES_EQUAL>())
     {
       multiplierEffectsSettings.yFreq = multiplierEffectsSettings.xFreq;
     }
     else
     {
-      multiplierEffectsSettings.yFreq = m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_FREQ_RANGE);
+      multiplierEffectsSettings.yFreq = m_goomRand->GetRandInRange<MULTIPLIER_EFFECT_FREQ_RANGE>();
     }
 
     multiplierEffectsSettings.xAmplitude =
-        m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_AMPLITUDE_RANGE);
-    if (m_goomRand->ProbabilityOf(PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL))
+        m_goomRand->GetRandInRange<MULTIPLIER_EFFECT_AMPLITUDE_RANGE>();
+    if (m_goomRand->ProbabilityOf<PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL>())
     {
       multiplierEffectsSettings.yAmplitude = multiplierEffectsSettings.xAmplitude;
     }
     else
     {
       multiplierEffectsSettings.yAmplitude =
-          m_goomRand->GetRandInRange(MULTIPLIER_EFFECT_AMPLITUDE_RANGE);
+          m_goomRand->GetRandInRange<MULTIPLIER_EFFECT_AMPLITUDE_RANGE>();
     }
   }
 
-  multiplierEffectsSettings.lerpZoomAdjustmentToCoords = m_goomRand->GetRandInRange(UNIT_RANGE);
+  multiplierEffectsSettings.lerpZoomAdjustmentToCoords = m_goomRand->GetRandInRange<UNIT_RANGE>();
 }
 
 auto FilterSettingsService::ResetRandomAfterEffects() -> void
@@ -863,8 +863,8 @@ auto FilterSettingsService::SetWaveModeAfterEffects() -> void
   m_randomizedAfterEffects->TurnPlaneEffectOn();
 
   auto& filterEffectsSettings = m_filterSettings.filterEffectsSettings;
-  filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand->ProbabilityOf(PROB_REVERSE_SPEED));
-  if (m_goomRand->ProbabilityOf(PROB_CHANGE_SPEED))
+  filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand->ProbabilityOf<PROB_REVERSE_SPEED>());
+  if (m_goomRand->ProbabilityOf<PROB_CHANGE_SPEED>())
   {
     filterEffectsSettings.vitesse.SetVitesse(
         U_HALF * (Vitesse::DEFAULT_SPEED + filterEffectsSettings.vitesse.GetVitesse()));
@@ -880,7 +880,7 @@ auto FilterSettingsService::UpdateFilterSettingsFromAfterEffects() -> void
 
 auto FilterSettingsService::SetBaseZoomAdjustmentFactorMultiplier() noexcept -> void
 {
-  if (static constexpr auto PROB_CALM_DOWN = 0.8F; m_goomRand->ProbabilityOf(PROB_CALM_DOWN))
+  if (static constexpr auto PROB_CALM_DOWN = 0.8F; m_goomRand->ProbabilityOf<PROB_CALM_DOWN>())
   {
     m_filterSettings.filterEffectsSettings.baseZoomAdjustmentFactorMultiplier = 1.0F;
     return;
@@ -891,7 +891,7 @@ auto FilterSettingsService::SetBaseZoomAdjustmentFactorMultiplier() noexcept -> 
   static_assert(ZoomVectorEffects::IsValidMultiplierRange(MULTIPLIER_RANGE));
 
   m_filterSettings.filterEffectsSettings.baseZoomAdjustmentFactorMultiplier =
-      m_goomRand->GetRandInRange(MULTIPLIER_RANGE);
+      m_goomRand->GetRandInRange<MULTIPLIER_RANGE>();
 }
 
 auto FilterSettingsService::SetAfterEffectsVelocityMultiplier() noexcept -> void
@@ -899,7 +899,7 @@ auto FilterSettingsService::SetAfterEffectsVelocityMultiplier() noexcept -> void
   static constexpr auto CONTRIBUTION_RANGE = NumberRange{0.1F, 1.0F};
 
   m_filterSettings.filterEffectsSettings.afterEffectsVelocityMultiplier =
-      m_goomRand->GetRandInRange(CONTRIBUTION_RANGE);
+      m_goomRand->GetRandInRange<CONTRIBUTION_RANGE>();
 }
 
 auto FilterSettingsService::SetRandomZoomMidpoint() -> void
@@ -930,12 +930,12 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
   }
 
   if (((m_filterMode == CRYSTAL_BALL_MODE0) or (m_filterMode == CRYSTAL_BALL_MODE1)) and
-      m_goomRand->ProbabilityOf(PROB_CRYSTAL_BALL_IN_MIDDLE))
+      m_goomRand->ProbabilityOf<PROB_CRYSTAL_BALL_IN_MIDDLE>())
   {
     return true;
   }
 
-  if (IsFilterModeAWaveMode() and m_goomRand->ProbabilityOf(PROB_WAVE_IN_MIDDLE))
+  if (IsFilterModeAWaveMode() and m_goomRand->ProbabilityOf<PROB_WAVE_IN_MIDDLE>())
   {
     return true;
   }
