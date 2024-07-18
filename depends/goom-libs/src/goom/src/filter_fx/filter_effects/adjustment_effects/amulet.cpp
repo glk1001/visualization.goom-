@@ -38,10 +38,10 @@ auto Amulet::SetRandomParams() noexcept -> void
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_XY_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
   SetParams({
       viewport, {xAmplitude, yAmplitude}

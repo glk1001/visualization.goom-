@@ -95,30 +95,30 @@ auto Newton::SetRandomParams() noexcept -> void
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
                                ? xLerpToOneT
-                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
-  const auto useZSin        = m_goomRand->ProbabilityOf(PROB_Z_SIN);
-  const auto xZSinAmplitude = m_goomRand->GetRandInRange(Z_SIN_AMPLITUDE_RANGE);
-  const auto yZSinAmplitude = m_goomRand->ProbabilityOf(PROB_Z_SIN_AMPLITUDES_EQUAL)
+  const auto useZSin        = m_goomRand->ProbabilityOf<PROB_Z_SIN>();
+  const auto xZSinAmplitude = m_goomRand->GetRandInRange<Z_SIN_AMPLITUDE_RANGE>();
+  const auto yZSinAmplitude = m_goomRand->ProbabilityOf<PROB_Z_SIN_AMPLITUDES_EQUAL>()
                                   ? xZSinAmplitude
-                                  : m_goomRand->GetRandInRange(Z_SIN_AMPLITUDE_RANGE);
+                                  : m_goomRand->GetRandInRange<Z_SIN_AMPLITUDE_RANGE>();
 
-  const auto exponent = m_goomRand->GetRandInRange(EXPONENT_RANGE);
-  const auto a        = std::complex<float>{m_goomRand->GetRandInRange(A_REAL_RANGE),
-                                            m_goomRand->GetRandInRange(A_IMAG_RANGE)};
-  const auto c        = std::complex<float>{m_goomRand->GetRandInRange(C_REAL_RANGE),
-                                            m_goomRand->GetRandInRange(C_IMAG_RANGE)};
+  const auto exponent = m_goomRand->GetRandInRange<EXPONENT_RANGE>();
+  const auto a        = std::complex<float>{m_goomRand->GetRandInRange<A_REAL_RANGE>(),
+                                            m_goomRand->GetRandInRange<A_IMAG_RANGE>()};
+  const auto c        = std::complex<float>{m_goomRand->GetRandInRange<C_REAL_RANGE>(),
+                                            m_goomRand->GetRandInRange<C_IMAG_RANGE>()};
 
-  const auto useSqDistDenominator = m_goomRand->ProbabilityOf(PROB_USE_SQ_DIST_DENOM);
-  const auto denominator          = m_goomRand->GetRandInRange(DENOMINATOR_RANGE);
+  const auto useSqDistDenominator = m_goomRand->ProbabilityOf<PROB_USE_SQ_DIST_DENOM>();
+  const auto denominator          = m_goomRand->GetRandInRange<DENOMINATOR_RANGE>();
 
   SetParams({
       viewport,
@@ -195,7 +195,7 @@ auto Newton::GetZ(const NormalizedCoords& coords) const noexcept -> std::complex
 
 auto Newton::GetNextFuncValueAndDerivativeFunc() const noexcept -> GetFuncValueAndDerivativeFunc
 {
-  if (m_goomRand->ProbabilityOf(PROB_POLY_SIN_FUNC))
+  if (m_goomRand->ProbabilityOf<PROB_POLY_SIN_FUNC>())
   {
     return [this](const std::complex<FltCalcType>& z)
     { return GetPolySinFuncValueAndDerivative(z); };

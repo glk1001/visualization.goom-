@@ -118,7 +118,7 @@ AttractorEffect::AttractorEffect(const GoomRand& goomRand, const size_t numParti
 
 auto AttractorEffect::MakeColorUpdater() const noexcept -> std::shared_ptr<IColorUpdater>
 {
-  if (m_goomRand->ProbabilityOf(PROB_POS_COLOR_UPDATER))
+  if (m_goomRand->ProbabilityOf<PROB_POS_COLOR_UPDATER>())
   {
     return std::make_shared<PositionColorUpdater>(MIN_COLOR_POSITION, MAX_COLOR_POSITION);
   }
@@ -127,30 +127,31 @@ auto AttractorEffect::MakeColorUpdater() const noexcept -> std::shared_ptr<IColo
 
 auto AttractorEffect::GetNewEmitRate() const noexcept -> float
 {
-  return m_goomRand->GetRandInRange(EMIT_RATE_FACTOR_RANGE) *
+  return m_goomRand->GetRandInRange<EMIT_RATE_FACTOR_RANGE>() *
          static_cast<float>(m_system.GetNumAllParticles());
 }
 
 auto AttractorEffect::GetNewEulerAcceleration() const noexcept -> glm::vec4
 {
-  if (m_goomRand->ProbabilityOf(PROB_EQUAL_EULER_ACCELERATION))
+  if (m_goomRand->ProbabilityOf<PROB_EQUAL_EULER_ACCELERATION>())
   {
-    const auto eulerAcceleration = m_goomRand->ProbabilityOf(PROB_BIG_EULER_ACCELERATION)
-                                       ? m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE)
-                                       : m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE);
+    const auto eulerAcceleration =
+        m_goomRand->ProbabilityOf<PROB_BIG_EULER_ACCELERATION>()
+            ? m_goomRand->GetRandInRange<BIG_EULER_ACCELERATION_RANGE>()
+            : m_goomRand->GetRandInRange<SMALL_EULER_ACCELERATION_RANGE>();
     return {eulerAcceleration, eulerAcceleration, eulerAcceleration, 0.0F};
   }
 
-  if (m_goomRand->ProbabilityOf(PROB_BIG_EULER_ACCELERATION))
+  if (m_goomRand->ProbabilityOf<PROB_BIG_EULER_ACCELERATION>())
   {
-    return {m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE),
-            m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE),
-            m_goomRand->GetRandInRange(BIG_EULER_ACCELERATION_RANGE),
+    return {m_goomRand->GetRandInRange<BIG_EULER_ACCELERATION_RANGE>(),
+            m_goomRand->GetRandInRange<BIG_EULER_ACCELERATION_RANGE>(),
+            m_goomRand->GetRandInRange<BIG_EULER_ACCELERATION_RANGE>(),
             0.0F};
   }
-  return {m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE),
-          m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE),
-          m_goomRand->GetRandInRange(SMALL_EULER_ACCELERATION_RANGE),
+  return {m_goomRand->GetRandInRange<SMALL_EULER_ACCELERATION_RANGE>(),
+          m_goomRand->GetRandInRange<SMALL_EULER_ACCELERATION_RANGE>(),
+          m_goomRand->GetRandInRange<SMALL_EULER_ACCELERATION_RANGE>(),
           0.0F};
 }
 

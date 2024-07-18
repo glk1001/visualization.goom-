@@ -189,7 +189,7 @@ auto Circles::IncrementTs() noexcept -> void
 auto Circles::UpdatePositionSpeed() noexcept -> void
 {
   if (static constexpr auto PROB_NO_SPEED_CHANGE = 0.7F;
-      m_goomRand->ProbabilityOf(PROB_NO_SPEED_CHANGE))
+      m_goomRand->ProbabilityOf<PROB_NO_SPEED_CHANGE>())
   {
     return;
   }

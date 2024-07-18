@@ -84,9 +84,9 @@ private:
   Timer m_synchronisedShapeChangesTimer{m_fxHelper->GetGoomTime(), TIME_BEFORE_SYNCHRONISED_CHANGE};
 
   static constexpr auto INCREMENTS_PER_UPDATE_RANGE = NumberRange{1U, 100U};
-  static_assert(0 < INCREMENTS_PER_UPDATE_RANGE.Min());
+  static_assert(0 < INCREMENTS_PER_UPDATE_RANGE.min);
   uint32_t m_numIncrementsPerUpdate =
-      m_fxHelper->GetGoomRand().GetRandInRange(INCREMENTS_PER_UPDATE_RANGE);
+      m_fxHelper->GetGoomRand().GetRandInRange<INCREMENTS_PER_UPDATE_RANGE>();
   auto UpdateShapeEffects() noexcept -> void;
   auto UpdateShapeSpeeds() noexcept -> void;
   auto SetShapeSpeeds() noexcept -> void;
@@ -204,14 +204,14 @@ inline auto ShapesFx::ShapesFxImpl::SetWeightedColorMaps(
 inline auto ShapesFx::ShapesFxImpl::UpdateShapeEffects() noexcept -> void
 {
   if (static constexpr auto PROB_UPDATE_NUM_INCREMENTS = 0.1F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_UPDATE_NUM_INCREMENTS))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_UPDATE_NUM_INCREMENTS>())
   {
     m_numIncrementsPerUpdate =
-        m_fxHelper->GetGoomRand().GetRandInRange(INCREMENTS_PER_UPDATE_RANGE);
+        m_fxHelper->GetGoomRand().GetRandInRange<INCREMENTS_PER_UPDATE_RANGE>();
   }
 
   static constexpr auto PROB_VARY_DOT_RADIUS = 0.01F;
-  const auto varyDotRadius = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_VARY_DOT_RADIUS);
+  const auto varyDotRadius = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_VARY_DOT_RADIUS>();
   std::ranges::for_each(m_shapes,
                         [&varyDotRadius](Shape& shape) { shape.SetVaryDotRadius(varyDotRadius); });
 }

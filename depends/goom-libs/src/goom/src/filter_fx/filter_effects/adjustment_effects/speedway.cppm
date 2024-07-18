@@ -105,7 +105,7 @@ inline auto Speedway::GetMode0ZoomAdjustment(const NormalizedCoords& coords,
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
   auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
+  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf<PROB_FLIP_X_ADD>())
   {
     xAdd = -xAdd;
   }
@@ -121,17 +121,17 @@ inline auto Speedway::GetMode1ZoomAdjustment(const NormalizedCoords& coords,
                                              const float sqDistFromZero) const noexcept -> Vec2dFlt
 {
   auto xAdd = -1.0F;
-  if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_RANDOM_X_ADD))
+  if (static constexpr auto PROB_RANDOM_X_ADD = 0.5F; m_goomRand->ProbabilityOf<PROB_RANDOM_X_ADD>())
   {
     static constexpr auto NEGATIVE_X_ADD_RANGE = NumberRange{-1.9F, -0.5F};
     static constexpr auto POSITIVE_X_ADD_RANGE = NumberRange{+0.5F, +1.9F};
     static constexpr auto PROB_NEGATIVE_X_ADD  = 0.5F;
 
-    xAdd = m_goomRand->ProbabilityOf(PROB_NEGATIVE_X_ADD)
-               ? m_goomRand->GetRandInRange(NEGATIVE_X_ADD_RANGE)
-               : m_goomRand->GetRandInRange(POSITIVE_X_ADD_RANGE);
+    xAdd = m_goomRand->ProbabilityOf<PROB_NEGATIVE_X_ADD>()
+               ? m_goomRand->GetRandInRange<NEGATIVE_X_ADD_RANGE>()
+               : m_goomRand->GetRandInRange<POSITIVE_X_ADD_RANGE>();
   }
-  else if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
+  else if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf<PROB_FLIP_X_ADD>())
   {
     xAdd = -xAdd;
   }
@@ -157,7 +157,7 @@ inline auto Speedway::GetMode2ZoomAdjustment(const NormalizedCoords& coords,
   static constexpr auto SQ_DIST_FACTOR = 0.01F;
 
   auto xAdd = SQ_DIST_FACTOR * sqDistFromZero;
-  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf(PROB_FLIP_X_ADD))
+  if (static constexpr auto PROB_FLIP_X_ADD = 0.5F; m_goomRand->ProbabilityOf<PROB_FLIP_X_ADD>())
   {
     xAdd = -xAdd;
   }

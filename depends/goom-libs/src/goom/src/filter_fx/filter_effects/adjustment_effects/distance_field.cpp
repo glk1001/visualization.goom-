@@ -38,12 +38,12 @@ using UTILS::MATH::U_HALF;
 
 static constexpr auto MIN_GRID_WIDTH         = 4U;
 static constexpr auto DEFAULT_GRID_WIDTH     = MIN_GRID_WIDTH;
-static constexpr auto GRID_WIDTH_RANGE_MODE0 = NumberRange{4U, 15U};
-static constexpr auto GRID_WIDTH_RANGE_MODE1 = NumberRange{16U, 31U};
-static constexpr auto GRID_WIDTH_RANGE_MODE2 = NumberRange{32U, 63U};
-static_assert(GRID_WIDTH_RANGE_MODE0.Min() >= MIN_GRID_WIDTH);
-static_assert(GRID_WIDTH_RANGE_MODE1.Min() > GRID_WIDTH_RANGE_MODE0.Min());
-static_assert(GRID_WIDTH_RANGE_MODE2.Min() > GRID_WIDTH_RANGE_MODE1.Min());
+static constexpr auto GRID_WIDTH_MODE0_RANGE = NumberRange{4U, 15U};
+static constexpr auto GRID_WIDTH_MODE1_RANGE = NumberRange{16U, 31U};
+static constexpr auto GRID_WIDTH_MODE2_RANGE = NumberRange{32U, 63U};
+static_assert(GRID_WIDTH_MODE0_RANGE.min >= MIN_GRID_WIDTH);
+static_assert(GRID_WIDTH_MODE1_RANGE.min > GRID_WIDTH_MODE0_RANGE.min);
+static_assert(GRID_WIDTH_MODE2_RANGE.min > GRID_WIDTH_MODE1_RANGE.min);
 
 static constexpr auto DEFAULT_GRID_TYPE = DistanceField::GridType::FULL;
 static constexpr auto DEFAULT_GRID_SCALE =
@@ -122,17 +122,17 @@ auto DistanceField::SetRandomParams() noexcept -> void
 
 auto DistanceField::SetMode0RandomParams() noexcept -> void
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE0, GRID_WIDTH_RANGE_MODE0);
+  SetRandomParams(AMPLITUDE_RANGE_MODE0, GRID_WIDTH_MODE0_RANGE);
 }
 
 auto DistanceField::SetMode1RandomParams() noexcept -> void
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE1, GRID_WIDTH_RANGE_MODE1);
+  SetRandomParams(AMPLITUDE_RANGE_MODE1, GRID_WIDTH_MODE1_RANGE);
 }
 
 auto DistanceField::SetMode2RandomParams() noexcept -> void
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE2, GRID_WIDTH_RANGE_MODE2);
+  SetRandomParams(AMPLITUDE_RANGE_MODE2, GRID_WIDTH_MODE2_RANGE);
 }
 
 auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
@@ -146,12 +146,12 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
 
   const auto amplitude = GetAmplitude(amplitudeRange, gridType, gridWidth, gridArrays);
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
                                ? xLerpToOneT
-                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
   const auto useDiscontinuousZoomFactor =
-      m_goomRand->ProbabilityOf(PROB_USE_DISCONTINUOUS_ZOOM_FACTOR);
+      m_goomRand->ProbabilityOf<PROB_USE_DISCONTINUOUS_ZOOM_FACTOR>();
 
   SetParams({
       amplitude,
@@ -168,11 +168,10 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
 auto DistanceField::GetGridWidth(const GridType gridType,
                                  const GridWidthRange& gridWidthRange) const noexcept -> uint32_t
 {
-  if ((gridType == GridType::PARTIAL_RANDOM) and
-      (gridWidthRange.Min() == GRID_WIDTH_RANGE_MODE0.Min()))
+  if ((gridType == GridType::PARTIAL_RANDOM) and (gridWidthRange.min == GRID_WIDTH_MODE0_RANGE.min))
   {
     // For random grid type, wider range looks better.
-    return m_goomRand->GetRandInRange(GRID_WIDTH_RANGE_MODE1);
+    return m_goomRand->GetRandInRange<GRID_WIDTH_MODE1_RANGE>();
   }
 
   const auto gridWidth = m_goomRand->GetRandInRange(gridWidthRange);
@@ -270,7 +269,7 @@ auto DistanceField::TryGetGridPointRandomArray(const uint32_t gridWidth) const n
   {
     for (auto x = 0U; x < gridWidth; ++x)
     {
-      if (m_goomRand->ProbabilityOf(PROB_RANDOM_CENTRE))
+      if (m_goomRand->ProbabilityOf<PROB_RANDOM_CENTRE>())
       {
         gridPointArray.emplace_back(GetPoint2dInt(x, y));
       }
@@ -337,7 +336,7 @@ inline auto DistanceField::GetAmplitude(const AmplitudeRange& amplitudeRange,
     -> Amplitude
 {
   const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange.xRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
                               ? xAmplitude
                               : m_goomRand->GetRandInRange(amplitudeRange.yRange);
 

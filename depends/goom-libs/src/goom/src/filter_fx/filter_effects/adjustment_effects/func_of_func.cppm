@@ -43,10 +43,10 @@ private:
   FuncEffect m_func;
 
   static constexpr auto FUNC_TO_FUNC_OF_LERP_VALUE_RANGE = NumberRange{0.00F, 0.75F};
-  float m_funcToFuncOfLerpValue                          = FUNC_TO_FUNC_OF_LERP_VALUE_RANGE.Min();
+  float m_funcToFuncOfLerpValue                          = FUNC_TO_FUNC_OF_LERP_VALUE_RANGE.min;
 
   static constexpr auto COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE = UNIT_RANGE;
-  float m_coordsToFuncCoordsLerpValue = COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE.Min();
+  float m_coordsToFuncCoordsLerpValue = COORDS_TO_FUNC_COORDS_LERP_VALUE_RANGE.min;
 
   static constexpr auto PROB_USE_FULL_FUNC_OF = 0.1F;
   bool m_useFullFuncOf                        = false;

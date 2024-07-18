@@ -76,7 +76,7 @@ private:
   bool m_doCircleDotShapes = true;
   ColorMapPtrWrapper m_outerCircleDotColorMap{nullptr};
   static constexpr auto OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE = NumberRange{0.1F, 0.9F};
-  float m_outerCircleDotColorMix = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.Min();
+  float m_outerCircleDotColorMix = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.min;
 
   auto DrawBitmapDot(const Point2dInt& position,
                      uint32_t diameter,
@@ -117,13 +117,13 @@ inline auto DotDrawer::SetGlobalBrightnessFactor(const float val) noexcept -> vo
 inline auto DotDrawer::GetRandomDecorationType() const noexcept -> DecorationType
 {
   return static_cast<DecorationType>(
-      m_goomRand->GetRandInRange(NumberRange{0U, NUM<DecorationType> - 1}));
+      m_goomRand->GetRandInRange<NumberRange{0U, NUM<DecorationType> - 1}>());
 }
 
 inline auto DotDrawer::GetRandomDifferentColor(const RandomColorMaps& weightedMaps) const noexcept
     -> Pixel
 {
-  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange(UNIT_RANGE));
+  return weightedMaps.GetRandomColorMap().GetColor(m_goomRand->GetRandInRange<UNIT_RANGE>());
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
@@ -144,22 +144,22 @@ DotDrawer::DotDrawer(IGoomDraw& draw, const GoomRand& goomRand, const Helper& he
     m_helper{&helper},
     m_bitmapDrawer{draw},
     m_circleDrawer{draw},
-    m_bgndMainColorMixT{m_goomRand->GetRandInRange(BGND_MIX_T_RANGE)},
-    m_bgndLowColorMixT{m_goomRand->GetRandInRange(BGND_MIX_T_RANGE)},
+    m_bgndMainColorMixT{m_goomRand->GetRandInRange<BGND_MIX_T_RANGE>()},
+    m_bgndLowColorMixT{m_goomRand->GetRandInRange<BGND_MIX_T_RANGE>()},
     m_decorationType{GetRandomDecorationType()}
 {
 }
 
 auto DotDrawer::SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void
 {
-  m_bgndMainColorMixT      = m_goomRand->GetRandInRange(BGND_MIX_T_RANGE);
-  m_bgndLowColorMixT       = m_goomRand->GetRandInRange(BGND_MIX_T_RANGE);
+  m_bgndMainColorMixT      = m_goomRand->GetRandInRange<BGND_MIX_T_RANGE>();
+  m_bgndLowColorMixT       = m_goomRand->GetRandInRange<BGND_MIX_T_RANGE>();
   m_decorationType         = GetRandomDecorationType();
   m_differentColor         = GetRandomDifferentColor(weightedMaps);
   m_outerCircleDotColorMap = weightedMaps.GetRandomColorMap();
 
-  m_doCircleDotShapes      = m_goomRand->ProbabilityOf(PROB_CIRCLES);
-  m_outerCircleDotColorMix = m_goomRand->GetRandInRange(OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE);
+  m_doCircleDotShapes      = m_goomRand->ProbabilityOf<PROB_CIRCLES>();
+  m_outerCircleDotColorMix = m_goomRand->GetRandInRange<OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE>();
 }
 
 auto DotDrawer::DrawDot(const Point2dInt& pos,

@@ -106,7 +106,7 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero,
                       (MODE0_OFFSET + std::sin(MODE0_FREQ * sqDistFromZero)));
     case Modes::MODE1:
       return std::cos((m_params.tFreq * sqDistFromZero) *
-                      m_goomRand->GetRandInRange(NumberRange{MODE1_FACTOR_RANGE}));
+                      m_goomRand->GetRandInRange<MODE1_FACTOR_RANGE>());
     case Modes::MODE2:
       return -(1.0F / UTILS::MATH::HALF_PI) *
              std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));

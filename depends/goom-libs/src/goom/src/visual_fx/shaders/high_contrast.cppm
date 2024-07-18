@@ -112,12 +112,12 @@ auto HighContrast::ChangeHighContrast() -> void
 
   if (static constexpr float PROB_CONTRAST = 0.001F;
       (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()) &&
-      m_goomRand->ProbabilityOf(PROB_CONTRAST))
+      m_goomRand->ProbabilityOf<PROB_CONTRAST>())
   {
     m_highContrastT.Reset();
     m_highContrastOnTimer.ResetToZero();
     static constexpr auto CONTRAST_MIN_CHAN_RANGE = NumberRange{-0.5F, -0.2F};
-    m_maxContrastMinChannelValue = m_goomRand->GetRandInRange(CONTRAST_MIN_CHAN_RANGE);
+    m_maxContrastMinChannelValue = m_goomRand->GetRandInRange<CONTRAST_MIN_CHAN_RANGE>();
   }
 }
 

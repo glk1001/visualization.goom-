@@ -215,7 +215,7 @@ inline auto TentaclesFx::TentaclesImpl::Start() -> void
 inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 {
   if (static constexpr auto PROB_NEW_DRIVER = 0.5F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NEW_DRIVER))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_NEW_DRIVER>())
   {
     m_currentTentacleDriver = GetNextDriver();
   }

@@ -129,8 +129,8 @@ auto DotDrawer::ChangeDotSizes() noexcept -> void
 
   static constexpr auto PROB_BEADED_LOOK      = 0.15F;
   static constexpr auto BEADED_DOT_SIZE_RANGE = NumberRange{MAX_DOT_SIZE + 1, MAX_IMAGE_DOT_SIZE};
-  m_beadedLook                                = m_goomRand->ProbabilityOf(PROB_BEADED_LOOK);
-  m_maxBeadedDotSize                          = m_goomRand->GetRandInRange(BEADED_DOT_SIZE_RANGE);
+  m_beadedLook                                = m_goomRand->ProbabilityOf<PROB_BEADED_LOOK>();
+  m_maxBeadedDotSize                          = m_goomRand->GetRandInRange<BEADED_DOT_SIZE_RANGE>();
 }
 
 auto DotDrawer::DrawDot(const DotSizes dotSize,

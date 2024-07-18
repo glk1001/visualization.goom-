@@ -71,12 +71,12 @@ inline auto VisualFxColorMaps::GetNextRandomColorMapsGroup(const GoomEffect goom
   //  return randomColorMapsGroups.MakeRandomColorMapsGroup(group);
 
   if (static constexpr auto PROB_COMPLETELY_RANDOM = 0.05F;
-      m_goomRand->ProbabilityOf(PROB_COMPLETELY_RANDOM))
+      m_goomRand->ProbabilityOf<PROB_COMPLETELY_RANDOM>())
   {
     return GetNextCompletelyRandomColorMapsGroup();
   }
   if (static constexpr auto PROB_WEIGHTED_COLOR_MAPS = 0.25F;
-      m_goomRand->ProbabilityOf(PROB_WEIGHTED_COLOR_MAPS))
+      m_goomRand->ProbabilityOf<PROB_WEIGHTED_COLOR_MAPS>())
   {
     return m_visualFxWeightedColorMaps.GetCurrentRandomColorMapsGroup(goomEffect);
   }
@@ -88,7 +88,7 @@ inline auto VisualFxColorMaps::GetNextCompletelyRandomColorMapsGroup() const
     -> RandomColorMapsGroups::Groups
 {
   return static_cast<RandomColorMapsGroups::Groups>(
-      m_goomRand->GetRandInRange(NumberRange{0U, NUM<RandomColorMapsGroups::Groups> - 1}));
+      m_goomRand->GetRandInRange<NumberRange{0U, NUM<RandomColorMapsGroups::Groups> - 1}>());
 }
 
 } // namespace GOOM::CONTROL

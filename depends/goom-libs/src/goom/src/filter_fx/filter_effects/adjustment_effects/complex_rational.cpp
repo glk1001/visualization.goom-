@@ -161,22 +161,22 @@ auto ComplexRational::SetRandomParams() noexcept -> void
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
                                ? xLerpToOneT
-                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
-  const auto noInverseSquare        = m_goomRand->ProbabilityOf(PROB_NO_INVERSE_SQUARE);
-  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf(PROB_USE_NORMALIZED_AMPLITUDE);
+  const auto noInverseSquare        = m_goomRand->ProbabilityOf<PROB_NO_INVERSE_SQUARE>();
+  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf<PROB_USE_NORMALIZED_AMPLITUDE>();
 
-  const auto useModulatorContours = m_goomRand->ProbabilityOf(PROB_USE_MODULATOR_CONTOURS);
+  const auto useModulatorContours = m_goomRand->ProbabilityOf<PROB_USE_MODULATOR_CONTOURS>();
   const auto modulatorPeriod =
-      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange(MODULATOR_PERIOD_RANGE);
+      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange<MODULATOR_PERIOD_RANGE>();
 
   const auto zeroesAndPoles = GetNextZeroesAndPoles();
   SetParams({
@@ -193,7 +193,7 @@ auto ComplexRational::SetRandomParams() noexcept -> void
 
 auto ComplexRational::GetNextZeroesAndPoles() const noexcept -> Params::ZeroesAndPoles
 {
-  if (m_goomRand->ProbabilityOf(PROB_USE_SIMPLE_ZEROES_AND_POLES))
+  if (m_goomRand->ProbabilityOf<PROB_USE_SIMPLE_ZEROES_AND_POLES>())
   {
     return GetSimpleZeroesAndPoles();
   }
@@ -210,20 +210,20 @@ auto ComplexRational::GetNextZeroesAndPoles() const noexcept -> Params::ZeroesAn
 
   static constexpr auto POLES_RANGE = NumberRange{4U, 8U};
 
-  const auto numPoles    = m_goomRand->GetRandInRange(POLES_RANGE);
-  const auto polesRadius = m_goomRand->GetRandInRange(POLES_RADIUS_RANGE);
+  const auto numPoles    = m_goomRand->GetRandInRange<POLES_RANGE>();
+  const auto polesRadius = m_goomRand->GetRandInRange<POLES_RADIUS_RANGE>();
 
-  if (not m_goomRand->ProbabilityOf(PROB_USE_INNER_ZEROES))
+  if (not m_goomRand->ProbabilityOf<PROB_USE_INNER_ZEROES>())
   {
-    const auto numZeroes    = m_goomRand->GetRandInRange(ZEROES_RANGE);
-    const auto zeroesRadius = m_goomRand->GetRandInRange(ZEROES_RADIUS_RANGE);
+    const auto numZeroes    = m_goomRand->GetRandInRange<ZEROES_RANGE>();
+    const auto zeroesRadius = m_goomRand->GetRandInRange<ZEROES_RADIUS_RANGE>();
     return {GetPointSpread(numZeroes, zeroesRadius), GetPointSpread(numPoles, polesRadius)};
   }
 
-  const auto numInnerZeroes    = m_goomRand->GetRandInRange(INNER_ZEROES_RANGE);
-  const auto numOuterZeroes    = m_goomRand->GetRandInRange(OUTER_ZEROES_RANGE);
-  const auto innerZeroesRadius = m_goomRand->GetRandInRange(ZEROES_INNER_RADIUS_RANGE);
-  const auto outerZeroesRadius = m_goomRand->GetRandInRange(ZEROES_OUTER_RADIUS_RANGE);
+  const auto numInnerZeroes    = m_goomRand->GetRandInRange<INNER_ZEROES_RANGE>();
+  const auto numOuterZeroes    = m_goomRand->GetRandInRange<OUTER_ZEROES_RANGE>();
+  const auto innerZeroesRadius = m_goomRand->GetRandInRange<ZEROES_INNER_RADIUS_RANGE>();
+  const auto outerZeroesRadius = m_goomRand->GetRandInRange<ZEROES_OUTER_RADIUS_RANGE>();
 
   const auto innerZeroes = GetPointSpread(numInnerZeroes, innerZeroesRadius);
   const auto outerZeroes = GetPointSpread(numOuterZeroes, outerZeroesRadius);

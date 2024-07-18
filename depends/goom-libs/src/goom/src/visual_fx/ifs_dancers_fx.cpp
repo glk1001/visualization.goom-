@@ -97,7 +97,7 @@ public:
 
 private:
   static constexpr auto CYCLE_LENGTH_RANGE = NumberRange{1000, 2000};
-  int32_t m_cycleLength                    = CYCLE_LENGTH_RANGE.Min();
+  int32_t m_cycleLength                    = CYCLE_LENGTH_RANGE.min;
 
   FxHelper* m_fxHelper;
   BitmapDrawer m_bitmapDrawer;
@@ -138,7 +138,7 @@ private:
   static constexpr auto PROB_DRAW_LOW_DENSITY_POINTS = 0.1F;
   bool m_drawLowDensityPoints                        = false;
   static constexpr auto DENSITY_COUNT_RANGE          = NumberRange{5U, 20U};
-  uint32_t m_lowDensityCount                         = DENSITY_COUNT_RANGE.Min();
+  uint32_t m_lowDensityCount                         = DENSITY_COUNT_RANGE.min;
   LowDensityBlurrer m_blurrer;
   static constexpr auto BLUR_WIDTH                         = 3U;
   static constexpr auto DEFAULT_LOW_DENSITY_BLUR_THRESHOLD = 0.99F;
@@ -249,13 +249,13 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(FxHelper& fxHelper,
 inline auto IfsDancersFx::IfsDancersFxImpl::MegaChangeColorMapEvent() const noexcept -> bool
 {
   static constexpr auto PROB_MEGA_CHANGE_COLOR_MAP_EVENT = 0.5F;
-  return m_fxHelper->GetGoomRand().ProbabilityOf(PROB_MEGA_CHANGE_COLOR_MAP_EVENT);
+  return m_fxHelper->GetGoomRand().ProbabilityOf<PROB_MEGA_CHANGE_COLOR_MAP_EVENT>();
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::IfsRenewEvent() const noexcept -> bool
 {
   static constexpr auto PROB_IFS_RENEW_EVENT = 2.0F / 3.0F;
-  return m_fxHelper->GetGoomRand().ProbabilityOf(PROB_IFS_RENEW_EVENT);
+  return m_fxHelper->GetGoomRand().ProbabilityOf<PROB_IFS_RENEW_EVENT>();
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::InitFractal() noexcept -> void
@@ -341,7 +341,7 @@ auto IfsDancersFx::IfsDancersFxImpl::ChangeColorMaps() noexcept -> void
 {
   m_colorizer.ChangeColorMaps();
 
-  m_drawLowDensityPoints = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_DRAW_LOW_DENSITY_POINTS);
+  m_drawLowDensityPoints = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_DRAW_LOW_DENSITY_POINTS>();
 
   if (m_drawLowDensityPoints)
   {
@@ -425,7 +425,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateCycle() noexcept -> void
   }
 
   m_cycle       = 0;
-  m_cycleLength = m_fxHelper->GetGoomRand().GetRandInRange(CYCLE_LENGTH_RANGE);
+  m_cycleLength = m_fxHelper->GetGoomRand().GetRandInRange<CYCLE_LENGTH_RANGE>();
 
   UpdateLowDensityBlurThreshold();
 
@@ -439,7 +439,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityBlurThreshold() noex
   static constexpr auto PROB_HIGH_BLUR_THRESHOLD = 0.75F;
   static constexpr auto HIGH_BLUR_THRESHOLD      = 0.99F;
   static constexpr auto LOW_BLUR_THRESHOLD       = 0.40F;
-  m_lowDensityBlurThreshold = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_HIGH_BLUR_THRESHOLD)
+  m_lowDensityBlurThreshold = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_HIGH_BLUR_THRESHOLD>()
                                   ? HIGH_BLUR_THRESHOLD
                                   : LOW_BLUR_THRESHOLD;
 }
@@ -577,7 +577,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
     std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) noexcept -> void
 {
   if (static constexpr auto PROB_FIXED_MIX_FACTOR = 0.8F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_FIXED_MIX_FACTOR))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_FIXED_MIX_FACTOR>())
   {
     static constexpr auto FIXED_MIX_FACTOR = 0.98F;
     m_blurrer.SetNeighbourMixFactor(FIXED_MIX_FACTOR);
@@ -585,7 +585,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
   else
   {
     static constexpr auto MIX_FACTOR_RANGE = NumberRange{0.9F, 1.0F};
-    m_blurrer.SetNeighbourMixFactor(m_fxHelper->GetGoomRand().GetRandInRange(MIX_FACTOR_RANGE));
+    m_blurrer.SetNeighbourMixFactor(m_fxHelper->GetGoomRand().GetRandInRange<MIX_FACTOR_RANGE>());
   }
 
   m_blurrer.DoBlur(lowDensityPoints, maxLowDensityCount);
@@ -593,7 +593,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithBlur(
 
 inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() noexcept -> void
 {
-  m_lowDensityCount = m_fxHelper->GetGoomRand().GetRandInRange(DENSITY_COUNT_RANGE);
+  m_lowDensityCount = m_fxHelper->GetGoomRand().GetRandInRange<DENSITY_COUNT_RANGE>();
 
   m_blurrer.SetWidth(GetNewBlurWidth());
 }
@@ -601,7 +601,7 @@ inline auto IfsDancersFx::IfsDancersFxImpl::UpdateLowDensityThreshold() noexcept
 inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const noexcept -> uint32_t
 {
   static constexpr auto NUM_WIDTHS         = 3U;
-  static constexpr auto WIDTH_RANGE        = DENSITY_COUNT_RANGE.Range() / NUM_WIDTHS;
+  static constexpr auto WIDTH_RANGE        = DENSITY_COUNT_RANGE.range / NUM_WIDTHS;
   static constexpr auto DOUBLE_WIDTH_RANGE = 2 * WIDTH_RANGE;
 
   static constexpr auto LARGE_BLUR_WIDTH  = 7U;
@@ -610,11 +610,11 @@ inline auto IfsDancersFx::IfsDancersFxImpl::GetNewBlurWidth() const noexcept -> 
 
   auto blurWidth = SMALL_BLUR_WIDTH;
 
-  if (m_lowDensityCount <= (DENSITY_COUNT_RANGE.Min() + WIDTH_RANGE))
+  if (m_lowDensityCount <= (DENSITY_COUNT_RANGE.min + WIDTH_RANGE))
   {
     blurWidth = LARGE_BLUR_WIDTH;
   }
-  else if (m_lowDensityCount <= (DENSITY_COUNT_RANGE.Min() + DOUBLE_WIDTH_RANGE))
+  else if (m_lowDensityCount <= (DENSITY_COUNT_RANGE.min + DOUBLE_WIDTH_RANGE))
   {
     blurWidth = MEDIUM_BLUR_WIDTH;
   }

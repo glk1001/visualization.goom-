@@ -111,7 +111,7 @@ auto StarMaker::GetNewStarParams(const float starPathAngle) const noexcept -> St
 
   static constexpr auto PATH_LENGTH_RANGE = NumberRange{0.01F, 2.00F};
   const auto starPathLength =
-      m_starSetupParams.nominalPathLength * m_goomRand->GetRandInRange(PATH_LENGTH_RANGE);
+      m_starSetupParams.nominalPathLength * m_goomRand->GetRandInRange<PATH_LENGTH_RANGE>();
   static constexpr auto LENGTH_OFFSET = -0.2F;
   const auto initialVelocity          = Vec2dFlt{starPathLength * std::cos(starPathAngle),
                                         LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};

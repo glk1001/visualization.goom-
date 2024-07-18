@@ -494,10 +494,10 @@ Circle::Circle(FxHelper& fxHelper,
 
 inline auto Circle::GetNewNumDots() const noexcept -> uint32_t
 {
-  static_assert(UTILS::MATH::IsEven(NUM_DOTS_RANGE.Min()));
-  static_assert(UTILS::MATH::IsEven(NUM_DOTS_RANGE.Max()));
+  static_assert(UTILS::MATH::IsEven(NUM_DOTS_RANGE.min));
+  static_assert(UTILS::MATH::IsEven(NUM_DOTS_RANGE.max));
 
-  auto numDots = m_fxHelper->GetGoomRand().GetRandInRange(NUM_DOTS_RANGE);
+  auto numDots = m_fxHelper->GetGoomRand().GetRandInRange<NUM_DOTS_RANGE>();
   if (not UTILS::MATH::IsEven(numDots))
   {
     numDots += 1;
@@ -584,9 +584,9 @@ inline auto Circle::GetVerticalLowColorMaps() const noexcept -> std::vector<Colo
 auto Circle::UpdateRotatingColorMaps() noexcept -> void
 {
   const auto newNumRotatingColors =
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_NO_ROTATING_COLORS)
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_NO_ROTATING_COLORS>()
           ? 0U
-          : m_fxHelper->GetGoomRand().GetRandInRange(NUM_ROTATING_COLORS_RANGE);
+          : m_fxHelper->GetGoomRand().GetRandInRange<NUM_ROTATING_COLORS_RANGE>();
 
   if (m_numRotatingColors == newNumRotatingColors)
   {
@@ -594,7 +594,7 @@ auto Circle::UpdateRotatingColorMaps() noexcept -> void
   }
   m_numRotatingColors = newNumRotatingColors;
 
-  m_dotRotateIncrement = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_DOT_ROTATE_INCREMENT);
+  m_dotRotateIncrement = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_DOT_ROTATE_INCREMENT>();
 
   m_rotatingDotNums.resize(m_numRotatingColors);
   for (auto& dotNum : m_rotatingDotNums)
@@ -649,18 +649,18 @@ auto Circle::SetWeightedColorMaps(const WeightedRandomColorMaps& weightedMainMap
   UpdateRotatingColorMaps();
 
   UpdateNumDifferentGridMaps();
-  m_currentColorGridMixT = m_fxHelper->GetGoomRand().GetRandInRange(COLOR_GRID_MIX_T_RANGE);
+  m_currentColorGridMixT = m_fxHelper->GetGoomRand().GetRandInRange<COLOR_GRID_MIX_T_RANGE>();
   m_mainColorMapsGrid.SetColorMaps(GetHorizontalMainColorMaps(), GetVerticalMainColorMaps());
   m_lowColorMapsGrid.SetColorMaps(GetHorizontalLowColorMaps(), GetVerticalLowColorMaps());
 
   m_linesMainColorMap = GetHorizontalMainColorMaps().at(0);
   m_linesLowColorMap  = GetHorizontalLowColorMaps().at(0);
 
-  m_showLine = m_fxHelper->GetGoomRand().ProbabilityOf(PROB_SHOW_LINE);
+  m_showLine = m_fxHelper->GetGoomRand().ProbabilityOf<PROB_SHOW_LINE>();
 
   m_circleDots.GetDotDiameters().ChangeDiameters();
   m_alternateMainLowDotColors =
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_ALTERNATE_MAIN_LOW_DOT_COLORS);
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_ALTERNATE_MAIN_LOW_DOT_COLORS>();
   m_dotDrawer.SetWeightedColorMaps(weightedMainMaps);
 }
 

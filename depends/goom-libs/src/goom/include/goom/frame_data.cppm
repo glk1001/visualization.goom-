@@ -23,15 +23,15 @@ struct FilterPosArrays
   std::span<Point2dFlt> filterDestPos;
   float filterPosBuffersLerpFactor                 = 0.0F;
   static constexpr auto POS1_POS2_MIX_FREQ_RANGE   = NumberRange{0.001F, 0.010F};
-  static constexpr auto DEFAULT_POS1_POS2_MIX_FREQ = POS1_POS2_MIX_FREQ_RANGE.Max();
+  static constexpr auto DEFAULT_POS1_POS2_MIX_FREQ = POS1_POS2_MIX_FREQ_RANGE.max;
   float filterPos1Pos2FreqMixFreq                  = 0.0F;
   bool filterDestPosNeedsUpdating                  = false;
 };
 struct ImageArrays
 {
-  GOOM::PixelBuffer mainImagePixelBuffer;
+  PixelBuffer mainImagePixelBuffer;
   bool mainImagePixelBufferNeedsUpdating = false;
-  GOOM::PixelBuffer lowImagePixelBuffer;
+  PixelBuffer lowImagePixelBuffer;
   bool lowImagePixelBufferNeedsUpdating = false;
 };
 struct MiscData

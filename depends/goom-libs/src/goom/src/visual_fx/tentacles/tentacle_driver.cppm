@@ -287,7 +287,7 @@ auto TentacleDriver::CreateNewTentacle2D(const GoomRand& goomRand,
   };
 
   auto baseYWeights = GetMatchingBaseYWeights(tentacleParams.iterZeroYValWaveFreq);
-  baseYWeights.previous *= goomRand.GetRandInRange(BASE_Y_WEIGHT_FACTOR_RANGE);
+  baseYWeights.previous *= goomRand.GetRandInRange<BASE_Y_WEIGHT_FACTOR_RANGE>();
   baseYWeights.current = 1.0F - baseYWeights.previous;
 
   return std::make_unique<Tentacle2D>(tentacleParams.numNodes, dimensions, baseYWeights);
@@ -364,7 +364,7 @@ auto TentacleDriver::ChangeTentacleColorMaps() -> void
   m_tentacleGroupSize = m_goomRand->GetRandInRange(
       NumberRange{MIN_TENTACLE_GROUP_SIZE, static_cast<uint32_t>(m_tentacles.size() - 1)});
 
-  m_useThickLines = m_goomRand->ProbabilityOf(PROB_THICK_LINES);
+  m_useThickLines = m_goomRand->ProbabilityOf<PROB_THICK_LINES>();
 }
 
 auto TentacleDriver::SetTentaclesEndCentrePos(const Point2dInt& newEndCentrePos) noexcept -> void
@@ -385,7 +385,7 @@ auto TentacleDriver::UpdateTentaclesEndCentrePosOffsets() noexcept -> void
 {
   const auto endCentrePos = lerp(m_previousEndCentrePos, m_targetEndCentrePos, m_endCentrePosT());
   const auto endCentrePosOffset = endCentrePos - ToVec2dInt(m_screenCentre);
-  const auto radiusScale        = m_goomRand->GetRandInRange(RADIUS_FACTOR_RANGE);
+  const auto radiusScale        = m_goomRand->GetRandInRange<RADIUS_FACTOR_RANGE>();
 
   std::ranges::for_each(m_tentacles,
                         [&endCentrePosOffset, &radiusScale](auto& tentacle)
@@ -519,11 +519,11 @@ auto TentacleDriver::GetMixedColors(const float dominantT,
 
 inline auto TentacleDriver::ChangeSegmentMixes() noexcept -> void
 {
-  m_mainColorSegmentMixT = m_goomRand->GetRandInRange(COLOR_SEGMENT_MIX_T_RANGE);
+  m_mainColorSegmentMixT = m_goomRand->GetRandInRange<COLOR_SEGMENT_MIX_T_RANGE>();
 
-  m_lowColorSegmentMixT = m_goomRand->ProbabilityOf(PROB_LOW_MIX_SAME)
+  m_lowColorSegmentMixT = m_goomRand->ProbabilityOf<PROB_LOW_MIX_SAME>()
                               ? m_mainColorSegmentMixT
-                              : m_goomRand->GetRandInRange(COLOR_SEGMENT_MIX_T_RANGE);
+                              : m_goomRand->GetRandInRange<COLOR_SEGMENT_MIX_T_RANGE>();
 }
 
 inline auto TentacleDriver::GetLineThickness(const uint32_t tentacleNum) const noexcept -> uint8_t

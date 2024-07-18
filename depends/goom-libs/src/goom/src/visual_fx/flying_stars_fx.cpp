@@ -165,7 +165,7 @@ FlyingStarsFx::FlyingStarsImpl::FlyingStarsImpl(FxHelper& fxHelper,
     },
     m_pixelBlender{m_fxHelper->GetGoomRand()}
 {
-  m_activeStars.reserve(TOTAL_NUM_ACTIVE_STARS_RANGE.Max());
+  m_activeStars.reserve(TOTAL_NUM_ACTIVE_STARS_RANGE.max);
 }
 
 inline auto FlyingStarsFx::FlyingStarsImpl::GetCurrentStarTypeColorMapsNames() const noexcept
@@ -246,7 +246,7 @@ auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
   SoundEventOccurred();
 
   if (static constexpr auto PROB_CHANGE_MAPS_AND_MODES = 1.0F / 20.0F;
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_MAPS_AND_MODES))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_CHANGE_MAPS_AND_MODES>())
   {
     ChangeMapsAndModes();
   }
@@ -260,7 +260,7 @@ auto FlyingStarsFx::FlyingStarsImpl::CheckForStarEvents() noexcept -> void
 auto FlyingStarsFx::FlyingStarsImpl::DrawStars() noexcept -> void
 {
   static constexpr auto SPEED_FACTOR_RANGE = NumberRange{0.1F, 10.0F};
-  const auto speedFactor = m_fxHelper->GetGoomRand().GetRandInRange(SPEED_FACTOR_RANGE);
+  const auto speedFactor = m_fxHelper->GetGoomRand().GetRandInRange<SPEED_FACTOR_RANGE>();
 
   for (auto& star : m_activeStars)
   {
@@ -303,9 +303,9 @@ auto FlyingStarsFx::FlyingStarsImpl::IsStarDead(const Star& star) const noexcept
 
 auto FlyingStarsFx::FlyingStarsImpl::AddStarClusters() -> void
 {
-  const auto numStarClusters = m_fxHelper->GetGoomRand().GetRandInRange(NUM_STAR_CLUSTERS_RANGE);
+  const auto numStarClusters = m_fxHelper->GetGoomRand().GetRandInRange<NUM_STAR_CLUSTERS_RANGE>();
   const auto totalNumActiveStars =
-      m_fxHelper->GetGoomRand().GetRandInRange(TOTAL_NUM_ACTIVE_STARS_RANGE);
+      m_fxHelper->GetGoomRand().GetRandInRange<TOTAL_NUM_ACTIVE_STARS_RANGE>();
 
   for (auto i = 0U; i < numStarClusters; ++i)
   {
@@ -340,7 +340,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetStarProperties() const noexcept -> StarM
   return StarMaker::StarProperties{
       /* .heightRatio = */ m_heightRatio,
       /* .defaultPathLength = */ (1.0F + m_fxHelper->GetSoundEvents().GetGoomPower()) *
-          (m_fxHelper->GetGoomRand().GetRandInRange(STAR_CLUSTER_HEIGHT_RANGE) /
+          (m_fxHelper->GetGoomRand().GetRandInRange<STAR_CLUSTER_HEIGHT_RANGE>() /
            MAX_STAR_CLUSTER_WIDTH),
       /* .nominalPathLengthFactor = */
       (m_fxHelper->GetSoundEvents().GetTimeSinceLastBigGoom() >= 1) ? 1.0F
@@ -364,7 +364,7 @@ auto FlyingStarsFx::FlyingStarsImpl::GetMaxStarsInACluster() const noexcept -> u
   const auto maxStarsInACluster                      = static_cast<uint32_t>(
       m_heightRatio * (BASE_STARS_IN_CLUSTER +
                        ((m_fxHelper->GetSoundEvents().GetGoomPower() + 1.0F) *
-                        m_fxHelper->GetGoomRand().GetRandInRange(EXTRA_STARS_IN_CLUSTER_RANGE))));
+                        m_fxHelper->GetGoomRand().GetRandInRange<EXTRA_STARS_IN_CLUSTER_RANGE>())));
 
   if (m_fxHelper->GetSoundEvents().GetTimeSinceLastBigGoom() < 1)
   {

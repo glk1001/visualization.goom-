@@ -48,8 +48,8 @@ XYLerpEffect::XYLerpEffect(const GoomRand& goomRand)
 auto XYLerpEffect::SetRandomParams() -> void
 {
   const auto mode   = m_modeWeights.GetRandomWeighted();
-  const auto tFreq  = m_goomRand->GetRandInRange(T_FREQ_RANGE);
-  const auto ySign  = m_goomRand->ProbabilityOf(PROB_FLIP_Y_SIGN) ? -1.0F : +1.0F;
+  const auto tFreq  = m_goomRand->GetRandInRange<T_FREQ_RANGE>();
+  const auto ySign  = m_goomRand->ProbabilityOf<PROB_FLIP_Y_SIGN>() ? -1.0F : +1.0F;
   const auto flipXY = m_goomRand->ProbabilityOf(GetFlipYProbability(mode));
 
   SetParams({mode, tFreq, ySign, flipXY});

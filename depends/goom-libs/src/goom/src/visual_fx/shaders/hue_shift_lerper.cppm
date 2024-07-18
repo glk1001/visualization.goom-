@@ -85,8 +85,8 @@ HueShiftLerper::HueShiftLerper(const PluginInfo& goomInfo,
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_params{params},
-    m_lerpT{{TValue::StepType::SINGLE_CYCLE, m_params.numLerpStepsRange.Min()}},
-    m_lerpConstTimer{m_goomInfo->GetTime(), m_params.lerpConstTimeRange.Min(), false}
+    m_lerpT{{TValue::StepType::SINGLE_CYCLE, m_params.numLerpStepsRange.min}},
+    m_lerpConstTimer{m_goomInfo->GetTime(), m_params.lerpConstTimeRange.min, false}
 {
 }
 
@@ -135,7 +135,7 @@ inline auto HueShiftLerper::SetNewDestHue() noexcept -> void
   m_lerpT.Reset(0.0F);
 
   m_destHueShift =
-      std::fmod(m_srceHueShift + m_goomRand->GetRandInRange(FULL_CIRCLE_RANGE), TWO_PI);
+      std::fmod(m_srceHueShift + m_goomRand->GetRandInRange<FULL_CIRCLE_RANGE>(), TWO_PI);
   LogInfo("Reset m_destHueShift = {}.", m_destHueShift);
 }
 
@@ -153,7 +153,7 @@ inline auto HueShiftLerper::StopLerpAndSetHueShiftOff() noexcept -> void
 inline auto HueShiftLerper::CanRestartLerp() const noexcept -> bool
 {
   if (static constexpr float PROB_RESTART_LERP_AFTER_BIG_GOOM = 0.5F;
-      m_goomRand->ProbabilityOf(PROB_RESTART_LERP_AFTER_BIG_GOOM) and
+      m_goomRand->ProbabilityOf<PROB_RESTART_LERP_AFTER_BIG_GOOM>() and
       (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastBigGoom()))
   {
     LogInfo("Restarting lerp - GetTimeSinceLastBigGoom = {}",
@@ -162,7 +162,7 @@ inline auto HueShiftLerper::CanRestartLerp() const noexcept -> bool
   }
 
   if (static constexpr float PROB_RESTART_LERP_AFTER_GOOM = 0.01F;
-      m_goomRand->ProbabilityOf(PROB_RESTART_LERP_AFTER_GOOM) and
+      m_goomRand->ProbabilityOf<PROB_RESTART_LERP_AFTER_GOOM>() and
       (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom()))
   {
     LogInfo("Restarting lerp - GetTimeSinceLastGoom = {}",

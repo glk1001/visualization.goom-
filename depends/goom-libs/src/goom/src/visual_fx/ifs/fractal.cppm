@@ -63,7 +63,7 @@ private:
   TValue m_speedTransitionT{
       {TValue::StepType::SINGLE_CYCLE, NUM_SPEED_TRANSITION_STEPS}
   };
-  uint32_t m_maxCountTimesSpeed = MAX_COUNT_TIMES_SPEED_RANGE.Max();
+  uint32_t m_maxCountTimesSpeed = MAX_COUNT_TIMES_SPEED_RANGE.max;
 
   FractalHits m_hits1;
   FractalHits m_hits2;
@@ -141,7 +141,7 @@ auto Fractal::SetSpeed(const uint32_t val) -> void
 
 auto Fractal::Reset() -> void
 {
-  m_maxCountTimesSpeed = m_goomRand->GetRandInRange(MAX_COUNT_TIMES_SPEED_RANGE);
+  m_maxCountTimesSpeed = m_goomRand->GetRandInRange<MAX_COUNT_TIMES_SPEED_RANGE>();
 
   m_similitudes.ResetCurrentIfsFunc();
 }

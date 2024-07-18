@@ -151,9 +151,9 @@ auto LSysPath::GetPathParams() const noexcept -> OscillatingFunction::Params
   static constexpr auto PATH_Y_FREQ_RANGE    = NumberRange{0.9F, 2.0F};
 
   return {
-      m_goomRand->GetRandInRange(PATH_AMPLITUDE_RANGE),
-      m_goomRand->GetRandInRange(PATH_X_FREQ_RANGE),
-      m_goomRand->GetRandInRange(PATH_Y_FREQ_RANGE),
+      m_goomRand->GetRandInRange<PATH_AMPLITUDE_RANGE>(),
+      m_goomRand->GetRandInRange<PATH_X_FREQ_RANGE>(),
+      m_goomRand->GetRandInRange<PATH_Y_FREQ_RANGE>(),
   };
 }
 

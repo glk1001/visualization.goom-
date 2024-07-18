@@ -120,8 +120,7 @@ private:
   GoomLock m_lock; // pour empecher de nouveaux changements
 
   static constexpr auto MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE = NumberRange{300, 500};
-  int32_t m_maxTimeBetweenFilterSettingsChange =
-      MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.Min();
+  int32_t m_maxTimeBetweenFilterSettingsChange = MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.min;
   int32_t m_numUpdatesSinceLastFilterSettingsChange = 0;
   uint32_t m_previousZoomSpeed                      = FILTER_FX::Vitesse::STOP_SPEED;
 
@@ -427,7 +426,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::Start() -> void
 {
   m_timeInState                             = 0;
   m_numUpdatesSinceLastFilterSettingsChange = 0;
-  m_maxTimeBetweenFilterSettingsChange      = MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.Min();
+  m_maxTimeBetweenFilterSettingsChange      = MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE.min;
   m_previousZoomSpeed                       = FILTER_FX::Vitesse::STOP_SPEED;
 
   ClearChangeEventData();
@@ -489,7 +488,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeStateMaybe() 
     --m_stateSelectionBlocker;
     return;
   }
-  if (not m_goomRand->ProbabilityOf(PROB_CHANGE_STATE))
+  if (not m_goomRand->ProbabilityOf<PROB_CHANGE_STATE>())
   {
     return;
   }
@@ -503,7 +502,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterModeMay
 {
   if ((m_numUpdatesSinceLastFilterSettingsChange <= m_maxTimeBetweenFilterSettingsChange) and
       ((m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() > 0) or
-       (not m_goomRand->ProbabilityOf(PROB_CHANGE_FILTER_MODE))))
+       (not m_goomRand->ProbabilityOf<PROB_CHANGE_FILTER_MODE>())))
   {
     return;
   }
@@ -583,7 +582,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeRotationMaybe
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterExtraSettingsMaybe()
     -> void
 {
-  if (not m_goomRand->ProbabilityOf(PROB_CHANGE_FILTER_EXTRA_SETTINGS))
+  if (not m_goomRand->ProbabilityOf<PROB_CHANGE_FILTER_EXTRA_SETTINGS>())
   {
     return;
   }
@@ -599,11 +598,11 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::RestoreZoomInMaybe(
   if (static constexpr auto REVERSE_VITESSE_CYCLES = 13U;
       (m_filterSettingsService->GetROVitesse().GetReverseVitesse()) and
       ((m_goomInfo->GetTime().GetCurrentTime() % REVERSE_VITESSE_CYCLES) != 0) and
-      m_goomRand->ProbabilityOf(PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED))
+      m_goomRand->ProbabilityOf<PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED>())
   {
     DoChangeSpeedSlowAndForward();
   }
-  if (m_goomRand->ProbabilityOf(PROB_FILTER_REVERSE_ON))
+  if (m_goomRand->ProbabilityOf<PROB_FILTER_REVERSE_ON>())
   {
     DoChangeSpeedReverse();
   }
@@ -611,12 +610,12 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::RestoreZoomInMaybe(
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeStopSpeedsMaybe() -> void
 {
-  if (m_goomRand->ProbabilityOf(PROB_FILTER_VITESSE_STOP_SPEED_MINUS_1))
+  if (m_goomRand->ProbabilityOf<PROB_FILTER_VITESSE_STOP_SPEED_MINUS_1>())
   {
     LogChangeEvent(SET_SLOW_SPEED);
     m_filterSettingsService->GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::SLOWEST_SPEED);
   }
-  else if (m_goomRand->ProbabilityOf(PROB_FILTER_VITESSE_STOP_SPEED))
+  else if (m_goomRand->ProbabilityOf<PROB_FILTER_VITESSE_STOP_SPEED>())
   {
     LogChangeEvent(SET_STOP_SPEED);
     m_filterSettingsService->GetRWVitesse().SetVitesse(FILTER_FX::Vitesse::STOP_SPEED);
@@ -653,7 +652,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeVitesseMaybe(
   if (static constexpr auto VITESSE_CYCLES = 3U;
       ((currentVitesse > Vitesse::FASTER_SPEED) and (newVitesse > Vitesse::EVEN_FASTER_SPEED) and
        (0 == (m_goomInfo->GetTime().GetCurrentTime() % VITESSE_CYCLES))) or
-      m_goomRand->ProbabilityOf(PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE))
+      m_goomRand->ProbabilityOf<PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE>())
   {
     LogChangeEvent(SET_SLOWER_SPEED_AND_TOGGLE_REVERSE);
     DoSetSlowerSpeedAndToggleReverse();
@@ -688,7 +687,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigUpdateMaybe() 
   }
 
   // mode mega-lent
-  if (m_goomRand->ProbabilityOf(PROB_CHANGE_TO_MEGA_LENT_MODE))
+  if (m_goomRand->ProbabilityOf<PROB_CHANGE_TO_MEGA_LENT_MODE>())
   {
     DoMegaLentUpdate();
   }
@@ -710,7 +709,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigNormalUpdate()
   m_visualFx->ChangeAllFxColorMaps();
 
   m_maxTimeBetweenFilterSettingsChange =
-      m_goomRand->GetRandInRange(MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE);
+      m_goomRand->GetRandInRange<MAX_TIME_BETWEEN_FILTER_SETTINGS_CHANGE_RANGE>();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoMegaLentUpdate() -> void
@@ -751,7 +750,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeFilterMode(
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateFilterSettingsNow()
     const noexcept -> bool
 {
-  return (not m_goomRand->ProbabilityOf(PROB_SLOW_FILTER_SETTINGS_UPDATE)) or
+  return (not m_goomRand->ProbabilityOf<PROB_SLOW_FILTER_SETTINGS_UPDATE>()) or
          (0 == m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom());
 }
 
@@ -777,24 +776,24 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeRotationMay
 {
   LogChangeEvent(CHANGE_ROTATION);
 
-  if (m_goomRand->ProbabilityOf(PROB_FILTER_STOP_ROTATION))
+  if (m_goomRand->ProbabilityOf<PROB_FILTER_STOP_ROTATION>())
   {
     LogChangeEvent(TURN_OFF_ROTATION);
     m_filterSettingsService->TurnOffRotation();
   }
-  else if (m_goomRand->ProbabilityOf(PROB_FILTER_DECREASE_ROTATION))
+  else if (m_goomRand->ProbabilityOf<PROB_FILTER_DECREASE_ROTATION>())
   {
     LogChangeEvent(SLOWER_ROTATION);
     static constexpr auto ROTATE_SLOWER_FACTOR = 0.9F;
     m_filterSettingsService->MultiplyRotation(ROTATE_SLOWER_FACTOR);
   }
-  else if (m_goomRand->ProbabilityOf(PROB_FILTER_INCREASE_ROTATION))
+  else if (m_goomRand->ProbabilityOf<PROB_FILTER_INCREASE_ROTATION>())
   {
     LogChangeEvent(FASTER_ROTATION);
     static constexpr auto ROTATE_FASTER_FACTOR = 1.1F;
     m_filterSettingsService->MultiplyRotation(ROTATE_FASTER_FACTOR);
   }
-  else if (m_goomRand->ProbabilityOf(PROB_FILTER_TOGGLE_ROTATION))
+  else if (m_goomRand->ProbabilityOf<PROB_FILTER_TOGGLE_ROTATION>())
   {
     LogChangeEvent(TOGGLE_ROTATION);
     m_filterSettingsService->ToggleRotationDirection();

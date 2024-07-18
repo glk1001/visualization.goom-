@@ -83,28 +83,28 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
-  const auto yAmplitude = m_goomRand->ProbabilityOf(PROB_AMPLITUDES_EQUAL)
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
                               ? xAmplitude
-                              : m_goomRand->GetRandInRange(AMPLITUDE_RANGE);
+                              : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf(PROB_LERP_TO_ONE_T_S_EQUAL)
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
                                ? xLerpToOneT
-                               : m_goomRand->GetRandInRange(LERP_TO_ONE_T_RANGE);
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
-  const auto noInverseSquare        = m_goomRand->ProbabilityOf(PROB_NO_INVERSE_SQUARE);
-  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf(PROB_USE_NORMALIZED_AMPLITUDE);
+  const auto noInverseSquare        = m_goomRand->ProbabilityOf<PROB_NO_INVERSE_SQUARE>();
+  const auto useNormalizedAmplitude = m_goomRand->ProbabilityOf<PROB_USE_NORMALIZED_AMPLITUDE>();
 
-  const auto rotate  = std::polar(1.0F, m_goomRand->GetRandInRange(ROTATE_RANGE));
-  const auto magnify = m_goomRand->GetRandInRange(MAGNIFY_RANGE);
+  const auto rotate  = std::polar(1.0F, m_goomRand->GetRandInRange<ROTATE_RANGE>());
+  const auto magnify = m_goomRand->GetRandInRange<MAGNIFY_RANGE>();
 
   const auto reciprocalExponent =
-      static_cast<float>(m_goomRand->GetRandInRange(RECIPROCAL_EXPONENT_RANGE));
+      static_cast<float>(m_goomRand->GetRandInRange<RECIPROCAL_EXPONENT_RANGE>());
 
-  const auto useModulatorContours = m_goomRand->ProbabilityOf(PROB_USE_MODULATOR_CONTOURS);
+  const auto useModulatorContours = m_goomRand->ProbabilityOf<PROB_USE_MODULATOR_CONTOURS>();
   const auto modulatorPeriod =
-      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange(MODULATOR_PERIOD_RANGE);
+      not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange<MODULATOR_PERIOD_RANGE>();
 
   SetParams({
       viewport,

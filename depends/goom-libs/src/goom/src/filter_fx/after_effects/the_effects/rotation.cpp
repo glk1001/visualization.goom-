@@ -38,10 +38,10 @@ Rotation::Rotation(const GoomRand& goomRand) noexcept
 
 auto Rotation::SetRandomParams() -> void
 {
-  const auto xRotateSpeed = m_goomRand->GetRandInRange(ROTATE_SPEED_RANGE);
-  auto yRotateSpeed       = m_goomRand->ProbabilityOf(PROB_EQUAL_XY_ROTATE_SPEEDS)
+  const auto xRotateSpeed = m_goomRand->GetRandInRange<ROTATE_SPEED_RANGE>();
+  auto yRotateSpeed       = m_goomRand->ProbabilityOf<PROB_EQUAL_XY_ROTATE_SPEEDS>()
                                 ? xRotateSpeed
-                                : m_goomRand->GetRandInRange(ROTATE_SPEED_RANGE);
+                                : m_goomRand->GetRandInRange<ROTATE_SPEED_RANGE>();
 
   if (((xRotateSpeed < 0.0F) && (yRotateSpeed > 0.0F)) ||
       ((xRotateSpeed > 0.0F) && (yRotateSpeed < 0.0F)))
@@ -49,7 +49,7 @@ auto Rotation::SetRandomParams() -> void
     yRotateSpeed = -yRotateSpeed;
   }
 
-  const auto angle    = m_goomRand->GetRandInRange(ANGLE_RANGE);
+  const auto angle    = m_goomRand->GetRandInRange<ANGLE_RANGE>();
   const auto sinAngle = std::sin(angle);
   const auto cosAngle = std::cos(angle);
 

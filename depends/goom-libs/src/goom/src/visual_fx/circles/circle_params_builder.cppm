@@ -180,7 +180,7 @@ inline auto CircleParamsBuilder::SetCircleCentreStarts(
 inline auto CircleParamsBuilder::GetMainCircleRadius() const noexcept -> float
 {
   static constexpr auto RADIUS_MARGIN_RANGE = NumberRange{100.0F, 200.0F};
-  const auto radiusMargin = m_fxHelper->GetGoomRand().GetRandInRange(RADIUS_MARGIN_RANGE);
+  const auto radiusMargin = m_fxHelper->GetGoomRand().GetRandInRange<RADIUS_MARGIN_RANGE>();
 
   const auto maxRadius = 0.5F * static_cast<float>(std::min(m_screenWidth, m_screenHeight));
 
@@ -228,7 +228,7 @@ auto CircleParamsBuilder::GetReducingCircleRadii(const float mainCircleRadius) c
 inline auto CircleParamsBuilder::GetCircleRadiusReducer() const noexcept -> float
 {
   static constexpr auto RADIUS_REDUCER_RANGE = UNIT_RANGE;
-  return m_fxHelper->GetGoomRand().GetRandInRange(RADIUS_REDUCER_RANGE);
+  return m_fxHelper->GetGoomRand().GetRandInRange<RADIUS_REDUCER_RANGE>();
 }
 
 inline auto CircleParamsBuilder::GetFourCornersCircleRadii(
@@ -286,7 +286,7 @@ inline auto CircleParamsBuilder::GetFourCornersCircleCentreStarts(
 
   const auto innerCircleRadius = HALF * mainCircleRadius;
   const auto offset            = static_cast<int32_t>(
-      m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{0.5F, 1.0F}) * innerCircleRadius);
+      m_fxHelper->GetGoomRand().GetRandInRange<NumberRange{0.5F, 1.0F}>() * innerCircleRadius);
 
   auto circleCentreStarts = std::vector<Point2dInt>(m_numCircles);
 
@@ -348,7 +348,7 @@ inline auto CircleParamsBuilder::GetFourCornersCircleCentreTargets(
   auto circleCentreTargets = std::vector<Point2dInt>(m_numCircles);
 
   static constexpr auto T_RANGE = NumberRange{0.05F, 0.95F};
-  const auto t                  = m_fxHelper->GetGoomRand().GetRandInRange(T_RANGE);
+  const auto t                  = m_fxHelper->GetGoomRand().GetRandInRange<T_RANGE>();
 
   circleCentreTargets.at(0) = target;
   circleCentreTargets.at(1) = lerp(m_topLeftCorner, circleCentreTargets.at(0), t);

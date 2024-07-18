@@ -85,7 +85,7 @@ private:
   static constexpr auto TIME_TO_KEEP_ACTIVE_LSYS_RANGE = NumberRange{200U, 1000U};
   Timer m_timeForTheseActiveLSys{
       m_fxHelper->GetGoomTime(),
-      m_fxHelper->GetGoomRand().GetRandInRange(TIME_TO_KEEP_ACTIVE_LSYS_RANGE)};
+      m_fxHelper->GetGoomRand().GetRandInRange<TIME_TO_KEEP_ACTIVE_LSYS_RANGE>()};
 
   static constexpr auto MIN_NUM_ROTATE_DEGREES_STEPS = 50U;
   static constexpr auto MAX_NUM_ROTATE_DEGREES_STEPS = 500U;
@@ -310,12 +310,12 @@ auto LSystemFx::LSystemFxImpl::InitNextActiveLSystems() noexcept -> void
   m_activeLSystems.push_back(m_lSystems.at(lSystemIndex).get());
 
   m_timeForTheseActiveLSys.SetTimeLimitAndResetToZero(
-      m_fxHelper->GetGoomRand().GetRandInRange(TIME_TO_KEEP_ACTIVE_LSYS_RANGE));
+      m_fxHelper->GetGoomRand().GetRandInRange<TIME_TO_KEEP_ACTIVE_LSYS_RANGE>());
 }
 
 auto LSystemFx::LSystemFxImpl::Start() -> void
 {
-  SetRandFunc([this]() { return m_fxHelper->GetGoomRand().GetRandInRange(UNIT_RANGE); });
+  SetRandFunc([this]() { return m_fxHelper->GetGoomRand().GetRandInRange<UNIT_RANGE>(); });
 
   std::ranges::for_each(m_lSystems,
                         [this](auto& lSystem)
@@ -372,7 +372,7 @@ inline auto LSystemFx::LSystemFxImpl::Update() noexcept -> void
 
   if (static constexpr auto PROB_CHANGE_COLORS = 0.01F;
       (0 == m_fxHelper->GetSoundEvents().GetTimeSinceLastGoom()) or
-      m_fxHelper->GetGoomRand().ProbabilityOf(PROB_CHANGE_COLORS))
+      m_fxHelper->GetGoomRand().ProbabilityOf<PROB_CHANGE_COLORS>())
   {
     ChangeColors();
   }

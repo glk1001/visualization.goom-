@@ -129,7 +129,7 @@ private:
   // This factor gives the maximum height to the peaks of the audio samples lines.
   // This value seems pleasing.
   static constexpr auto MAX_NORMALIZED_PEAK_RANGE = NumberRange{100.0F, 400.0F};
-  float m_maxNormalizedPeak                       = MAX_NORMALIZED_PEAK_RANGE.Min();
+  float m_maxNormalizedPeak                       = MAX_NORMALIZED_PEAK_RANGE.min;
 
   FX_UTILS::DotDrawer m_dotDrawer;
   float m_audioRange    = 0.0F;
@@ -265,7 +265,7 @@ inline auto LineMorph::UpdateColorInfo() noexcept -> void
       m_colorMaps.GetRandomColorMapSharedPtr(WeightedRandomColorMaps::GetAllColorMapsTypes());
 
   static constexpr auto PROB_USE_LINE_COLOR = 0.5F;
-  m_useLineColor                            = m_goomRand->ProbabilityOf(PROB_USE_LINE_COLOR);
+  m_useLineColor                            = m_goomRand->ProbabilityOf<PROB_USE_LINE_COLOR>();
 }
 
 inline auto LineMorph::GetFreshLine(const LineType lineType,
@@ -300,7 +300,7 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   {
     m_srceLineParams.lineType              = m_destLineParams.lineType;
     static constexpr auto BRIGHTNESS_RANGE = NumberRange{5.0F, 10.0F};
-    m_currentBrightness                    = m_goomRand->GetRandInRange(BRIGHTNESS_RANGE);
+    m_currentBrightness                    = m_goomRand->GetRandInRange<BRIGHTNESS_RANGE>();
   }
 
   Ensures((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
@@ -320,12 +320,12 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   if (m_lineColorPower < MIN_POWER)
   {
     m_lineColorPower          = MIN_POWER;
-    m_lineColorPowerIncrement = m_goomRand->GetRandInRange(POW_INC_RANGE);
+    m_lineColorPowerIncrement = m_goomRand->GetRandInRange<POW_INC_RANGE>();
   }
   if (m_lineColorPower > MAX_POWER)
   {
     m_lineColorPower          = MAX_POWER;
-    m_lineColorPowerIncrement = -m_goomRand->GetRandInRange(POW_INC_RANGE);
+    m_lineColorPowerIncrement = -m_goomRand->GetRandInRange<POW_INC_RANGE>();
   }
 
   static constexpr auto AMP_MIX_AMOUNT = 0.01F;
@@ -343,18 +343,18 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
   m_lineLerpParam = 0.0;
 
   static constexpr auto BRIGHTNESS_RANGE = NumberRange{1.5F, 3.0F};
-  m_currentBrightness                    = m_goomRand->GetRandInRange(BRIGHTNESS_RANGE);
+  m_currentBrightness                    = m_goomRand->GetRandInRange<BRIGHTNESS_RANGE>();
 
   m_dotDrawer.ChangeDotSizes();
 
-  m_maxNormalizedPeak = m_goomRand->GetRandInRange(MAX_NORMALIZED_PEAK_RANGE);
+  m_maxNormalizedPeak = m_goomRand->GetRandInRange<MAX_NORMALIZED_PEAK_RANGE>();
 
   m_srcePointsCopy = m_srcePoints;
 }
 
 auto LineMorph::GetRandomLineColor() const noexcept -> Pixel
 {
-  if (static constexpr auto PROB_LINE_COLOR = 0.02F; m_goomRand->ProbabilityOf(PROB_LINE_COLOR))
+  if (static constexpr auto PROB_LINE_COLOR = 0.02F; m_goomRand->ProbabilityOf<PROB_LINE_COLOR>())
   {
     return GetSimpleColor(static_cast<SimpleColors>(m_goomRand->GetNRand(NUM<SimpleColors>)),
                           m_defaultAlpha);

@@ -24,8 +24,8 @@ Scrunch::Scrunch(const GoomRand& goomRand) noexcept
 
 auto Scrunch::SetRandomParams() noexcept -> void
 {
-  const auto xAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.xRange);
-  const auto yAmplitude = m_goomRand->GetRandInRange(AMPLITUDE_RANGE.yRange);
+  const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE.xRange>();
+  const auto yAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE.yRange>();
 
   SetParams({xAmplitude, yAmplitude});
 }
