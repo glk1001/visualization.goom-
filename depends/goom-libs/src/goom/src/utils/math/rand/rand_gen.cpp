@@ -3,6 +3,7 @@ module;
 #include "xoshiro.hpp"
 
 #include <cstdint>
+#include <type_traits>
 
 module Goom.Utils.Math.Rand.RandGen;
 
@@ -15,11 +16,12 @@ namespace GOOM::UTILS::MATH::RAND::GEN
 using RandType = XoshiroCpp::Xoshiro128Plus;
 //using RandType = std::mt19937;
 
+static_assert(std::is_same_v<decltype(GEN_RAND_MAX), const uint32_t>);
 static constexpr auto RAND_BITS = 32U;
 
-static_assert(GOOM_RAND_MAX == RandType::max());
-static_assert(GOOM_RAND_MAX == (1UL << RAND_BITS) - 1);
-static_assert(((static_cast<uint64_t>(GOOM_RAND_MAX) + 1) >> RAND_BITS) == 1);
+static_assert(GEN_RAND_MAX == RandType::max());
+static_assert(GEN_RAND_MAX == (static_cast<uint64_t>(1U) << RAND_BITS) - 1);
+static_assert(((static_cast<uint64_t>(GEN_RAND_MAX) + 1) >> RAND_BITS) == 1);
 
 namespace
 {
@@ -55,11 +57,18 @@ auto Generate(const uint32_t n) noexcept -> uint32_t
   auto x = sXoshiroEng();
 
   auto m = static_cast<uint64_t>(x) * static_cast<uint64_t>(s);
-  auto l = static_cast<uint32_t>(m); // == m % (GOOM_RAND_MAX + 1)
+  auto l = static_cast<uint32_t>(m); // == m % (GEN_RAND_MAX + 1)
 
   if (l < s)
   {
-    const uint32_t t = -s % s; // (GOOM_RAND_MAX % s) + 1
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4146) // Minus unsigned works fine for clang.
+#endif
+    const uint32_t t = -s % s; // (GEN_RAND_MAX % s) + 1
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
     while (l < t)
     {
       x = sXoshiroEng();

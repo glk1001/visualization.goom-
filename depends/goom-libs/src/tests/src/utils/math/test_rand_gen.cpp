@@ -3,6 +3,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_all.hpp>
+#include <cstdint>
 #include <format>
 #include <limits>
 
@@ -12,9 +13,9 @@ import Goom.Utils.Math.Rand.RandGen;
 namespace GOOM::UNIT_TESTS
 {
 
+using UTILS::MATH::RAND::GEN::GEN_RAND_MAX;
 using UTILS::MATH::RAND::GEN::Generate;
 using UTILS::MATH::RAND::GEN::GetRandSeed;
-using UTILS::MATH::RAND::GEN::GOOM_RAND_MAX;
 using UTILS::MATH::RAND::GEN::SetRandSeed;
 
 // NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
@@ -30,20 +31,27 @@ TEST_CASE("Lemire")
   static_assert(M_UINT64 > std::numeric_limits<uint32_t>::max());
 
   static constexpr auto M_UINT64_TRUNC32 = static_cast<uint32_t>(M_UINT64);
-  static constexpr auto M_UINT64_MOD_MAX = M_UINT64 % (static_cast<u_int64_t>(GOOM_RAND_MAX) + 1U);
+  static constexpr auto M_UINT64_MOD_MAX = M_UINT64 % (static_cast<uint64_t>(GEN_RAND_MAX) + 1U);
   STATIC_REQUIRE(M_UINT64_TRUNC32 == M_UINT64_MOD_MAX);
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4146) // Minus unsigned works fine for clang.
+#endif
   // Check -s % s
   static constexpr auto M_UINT32 = 0xAAAFFEU;
   static_assert(M_UINT32 < std::numeric_limits<uint32_t>::max());
 
   static constexpr auto M_UINT32_COMPLEMENT   = -M_UINT32;
-  static constexpr auto GOOM_RAND_MAX_MINUS_M = GOOM_RAND_MAX - M_UINT32;
+  static constexpr auto GOOM_RAND_MAX_MINUS_M = GEN_RAND_MAX - M_UINT32;
   static_assert(M_UINT32_COMPLEMENT == (GOOM_RAND_MAX_MINUS_M + 1));
 
   static constexpr auto M_UINT32_MOD        = -M_UINT32 % M_UINT32;
-  static constexpr auto GOOM_RAND_MAX_MOD_M = GOOM_RAND_MAX % M_UINT32;
+  static constexpr auto GOOM_RAND_MAX_MOD_M = GEN_RAND_MAX % M_UINT32;
   STATIC_REQUIRE(M_UINT32_MOD == (GOOM_RAND_MAX_MOD_M + 1));
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 }
 
 TEST_CASE("Rand Generate")
