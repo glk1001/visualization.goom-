@@ -66,14 +66,16 @@ public:
   [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool;
 
   // Return random integer in the range 0 <= n < n1.
-  [[nodiscard]] auto GetNRand(uint32_t n1) const noexcept -> uint32_t;
+  [[nodiscard]] static auto GetNRand(uint32_t n1) noexcept -> uint32_t;
 
 private:
-  // Return random number in the range n0 <= n <= n1.
-  [[nodiscard]] auto GetRandInRange(uint32_t n0, uint32_t n1) const noexcept -> uint32_t;
-  [[nodiscard]] auto GetRandInRange(int32_t n0, int32_t n1) const noexcept -> int32_t;
-  [[nodiscard]] auto GetRandInRange(float n0, float n1) const noexcept -> float;
-  [[nodiscard]] auto GetRandInRange(double n0, double n1) const noexcept -> double;
+  // Return a random integer number in the range [n0, n0 + nRangePlus1).
+  [[nodiscard]] static auto GetRandInRange(uint32_t n0, uint32_t nRangePlus1) noexcept -> uint32_t;
+  [[nodiscard]] static auto GetRandInRange(int32_t n0, int32_t nRangePlus1) noexcept -> int32_t;
+
+  // Return a random real number in the range [x0, x0+xRange].
+  [[nodiscard]] static auto GetRandInRange(float x0, float xRange) noexcept -> float;
+  [[nodiscard]] static auto GetRandInRange(double x0, double xRange) noexcept -> double;
 };
 
 template<EnumType E>
@@ -103,7 +105,7 @@ private:
   [[nodiscard]] auto GetRandomWeighted(const E& given) const noexcept -> E;
 
   const GoomRand* m_goomRand = nullptr;
-  using WeightArray           = std::array<float, NUM<E>>;
+  using WeightArray          = std::array<float, NUM<E>>;
   struct WeightData
   {
     WeightArray weightArray{0.0F};
@@ -187,26 +189,7 @@ constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
   return std::midpoint(numberRange.Min(), numberRange.Max());
 }
 
-template<typename T, NumberRange<T> numberRange>
-[[nodiscard]] auto GoomRand::GetRandInRange() const noexcept -> T
-{
-  if (std::is_integral<T>())
-  {
-    return GetRandInRange(numberRange.Min(), numberRange.Max() + 1);
-  }
-  return GetRandInRange(numberRange.Min(), numberRange.Max());
-}
-
-template<typename T>
-auto GoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T
-{
-  if (std::is_integral<T>())
-  {
-    return GetRandInRange(numberRange.Min(), numberRange.Max() + 1);
-  }
-  return GetRandInRange(numberRange.Min(), numberRange.Max());
-}
-
+// NOLINTBEGIN(readability-convert-member-functions-to-static)
 template<std::ranges::random_access_range Range>
 auto GoomRand::Shuffle(Range& range) const noexcept -> void
 {
@@ -220,35 +203,82 @@ auto GoomRand::Shuffle(Range& range) const noexcept -> void
   }
 }
 
-inline auto GoomRand::GetNRand(const uint32_t n1) const noexcept -> uint32_t
+inline auto GoomRand::ProbabilityOf(const float x) const noexcept -> bool
+{
+  return GetRandInRange(0.0F, 1.0F) <= x;
+}
+
+template<typename T, NumberRange<T> numberRange>
+[[nodiscard]] auto GoomRand::GetRandInRange() const noexcept -> T
+{
+  if constexpr (not std::is_integral<T>())
+  {
+    // Get floating point integer.
+    return GetRandInRange(numberRange.Min(), numberRange.Range());
+  }
+  else
+  {
+    // Get random integer.
+    if constexpr (0 == numberRange.Range())
+    {
+      return numberRange.Min();
+    }
+    else
+    {
+      return GetRandInRange(numberRange.Min(), numberRange.Range() + 1);
+    }
+  }
+}
+
+template<typename T>
+auto GoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T
+{
+  if constexpr (not std::is_integral<T>())
+  {
+    // Get floating point integer.
+    return GetRandInRange(numberRange.Min(), numberRange.Range());
+  }
+  else
+  {
+    // Get random integer.
+    if (0 == numberRange.Range())
+    {
+      return numberRange.Min();
+    }
+    return GetRandInRange(numberRange.Min(), numberRange.Range() + 1);
+  }
+}
+
+inline auto GoomRand::GetNRand(const uint32_t n1) noexcept -> uint32_t
 {
   return RAND::GetNRand(n1);
 }
+// NOLINTEND(readability-convert-member-functions-to-static)
 
-inline auto GoomRand::GetRandInRange(const uint32_t n0, const uint32_t n1) const noexcept
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+inline auto GoomRand::GetRandInRange(const uint32_t n0, const uint32_t nRangePlus1) noexcept
     -> uint32_t
 {
-  return RAND::GetRandInRange(n0, n1);
+  return RAND::GetRandInRange(n0, nRangePlus1);
 }
 
-inline auto GoomRand::GetRandInRange(const int32_t n0, const int32_t n1) const noexcept -> int32_t
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+inline auto GoomRand::GetRandInRange(const int32_t n0, const int32_t nRangePlus1) noexcept
+    -> int32_t
 {
-  return RAND::GetRandInRange(n0, n1);
+  return RAND::GetRandInRange(n0, nRangePlus1);
 }
 
-inline auto GoomRand::GetRandInRange(const float n0, const float n1) const noexcept -> float
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+inline auto GoomRand::GetRandInRange(const float x0, const float xRange) noexcept -> float
 {
-  return RAND::GetRandInRange(n0, n1);
+  return RAND::GetRandInRange(x0, xRange);
 }
 
-inline auto GoomRand::GetRandInRange(const double n0, const double n1) const noexcept -> double
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+inline auto GoomRand::GetRandInRange(const double x0, const double xRange) noexcept -> double
 {
-  return RAND::GetRandInRange(n0, n1);
-}
-
-inline auto GoomRand::ProbabilityOf(const float x) const noexcept -> bool
-{
-  return RAND::ProbabilityOf(x);
+  return RAND::GetRandInRange(x0, xRange);
 }
 
 template<EnumType E>

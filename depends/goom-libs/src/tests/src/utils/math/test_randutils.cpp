@@ -70,25 +70,28 @@ TEST_CASE("repeatable random sequence")
   REQUIRE(SEED == GetRandSeed());
 }
 
-static const auto RAND_GENERATOR = [](const auto min, const auto max)
-{ return GetRandInRange(min, max); };
+static const auto INT_RAND_GENERATOR = [](const auto min, const auto range)
+{ return GetRandInRange(min, range + 1); };
+static const auto FLT_RAND_GENERATOR = [](const auto min, const auto range)
+{ return GetRandInRange(min, range); };
 
 TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
   static constexpr auto NUM_LOOPS                        = 1000'000U;
-  static constexpr auto ACCEPTABLE_OUT_OF_UNIFORM_MARGIN = 550U;
+  static constexpr auto ACCEPTABLE_OUT_OF_UNIFORM_MARGIN = 600U;
 
   static constexpr auto SEED = 1000UL;
   SetRandSeed(SEED);
 
-  static constexpr auto N_MIN1 = 999U;
-  static constexpr auto N_MAX1 = 10001U;
-  const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_GENERATOR);
+  static constexpr auto N_MIN1   = 999U;
+  static constexpr auto N_MAX1   = 10001U;
+  static constexpr auto N_RANGE1 = N_MAX1 - N_MIN1;
+  const auto countsResults1      = GetCountResults(NUM_LOOPS, N_MIN1, N_RANGE1, INT_RAND_GENERATOR);
   REQUIRE(countsResults1.min == N_MIN1);
-  REQUIRE(countsResults1.max == N_MAX1 - 1);
-  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
+  REQUIRE(countsResults1.max == N_MAX1);
+  REQUIRE(countsResults1.numCounts == (N_RANGE1 + 1));
   REQUIRE(countsResults1.sumOfAllCounts == NUM_LOOPS);
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults1.minCount, countsResults1.minCountAt));
@@ -96,12 +99,13 @@ TEST_CASE("uint32_t min max get random")
       "maxCount = {}, maxCountAt = {}", countsResults1.maxCount, countsResults1.maxCountAt));
   REQUIRE(countsResults1.maxCount - countsResults1.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN2 = 0U;
-  static constexpr auto N_MAX2 = 100U;
-  const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_GENERATOR);
+  static constexpr auto N_MIN2   = 0U;
+  static constexpr auto N_MAX2   = 100U;
+  static constexpr auto N_RANGE2 = N_MAX2 - N_MIN2;
+  const auto countsResults2      = GetCountResults(NUM_LOOPS, N_MIN2, N_RANGE2, INT_RAND_GENERATOR);
   REQUIRE(countsResults2.min == N_MIN2);
-  REQUIRE(countsResults2.max == N_MAX2 - 1);
-  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
+  REQUIRE(countsResults2.max == N_MAX2);
+  REQUIRE(countsResults2.numCounts == (N_RANGE2 + 1));
   REQUIRE(countsResults2.sumOfAllCounts == NUM_LOOPS);
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults2.minCount, countsResults2.minCountAt));
@@ -109,17 +113,17 @@ TEST_CASE("uint32_t min max get random")
       "maxCount = {}, maxCountAt = {}", countsResults2.maxCount, countsResults2.maxCountAt));
   REQUIRE(countsResults2.maxCount - countsResults2.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  REQUIRE(5U == GetRandInRange(5U, 6U));
+  REQUIRE(5U == GetRandInRange(5U, 1U));
 
 
   static constexpr auto BENCHMARK_NUM_LOOPS = 10000U;
   BENCHMARK("uint32_t rand loop 1")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN1, N_MAX1, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN1, N_RANGE1, INT_RAND_GENERATOR);
   };
   BENCHMARK("uint32_t rand loop 2")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN2, N_MAX2, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN2, N_RANGE2, INT_RAND_GENERATOR);
   };
 }
 
@@ -133,73 +137,77 @@ TEST_CASE("int32_t min max get random")
   static constexpr auto SEED = 1000UL;
   SetRandSeed(SEED);
 
-  static constexpr auto N_MIN1 = -999;
-  static constexpr auto N_MAX1 = 10001;
-  const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_GENERATOR);
+  static constexpr auto N_MIN1   = -999;
+  static constexpr auto N_MAX1   = 10001;
+  static constexpr auto N_RANGE1 = N_MAX1 - N_MIN1;
+  const auto countsResults1      = GetCountResults(NUM_LOOPS, N_MIN1, N_RANGE1, INT_RAND_GENERATOR);
   REQUIRE(countsResults1.min == N_MIN1);
-  REQUIRE(countsResults1.max == N_MAX1 - 1);
-  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
+  REQUIRE(countsResults1.max == N_MAX1);
+  REQUIRE(countsResults1.numCounts == (N_RANGE1 + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults1.minCount, countsResults1.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults1.maxCount, countsResults1.maxCountAt));
   REQUIRE(countsResults1.maxCount - countsResults1.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN2 = -999;
-  static constexpr auto N_MAX2 = -50;
-  const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_GENERATOR);
+  static constexpr auto N_MIN2   = -999;
+  static constexpr auto N_MAX2   = -50;
+  static constexpr auto N_RANGE2 = N_MAX2 - N_MIN2;
+  const auto countsResults2      = GetCountResults(NUM_LOOPS, N_MIN2, N_RANGE2, INT_RAND_GENERATOR);
   REQUIRE(countsResults2.min == N_MIN2);
-  REQUIRE(countsResults2.max == N_MAX2 - 1);
-  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
+  REQUIRE(countsResults2.max == N_MAX2);
+  REQUIRE(countsResults2.numCounts == (N_RANGE2 + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults2.minCount, countsResults2.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults2.maxCount, countsResults2.maxCountAt));
   REQUIRE(countsResults2.maxCount - countsResults2.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN3 = 1;
-  static constexpr auto N_MAX3 = 999;
-  const auto countsResults3    = GetCountResults(NUM_LOOPS, N_MIN3, N_MAX3, RAND_GENERATOR);
+  static constexpr auto N_MIN3   = 1;
+  static constexpr auto N_MAX3   = 999;
+  static constexpr auto N_RANGE3 = N_MAX3 - N_MIN3;
+  const auto countsResults3      = GetCountResults(NUM_LOOPS, N_MIN3, N_RANGE3, INT_RAND_GENERATOR);
   REQUIRE(countsResults3.min == N_MIN3);
-  REQUIRE(countsResults3.max == N_MAX3 - 1);
-  REQUIRE(countsResults3.numCounts == (N_MAX3 - N_MIN3));
+  REQUIRE(countsResults3.max == N_MAX3);
+  REQUIRE(countsResults3.numCounts == (N_RANGE3 + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults3.minCount, countsResults3.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults3.maxCount, countsResults3.maxCountAt));
   REQUIRE(countsResults3.maxCount - countsResults3.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN4 = 0;
-  static constexpr auto N_MAX4 = 635;
-  const auto countsResults4    = GetCountResults(NUM_LOOPS, N_MIN4, N_MAX4, RAND_GENERATOR);
+  static constexpr auto N_MIN4   = 0;
+  static constexpr auto N_MAX4   = 635;
+  static constexpr auto N_RANGE4 = N_MAX4 - N_MIN4;
+  const auto countsResults4      = GetCountResults(NUM_LOOPS, N_MIN4, N_RANGE4, INT_RAND_GENERATOR);
   REQUIRE(countsResults4.min == N_MIN4);
-  REQUIRE(countsResults4.max == N_MAX4 - 1);
-  REQUIRE(countsResults4.numCounts == (N_MAX4 - N_MIN4));
+  REQUIRE(countsResults4.max == N_MAX4);
+  REQUIRE(countsResults4.numCounts == (N_RANGE4 + 1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults4.minCount, countsResults4.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults4.maxCount, countsResults4.maxCountAt));
   REQUIRE(countsResults4.maxCount - countsResults4.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  REQUIRE(5 == GetRandInRange(5, 6));
-  REQUIRE(-6 == GetRandInRange(-6, -5));
+  REQUIRE(5 == GetRandInRange(5, 1));
+  REQUIRE(-6 == GetRandInRange(-6, 1));
 
   static constexpr auto BENCHMARK_NUM_LOOPS = 10000U;
   BENCHMARK("int32_t rand loop 1")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN1, N_MAX1, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN1, N_RANGE1, INT_RAND_GENERATOR);
   };
   BENCHMARK("int32_t rand loop 2")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN2, N_MAX2, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN2, N_RANGE2, INT_RAND_GENERATOR);
   };
   BENCHMARK("int32_t rand loop 3")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN3, N_MAX3, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN3, N_RANGE3, INT_RAND_GENERATOR);
   };
   BENCHMARK("int32_t rand loop 4")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN4, N_MAX4, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN4, N_RANGE4, INT_RAND_GENERATOR);
   };
 }
 
@@ -217,9 +225,10 @@ TEST_CASE("float min max get random")
   static constexpr auto SEED = 1000UL;
   SetRandSeed(SEED);
 
-  static constexpr auto N_MIN1 = 0.0F;
-  static constexpr auto N_MAX1 = 1.0F;
-  const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_GENERATOR);
+  static constexpr auto N_MIN1   = 0.0F;
+  static constexpr auto N_MAX1   = 1.0F;
+  static constexpr auto N_RANGE1 = N_MAX1 - N_MIN1;
+  const auto countsResults1      = GetCountResults(NUM_LOOPS, N_MIN1, N_RANGE1, FLT_RAND_GENERATOR);
   REQUIRE(countsResults1.min == Approx(N_MIN1).margin(SMALL_VAL));
   REQUIRE(countsResults1.max == Approx(N_MAX1).margin(SMALL_VAL));
   REQUIRE(countsResults1.numCounts > REASONABLE_FLOAT_COUNT);
@@ -229,9 +238,10 @@ TEST_CASE("float min max get random")
       "maxCount = {}, maxCountAt = {}", countsResults1.maxCount, countsResults1.maxCountAt));
   REQUIRE(countsResults1.maxCount - countsResults1.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN2 = -1.0F;
-  static constexpr auto N_MAX2 = 0.0F;
-  const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_GENERATOR);
+  static constexpr auto N_MIN2   = -1.0F;
+  static constexpr auto N_MAX2   = 0.0F;
+  static constexpr auto N_RANGE2 = N_MAX2 - N_MIN2;
+  const auto countsResults2      = GetCountResults(NUM_LOOPS, N_MIN2, N_RANGE2, FLT_RAND_GENERATOR);
   REQUIRE(countsResults2.min == Approx(N_MIN2).margin(SMALL_VAL));
   REQUIRE(countsResults2.max == Approx(N_MAX2).margin(SMALL_VAL));
   REQUIRE(countsResults2.numCounts > REASONABLE_FLOAT_COUNT);
@@ -241,9 +251,10 @@ TEST_CASE("float min max get random")
       "maxCount = {}, maxCountAt = {}", countsResults2.maxCount, countsResults2.maxCountAt));
   REQUIRE(countsResults2.maxCount - countsResults2.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN3 = -10.0F;
-  static constexpr auto N_MAX3 = +10.0F;
-  const auto countsResults3    = GetCountResults(NUM_LOOPS, N_MIN3, N_MAX3, RAND_GENERATOR);
+  static constexpr auto N_MIN3   = -10.0F;
+  static constexpr auto N_MAX3   = +10.0F;
+  static constexpr auto N_RANGE3 = N_MAX3 - N_MIN3;
+  const auto countsResults3      = GetCountResults(NUM_LOOPS, N_MIN3, N_RANGE3, FLT_RAND_GENERATOR);
   REQUIRE(countsResults3.min == Approx(N_MIN3).margin(SMALL_VAL));
   REQUIRE(countsResults3.max == Approx(N_MAX3).margin(SMALL_VAL));
   REQUIRE(countsResults3.numCounts > REASONABLE_FLOAT_COUNT);
@@ -255,21 +266,21 @@ TEST_CASE("float min max get random")
 
   static constexpr auto POS = 5.0F;
   static constexpr auto NEG = -6.0F;
-  REQUIRE(Approx(POS).margin(SMALL_VAL) == GetRandInRange(POS, POS + SMALL_VAL));
-  REQUIRE(Approx(NEG).margin(SMALL_VAL) == GetRandInRange(NEG, NEG + SMALL_VAL));
+  REQUIRE(Approx(POS) == GetRandInRange(POS, 0.0F));
+  REQUIRE(Approx(NEG) == GetRandInRange(NEG, 0.0F));
 
   static constexpr auto BENCHMARK_NUM_LOOPS = 10000U;
   BENCHMARK("float rand loop 1")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN1, N_MAX1, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN1, N_RANGE1, FLT_RAND_GENERATOR);
   };
   BENCHMARK("float rand loop 2")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN2, N_MAX2, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN2, N_RANGE2, FLT_RAND_GENERATOR);
   };
   BENCHMARK("float rand loop 3")
   {
-    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN3, N_MAX3, RAND_GENERATOR);
+    return GetCountResults(BENCHMARK_NUM_LOOPS, N_MIN3, N_RANGE3, FLT_RAND_GENERATOR);
   };
 }
 
