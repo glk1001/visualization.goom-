@@ -18,7 +18,7 @@ import Goom.Utils.EnumUtils;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 
@@ -29,7 +29,7 @@ using GOOM::COLOR::COLOR_DATA::ColorMapName;
 using GOOM::DRAW::MakePixels;
 using GOOM::DRAW::MultiplePixels;
 using GOOM::UTILS::MATH::HALF;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 
@@ -55,7 +55,7 @@ private:
 class LSysColors
 {
 public:
-  LSysColors(const IGoomRand& goomRand, PixelChannelType defaultAlpha) noexcept;
+  LSysColors(const GoomRand& goomRand, PixelChannelType defaultAlpha) noexcept;
 
   auto SetNumColors(uint32_t numColors) noexcept -> void;
   auto SetMaxNumColorSteps(uint32_t numSteps) noexcept -> void;
@@ -75,7 +75,7 @@ public:
   [[nodiscard]] auto GetCurrentColorTs() const noexcept -> const std::vector<TValue>&;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   float m_globalBrightness = 1.0F;
   uint8_t m_lineWidth      = 1U;
@@ -171,7 +171,7 @@ inline auto ColorShadesAndTints::GetTint(const float t) const noexcept -> Pixel
 
 using TintProperties = ColorMaps::TintProperties;
 
-LSysColors::LSysColors(const IGoomRand& goomRand, const PixelChannelType defaultAlpha) noexcept
+LSysColors::LSysColors(const GoomRand& goomRand, const PixelChannelType defaultAlpha) noexcept
   : m_goomRand{&goomRand}, m_defaultAlpha{defaultAlpha}
 {
 }

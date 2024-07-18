@@ -25,7 +25,7 @@ import Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::UNIT_TESTS
 {
@@ -41,7 +41,7 @@ using FILTER_FX::AFTER_EFFECTS::RotationAdjustments;
 using FILTER_FX::FILTER_EFFECTS::UniformZoomAdjustmentEffect;
 using FILTER_FX::FILTER_EFFECTS::ZoomVectorEffects;
 using UTILS::EnumMap;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 namespace
 {
@@ -55,7 +55,7 @@ public:
 
 constexpr auto WIDTH                = 120;
 constexpr auto* RESOURCES_DIRECTORY = "";
-const auto GOOM_RAND                = IGoomRand{};
+const auto GOOM_RAND                = GoomRand{};
 
 [[nodiscard]] constexpr auto GetRelativeSpeed(const uint32_t intSpeed,
                                               const bool reverseSpeed) -> float

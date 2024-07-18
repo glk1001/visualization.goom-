@@ -9,7 +9,7 @@ export module Goom.FilterFx.FilterUtils.ImageDisplacementList;
 import Goom.FilterFx.FilterUtils.ImageDisplacement;
 import Goom.FilterFx.CommonTypes;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 
 export namespace GOOM::FILTER_FX::FILTER_UTILS
@@ -19,7 +19,7 @@ class ImageDisplacementList
 {
 public:
   ImageDisplacementList(const std::string& resourcesDirectory,
-                        const UTILS::MATH::IGoomRand& goomRand);
+                        const UTILS::MATH::GoomRand& goomRand);
 
   struct Params
   {
@@ -41,7 +41,7 @@ public:
 private:
   std::vector<ImageDisplacement> m_imageDisplacements;
   std::string m_resourcesDirectory;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   size_t m_currentImageDisplacementIndex = 0;
   [[nodiscard]] auto GetImageFilename(const std::string& imageFilename) const -> std::string;
 };

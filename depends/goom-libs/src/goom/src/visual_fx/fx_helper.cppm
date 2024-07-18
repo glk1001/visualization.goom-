@@ -7,7 +7,7 @@ export module Goom.VisualFx.FxHelper;
 import Goom.Control.GoomSoundEvents;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.Blend2dToGoom;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.GoomTime;
 import Goom.Lib.GoomTypes;
 import Goom.PluginInfo;
@@ -20,14 +20,14 @@ class FxHelper
 public:
   FxHelper(DRAW::IGoomDraw& draw,
            const PluginInfo& goomInfo,
-           const UTILS::MATH::IGoomRand& goomRand,
+           const UTILS::MATH::GoomRand& goomRand,
            GoomLogger& goomLogger,
            UTILS::GRAPHICS::Blend2dContexts& blend2dContexts) noexcept;
 
   [[nodiscard]] auto GetDraw() const noexcept -> const DRAW::IGoomDraw&;
   [[nodiscard]] auto GetDraw() noexcept -> DRAW::IGoomDraw&;
   [[nodiscard]] auto GetGoomInfo() const noexcept -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const noexcept -> const UTILS::MATH::GoomRand&;
   [[nodiscard]] auto GetGoomLogger() const noexcept -> const GoomLogger&;
   [[nodiscard]] auto GetGoomLogger() noexcept -> GoomLogger&;
   [[nodiscard]] auto GetBlend2dContexts() const noexcept -> const UTILS::GRAPHICS::Blend2dContexts&;
@@ -40,14 +40,14 @@ public:
 private:
   DRAW::IGoomDraw* m_draw;
   const PluginInfo* m_goomInfo;
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   GoomLogger* m_goomLogger;
   UTILS::GRAPHICS::Blend2dContexts* m_blend2dContexts;
 };
 
 inline FxHelper::FxHelper(DRAW::IGoomDraw& draw,
                           const PluginInfo& goomInfo,
-                          const UTILS::MATH::IGoomRand& goomRand,
+                          const UTILS::MATH::GoomRand& goomRand,
                           GoomLogger& goomLogger,
                           UTILS::GRAPHICS::Blend2dContexts& blend2dContexts) noexcept
   : m_draw{&draw},
@@ -73,7 +73,7 @@ inline auto FxHelper::GetGoomInfo() const noexcept -> const PluginInfo&
   return *m_goomInfo;
 }
 
-inline auto FxHelper::GetGoomRand() const noexcept -> const UTILS::MATH::IGoomRand&
+inline auto FxHelper::GetGoomRand() const noexcept -> const UTILS::MATH::GoomRand&
 {
   return *m_goomRand;
 }

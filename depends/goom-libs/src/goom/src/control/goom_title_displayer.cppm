@@ -12,7 +12,7 @@ import Goom.Color.ColorMaps;
 import Goom.Color.RandomColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
@@ -25,7 +25,7 @@ class GoomTitleDisplayer
 {
 public:
   GoomTitleDisplayer(DRAW::IGoomDraw& draw,
-                     const UTILS::MATH::IGoomRand& goomRand,
+                     const UTILS::MATH::GoomRand& goomRand,
                      const std::string& fontDirectory);
 
   void SetInitialPosition(int32_t xStart, int32_t yStart);
@@ -40,7 +40,7 @@ public:
   void DrawStaticText(const std::string& title);
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   static constexpr auto MAX_TEXT_DISPLAY_TIME       = 200;
   static constexpr auto TIME_TO_START_MIDDLE_PHASE  = 100;
   static constexpr auto TIME_TO_START_FINAL_PHASE   = 50;

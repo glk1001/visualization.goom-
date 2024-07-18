@@ -6,9 +6,9 @@ module;
 export module Goom.Control.GoomDrawablesData;
 
 import Goom.Control.GoomDrawables;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 
 export namespace GOOM::CONTROL
 {
@@ -17,7 +17,7 @@ export namespace GOOM::CONTROL
     -> std::string;
 
 [[nodiscard]] auto GetRandInRangeBuffIntensities(
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     const std::vector<GoomDrawables>& drawables) noexcept -> std::vector<float>;
 
 [[nodiscard]] auto GetMidpointRangeBuffIntensities(

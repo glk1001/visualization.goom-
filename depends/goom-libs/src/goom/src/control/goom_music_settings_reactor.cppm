@@ -7,13 +7,13 @@ export module Goom.Control.GoomMusicSettingsReactor;
 import Goom.Control.GoomAllVisualFx;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.SPimpl;
 import Goom.PluginInfo;
 
 using GOOM::FILTER_FX::FilterSettingsService;
 using GOOM::UTILS::NameValuePairs;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 
 export namespace GOOM::CONTROL
 {
@@ -22,7 +22,7 @@ class GoomMusicSettingsReactor
 {
 public:
   GoomMusicSettingsReactor(const PluginInfo& goomInfo,
-                           const IGoomRand& goomRand,
+                           const GoomRand& goomRand,
                            GoomAllVisualFx& visualFx,
                            FilterSettingsService& filterSettingsService) noexcept;
 

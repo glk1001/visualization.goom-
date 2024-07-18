@@ -5,7 +5,7 @@ import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -14,7 +14,7 @@ export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class Amulet : public IZoomAdjustmentEffect
 {
 public:
-  explicit Amulet(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Amulet(const UTILS::MATH::GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -35,7 +35,7 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   FILTER_UTILS::RandomViewport m_randomViewport;
   Params m_params;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;

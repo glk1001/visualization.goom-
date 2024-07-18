@@ -6,7 +6,7 @@ module;
 export module Goom.Utils.Graphics.PointUtils;
 
 import Goom.Utils.Graphics.LineClipper;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
@@ -30,12 +30,12 @@ export namespace GOOM::UTILS::GRAPHICS
     const Rectangle2dInt& clipRectangle,
     const Point2dInt& connectingPointInsideClipRectangle) noexcept -> Point2dInt;
 
-[[nodiscard]] auto GetRandomPoint(const UTILS::MATH::IGoomRand& goomRand,
+[[nodiscard]] auto GetRandomPoint(const UTILS::MATH::GoomRand& goomRand,
                                   const Rectangle2dInt& rectangle2D) noexcept -> Point2dInt;
 
 inline constexpr auto DEFAULT_CLOSE_TO_WEIGHT_POINT_T = 0.3F; // not very close
 [[nodiscard]] auto GetRandomPoint(
-    const UTILS::MATH::IGoomRand& goomRand,
+    const UTILS::MATH::GoomRand& goomRand,
     const Rectangle2dInt& rectangle2D,
     const Point2dInt& weightPoint,
     float closeToWeightPointT = DEFAULT_CLOSE_TO_WEIGHT_POINT_T) noexcept -> Point2dInt;
@@ -81,7 +81,7 @@ inline auto GetPointClippedToRectangle(
   return ToPoint2dInt(clippedLine.line.point2);
 }
 
-inline auto GetRandomPoint(const UTILS::MATH::IGoomRand& goomRand,
+inline auto GetRandomPoint(const UTILS::MATH::GoomRand& goomRand,
                            const Rectangle2dInt& rectangle2D) noexcept -> Point2dInt
 {
   Expects(rectangle2D.topLeft.x <= rectangle2D.bottomRight.x);
@@ -93,7 +93,7 @@ inline auto GetRandomPoint(const UTILS::MATH::IGoomRand& goomRand,
   };
 }
 
-inline auto GetRandomPoint(const UTILS::MATH::IGoomRand& goomRand,
+inline auto GetRandomPoint(const UTILS::MATH::GoomRand& goomRand,
                            const Rectangle2dInt& rectangle2D,
                            const Point2dInt& weightPoint,
                            const float closeToWeightPointT) noexcept -> Point2dInt

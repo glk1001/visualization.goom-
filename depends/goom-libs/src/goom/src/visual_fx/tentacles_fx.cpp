@@ -18,7 +18,7 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Timer;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.AssertUtils;
@@ -40,7 +40,7 @@ using TENTACLES::CirclesTentacleLayout;
 using TENTACLES::TentacleDriver;
 using UTILS::NUM;
 using UTILS::Timer;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::Weights;
 
 class TentaclesFx::TentaclesImpl
@@ -76,7 +76,7 @@ private:
   std::vector<TentacleDriver> m_tentacleDrivers;
   [[nodiscard]] static auto GetTentacleDrivers(
       IGoomDraw& draw,
-      const IGoomRand& goomRand,
+      const GoomRand& goomRand,
       const UTILS::GoomTime& goomTime,
       const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
       PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>;
@@ -227,7 +227,7 @@ inline auto TentaclesFx::TentaclesImpl::Resume() -> void
 
 auto TentaclesFx::TentaclesImpl::GetTentacleDrivers(
     IGoomDraw& draw,
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     const UTILS::GoomTime& goomTime,
     const std::array<CirclesTentacleLayout, NUM_TENTACLE_DRIVERS>& tentacleLayouts,
     const PixelChannelType defaultAlpha) -> std::vector<TentacleDriver>

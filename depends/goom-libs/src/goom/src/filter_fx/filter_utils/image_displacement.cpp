@@ -8,7 +8,7 @@ module Goom.FilterFx.FilterUtils.ImageDisplacement;
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Graphics.ImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
 
@@ -16,10 +16,10 @@ namespace GOOM::FILTER_FX::FILTER_UTILS
 {
 
 using UTILS::GRAPHICS::ImageBitmap;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 ImageDisplacement::ImageDisplacement(const std::string& imageFilename,
-                                     [[maybe_unused]] const IGoomRand& goomRand)
+                                     [[maybe_unused]] const GoomRand& goomRand)
   : m_imageBuffer(std::make_unique<ImageBitmap>(imageFilename)), m_imageFilename{imageFilename}
 {
 }

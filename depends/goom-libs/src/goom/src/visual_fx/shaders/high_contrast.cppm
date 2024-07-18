@@ -7,11 +7,11 @@ module Goom.VisualFx.ShaderFx:HighContrast;
 
 import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.PluginInfo;
 
 using GOOM::UTILS::Timer;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 
@@ -24,7 +24,7 @@ public:
   static constexpr float DEFAULT_CONTRAST   = 1.0F;
   static constexpr float DEFAULT_BRIGHTNESS = 1.0F;
 
-  HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept;
+  HighContrast(const PluginInfo& goomInfo, const GoomRand& goomRand) noexcept;
 
   auto Start() -> void;
 
@@ -36,7 +36,7 @@ public:
 
 private:
   const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   float m_currentContrast                = DEFAULT_CONTRAST;
   float m_currentBrightness              = DEFAULT_BRIGHTNESS;
@@ -77,7 +77,7 @@ inline auto HighContrast::GetCurrentContrastMinChannelValue() const -> float
   return m_currentContrastMinChannelValue;
 }
 
-HighContrast::HighContrast(const PluginInfo& goomInfo, const IGoomRand& goomRand) noexcept
+HighContrast::HighContrast(const PluginInfo& goomInfo, const GoomRand& goomRand) noexcept
   : m_goomInfo{&goomInfo}, m_goomRand{&goomRand}
 {
 }

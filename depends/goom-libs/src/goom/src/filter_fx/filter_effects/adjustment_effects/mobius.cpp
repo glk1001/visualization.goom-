@@ -10,7 +10,7 @@ import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -22,7 +22,7 @@ using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
@@ -62,7 +62,7 @@ static constexpr auto PROB_NO_INVERSE_SQUARE        = 0.50F;
 static constexpr auto PROB_USE_NORMALIZED_AMPLITUDE = 0.50F;
 static constexpr auto PROB_USE_MODULATOR_CONTOURS   = 0.10F;
 
-Mobius::Mobius(const IGoomRand& goomRand) noexcept
+Mobius::Mobius(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{

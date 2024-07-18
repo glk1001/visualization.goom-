@@ -7,7 +7,7 @@ export module Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 
@@ -19,7 +19,7 @@ export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class XYLerpEffect
 {
 public:
-  explicit XYLerpEffect(const UTILS::MATH::IGoomRand& goomRand);
+  explicit XYLerpEffect(const UTILS::MATH::GoomRand& goomRand);
   XYLerpEffect(const XYLerpEffect&) noexcept           = delete;
   XYLerpEffect(XYLerpEffect&&) noexcept                = delete;
   virtual ~XYLerpEffect() noexcept                     = default;
@@ -54,7 +54,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   UTILS::MATH::Weights<Modes> m_modeWeights;
   Params m_params;
   [[nodiscard]] auto GetT(float sqDistFromZero, const NormalizedCoords& velocity) const -> float;

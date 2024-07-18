@@ -15,7 +15,7 @@ import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Math.DampingFunctions;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.Paths;
@@ -37,7 +37,7 @@ using GOOM::DRAW::GetMainColor;
 using GOOM::DRAW::IGoomDraw;
 using GOOM::DRAW::MultiplePixels;
 using GOOM::UTILS::GoomTime;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::IncrementedValue;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::SineWaveMultiplier;
@@ -50,7 +50,7 @@ class TentacleDriver
 {
 public:
   TentacleDriver(IGoomDraw& draw,
-                 const IGoomRand& goomRand,
+                 const GoomRand& goomRand,
                  const GoomTime& goomTime,
                  const CirclesTentacleLayout& tentacleLayout,
                  PixelChannelType defaultAlpha) noexcept;
@@ -71,7 +71,7 @@ public:
 private:
   using StepType = UTILS::MATH::TValue::StepType;
 
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   const GoomTime* m_goomTime;
   Point2dInt m_screenCentre;
 
@@ -106,11 +106,11 @@ private:
       {StepType::CONTINUOUS_REVERSIBLE, NUM_NODE_T_OFFSET_STEPS}
   };
   std::vector<TentacleAndAttributes> m_tentacles;
-  [[nodiscard]] static auto GetTentacles(const IGoomRand& goomRand,
+  [[nodiscard]] static auto GetTentacles(const GoomRand& goomRand,
                                          const CirclesTentacleLayout& tentacleLayout,
                                          const IterationParams& tentacleParams) noexcept
       -> std::vector<TentacleAndAttributes>;
-  [[nodiscard]] static auto CreateNewTentacle2D(const IGoomRand& goomRand,
+  [[nodiscard]] static auto CreateNewTentacle2D(const GoomRand& goomRand,
                                                 const IterationParams& tentacleParams) noexcept
       -> std::unique_ptr<Tentacle2D>;
   uint32_t m_tentacleGroupSize = static_cast<uint32_t>(m_tentacles.size());
@@ -227,7 +227,7 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
 }
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
-                               const IGoomRand& goomRand,
+                               const GoomRand& goomRand,
                                const UTILS::GoomTime& goomTime,
                                const CirclesTentacleLayout& tentacleLayout,
                                const PixelChannelType defaultAlpha) noexcept
@@ -242,7 +242,7 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
 {
 }
 
-auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
+auto TentacleDriver::GetTentacles(const GoomRand& goomRand,
                                   const CirclesTentacleLayout& tentacleLayout,
                                   const IterationParams& tentacleParams) noexcept
     -> std::vector<TentacleAndAttributes>
@@ -272,7 +272,7 @@ auto TentacleDriver::GetTentacles(const IGoomRand& goomRand,
   return tentacles;
 }
 
-auto TentacleDriver::CreateNewTentacle2D(const IGoomRand& goomRand,
+auto TentacleDriver::CreateNewTentacle2D(const GoomRand& goomRand,
                                          const IterationParams& tentacleParams) noexcept
     -> std::unique_ptr<Tentacle2D>
 {

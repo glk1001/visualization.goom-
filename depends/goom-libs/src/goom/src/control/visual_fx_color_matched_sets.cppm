@@ -11,7 +11,7 @@ import Goom.Color.RandomColorMapsGroups;
 import Goom.Control.GoomEffects;
 import Goom.Utils.ArrayUtils;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
@@ -21,7 +21,7 @@ namespace GOOM::CONTROL
 class VisualFxColorMatchedSets
 {
 public:
-  explicit VisualFxColorMatchedSets(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit VisualFxColorMatchedSets(const UTILS::MATH::GoomRand& goomRand) noexcept;
 
   auto SetNextRandomColorMatchedSet() noexcept -> void;
   [[nodiscard]] auto GetCurrentRandomColorMapsGroup(GoomEffect goomEffect) const noexcept
@@ -54,7 +54,7 @@ private:
     COLOR_MATCHED_SET8,
   };
   using ColorMatchedSetsMap = UTILS::EnumMap<ColorMatchedSets, ColorMatchedSet>;
-  [[nodiscard]] static auto MakeColorMatchedSetsMap(const UTILS::MATH::IGoomRand& goomRand) noexcept
+  [[nodiscard]] static auto MakeColorMatchedSetsMap(const UTILS::MATH::GoomRand& goomRand) noexcept
       -> ColorMatchedSetsMap;
   ColorMatchedSetsMap m_colorMatchedSetsMap;
 
@@ -68,7 +68,7 @@ private:
       -> std::array<ColorMatchedSet::KeyValue, UTILS::NUM<GoomEffect>>;
   [[nodiscard]] static auto GetTwoGroupsColorMatchedSet(
       COLOR::RandomColorMapsGroups::Groups group1,
-      const UTILS::MATH::IGoomRand& goomRand,
+      const UTILS::MATH::GoomRand& goomRand,
       COLOR::RandomColorMapsGroups::Groups group2) noexcept -> ColorMatchedSet;
 
   static auto GetPrimaryColorDots(ColorMatchedSet& matchedSet) noexcept -> void;
@@ -108,11 +108,11 @@ namespace GOOM::CONTROL
 using COLOR::RandomColorMapsGroups;
 using UTILS::CreateArray;
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 using Groups = RandomColorMapsGroups::Groups;
 
-auto VisualFxColorMatchedSets::MakeColorMatchedSetsMap(const IGoomRand& goomRand) noexcept
+auto VisualFxColorMatchedSets::MakeColorMatchedSetsMap(const GoomRand& goomRand) noexcept
     -> ColorMatchedSetsMap
 {
   using enum ColorMatchedSets;
@@ -179,7 +179,7 @@ static constexpr auto COLOR_MATCHED_SET6_WEIGHT            = 90.0F;
 static constexpr auto COLOR_MATCHED_SET7_WEIGHT            = 90.0F;
 static constexpr auto COLOR_MATCHED_SET8_WEIGHT            = 90.0F;
 
-VisualFxColorMatchedSets::VisualFxColorMatchedSets(const IGoomRand& goomRand) noexcept
+VisualFxColorMatchedSets::VisualFxColorMatchedSets(const GoomRand& goomRand) noexcept
   : m_colorMatchedSetsMap{MakeColorMatchedSetsMap(goomRand)},
     m_colorMatchedSetsWeights
     {
@@ -249,7 +249,7 @@ auto VisualFxColorMatchedSets::GetOneGroupColorMatchedSet(const Groups group) no
 }
 
 auto VisualFxColorMatchedSets::GetTwoGroupsColorMatchedSet(
-    const Groups group1, const IGoomRand& goomRand, const Groups group2) noexcept -> ColorMatchedSet
+    const Groups group1, const GoomRand& goomRand, const Groups group2) noexcept -> ColorMatchedSet
 {
   auto matchedSet = GetOneGroupColorMatchedSet(group1);
 

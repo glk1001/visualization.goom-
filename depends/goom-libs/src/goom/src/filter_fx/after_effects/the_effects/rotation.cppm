@@ -6,7 +6,7 @@ export module Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
@@ -42,7 +42,7 @@ private:
 class Rotation
 {
 public:
-  explicit Rotation(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Rotation(const UTILS::MATH::GoomRand& goomRand) noexcept;
   Rotation(const Rotation&) noexcept           = delete;
   Rotation(Rotation&&) noexcept                = delete;
   virtual ~Rotation() noexcept                 = default;
@@ -70,7 +70,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   Params m_params;
 
   auto Multiply(float factor) -> void;

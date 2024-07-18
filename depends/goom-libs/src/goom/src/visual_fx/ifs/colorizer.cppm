@@ -12,7 +12,7 @@ import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.RandomColorMaps;
 import Goom.Color.RandomColorMapsGroups;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.IfsDancersFx;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
@@ -22,7 +22,7 @@ using GOOM::COLOR::ConstColorMapSharedPtr;
 using GOOM::COLOR::GetUnweightedRandomColorMaps;
 using GOOM::COLOR::RandomColorMaps;
 using GOOM::COLOR::WeightedRandomColorMaps;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::Weights;
 
@@ -32,7 +32,7 @@ namespace GOOM::VISUAL_FX::IFS
 class Colorizer
 {
 public:
-  Colorizer(const IGoomRand& goomRand, PixelChannelType defaultAlpha);
+  Colorizer(const GoomRand& goomRand, PixelChannelType defaultAlpha);
 
   [[nodiscard]] auto GetWeightedColorMaps() const -> const WeightedRandomColorMaps&;
   auto SetWeightedColorMaps(const WeightedRandomColorMaps& weightedColorMaps) -> void;
@@ -61,7 +61,7 @@ public:
                                    const MixProperties& mixProperties) const -> Pixel;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   WeightedRandomColorMaps m_colorMaps;
   ConstColorMapSharedPtr m_mixerColorMapPtr1         = nullptr;
@@ -141,7 +141,7 @@ static constexpr auto SINGLE_COLORS_WEIGHT         = 05.0F;
 static constexpr auto SINE_MIX_COLORS_WEIGHT       = 05.0F;
 static constexpr auto SINE_MAP_COLORS_WEIGHT       = 05.0F;
 
-Colorizer::Colorizer(const IGoomRand& goomRand, const PixelChannelType defaultAlpha)
+Colorizer::Colorizer(const GoomRand& goomRand, const PixelChannelType defaultAlpha)
   : m_goomRand{&goomRand},
     m_colorMaps{GetUnweightedRandomColorMaps(*m_goomRand, defaultAlpha)},
     m_colorModeWeights{

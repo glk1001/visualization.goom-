@@ -7,13 +7,13 @@ module Goom.Control.GoomFavouriteStatesHandler;
 import Goom.Control.GoomDrawables;
 import Goom.Control.GoomDrawablesData;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::CONTROL
 {
 
 using UTILS::EnumMap;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 using enum GoomDrawables;
 
@@ -33,7 +33,7 @@ static constexpr auto DOTS_IFS_WEIGHT       = 1.0F;
 static constexpr auto PARTICLES_ONLY_WEIGHT = 1.0F;
 static constexpr auto PARTICLES_IFS_WEIGHT  = 1.0F;
 
-GoomFavouriteStatesHandler::GoomFavouriteStatesHandler(const IGoomRand& goomRand)
+GoomFavouriteStatesHandler::GoomFavouriteStatesHandler(const GoomRand& goomRand)
 :  m_goomRand{&goomRand},
    m_weightedFavourites{
         goomRand,

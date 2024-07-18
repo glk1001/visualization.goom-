@@ -12,7 +12,7 @@
 
 import Goom.Tests.Utils.Math.RandHelper;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
 namespace GOOM::UNIT_TESTS
@@ -23,7 +23,7 @@ using GOOM::UnderlyingEnumType;
 using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::Weights;
 
@@ -91,8 +91,8 @@ TEST_CASE("NumberRange min max get random")
   static constexpr auto NUM_RANGE_LOOPS                  = 100'000U;
   static constexpr auto ACCEPTABLE_OUT_OF_UNIFORM_MARGIN = 300U;
 
-  const auto goomRand      = IGoomRand{};
-  const auto& goomRandBase = static_cast<const IGoomRand&>(goomRand);
+  const auto goomRand      = GoomRand{};
+  const auto& goomRandBase = static_cast<const GoomRand&>(goomRand);
   const auto randInRange   = [&goomRandBase](const auto min, const auto max)
   { return goomRandBase.GetRandInRange(NumberRange{min, max - 1}); };
 
@@ -127,7 +127,7 @@ TEST_CASE("Shuffle")
 {
   static constexpr auto TEST_VEC = std::array{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-  const auto goomRand = IGoomRand{};
+  const auto goomRand = GoomRand{};
   auto vec            = TEST_VEC;
   goomRand.Shuffle(vec);
   REQUIRE(vec != TEST_VEC);
@@ -137,7 +137,7 @@ TEST_CASE("Shuffle")
 
 TEST_CASE("Weighted Events")
 {
-  const auto goomRand    = IGoomRand{};
+  const auto goomRand    = GoomRand{};
   const auto weightPairs = Weights<Events>::EventWeightPairs{
       {Events::EVENT1, 05.0F},
       {Events::EVENT2, 02.0F},
@@ -233,7 +233,7 @@ TEST_CASE("Weighted Events")
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Weighted Events Corner Cases")
 {
-  const auto goomRand       = IGoomRand{};
+  const auto goomRand       = GoomRand{};
   const auto weightedEvents = Weights<Events>{
       goomRand,
       {

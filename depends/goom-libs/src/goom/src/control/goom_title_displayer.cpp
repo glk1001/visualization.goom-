@@ -32,8 +32,8 @@ using COLOR::RandomColorMaps;
 using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::TextDrawer;
 using UTILS::MATH::GetFltFraction;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::I_HALF;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::TEXT::GetLeftAlignedPenForCentringStringAt;
 using UTILS::TEXT::GetLinesOfWords;
@@ -89,7 +89,7 @@ inline auto GoomTitleDisplayer::GetSelectedFontSize() const -> int32_t
 }
 
 GoomTitleDisplayer::GoomTitleDisplayer(IGoomDraw& draw,
-                                       const IGoomRand& goomRand,
+                                       const GoomRand& goomRand,
                                        const std::string& fontDirectory)
   : m_goomRand{&goomRand},
     m_textDrawer{std::make_unique<TextDrawer>(draw)},

@@ -7,7 +7,7 @@ export module Goom.VisualFx.CirclesFx.BitmapGetter;
 
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 export namespace GOOM::VISUAL_FX::CIRCLES
 {
@@ -32,7 +32,7 @@ public:
   static constexpr size_t MIN_DOT_DIAMETER = 5;
   static constexpr size_t MAX_DOT_DIAMETER = 21;
 
-  BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
+  BitmapGetter(const UTILS::MATH::GoomRand& goomRand,
                const UTILS::GRAPHICS::SmallImageBitmaps& smallBitmaps) noexcept;
 
   [[nodiscard]] auto GetBitmap(size_t size) const noexcept
@@ -63,7 +63,7 @@ static constexpr auto IMAGE_NAMES_PINK_FLOWER_WEIGHT   = 20.0F;
 static constexpr auto IMAGE_NAMES_RED_FLOWER_WEIGHT    = 20.0F;
 static constexpr auto IMAGE_NAMES_WHITE_FLOWER_WEIGHT  = 10.0F;
 
-BitmapGetter::BitmapGetter(const UTILS::MATH::IGoomRand& goomRand,
+BitmapGetter::BitmapGetter(const UTILS::MATH::GoomRand& goomRand,
                            const SmallImageBitmaps& smallBitmaps) noexcept
   : m_smallBitmaps{&smallBitmaps},
     m_bitmapTypes{

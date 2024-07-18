@@ -7,11 +7,11 @@ export module Goom.Control.GoomFavouriteStatesHandler;
 import Goom.Control.GoomDrawables;
 import Goom.Control.GoomStateHandler;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
 using GOOM::UTILS::EnumMap;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::Weights;
 
 export namespace GOOM::CONTROL
@@ -20,14 +20,14 @@ export namespace GOOM::CONTROL
 class GoomFavouriteStatesHandler : public IGoomStateHandler
 {
 public:
-  explicit GoomFavouriteStatesHandler(const IGoomRand& goomRand);
+  explicit GoomFavouriteStatesHandler(const GoomRand& goomRand);
 
   auto ChangeToNextState() -> void override;
 
   [[nodiscard]] auto GetCurrentState() const noexcept -> const GoomDrawablesState& override;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   enum class Favourites : UnderlyingEnumType
   {

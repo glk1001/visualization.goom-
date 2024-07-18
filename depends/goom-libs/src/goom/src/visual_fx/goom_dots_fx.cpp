@@ -20,7 +20,7 @@ import Goom.Color.RandomColorMaps;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;

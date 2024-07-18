@@ -23,7 +23,7 @@ import Goom.Color.RandomColorMapsGroups;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.PixelDrawer;
 import Goom.Utils.Graphics.ImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.VisualFx.FxHelper;

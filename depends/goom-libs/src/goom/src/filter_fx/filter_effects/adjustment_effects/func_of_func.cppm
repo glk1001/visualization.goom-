@@ -8,10 +8,10 @@ export module Goom.FilterFx.FilterEffects.AdjustmentEffects.FunctionOfFunction;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::UNIT_RANGE;
 
@@ -23,7 +23,7 @@ class FunctionOfFunction : public IZoomAdjustmentEffect
   using FuncEffect = std::unique_ptr<IZoomAdjustmentEffect>;
 
 public:
-  FunctionOfFunction(const IGoomRand& goomRand,
+  FunctionOfFunction(const GoomRand& goomRand,
                      const std::string& name,
                      FuncEffect&& funcOf,
                      FuncEffect&& func) noexcept;
@@ -37,7 +37,7 @@ public:
       -> UTILS::NameValuePairs override;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   std::string m_name;
   FuncEffect m_funcOf;
   FuncEffect m_func;

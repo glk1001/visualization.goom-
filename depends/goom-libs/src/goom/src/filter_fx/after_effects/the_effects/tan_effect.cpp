@@ -11,7 +11,7 @@ module Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
 import Goom.FilterFx.CommonTypes;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
@@ -22,7 +22,7 @@ using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
@@ -39,7 +39,7 @@ static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 static constexpr auto DEFAULT_LIMITING_FACTOR = 0.75F;
 static constexpr auto LIMITING_FACTOR_RANGE   = NumberRange{0.10F, 0.85F};
 
-TanEffect::TanEffect(const IGoomRand& goomRand)
+TanEffect::TanEffect(const GoomRand& goomRand)
   : m_goomRand{&goomRand},
     m_params{DEFAULT_TAN_TYPE, DEFAULT_COT_MIX, {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
              DEFAULT_LIMITING_FACTOR},

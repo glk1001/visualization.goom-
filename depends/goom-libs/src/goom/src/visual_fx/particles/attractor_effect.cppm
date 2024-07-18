@@ -11,9 +11,9 @@ import Particles.Effect;
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
 import Particles.Particles;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using ::PARTICLES::ParticleEmitter;
 using ::PARTICLES::ParticleSystem;
 using ::PARTICLES::EFFECTS::IEffect;
@@ -29,7 +29,7 @@ class AttractorEffect : public IEffect
 public:
   static constexpr auto NUM_EMITTERS = 3U;
 
-  AttractorEffect(const IGoomRand& goomRand, size_t numParticles) noexcept;
+  AttractorEffect(const GoomRand& goomRand, size_t numParticles) noexcept;
 
   auto Reset() noexcept -> void override;
 
@@ -42,7 +42,7 @@ public:
   [[nodiscard]] auto GetSystem() const noexcept -> const ParticleSystem& override;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   ParticleSystem m_system;
 
   std::shared_ptr<IColorUpdater> m_colorUpdater;

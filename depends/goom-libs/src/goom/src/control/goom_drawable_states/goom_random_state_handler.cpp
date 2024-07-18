@@ -7,14 +7,14 @@ module Goom.Control.GoomRandomStateHandler;
 
 import Goom.Control.GoomDrawablesData;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 
 namespace GOOM::CONTROL
 {
 
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 static constexpr auto FRESH_STATE_WEIGHT         = 7.0F;
 static constexpr auto NON_REPEAT_STATE_WEIGHT    = 7.0F;
@@ -28,7 +28,7 @@ static constexpr auto THREE_WEIGHT = 3.0F;
 static constexpr auto FOUR_WEIGHT  = 2.0F;
 static constexpr auto FIVE_WEIGHT  = 1.0F;
 
-GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
+GoomRandomStateHandler::GoomRandomStateHandler(const GoomRand& goomRand)
   : m_goomRand{&goomRand},
     m_drawablesPool{GetFullDrawablesPool(*m_goomRand)},
     m_weightedChangeTypes{
@@ -55,7 +55,7 @@ GoomRandomStateHandler::GoomRandomStateHandler(const IGoomRand& goomRand)
 {
 }
 
-auto GoomRandomStateHandler::GetFullDrawablesPool(const IGoomRand& goomRand)
+auto GoomRandomStateHandler::GetFullDrawablesPool(const GoomRand& goomRand)
     -> std::vector<GoomDrawables>
 {
   auto fullPool = std::vector<GoomDrawables>(NUM<GoomDrawables>);

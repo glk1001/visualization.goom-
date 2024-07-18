@@ -8,7 +8,7 @@ import Goom.FilterFx.FilterUtils.ImageDisplacementList;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -18,7 +18,7 @@ class ImageZoomAdjustment : public IZoomAdjustmentEffect
 {
 public:
   ImageZoomAdjustment(const std::string& resourcesDirectory,
-                      const GOOM::UTILS::MATH::IGoomRand& goomRand);
+                      const GOOM::UTILS::MATH::GoomRand& goomRand);
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -29,7 +29,7 @@ public:
       -> GOOM::UTILS::NameValuePairs override;
 
 private:
-  const GOOM::UTILS::MATH::IGoomRand* m_goomRand;
+  const GOOM::UTILS::MATH::GoomRand* m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   auto DoSetRandomParams() noexcept -> void;

@@ -8,7 +8,7 @@ module Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
 
 import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
@@ -17,7 +17,7 @@ using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_T_FREQ   = 1.0F;
@@ -30,7 +30,7 @@ static constexpr auto MODE1_WEIGHT = 10.0F;
 static constexpr auto MODE2_WEIGHT = 10.0F;
 static constexpr auto MODE3_WEIGHT = 10000000000.0F;
 
-XYLerpEffect::XYLerpEffect(const IGoomRand& goomRand)
+XYLerpEffect::XYLerpEffect(const GoomRand& goomRand)
   : m_goomRand{&goomRand},
     m_modeWeights{
         *m_goomRand,

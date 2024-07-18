@@ -10,7 +10,7 @@ import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.Point2d;
 
@@ -21,7 +21,7 @@ using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::PI;
 
@@ -80,7 +80,7 @@ static constexpr auto POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT = 1.0
 static constexpr auto POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT = 1.0F;
 static constexpr auto ZERO_EFFECTS_WEIGHT                                  = 2.0F;
 
-Planes::Planes(const IGoomRand& goomRand) noexcept
+Planes::Planes(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_params{
         {
@@ -122,7 +122,7 @@ auto Planes::SetRandomParams(const Point2dInt& zoomMidpoint, const uint32_t scre
       *m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint, screenWidth));
 }
 
-auto Planes::GetRandomParams(const IGoomRand& goomRand,
+auto Planes::GetRandomParams(const GoomRand& goomRand,
                              const PlaneEffectEvents planeEffectsEvent,
                              const Point2dInt& zoomMidpoint,
                              const uint32_t screenWidth) -> Params
@@ -134,7 +134,7 @@ auto Planes::GetRandomParams(const IGoomRand& goomRand,
       GetRandomSwirlEffects(goomRand, muchSpiralling)};
 }
 
-auto Planes::GetRandomPlaneEffects(const IGoomRand& goomRand,
+auto Planes::GetRandomPlaneEffects(const GoomRand& goomRand,
                                    const PlaneEffectEvents planeEffectsEvent,
                                    const bool muchSpiralling,
                                    const Point2dInt& zoomMidpoint,
@@ -178,7 +178,7 @@ inline auto Planes::GetRandomPlaneEffects(const IntAmplitude& adjustedIntAmplitu
   return planeEffects;
 }
 
-auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand,
+auto Planes::GetRandomIntAmplitude(const GoomRand& goomRand,
                                    const PlaneEffectEvents planeEffectsEvent) -> IntAmplitude
 {
   auto intAmplitude = IntAmplitude{};
@@ -226,7 +226,7 @@ auto Planes::GetRandomIntAmplitude(const IGoomRand& goomRand,
   return intAmplitude;
 }
 
-auto Planes::GetAdjustedIntAmplitude(const IGoomRand& goomRand,
+auto Planes::GetAdjustedIntAmplitude(const GoomRand& goomRand,
                                      const IntAmplitude& intAmplitude,
                                      const Point2dInt& zoomMidpoint,
                                      const uint32_t screenWidth) -> IntAmplitude
@@ -245,7 +245,7 @@ auto Planes::GetAdjustedIntAmplitude(const IGoomRand& goomRand,
   return adjustedIntAmplitude;
 }
 
-auto Planes::GetRandomEffectMultiplier(const IGoomRand& goomRand,
+auto Planes::GetRandomEffectMultiplier(const GoomRand& goomRand,
                                        const bool muchSpiralling) -> Amplitude
 {
   auto effectMultiplier = Amplitude{};
@@ -268,7 +268,7 @@ auto Planes::GetRandomEffectMultiplier(const IGoomRand& goomRand,
   return effectMultiplier;
 }
 
-auto Planes::GetRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand,
+auto Planes::GetRandomSwirlEffects(const UTILS::MATH::GoomRand& goomRand,
                                    const bool muchSpiralling) -> PlaneSwirlEffects
 {
   if (muchSpiralling || goomRand.ProbabilityOf(PROB_NO_SWIRL))
@@ -288,7 +288,7 @@ inline auto Planes::GetZeroSwirlEffects() -> PlaneSwirlEffects
   };
 }
 
-inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::IGoomRand& goomRand)
+inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::GoomRand& goomRand)
     -> PlaneSwirlEffects
 {
   auto swirlEffects = PlaneSwirlEffects{};

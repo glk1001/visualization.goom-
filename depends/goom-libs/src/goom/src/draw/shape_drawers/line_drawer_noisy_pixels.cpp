@@ -9,17 +9,17 @@ module Goom.Draw.ShaperDrawers.LineDrawerNoisyPixels;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.DrawerUtils;
 import Goom.Utils.Math.Misc;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS
 {
 
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 LineDrawerNoisyPixels::NoisyPixelDrawer::NoisyPixelDrawer(IGoomDraw& draw,
-                                                          const IGoomRand& goomRand,
+                                                          const GoomRand& goomRand,
                                                           const NoiseParams& noiseParams) noexcept
   : m_draw{&draw},
     m_goomRand{&goomRand},
@@ -127,7 +127,7 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::IncrementCurrentNoisePerPix
 
 // clang-format off
 LineDrawerNoisyPixels::LineDrawerNoisyPixels(IGoomDraw& draw,
-                                             const IGoomRand& goomRand,
+                                             const GoomRand& goomRand,
                                              const NoiseParams& noiseParams) noexcept
   : m_lineDrawer{NoisyPixelDrawer{draw, goomRand, noiseParams}}
 {

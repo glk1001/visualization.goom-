@@ -14,7 +14,7 @@ import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
@@ -23,7 +23,7 @@ import Goom.PluginInfo;
 
 using GOOM::UTILS::RuntimeEnumMap;
 using GOOM::UTILS::MATH::ConditionalWeights;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::Weights;
 
@@ -73,11 +73,11 @@ public:
   using FilterModeEnumMap =
       RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
   using CreateZoomAdjustmentEffectFunc = std::function<std::unique_ptr<IZoomAdjustmentEffect>(
-      ZoomFilterMode filterMode, const IGoomRand& goomRand, const std::string& resourcesDirectory)>;
+      ZoomFilterMode filterMode, const GoomRand& goomRand, const std::string& resourcesDirectory)>;
   // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
 
   FilterSettingsService(const PluginInfo& goomInfo,
-                        const IGoomRand& goomRand,
+                        const GoomRand& goomRand,
                         const std::string& resourcesDirectory,
                         const CreateZoomAdjustmentEffectFunc& createZoomAdjustmentEffect);
   FilterSettingsService(const FilterSettingsService&) noexcept = delete;
@@ -119,7 +119,7 @@ protected:
   [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
   auto SetFilterMode(ZoomFilterMode filterMode) -> void;
   [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const -> const IGoomRand&;
+  [[nodiscard]] auto GetGoomRand() const -> const GoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeRandomEffects() -> void;
@@ -130,7 +130,7 @@ protected:
 
 private:
   const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Point2dInt m_screenCentre;
   std::string m_resourcesDirectory;
   std::unique_ptr<AFTER_EFFECTS::AfterEffectsStates> m_randomizedAfterEffects;
@@ -233,7 +233,7 @@ inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
   return *m_goomInfo;
 }
 
-inline auto FilterSettingsService::GetGoomRand() const -> const IGoomRand&
+inline auto FilterSettingsService::GetGoomRand() const -> const GoomRand&
 {
   return *m_goomRand;
 }

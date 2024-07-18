@@ -12,7 +12,7 @@ module Goom.VisualFx.FlyingStarsFx;
 import Goom.Control.GoomSoundEvents;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;
 import Goom.Lib.GoomGraphic;

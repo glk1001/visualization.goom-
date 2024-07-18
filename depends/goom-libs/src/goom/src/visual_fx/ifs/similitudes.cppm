@@ -14,7 +14,7 @@ import Goom.Color.RandomColorMaps;
 import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.Graphics.ImageBitmaps;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
@@ -28,7 +28,7 @@ using GOOM::UTILS::GRAPHICS::ImageBitmap;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
 using GOOM::UTILS::MATH::DEGREES_180;
 using GOOM::UTILS::MATH::HALF;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::PI;
 using GOOM::UTILS::MATH::UNIT_RANGE;
@@ -68,7 +68,7 @@ private:
 class Similitudes
 {
 public:
-  Similitudes(const IGoomRand& goomRand, const SmallImageBitmaps& smallBitmaps);
+  Similitudes(const GoomRand& goomRand, const SmallImageBitmaps& smallBitmaps);
 
   auto Init() -> void;
 
@@ -102,7 +102,7 @@ private:
   auto UpdateMainSimisFltPart() -> void;
   [[nodiscard]] auto GetSimiBitmap(bool useBitmaps) const -> const ImageBitmap*;
 
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   const SmallImageBitmaps* m_smallBitmaps;
   WeightedRandomColorMaps m_colorMaps;
 
@@ -207,7 +207,7 @@ static constexpr auto NUM1_WEIGHT = 05.0F;
 static constexpr auto NUM2_WEIGHT = 03.0F;
 static constexpr auto NUM3_WEIGHT = 01.0F;
 
-Similitudes::Similitudes(const IGoomRand& goomRand,
+Similitudes::Similitudes(const GoomRand& goomRand,
                          const SmallImageBitmaps& smallBitmaps)
   : m_goomRand{&goomRand},
     m_smallBitmaps{&smallBitmaps},

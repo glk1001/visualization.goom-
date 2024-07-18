@@ -7,7 +7,7 @@ module;
 
 export module Goom.VisualFx.FxUtils:Lines;
 
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;

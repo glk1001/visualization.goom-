@@ -9,14 +9,14 @@ module Goom.VisualFx.ShaderFx:HueShifterLerper;
 
 import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
 using GOOM::UTILS::Timer;
 using GOOM::UTILS::MATH::FULL_CIRCLE_RANGE;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 using GOOM::UTILS::MATH::TWO_PI;
@@ -34,7 +34,7 @@ public:
   };
 
   HueShiftLerper(const PluginInfo& goomInfo,
-                 const IGoomRand& goomRand,
+                 const GoomRand& goomRand,
                  const Params& params) noexcept;
 
   auto Update() noexcept -> void;
@@ -44,7 +44,7 @@ public:
 
 private:
   const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
 
   float m_srceHueShift    = 0.0F;
@@ -80,7 +80,7 @@ inline auto HueShiftLerper::GetLerpedValue() const noexcept -> float
 }
 
 HueShiftLerper::HueShiftLerper(const PluginInfo& goomInfo,
-                               const IGoomRand& goomRand,
+                               const GoomRand& goomRand,
                                const Params& params) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},

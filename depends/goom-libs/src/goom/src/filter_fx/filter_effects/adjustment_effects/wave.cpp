@@ -8,15 +8,15 @@ import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.Misc;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using FILTER_UTILS::RandomViewport;
 using UTILS::NameValuePairs;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::HALF_CIRCLE_RANGE;
-using UTILS::MATH::IGoomRand;
 using UTILS::MATH::NumberRange;
 
 using enum Wave::WaveEffect;
@@ -92,7 +92,7 @@ inline auto Wave::GetSqDistEffect() const noexcept -> Wave::AngleEffect
   return AngleEffect::SQ_DIST;
 }
 
-Wave::Wave(const Modes mode, const IGoomRand& goomRand)
+Wave::Wave(const Modes mode, const GoomRand& goomRand)
   : m_mode{mode},
     m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},

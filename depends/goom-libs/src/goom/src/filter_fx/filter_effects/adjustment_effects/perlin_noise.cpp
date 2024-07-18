@@ -10,7 +10,7 @@ module Goom.FilterFx.FilterEffects.AdjustmentEffects.PerlinNoise;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Rand.RandUtils;
 import Goom.Lib.Point2d;
 
@@ -22,7 +22,7 @@ using FILTER_UTILS::LerpToOneTs;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::RAND::GOOM_RAND_MAX;
 using UTILS::MATH::RAND::GetRandSeed;
@@ -50,7 +50,7 @@ static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL      = 0.95F;
 static constexpr auto PROB_XY_NOISE_FREQUENCIES_EQUAL = 0.5F;
 static constexpr auto PROB_XY_ANGLE_FREQUENCIES_EQUAL = 0.5F;
 
-PerlinNoise::PerlinNoise(const IGoomRand& goomRand) noexcept
+PerlinNoise::PerlinNoise(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_params{{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
              DEFAULT_LERP_TO_ONE_T_S,

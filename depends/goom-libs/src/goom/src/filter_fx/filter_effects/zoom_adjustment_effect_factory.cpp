@@ -23,14 +23,14 @@ import Goom.FilterFx.FilterEffects.AdjustmentEffects.Wave;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
 import Goom.FilterFx.FilterSettingsService;
 import Goom.FilterFx.ZoomAdjustmentEffect;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.EnumUtils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 namespace
 {
@@ -61,7 +61,7 @@ auto IsAllowedFuncOfMode(const ZoomFilterMode funcOfMode,
 
 
 auto CreateFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
-                                    const IGoomRand& goomRand,
+                                    const GoomRand& goomRand,
                                     const std::string& resourcesDirectory)
     -> std::unique_ptr<IZoomAdjustmentEffect>
 {
@@ -122,7 +122,7 @@ auto CreateFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
 }
 
 auto GetFuncOfMode(const ZoomFilterMode baseFilterMode,
-                   const IGoomRand& goomRand) noexcept -> ZoomFilterMode
+                   const GoomRand& goomRand) noexcept -> ZoomFilterMode
 {
   static constexpr auto MAX_RETRIES = 10U;
 
@@ -141,7 +141,7 @@ auto GetFuncOfMode(const ZoomFilterMode baseFilterMode,
 }
 
 auto CreateFuncOfFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
-                                          const IGoomRand& goomRand,
+                                          const GoomRand& goomRand,
                                           const std::string& resourcesDirectory)
     -> std::unique_ptr<IZoomAdjustmentEffect>
 {
@@ -158,7 +158,7 @@ auto CreateFuncOfFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
 } // namespace
 
 auto CreateZoomAdjustmentEffect(const ZoomFilterMode filterMode,
-                                const IGoomRand& goomRand,
+                                const GoomRand& goomRand,
                                 const std::string& resourcesDirectory)
     -> std::unique_ptr<IZoomAdjustmentEffect>
 {

@@ -11,7 +11,7 @@ import Goom.FilterFx.AfterEffects.ZoomVectorAfterEffects;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -20,11 +20,11 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using AFTER_EFFECTS::AfterEffects;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
 ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                                      const std::string& resourcesDirectory,
-                                     const IGoomRand& goomRand,
+                                     const GoomRand& goomRand,
                                      const GetAfterEffectsFunc& getAfterEffects) noexcept
   : m_zoomVectorAfterEffects{screenWidth, getAfterEffects(goomRand, resourcesDirectory)}
 {
@@ -35,7 +35,7 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
 }
 
 auto ZoomVectorEffects::GetStandardAfterEffects(
-    const IGoomRand& goomRand, const std::string& resourcesDirectory) noexcept -> AfterEffects
+    const GoomRand& goomRand, const std::string& resourcesDirectory) noexcept -> AfterEffects
 {
   return AFTER_EFFECTS::GetStandardAfterEffects(goomRand, resourcesDirectory);
 }

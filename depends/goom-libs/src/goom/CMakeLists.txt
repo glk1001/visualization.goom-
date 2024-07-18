@@ -256,7 +256,7 @@ set(GoomUtils_modules
     src/utils/math/rand/rand_gen.cppm
     src/utils/math/rand/randutils.cppm
     src/utils/math/damping_functions.cppm
-    src/utils/math/goom_rand_base.cppm
+    src/utils/math/goom_rand.cppm
     src/utils/math/incremented_values.cppm
     src/utils/math/misc.cppm
     src/utils/math/parametric_functions2d.cppm

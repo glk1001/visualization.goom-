@@ -15,7 +15,7 @@ module Goom.VisualFx.LSystemFx;
 
 import LSys.Rand;
 import Goom.Draw.GoomDrawBase;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.VisualFx.FxHelper;

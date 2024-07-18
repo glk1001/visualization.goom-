@@ -19,7 +19,7 @@ import Goom.Utils.Graphics.SmallImageBitmaps;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.EnumUtils;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
@@ -36,7 +36,7 @@ using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 using GOOM::UTILS::GRAPHICS::GetColorMultiply;
 using GOOM::UTILS::GRAPHICS::ImageBitmap;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::IncrementedValue;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
@@ -48,7 +48,7 @@ class StarDrawer
 {
 public:
   StarDrawer(IGoomDraw& draw,
-             const IGoomRand& goomRand,
+             const GoomRand& goomRand,
              const SmallImageBitmaps& smallBitmaps) noexcept;
 
   auto ChangeDrawMode() noexcept -> void;
@@ -56,7 +56,7 @@ public:
   auto DrawStar(const Star& star, float speedFactor) noexcept -> void;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   const SmallImageBitmaps* m_smallBitmaps;
   BitmapDrawer m_bitmapDrawer;
   CircleDrawer m_circleDrawer;
@@ -188,7 +188,7 @@ namespace GOOM::VISUAL_FX::FLYING_STARS
 {
 
 StarDrawer::StarDrawer(IGoomDraw& draw,
-                       const IGoomRand& goomRand,
+                       const GoomRand& goomRand,
                        const SmallImageBitmaps& smallBitmaps) noexcept
   : m_goomRand{&goomRand},
     m_smallBitmaps{&smallBitmaps},

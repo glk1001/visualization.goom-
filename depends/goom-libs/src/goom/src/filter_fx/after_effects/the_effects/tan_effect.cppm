@@ -9,7 +9,7 @@ export module Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 
@@ -19,7 +19,7 @@ export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class TanEffect
 {
 public:
-  explicit TanEffect(const UTILS::MATH::IGoomRand& goomRand);
+  explicit TanEffect(const UTILS::MATH::GoomRand& goomRand);
   TanEffect(const TanEffect&) noexcept           = delete;
   TanEffect(TanEffect&&) noexcept                = delete;
   virtual ~TanEffect() noexcept                  = default;
@@ -53,7 +53,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   Params m_params;
   UTILS::MATH::Weights<TanType> m_tanEffectWeights;
   static constexpr auto HALF_PI = UTILS::MATH::HALF_PI;

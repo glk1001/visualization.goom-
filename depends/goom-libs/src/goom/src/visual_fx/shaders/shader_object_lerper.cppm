@@ -7,12 +7,12 @@ module Goom.VisualFx.ShaderFx:ShaderObjectLerper;
 
 import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
 using GOOM::UTILS::Timer;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 
@@ -33,7 +33,7 @@ public:
   };
 
   ShaderObjectLerper(const PluginInfo& goomInfo,
-                     const IGoomRand& goomRand,
+                     const GoomRand& goomRand,
                      const Params& params) noexcept;
 
   auto Update() noexcept -> void;
@@ -43,7 +43,7 @@ public:
 
 private:
   [[maybe_unused]] const PluginInfo* m_goomInfo;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
 
   Params m_params;
   float m_srceValue = m_goomRand->GetRandInRange(m_params.valueRange);
@@ -66,7 +66,7 @@ inline auto ShaderObjectLerper::GetLerpedValue() const noexcept -> float
 }
 
 ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
-                                       const IGoomRand& goomRand,
+                                       const GoomRand& goomRand,
                                        const Params& params) noexcept
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},

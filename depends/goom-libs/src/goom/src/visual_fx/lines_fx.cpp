@@ -14,7 +14,7 @@ import Goom.Color.ColorUtils;
 import Goom.Color.RandomColorMaps;
 import Goom.Control.GoomSoundEvents;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.GoomTime;
 import Goom.VisualFx.FxHelper;
 import Goom.VisualFx.FxUtils;

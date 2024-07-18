@@ -12,7 +12,7 @@ import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
@@ -24,19 +24,19 @@ export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 class ZoomVectorEffects
 {
 public:
-  using GetAfterEffectsFunc = std::function<auto(const UTILS::MATH::IGoomRand& goomRand,
+  using GetAfterEffectsFunc = std::function<auto(const UTILS::MATH::GoomRand& goomRand,
                                                  const std::string& resourcesDirectory)
                                                 ->AFTER_EFFECTS::AfterEffects>;
 
   ZoomVectorEffects(uint32_t screenWidth,
                     const std::string& resourcesDirectory,
-                    const UTILS::MATH::IGoomRand& goomRand,
+                    const UTILS::MATH::GoomRand& goomRand,
                     const GetAfterEffectsFunc& getAfterEffects) noexcept;
 
   [[nodiscard]] static constexpr auto IsValidMultiplierRange(
       const NumberRange<float>& range) noexcept -> bool;
 
-  [[nodiscard]] static auto GetStandardAfterEffects(const UTILS::MATH::IGoomRand& goomRand,
+  [[nodiscard]] static auto GetStandardAfterEffects(const UTILS::MATH::GoomRand& goomRand,
                                                     const std::string& resourcesDirectory) noexcept
       -> AFTER_EFFECTS::AfterEffects;
 

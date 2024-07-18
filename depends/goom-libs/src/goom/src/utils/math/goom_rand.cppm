@@ -9,7 +9,7 @@ module;
 #include <type_traits>
 #include <vector>
 
-export module Goom.Utils.Math.GoomRandBase;
+export module Goom.Utils.Math.GoomRand;
 
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.Misc;
@@ -51,20 +51,12 @@ inline constexpr auto HALF_CIRCLE_RANGE = NumberRange{0.0F, PI};
 template<typename T>
 [[nodiscard]] constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept;
 
-class IGoomRand
+class GoomRand
 {
 public:
-  IGoomRand() noexcept                                    = default;
-  IGoomRand(const IGoomRand&) noexcept                    = delete;
-  IGoomRand(IGoomRand&&) noexcept                         = delete;
-  auto operator=(const IGoomRand&) noexcept -> IGoomRand& = delete;
-  auto operator=(IGoomRand&&) noexcept -> IGoomRand&      = delete;
-  virtual ~IGoomRand() noexcept                           = default;
-
-  // Return random integer in the range 0 <= n < n1.
-  [[nodiscard]] auto GetNRand(uint32_t n1) const noexcept -> uint32_t;
-
   // Return random number in the range n0 <= n < n1.
+  template<typename T, NumberRange<T> numberRange>
+  [[nodiscard]] auto GetRandInRange() const noexcept -> T;
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
 
@@ -72,6 +64,9 @@ public:
   auto Shuffle(Range& range) const noexcept -> void;
 
   [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool;
+
+  // Return random integer in the range 0 <= n < n1.
+  [[nodiscard]] auto GetNRand(uint32_t n1) const noexcept -> uint32_t;
 
 private:
   // Return random number in the range n0 <= n <= n1.
@@ -93,7 +88,7 @@ public:
   using EventWeightPairs = std::vector<KeyValue>;
 
   Weights() noexcept = default;
-  Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept;
+  Weights(const GoomRand& goomRand, const EventWeightPairs& weights) noexcept;
 
   [[nodiscard]] auto GetNumElements() const noexcept -> size_t;
   [[nodiscard]] auto GetNumSetWeights() const noexcept -> size_t;
@@ -107,7 +102,7 @@ private:
   friend class ConditionalWeights;
   [[nodiscard]] auto GetRandomWeighted(const E& given) const noexcept -> E;
 
-  const IGoomRand* m_goomRand = nullptr;
+  const GoomRand* m_goomRand = nullptr;
   using WeightArray           = std::array<float, NUM<E>>;
   struct WeightData
   {
@@ -134,10 +129,10 @@ public:
   };
   using EventWeightMultiplierPairs = std::vector<KeyValue>;
 
-  ConditionalWeights(const IGoomRand& goomRand,
+  ConditionalWeights(const GoomRand& goomRand,
                      const typename Weights<E>::EventWeightPairs& eventWeightPairs,
                      bool disallowEventsSameAsGiven = true) noexcept;
-  ConditionalWeights(const IGoomRand& goomRand,
+  ConditionalWeights(const GoomRand& goomRand,
                      const typename Weights<E>::EventWeightPairs& weights,
                      const EventWeightMultiplierPairs& weightMultiplierPairs,
                      bool disallowEventsSameAsGiven = true) noexcept;
@@ -158,7 +153,7 @@ private:
   std::map<E, Weights<E>> m_conditionalWeights;
   bool m_disallowEventsSameAsGiven;
   [[nodiscard]] static auto GetConditionalWeightMap(
-      const IGoomRand& goomRand,
+      const GoomRand& goomRand,
       const typename Weights<E>::EventWeightPairs& eventWeightPairs,
       const EventWeightMultiplierPairs& weightMultiplierPairs) noexcept -> std::map<E, Weights<E>>;
 };
@@ -192,8 +187,18 @@ constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
   return std::midpoint(numberRange.Min(), numberRange.Max());
 }
 
+template<typename T, NumberRange<T> numberRange>
+[[nodiscard]] auto GoomRand::GetRandInRange() const noexcept -> T
+{
+  if (std::is_integral<T>())
+  {
+    return GetRandInRange(numberRange.Min(), numberRange.Max() + 1);
+  }
+  return GetRandInRange(numberRange.Min(), numberRange.Max());
+}
+
 template<typename T>
-auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T
+auto GoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T
 {
   if (std::is_integral<T>())
   {
@@ -203,7 +208,7 @@ auto IGoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept
 }
 
 template<std::ranges::random_access_range Range>
-auto IGoomRand::Shuffle(Range& range) const noexcept -> void
+auto GoomRand::Shuffle(Range& range) const noexcept -> void
 {
   auto first = std::ranges::begin(range);
   auto last  = std::ranges::end(range);
@@ -215,39 +220,39 @@ auto IGoomRand::Shuffle(Range& range) const noexcept -> void
   }
 }
 
-inline auto IGoomRand::GetNRand(const uint32_t n1) const noexcept -> uint32_t
+inline auto GoomRand::GetNRand(const uint32_t n1) const noexcept -> uint32_t
 {
   return RAND::GetNRand(n1);
 }
 
-inline auto IGoomRand::GetRandInRange(const uint32_t n0, const uint32_t n1) const noexcept
+inline auto GoomRand::GetRandInRange(const uint32_t n0, const uint32_t n1) const noexcept
     -> uint32_t
 {
   return RAND::GetRandInRange(n0, n1);
 }
 
-inline auto IGoomRand::GetRandInRange(const int32_t n0, const int32_t n1) const noexcept -> int32_t
+inline auto GoomRand::GetRandInRange(const int32_t n0, const int32_t n1) const noexcept -> int32_t
 {
   return RAND::GetRandInRange(n0, n1);
 }
 
-inline auto IGoomRand::GetRandInRange(const float n0, const float n1) const noexcept -> float
+inline auto GoomRand::GetRandInRange(const float n0, const float n1) const noexcept -> float
 {
   return RAND::GetRandInRange(n0, n1);
 }
 
-inline auto IGoomRand::GetRandInRange(const double n0, const double n1) const noexcept -> double
+inline auto GoomRand::GetRandInRange(const double n0, const double n1) const noexcept -> double
 {
   return RAND::GetRandInRange(n0, n1);
 }
 
-inline auto IGoomRand::ProbabilityOf(const float x) const noexcept -> bool
+inline auto GoomRand::ProbabilityOf(const float x) const noexcept -> bool
 {
   return RAND::ProbabilityOf(x);
 }
 
 template<EnumType E>
-Weights<E>::Weights(const IGoomRand& goomRand, const EventWeightPairs& weights) noexcept
+Weights<E>::Weights(const GoomRand& goomRand, const EventWeightPairs& weights) noexcept
   : m_goomRand{&goomRand},
     m_weightData{GetWeightData(weights)},
     m_sumOfWeights{GetSumOfWeights(weights)}
@@ -358,7 +363,7 @@ auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
 
 template<EnumType E>
 ConditionalWeights<E>::ConditionalWeights(
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     const typename Weights<E>::EventWeightPairs& eventWeightPairs,
     const bool disallowEventsSameAsGiven) noexcept
   : m_unconditionalWeights{goomRand, eventWeightPairs},
@@ -368,7 +373,7 @@ ConditionalWeights<E>::ConditionalWeights(
 }
 
 template<EnumType E>
-ConditionalWeights<E>::ConditionalWeights(const IGoomRand& goomRand,
+ConditionalWeights<E>::ConditionalWeights(const GoomRand& goomRand,
                                           const typename Weights<E>::EventWeightPairs& weights,
                                           const EventWeightMultiplierPairs& weightMultiplierPairs,
                                           const bool disallowEventsSameAsGiven) noexcept
@@ -425,7 +430,7 @@ auto ConditionalWeights<E>::GetRandomWeighted(const E& given) const noexcept -> 
 
 template<EnumType E>
 auto ConditionalWeights<E>::GetConditionalWeightMap(
-    const IGoomRand& goomRand,
+    const GoomRand& goomRand,
     const typename Weights<E>::EventWeightPairs& eventWeightPairs,
     const EventWeightMultiplierPairs& weightMultiplierPairs) noexcept -> std::map<E, Weights<E>>
 {

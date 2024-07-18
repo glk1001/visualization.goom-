@@ -8,15 +8,15 @@ module Goom.FilterFx.FilterEffects.AdjustmentEffects.FunctionOfFunction;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 
-FunctionOfFunction::FunctionOfFunction(const IGoomRand& goomRand,
+FunctionOfFunction::FunctionOfFunction(const GoomRand& goomRand,
                                        const std::string& name,
                                        FuncEffect&& funcOf,
                                        FuncEffect&& func) noexcept

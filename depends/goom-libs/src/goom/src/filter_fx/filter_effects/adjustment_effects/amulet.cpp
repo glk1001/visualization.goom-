@@ -3,14 +3,14 @@ module Goom.FilterFx.FilterEffects.AdjustmentEffects.Amulet;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using FILTER_UTILS::RandomViewport;
 using UTILS::NameValuePairs;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto DEFAULT_AMPLITUDE = 1.0F;
@@ -26,7 +26,7 @@ static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.98F;
 static constexpr auto PROB_NO_VIEWPORT         = 0.5F;
 
-Amulet::Amulet(const IGoomRand& goomRand) noexcept
+Amulet::Amulet(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{Viewport{}, {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE}}

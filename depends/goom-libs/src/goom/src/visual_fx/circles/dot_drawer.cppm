@@ -12,11 +12,11 @@ import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShapeDrawers.BitmapDrawer;
 import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.VisualFx.CirclesFx.Helper;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
@@ -33,7 +33,7 @@ using GOOM::DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using GOOM::DRAW::SHAPE_DRAWERS::CircleDrawer;
 using GOOM::UTILS::NUM;
 using GOOM::UTILS::MATH::I_HALF;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::IncrementedValue;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
@@ -45,7 +45,7 @@ export namespace GOOM::VISUAL_FX::CIRCLES
 class DotDrawer
 {
 public:
-  DotDrawer(IGoomDraw& draw, const IGoomRand& goomRand, const Helper& helper) noexcept;
+  DotDrawer(IGoomDraw& draw, const GoomRand& goomRand, const Helper& helper) noexcept;
 
   auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
@@ -54,7 +54,7 @@ public:
       -> void;
 
 private:
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   const Helper* m_helper;
   BitmapDrawer m_bitmapDrawer;
   CircleDrawer m_circleDrawer;
@@ -139,7 +139,7 @@ static constexpr auto DOT_INSIDE_MAX_BRIGHTNESS_FACTOR      = 2.0F;
 static constexpr auto DECORATION_DIFFERENT_COLOR_BRIGHTNESS = 2.0F;
 static constexpr auto DECORATION_SPECIAL_BRIGHTNESS         = 4.0F;
 
-DotDrawer::DotDrawer(IGoomDraw& draw, const IGoomRand& goomRand, const Helper& helper) noexcept
+DotDrawer::DotDrawer(IGoomDraw& draw, const GoomRand& goomRand, const Helper& helper) noexcept
   : m_goomRand{&goomRand},
     m_helper{&helper},
     m_bitmapDrawer{draw},

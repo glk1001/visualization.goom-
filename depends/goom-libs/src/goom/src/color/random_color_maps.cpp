@@ -14,7 +14,7 @@ module Goom.Color.RandomColorMaps;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Utils.EnumUtils;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 
@@ -23,7 +23,7 @@ namespace GOOM::COLOR
 
 using COLOR_DATA::ColorMapName;
 using UTILS::NUM;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::Weights;
 
@@ -240,7 +240,7 @@ auto RandomColorMaps::SetLightnessLimits(const MinMaxValues<float>& minMaxLightn
 }
 
 WeightedRandomColorMaps::WeightedRandomColorMaps(const PixelChannelType defaultAlpha,
-                                                 const IGoomRand& goomRand,
+                                                 const GoomRand& goomRand,
                                                  const Weights<ColorMapGroup>& weights,
                                                  const std::string& colorMapsName) noexcept
   : RandomColorMaps{defaultAlpha, goomRand, colorMapsName}, m_weights{weights}

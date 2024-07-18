@@ -8,7 +8,7 @@ import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
@@ -17,7 +17,7 @@ export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class Hypercos
 {
 public:
-  explicit Hypercos(const UTILS::MATH::IGoomRand& goomRand) noexcept;
+  explicit Hypercos(const UTILS::MATH::GoomRand& goomRand) noexcept;
   Hypercos(const Hypercos&) noexcept           = delete;
   Hypercos(Hypercos&&) noexcept                = delete;
   virtual ~Hypercos() noexcept                 = default;
@@ -65,7 +65,7 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::IGoomRand* m_goomRand;
+  const UTILS::MATH::GoomRand* m_goomRand;
   Params m_params;
   UTILS::MATH::Weights<HypercosEffect> m_hypercosOverlayWeights;
   auto SetHypercosEffect(HypercosOverlayMode overlay,

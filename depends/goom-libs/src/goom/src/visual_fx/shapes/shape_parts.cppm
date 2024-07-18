@@ -16,7 +16,7 @@ import Goom.Color.RandomColorMapsGroups;
 import Goom.Draw.GoomDrawBase;
 import Goom.Utils.Timer;
 import Goom.Utils.StepSpeed;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.ParametricFunctions2d;
 import Goom.Utils.Math.Paths;
@@ -36,7 +36,7 @@ using GOOM::UTILS::StepSpeed;
 using GOOM::UTILS::MATH::AngleParams;
 using GOOM::UTILS::MATH::CircleFunction;
 using GOOM::UTILS::MATH::CirclePath;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::IsEven;
 using GOOM::UTILS::MATH::IsOdd;
 using GOOM::UTILS::MATH::NumberRange;
@@ -101,7 +101,7 @@ public:
   auto UseRandomShapePathsNumSteps() noexcept -> void;
   auto UseFixedShapePathsNumSteps(float tMinMaxLerp) noexcept -> void;
   auto UseEvenShapePartNumsForDirection(bool val) -> void;
-  [[nodiscard]] static auto GetNewRandomMinMaxLerpT(const IGoomRand& goomRand,
+  [[nodiscard]] static auto GetNewRandomMinMaxLerpT(const GoomRand& goomRand,
                                                     float oldTMinMaxLerp) noexcept -> float;
 
   [[nodiscard]] auto GetNumShapePaths() const noexcept -> uint32_t;
@@ -230,7 +230,7 @@ inline auto ShapePart::ResetTs(const float val) noexcept -> void
   std::ranges::for_each(m_shapePaths, [&val](ShapePath& path) { path.ResetT(val); });
 }
 
-inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::IGoomRand& goomRand,
+inline auto ShapePart::GetNewRandomMinMaxLerpT(const UTILS::MATH::GoomRand& goomRand,
                                                const float oldTMinMaxLerp) noexcept -> float
 {
   static constexpr auto SMALL_OFFSET = 0.2F;

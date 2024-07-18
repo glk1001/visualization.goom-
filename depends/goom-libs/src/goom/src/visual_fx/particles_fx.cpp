@@ -27,7 +27,7 @@ import Goom.Utils.Graphics.Camera;
 import Goom.Utils.Graphics.PixelUtils;
 import Goom.Utils.Graphics.PointUtils;
 import Goom.Utils.Graphics.SmallImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.IncrementedValues;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.Misc;
@@ -56,7 +56,7 @@ using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
-using UTILS::MATH::IGoomRand;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::IncrementedValue;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
@@ -121,10 +121,10 @@ private:
 class EffectFactory
 {
 public:
-  [[nodiscard]] static auto Create(const IGoomRand& goomRand, const char* name) -> EffectData;
+  [[nodiscard]] static auto Create(const GoomRand& goomRand, const char* name) -> EffectData;
 };
 
-auto EffectFactory::Create(const IGoomRand& goomRand, const char* const name) -> EffectData
+auto EffectFactory::Create(const GoomRand& goomRand, const char* const name) -> EffectData
 {
   static constexpr auto DEFAULT_NUM_PARTICLES = 20000U;
   static constexpr auto DEFAULT_WORLD_SCALE   = 0.5F;

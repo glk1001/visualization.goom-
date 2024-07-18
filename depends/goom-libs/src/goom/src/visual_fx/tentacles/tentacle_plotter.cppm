@@ -12,7 +12,7 @@ import Goom.Draw.ShaperDrawers.CircleDrawer;
 import Goom.Draw.ShaperDrawers.LineDrawer;
 import Goom.Utils.Graphics.LineClipper;
 import Goom.Utils.Math.TValues;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import :Tentacle3d;
@@ -20,7 +20,7 @@ import :Tentacle3d;
 using GOOM::DRAW::IGoomDraw;
 using GOOM::DRAW::MultiplePixels;
 using GOOM::UTILS::GRAPHICS::LineClipper;
-using GOOM::UTILS::MATH::IGoomRand;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 
@@ -31,7 +31,7 @@ class TentaclePlotter
 {
 public:
   TentaclePlotter() noexcept = delete;
-  TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept;
+  TentaclePlotter(IGoomDraw& draw, const GoomRand& goomRand) noexcept;
 
   auto UpdateCameraPosition() noexcept -> void;
   auto SetTentacleLineThickness(uint8_t lineThickness) noexcept -> void;
@@ -45,7 +45,7 @@ public:
 
 private:
   IGoomDraw* m_draw;
-  const IGoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Vec2dFlt m_screenCentre = ToVec2dFlt(m_draw->GetDimensions().GetCentrePoint());
 
   DRAW::SHAPE_DRAWERS::LineDrawerNoClippedEndPoints m_lineDrawer{*m_draw};
@@ -116,7 +116,7 @@ inline auto TentaclePlotter::UpdateCameraPosition() noexcept -> void
                       m_goomRand->GetRandInRange(CAMERA_Z_OFFSET_RANGE)};
 }
 
-TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const IGoomRand& goomRand) noexcept
+TentaclePlotter::TentaclePlotter(IGoomDraw& draw, const GoomRand& goomRand) noexcept
   : m_draw{&draw}, m_goomRand{&goomRand}
 {
 }

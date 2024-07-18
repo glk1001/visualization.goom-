@@ -9,7 +9,7 @@ export module Goom.FilterFx.FilterUtils.ImageDisplacement;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.Graphics.ImageBitmaps;
-import Goom.Utils.Math.GoomRandBase;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
@@ -20,7 +20,7 @@ export namespace GOOM::FILTER_FX::FILTER_UTILS
 class ImageDisplacement
 {
 public:
-  ImageDisplacement(const std::string& imageFilename, const UTILS::MATH::IGoomRand& goomRand);
+  ImageDisplacement(const std::string& imageFilename, const UTILS::MATH::GoomRand& goomRand);
 
   [[nodiscard]] auto GetImageFilename() const noexcept -> std::string;
   [[nodiscard]] auto GetXColorCutoff() const noexcept -> float;
