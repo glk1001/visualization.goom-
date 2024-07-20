@@ -1,6 +1,5 @@
 module;
 
-#include <cmath>
 #include <cstdint>
 
 export module Goom.Utils.Math.Rand.RandUtils;
@@ -16,10 +15,10 @@ inline constexpr auto GOOM_RAND_MAX = GEN::GOOM_RAND_MAX;
 [[nodiscard]] auto GetRandSeed() noexcept -> uint64_t;
 auto SetRandSeed(uint64_t seed) noexcept -> void;
 
-// Return a random integer in the range 0 <= n < n1.
-[[nodiscard]] auto GetNRand(uint32_t n1) noexcept -> uint32_t;
+// Return a random integer in the range [0, n).
+[[nodiscard]] auto GetNRand(uint32_t n) noexcept -> uint32_t;
 
-// Return a random integer in the range 0 <= n <= GOOM_RAND_MAX.
+// Return a random integer in the range [0, GOOM_RAND_MAX+1).
 [[nodiscard]] auto GetRand() noexcept -> uint32_t;
 
 
@@ -41,7 +40,7 @@ inline auto GetRandSeed() noexcept -> uint64_t
   return GEN::GetRandSeed();
 }
 
-inline auto SetRandSeed(uint64_t seed) noexcept -> void
+inline auto SetRandSeed(const uint64_t seed) noexcept -> void
 {
   GEN::SetRandSeed(seed);
 }

@@ -71,7 +71,6 @@ import Goom.Lib.SPimpl;
 import Goom.PluginInfo;
 #ifdef DO_GOOM_STATE_DUMP
 import Goom.Control.GoomStateDump;
-import Goom.Utils.Math.RandUtils;
 #endif
 
 namespace GOOM
@@ -655,7 +654,7 @@ inline auto GoomControl::GoomControlImpl::FinishGoomStateDump() -> void
     return;
   }
   m_goomStateDump->SetSongTitle(m_songInfo.title);
-  m_goomStateDump->SetGoomSeed(UTILS::MATH::RAND::GetRandSeed());
+  m_goomStateDump->SetGoomSeed(UTILS::MATH::GetRandSeed());
   m_goomStateDump->SetStopWatch(m_runningTimeStopwatch);
   m_goomStateDump->DumpData(m_dumpDirectory);
 }
