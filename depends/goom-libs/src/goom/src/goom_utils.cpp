@@ -9,7 +9,7 @@ module Goom.Lib.GoomUtils;
 
 import Goom.Utils.StrUtils;
 import Goom.Utils.BuildTime;
-import Goom.Utils.Math.Rand.RandUtils;
+import Goom.Utils.Math.GoomRand;
 import Goom.Lib.CompilerVersions;
 import Goom.Lib.GoomVersion;
 
@@ -30,12 +30,12 @@ auto PutFileLines(std::ostream& outStream, const std::vector<std::string>& lines
 
 auto GetRandSeed() noexcept -> uint64_t
 {
-  return UTILS::MATH::RAND::GetRandSeed();
+  return UTILS::MATH::GetRandSeed();
 }
 
 auto SetRandSeed(const uint64_t seed) noexcept -> void
 {
-  UTILS::MATH::RAND::SetRandSeed(seed);
+  UTILS::MATH::SetRandSeed(seed);
 }
 
 auto GetGoomLibCompilerVersion() noexcept -> std::string

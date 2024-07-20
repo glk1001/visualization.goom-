@@ -11,7 +11,6 @@ import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
-import Goom.Utils.Math.Rand.RandUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -22,10 +21,10 @@ using FILTER_UTILS::LerpToOneTs;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
+using UTILS::MATH::GetRandSeed;
+using UTILS::MATH::GOOM_RAND_MAX;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
-using UTILS::MATH::RAND::GOOM_RAND_MAX;
-using UTILS::MATH::RAND::GetRandSeed;
 
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.05F, 1.5F};
@@ -96,14 +95,16 @@ auto PerlinNoise::SetRandomParams() noexcept -> void
                                : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
   const auto xNoiseFrequencyFactor = m_goomRand->GetRandInRange<NOISE_FREQUENCY_FACTOR_RANGE>();
-  const auto yNoiseFrequencyFactor = m_goomRand->ProbabilityOf<PROB_XY_NOISE_FREQUENCIES_EQUAL>()
-                                         ? xNoiseFrequencyFactor
-                                         : m_goomRand->GetRandInRange<NOISE_FREQUENCY_FACTOR_RANGE>();
+  const auto yNoiseFrequencyFactor =
+      m_goomRand->ProbabilityOf<PROB_XY_NOISE_FREQUENCIES_EQUAL>()
+          ? xNoiseFrequencyFactor
+          : m_goomRand->GetRandInRange<NOISE_FREQUENCY_FACTOR_RANGE>();
 
   const auto xAngleFrequencyFactor = m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
-  const auto yAngleFrequencyFactor = m_goomRand->ProbabilityOf<PROB_XY_ANGLE_FREQUENCIES_EQUAL>()
-                                         ? xAngleFrequencyFactor
-                                         : m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
+  const auto yAngleFrequencyFactor =
+      m_goomRand->ProbabilityOf<PROB_XY_ANGLE_FREQUENCIES_EQUAL>()
+          ? xAngleFrequencyFactor
+          : m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
 
   const auto octaves = m_goomRand->GetRandInRange<OCTAVES_RANGE>();
 

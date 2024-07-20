@@ -19,6 +19,11 @@ import Goom.Lib.AssertUtils;
 export namespace GOOM::UTILS::MATH
 {
 
+inline constexpr auto GOOM_RAND_MAX = RAND::GOOM_RAND_MAX;
+
+[[nodiscard]] auto GetRandSeed() noexcept -> uint64_t;
+auto SetRandSeed(uint64_t seed) noexcept -> void;
+
 // NOLINTBEGIN(misc-non-private-member-variables-in-classes): Need class as non-type template param.
 template<typename T>
 class NumberRange
@@ -55,8 +60,8 @@ template<typename T>
 class GoomRand
 {
 public:
-  // Return random number in the range [numberRange.min, numberRange.max].
-  template<NumberRange numberRange>
+  // Return a random number in the range [numberRange.min, numberRange.max].
+  template<NumberRange numberRange> // NOLINT(readability-identifier-naming)
   [[nodiscard]] auto GetRandInRange() const noexcept -> decltype(numberRange.min);
   template<typename T>
   [[nodiscard]] auto GetRandInRange(const NumberRange<T>& numberRange) const noexcept -> T;
@@ -68,8 +73,8 @@ public:
   [[nodiscard]] auto ProbabilityOf() const noexcept -> bool;
   [[nodiscard]] auto ProbabilityOf(float x) const noexcept -> bool;
 
-  // Return random integer in the range 0 <= n < n1.
-  [[nodiscard]] static auto GetNRand(uint32_t n1) noexcept -> uint32_t;
+  // Return a random integer in the range [0, n).
+  [[nodiscard]] static auto GetNRand(uint32_t n) noexcept -> uint32_t;
 
 private:
   // Return a random integer number in the range [n0, n0 + nRangePlus1).
@@ -168,6 +173,16 @@ private:
 namespace GOOM::UTILS::MATH
 {
 
+inline auto GetRandSeed() noexcept -> uint64_t
+{
+  return RAND::GetRandSeed();
+}
+
+inline auto SetRandSeed(const uint64_t seed) noexcept -> void
+{
+  RAND::SetRandSeed(seed);
+}
+
 template<typename T>
 constexpr auto GetMidpoint(const NumberRange<T>& numberRange) noexcept
 {
@@ -245,9 +260,9 @@ auto GoomRand::GetRandInRange(const NumberRange<T>& numberRange) const noexcept 
   }
 }
 
-inline auto GoomRand::GetNRand(const uint32_t n1) noexcept -> uint32_t
+inline auto GoomRand::GetNRand(const uint32_t n) noexcept -> uint32_t
 {
-  return RAND::GetNRand(n1);
+  return RAND::GetNRand(n);
 }
 // NOLINTEND(readability-convert-member-functions-to-static)
 
