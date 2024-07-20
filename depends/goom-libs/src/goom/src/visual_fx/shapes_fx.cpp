@@ -83,7 +83,8 @@ private:
   static constexpr uint32_t TIME_BEFORE_SYNCHRONISED_CHANGE = 5000;
   Timer m_synchronisedShapeChangesTimer{m_fxHelper->GetGoomTime(), TIME_BEFORE_SYNCHRONISED_CHANGE};
 
-  static constexpr auto INCREMENTS_PER_UPDATE_RANGE = NumberRange{1U, 100U};
+  static constexpr auto INCREMENTS_PER_UPDATE_RANGE = NumberRange{20U, 20U};
+  // NOTE: Set INCREMENTS_PER_UPDATE_RANGE.min to 20. Doesn't look too flat.
   static_assert(0 < INCREMENTS_PER_UPDATE_RANGE.min);
   uint32_t m_numIncrementsPerUpdate =
       m_fxHelper->GetGoomRand().GetRandInRange<INCREMENTS_PER_UPDATE_RANGE>();
