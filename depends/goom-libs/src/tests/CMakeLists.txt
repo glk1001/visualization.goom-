@@ -39,6 +39,12 @@ add_executable(${GOOM_LIB_TESTS_NAME}
                src/utils/test_timer.cpp
 )
 
+target_sources(${GOOM_LIB_TESTS_NAME}
+               PUBLIC  # Seems like there is not way (yet) to make this PRIVATE
+               FILE_SET private_modules TYPE CXX_MODULES FILES
+               src/utils/math/rand_helper.cppm
+)
+
 target_include_directories(${GOOM_LIB_TESTS_NAME}
                            PRIVATE
                            ${goom_SOURCE_DIR}

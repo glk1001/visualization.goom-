@@ -5,12 +5,9 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <filesystem>
-#include <fstream>
-#include <limits>
-#include <tuple>
 #include <vector>
 
+import Goom.Tests.Utils.Math.RandHelper;
 import Goom.Utils.Math.RandUtils;
 
 namespace GOOM::UNIT_TESTS
@@ -19,57 +16,10 @@ namespace GOOM::UNIT_TESTS
 using UTILS::MATH::RAND::GetRand;
 using UTILS::MATH::RAND::GetRandInRange;
 using UTILS::MATH::RAND::GetRandSeed;
-using UTILS::MATH::RAND::RestoreRandState;
-using UTILS::MATH::RAND::SaveRandState;
 using UTILS::MATH::RAND::SetRandSeed;
-
-static constexpr auto SMALL_VAL = 0.0002F;
 
 // NOLINTBEGIN(bugprone-chained-comparison): Catch2 needs to fix this.
 // NOLINTBEGIN(readability-function-cognitive-complexity)
-TEST_CASE("save/restore random state")
-{
-  static constexpr auto NUM_LOOPS = 1000U;
-  static constexpr auto SEED      = 1000UL;
-
-  SetRandSeed(SEED);
-  REQUIRE(SEED == GetRandSeed());
-
-  const auto rand1 = GetRand();
-  const auto rand2 = GetRand();
-  REQUIRE(rand1 != rand2);
-
-  namespace fs        = std::filesystem;
-  const auto saveFile = fs::path{fs::temp_directory_path()} / "rand.out";
-  std::ofstream fileOut{saveFile, std::ofstream::out};
-  REQUIRE(not fileOut.fail());
-  SaveRandState(fileOut);
-  REQUIRE(not fileOut.fail());
-  fileOut.close();
-  REQUIRE(not fileOut.fail());
-  const auto randJustAfterSave = GetRand();
-
-  // Scramble things a bit
-  static constexpr auto SEED_EXTRA = 10U;
-  SetRandSeed(SEED + SEED_EXTRA);
-  auto rand = 0U;
-  for (auto i = 0U; i < NUM_LOOPS; ++i)
-  {
-    rand = GetRand();
-  }
-  REQUIRE(SEED != GetRandSeed());
-  REQUIRE(rand != randJustAfterSave);
-
-  std::ifstream fileIn{saveFile, std::ifstream::in};
-  REQUIRE(not fileIn.fail());
-  RestoreRandState(fileIn);
-  REQUIRE(not fileIn.fail());
-  fileOut.close();
-  REQUIRE(not fileIn.fail());
-  rand = GetRand();
-  REQUIRE(SEED == GetRandSeed());
-  REQUIRE(rand == randJustAfterSave);
-}
 
 TEST_CASE("repeatable random sequence")
 {
@@ -116,117 +66,107 @@ TEST_CASE("repeatable random sequence")
   REQUIRE(SEED == GetRandSeed());
 }
 
-template<typename ValType>
-auto GetMinMax(const size_t numLoop,
-               const ValType& nMin,
-               const ValType& nMax) -> std::tuple<ValType, ValType>
-{
-  auto min = std::numeric_limits<ValType>::max();
-  auto max = std::numeric_limits<ValType>::min();
-  for (auto i = 0U; i < numLoop; ++i)
-  {
-    const auto rand = GetRandInRange(nMin, nMax);
-    if (rand < min)
-    {
-      min = rand;
-    }
-    if (rand > max)
-    {
-      max = rand;
-    }
-  }
-
-  return std::make_tuple(min, max);
-}
+static const auto RAND_IN_RANGE = [](const auto min, const auto max)
+{ return GetRandInRange(min, max); };
 
 TEST_CASE("uint32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr auto NUM_LOOPS = 100000U;
+  static constexpr auto NUM_LOOPS = 150000U;
 
   static constexpr auto N_MIN1 = 999U;
   static constexpr auto N_MAX1 = 10001U;
-  const auto [min1, max1]      = GetMinMax(NUM_LOOPS, N_MIN1, N_MAX1);
-  REQUIRE(min1 == N_MIN1);
-  REQUIRE(max1 == N_MAX1 - 1);
+  const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
+  REQUIRE(countsResults1.min == N_MIN1);
+  REQUIRE(countsResults1.max == N_MAX1 - 1);
+  REQUIRE(countsResults1.counts.size() == (N_MAX1 - N_MIN1));
 
   static constexpr auto N_MIN2 = 0U;
   static constexpr auto N_MAX2 = 120U;
-  const auto [min2, max2]      = GetMinMax(NUM_LOOPS, N_MIN2, N_MAX2);
-  REQUIRE(min2 == N_MIN2);
-  REQUIRE(max2 == N_MAX2 - 1);
+  const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
+  REQUIRE(countsResults2.min == N_MIN2);
+  REQUIRE(countsResults2.max == N_MAX2 - 1);
+  REQUIRE(countsResults2.counts.size() == (N_MAX2 - N_MIN2));
 
-  REQUIRE_NOTHROW(GetRandInRange(5U, 6U));
+  REQUIRE(5U == GetRandInRange(5U, 6U));
 }
 
 TEST_CASE("int32_t min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr auto NUM_LOOPS = 100000U;
+  static constexpr auto NUM_LOOPS = 150000U;
 
   static constexpr auto N_MIN1 = -999;
   static constexpr auto N_MAX1 = 10001;
-  const auto [min1, max1]      = GetMinMax(NUM_LOOPS, N_MIN1, N_MAX1);
-  REQUIRE(min1 == N_MIN1);
-  REQUIRE(max1 == N_MAX1 - 1);
+  const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
+  REQUIRE(countsResults1.min == N_MIN1);
+  REQUIRE(countsResults1.max == N_MAX1 - 1);
+  REQUIRE(countsResults1.counts.size() == (N_MAX1 - N_MIN1));
 
   static constexpr auto N_MIN2 = -999;
   static constexpr auto N_MAX2 = -50;
-  const auto [min2, max2]      = GetMinMax(NUM_LOOPS, N_MIN2, N_MAX2);
-  REQUIRE(min2 == N_MIN2);
-  REQUIRE(max2 == N_MAX2 - 1);
+  const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
+  REQUIRE(countsResults2.min == N_MIN2);
+  REQUIRE(countsResults2.max == N_MAX2 - 1);
+  REQUIRE(countsResults2.counts.size() == (N_MAX2 - N_MIN2));
 
   static constexpr auto N_MIN3 = 1;
   static constexpr auto N_MAX3 = 999;
-  const auto [min3, max3]      = GetMinMax(NUM_LOOPS, N_MIN3, N_MAX3);
-  REQUIRE(min3 == N_MIN3);
-  REQUIRE(max3 == N_MAX3 - 1);
+  const auto countsResults3    = GetCountResults(NUM_LOOPS, N_MIN3, N_MAX3, RAND_IN_RANGE);
+  REQUIRE(countsResults3.min == N_MIN3);
+  REQUIRE(countsResults3.max == N_MAX3 - 1);
+  REQUIRE(countsResults3.counts.size() == (N_MAX3 - N_MIN3));
 
   static constexpr auto N_MIN4 = 0;
   static constexpr auto N_MAX4 = 635;
-  const auto [min4, max4]      = GetMinMax(NUM_LOOPS, N_MIN4, N_MAX4);
-  REQUIRE(min4 == N_MIN4);
-  REQUIRE(max4 == N_MAX4 - 1);
+  const auto countsResults4    = GetCountResults(NUM_LOOPS, N_MIN4, N_MAX4, RAND_IN_RANGE);
+  REQUIRE(countsResults4.min == N_MIN4);
+  REQUIRE(countsResults4.max == N_MAX4 - 1);
+  REQUIRE(countsResults4.counts.size() == (N_MAX4 - N_MIN4));
 
-  REQUIRE_NOTHROW(GetRandInRange(5, 6));
-  REQUIRE_NOTHROW(GetRandInRange(-6, -5));
-  REQUIRE_NOTHROW(GetRandInRange(-6, 10));
+  REQUIRE(5 == GetRandInRange(5, 6));
+  REQUIRE(-6 == GetRandInRange(-6, -5));
 }
 
 TEST_CASE("float min max get random")
 {
   // After a big enough loop, a good random distribution should have
   // covered the entire range: nMin <= n < nMax
-  static constexpr auto NUM_LOOPS = 1000000U;
+  static constexpr auto NUM_LOOPS              = 1000000U;
+  static constexpr auto REASONABLE_FLOAT_COUNT = 950000U;
+
+  static constexpr auto SMALL_VAL = 0.0002F;
+  using Catch::Approx;
 
   static constexpr auto N_MIN1 = 0.0F;
   static constexpr auto N_MAX1 = 1.0F;
-  const auto [min1, max1]      = GetMinMax(NUM_LOOPS, N_MIN1, N_MAX1);
-  REQUIRE(std::fabs(min1 - N_MIN1) < SMALL_VAL);
-  REQUIRE(std::fabs(max1 - N_MAX1) < SMALL_VAL);
+  const auto countsResults1    = GetCountResults(NUM_LOOPS, N_MIN1, N_MAX1, RAND_IN_RANGE);
+  REQUIRE(countsResults1.min == Approx(N_MIN1).margin(SMALL_VAL));
+  REQUIRE(countsResults1.max == Approx(N_MAX1).margin(SMALL_VAL));
+  REQUIRE(countsResults1.counts.size() > REASONABLE_FLOAT_COUNT);
 
   static constexpr auto N_MIN2 = -1.0F;
   static constexpr auto N_MAX2 = 0.0F;
-  const auto [min2, max2]      = GetMinMax(NUM_LOOPS, N_MIN2, N_MAX2);
-  REQUIRE(std::fabs(min2 - N_MIN2) < SMALL_VAL);
-  REQUIRE(std::fabs(max2 - N_MAX2) < SMALL_VAL);
+  const auto countsResults2    = GetCountResults(NUM_LOOPS, N_MIN2, N_MAX2, RAND_IN_RANGE);
+  REQUIRE(countsResults2.min == Approx(N_MIN2).margin(SMALL_VAL));
+  REQUIRE(countsResults2.max == Approx(N_MAX2).margin(SMALL_VAL));
+  REQUIRE(countsResults2.counts.size() > REASONABLE_FLOAT_COUNT);
 
   static constexpr auto N_MIN3 = -10.0F;
   static constexpr auto N_MAX3 = +10.0F;
-  const auto [min3, max3]      = GetMinMax(NUM_LOOPS, N_MIN3, N_MAX3);
-  REQUIRE(std::fabs(min3 - N_MIN3) < SMALL_VAL);
-  REQUIRE(std::fabs(max3 - N_MAX3) < SMALL_VAL);
+  const auto countsResults3    = GetCountResults(NUM_LOOPS, N_MIN3, N_MAX3, RAND_IN_RANGE);
+  REQUIRE(countsResults3.min == Approx(N_MIN3).margin(SMALL_VAL));
+  REQUIRE(countsResults3.max == Approx(N_MAX3).margin(SMALL_VAL));
+  REQUIRE(countsResults3.counts.size() > REASONABLE_FLOAT_COUNT);
 
-  static constexpr auto POS_MIN = 5.0F;
-  static constexpr auto POS_MAX = 6.0F;
-  static constexpr auto NEG_MIN = -6.0F;
-  static constexpr auto NEG_MAX = 5.0F;
-  REQUIRE_NOTHROW(GetRandInRange(POS_MIN, POS_MAX));
-  REQUIRE_NOTHROW(GetRandInRange(NEG_MIN, NEG_MAX));
-  REQUIRE_NOTHROW(GetRandInRange(NEG_MIN, POS_MAX));
+  static constexpr auto POS = 5.0F;
+  static constexpr auto NEG = -6.0F;
+  REQUIRE(Approx(POS).margin(SMALL_VAL) == GetRandInRange(POS, POS + SMALL_VAL));
+  REQUIRE(Approx(NEG).margin(SMALL_VAL) == GetRandInRange(NEG, NEG + SMALL_VAL));
 }
+
 // NOLINTEND(readability-function-cognitive-complexity)
 // NOLINTEND(bugprone-chained-comparison)
 
