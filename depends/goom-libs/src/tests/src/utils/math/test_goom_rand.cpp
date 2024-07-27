@@ -43,10 +43,11 @@ constexpr auto PREVIOUS_EVENT = Events::EVENT3;
 constexpr size_t NUM_LOOPS     = 10000000;
 constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
-[[nodiscard]] auto GetWeightedCounts(const Weights<Events>& weights) -> EventCounts
+[[nodiscard]] auto GetWeightedCounts(const size_t numLoops, const Weights<Events>& weights)
+    -> EventCounts
 {
   EventCounts eventCounts{};
-  for (auto i = 0U; i < NUM_LOOPS; ++i)
+  for (auto i = 0U; i < numLoops; ++i)
   {
     const auto event = weights.GetRandomWeighted();
     ++eventCounts.at(static_cast<size_t>(event));
@@ -55,11 +56,12 @@ constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
   return eventCounts;
 }
 
-[[nodiscard]] auto GetConditionalWeightedCounts(const ConditionalWeights<Events>& weights)
+[[nodiscard]] auto GetConditionalWeightedCounts(const size_t numLoops,
+                                                const ConditionalWeights<Events>& weights)
     -> EventCounts
 {
   EventCounts eventCounts{};
-  for (auto i = 0U; i < NUM_LOOPS; ++i)
+  for (auto i = 0U; i < numLoops; ++i)
   {
     const auto event = weights.GetRandomWeighted(PREVIOUS_EVENT);
     ++eventCounts.at(static_cast<size_t>(event));
@@ -73,8 +75,9 @@ constexpr auto GOOM_RAND = GoomRand{};
 template<NumberRange numberRange>
 auto GetRangeCountResults(const size_t numLoops) -> CountResults<decltype(numberRange.min)>
 {
-  const auto randInRange = [](const auto n0, const auto nRange)
-  { return GOOM_RAND.GetRandInRange(NumberRange<decltype(numberRange.min)>{n0, n0 + nRange - 1}); };
+  const auto randInRange = [](const auto n0, const auto nRange) {
+    return GOOM_RAND.GetRandInRange(NumberRange<decltype(numberRange.min)>{n0, n0 + nRange - 1});
+  };
 
   return GetCountResults(numLoops, numberRange.min, numberRange.rangePlus1, randInRange);
 }
@@ -158,7 +161,7 @@ TEST_CASE("Weighted Events")
     const auto sumOfWeights = static_cast<double>(weightedEvents.GetSumOfWeights());
     REQUIRE(sumOfWeights == Approx(EXPECTED_SUM));
 
-    const auto eventCounts = GetWeightedCounts(weightedEvents);
+    const auto eventCounts = GetWeightedCounts(NUM_LOOPS, weightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
@@ -194,7 +197,8 @@ TEST_CASE("Weighted Events")
     static constexpr auto EXPECTED_SUM_FOR_GIVEN = 5.0 + (2.0 * 10.0) + 6.0;
     REQUIRE(conditionalSumOfWeights == Approx(EXPECTED_SUM_FOR_GIVEN));
 
-    const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
+    const auto conditionalEventCounts =
+        GetConditionalWeightedCounts(NUM_LOOPS, conditionalWeightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
@@ -229,7 +233,8 @@ TEST_CASE("Weighted Events")
   {
     const auto conditionalWeightedEvents = ConditionalWeights<Events>{GOOM_RAND, weightPairs, true};
 
-    const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
+    const auto conditionalEventCounts =
+        GetConditionalWeightedCounts(NUM_LOOPS, conditionalWeightedEvents);
 
     REQUIRE(conditionalEventCounts.at(static_cast<size_t>(PREVIOUS_EVENT)) == 0);
   }
@@ -254,7 +259,7 @@ TEST_CASE("Weighted Events Corner Cases")
     const auto sumOfWeights = static_cast<double>(weightedEvents.GetSumOfWeights());
     REQUIRE(sumOfWeights == Approx(1.0F));
 
-    const auto eventCounts = GetWeightedCounts(weightedEvents);
+    const auto eventCounts = GetWeightedCounts(NUM_LOOPS, weightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
