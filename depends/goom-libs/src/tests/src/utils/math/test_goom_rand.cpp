@@ -8,7 +8,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <functional>
 #include <map>
+#include <print>
 
 import Goom.Tests.Utils.Math.RandHelper;
 import Goom.Utils.EnumUtils;
@@ -23,6 +25,7 @@ using GOOM::UnderlyingEnumType;
 using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
+using UTILS::MATH::GetWeightedSample;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::Weights;
@@ -43,13 +46,14 @@ constexpr auto PREVIOUS_EVENT = Events::EVENT3;
 constexpr size_t NUM_LOOPS     = 10000000;
 constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
-[[nodiscard]] auto GetWeightedCounts(const size_t numLoops, const Weights<Events>& weights)
-    -> EventCounts
+template<typename E>
+[[nodiscard]] auto GetWeightedCounts(const size_t numLoops,
+                                     const std::function<E()>& getRandomWeighted) -> EventCounts
 {
   EventCounts eventCounts{};
   for (auto i = 0U; i < numLoops; ++i)
   {
-    const auto event = weights.GetRandomWeighted();
+    const auto event = getRandomWeighted();
     ++eventCounts.at(static_cast<size_t>(event));
   }
 
@@ -147,21 +151,28 @@ TEST_CASE("Shuffle")
 
 TEST_CASE("Weighted Events")
 {
-  const auto weightPairs = Weights<Events>::EventWeightPairs{
-      {Events::EVENT1, 05.0F},
-      {Events::EVENT2, 02.0F},
-      {Events::EVENT3, 10.0F},
-      {Events::EVENT4, 06.0F},
+  static constexpr auto EVENT1_WEIGHT = 05.0F;
+  static constexpr auto EVENT2_WEIGHT = 02.0F;
+  static constexpr auto EVENT3_WEIGHT = 10.0F;
+  static constexpr auto EVENT4_WEIGHT = 06.0F;
+  const auto weightPairs              = Weights<Events>::EventWeightPairs{
+                   {Events::EVENT1, EVENT1_WEIGHT},
+                   {Events::EVENT2, EVENT2_WEIGHT},
+                   {Events::EVENT3, EVENT3_WEIGHT},
+                   {Events::EVENT4, EVENT4_WEIGHT},
   };
-  const auto weightedEvents          = Weights<Events>{GOOM_RAND, weightPairs};
-  static constexpr auto EXPECTED_SUM = 23.0;
+  const auto weightedEvents = Weights<Events>{GOOM_RAND, weightPairs};
+  static constexpr auto EXPECTED_SUM =
+      EVENT1_WEIGHT + EVENT2_WEIGHT + EVENT3_WEIGHT + EVENT4_WEIGHT;
 
   SECTION("Unconditional weights")
   {
     const auto sumOfWeights = static_cast<double>(weightedEvents.GetSumOfWeights());
     REQUIRE(sumOfWeights == Approx(EXPECTED_SUM));
 
-    const auto eventCounts = GetWeightedCounts(NUM_LOOPS, weightedEvents);
+    const auto getRandomWeighted = [&weightedEvents]()
+    { return weightedEvents.GetRandomWeighted(); };
+    const auto eventCounts = GetWeightedCounts<Events>(NUM_LOOPS, getRandomWeighted);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
@@ -174,6 +185,98 @@ TEST_CASE("Weighted Events")
 
       UNSCOPED_INFO(std::format(
           "i = {}, countFraction = {}, eventFraction = {}", i, countFraction, eventFraction));
+      static constexpr auto CLOSE_ENOUGH = 0.005;
+      REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
+    }
+  }
+
+  SECTION("Weighted Sample")
+  {
+    static constexpr auto SAMPLE_EVENT1_WEIGHT = 05.0F;
+    static constexpr auto SAMPLE_EVENT2_WEIGHT = 02.0F;
+    static constexpr auto SAMPLE_EVENT3_WEIGHT = 10.0F;
+    static constexpr auto SAMPLE_EVENT4_WEIGHT = 06.0F;
+    const auto weightedSamplePairs             = Weights<Events>::EventWeightPairs{
+                    {Events::EVENT1, SAMPLE_EVENT1_WEIGHT},
+                    {Events::EVENT2, SAMPLE_EVENT2_WEIGHT},
+                    {Events::EVENT3, SAMPLE_EVENT3_WEIGHT},
+                    {Events::EVENT4, SAMPLE_EVENT4_WEIGHT},
+    };
+    const auto weightedSampleEvents = Weights<Events>{GOOM_RAND, weightedSamplePairs};
+    const auto sumOfWeights         = static_cast<double>(weightedSampleEvents.GetSumOfWeights());
+
+    static constexpr auto SAMPLE_SIZE = NUM<Events>;
+    auto eventsSample                 = std::vector<Events>(SAMPLE_SIZE);
+
+    // TODO(glk): Not sure how to test positions 1,2,3. '0' seems OK.
+    auto weightedEventPositions  = EventCounts{0};
+    auto weightedEventPositions1 = EventCounts{0};
+
+    for (auto i = 0U; i < NUM_LOOPS; ++i)
+    //for (auto i = 0U; i < 10; ++i)
+    {
+      GetWeightedSample(weightedSampleEvents, SAMPLE_SIZE, eventsSample);
+      REQUIRE(eventsSample.size() == SAMPLE_SIZE);
+      // std::println("{}, {}, {}, {}",
+      //              static_cast<u_int32_t>(eventsSample.at(0)),
+      //              static_cast<u_int32_t>(eventsSample.at(1)),
+      //              static_cast<u_int32_t>(eventsSample.at(2)),
+      //              static_cast<u_int32_t>(eventsSample.at(3)));
+      ++weightedEventPositions.at(static_cast<size_t>(eventsSample.at(0)));
+      ++weightedEventPositions1.at(static_cast<size_t>(eventsSample.at(1)));
+    }
+    std::println("{}, {}, {}, {}",
+                 static_cast<u_int32_t>(weightedEventPositions.at(0)),
+                 static_cast<u_int32_t>(weightedEventPositions.at(1)),
+                 static_cast<u_int32_t>(weightedEventPositions.at(2)),
+                 static_cast<u_int32_t>(weightedEventPositions.at(3)));
+    std::println("{}, {}, {}, {}",
+                 static_cast<u_int32_t>(weightedEventPositions1.at(0)),
+                 static_cast<u_int32_t>(weightedEventPositions1.at(1)),
+                 static_cast<u_int32_t>(weightedEventPositions1.at(2)),
+                 static_cast<u_int32_t>(weightedEventPositions1.at(3)));
+    std::println("{}, {}, {}, {}",
+                 static_cast<double>(weightedEventPositions.at(0)) / DBL_NUM_LOOPS,
+                 static_cast<double>(weightedEventPositions.at(1)) / DBL_NUM_LOOPS,
+                 static_cast<double>(weightedEventPositions.at(2)) / DBL_NUM_LOOPS,
+                 static_cast<double>(weightedEventPositions.at(3)) / DBL_NUM_LOOPS);
+    std::println("{}, {}, {}, {}",
+                 static_cast<double>(weightedEventPositions1.at(0)) / DBL_NUM_LOOPS,
+                 static_cast<double>(weightedEventPositions1.at(1)) / DBL_NUM_LOOPS,
+                 static_cast<double>(weightedEventPositions1.at(2)) / DBL_NUM_LOOPS,
+                 static_cast<double>(weightedEventPositions1.at(3)) / DBL_NUM_LOOPS);
+
+    auto weights = weightedSampleEvents.GetWeightArray();
+    //    std::ranges::sort(weights, std::ranges::greater{});
+    std::println("{}, {}, {}, {}",
+                 static_cast<double>(weights.at(0)),
+                 static_cast<double>(weights.at(1)),
+                 static_cast<double>(weights.at(2)),
+                 static_cast<double>(weights.at(3)));
+    std::println("{}, {}, {}, {}",
+                 static_cast<double>(weights.at(0)) / (sumOfWeights - 10.0),
+                 static_cast<double>(weights.at(1)) / (sumOfWeights - 10.0),
+                 static_cast<double>(weights.at(2)) / (sumOfWeights - 10.0),
+                 static_cast<double>(weights.at(3)) / (sumOfWeights - 10.0));
+
+    for (auto i = 0U; i < NUM<Events>; ++i)
+    {
+      const auto fEventCount  = static_cast<double>(weightedEventPositions.at(i));
+      const auto fEventWeight = static_cast<double>(weights.at(i));
+
+      const auto countFraction = fEventCount / DBL_NUM_LOOPS;
+      const auto eventFraction = fEventWeight / sumOfWeights;
+
+      UNSCOPED_INFO(std::format("i = {}, fEventWeight = {}, sumOfWeights = {}, eventFraction = {}",
+                                i,
+                                fEventWeight,
+                                sumOfWeights,
+                                eventFraction));
+      UNSCOPED_INFO(std::format("i = {}, fEventCount = {}, DBL_NUM_LOOPS = {}, countFraction = {}",
+                                i,
+                                fEventCount,
+                                DBL_NUM_LOOPS,
+                                countFraction));
       static constexpr auto CLOSE_ENOUGH = 0.005;
       REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
     }
@@ -259,7 +362,9 @@ TEST_CASE("Weighted Events Corner Cases")
     const auto sumOfWeights = static_cast<double>(weightedEvents.GetSumOfWeights());
     REQUIRE(sumOfWeights == Approx(1.0F));
 
-    const auto eventCounts = GetWeightedCounts(NUM_LOOPS, weightedEvents);
+    const auto getRandomWeighted = [&weightedEvents]()
+    { return weightedEvents.GetRandomWeighted(); };
+    const auto eventCounts = GetWeightedCounts<Events>(NUM_LOOPS, getRandomWeighted);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {

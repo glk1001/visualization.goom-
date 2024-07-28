@@ -100,10 +100,16 @@ public:
   Weights() noexcept = default;
   Weights(const GoomRand& goomRand, const EventWeightPairs& weights) noexcept;
 
+  auto SetWeightToZero(const E& enumVal) noexcept -> void;
+
+  [[nodiscard]] auto GetWeightArray() const noexcept -> const std::array<float, NUM<E>>&;
+  [[nodiscard]] auto GetEventWeightPairs() const noexcept -> EventWeightPairs;
+
   [[nodiscard]] auto GetNumElements() const noexcept -> size_t;
   [[nodiscard]] auto GetNumSetWeights() const noexcept -> size_t;
   [[nodiscard]] auto GetWeight(const E& enumVal) const noexcept -> float;
   [[nodiscard]] auto GetSumOfWeights() const noexcept -> float;
+  [[nodiscard]] auto GetSumOfWeightsUpTo(const E& lastVal) const noexcept -> float;
 
   [[nodiscard]] auto GetRandomWeighted() const noexcept -> E;
 
@@ -116,6 +122,7 @@ private:
   using WeightArray          = std::array<float, NUM<E>>;
   struct WeightData
   {
+    // Array indexes correspond to E values.
     WeightArray weightArray{0.0F};
     WeightArray progressiveWeightSumArray{0.0F};
     size_t numSetWeights = 0;
@@ -125,6 +132,10 @@ private:
   [[nodiscard]] static auto GetWeightData(const EventWeightPairs& eventWeightPairs) noexcept
       -> WeightData;
 };
+
+template<typename E>
+auto GetWeightedSample(const Weights<E>& weights, uint32_t n, std::vector<E>& sample) noexcept
+    -> void;
 
 template<EnumType E>
 class ConditionalWeights
@@ -198,6 +209,22 @@ auto GoomRand::Shuffle(Range& range) const noexcept -> void
   {
     using std::swap;
     swap(first[i], first[GetRandInRange(0U, static_cast<uint32_t>(i) + 1)]);
+  }
+}
+
+template<typename E>
+auto GetWeightedSample(const Weights<E>& weights, uint32_t n, std::vector<E>& sample) noexcept
+    -> void
+{
+  Expects(n <= weights.GetNumSetWeights());
+
+  sample.resize(n);
+  auto newWeights = weights;
+  for (auto i = 0U; i < n; ++i)
+  {
+    const auto nextEnum = newWeights.GetRandomWeighted();
+    sample.at(i)        = nextEnum;
+    newWeights.SetWeightToZero(nextEnum);
   }
 }
 
@@ -294,7 +321,29 @@ template<EnumType E>
 Weights<E>::Weights(const GoomRand& goomRand, const EventWeightPairs& weights) noexcept
   : m_goomRand{&goomRand}, m_weightData{GetWeightData(weights)}
 {
+  Expects(NUM<E> == m_weightData.weightArray.size());
   Expects(GetSumOfWeights() > SMALL_FLOAT);
+}
+
+template<EnumType E>
+auto Weights<E>::SetWeightToZero(const E& enumVal) noexcept -> void
+{
+  const auto index = static_cast<size_t>(enumVal);
+  if (m_weightData.weightArray.at(index) < SMALL_FLOAT)
+  {
+    return;
+  }
+
+  Expects(m_weightData.numSetWeights > 0);
+  m_weightData.weightArray.at(index) = 0.0;
+  --m_weightData.numSetWeights;
+
+  m_weightData.progressiveWeightSumArray.at(0) = m_weightData.weightArray.at(0);
+  for (auto i = 1U; i < m_weightData.weightArray.size(); ++i)
+  {
+    m_weightData.progressiveWeightSumArray.at(i) =
+        m_weightData.progressiveWeightSumArray.at(i - 1) + m_weightData.weightArray.at(i);
+  }
 }
 
 template<EnumType E>
@@ -315,6 +364,25 @@ auto Weights<E>::GetWeightData(const EventWeightPairs& eventWeightPairs) noexcep
   }
 
   return weightData;
+}
+
+template<EnumType E>
+auto Weights<E>::GetWeightArray() const noexcept -> const std::array<float, NUM<E>>&
+{
+  return m_weightData.weightArray;
+}
+
+template<EnumType E>
+auto Weights<E>::GetEventWeightPairs() const noexcept -> EventWeightPairs
+{
+  auto eventWeightPairs = EventWeightPairs{};
+
+  for (const auto& [e, w] : m_weightData.weightArray)
+  {
+    eventWeightPairs.emplace_back(e, w);
+  }
+
+  return eventWeightPairs;
 }
 
 template<EnumType E>
@@ -352,8 +420,6 @@ auto Weights<E>::GetSumOfWeights() const noexcept -> float
 template<EnumType E>
 auto Weights<E>::GetRandomWeighted() const noexcept -> E
 {
-  Expects(NUM<E> == m_weightData.weightArray.size());
-
   const auto randVal = m_goomRand->GetRandInRange(NumberRange{0.0F, GetSumOfWeights()});
 
   for (auto i = 0U; i < m_weightData.weightArray.size(); ++i)
@@ -366,6 +432,12 @@ auto Weights<E>::GetRandomWeighted() const noexcept -> E
   }
 
   FailFast();
+}
+
+template<EnumType E>
+auto Weights<E>::GetSumOfWeightsUpTo(const E& lastVal) const noexcept -> float
+{
+  return m_weightData.progressiveWeightSumArray.at(static_cast<size_t>(lastVal));
 }
 
 template<EnumType E>
