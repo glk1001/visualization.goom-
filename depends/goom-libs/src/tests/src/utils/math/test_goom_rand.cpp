@@ -209,8 +209,7 @@ TEST_CASE("Weighted Events")
     auto eventsSample                 = std::vector<Events>(SAMPLE_SIZE);
 
     // TODO(glk): Not sure how to test positions 1,2,3. '0' seems OK.
-    auto weightedEventPositions  = EventCounts{0};
-    auto weightedEventPositions1 = EventCounts{0};
+    auto weightedEventPositions = std::array<EventCounts, NUM<Events>>{};
 
     for (auto i = 0U; i < NUM_LOOPS; ++i)
     //for (auto i = 0U; i < 10; ++i)
@@ -222,29 +221,25 @@ TEST_CASE("Weighted Events")
       //              static_cast<u_int32_t>(eventsSample.at(1)),
       //              static_cast<u_int32_t>(eventsSample.at(2)),
       //              static_cast<u_int32_t>(eventsSample.at(3)));
-      ++weightedEventPositions.at(static_cast<size_t>(eventsSample.at(0)));
-      ++weightedEventPositions1.at(static_cast<size_t>(eventsSample.at(1)));
+      for (auto j = 0U; j < NUM<Events>; ++j)
+      {
+        ++weightedEventPositions.at(j).at(static_cast<size_t>(eventsSample.at(j)));
+      }
     }
-    std::println("{}, {}, {}, {}",
-                 static_cast<u_int32_t>(weightedEventPositions.at(0)),
-                 static_cast<u_int32_t>(weightedEventPositions.at(1)),
-                 static_cast<u_int32_t>(weightedEventPositions.at(2)),
-                 static_cast<u_int32_t>(weightedEventPositions.at(3)));
-    std::println("{}, {}, {}, {}",
-                 static_cast<u_int32_t>(weightedEventPositions1.at(0)),
-                 static_cast<u_int32_t>(weightedEventPositions1.at(1)),
-                 static_cast<u_int32_t>(weightedEventPositions1.at(2)),
-                 static_cast<u_int32_t>(weightedEventPositions1.at(3)));
-    std::println("{}, {}, {}, {}",
-                 static_cast<double>(weightedEventPositions.at(0)) / DBL_NUM_LOOPS,
-                 static_cast<double>(weightedEventPositions.at(1)) / DBL_NUM_LOOPS,
-                 static_cast<double>(weightedEventPositions.at(2)) / DBL_NUM_LOOPS,
-                 static_cast<double>(weightedEventPositions.at(3)) / DBL_NUM_LOOPS);
-    std::println("{}, {}, {}, {}",
-                 static_cast<double>(weightedEventPositions1.at(0)) / DBL_NUM_LOOPS,
-                 static_cast<double>(weightedEventPositions1.at(1)) / DBL_NUM_LOOPS,
-                 static_cast<double>(weightedEventPositions1.at(2)) / DBL_NUM_LOOPS,
-                 static_cast<double>(weightedEventPositions1.at(3)) / DBL_NUM_LOOPS);
+
+    for (auto j = 0U; j < NUM<Events>; ++j)
+    {
+      std::println("{}, {}, {}, {}",
+                   static_cast<u_int32_t>(weightedEventPositions.at(j).at(0)),
+                   static_cast<u_int32_t>(weightedEventPositions.at(j).at(1)),
+                   static_cast<u_int32_t>(weightedEventPositions.at(j).at(2)),
+                   static_cast<u_int32_t>(weightedEventPositions.at(j).at(3)));
+      std::println("{}, {}, {}, {}",
+                   static_cast<double>(weightedEventPositions.at(j).at(0)) / DBL_NUM_LOOPS,
+                   static_cast<double>(weightedEventPositions.at(j).at(1)) / DBL_NUM_LOOPS,
+                   static_cast<double>(weightedEventPositions.at(j).at(2)) / DBL_NUM_LOOPS,
+                   static_cast<double>(weightedEventPositions.at(j).at(3)) / DBL_NUM_LOOPS);
+    }
 
     auto weights = weightedSampleEvents.GetWeightArray();
     //    std::ranges::sort(weights, std::ranges::greater{});
@@ -254,31 +249,42 @@ TEST_CASE("Weighted Events")
                  static_cast<double>(weights.at(2)),
                  static_cast<double>(weights.at(3)));
     std::println("{}, {}, {}, {}",
-                 static_cast<double>(weights.at(0)) / (sumOfWeights - 10.0),
-                 static_cast<double>(weights.at(1)) / (sumOfWeights - 10.0),
-                 static_cast<double>(weights.at(2)) / (sumOfWeights - 10.0),
-                 static_cast<double>(weights.at(3)) / (sumOfWeights - 10.0));
+                 static_cast<double>(weights.at(0)) / sumOfWeights,
+                 static_cast<double>(weights.at(1)) / sumOfWeights,
+                 static_cast<double>(weights.at(2)) / sumOfWeights,
+                 static_cast<double>(weights.at(3)) / sumOfWeights);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
-      const auto fEventCount  = static_cast<double>(weightedEventPositions.at(i));
-      const auto fEventWeight = static_cast<double>(weights.at(i));
+      for (auto j = 0U; j < NUM<Events>; ++j)
+      //  for (auto j = 0U; j < 1; ++j)
+      {
+        const auto fEventCount  = static_cast<double>(weightedEventPositions.at(j).at(i));
+        const auto fEventWeight = static_cast<double>(weights.at(i));
 
-      const auto countFraction = fEventCount / DBL_NUM_LOOPS;
-      const auto eventFraction = fEventWeight / sumOfWeights;
+        const auto probCond = j == 0 ? 1.0 : 1.0-fEventWeight / (sumOfWeights - fEventWeight);
 
-      UNSCOPED_INFO(std::format("i = {}, fEventWeight = {}, sumOfWeights = {}, eventFraction = {}",
-                                i,
-                                fEventWeight,
-                                sumOfWeights,
-                                eventFraction));
-      UNSCOPED_INFO(std::format("i = {}, fEventCount = {}, DBL_NUM_LOOPS = {}, countFraction = {}",
-                                i,
-                                fEventCount,
-                                DBL_NUM_LOOPS,
-                                countFraction));
-      static constexpr auto CLOSE_ENOUGH = 0.005;
-      REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
+        const auto countFraction = fEventCount / DBL_NUM_LOOPS;
+        const auto eventFraction = fEventWeight / sumOfWeights / probCond;
+
+        UNSCOPED_INFO(std::format("i = {}, j = {}, fEventWeight = {}, sumOfWeights = {}, probCond "
+                                  "= {}, eventFraction = {}",
+                                  i,
+                                  j,
+                                  fEventWeight,
+                                  sumOfWeights,
+                                  probCond,
+                                  eventFraction));
+        UNSCOPED_INFO(
+            std::format("i = {}, j = {}, fEventCount = {}, DBL_NUM_LOOPS = {}, countFraction = {}",
+                        i,
+                        j,
+                        fEventCount,
+                        DBL_NUM_LOOPS,
+                        countFraction));
+        static constexpr auto CLOSE_ENOUGH = 0.005;
+        REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
+      }
     }
   }
 
