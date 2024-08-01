@@ -62,6 +62,7 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE1;
 //constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE2;
 //constexpr auto FORCED_FILTER_MODE = EXP_RECIPROCAL_MODE;
+constexpr auto FORCED_FILTER_MODE = FLOW_FIELD_MODE;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE0;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE1;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE2;
@@ -69,7 +70,7 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = IMAGE_DISPLACEMENT_MODE;
 //constexpr auto FORCED_FILTER_MODE = MOBIUS_MODE;
 //constexpr auto FORCED_FILTER_MODE = NEWTON_MODE;
-constexpr auto FORCED_FILTER_MODE = NORMAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = NORMAL_MODE;
 //constexpr auto FORCED_FILTER_MODE = PERLIN_NOISE_MODE;
 //constexpr auto FORCED_FILTER_MODE = SCRUNCH_MODE;
 //constexpr auto FORCED_FILTER_MODE = SPEEDWAY_MODE0;
@@ -113,6 +114,7 @@ constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {DISTANCE_FIELD_MODE1, "Distance Field Mode 1"},
     {DISTANCE_FIELD_MODE2, "Distance Field Mode 2"},
     {EXP_RECIPROCAL_MODE, "Exp Reciprocal"},
+    {FLOW_FIELD_MODE, "Flow Field"},
     {HYPERCOS_MODE0, "Hypercos Mode 0"},
     {HYPERCOS_MODE1, "Hypercos Mode 1"},
     {HYPERCOS_MODE2, "Hypercos Mode 2"},
@@ -169,6 +171,8 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[DISTANCE_FIELD_MODE2][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[EXP_RECIPROCAL_MODE][EffectType::ROTATION] = PROB_HIGH;
+
+  effectsProbs[FLOW_FIELD_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[HYPERCOS_MODE0][EffectType::ROTATION] = PROB_LOW;
   effectsProbs[HYPERCOS_MODE1][EffectType::ROTATION] = PROB_LOW;
@@ -278,6 +282,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
   static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 02.0F;
   static constexpr auto EXP_RECIPROCAL_MODE_WEIGHT     = 10.0F;
+  static constexpr auto FLOW_FIELD_MODE_WEIGHT         = 10.0F;
   static constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
   static constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
   static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
@@ -379,6 +384,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
         {.key = DISTANCE_FIELD_MODE1, .weight = DISTANCE_FIELD_MODE1_WEIGHT},
         {.key = DISTANCE_FIELD_MODE2, .weight = DISTANCE_FIELD_MODE2_WEIGHT},
         {.key = EXP_RECIPROCAL_MODE, .weight = EXP_RECIPROCAL_MODE_WEIGHT},
+        {.key = FLOW_FIELD_MODE, .weight = FLOW_FIELD_MODE_WEIGHT},
         {.key = HYPERCOS_MODE0, .weight = HYPERCOS_MODE0_WEIGHT},
         {.key = HYPERCOS_MODE1, .weight = HYPERCOS_MODE1_WEIGHT},
         {.key = HYPERCOS_MODE2, .weight = HYPERCOS_MODE2_WEIGHT},
@@ -478,6 +484,13 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {.key = Hyp::MODE1, .weight = 1.0F},
        {.key = Hyp::MODE2, .weight = 1.0F},
        {.key = Hyp::MODE3, .weight = 0.0F}}
+  };
+  constexpr auto FLOW_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 20.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
       {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 1.0F},
@@ -608,6 +621,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
       {DISTANCE_FIELD_MODE1, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
       {DISTANCE_FIELD_MODE2, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
       {EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_HYPERCOS_WEIGHTS},
+      {FLOW_FIELD_MODE, FLOW_FIELD_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE0, HYPERCOS0_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE1, HYPERCOS1_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
