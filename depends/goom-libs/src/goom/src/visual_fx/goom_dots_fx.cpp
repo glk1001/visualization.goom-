@@ -205,13 +205,13 @@ auto GoomDotsFx::GoomDotsFxImpl::GetDotPaths(const Point2dInt& centre)
     -> std::array<std::unique_ptr<IPath>, NUM_DOT_TYPES>
 {
   static constexpr auto HYPOTROCHOID_PARAMS1 =
-      HypotrochoidFunction::Params{7.0F, 3.0F, 5.0F, 30.0F};
+      HypotrochoidFunction::Params{10.0F, 3.0F, 5.0F, 30.0F};
   static constexpr auto HYPOTROCHOID_PARAMS2 =
-      HypotrochoidFunction::Params{8.0F, 3.0F, 5.0F, 30.0F};
+      HypotrochoidFunction::Params{12.0F, 3.0F, 5.0F, 30.0F};
   static constexpr auto HYPOTROCHOID_PARAMS3 =
-      HypotrochoidFunction::Params{9.0F, 3.0F, 5.0F, 30.0F};
-  static constexpr auto LISSAJOUS_PATH_PARAMS = LissajousFunction::Params{50.0F, 50.F, 3.0F, 2.0F};
-  static constexpr auto EPICYCLOID_PARAMS     = EpicycloidFunction::Params{5.1F, 1.0F, 30.0F};
+      HypotrochoidFunction::Params{13.0F, 3.0F, 5.0F, 30.0F};
+  static constexpr auto LISSAJOUS_PATH_PARAMS = LissajousFunction::Params{60.0F, 50.F, 3.0F, 2.0F};
+  static constexpr auto EPICYCLOID_PARAMS     = EpicycloidFunction::Params{5.1F, 1.0F, 40.0F};
 
   static constexpr auto STEP_TYPE              = TValue::StepType::CONTINUOUS_REVERSIBLE;
   static constexpr auto HYPOTROCHOID_STEP_SIZE = 0.01F;
