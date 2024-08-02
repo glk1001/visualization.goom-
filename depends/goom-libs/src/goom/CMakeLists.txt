@@ -441,7 +441,6 @@ target_include_directories(goom
                            SYSTEM PUBLIC
                            ${GOOM_LIBS_DIR}/lib/vivid
                            ${GOOM_LIBS_DIR}/src/vivid/include
-                           ${GOOM_LIBS_DIR}/lib/libdivide
                            ${GOOM_LIBS_DIR}/lib/perlin_noise
                            ${magic_enum_INCLUDE_DIR}
                            ${GLM_INCLUDE_DIR}
