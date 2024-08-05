@@ -94,11 +94,6 @@ private:
   SlotProducerConsumer<TResource>* m_slotProducerConsumer;
 };
 
-} // namespace GOOM
-
-namespace GOOM
-{
-
 using SlotProducerIsDrivingWithoutResources = SlotProducerIsDriving<std::nullptr_t>;
 
 template<typename TResource>
@@ -114,6 +109,11 @@ private:
 };
 
 using SlotConsumerIsDrivingWithoutResources = SlotConsumerIsDriving<std::nullptr_t>;
+
+} // namespace GOOM
+
+namespace GOOM
+{
 
 template<typename TResource>
 SlotProducerConsumer<TResource>::SlotProducerConsumer(GoomLogger& goomLogger,

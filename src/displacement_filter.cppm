@@ -44,7 +44,7 @@ import :GlslProgram;
 import :GlslShaderFile;
 import :Scene;
 
-namespace GOOM::OPENGL
+export namespace GOOM::OPENGL
 {
 
 class DisplacementFilter : public IScene
@@ -114,6 +114,9 @@ protected:
   static constexpr auto PASS1_VERTEX_SHADER   = "filter.vs";
   static constexpr auto PASS1_FRAGMENT_SHADER = "pass1_update_filter_buff1_and_buff3.fs";
   virtual auto Pass1UpdateFilterBuff1AndBuff3() noexcept -> void;
+
+  [[nodiscard]] auto GetCurrentFrameData() const noexcept -> const FrameData&;
+  [[nodiscard]] auto GetGl() noexcept -> GlCaller&;
 
 private:
   GoomLogger* m_goomLogger;
@@ -356,6 +359,16 @@ inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::stri
 inline auto DisplacementFilter::GetFrameData(const size_t pboIndex) noexcept -> FrameData&
 {
   return m_frameDataArray.at(pboIndex);
+}
+
+inline auto DisplacementFilter::GetCurrentFrameData() const noexcept -> const FrameData&
+{
+  return m_frameDataArray.at(m_currentPboIndex);
+}
+
+inline auto DisplacementFilter::GetGl() noexcept -> GlCaller& 
+{ 
+  return m_gl; 
 }
 
 inline auto DisplacementFilter::GetBrightnessAdjust() const noexcept -> float

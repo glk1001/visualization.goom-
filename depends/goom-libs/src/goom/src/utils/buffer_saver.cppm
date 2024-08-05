@@ -17,6 +17,7 @@ module;
 
 export module Goom.Utils.BufferSaver;
 
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomUtils;
 
 export namespace GOOM::UTILS
@@ -102,8 +103,6 @@ private:
 
 } // namespace GOOM::UTILS
 
-module :private;
-
 namespace GOOM::UTILS
 {
 
@@ -113,7 +112,7 @@ template<class T>
 [[nodiscard]] auto GetBufferValueToString(const T& bufferValue) -> std::string;
 
 template<class T, class HeaderT>
-inline BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
+BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
                                             const BufferLimits& bufferLimits) noexcept
   : m_filenamePrefix{filenamePrefix},
     m_startBuffNum{bufferLimits.startBuffNum},
@@ -131,37 +130,37 @@ auto BufferSaver<T, HeaderT>::GetCurrentFilename() const -> std::string
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::GetCurrentBufferNum() const noexcept -> int64_t
+auto BufferSaver<T, HeaderT>::GetCurrentBufferNum() const noexcept -> int64_t
 {
   return m_currentBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::IncCurrentBufferNum() noexcept -> void
+auto BufferSaver<T, HeaderT>::IncCurrentBufferNum() noexcept -> void
 {
   ++m_currentBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::GetStartBufferNum() const noexcept -> int64_t
+auto BufferSaver<T, HeaderT>::GetStartBufferNum() const noexcept -> int64_t
 {
   return m_startBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::GetEndBufferNum() const noexcept -> int64_t
+auto BufferSaver<T, HeaderT>::GetEndBufferNum() const noexcept -> int64_t
 {
   return m_endBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const noexcept -> bool
+auto BufferSaver<T, HeaderT>::HaveFinishedBufferRange() const noexcept -> bool
 {
   return m_currentBuffNum > m_endBuffNum;
 }
 
 template<class T, class HeaderT>
-inline auto BufferSaver<T, HeaderT>::SetFormatters(const Formatters& formatters) noexcept -> void
+auto BufferSaver<T, HeaderT>::SetFormatters(const Formatters& formatters) noexcept -> void
 {
   m_formatters = formatters;
 }

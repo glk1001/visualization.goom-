@@ -29,12 +29,12 @@ import :SlotProducerConsumer;
 namespace GOOM::VIS
 {
 
-using GOOM::OPENGL::DisplacementFilter;
+using OPENGL::DisplacementFilter;
 
 namespace
 {
 
-[[nodiscard]] inline auto GetGoomVisualizationBuildTime() -> std::string
+[[nodiscard]] auto GetGoomVisualizationBuildTime() -> std::string
 {
   return ::GetBuildTime();
 }

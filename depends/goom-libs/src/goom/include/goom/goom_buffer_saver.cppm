@@ -5,7 +5,7 @@ module;
 
 export module Goom.Lib.GoomBufferSaver;
 
-import Goom.Utils.BufferSaver;
+export import Goom.Utils.BufferSaver;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.Point2d;
 

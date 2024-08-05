@@ -17,9 +17,11 @@ export module Goom.GoomVisualization;
 import Goom.Lib.GoomControl;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.SoundInfo;
+export import Goom.GoomVisualization.GlUtils;
+export import :DisplacementFilter;
 export import :GlRenderTypes;
-import :DisplacementFilter;
-import :SlotProducerConsumer;
+export import :Scene;
+export import :SlotProducerConsumer;
 
 export namespace GOOM::VIS
 {
