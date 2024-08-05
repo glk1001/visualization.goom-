@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-if (NOT DEFINED CMAKE_SCRIPTS_PATH)
-    set(CMAKE_SCRIPTS_PATH "../../cmake")
+if (NOT DEFINED GOOM_CMAKE_SCRIPTS_PATH)
+    set(GOOM_CMAKE_SCRIPTS_PATH "../../cmake")
 endif ()
 if (NOT DEFINED GOOM_LIBS_DIR)
     set(GOOM_LIBS_DIR ${PROJECT_SOURCE_DIR})
@@ -27,13 +27,13 @@ string(REPLACE "-DNDEBUG" ""
        ${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}})
 
 
-include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
-include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
-include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
-include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
-include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
-include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
-include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/CPM.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/Cache.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/Linker.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 set(BUILD_SHARED_LIBS OFF)
@@ -109,7 +109,7 @@ message(STATUS "Goom-libs: CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}"
         " = \"${CMAKE_CXX_FLAGS_${UPPER_CMAKE_BUILD_TYPE}}\".")
 message(STATUS "Goom-libs: WARNINGS_AS_ERRORS             = \"${vis_goom_pp_WARNINGS_AS_ERRORS}\".")
 message(STATUS "Goom-libs: CMAKE_MODULE_PATH              = \"${CMAKE_MODULE_PATH}\".")
-message(STATUS "Goom-libs: CMAKE_SCRIPTS_PATH             = \"${CMAKE_SCRIPTS_PATH}\".")
+message(STATUS "Goom-libs: GOOM_CMAKE_SCRIPTS_PATH        = \"${GOOM_CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Goom-libs: GENERATOR_IS_MULTI_CONFIG      = \"${GENERATOR_IS_MULTI_CONFIG}\".")
 message(STATUS "Goom-libs: C++ standard                   = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Goom-libs: C++ standard required          = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")

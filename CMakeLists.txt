@@ -21,22 +21,22 @@ if (NOT EXISTS "${GOOM_BUILD_DIR}")
 endif ()
 set(CMAKE_INSTALL_PREFIX "${GOOM_BUILD_DIR}/kodi-vis-goom-addon")
 
-set(CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
+set(GOOM_CMAKE_SCRIPTS_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SCRIPTS_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${GOOM_CMAKE_SCRIPTS_PATH})
 
-include(${CMAKE_SCRIPTS_PATH}/CPM.cmake)
-include(${CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
-include(${CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
-include(${CMAKE_SCRIPTS_PATH}/Cache.cmake)
-include(${CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
-include(${CMAKE_SCRIPTS_PATH}/Linker.cmake)
-include(${CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/CPM.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/StandardProjectSettings.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/PreventInSourceBuilds.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/Cache.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/CompilerWarnings.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/Linker.cmake)
+include(${GOOM_CMAKE_SCRIPTS_PATH}/CheckMinimumToolRequirements.cmake)
 
 
 if (CMAKE_CXX_COMPILER_ID MATCHES ".*MSVC")
@@ -176,7 +176,7 @@ message(STATUS "Vis.goom: CMAKE_SOURCE_DIR           = \"${CMAKE_SOURCE_DIR}\"."
 message(STATUS "Vis.goom: PROJECT_SOURCE_DIR         = \"${PROJECT_SOURCE_DIR}\".")
 message(STATUS "Vis.goom: CMAKE_BINARY_DIR           = \"${CMAKE_BINARY_DIR}\".")
 message(STATUS "Vis.goom: CMAKE_MODULE_PATH          = \"${CMAKE_MODULE_PATH}\".")
-message(STATUS "Vis.goom: CMAKE_SCRIPTS_PATH         = \"${CMAKE_SCRIPTS_PATH}\".")
+message(STATUS "Vis.goom: GOOM_CMAKE_SCRIPTS_PATH    = \"${GOOM_CMAKE_SCRIPTS_PATH}\".")
 message(STATUS "Vis.goom: CMAKE_INSTALL_PREFIX       = \"${CMAKE_INSTALL_PREFIX}\".")
 message(STATUS "Vis.goom: C++ standard               = \"${CMAKE_CXX_STANDARD}\".")
 message(STATUS "Vis.goom: C++ standard required      = \"${CMAKE_CXX_STANDARD_REQUIRED}\".")
