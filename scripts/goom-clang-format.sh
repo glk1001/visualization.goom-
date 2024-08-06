@@ -24,17 +24,13 @@ fi
 
 if [[ "${1:-}" != "" ]]; then
   declare -r CUSTOM_SRCE=$1
-  python3 "${RUN_CLANG_FORMAT}" --clang-format-executable "${CLANG_FORMAT_EXE}" \
-                                --dry-run --verbose -r -j 6 \
-                                "${CUSTOM_SRCE}"
+  python3 "${RUN_CLANG_FORMAT}" "${CUSTOM_SRCE}"
   exit $?
 fi
 
 SECONDS=0
 
-python3 "${RUN_CLANG_FORMAT}" --clang-format-executable "${CLANG_FORMAT_EXE}" \
-                              --dry-run --verbose -r -j 6 \
-                              "${GOOM_MAIN_ROOT_DIR}"
+python3 "${RUN_CLANG_FORMAT}" --recursive "${GOOM_MAIN_ROOT_DIR}"
 if [[ $? != 0 ]]; then
   >&2 echo "ERROR: There were clang-format errors."
   >&2 echo "Time of run: $(( SECONDS/60 )) min, $(( SECONDS%60 )) sec."
@@ -45,7 +41,7 @@ FILE_CHANGES=$(if [[ $(git diff --name-only) ]]; then echo yes; else echo no; fi
 if [[ "${FILE_CHANGES}" == "yes" ]]; then
   >&2 echo "ERROR: There were clang-format changes."
   >&2 echo
-  git diff --name-only
+  >&2 git diff --name-only
   >&2 echo
   >&2 echo "Time of run: $(( SECONDS/60 )) min, $(( SECONDS%60 )) sec."
   exit 1

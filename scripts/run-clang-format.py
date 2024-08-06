@@ -1,52 +1,60 @@
 #!/usr/bin/env python
-"""A wrapper script around clang-format, suitable for linting multiple files
+
+"""A wrapper script around clang-format, suitable for formatting multiple files
 and to use for continuous integration.
 
-This is an alternative API for the clang-format command line.
-It runs over multiple files and directories in parallel.
-A diff output is produced and a sensible exit code is returned.
+This is an alternative API for the clang-format command line. It runs over
+multiple files and directories in parallel and uses more sensible patterns
+in ".clang-format-ignore".
 
 """
 
 import argparse
-import difflib
+import errno
 import fnmatch
 import io
-import errno
 import multiprocessing
 import os
-import signal
 import subprocess
 import sys
 import traceback
-
 from functools import partial
-
-try:
-    from subprocess import DEVNULL  # py3k
-except ImportError:
-    DEVNULL = open(os.devnull, "wb")
+from subprocess import DEVNULL
+from typing import List
 
 
-DEFAULT_EXTENSIONS = 'c,h,C,H,cpp,cppm,hpp,cc,hh,c++,h++,cxx,hxx'
-DEFAULT_CLANG_FORMAT_IGNORE = '.clang-format-ignore'
+CLANG_FORMAT_IGNORE_FILE = ".clang-format-ignore"
+CLANG_FORMAT_ENV_VAR = "CLANG_FORMAT"
+DEFAULT_EXTENSIONS = "c,h,C,H,cpp,cppm,hpp,cc,hh,c++,h++,cxx,hxx"
+
+
+def safe_print(msg: str) -> None:
+    print(msg, file=sys.stdout)
+    sys.stdout.flush()
 
 
 class ExitStatus:
     SUCCESS = 0
-    DIFF = 1
-    TROUBLE = 2
+    ERROR = 1
 
 
-def excludes_from_file(ignore_file, verbose):
+class UnexpectedError(Exception):
+    def __init__(self, message: str):
+        super(UnexpectedError, self).__init__(message)
+        self.formatted_traceback = traceback.format_exc()
+
+
+def get_excludes_from_ignore_file(ignore_file: str, verbose: bool) -> List[str]:
+    ignore_file = os.path.realpath(ignore_file)
+
     excludes = []
     try:
-        with io.open(ignore_file, 'r', encoding='utf-8') as f:
+        with io.open(ignore_file, "r", encoding="utf-8") as f:
             if verbose:
-                print(f'Checking ignore file "{ignore_file}".')
+                safe_print(f'Checking ignore file "{ignore_file}".')
             ignore_file_dir = os.path.dirname(ignore_file)
             for line in f:
-                if line.startswith('#'):
+                if line.startswith("#"):
                     # ignore comments
                     continue
                 pattern = line.rstrip()
@@ -55,92 +63,84 @@ def excludes_from_file(ignore_file, verbose):
                     continue
                 pattern = os.path.join(ignore_file_dir, pattern)
                 if verbose:
-                    print(f'Using exclude pattern "{pattern}".')
+                    safe_print(f'Using exclude pattern "{pattern}".')
                 excludes.append(pattern)
     except EnvironmentError as e:
         if e.errno != errno.ENOENT:
             raise
+
     return excludes
 
 
-def list_files(files, recursive=False, extensions=None, exclude=None, verbose=False):
+def get_all_files_to_format(
+    files: List[str],
+    recursive: bool = False,
+    extensions: List[str] = None,
+    verbose: bool = False,
+) -> List[str]:
     if extensions is None:
         extensions = []
-    if exclude is None:
-        exclude = []
+
+    if verbose:
+        if recursive:
+            safe_print("Recursing into directories to get list of files to format.")
+        else:
+            safe_print("NOT recursing into directories to get list of files to format.")
+
+    excludes = get_excludes_from_ignore_file(CLANG_FORMAT_IGNORE_FILE, verbose)
 
     out = []
     for file in files:
-        if recursive and os.path.isdir(file):
-            for dirpath, dnames, fnames in os.walk(file):
-                exclude.extend(excludes_from_file(os.path.join(dirpath, DEFAULT_CLANG_FORMAT_IGNORE), verbose))
-                fpaths = [os.path.join(dirpath, fname) for fname in fnames]
-                for pattern in exclude:
-                    # os.walk() supports trimming down the dnames list
-                    # by modifying it in-place,
-                    # to avoid unnecessary directory listings.
-                    dnames[:] = [
-                        x for x in dnames
-                        if
-                        not fnmatch.fnmatch(os.path.join(dirpath, x), pattern)
+        if os.path.isfile(file):
+            out.append(file)
+        elif recursive:
+            for dir_path, dir_names, filenames in os.walk(file):
+                excludes.extend(
+                    get_excludes_from_ignore_file(
+                        os.path.join(dir_path, CLANG_FORMAT_IGNORE_FILE), verbose
+                    )
+                )
+
+                file_paths = [os.path.join(dir_path, f) for f in filenames]
+
+                for pattern in excludes:
+                    # os.walk() supports trimming down the dir_names list by
+                    # modifying it in-place, to avoid unnecessary directory listings.
+                    dir_names[:] = [
+                        d
+                        for d in dir_names
+                        if not fnmatch.fnmatch(os.path.join(dir_path, d), pattern)
                     ]
-                    fpaths = [
-                        x for x in fpaths if not fnmatch.fnmatch(x, pattern)
+                    file_paths = [
+                        f for f in file_paths if not fnmatch.fnmatch(f, pattern)
                     ]
-                for f in fpaths:
+
+                for f in file_paths:
                     ext = os.path.splitext(f)[1][1:]
                     if ext in extensions:
                         out.append(f)
-        else:
-            out.append(file)
+
     return out
 
 
-def make_diff(file, original, reformatted):
-    return list(
-        difflib.unified_diff(
-            original,
-            reformatted,
-            fromfile='{}\t(original)'.format(file),
-            tofile='{}\t(reformatted)'.format(file),
-            n=3))
-
-
-class DiffError(Exception):
-    def __init__(self, message, errs=None):
-        super(DiffError, self).__init__(message)
-        self.errs = errs or []
-
-
-class UnexpectedError(Exception):
-    def __init__(self, message, exc=None):
-        super(UnexpectedError, self).__init__(message)
-        self.formatted_traceback = traceback.format_exc()
-        self.exc = exc
-
-
-def run_clang_format_diff_wrapper(args, file):
+def run_clang_format_wrapper(args, file: str) -> List[str]:
     try:
-        ret = run_clang_format_diff(args, file)
-        return ret
-    except DiffError:
-        raise
+        return run_clang_format(args, file)
     except Exception as e:
-        raise UnexpectedError('{}: {}: {}'.format(file, e.__class__.__name__,
-                                                  e), e)
+        raise UnexpectedError(f"{file}: {e.__class__.__name__}: {e}")
 
 
-def run_clang_format_diff(args, file):
-    invocation = [args.clang_format_executable, '-i', file]
+def run_clang_format(args, file: str) -> List[str]:
+    invocation = [args.clang_format_exe, "-i", file]
 
     if args.style:
-        invocation.extend(['--style', args.style])
+        invocation.extend(["--style", args.style])
 
     if args.dry_run:
-        print(" ".join(invocation))
+        safe_print(" ".join(invocation))
         return []
 
-    encoding_py3 = {'encoding': 'utf-8'}
+    encoding_py3 = {"encoding": "utf-8"}
 
     try:
         proc = subprocess.Popen(
@@ -148,213 +148,166 @@ def run_clang_format_diff(args, file):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True,
-            **encoding_py3)
-    except OSError as exc:
-        raise DiffError(
-            "Command '{}' failed to start: {}".format(
-                subprocess.list2cmdline(invocation), exc
-            )
+            **encoding_py3,
         )
+    except OSError as e:
+        raise UnexpectedError(
+            f"Command '{subprocess.list2cmdline(invocation)}' failed to start: {e}"
+        )
+
     proc_stderr = proc.stderr
-    # hopefully the stderr pipe won't get full and block the process
-    errs = list(proc_stderr.readlines())
+    # Hopefully the stderr pipe won't get full and block the process.
+    std_errs = list(proc_stderr.readlines())
     proc.wait()
+
     if proc.returncode:
-        raise DiffError(
-            "Command '{}' returned non-zero exit status {}".format(
-                subprocess.list2cmdline(invocation), proc.returncode
-            ),
-            errs,
+        raise UnexpectedError(
+            f"Command '{subprocess.list2cmdline(invocation)}'"
+            f" returned non-zero exit status {proc.returncode}"
         )
-    return errs
+
+    return std_errs
 
 
-def bold_red(s):
-    return '\x1b[1m\x1b[31m' + s + '\x1b[0m'
+def get_cmd_line_args():
+    clang_format_exe = os.environ.get(CLANG_FORMAT_ENV_VAR, "")
+    if not clang_format_exe:
+        clang_format_exe = "clang-format"
 
-
-def colorize(diff_lines):
-    def bold(s):
-        return '\x1b[1m' + s + '\x1b[0m'
-
-    def cyan(s):
-        return '\x1b[36m' + s + '\x1b[0m'
-
-    def green(s):
-        return '\x1b[32m' + s + '\x1b[0m'
-
-    def red(s):
-        return '\x1b[31m' + s + '\x1b[0m'
-
-    for line in diff_lines:
-        if line[:4] in ['--- ', '+++ ']:
-            yield bold(line)
-        elif line.startswith('@@ '):
-            yield cyan(line)
-        elif line.startswith('+'):
-            yield green(line)
-        elif line.startswith('-'):
-            yield red(line)
-        else:
-            yield line
-
-
-def print_trouble(prog, message, use_colors):
-    error_text = 'error:'
-    if use_colors:
-        error_text = bold_red(error_text)
-    print("{}: {} {}".format(prog, error_text, message), file=sys.stderr)
-
-
-def main():
     parser = argparse.ArgumentParser(description=__doc__)
+
+    parser.add_argument("files", metavar="file", nargs="+")
+
     parser.add_argument(
-        '--clang-format-executable',
-        metavar='EXECUTABLE',
-        help='path to the clang-format executable',
-        default='clang-format')
+        "--clang-format-exe",
+        help=f"path to the clang-format executable (default: {clang_format_exe})",
+        default=clang_format_exe,
+    )
     parser.add_argument(
-        '--extensions',
-        help='comma separated list of file extensions (default: {})'.format(
-            DEFAULT_EXTENSIONS),
-        default=DEFAULT_EXTENSIONS)
+        "--extensions",
+        help=f"comma separated list of file extensions (default: {DEFAULT_EXTENSIONS})",
+        default=DEFAULT_EXTENSIONS,
+    )
     parser.add_argument(
-        '-r',
-        '--recursive',
-        action='store_true',
-        help='run recursively over directories')
+        "-r",
+        "--recursive",
+        action="store_true",
+        help="run recursively over directories",
+    )
     parser.add_argument(
-        '-d',
-        '--dry-run',
-        action='store_true',
-        help='just print the list of files')
-    parser.add_argument('files', metavar='file', nargs='+')
+        "-d", "--dry-run", action="store_true", help="just print the list of files"
+    )
     parser.add_argument(
-        '-q',
-        '--quiet',
-        action='store_true',
-        help="disable output, useful for the exit code")
+        "-q",
+        "--quiet",
+        action="store_true",
+        help="disable output, useful when only checking exit code",
+    )
     parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help="enable extra helpful output")
+        "--verbose", action="store_true", help="enable additional helpful output"
+    )
     parser.add_argument(
-        '-j',
-        metavar='N',
+        "-j",
+        "--num-jobs",
+        metavar="N",
         type=int,
         default=0,
-        help='run N clang-format jobs in parallel'
-        ' (default number of cpus + 1)')
+        help="run N clang-format jobs in parallel (default: number of cpus + 1)",
+    )
     parser.add_argument(
-        '--color',
-        default='auto',
-        choices=['auto', 'always', 'never'],
-        help='show colored diff (default: auto)')
-    parser.add_argument(
-        '-e',
-        '--exclude',
-        metavar='PATTERN',
-        action='append',
-        default=[],
-        help='exclude paths matching the given glob-like pattern(s)'
-        ' from recursive search')
-    parser.add_argument(
-        '--style',
-        help='formatting style to apply (LLVM, Google, Chromium, Mozilla, WebKit)')
+        "--style",
+        help="formatting style to apply (LLVM, Google, Chromium, Mozilla, WebKit)",
+    )
 
-    args = parser.parse_args()
+    return parser.parse_args(), parser.prog
 
-    # use default signal handling, like diff return SIGINT value on ^C
-    # https://bugs.python.org/issue14229#msg156446
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-    try:
-        signal.SIGPIPE
-    except AttributeError:
-        # compatibility, SIGPIPE does not exist on Windows
-        pass
-    else:
-        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
-    colored_stderr = False
-    if args.color == 'always':
-        colored_stderr = True
-    elif args.color == 'auto':
-        colored_stderr = sys.stderr.isatty()
+def get_num_jobs(args, num_files: int) -> int:
+    num_jobs = args.num_jobs
 
-    version_invocation = [args.clang_format_executable, str("--version")]
+    if num_jobs == 0:
+        num_jobs = multiprocessing.cpu_count() + 1
+
+    return min(num_files, num_jobs)
+
+
+def check_clang_format_ok(args, prog) -> bool:
+    version_invocation = [args.clang_format_exe, str("--version")]
     try:
         subprocess.check_call(version_invocation, stdout=DEVNULL)
     except subprocess.CalledProcessError as e:
-        print_trouble(parser.prog, str(e), use_colors=colored_stderr)
-        return ExitStatus.TROUBLE
+        print_error_msg(prog, str(e))
+        return False
     except OSError as e:
-        print_trouble(
-            parser.prog,
-            "Command '{}' failed to start: {}".format(
-                subprocess.list2cmdline(version_invocation), e
-            ),
-            use_colors=colored_stderr,
+        print_error_msg(
+            prog,
+            f"Command '{subprocess.list2cmdline(version_invocation)}' failed to start: {e}",
         )
-        return ExitStatus.TROUBLE
+        return False
 
-    retcode = ExitStatus.SUCCESS
+    return True
 
-    excludes = excludes_from_file(DEFAULT_CLANG_FORMAT_IGNORE, args.verbose)
-    excludes.extend(args.exclude)
 
-    files = list_files(
-        args.files,
-        recursive=args.recursive,
-        exclude=excludes,
-        extensions=args.extensions.split(','),
-        verbose=args.verbose)
-
-    if not files:
-        return
-
-    njobs = args.j
-    if njobs == 0:
-        njobs = multiprocessing.cpu_count() + 1
-    njobs = min(len(files), njobs)
-
-    if njobs == 1:
-        # execute directly instead of in a pool,
-        # less overhead, simpler stacktraces
-        it = (run_clang_format_diff_wrapper(args, file) for file in files)
+def run_jobs(args, prog, num_jobs: int, files: List[str]) -> int:
+    if num_jobs == 1:
+        # Execute directly instead of in a pool: less overhead, simpler stacktraces,
+        it = (run_clang_format_wrapper(args, file) for file in files)
         pool = None
     else:
-        pool = multiprocessing.Pool(njobs)
-        it = pool.imap_unordered(
-            partial(run_clang_format_diff_wrapper, args), files)
+        pool = multiprocessing.Pool(num_jobs)
+        it = pool.imap_unordered(partial(run_clang_format_wrapper, args), files)
         pool.close()
+
     while True:
         try:
             errs = next(it)
         except StopIteration:
             break
-        except DiffError as e:
-            print_trouble(parser.prog, str(e), use_colors=colored_stderr)
-            retcode = ExitStatus.TROUBLE
-            sys.stderr.writelines(e.errs)
         except UnexpectedError as e:
-            print_trouble(parser.prog, str(e), use_colors=colored_stderr)
+            print_error_msg(prog, str(e))
             sys.stderr.write(e.formatted_traceback)
-            retcode = ExitStatus.TROUBLE
-            # stop at the first unexpected error,
-            # something could be very wrong,
-            # don't process all files unnecessarily
+            # Stop at the first unexpected error, since something could be
+            # very wrong - don't process all files unnecessarily.
             if pool:
                 pool.terminate()
-            break
+            return ExitStatus.ERROR
         else:
-            sys.stderr.writelines(errs)
-            if retcode == ExitStatus.SUCCESS:
-                retcode = ExitStatus.DIFF
+            if errs:
+                sys.stderr.writelines(errs)
+                return ExitStatus.ERROR
+
     if pool:
         pool.join()
-    return retcode
+
+    return ExitStatus.SUCCESS
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+def print_error_msg(prog: str, message: str):
+    error_text = "error:"
+    print(f"{prog}: {error_text} {message}", file=sys.stderr)
 
+
+if __name__ == "__main__":
+    cmd_args, prog_name = get_cmd_line_args()
+
+    if not check_clang_format_ok(cmd_args, prog_name):
+        sys.exit(ExitStatus.ERROR)
+
+    files_to_format = get_all_files_to_format(
+        cmd_args.files,
+        recursive=cmd_args.recursive,
+        extensions=cmd_args.extensions.split(","),
+        verbose=cmd_args.verbose,
+    )
+    if not files_to_format:
+        if cmd_args.verbose:
+            safe_print(f"Nothing to do - exiting.")
+        sys.exit(ExitStatus.SUCCESS)
+
+    num_processes = get_num_jobs(cmd_args, len(files_to_format))
+    if cmd_args.verbose:
+        safe_print(f"Using {num_processes} threads.")
+
+    exit_code = run_jobs(cmd_args, prog_name, num_processes, files_to_format)
+
+    sys.exit(exit_code)
