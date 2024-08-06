@@ -614,8 +614,7 @@ auto VisualFxWeightedColorMaps::GetImageGroups(const GoomRand& goomRand) noexcep
   // clang-format on
 }
 
-auto VisualFxWeightedColorMaps::GetLines1Groups(const GoomRand& goomRand) noexcept
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetLines1Groups(const GoomRand& goomRand) noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;
@@ -667,8 +666,7 @@ auto VisualFxWeightedColorMaps::GetLines1Groups(const GoomRand& goomRand) noexce
   // clang-format on
 }
 
-auto VisualFxWeightedColorMaps::GetLines2Groups(const GoomRand& goomRand) noexcept
-    -> WeightedGroups
+auto VisualFxWeightedColorMaps::GetLines2Groups(const GoomRand& goomRand) noexcept -> WeightedGroups
 {
   static constexpr auto ALL_MAPS_UNWEIGHTED_WEIGHT              = 05.0F;
   static constexpr auto ALL_STANDARD_MAPS_WEIGHT                = 05.0F;

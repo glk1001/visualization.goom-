@@ -36,9 +36,9 @@ struct TubeData
 {
   uint32_t tubeId = 0U;
   TubeDrawFuncs drawFuncs{};
-  uint32_t screenWidth                   = 0U;
-  uint32_t screenHeight                  = 0U;
-  const UTILS::GoomTime* goomTime        = nullptr;
+  uint32_t screenWidth                  = 0U;
+  uint32_t screenHeight                 = 0U;
+  const UTILS::GoomTime* goomTime       = nullptr;
   const UTILS::MATH::GoomRand* goomRand = nullptr;
   COLOR::WeightedRandomColorMaps mainColorMaps;
   COLOR::WeightedRandomColorMaps lowColorMaps;

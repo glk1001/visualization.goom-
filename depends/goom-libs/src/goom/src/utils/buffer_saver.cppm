@@ -113,7 +113,7 @@ template<class T>
 
 template<class T, class HeaderT>
 BufferSaver<T, HeaderT>::BufferSaver(const std::string& filenamePrefix,
-                                            const BufferLimits& bufferLimits) noexcept
+                                     const BufferLimits& bufferLimits) noexcept
   : m_filenamePrefix{filenamePrefix},
     m_startBuffNum{bufferLimits.startBuffNum},
     m_endBuffNum{bufferLimits.endBuffNum},
@@ -226,11 +226,10 @@ auto BufferSaver<T, HeaderT>::WriteBinary(const std::string& filename,
   auto file = std::ofstream{filename, std::ios::out | std::ios::binary};
   if (not file.good())
   {
-    throw std::runtime_error(std::format(
-        "Could not open file '{}' for binary writing. Error: {}.",
-        filename,
-        // NOLINTNEXTLINE(concurrency-mt-unsafe)
-        strerror(errno)));
+    throw std::runtime_error(std::format("Could not open file '{}' for binary writing. Error: {}.",
+                                         filename,
+                                         // NOLINTNEXTLINE(concurrency-mt-unsafe)
+                                         strerror(errno)));
   }
   WriteBinary(file, tag, header, buffer);
 }
@@ -295,11 +294,10 @@ auto BufferSaver<T, HeaderT>::WriteFormatted(const std::string& filename,
   auto file = std::ofstream{filename, std::ios::out};
   if (not file.good())
   {
-    throw std::runtime_error(std::format(
-        "Could not open file '{}' for text writing. Error: {}.",
-        filename,
-        // NOLINTNEXTLINE(concurrency-mt-unsafe)
-        strerror(errno)));
+    throw std::runtime_error(std::format("Could not open file '{}' for text writing. Error: {}.",
+                                         filename,
+                                         // NOLINTNEXTLINE(concurrency-mt-unsafe)
+                                         strerror(errno)));
   }
   WriteFormatted(file, tag, header, buffer, formatters);
 }

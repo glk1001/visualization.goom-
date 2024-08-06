@@ -134,8 +134,9 @@ private:
 };
 
 template<typename E>
-auto GetWeightedSample(const Weights<E>& weights, uint32_t n, std::vector<E>& sample) noexcept
-    -> void;
+auto GetWeightedSample(const Weights<E>& weights,
+                       uint32_t n,
+                       std::vector<E>& sample) noexcept -> void;
 
 template<EnumType E>
 class ConditionalWeights
@@ -213,8 +214,9 @@ auto GoomRand::Shuffle(Range& range) const noexcept -> void
 }
 
 template<typename E>
-auto GetWeightedSample(const Weights<E>& weights, uint32_t n, std::vector<E>& sample) noexcept
-    -> void
+auto GetWeightedSample(const Weights<E>& weights,
+                       uint32_t n,
+                       std::vector<E>& sample) noexcept -> void
 {
   Expects(n <= weights.GetNumSetWeights());
 
@@ -294,15 +296,15 @@ inline auto GoomRand::GetNRand(const uint32_t n) const noexcept -> uint32_t
 // NOLINTEND(readability-convert-member-functions-to-static)
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-inline auto GoomRand::GetRandInRange(const uint32_t n0, const uint32_t nRangePlus1) noexcept
-    -> uint32_t
+inline auto GoomRand::GetRandInRange(const uint32_t n0,
+                                     const uint32_t nRangePlus1) noexcept -> uint32_t
 {
   return RAND::GetRandInRange(n0, nRangePlus1);
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-inline auto GoomRand::GetRandInRange(const int32_t n0, const int32_t nRangePlus1) noexcept
-    -> int32_t
+inline auto GoomRand::GetRandInRange(const int32_t n0,
+                                     const int32_t nRangePlus1) noexcept -> int32_t
 {
   return RAND::GetRandInRange(n0, nRangePlus1);
 }

@@ -32,8 +32,8 @@ using GOOM::DRAW::MultiplePixels;
 using GOOM::DRAW::SHAPE_DRAWERS::BitmapDrawer;
 using GOOM::DRAW::SHAPE_DRAWERS::CircleDrawer;
 using GOOM::UTILS::NUM;
-using GOOM::UTILS::MATH::I_HALF;
 using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::I_HALF;
 using GOOM::UTILS::MATH::IncrementedValue;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
@@ -50,8 +50,9 @@ public:
   auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
 
-  auto DrawDot(const Point2dInt& pos, uint32_t diameter, const MultiplePixels& colors) noexcept
-      -> void;
+  auto DrawDot(const Point2dInt& pos,
+               uint32_t diameter,
+               const MultiplePixels& colors) noexcept -> void;
 
 private:
   const GoomRand* m_goomRand;
@@ -76,7 +77,7 @@ private:
   bool m_doCircleDotShapes = true;
   ColorMapPtrWrapper m_outerCircleDotColorMap{nullptr};
   static constexpr auto OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE = NumberRange{0.1F, 0.9F};
-  float m_outerCircleDotColorMix = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.min;
+  float m_outerCircleDotColorMix                           = OUTER_CIRCLE_DOT_COLOR_MIX_T_RANGE.min;
 
   auto DrawBitmapDot(const Point2dInt& position,
                      uint32_t diameter,
@@ -243,8 +244,9 @@ inline auto DotDrawer::DrawBitmapDot(const Point2dInt& position,
     return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetMainColor(colors), m_bgndMainColorMixT);
   };
 
-  const auto getLowColor = [this, &colors, &diameter](const Point2dInt& bitmapPoint,
-                                                      const Pixel& bgnd) {
+  const auto getLowColor =
+      [this, &colors, &diameter](const Point2dInt& bitmapPoint, const Pixel& bgnd)
+  {
     return GetDotMixedColor(bitmapPoint, diameter, bgnd, GetLowColor(colors), m_bgndLowColorMixT);
   };
 

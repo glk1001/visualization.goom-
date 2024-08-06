@@ -766,7 +766,8 @@ inline auto Tube::TubeImpl::UpdateTimers() noexcept -> void
     m_interiorShapeTimer.ResetToZero();
   }
 
-  if (m_noBoundaryShapeTimer.Finished() and m_data.goomRand->ProbabilityOf<PROB_NO_BOUNDARY_SHAPES>())
+  if (m_noBoundaryShapeTimer.Finished() and
+      m_data.goomRand->ProbabilityOf<PROB_NO_BOUNDARY_SHAPES>())
   {
     m_noBoundaryShapeTimer.ResetToZero();
   }

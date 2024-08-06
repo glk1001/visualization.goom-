@@ -9,7 +9,7 @@ export namespace GOOM::UTILS::MATH::RAND::GEN
 {
 
 inline constexpr auto GOOM_RAND_MAX = std::numeric_limits<uint32_t>::max() - 1;
-inline constexpr auto GEN_RAND_MAX = GOOM_RAND_MAX + 1;
+inline constexpr auto GEN_RAND_MAX  = GOOM_RAND_MAX + 1;
 
 [[nodiscard]] auto GetRandSeed() noexcept -> uint64_t;
 auto SetRandSeed(uint64_t seed) noexcept -> void;

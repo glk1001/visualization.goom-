@@ -366,9 +366,9 @@ inline auto DisplacementFilter::GetCurrentFrameData() const noexcept -> const Fr
   return m_frameDataArray.at(m_currentPboIndex);
 }
 
-inline auto DisplacementFilter::GetGl() noexcept -> GlCaller& 
-{ 
-  return m_gl; 
+inline auto DisplacementFilter::GetGl() noexcept -> GlCaller&
+{
+  return m_gl;
 }
 
 inline auto DisplacementFilter::GetBrightnessAdjust() const noexcept -> float

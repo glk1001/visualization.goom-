@@ -28,8 +28,8 @@ using GOOM::COLOR::SimpleColors;
 using GOOM::COLOR::COLOR_DATA::ColorMapName;
 using GOOM::DRAW::MakePixels;
 using GOOM::DRAW::MultiplePixels;
-using GOOM::UTILS::MATH::HALF;
 using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::HALF;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
 
@@ -253,8 +253,8 @@ auto LSysColors::SetSimpleColors() noexcept -> void
 
 auto LSysColors::ResetColorTs() noexcept -> void
 {
-  const auto numColorSteps = m_goomRand->GetRandInRange(
-      NumberRange{NUM_COLOR_STEPS_RANGE.min, m_currentMaxNumColorSteps});
+  const auto numColorSteps =
+      m_goomRand->GetRandInRange(NumberRange{NUM_COLOR_STEPS_RANGE.min, m_currentMaxNumColorSteps});
 
   std::ranges::for_each(m_currentColorTs,
                         [&numColorSteps](auto& colorT) { colorT.SetNumSteps(numColorSteps); });
