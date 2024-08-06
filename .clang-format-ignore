@@ -1,0 +1,5 @@
+.git/*
+build*/*
+visualization.goom-pp/resources/*
+dockerize*/*
+

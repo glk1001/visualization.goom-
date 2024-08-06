@@ -13,7 +13,7 @@ if [[ "${COMPILER_VERSION}" == "" ]]; then
   declare -r CLANG_FORMAT_EXE="clang-format"
 else
 #  declare -r CLANG_FORMAT_EXE="clang-format-${COMPILER_VERSION}"
-  declare -r CLANG_FORMAT_EXE="clang-format-18"
+  declare -r CLANG_FORMAT_EXE="clang-format-19"
 fi
 declare -r CLANG_FORMAT_LOG="/tmp/goom-clang-format.log"
 
@@ -25,10 +25,7 @@ fi
 if [[ "${1:-}" != "" ]]; then
   declare -r CUSTOM_SRCE=$1
   python3 "${RUN_CLANG_FORMAT}" --clang-format-executable "${CLANG_FORMAT_EXE}" \
-                                -i -r -j 6 \
-                                -e "*particles/src/glm" \
-                                -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
-                                -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" -e "*magic_enum*" \
+                                --dry-run --verbose -r -j 6 \
                                 "${CUSTOM_SRCE}"
   exit $?
 fi
@@ -36,10 +33,7 @@ fi
 SECONDS=0
 
 python3 "${RUN_CLANG_FORMAT}" --clang-format-executable "${CLANG_FORMAT_EXE}" \
-                              -i -r -j 6 \
-                              -e "*particles/src/glm" \
-                              -e "*lsys/src/*.c" -e "*lsys/src/lexdefs.h" -e "*lsys/src/lsys.tab.h" \
-                              -e "*build-*" -e "*vivid*" -e "*bezier" -e "*perlin_noise*" \
+                              --dry-run --verbose -r -j 6 \
                               "${GOOM_MAIN_ROOT_DIR}"
 if [[ $? != 0 ]]; then
   >&2 echo "ERROR: There were clang-format errors."

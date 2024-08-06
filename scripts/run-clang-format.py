@@ -8,10 +8,7 @@ A diff output is produced and a sensible exit code is returned.
 
 """
 
-from __future__ import print_function, unicode_literals
-
 import argparse
-import codecs
 import difflib
 import fnmatch
 import io
@@ -31,7 +28,7 @@ except ImportError:
     DEVNULL = open(os.devnull, "wb")
 
 
-DEFAULT_EXTENSIONS = 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
+DEFAULT_EXTENSIONS = 'c,h,C,H,cpp,cppm,hpp,cc,hh,c++,h++,cxx,hxx'
 DEFAULT_CLANG_FORMAT_IGNORE = '.clang-format-ignore'
 
 
@@ -40,10 +37,14 @@ class ExitStatus:
     DIFF = 1
     TROUBLE = 2
 
-def excludes_from_file(ignore_file):
+
+def excludes_from_file(ignore_file, verbose):
     excludes = []
     try:
         with io.open(ignore_file, 'r', encoding='utf-8') as f:
+            if verbose:
+                print(f'Checking ignore file "{ignore_file}".')
+            ignore_file_dir = os.path.dirname(ignore_file)
             for line in f:
                 if line.startswith('#'):
                     # ignore comments
@@ -52,13 +53,17 @@ def excludes_from_file(ignore_file):
                 if not pattern:
                     # allow empty lines
                     continue
+                pattern = os.path.join(ignore_file_dir, pattern)
+                if verbose:
+                    print(f'Using exclude pattern "{pattern}".')
                 excludes.append(pattern)
     except EnvironmentError as e:
         if e.errno != errno.ENOENT:
             raise
-    return excludes;
+    return excludes
 
-def list_files(files, recursive=False, extensions=None, exclude=None):
+
+def list_files(files, recursive=False, extensions=None, exclude=None, verbose=False):
     if extensions is None:
         extensions = []
     if exclude is None:
@@ -68,6 +73,7 @@ def list_files(files, recursive=False, extensions=None, exclude=None):
     for file in files:
         if recursive and os.path.isdir(file):
             for dirpath, dnames, fnames in os.walk(file):
+                exclude.extend(excludes_from_file(os.path.join(dirpath, DEFAULT_CLANG_FORMAT_IGNORE), verbose))
                 fpaths = [os.path.join(dirpath, fname) for fname in fnames]
                 for pattern in exclude:
                     # os.walk() supports trimming down the dnames list
@@ -125,45 +131,16 @@ def run_clang_format_diff_wrapper(args, file):
 
 
 def run_clang_format_diff(args, file):
-    try:
-        with io.open(file, 'r', encoding='utf-8') as f:
-            original = f.readlines()
-    except IOError as exc:
-        raise DiffError(str(exc))
-    
-    if args.in_place:
-        invocation = [args.clang_format_executable, '-i', file]
-    else:
-        invocation = [args.clang_format_executable, file]
+    invocation = [args.clang_format_executable, '-i', file]
 
     if args.style:
         invocation.extend(['--style', args.style])
 
     if args.dry_run:
         print(" ".join(invocation))
-        return [], []
+        return []
 
-    # Use of utf-8 to decode the process output.
-    #
-    # Hopefully, this is the correct thing to do.
-    #
-    # It's done due to the following assumptions (which may be incorrect):
-    # - clang-format will returns the bytes read from the files as-is,
-    #   without conversion, and it is already assumed that the files use utf-8.
-    # - if the diagnostics were internationalized, they would use utf-8:
-    #   > Adding Translations to Clang
-    #   >
-    #   > Not possible yet!
-    #   > Diagnostic strings should be written in UTF-8,
-    #   > the client can translate to the relevant code page if needed.
-    #   > Each translation completely replaces the format string
-    #   > for the diagnostic.
-    #   > -- http://clang.llvm.org/docs/InternalsManual.html#internals-diag-translation
-    #
-    # It's not pretty, due to Python 2 & 3 compatibility.
-    encoding_py3 = {}
-    if sys.version_info[0] >= 3:
-        encoding_py3['encoding'] = 'utf-8'
+    encoding_py3 = {'encoding': 'utf-8'}
 
     try:
         proc = subprocess.Popen(
@@ -178,16 +155,8 @@ def run_clang_format_diff(args, file):
                 subprocess.list2cmdline(invocation), exc
             )
         )
-    proc_stdout = proc.stdout
     proc_stderr = proc.stderr
-    if sys.version_info[0] < 3:
-        # make the pipes compatible with Python 3,
-        # reading lines should output unicode
-        encoding = 'utf-8'
-        proc_stdout = codecs.getreader(encoding)(proc_stdout)
-        proc_stderr = codecs.getreader(encoding)(proc_stderr)
     # hopefully the stderr pipe won't get full and block the process
-    outs = list(proc_stdout.readlines())
     errs = list(proc_stderr.readlines())
     proc.wait()
     if proc.returncode:
@@ -197,9 +166,7 @@ def run_clang_format_diff(args, file):
             ),
             errs,
         )
-    if args.in_place:
-        return [], errs
-    return make_diff(file, original, outs), errs
+    return errs
 
 
 def bold_red(s):
@@ -232,15 +199,6 @@ def colorize(diff_lines):
             yield line
 
 
-def print_diff(diff_lines, use_color):
-    if use_color:
-        diff_lines = colorize(diff_lines)
-    if sys.version_info[0] < 3:
-        sys.stdout.writelines((l.encode('utf-8') for l in diff_lines))
-    else:
-        sys.stdout.writelines(diff_lines)
-
-
 def print_trouble(prog, message, use_colors):
     error_text = 'error:'
     if use_colors:
@@ -270,17 +228,16 @@ def main():
         '--dry-run',
         action='store_true',
         help='just print the list of files')
-    parser.add_argument(
-        '-i',
-        '--in-place',
-        action='store_true',
-        help='format file instead of printing differences')
     parser.add_argument('files', metavar='file', nargs='+')
     parser.add_argument(
         '-q',
         '--quiet',
         action='store_true',
         help="disable output, useful for the exit code")
+    parser.add_argument(
+        '--verbose',
+        action='store_true',
+        help="enable extra helpful output")
     parser.add_argument(
         '-j',
         metavar='N',
@@ -318,13 +275,10 @@ def main():
     else:
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
-    colored_stdout = False
     colored_stderr = False
     if args.color == 'always':
-        colored_stdout = True
         colored_stderr = True
     elif args.color == 'auto':
-        colored_stdout = sys.stdout.isatty()
         colored_stderr = sys.stderr.isatty()
 
     version_invocation = [args.clang_format_executable, str("--version")]
@@ -345,14 +299,15 @@ def main():
 
     retcode = ExitStatus.SUCCESS
 
-    excludes = excludes_from_file(DEFAULT_CLANG_FORMAT_IGNORE)
+    excludes = excludes_from_file(DEFAULT_CLANG_FORMAT_IGNORE, args.verbose)
     excludes.extend(args.exclude)
 
     files = list_files(
         args.files,
         recursive=args.recursive,
         exclude=excludes,
-        extensions=args.extensions.split(','))
+        extensions=args.extensions.split(','),
+        verbose=args.verbose)
 
     if not files:
         return
@@ -374,7 +329,7 @@ def main():
         pool.close()
     while True:
         try:
-            outs, errs = next(it)
+            errs = next(it)
         except StopIteration:
             break
         except DiffError as e:
@@ -393,10 +348,6 @@ def main():
             break
         else:
             sys.stderr.writelines(errs)
-            if outs == []:
-                continue
-            if not args.quiet:
-                print_diff(outs, use_color=colored_stdout)
             if retcode == ExitStatus.SUCCESS:
                 retcode = ExitStatus.DIFF
     if pool:

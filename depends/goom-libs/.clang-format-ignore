@@ -1,0 +1,6 @@
+lib/*
+src/vivid/*
+src/bezier/*
+src/goom/src/color/color_data/palettable/*
+src/goom/src/utils/math/rand/xoshiro.hpp
+
