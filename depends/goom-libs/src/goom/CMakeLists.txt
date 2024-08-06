@@ -444,7 +444,7 @@ target_include_directories(goom
                            ${GOOM_LIBS_DIR}/lib/perlin_noise
                            ${magic_enum_INCLUDE_DIR}
                            ${GLM_INCLUDE_DIR}
-                           SYSTEM PRIVATE
+                           PRIVATE
                            ${GOOM_LIBS_DIR}/src/bezier/include
                            ${LSys_SOURCE_DIR}/include/lsys
                            ${blend2d_SOURCE_DIR}/src
