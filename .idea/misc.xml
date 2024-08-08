@@ -9,9 +9,12 @@
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
   <component name="CidrRootsConfiguration">
     <excludeRoots>
+      <file path="$PROJECT_DIR$/.venv" />
       <file path="$PROJECT_DIR$/SPOTIFY_ERROR" />
+      <file path="$PROJECT_DIR$/build-clang-19-RelWithDebInfo-omega" />
       <file path="$PROJECT_DIR$/build-clion-clang-18-Debug-omega" />
       <file path="$PROJECT_DIR$/build-clion-clang-18-RelWithDebInfo-omega" />
+      <file path="$PROJECT_DIR$/build-clion-clang-19-RelWithDebInfo-omega" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-RelWithDebInfo-omega" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-18-Release-omega" />
       <file path="$PROJECT_DIR$/build-clion-docker-clang-19-RelWithDebInfo-omega" />
