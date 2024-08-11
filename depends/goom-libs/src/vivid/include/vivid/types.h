@@ -25,13 +25,13 @@ struct adobe_t;
 //  rgb \in [0; 1]
 struct rgb_t : public col_t
 {
-    rgb_t() = default;
-    rgb_t( const float x, const float y, const float z ) : col_t( x, y, z ) {}
+    constexpr rgb_t() = default;
+    constexpr rgb_t( const float x, const float y, const float z ) : col_t( x, y, z ) {}
     rgb_t( const srgb_t& srgb );    //  implicit cast
     rgb_t( const lrgb_t& lrgb );    //  implicit cast
     rgb_t( const adobe_t& adobe );  //  implicit cast
 
-    explicit rgb_t( const col_t& col ) : col_t( col ) {}
+    constexpr explicit rgb_t( const col_t& col ) : col_t( col ) {}
 };
 
 
@@ -101,11 +101,11 @@ struct oklab_t : public col_t
 
 struct srgb_t : public rgb_t
 {
-    srgb_t() = default;
-    srgb_t( const float x, const float y, const float z ) : rgb_t( x, y, z ) {}
-    srgb_t( const rgb_t& rgb ) : rgb_t( rgb ) {}    //  implicit cast
+    constexpr srgb_t() = default;
+    constexpr srgb_t( const float x, const float y, const float z ) : rgb_t( x, y, z ) {}
+    constexpr srgb_t( const rgb_t& rgb ) : rgb_t( rgb ) {}    //  implicit cast
 
-    explicit srgb_t( const col_t& col ) : rgb_t( col ) {}
+    constexpr explicit srgb_t( const col_t& col ) : rgb_t( col ) {}
 };
 
 
