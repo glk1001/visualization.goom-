@@ -35,13 +35,13 @@ XYLerpEffect::XYLerpEffect(const GoomRand& goomRand)
     m_modeWeights{
         *m_goomRand,
         {
-            {Modes::MODE0, MODE0_WEIGHT},
-            {Modes::MODE1, MODE1_WEIGHT},
-            {Modes::MODE2, MODE2_WEIGHT},
-            {Modes::MODE3, MODE3_WEIGHT},
+            {.key=Modes::MODE0, .weight=MODE0_WEIGHT},
+            {.key=Modes::MODE1, .weight=MODE1_WEIGHT},
+            {.key=Modes::MODE2, .weight=MODE2_WEIGHT},
+            {.key=Modes::MODE3, .weight=MODE3_WEIGHT},
         }
     },
-    m_params{Modes::MODE0, DEFAULT_T_FREQ, +1.0F, false}
+    m_params{.mode=Modes::MODE0, .tFreq=DEFAULT_T_FREQ, .ySign=+1.0F, .flipXY=false}
 {
 }
 
@@ -52,7 +52,7 @@ auto XYLerpEffect::SetRandomParams() -> void
   const auto ySign  = m_goomRand->ProbabilityOf<PROB_FLIP_Y_SIGN>() ? -1.0F : +1.0F;
   const auto flipXY = m_goomRand->ProbabilityOf(GetFlipYProbability(mode));
 
-  SetParams({mode, tFreq, ySign, flipXY});
+  SetParams({.mode = mode, .tFreq = tFreq, .ySign = ySign, .flipXY = flipXY});
 }
 
 inline auto XYLerpEffect::GetFlipYProbability(const Modes mode) -> float

@@ -64,8 +64,8 @@ constexpr auto GetCentrePoint(const Rectangle2dInt& rectangle2D) noexcept -> Poi
   Expects(rectangle2D.topLeft.x <= rectangle2D.bottomRight.x);
   Expects(rectangle2D.topLeft.y <= rectangle2D.bottomRight.y);
 
-  return {UTILS::MATH::I_HALF * (rectangle2D.topLeft.x + rectangle2D.bottomRight.x),
-          UTILS::MATH::I_HALF * (rectangle2D.topLeft.y + rectangle2D.bottomRight.y)};
+  return {.x = UTILS::MATH::I_HALF * (rectangle2D.topLeft.x + rectangle2D.bottomRight.x),
+          .y = UTILS::MATH::I_HALF * (rectangle2D.topLeft.y + rectangle2D.bottomRight.y)};
 }
 
 inline auto GetPointClippedToRectangle(
@@ -74,8 +74,8 @@ inline auto GetPointClippedToRectangle(
     const Point2dInt& connectingPointInsideClipRectangle) noexcept -> Point2dInt
 {
   const auto lineClipper = LineClipper{clipRectangle};
-  const auto clippedLine = lineClipper.GetClippedLine(
-      LineFlt{ToPoint2dFlt(connectingPointInsideClipRectangle), ToPoint2dFlt(point)});
+  const auto clippedLine = lineClipper.GetClippedLine(LineFlt{
+      .point1 = ToPoint2dFlt(connectingPointInsideClipRectangle), .point2 = ToPoint2dFlt(point)});
   Expects(clippedLine.clipResult != LineClipper::ClipResult::REJECTED);
 
   return ToPoint2dInt(clippedLine.line.point2);
@@ -88,8 +88,8 @@ inline auto GetRandomPoint(const UTILS::MATH::GoomRand& goomRand,
   Expects(rectangle2D.topLeft.y <= rectangle2D.bottomRight.y);
 
   return {
-      goomRand.GetRandInRange(NumberRange{rectangle2D.topLeft.x, rectangle2D.bottomRight.x}),
-      goomRand.GetRandInRange(NumberRange{rectangle2D.topLeft.y, rectangle2D.bottomRight.y}),
+      .x = goomRand.GetRandInRange(NumberRange{rectangle2D.topLeft.x, rectangle2D.bottomRight.x}),
+      .y = goomRand.GetRandInRange(NumberRange{rectangle2D.topLeft.y, rectangle2D.bottomRight.y}),
   };
 }
 

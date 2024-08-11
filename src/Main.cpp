@@ -99,7 +99,8 @@ struct Memory
   // For x86-64 is configured to use 2MB pages.
   auto pageSizeKb = static_cast<double>(sysconf(_SC_PAGE_SIZE)) / KILO;
 
-  return Memory{static_cast<double>(vSize) / KILO, static_cast<double>(rss) * pageSizeKb};
+  return Memory{.vmUsage     = static_cast<double>(vSize) / KILO,
+                .residentSet = static_cast<double>(rss) * pageSizeKb};
 }
 
 constexpr auto MAX_QUALITY = 4;
@@ -131,9 +132,9 @@ constexpr auto* BRIGHTNESS_ADJUST_SETTING = "brightness";
 
 [[nodiscard]] inline auto GetTextureBufferDimensions() noexcept -> TextureBufferDimensions
 {
-  return {WIDTHS_BY_QUALITY.at(static_cast<size_t>(
+  return {.width  = WIDTHS_BY_QUALITY.at(static_cast<size_t>(
               std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt(QUALITY_SETTING)))),
-          HEIGHTS_BY_QUALITY.at(static_cast<size_t>(
+          .height = HEIGHTS_BY_QUALITY.at(static_cast<size_t>(
               std::min(MAX_QUALITY, KODI_ADDON::GetSettingInt(QUALITY_SETTING))))};
 }
 } // namespace
@@ -153,7 +154,7 @@ CVisualizationGoom::CVisualizationGoom()
   StartLogging();
   kodi::Log(ADDON_LOG_DEBUG, "CVisualizationGoom: Created CVisualizationGoom object.");
 
-  m_goomVisualization.SetWindowDimensions({Width(), Height()});
+  m_goomVisualization.SetWindowDimensions({.width = Width(), .height = Height()});
 }
 
 // NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall): Third party parent code.
@@ -333,11 +334,11 @@ auto CVisualizationGoom::StartLogging() -> void
 
 auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& track) -> bool
 {
-  m_goomVisualization.UpdateTrack({track.GetTitle(),
-                                   track.GetArtist(),
-                                   track.GetAlbumArtist(),
-                                   track.GetGenre(),
-                                   static_cast<uint32_t>(track.GetDuration())});
+  m_goomVisualization.UpdateTrack({.title       = track.GetTitle(),
+                                   .artist      = track.GetArtist(),
+                                   .albumArtist = track.GetAlbumArtist(),
+                                   .genre       = track.GetGenre(),
+                                   .duration    = static_cast<uint32_t>(track.GetDuration())});
 
   return true;
 }
@@ -444,7 +445,7 @@ inline auto CVisualizationGoom::DoRender() noexcept -> void
     ++m_numRenders;
     const auto startTime = std::chrono::system_clock::now();
 
-    m_goomVisualization.GetScene().Resize(WindowDimensions{Width(), Height()});
+    m_goomVisualization.GetScene().Resize(WindowDimensions{.width = Width(), .height = Height()});
 
     m_goomVisualization.GetScene().Render();
 

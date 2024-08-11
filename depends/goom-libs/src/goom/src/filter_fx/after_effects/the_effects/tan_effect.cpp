@@ -41,14 +41,14 @@ static constexpr auto LIMITING_FACTOR_RANGE   = NumberRange{0.10F, 0.85F};
 
 TanEffect::TanEffect(const GoomRand& goomRand)
   : m_goomRand{&goomRand},
-    m_params{DEFAULT_TAN_TYPE, DEFAULT_COT_MIX, {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-             DEFAULT_LIMITING_FACTOR},
+    m_params{.tanType=DEFAULT_TAN_TYPE, .cotMix=DEFAULT_COT_MIX, .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+             .limitingFactor=DEFAULT_LIMITING_FACTOR},
     m_tanEffectWeights{
       *m_goomRand,
       {
-        {TanType::TAN_ONLY, TAN_ONLY_WEIGHT},
-        {TanType::COT_ONLY, COT_ONLY_WEIGHT},
-        {TanType::COT_MIX,  COT_MIX_WEIGHT},
+        {.key=TanType::TAN_ONLY, .weight=TAN_ONLY_WEIGHT},
+        {.key=TanType::COT_ONLY, .weight=COT_ONLY_WEIGHT},
+        {.key=TanType::COT_MIX,  .weight=COT_MIX_WEIGHT},
       }
     }
 {
@@ -71,8 +71,10 @@ auto TanEffect::SetRandomParams() -> void
   LogInfo("limitingFactor = {}", limitingFactor); // NOLINT
 
   SetParams({
-      tanType, cotMix, {xAmplitude, yAmplitude},
-        limitingFactor
+      .tanType        = tanType,
+      .cotMix         = cotMix,
+      .amplitude      = {xAmplitude, yAmplitude},
+      .limitingFactor = limitingFactor
   });
 }
 
@@ -82,7 +84,9 @@ auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameV
   return {
       GetPair(fullParamGroup, "tan type", EnumToString(m_params.tanType)),
       GetPair(fullParamGroup, "cot mix", m_params.cotMix),
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
       GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
   };
 }

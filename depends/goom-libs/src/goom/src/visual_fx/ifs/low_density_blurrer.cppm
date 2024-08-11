@@ -107,7 +107,7 @@ private:
                                         float logAlpha) const noexcept -> Pixel;
 
   static constexpr float GAMMA = 2.2F;
-  ColorAdjustment m_colorAdjust{{GAMMA}};
+  ColorAdjustment m_colorAdjust{{.gamma = GAMMA}};
 };
 
 } // namespace GOOM::VISUAL_FX::IFS
@@ -151,7 +151,7 @@ auto LowDensityBlurrer::SetWidth(const uint32_t val) noexcept -> void
 #pragma warning(disable : 4389) // '!=' mismatch. Not sure why?
 #endif
   static constexpr auto VALID_WIDTHS = std::array{3, 5, 7};
-  Expects(std::find(cbegin(VALID_WIDTHS), cend(VALID_WIDTHS), val) != cend(VALID_WIDTHS));
+  Expects(std::ranges::find(VALID_WIDTHS, val) != cend(VALID_WIDTHS));
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -226,7 +226,7 @@ auto LowDensityBlurrer::GetNeighbours(const IfsPoint& point) const noexcept -> s
     auto neighX = neighX0;
     for (auto j = 0U; j < m_width; ++j)
     {
-      neighbours[n] = m_draw->GetPixel({neighX, neighY});
+      neighbours[n] = m_draw->GetPixel({.x = neighX, .y = neighY});
       ++n;
       ++neighX;
     }
@@ -255,7 +255,8 @@ inline auto LowDensityBlurrer::DrawPoint(const IfsPoint& point) noexcept -> void
 
   if (nullptr == m_currentImageBitmap)
   {
-    m_pixelDrawer.DrawPixels(pt, MultiplePixels{point.GetColor(), point.GetColor()});
+    m_pixelDrawer.DrawPixels(
+        pt, MultiplePixels{.color1 = point.GetColor(), .color2 = point.GetColor()});
   }
   else
   {
@@ -354,7 +355,9 @@ inline auto LowDensityBlurrer::GetMixedPointColor(const Pixel& baseColor,
       ColorMaps::GetColorMix(baseColor, neighbourhoodAverageColor, m_neighbourMixFactor);
 
   return m_colorizer->GetMixedColor(
-      baseAndNeighbourhoodMixedColor, point.GetCount(), {brightness, logAlpha, fx, fy});
+      baseAndNeighbourhoodMixedColor,
+      point.GetCount(),
+      {.brightness = brightness, .tMix = logAlpha, .tX = fx, .tY = fy});
 }
 
 } // namespace GOOM::VISUAL_FX::IFS

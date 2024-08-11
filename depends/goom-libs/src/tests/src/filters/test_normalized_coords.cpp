@@ -34,7 +34,7 @@ TEST_CASE("Normalized Coords Values")
   SECTION("Min coords")
   {
     static constexpr auto COORDS =
-        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{0, 0});
+        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{.x = 0, .y = 0});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
     REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MIN_COORD));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
@@ -50,8 +50,8 @@ TEST_CASE("Normalized Coords Values")
 
   SECTION("Max coords")
   {
-    static constexpr auto COORDS =
-        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{WIDTH - 1U, HEIGHT - 1U});
+    static constexpr auto COORDS = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
+        Point2dInt{.x = WIDTH - 1U, .y = HEIGHT - 1U});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
     REQUIRE(FloatsEqual(COORDS.GetX(), NormalizedCoords::MAX_COORD));
     static constexpr auto MAX_Y = NormalizedCoords::MIN_COORD +
@@ -72,8 +72,8 @@ TEST_CASE("Normalized Coords Values")
   SECTION("Zero coords (middle)")
   {
     static constexpr auto EPSILON = 0.002F;
-    static constexpr auto COORDS =
-        NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{WIDTH / 2, WIDTH / 2});
+    static constexpr auto COORDS  = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(
+        Point2dInt{.x = WIDTH / 2, .y = WIDTH / 2});
     UNSCOPED_INFO("coords.GetX() = " << COORDS.GetX());
     REQUIRE(FloatsEqual(COORDS.GetX(), 0.0F, EPSILON));
     UNSCOPED_INFO("coords.GetY() = " << COORDS.GetY());
@@ -113,7 +113,7 @@ TEST_CASE("Normalized Coords Update")
 {
   SECTION("IncX")
   {
-    auto coords = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{0, 0});
+    auto coords = NORMALIZED_COORDS_CONVERTER.OtherToNormalizedCoords(Point2dInt{.x = 0, .y = 0});
     REQUIRE(FloatsEqual(coords.GetX(), NormalizedCoords::MIN_COORD));
     REQUIRE(FloatsEqual(coords.GetY(), NormalizedCoords::MIN_COORD));
     static constexpr auto STEP_SIZE = 0.11F;

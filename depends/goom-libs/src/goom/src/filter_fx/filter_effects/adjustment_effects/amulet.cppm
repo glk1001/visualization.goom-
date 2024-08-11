@@ -50,7 +50,7 @@ inline auto Amulet::GetZoomAdjustment(const NormalizedCoords& coords) const noex
 {
   const auto velocity = GetVelocity(coords);
 
-  return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
+  return {.x = coords.GetX() * velocity.x, .y = coords.GetY() * velocity.y};
 }
 
 inline auto Amulet::GetParams() const noexcept -> const Params&
@@ -69,8 +69,8 @@ inline auto Amulet::GetVelocity(const NormalizedCoords& coords) const noexcept -
 
   const auto sqDistFromZero = SqDistanceFromZero(viewportCoords);
 
-  return {GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero),
-          GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromZero)};
+  return {.x = GetBaseZoomAdjustment().x + (m_params.amplitude.x * sqDistFromZero),
+          .y = GetBaseZoomAdjustment().y + (m_params.amplitude.y * sqDistFromZero)};
   //?      speedCoeffs.y = 5.0F * std::cos(5.0F * speedCoeffs.x) * std::sin(5.0F * speedCoeffs.y);
 }
 

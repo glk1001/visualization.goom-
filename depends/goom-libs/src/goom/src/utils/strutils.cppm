@@ -67,16 +67,16 @@ namespace GOOM::UTILS
 inline auto LTrim(std::string& str) noexcept -> void
 {
   str.erase(str.begin(),
-            std::find_if(str.begin(),
-                         str.end(),
-                         [](const unsigned char chr) { return 0 == std::isspace(chr); }));
+            std::ranges::find_if(str,
+
+                                 [](const unsigned char chr) { return 0 == std::isspace(chr); }));
 }
 
 inline auto RTrim(std::string& str) noexcept -> void
 {
-  str.erase(std::find_if(str.rbegin(),
-                         str.rend(),
-                         [](const unsigned char chr) { return 0 == std::isspace(chr); })
+  str.erase(std::ranges::find_if(std::ranges::reverse_view(str),
+
+                                 [](const unsigned char chr) { return 0 == std::isspace(chr); })
                 .base(),
             str.end());
 }
@@ -310,7 +310,7 @@ auto GetExpandedFileLines(const std::string& includeDir,
     {
       const auto includeLines = GetFileLinesWithExpandedIncludes(
           includeDir, GetIncludeFileName(includeDir, parentFileDir, trimmedLine));
-      std::copy(cbegin(includeLines), cend(includeLines), std::back_inserter(outLines));
+      std::ranges::copy(includeLines, std::back_inserter(outLines));
     }
   }
 

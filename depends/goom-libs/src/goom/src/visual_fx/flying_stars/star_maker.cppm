@@ -43,7 +43,7 @@ private:
   uint32_t m_numStarsToMake = 0U;
   IStarType::SetupParams m_starSetupParams{};
   UTILS::MATH::TValue m_withinClusterT{
-      {UTILS::MATH::TValue::StepType::SINGLE_CYCLE, 1U}
+      {.stepType = UTILS::MATH::TValue::StepType::SINGLE_CYCLE, .numSteps = 1U}
   };
 
   [[nodiscard]] auto GetStarSetupParams(const StarProperties& starProperties) const noexcept
@@ -113,13 +113,18 @@ auto StarMaker::GetNewStarParams(const float starPathAngle) const noexcept -> St
   const auto starPathLength =
       m_starSetupParams.nominalPathLength * m_goomRand->GetRandInRange<PATH_LENGTH_RANGE>();
   static constexpr auto LENGTH_OFFSET = -0.2F;
-  const auto initialVelocity          = Vec2dFlt{starPathLength * std::cos(starPathAngle),
-                                        LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};
+  const auto initialVelocity =
+      Vec2dFlt{.x = starPathLength * std::cos(starPathAngle),
+               .y = LENGTH_OFFSET + (starPathLength * std::sin(starPathAngle))};
 
-  const auto initialAcceleration = Vec2dFlt{m_starSetupParams.sideWind, m_starSetupParams.gravity};
+  const auto initialAcceleration =
+      Vec2dFlt{.x = m_starSetupParams.sideWind, .y = m_starSetupParams.gravity};
 
-  return {
-      initialPosition, initialVelocity, initialAcceleration, 0.0F, m_starSetupParams.starTAgeInc};
+  return {.currentPosition = initialPosition,
+          .velocity        = initialVelocity,
+          .acceleration    = initialAcceleration,
+          .tAge            = 0.0F,
+          .tAgeInc         = m_starSetupParams.starTAgeInc};
 }
 
 } //namespace GOOM::VISUAL_FX::FLYING_STARS

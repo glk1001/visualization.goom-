@@ -158,7 +158,7 @@ TEST_CASE("Test GetCurrentHorizontalLineColors")
   static constexpr auto NUM_VERTICAL_STEPS = 4U;
 
   auto verticalT = TValue{
-      {TValue::StepType::SINGLE_CYCLE, NUM_VERTICAL_STEPS}
+      {.stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = NUM_VERTICAL_STEPS}
   };
   const auto colorMixingTFunc = []([[maybe_unused]] const float tX, [[maybe_unused]] const float tY)
   { return COLOR_MIX_T; };

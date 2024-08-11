@@ -79,23 +79,43 @@ struct TubeSettings
 };
 constexpr auto TUBE_SETTINGS = std::array<TubeSettings, NUM_TUBES>{
     {
-     {true, false, 3.4F, 150.0F, {10.0F, +0.5F, +0.5F}},
-     {false, false, 0.19F, 130.0F, {50.0F, -0.75F, -1.0F}},
-     {false, false, 0.18F, 130.0F, {40.0F, +1.0F, +0.75F}},
+     {.noMoveFromCentre = true,
+         .noOscillating    = false,
+         .brightnessFactor = 3.4F,
+         .radiusEdgeOffset = 150.0F,
+         .circlePathParams = {.oscillatingAmplitude = 10.0F,
+                              .xOscillatingFreq     = +0.5F,
+                              .yOscillatingFreq     = +0.5F}},
+     {.noMoveFromCentre = false,
+         .noOscillating    = false,
+         .brightnessFactor = 0.19F,
+         .radiusEdgeOffset = 130.0F,
+         .circlePathParams = {.oscillatingAmplitude = 50.0F,
+                              .xOscillatingFreq     = -0.75F,
+                              .yOscillatingFreq     = -1.0F}},
+     {.noMoveFromCentre = false,
+         .noOscillating    = false,
+         .brightnessFactor = 0.18F,
+         .radiusEdgeOffset = 130.0F,
+         .circlePathParams = {.oscillatingAmplitude = 40.0F,
+                              .xOscillatingFreq     = +1.0F,
+                              .yOscillatingFreq     = +0.75F}},
      }
 };
 constexpr auto MAIN_TUBE_INDEX             = 0U;
 constexpr auto SECONDARY_TUBES_START_INDEX = 1U;
-constexpr auto COMMON_CIRCLE_PATH_PARAMS   = OscillatingFunction::Params{10.0F, +3.0F, +3.0F};
+constexpr auto COMMON_CIRCLE_PATH_PARAMS   = OscillatingFunction::Params{
+      .oscillatingAmplitude = 10.0F, .xOscillatingFreq = +3.0F, .yOscillatingFreq = +3.0F};
 
 [[nodiscard]] inline auto lerp(const OscillatingFunction::Params& params0,
                                const OscillatingFunction::Params& params1,
                                const float t) -> OscillatingFunction::Params
 {
   return {
-      std::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
-      std::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
-      std::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
+      .oscillatingAmplitude =
+          std::lerp(params0.oscillatingAmplitude, params1.oscillatingAmplitude, t),
+      .xOscillatingFreq = std::lerp(params0.xOscillatingFreq, params1.xOscillatingFreq, t),
+      .yOscillatingFreq = std::lerp(params0.yOscillatingFreq, params1.yOscillatingFreq, t),
   };
 }
 
@@ -167,9 +187,9 @@ private:
   uint32_t m_numCapturedPrevShapesGroups              = 0;
   static constexpr auto PREV_SHAPES_CUTOFF_BRIGHTNESS = 0.005F;
   BrightnessAttenuation m_prevShapesBrightnessAttenuation{
-      {m_fxHelper->GetDimensions().GetWidth(),
-       m_fxHelper->GetDimensions().GetHeight(),
-       PREV_SHAPES_CUTOFF_BRIGHTNESS}
+      {.screenWidth      = m_fxHelper->GetDimensions().GetWidth(),
+       .screenHeight     = m_fxHelper->GetDimensions().GetHeight(),
+       .cutoffBrightness = PREV_SHAPES_CUTOFF_BRIGHTNESS}
   };
   [[nodiscard]] auto GetApproxBrightnessAttenuation() const -> float;
 
@@ -179,14 +199,16 @@ private:
   std::vector<Tube> m_tubes;
   static constexpr auto ALL_JOIN_CENTRE_STEP = 0.001F;
   TValue m_allJoinCentreT{
-      {ALL_JOIN_CENTRE_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}
+      {.stepSize = ALL_JOIN_CENTRE_STEP, .stepType = TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   Point2dInt m_screenCentre = m_fxHelper->GetDimensions().GetCentrePoint();
-  Point2dInt m_targetMiddlePos{0, 0};
-  Point2dInt m_previousMiddlePos{0, 0};
+  Point2dInt m_targetMiddlePos{.x = 0, .y = 0};
+  Point2dInt m_previousMiddlePos{.x = 0, .y = 0};
   static constexpr auto MIDDLE_POS_NUM_STEPS = 100U;
   TValue m_middlePosT{
-      {TValue::StepType::SINGLE_CYCLE, MIDDLE_POS_NUM_STEPS, TValue::MAX_T_VALUE}
+      {.stepType  = TValue::StepType::SINGLE_CYCLE,
+       .numSteps  = MIDDLE_POS_NUM_STEPS,
+       .startingT = TValue::MAX_T_VALUE}
   };
   [[nodiscard]] auto GetMiddlePos() const -> Point2dInt;
   Timer m_allStayInCentreTimer{m_fxHelper->GetGoomTime(), 1};
@@ -201,7 +223,7 @@ private:
   static constexpr auto MIN_CAPTURED_PREV_SHAPES_GROUPS = 4U;
   static constexpr auto JITTER_STEP                     = 0.1F;
   TValue m_shapeJitterT{
-      {JITTER_STEP, TValue::StepType::CONTINUOUS_REVERSIBLE}
+      {.stepSize = JITTER_STEP, .stepType = TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
 
   Timer m_colorMapTimer{m_fxHelper->GetGoomTime(),
@@ -381,7 +403,7 @@ inline auto TubesFx::TubeFxImpl::SetZoomMidpoint(const Point2dInt& zoomMidpoint)
   }
   else
   {
-    m_targetMiddlePos = {0, 0};
+    m_targetMiddlePos = {.x = 0, .y = 0};
   }
 }
 
@@ -393,58 +415,65 @@ inline auto TubesFx::TubeFxImpl::GetMiddlePos() const -> Point2dInt
 auto TubesFx::TubeFxImpl::InitTubes() -> void
 {
   const auto drawToOneFuncs = TubeDrawFuncs{
-      [this](const Point2dInt& point1,
-             const Point2dInt& point2,
-             const MultiplePixels& colors,
-             const uint8_t thickness) { DrawLineToOne(point1, point2, colors, thickness); },
-      [this](const Point2dInt& point,
-             const int radius,
-             const MultiplePixels& colors,
-             const uint8_t thickness) { DrawCircleToOne(point, radius, colors, thickness); },
-      [this](const Point2dInt& point,
-             const SmallImageBitmaps::ImageNames imageName,
-             const uint32_t size,
-             const MultiplePixels& colors) { DrawImageToOne(point, imageName, size, colors); },
+      .drawLine = [this](const Point2dInt& point1,
+                         const Point2dInt& point2,
+                         const MultiplePixels& colors,
+                         const uint8_t thickness)
+      { DrawLineToOne(point1, point2, colors, thickness); },
+      .drawCircle = [this](const Point2dInt& point,
+                           const int radius,
+                           const MultiplePixels& colors,
+                           const uint8_t thickness)
+      { DrawCircleToOne(point, radius, colors, thickness); },
+      .drawSmallImage = [this](const Point2dInt& point,
+                               const SmallImageBitmaps::ImageNames imageName,
+                               const uint32_t size,
+                               const MultiplePixels& colors)
+      { DrawImageToOne(point, imageName, size, colors); },
   };
   const auto drawToManyFuncs = TubeDrawFuncs{
-      [this](const Point2dInt& point1,
-             const Point2dInt& point2,
-             const MultiplePixels& colors,
-             const uint8_t thickness) { DrawLineToMany(point1, point2, colors, thickness); },
-      [this](const Point2dInt& point,
-             const int radius,
-             const MultiplePixels& colors,
-             const uint8_t thickness) { DrawCircleToMany(point, radius, colors, thickness); },
-      [this](const Point2dInt& point,
-             const SmallImageBitmaps::ImageNames imageName,
-             const uint32_t size,
-             const MultiplePixels& colors) { DrawImageToMany(point, imageName, size, colors); },
+      .drawLine = [this](const Point2dInt& point1,
+                         const Point2dInt& point2,
+                         const MultiplePixels& colors,
+                         const uint8_t thickness)
+      { DrawLineToMany(point1, point2, colors, thickness); },
+      .drawCircle = [this](const Point2dInt& point,
+                           const int radius,
+                           const MultiplePixels& colors,
+                           const uint8_t thickness)
+      { DrawCircleToMany(point, radius, colors, thickness); },
+      .drawSmallImage = [this](const Point2dInt& point,
+                               const SmallImageBitmaps::ImageNames imageName,
+                               const uint32_t size,
+                               const MultiplePixels& colors)
+      { DrawImageToMany(point, imageName, size, colors); },
   };
 
-  const auto mainTubeData = TubeData{MAIN_TUBE_INDEX,
-                                     drawToManyFuncs,
-                                     m_fxHelper->GetDimensions().GetWidth(),
-                                     m_fxHelper->GetDimensions().GetHeight(),
-                                     &m_fxHelper->GetGoomTime(),
-                                     &m_fxHelper->GetGoomRand(),
-                                     m_mainColorMaps,
-                                     m_lowColorMaps,
-                                     TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
-                                     TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor};
+  const auto mainTubeData =
+      TubeData{.tubeId           = MAIN_TUBE_INDEX,
+               .drawFuncs        = drawToManyFuncs,
+               .screenWidth      = m_fxHelper->GetDimensions().GetWidth(),
+               .screenHeight     = m_fxHelper->GetDimensions().GetHeight(),
+               .goomTime         = &m_fxHelper->GetGoomTime(),
+               .goomRand         = &m_fxHelper->GetGoomRand(),
+               .mainColorMaps    = m_mainColorMaps,
+               .lowColorMaps     = m_lowColorMaps,
+               .radiusEdgeOffset = TUBE_SETTINGS.at(MAIN_TUBE_INDEX).radiusEdgeOffset,
+               .brightnessFactor = TUBE_SETTINGS.at(MAIN_TUBE_INDEX).brightnessFactor};
   m_tubes.emplace_back(mainTubeData, TUBE_SETTINGS.at(MAIN_TUBE_INDEX).circlePathParams);
 
   for (auto i = SECONDARY_TUBES_START_INDEX; i < NUM_TUBES; ++i)
   {
-    const auto tubeData = TubeData{i,
-                                   drawToOneFuncs,
-                                   m_fxHelper->GetDimensions().GetWidth(),
-                                   m_fxHelper->GetDimensions().GetHeight(),
-                                   &m_fxHelper->GetGoomTime(),
-                                   &m_fxHelper->GetGoomRand(),
-                                   m_mainColorMaps,
-                                   m_lowColorMaps,
-                                   TUBE_SETTINGS.at(i).radiusEdgeOffset,
-                                   TUBE_SETTINGS.at(i).brightnessFactor};
+    const auto tubeData = TubeData{.tubeId           = i,
+                                   .drawFuncs        = drawToOneFuncs,
+                                   .screenWidth      = m_fxHelper->GetDimensions().GetWidth(),
+                                   .screenHeight     = m_fxHelper->GetDimensions().GetHeight(),
+                                   .goomTime         = &m_fxHelper->GetGoomTime(),
+                                   .goomRand         = &m_fxHelper->GetGoomRand(),
+                                   .mainColorMaps    = m_mainColorMaps,
+                                   .lowColorMaps     = m_lowColorMaps,
+                                   .radiusEdgeOffset = TUBE_SETTINGS.at(i).radiusEdgeOffset,
+                                   .brightnessFactor = TUBE_SETTINGS.at(i).brightnessFactor};
     m_tubes.emplace_back(tubeData, TUBE_SETTINGS.at(i).circlePathParams);
   }
 
@@ -700,8 +729,9 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
                 ? 0
                 : m_fxHelper->GetGoomRand().GetRandInRange<PREV_SHAPES_JITTER_AMOUNT_RANGE>();
         const auto newPoint = Point2dInt{
-            GetClipped(point.x + jitterAmount, m_fxHelper->GetDimensions().GetIntWidth() - 1),
-            GetClipped(point.y + jitterAmount, m_fxHelper->GetDimensions().GetIntHeight() - 1)};
+            .x = GetClipped(point.x + jitterAmount, m_fxHelper->GetDimensions().GetIntWidth() - 1),
+            .y =
+                GetClipped(point.y + jitterAmount, m_fxHelper->GetDimensions().GetIntHeight() - 1)};
 
         const auto avColor                      = GetAverageColor(colorsList);
         static constexpr auto BRIGHTNESS_FACTOR = 0.1F;
@@ -709,7 +739,7 @@ auto TubesFx::TubeFxImpl::DrawCapturedPreviousShapesGroups() -> void
         const auto newColor0                    = GetBrighterColor(brightness, avColor);
 
         // IMPORTANT - Best results come from putting color in second buffer.
-        m_pixelDrawer.DrawPixels(newPoint, {BLACK_PIXEL, newColor0});
+        m_pixelDrawer.DrawPixels(newPoint, {.color1 = BLACK_PIXEL, .color2 = newColor0});
       });
 }
 
@@ -745,8 +775,8 @@ auto TubesFx::TubeFxImpl::GetApproxBrightnessAttenuation() const -> float
 {
   static constexpr auto MIN_BRIGHTNESS = 0.1F;
   const auto& firstCoords              = m_drawToContainer.GetChangedCoordsList().front();
-  return m_prevShapesBrightnessAttenuation.GetPositionBrightness({firstCoords.x, firstCoords.y},
-                                                                 MIN_BRIGHTNESS);
+  return m_prevShapesBrightnessAttenuation.GetPositionBrightness(
+      {.x = firstCoords.x, .y = firstCoords.y}, MIN_BRIGHTNESS);
 }
 
 auto TubesFx::TubeFxImpl::UpdatePreviousShapesSettings() -> void

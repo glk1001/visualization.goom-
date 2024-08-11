@@ -180,10 +180,10 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(FxHelper& fxHelper)
     m_driverWeights{
       m_fxHelper->GetGoomRand(),
       {
-          {Drivers::NUM0, DRIVERS_NUM0_WEIGHT},
-          {Drivers::NUM1, DRIVERS_NUM1_WEIGHT},
-          {Drivers::NUM2, DRIVERS_NUM2_WEIGHT},
-          {Drivers::NUM3, DRIVERS_NUM3_WEIGHT},
+          {.key=Drivers::NUM0, .weight=DRIVERS_NUM0_WEIGHT},
+          {.key=Drivers::NUM1, .weight=DRIVERS_NUM1_WEIGHT},
+          {.key=Drivers::NUM2, .weight=DRIVERS_NUM2_WEIGHT},
+          {.key=Drivers::NUM3, .weight=DRIVERS_NUM3_WEIGHT},
       }},
     // clang-format off
     m_tentacleDrivers{GetTentacleDrivers(
@@ -191,10 +191,10 @@ TentaclesFx::TentaclesImpl::TentaclesImpl(FxHelper& fxHelper)
         m_fxHelper->GetGoomRand(),
         m_fxHelper->GetGoomTime(),
         {{
-           CirclesTentacleLayout{{LAYOUT0_START_RADIUS, LAYOUT0_END_RADIUS, LAYOUT0_NUM_TENTACLES}},
-           CirclesTentacleLayout{{LAYOUT1_START_RADIUS, LAYOUT1_END_RADIUS, LAYOUT1_NUM_TENTACLES}},
-           CirclesTentacleLayout{{LAYOUT2_START_RADIUS, LAYOUT2_END_RADIUS, LAYOUT2_NUM_TENTACLES}},
-           CirclesTentacleLayout{{LAYOUT3_START_RADIUS, LAYOUT3_END_RADIUS, LAYOUT3_NUM_TENTACLES}},
+           CirclesTentacleLayout{{.startRadius=LAYOUT0_START_RADIUS, .endRadius=LAYOUT0_END_RADIUS, .numTentacles=LAYOUT0_NUM_TENTACLES}},
+           CirclesTentacleLayout{{.startRadius=LAYOUT1_START_RADIUS, .endRadius=LAYOUT1_END_RADIUS, .numTentacles=LAYOUT1_NUM_TENTACLES}},
+           CirclesTentacleLayout{{.startRadius=LAYOUT2_START_RADIUS, .endRadius=LAYOUT2_END_RADIUS, .numTentacles=LAYOUT2_NUM_TENTACLES}},
+           CirclesTentacleLayout{{.startRadius=LAYOUT3_START_RADIUS, .endRadius=LAYOUT3_END_RADIUS, .numTentacles=LAYOUT3_NUM_TENTACLES}},
         }},
         m_defaultAlpha
     )},

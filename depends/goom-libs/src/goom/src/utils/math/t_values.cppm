@@ -3,7 +3,6 @@ module;
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <type_traits>
 #include <vector>
 
 export module Goom.Utils.Math.TValues;

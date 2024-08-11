@@ -414,7 +414,7 @@ namespace
 {
 auto CopyBuffer(const std::span<const Point2dFlt> srce, std::span<Point2dFlt> dest) noexcept -> void
 {
-  std::copy(srce.begin(), srce.end(), dest.begin());
+  std::ranges::copy(srce, dest.begin());
 }
 
 // TODO(glk) - Move this into goom filters?
@@ -433,8 +433,8 @@ auto InitFilterPosBuffer(const Dimensions& dimensions,
   const auto getNormalizedCoords = [&xRatioScreenToNormalizedCoord, &yRatioScreenToNormalizedCoord](
                                        const float x, const float y) noexcept -> Point2dFlt
   {
-    return {MIN_COORD + (xRatioScreenToNormalizedCoord * x),
-            MIN_COORD + (yRatioScreenToNormalizedCoord * y)};
+    return {.x = MIN_COORD + (xRatioScreenToNormalizedCoord * x),
+            .y = MIN_COORD + (yRatioScreenToNormalizedCoord * y)};
   };
 
   for (auto y = 0U; y < dimensions.GetHeight(); ++y)

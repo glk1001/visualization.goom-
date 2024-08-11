@@ -332,16 +332,18 @@ auto DotPaths::GetNewDotPaths(const DotStartsToAndFrom& dotStartsToAndFrom) noex
   for (auto i = 0U; i < m_numDots; ++i)
   {
     dotPathsToAndFrom.dotPathToTarget.emplace_back(
-        std::make_unique<TValue>(
-            TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS}),
-        StartAndEndPos{ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsToTarget.at(i)),
-                       ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionToTarget)},
+        std::make_unique<TValue>(TValue::NumStepsProperties{
+            .stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = DEFAULT_POSITION_STEPS}),
+        StartAndEndPos{.startPos =
+                           ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsToTarget.at(i)),
+                       .endPos = ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionToTarget)},
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
     dotPathsToAndFrom.dotPathFromTarget.emplace_back(
-        std::make_unique<TValue>(
-            TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, DEFAULT_POSITION_STEPS}),
-        StartAndEndPos{ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
-                       ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i))},
+        std::make_unique<TValue>(TValue::NumStepsProperties{
+            .stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = DEFAULT_POSITION_STEPS}),
+        StartAndEndPos{.startPos = ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget),
+                       .endPos =
+                           ToPoint2dFlt(dotStartsToAndFrom.dotStartingPositionsFromTarget.at(i))},
         m_dotPathParamsToAndFrom.dotPathParamsFromTarget);
   }
 
@@ -354,11 +356,12 @@ auto DotPaths::MakeToDotPathsSameAsFromDotPaths() noexcept -> void
   for (auto i = 0U; i < m_numDots; ++i)
   {
     m_dotPathsToAndFrom.dotPathToTarget.emplace_back(
-        std::make_unique<TValue>(
-            TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
-                                       m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()}),
-        StartAndEndPos{ToPoint2dFlt(m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint()),
-                       ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget)},
+        std::make_unique<TValue>(TValue::NumStepsProperties{
+            .stepType = TValue::StepType::SINGLE_CYCLE,
+            .numSteps = m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNumSteps()}),
+        StartAndEndPos{.startPos =
+                           ToPoint2dFlt(m_dotPathsToAndFrom.dotPathFromTarget.at(i).GetNextPoint()),
+                       .endPos = ToPoint2dFlt(m_dotTargetsToAndFrom.dotTargetPositionFromTarget)},
         m_dotPathParamsToAndFrom.dotPathParamsToTarget);
   }
 
@@ -393,8 +396,8 @@ auto DotPaths::GetNextDotPositions(const std::vector<OscillatingPath>& dotPath) 
 inline auto DotPaths::GetSmallRandomOffset() const noexcept -> Vec2dInt
 {
   static constexpr auto VARIATION_RANGE = NumberRange{-5, +5};
-  return {m_goomRand->GetRandInRange<VARIATION_RANGE>(),
-          m_goomRand->GetRandInRange<VARIATION_RANGE>()};
+  return {.x = m_goomRand->GetRandInRange<VARIATION_RANGE>(),
+          .y = m_goomRand->GetRandInRange<VARIATION_RANGE>()};
 }
 
 } // namespace GOOM::VISUAL_FX::CIRCLES

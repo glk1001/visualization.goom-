@@ -30,7 +30,7 @@ auto GetAllMapsUnweighted(const GoomRand& goomRand) noexcept -> WeightedRandomCo
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::ALL, 1.0F},
+                                 {.key = ColorMapGroup::ALL, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -52,18 +52,18 @@ auto GetAllStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColo
   return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
-      Weights<ColorMapGroup>{goomRand,
-                             {
-                                 {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL,
-                                  PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL, SEQUENTIAL_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL2, SEQUENTIAL2_WEIGHT},
-                                 {ColorMapGroup::CYCLIC, CYCLIC_WEIGHT},
-                                 {ColorMapGroup::DIVERGING, DIVERGING_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_BLACK, DIVERGING_BLACK_WEIGHT},
-                                 {ColorMapGroup::QUALITATIVE, QUALITATIVE_WEIGHT},
-                                 {ColorMapGroup::MISC, MISC_WEIGHT},
-                             }},
+      Weights<ColorMapGroup>{
+                             goomRand, {
+              {.key    = ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL,
+               .weight = PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL, .weight = SEQUENTIAL_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL2, .weight = SEQUENTIAL2_WEIGHT},
+              {.key = ColorMapGroup::CYCLIC, .weight = CYCLIC_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING, .weight = DIVERGING_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_BLACK, .weight = DIVERGING_BLACK_WEIGHT},
+              {.key = ColorMapGroup::QUALITATIVE, .weight = QUALITATIVE_WEIGHT},
+              {.key = ColorMapGroup::MISC, .weight = MISC_WEIGHT},
+          }},
       MAPS_NAME
   };
 }
@@ -84,18 +84,18 @@ auto GetAllSlimMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColorMap
   return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
-      Weights<ColorMapGroup>{goomRand,
-                             {
-                                 {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
-                                  PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL_SLIM, SEQUENTIAL_SLIM_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL2_SLIM, SEQUENTIAL2_SLIM_WEIGHT},
-                                 {ColorMapGroup::CYCLIC_SLIM, CYCLIC_SLIM_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_SLIM, DIVERGING_SLIM_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_BLACK_SLIM, DIVERGING_BLACK_SLIM_WEIGHT},
-                                 {ColorMapGroup::QUALITATIVE_SLIM, QUALITATIVE_SLIM_WEIGHT},
-                                 {ColorMapGroup::MISC_SLIM, MISC_SLIM_WEIGHT},
-                             }},
+      Weights<ColorMapGroup>{
+                             goomRand, {
+              {.key    = ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
+               .weight = PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL_SLIM, .weight = SEQUENTIAL_SLIM_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL2_SLIM, .weight = SEQUENTIAL2_SLIM_WEIGHT},
+              {.key = ColorMapGroup::CYCLIC_SLIM, .weight = CYCLIC_SLIM_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_SLIM, .weight = DIVERGING_SLIM_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_BLACK_SLIM, .weight = DIVERGING_BLACK_SLIM_WEIGHT},
+              {.key = ColorMapGroup::QUALITATIVE_SLIM, .weight = QUALITATIVE_SLIM_WEIGHT},
+              {.key = ColorMapGroup::MISC_SLIM, .weight = MISC_SLIM_WEIGHT},
+          }},
       MAPS_NAME
   };
 }
@@ -116,18 +116,18 @@ auto GetMostlySequentialStandardMaps(const GoomRand& goomRand) noexcept -> Weigh
   return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
-      Weights<ColorMapGroup>{goomRand,
-                             {
-                                 {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL,
-                                  PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL, SEQUENTIAL_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL2, SEQUENTIAL2_WEIGHT},
-                                 {ColorMapGroup::CYCLIC, CYCLIC_WEIGHT},
-                                 {ColorMapGroup::DIVERGING, DIVERGING_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_BLACK, DIVERGING_BLACK_WEIGHT},
-                                 {ColorMapGroup::QUALITATIVE, QUALITATIVE_WEIGHT},
-                                 {ColorMapGroup::MISC, MISC_WEIGHT},
-                             }},
+      Weights<ColorMapGroup>{
+                             goomRand, {
+              {.key    = ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL,
+               .weight = PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL, .weight = SEQUENTIAL_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL2, .weight = SEQUENTIAL2_WEIGHT},
+              {.key = ColorMapGroup::CYCLIC, .weight = CYCLIC_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING, .weight = DIVERGING_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_BLACK, .weight = DIVERGING_BLACK_WEIGHT},
+              {.key = ColorMapGroup::QUALITATIVE, .weight = QUALITATIVE_WEIGHT},
+              {.key = ColorMapGroup::MISC, .weight = MISC_WEIGHT},
+          }},
       MAPS_NAME
   };
 }
@@ -148,18 +148,18 @@ auto GetMostlySequentialSlimMaps(const GoomRand& goomRand) noexcept -> WeightedR
   return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
-      Weights<ColorMapGroup>{goomRand,
-                             {
-                                 {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
-                                  PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL_SLIM, SEQUENTIAL_SLIM_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL2_SLIM, SEQUENTIAL2_SLIM_WEIGHT},
-                                 {ColorMapGroup::CYCLIC_SLIM, CYCLIC_SLIM_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_SLIM, DIVERGING_SLIM_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_BLACK_SLIM, DIVERGING_BLACK_SLIM_WEIGHT},
-                                 {ColorMapGroup::QUALITATIVE_SLIM, QUALITATIVE_SLIM_WEIGHT},
-                                 {ColorMapGroup::MISC_SLIM, MISC_SLIM_WEIGHT},
-                             }},
+      Weights<ColorMapGroup>{
+                             goomRand, {
+              {.key    = ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
+               .weight = PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL_SLIM, .weight = SEQUENTIAL_SLIM_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL2_SLIM, .weight = SEQUENTIAL2_SLIM_WEIGHT},
+              {.key = ColorMapGroup::CYCLIC_SLIM, .weight = CYCLIC_SLIM_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_SLIM, .weight = DIVERGING_SLIM_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_BLACK_SLIM, .weight = DIVERGING_BLACK_SLIM_WEIGHT},
+              {.key = ColorMapGroup::QUALITATIVE_SLIM, .weight = QUALITATIVE_SLIM_WEIGHT},
+              {.key = ColorMapGroup::MISC_SLIM, .weight = MISC_SLIM_WEIGHT},
+          }},
       MAPS_NAME
   };
 }
@@ -180,18 +180,18 @@ auto GetSlightlyDivergingStandardMaps(const GoomRand& goomRand) noexcept -> Weig
   return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
-      Weights<ColorMapGroup>{goomRand,
-                             {
-                                 {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL,
-                                  PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL, SEQUENTIAL_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL2, SEQUENTIAL2_WEIGHT},
-                                 {ColorMapGroup::CYCLIC, CYCLIC_WEIGHT},
-                                 {ColorMapGroup::DIVERGING, DIVERGING_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_BLACK, DIVERGING_BLACK_WEIGHT},
-                                 {ColorMapGroup::QUALITATIVE, QUALITATIVE_WEIGHT},
-                                 {ColorMapGroup::MISC, MISC_WEIGHT},
-                             }},
+      Weights<ColorMapGroup>{
+                             goomRand, {
+              {.key    = ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL,
+               .weight = PERCEPTUALLY_UNIFORM_SEQUENTIAL_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL, .weight = SEQUENTIAL_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL2, .weight = SEQUENTIAL2_WEIGHT},
+              {.key = ColorMapGroup::CYCLIC, .weight = CYCLIC_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING, .weight = DIVERGING_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_BLACK, .weight = DIVERGING_BLACK_WEIGHT},
+              {.key = ColorMapGroup::QUALITATIVE, .weight = QUALITATIVE_WEIGHT},
+              {.key = ColorMapGroup::MISC, .weight = MISC_WEIGHT},
+          }},
       MAPS_NAME
   };
 }
@@ -212,18 +212,18 @@ auto GetSlightlyDivergingSlimMaps(const GoomRand& goomRand) noexcept -> Weighted
   return WeightedRandomColorMaps{
       DEFAULT_ALPHA,
       goomRand,
-      Weights<ColorMapGroup>{goomRand,
-                             {
-                                 {ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
-                                  PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL_SLIM, SEQUENTIAL_SLIM_WEIGHT},
-                                 {ColorMapGroup::SEQUENTIAL2_SLIM, SEQUENTIAL2_SLIM_WEIGHT},
-                                 {ColorMapGroup::CYCLIC_SLIM, CYCLIC_SLIM_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_SLIM, DIVERGING_SLIM_WEIGHT},
-                                 {ColorMapGroup::DIVERGING_BLACK_SLIM, DIVERGING_BLACK_SLIM_WEIGHT},
-                                 {ColorMapGroup::QUALITATIVE_SLIM, QUALITATIVE_SLIM_WEIGHT},
-                                 {ColorMapGroup::MISC_SLIM, MISC_SLIM_WEIGHT},
-                             }},
+      Weights<ColorMapGroup>{
+                             goomRand, {
+              {.key    = ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM,
+               .weight = PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL_SLIM, .weight = SEQUENTIAL_SLIM_WEIGHT},
+              {.key = ColorMapGroup::SEQUENTIAL2_SLIM, .weight = SEQUENTIAL2_SLIM_WEIGHT},
+              {.key = ColorMapGroup::CYCLIC_SLIM, .weight = CYCLIC_SLIM_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_SLIM, .weight = DIVERGING_SLIM_WEIGHT},
+              {.key = ColorMapGroup::DIVERGING_BLACK_SLIM, .weight = DIVERGING_BLACK_SLIM_WEIGHT},
+              {.key = ColorMapGroup::QUALITATIVE_SLIM, .weight = QUALITATIVE_SLIM_WEIGHT},
+              {.key = ColorMapGroup::MISC_SLIM, .weight = MISC_SLIM_WEIGHT},
+          }},
       MAPS_NAME
   };
 }
@@ -237,7 +237,7 @@ auto GetBlueStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomCol
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::BLUES, 1.0F},
+                                 {.key = ColorMapGroup::BLUES, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -252,7 +252,7 @@ auto GetRedStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomColo
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::REDS, 1.0F},
+                                 {.key = ColorMapGroup::REDS, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -267,7 +267,7 @@ auto GetGreenStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomCo
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::GREENS, 1.0F},
+                                 {.key = ColorMapGroup::GREENS, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -282,7 +282,7 @@ auto GetYellowStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomC
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::YELLOWS, 1.0F},
+                                 {.key = ColorMapGroup::YELLOWS, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -297,7 +297,7 @@ auto GetOrangeStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomC
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::ORANGES, 1.0F},
+                                 {.key = ColorMapGroup::ORANGES, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -312,7 +312,7 @@ auto GetPurpleStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomC
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::PURPLES, 1.0F},
+                                 {.key = ColorMapGroup::PURPLES, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -327,7 +327,7 @@ auto GetCitiesStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomC
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::CITIES, 1.0F},
+                                 {.key = ColorMapGroup::CITIES, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -342,7 +342,7 @@ auto GetSeasonsStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandom
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::SEASONS, 1.0F},
+                                 {.key = ColorMapGroup::SEASONS, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -357,7 +357,7 @@ auto GetHeatStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomCol
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::HEAT, 1.0F},
+                                 {.key = ColorMapGroup::HEAT, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -372,7 +372,7 @@ auto GetColdStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomCol
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::COLD, 1.0F},
+                                 {.key = ColorMapGroup::COLD, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -387,7 +387,7 @@ auto GetPastelStandardMaps(const GoomRand& goomRand) noexcept -> WeightedRandomC
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::PASTEL, 1.0F},
+                                 {.key = ColorMapGroup::PASTEL, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -402,7 +402,7 @@ auto GetDivergingBlackStandardMaps(const GoomRand& goomRand) noexcept -> Weighte
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::DIVERGING_BLACK, 1.0F},
+                                 {.key = ColorMapGroup::DIVERGING_BLACK, .weight = 1.0F},
                              }},
       MAPS_NAME
   };
@@ -417,7 +417,7 @@ auto GetWesAndersonMaps(const UTILS::MATH::GoomRand& goomRand) noexcept -> Weigh
       goomRand,
       Weights<ColorMapGroup>{goomRand,
                              {
-                                 {ColorMapGroup::WES_ANDERSON, 1.0F},
+                                 {.key = ColorMapGroup::WES_ANDERSON, .weight = 1.0F},
                              }},
       MAPS_NAME
   };

@@ -71,7 +71,7 @@ ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_params{params},
-    m_lerpT{{TValue::StepType::CONTINUOUS_REVERSIBLE, m_params.initialNumLerpSteps}},
+    m_lerpT{{.stepType=TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps=m_params.initialNumLerpSteps}},
     m_lerpConstTimer{m_goomInfo->GetTime(), m_params.initialLerpConstTime, false}
 {
   Expects(m_params.minValueRangeDist > 0.0F);

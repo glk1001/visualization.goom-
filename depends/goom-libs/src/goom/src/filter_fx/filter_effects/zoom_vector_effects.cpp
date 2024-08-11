@@ -60,7 +60,7 @@ auto ZoomVectorEffects::GetMultiplierEffect(
 
   if (not multiplierSettings.isActive)
   {
-    return {1.0F, 1.0F};
+    return {.x = 1.0F, .y = 1.0F};
   }
 
   const auto targetPointX =
@@ -68,9 +68,10 @@ auto ZoomVectorEffects::GetMultiplierEffect(
   const auto targetPointY =
       std::lerp(zoomAdjustment.y, coords.GetY(), multiplierSettings.lerpZoomAdjustmentToCoords);
 
-  return {
-      1.0F - (multiplierSettings.xAmplitude * std::sin(multiplierSettings.xFreq * targetPointX)),
-      1.0F - (multiplierSettings.yAmplitude * std::cos(multiplierSettings.yFreq * targetPointY))};
+  return {.x = 1.0F -
+               (multiplierSettings.xAmplitude * std::sin(multiplierSettings.xFreq * targetPointX)),
+          .y = 1.0F -
+               (multiplierSettings.yAmplitude * std::cos(multiplierSettings.yFreq * targetPointY))};
 }
 
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs

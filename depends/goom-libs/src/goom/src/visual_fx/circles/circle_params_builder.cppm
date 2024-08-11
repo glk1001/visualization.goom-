@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
 #include <vector>
 
@@ -205,7 +206,7 @@ auto CircleParamsBuilder::GetSameCircleRadii(const float mainCircleRadius) const
     -> std::vector<float>
 {
   auto sameRadii = std::vector<float>(m_numCircles);
-  std::fill(begin(sameRadii), end(sameRadii), mainCircleRadius);
+  std::ranges::fill(sameRadii, mainCircleRadius);
   return sameRadii;
 }
 
@@ -267,7 +268,7 @@ inline auto CircleParamsBuilder::GetAllSameCircleCentreStarts(
     [[maybe_unused]] const float mainCircleRadius) const noexcept -> std::vector<Point2dInt>
 {
   auto circleCentreStarts = std::vector<Point2dInt>(m_numCircles);
-  std::fill(begin(circleCentreStarts), end(circleCentreStarts), m_mainCircleCentreStart);
+  std::ranges::fill(circleCentreStarts, m_mainCircleCentreStart);
   return circleCentreStarts;
 }
 
@@ -275,7 +276,7 @@ inline auto CircleParamsBuilder::GetReducingRadiusCircleCentreStarts(
     [[maybe_unused]] const float mainCircleRadius) const noexcept -> std::vector<Point2dInt>
 {
   auto circleCentreStarts = std::vector<Point2dInt>(m_numCircles);
-  std::fill(begin(circleCentreStarts), end(circleCentreStarts), m_mainCircleCentreStart);
+  std::ranges::fill(circleCentreStarts, m_mainCircleCentreStart);
   return circleCentreStarts;
 }
 
@@ -291,10 +292,14 @@ inline auto CircleParamsBuilder::GetFourCornersCircleCentreStarts(
   auto circleCentreStarts = std::vector<Point2dInt>(m_numCircles);
 
   circleCentreStarts.at(0) = m_mainCircleCentreStart;
-  circleCentreStarts.at(1) = {m_mainCircleCentreStart.x, m_mainCircleCentreStart.y - offset};
-  circleCentreStarts.at(2) = {m_mainCircleCentreStart.x + offset, m_mainCircleCentreStart.y};
-  circleCentreStarts.at(3) = {m_mainCircleCentreStart.x, m_mainCircleCentreStart.y + offset};
-  circleCentreStarts.at(4) = {m_mainCircleCentreStart.x - offset, m_mainCircleCentreStart.y};
+  circleCentreStarts.at(1) = {.x = m_mainCircleCentreStart.x,
+                              .y = m_mainCircleCentreStart.y - offset};
+  circleCentreStarts.at(2) = {.x = m_mainCircleCentreStart.x + offset,
+                              .y = m_mainCircleCentreStart.y};
+  circleCentreStarts.at(3) = {.x = m_mainCircleCentreStart.x,
+                              .y = m_mainCircleCentreStart.y + offset};
+  circleCentreStarts.at(4) = {.x = m_mainCircleCentreStart.x - offset,
+                              .y = m_mainCircleCentreStart.y};
 
   return circleCentreStarts;
 }

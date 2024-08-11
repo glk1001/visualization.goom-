@@ -43,7 +43,8 @@ private:
   static constexpr auto DEFAULT_T_INC = 0.007F;
   UTILS::MATH::TValue m_sFuncTVal{
       UTILS::MATH::TValue::StepSizeProperties{
-                                              DEFAULT_T_INC, UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
+                                              .stepSize = DEFAULT_T_INC,
+                                              .stepType = UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   [[nodiscard]] auto GetNextSFuncValue() const noexcept -> float;
 
@@ -76,8 +77,8 @@ inline GoomLerpData::GoomLerpData(const float increment, const bool useSFunction
   : m_useSFunction{useSFunction},
     m_incLerpFactor{
         UTILS::MATH::TValue::StepSizeProperties{
-            increment,
-            UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}},
+            .stepSize=increment,
+            .stepType=UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE}},
     m_funcLerpFactor{not useSFunction ? 0.0F : GetNextSFuncValue()},
     m_lerpFactor{m_funcLerpFactor}
 {

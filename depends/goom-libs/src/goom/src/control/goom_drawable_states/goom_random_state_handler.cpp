@@ -34,21 +34,21 @@ GoomRandomStateHandler::GoomRandomStateHandler(const GoomRand& goomRand)
     m_weightedChangeTypes{
         goomRand,
         {
-            {ChangeType::FRESH_STATE,         FRESH_STATE_WEIGHT},
-            {ChangeType::NON_REPEAT_STATE,    NON_REPEAT_STATE_WEIGHT},
-            {ChangeType::ADD_EXTRA_DRAWABLE,  ADD_EXTRA_DRAWABLE_WEIGHT},
-            {ChangeType::ADD_REMOVE_DRAWABLE, ADD_REMOVE_DRAWABLE_WEIGHT},
-            {ChangeType::REMOVE_DRAWABLE,     REMOVE_DRAWABLE_WEIGHT},
+            {.key=ChangeType::FRESH_STATE,         .weight=FRESH_STATE_WEIGHT},
+            {.key=ChangeType::NON_REPEAT_STATE,    .weight=NON_REPEAT_STATE_WEIGHT},
+            {.key=ChangeType::ADD_EXTRA_DRAWABLE,  .weight=ADD_EXTRA_DRAWABLE_WEIGHT},
+            {.key=ChangeType::ADD_REMOVE_DRAWABLE, .weight=ADD_REMOVE_DRAWABLE_WEIGHT},
+            {.key=ChangeType::REMOVE_DRAWABLE,     .weight=REMOVE_DRAWABLE_WEIGHT},
         }
     },
     m_weightedNumDrawables{
         goomRand,
         {
-            {NumDrawables::ONE,   ONE_WEIGHT},
-            {NumDrawables::TWO,   TWO_WEIGHT},
-            {NumDrawables::THREE, THREE_WEIGHT},
-            {NumDrawables::FOUR,  FOUR_WEIGHT},
-            {NumDrawables::FIVE,  FIVE_WEIGHT},
+            {.key=NumDrawables::ONE,   .weight=ONE_WEIGHT},
+            {.key=NumDrawables::TWO,   .weight=TWO_WEIGHT},
+            {.key=NumDrawables::THREE, .weight=THREE_WEIGHT},
+            {.key=NumDrawables::FOUR,  .weight=FOUR_WEIGHT},
+            {.key=NumDrawables::FIVE,  .weight=FIVE_WEIGHT},
         }
     },
     m_currentDrawablesState{GetNewRandomState(GetNextNumDrawables())}

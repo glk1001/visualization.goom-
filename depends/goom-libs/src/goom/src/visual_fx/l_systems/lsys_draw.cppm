@@ -158,7 +158,7 @@ inline auto LSysDraw::GetPerspectiveProjection(const std::vector<Point3dFlt>& po
 auto LSysDraw::GetPerspectivePoint(const Point3dFlt& point3d) noexcept -> Point2dFlt
 {
   // TODO(glk) Why does this look better?
-  return {point3d.x, point3d.y};
+  return {.x = point3d.x, .y = point3d.y};
 
   /**
   const auto point = Point3dFlt{point3d.x, point3d.y, point3d.z};
@@ -193,7 +193,7 @@ inline auto LSysDraw::GetPolygon3dFlt(const std::vector<::LSYS::Vector>& polygon
 
 inline auto LSysDraw::GetPoint3dFlt(const ::LSYS::Vector& point) noexcept -> Point3dFlt
 {
-  return {point(0), point(1), point(2)};
+  return {.x = point(0), .y = point(1), .z = point(2)};
 }
 
 } // namespace GOOM::VISUAL_FX::L_SYSTEM

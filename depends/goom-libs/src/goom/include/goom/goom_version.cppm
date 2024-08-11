@@ -25,7 +25,7 @@ struct VersionInfoInt
 
 [[nodiscard]] inline auto GetVersionInfo() -> VersionInfoInt
 {
-  return {GOOM_VER_MAJOR, GOOM_VER_MINOR, GOOM_VER_REVISION};
+  return {.verMajor = GOOM_VER_MAJOR, .verMinor = GOOM_VER_MINOR, .verRevision = GOOM_VER_REVISION};
 }
 
 } // namespace GOOM

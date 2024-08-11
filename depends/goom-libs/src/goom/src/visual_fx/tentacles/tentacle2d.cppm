@@ -294,11 +294,11 @@ auto Tentacle2D::CreateExpDampingFunc(const LinearDimensions& xDimensions) noexc
   const auto xToStartRise = xDimensions.min + (0.25 * xDimensions.max);
 
   return DampingFuncPtr{std::make_unique<ExpDampingFunction>(
-      ExpDampingFunction::ExpProperties{DAMPING_AMPLITUDE,
-                                        xToStartRise,
-                                        DAMPING_Y_AT_START_TO_RISE,
-                                        xDimensions.max,
-                                        DAMPING_Y_AT_X_MAX})};
+      ExpDampingFunction::ExpProperties{.amplitude      = DAMPING_AMPLITUDE,
+                                        .xToStartRise   = xToStartRise,
+                                        .yAtStartToRise = DAMPING_Y_AT_START_TO_RISE,
+                                        .xMax           = xDimensions.max,
+                                        .yAtXMax        = DAMPING_Y_AT_X_MAX})};
 }
 
 auto Tentacle2D::CreateLinearDampingFunc(const LinearDimensions& xDimensions) noexcept
@@ -315,12 +315,13 @@ auto Tentacle2D::CreateLinearDampingFunc(const LinearDimensions& xDimensions) no
 
   const auto linearXMin = flatXMax;
   const auto linearXMax = 10.0 * xDimensions.max;
-  pieces.emplace_back(
-      linearXMin,
-      linearXMax,
-      DampingFuncPtr{
-          std::make_unique<LinearDampingFunction>(LinearDampingFunction::LinearProperties{
-              flatXMax, LINEAR_DAMPING_FLAT_VALUE, xDimensions.max, LINEAR_DAMPING_Y_SCALE})});
+  pieces.emplace_back(linearXMin,
+                      linearXMax,
+                      DampingFuncPtr{std::make_unique<LinearDampingFunction>(
+                          LinearDampingFunction::LinearProperties{.x0 = flatXMax,
+                                                                  .y0 = LINEAR_DAMPING_FLAT_VALUE,
+                                                                  .x1 = xDimensions.max,
+                                                                  .y1 = LINEAR_DAMPING_Y_SCALE})});
 
   return DampingFuncPtr{std::make_unique<PiecewiseDampingFunction>(pieces)};
 }

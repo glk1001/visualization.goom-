@@ -69,16 +69,19 @@ inline constexpr auto DEFAULT_VISUAL_FX_ALPHA =
     const PixelChannelType newDefaultAlpha) noexcept -> IVisualFx::WeightedColorMaps
 {
   return {
-      weightedColorMaps.id,
-      not weightedColorMaps.mainColorMaps.IsActive()
-          ? weightedColorMaps.mainColorMaps
-          : COLOR::WeightedRandomColorMaps{ weightedColorMaps.mainColorMaps, newDefaultAlpha},
-      not weightedColorMaps.lowColorMaps.IsActive()
-          ? weightedColorMaps.lowColorMaps
-          : COLOR::WeightedRandomColorMaps{  weightedColorMaps.lowColorMaps, newDefaultAlpha},
-      not weightedColorMaps.extraColorMaps.IsActive()
-          ? weightedColorMaps.extraColorMaps
-          : COLOR::WeightedRandomColorMaps{weightedColorMaps.extraColorMaps, newDefaultAlpha}
+      .id = weightedColorMaps.id,
+      .mainColorMaps =
+          not weightedColorMaps.mainColorMaps.IsActive()
+              ? weightedColorMaps.mainColorMaps
+              : COLOR::WeightedRandomColorMaps{ weightedColorMaps.mainColorMaps, newDefaultAlpha},
+      .lowColorMaps =
+          not weightedColorMaps.lowColorMaps.IsActive()
+              ? weightedColorMaps.lowColorMaps
+              : COLOR::WeightedRandomColorMaps{  weightedColorMaps.lowColorMaps, newDefaultAlpha},
+      .extraColorMaps =
+          not weightedColorMaps.extraColorMaps.IsActive()
+              ? weightedColorMaps.extraColorMaps
+              : COLOR::WeightedRandomColorMaps{weightedColorMaps.extraColorMaps, newDefaultAlpha}
   };
 }
 

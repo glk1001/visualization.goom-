@@ -79,7 +79,7 @@ private:
   DRAW::IGoomDraw::PixelBlendFunc m_currentPixelBlendFunc  = m_previousPixelBlendFunc;
   static constexpr auto LERP_STEPS_RANGE                   = NumberRange{50U, 500U};
   TValue m_lerpT{
-      {TValue::StepType::SINGLE_CYCLE, LERP_STEPS_RANGE.min}
+      {.stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = LERP_STEPS_RANGE.min}
   };
 
   static const Weights<PixelBlendType>::EventWeightPairs DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS;
@@ -123,13 +123,16 @@ inline auto RandomPixelBlender::GetCurrentPixelBlendFunc() const noexcept
 const Weights<RandomPixelBlender::PixelBlendType>::EventWeightPairs
     // NOLINTNEXTLINE(cert-err58-cpp): How to fix this?
     RandomPixelBlender::DEFAULT_PIXEL_BLEND_TYPE_WEIGHTS{
-        {          RandomPixelBlender::PixelBlendType::ADD,           DEFAULT_ADD_WEIGHT},
-        {  RandomPixelBlender::PixelBlendType::DARKEN_ONLY,   DEFAULT_DARKEN_ONLY_WEIGHT},
-        { RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY,  DEFAULT_LIGHTEN_ONLY_WEIGHT},
-        {     RandomPixelBlender::PixelBlendType::LUMA_MIX,      DEFAULT_LUMA_MIX_WEIGHT},
-        {     RandomPixelBlender::PixelBlendType::MULTIPLY,      DEFAULT_MULTIPLY_WEIGHT},
-        {        RandomPixelBlender::PixelBlendType::ALPHA,         DEFAULT_ALPHA_WEIGHT},
-        {RandomPixelBlender::PixelBlendType::ALPHA_AND_ADD, DEFAULT_ALPHA_AND_ADD_WEIGHT},
+        {             .key = RandomPixelBlender::PixelBlendType::ADD,.weight = DEFAULT_ADD_WEIGHT                                                                     },
+        {  .key    = RandomPixelBlender::PixelBlendType::DARKEN_ONLY,
+         .weight = DEFAULT_DARKEN_ONLY_WEIGHT                                                          },
+        { .key    = RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY,
+         .weight = DEFAULT_LIGHTEN_ONLY_WEIGHT                                                         },
+        {        .key = RandomPixelBlender::PixelBlendType::LUMA_MIX, .weight = DEFAULT_LUMA_MIX_WEIGHT},
+        {        .key = RandomPixelBlender::PixelBlendType::MULTIPLY, .weight = DEFAULT_MULTIPLY_WEIGHT},
+        {           .key = RandomPixelBlender::PixelBlendType::ALPHA,    .weight = DEFAULT_ALPHA_WEIGHT},
+        {.key    = RandomPixelBlender::PixelBlendType::ALPHA_AND_ADD,
+         .weight = DEFAULT_ALPHA_AND_ADD_WEIGHT                                                        },
 };
 
 auto RandomPixelBlender::GetRandomPixelBlendType(const GoomRand& goomRand) noexcept

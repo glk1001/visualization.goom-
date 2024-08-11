@@ -250,8 +250,8 @@ private:
       m_goomTime, TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE.min, false};
   static constexpr auto POS1_POS2_MIX_FREQ_TRANSITION_TIME = 200U;
   TValue m_pos1Pos2TransitionLerpFactor{
-      TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE,
-                                 POS1_POS2_MIX_FREQ_TRANSITION_TIME}
+      TValue::NumStepsProperties{.stepType = TValue::StepType::SINGLE_CYCLE,
+                                 .numSteps = POS1_POS2_MIX_FREQ_TRANSITION_TIME}
   };
   float m_previousPos1Pos2MixFreq = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
   float m_targetPos1Pos2MixFreq   = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;

@@ -97,7 +97,7 @@ private:
 
   static constexpr float GAMMA = 2.2F;
   COLOR::ColorAdjustment m_colorAdjust{
-      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+      {.gamma = GAMMA, .alterChromaFactor = COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 };
 
@@ -147,14 +147,14 @@ Colorizer::Colorizer(const GoomRand& goomRand, const PixelChannelType defaultAlp
     m_colorModeWeights{
         *m_goomRand,
         {
-            { IfsDancersFx::ColorMode::MAP_COLORS,            MAP_COLORS_WEIGHT },
-            { IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, MEGA_MAP_COLOR_CHANGE_WEIGHT },
-            { IfsDancersFx::ColorMode::MIX_COLORS,            MIX_COLORS_WEIGHT },
-            { IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE, MEGA_MIX_COLOR_CHANGE_WEIGHT },
-            { IfsDancersFx::ColorMode::REVERSE_MIX_COLORS,    REVERSE_MIX_COLORS_WEIGHT },
-            { IfsDancersFx::ColorMode::SINGLE_COLORS,         SINGLE_COLORS_WEIGHT },
-            { IfsDancersFx::ColorMode::SINE_MIX_COLORS,       SINE_MIX_COLORS_WEIGHT },
-            { IfsDancersFx::ColorMode::SINE_MAP_COLORS,       SINE_MAP_COLORS_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::MAP_COLORS,            .weight=MAP_COLORS_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::MEGA_MAP_COLOR_CHANGE, .weight=MEGA_MAP_COLOR_CHANGE_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::MIX_COLORS,            .weight=MIX_COLORS_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::MEGA_MIX_COLOR_CHANGE, .weight=MEGA_MIX_COLOR_CHANGE_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::REVERSE_MIX_COLORS,    .weight=REVERSE_MIX_COLORS_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::SINGLE_COLORS,         .weight=SINGLE_COLORS_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::SINE_MIX_COLORS,       .weight=SINE_MIX_COLORS_WEIGHT },
+            { .key=IfsDancersFx::ColorMode::SINE_MAP_COLORS,       .weight=SINE_MAP_COLORS_WEIGHT },
         }
     }
 {

@@ -291,7 +291,8 @@ auto GoomVisualization::UpdateTrack(const TrackInfo& track) -> void
   LogInfo(*m_goomLogger, "Current Title = '{}'", currentSongName);
   LogInfo(*m_goomLogger, "Genre = '{}', Duration = {}", track.genre, track.duration);
 
-  m_goomControl->SetSongInfo({currentSongName, track.genre, track.duration});
+  m_goomControl->SetSongInfo(
+      {.title = currentSongName, .genre = track.genre, .duration = track.duration});
 
 #ifdef SAVE_AUDIO_BUFFERS
   m_audioBufferWriter = GetAudioBufferWriter(track.title);

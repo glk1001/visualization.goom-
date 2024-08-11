@@ -59,16 +59,16 @@ struct FontInfo
 };
 
 static constexpr auto FONT_INFO = std::array{
-    FontInfo{  "AeroviasBrasilNF.ttf", 1.34F},
-    FontInfo{ "AlexBrush-Regular.ttf", 1.25F},
-    FontInfo{   "AvenueX-Regular.otf", 1.01F},
-    FontInfo{        "CelticHand.ttf", 0.99F},
-    FontInfo{         "CheapSign.ttf", 1.26F},
-    FontInfo{         "EatAtJoes.ttf", 0.90F},
-    FontInfo{"GreatVibes-Regular.ttf", 1.29F},
-    FontInfo{          "KellsFLF.ttf", 1.23F},
-    FontInfo{     "Rubik-Regular.ttf",  1.1F},
-    FontInfo{           "verdana.ttf",  1.0F},
+    FontInfo{  .fontFilename = "AeroviasBrasilNF.ttf", .fontSizeNormalizeFactor = 1.34F},
+    FontInfo{ .fontFilename = "AlexBrush-Regular.ttf", .fontSizeNormalizeFactor = 1.25F},
+    FontInfo{   .fontFilename = "AvenueX-Regular.otf", .fontSizeNormalizeFactor = 1.01F},
+    FontInfo{        .fontFilename = "CelticHand.ttf", .fontSizeNormalizeFactor = 0.99F},
+    FontInfo{         .fontFilename = "CheapSign.ttf", .fontSizeNormalizeFactor = 1.26F},
+    FontInfo{         .fontFilename = "EatAtJoes.ttf", .fontSizeNormalizeFactor = 0.90F},
+    FontInfo{.fontFilename = "GreatVibes-Regular.ttf", .fontSizeNormalizeFactor = 1.29F},
+    FontInfo{          .fontFilename = "KellsFLF.ttf", .fontSizeNormalizeFactor = 1.23F},
+    FontInfo{     .fontFilename = "Rubik-Regular.ttf",  .fontSizeNormalizeFactor = 1.1F},
+    FontInfo{           .fontFilename = "verdana.ttf",  .fontSizeNormalizeFactor = 1.0F},
 };
 
 static constexpr auto FONT_INFO_INDEX_RANGE =
@@ -166,8 +166,8 @@ inline void GoomTitleDisplayer::SetFinalPhaseColorMaps()
 inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTitleDisplay) const
     -> int32_t
 {
-  const auto fractionOfTimeLeft =
-      GetFltFraction<int32_t>({timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE});
+  const auto fractionOfTimeLeft = GetFltFraction<int32_t>(
+      {.numerator = timeLeftOfTitleDisplay, .denominator = TIME_TO_START_FINAL_PHASE});
   const auto t                  = 1.0F - std::pow(fractionOfTimeLeft, 0.7F);
   const auto fontSizeMultiplier = std::lerp(1.0F, MAX_FONT_SIZE_MULTIPLIER, t);
   return static_cast<int32_t>(fontSizeMultiplier * static_cast<float>(GetSelectedFontSize()));
@@ -176,13 +176,13 @@ inline auto GoomTitleDisplayer::GetFinalPhaseFontSize(const int32_t timeLeftOfTi
 auto GoomTitleDisplayer::GetFinalPhaseIncrements(const std::string& title) -> FinalPhaseIncrements
 {
   const auto [finalXPos, finalYPos] = GetFinalPhaseCentrePenPos(title);
-  return {(finalXPos - m_xPos) / static_cast<float>(TIME_TO_START_FINAL_PHASE),
-          (finalYPos - m_yPos) / static_cast<float>(TIME_TO_START_FINAL_PHASE)};
+  return {.xIncrement = (finalXPos - m_xPos) / static_cast<float>(TIME_TO_START_FINAL_PHASE),
+          .yIncrement = (finalYPos - m_yPos) / static_cast<float>(TIME_TO_START_FINAL_PHASE)};
 }
 
 inline auto GoomTitleDisplayer::GetFinalPhaseCentrePenPos(const std::string& str) -> Point2dFlt
 {
-  const auto screenCentre = Point2dInt{I_HALF * m_screenWidth, I_HALF * m_screenHeight};
+  const auto screenCentre = Point2dInt{.x = I_HALF * m_screenWidth, .y = I_HALF * m_screenHeight};
   const auto fontSize     = GetFinalPhaseFontSize(0);
   return ToPoint2dFlt(
       GetLeftAlignedPenForCentringStringAt(*m_textDrawer, str, fontSize, screenCentre));
@@ -218,7 +218,9 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
                                        const Dimensions& charDimensions)
   {
     const auto color =
-        GetOutlineColor(point.x, {colorT, fontCharColorMixT}, charDimensions.GetIntWidth());
+        GetOutlineColor(point.x,
+                        {.fontColorT = colorT, .fontCharColorMixT = fontCharColorMixT},
+                        charDimensions.GetIntWidth());
     return m_textColorAdjust.GetAdjustment(textBrightness, color);
   };
 
@@ -240,7 +242,7 @@ void GoomTitleDisplayer::DrawText(const std::string& text)
   auto y                 = static_cast<int32_t>(std::round(m_yPos));
   for (const auto& str : textStrings)
   {
-    drawStr(str, {static_cast<int32_t>(std::round(m_xPos)), y});
+    drawStr(str, {.x = static_cast<int32_t>(std::round(m_xPos)), .y = y});
     y += lineSpacing;
   }
 }
@@ -257,7 +259,8 @@ inline auto GoomTitleDisplayer::GetInteriorColor(const float fontColorT,
 
   if (IsMiddlePhase())
   {
-    return GetMiddlePhaseInteriorColor(point, {fontColorT, fontCharColorMixT}, charDimensions);
+    return GetMiddlePhaseInteriorColor(
+        point, {.fontColorT = fontColorT, .fontCharColorMixT = fontCharColorMixT}, charDimensions);
   }
 
   return GetFinalPhaseInteriorColor(point, fontCharColorMixT, charDimensions);
@@ -271,11 +274,11 @@ inline auto GoomTitleDisplayer::GetInitialPhaseInteriorColor(const float fontCol
 inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(
     const Point2dInt& point, const FontTs& fontTs, const Dimensions& charDimensions) const -> Pixel
 {
-  const auto fontColor = m_textColorMap.GetColor(fontTs.fontColorT);
-  const auto charColor1 =
-      m_charColorMap.GetColor(GetFltFraction<int32_t>({point.x, charDimensions.GetIntWidth()}));
-  const auto charColor2 = m_textOutlineColorMap.GetColor(
-      GetFltFraction<int32_t>({point.y, charDimensions.GetIntHeight()}));
+  const auto fontColor  = m_textColorMap.GetColor(fontTs.fontColorT);
+  const auto charColor1 = m_charColorMap.GetColor(
+      GetFltFraction<int32_t>({.numerator = point.x, .denominator = charDimensions.GetIntWidth()}));
+  const auto charColor2                = m_textOutlineColorMap.GetColor(GetFltFraction<int32_t>(
+      {.numerator = point.y, .denominator = charDimensions.GetIntHeight()}));
   static constexpr auto CHAR_COLOR_MIX = 0.5F;
   const auto charColor = ColorMaps::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
 
@@ -287,11 +290,11 @@ inline auto GoomTitleDisplayer::GetFinalPhaseInteriorColor(const Point2dInt& poi
                                                            const Dimensions& charDimensions) const
     -> Pixel
 {
-  const auto fontColor = m_textColorMap.GetColor(fontCharColorMixT);
-  const auto charColor1 =
-      m_charColorMap.GetColor(GetFltFraction<int32_t>({point.x, charDimensions.GetIntWidth()}));
-  const auto charColor2 = m_textOutlineColorMap.GetColor(
-      GetFltFraction<int32_t>({point.y, charDimensions.GetIntHeight()}));
+  const auto fontColor  = m_textColorMap.GetColor(fontCharColorMixT);
+  const auto charColor1 = m_charColorMap.GetColor(
+      GetFltFraction<int32_t>({.numerator = point.x, .denominator = charDimensions.GetIntWidth()}));
+  const auto charColor2                = m_textOutlineColorMap.GetColor(GetFltFraction<int32_t>(
+      {.numerator = point.y, .denominator = charDimensions.GetIntHeight()}));
   static constexpr auto CHAR_COLOR_MIX = 0.8F;
   const auto charColor  = ColorMaps::GetColorMix(charColor1, charColor2, CHAR_COLOR_MIX);
   const auto finalColor = ColorMaps::GetColorMix(fontColor, charColor, fontCharColorMixT);
@@ -311,7 +314,8 @@ inline auto GoomTitleDisplayer::GetOutlineColor(const int32_t x,
   const auto outlineFontColor =
       (not IsMiddlePhase()) ? WHITE_PIXEL : m_textOutlineColorMap.GetColor(fontTs.fontColorT);
 
-  const auto charColor = m_textOutlineColorMap.GetColor(GetFltFraction<int32_t>({x, charWidth}));
+  const auto charColor = m_textOutlineColorMap.GetColor(
+      GetFltFraction<int32_t>({.numerator = x, .denominator = charWidth}));
   return ColorMaps::GetColorMix(outlineFontColor, charColor, fontTs.fontCharColorMixT);
 }
 
@@ -322,7 +326,8 @@ inline auto GoomTitleDisplayer::GetColorT() const -> float
     return 0.0F;
   }
 
-  return GetFltFraction<int32_t>({m_timeLeftOfTitleDisplay, MAX_TEXT_DISPLAY_TIME});
+  return GetFltFraction<int32_t>(
+      {.numerator = m_timeLeftOfTitleDisplay, .denominator = MAX_TEXT_DISPLAY_TIME});
 }
 
 inline auto GoomTitleDisplayer::GetTextBrightness() const -> float
@@ -341,8 +346,8 @@ inline auto GoomTitleDisplayer::GetTextBrightness() const -> float
     return BASE_BRIGHTNESS * MAX_BRIGHTNESS_FACTOR;
   }
 
-  const auto fractionOfTimeLeft =
-      GetFltFraction<int32_t>({m_timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE});
+  const auto fractionOfTimeLeft = GetFltFraction<int32_t>(
+      {.numerator = m_timeLeftOfTitleDisplay, .denominator = TIME_TO_START_FINAL_PHASE});
   return BASE_BRIGHTNESS * (MAX_BRIGHTNESS_FACTOR - fractionOfTimeLeft);
 }
 
@@ -354,14 +359,16 @@ inline auto GoomTitleDisplayer::GetFontCharColorMixT() const -> float
   }
   if (IsMiddlePhase())
   {
-    return GetFltFraction<int32_t>({m_timeLeftOfTitleDisplay, TIME_TO_START_MIDDLE_PHASE});
+    return GetFltFraction<int32_t>(
+        {.numerator = m_timeLeftOfTitleDisplay, .denominator = TIME_TO_START_MIDDLE_PHASE});
   }
   if (m_timeLeftOfTitleDisplay <= 0)
   {
     return 0.0F;
   }
 
-  return GetFltFraction<int32_t>({m_timeLeftOfTitleDisplay, TIME_TO_START_FINAL_PHASE});
+  return GetFltFraction<int32_t>(
+      {.numerator = m_timeLeftOfTitleDisplay, .denominator = TIME_TO_START_FINAL_PHASE});
 }
 
 auto GoomTitleDisplayer::GetCharSpacing() const -> float

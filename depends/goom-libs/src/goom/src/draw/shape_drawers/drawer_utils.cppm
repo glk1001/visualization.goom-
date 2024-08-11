@@ -79,10 +79,10 @@ inline ClipTester::ClipTester(const Dimensions& screenDimensions, const int32_t 
 
 inline auto ClipTester::GetClipRect(const int32_t clipMargin) const noexcept -> ClipRect
 {
-  return {clipMargin,
-          clipMargin,
-          (m_screenDimensions.GetIntWidth() - clipMargin) - 1,
-          (m_screenDimensions.GetIntHeight() - clipMargin) - 1};
+  return {.x0 = clipMargin,
+          .y0 = clipMargin,
+          .x1 = (m_screenDimensions.GetIntWidth() - clipMargin) - 1,
+          .y1 = (m_screenDimensions.GetIntHeight() - clipMargin) - 1};
 }
 
 inline auto ClipTester::GetClipRect() const noexcept -> const ClipRect&

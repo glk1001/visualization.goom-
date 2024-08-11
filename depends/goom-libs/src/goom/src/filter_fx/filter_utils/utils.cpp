@@ -58,7 +58,7 @@ auto RandomViewport::GetRandomUncentredViewport() const noexcept -> Viewport
                                                             m_bounds.rect.minMaxYMax.maxValue}));
 
   return Viewport{
-      Viewport::Rectangle{{xMin, yMin}, {xMax, yMax}}
+      Viewport::Rectangle{.bottomLeft = {xMin, yMin}, .topRight = {xMax, yMax}}
   };
 }
 
@@ -83,7 +83,7 @@ auto RandomViewport::GetRandomCentredViewport() const noexcept -> Viewport
   const auto yMax = +halfHeight;
 
   return Viewport{
-      Viewport::Rectangle{{xMin, yMin}, {xMax, yMax}}
+      Viewport::Rectangle{.bottomLeft = {xMin, yMin}, .topRight = {xMax, yMax}}
   };
 }
 

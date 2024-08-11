@@ -35,7 +35,7 @@ inline auto UniformZoomAdjustmentEffect::GetZoomAdjustment(
 {
   const auto velocity = GetVelocity(coords);
 
-  return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
+  return {.x = coords.GetX() * velocity.x, .y = coords.GetY() * velocity.y};
 }
 
 inline auto UniformZoomAdjustmentEffect::SetRandomParams() noexcept -> void
@@ -46,7 +46,7 @@ inline auto UniformZoomAdjustmentEffect::SetRandomParams() noexcept -> void
 inline auto UniformZoomAdjustmentEffect::GetZoomAdjustmentEffectNameValueParams() const noexcept
     -> GOOM::UTILS::NameValuePairs
 {
-  return GOOM::UTILS::NameValuePairs();
+  return {};
 }
 
 inline auto UniformZoomAdjustmentEffect::GetVelocity(

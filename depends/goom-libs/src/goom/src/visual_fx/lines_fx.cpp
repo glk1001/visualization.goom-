@@ -186,18 +186,18 @@ LinesFx::LinesImpl::LinesImpl(FxHelper& fxHelper,
             fxHelper.GetGoomRand(),
             smallBitmaps,
             {
-                {
-                    LineType::H_LINE,
-                    fxHelper.GetDimensions().GetFltHeight(),
-                    m_blackLineColor,
-                    1.0F
+                .srceLineParams={
+                    .lineType=LineType::H_LINE,
+                    .param=fxHelper.GetDimensions().GetFltHeight(),
+                    .color=m_blackLineColor,
+                    .amplitude=1.0F
                 },
-                {
-                    LineType::CIRCLE,
-                    INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
+                .destLineParams={
+                    .lineType=LineType::CIRCLE,
+                    .param=INITIAL_SCREEN_HEIGHT_FRACTION_LINE1 *
                         fxHelper.GetDimensions().GetFltHeight(),
-                    GetSimpleColor(SimpleColors::SHAMROCK, m_defaultAlpha),
-                    1.0F
+                    .color=GetSimpleColor(SimpleColors::SHAMROCK, m_defaultAlpha),
+                    .amplitude=1.0F
                 }
             },
             m_defaultAlpha
@@ -208,18 +208,18 @@ LinesFx::LinesImpl::LinesImpl(FxHelper& fxHelper,
             fxHelper.GetGoomRand(),
             smallBitmaps,
             {
-                {
-                    LineType::H_LINE,
-                    0.0F,
-                    m_blackLineColor,
-                    1.0F
+                .srceLineParams={
+                    .lineType=LineType::H_LINE,
+                    .param=0.0F,
+                    .color=m_blackLineColor,
+                    .amplitude=1.0F
                 },
-                {
-                    LineType::CIRCLE,
-                    INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
+                .destLineParams={
+                    .lineType=LineType::CIRCLE,
+                    .param=INITIAL_SCREEN_HEIGHT_FRACTION_LINE2 *
                         fxHelper.GetDimensions().GetFltHeight(),
-                    GetSimpleColor(SimpleColors::TANGO, m_defaultAlpha),
-                    1.0F
+                    .color=GetSimpleColor(SimpleColors::TANGO, m_defaultAlpha),
+                    .amplitude=1.0F
                 }
             },
             m_defaultAlpha
@@ -229,9 +229,9 @@ LinesFx::LinesImpl::LinesImpl(FxHelper& fxHelper,
     m_lineTypeWeights{
         m_fxHelper->GetGoomRand(),
         {
-            { LineType::CIRCLE, CIRCLE_LINE_TYPE_WEIGHT },
-            { LineType::H_LINE, H_LINE_LINE_TYPE_WEIGHT },
-            { LineType::V_LINE, V_LINE_LINE_TYPE_WEIGHT },
+            { .key=LineType::CIRCLE, .weight=CIRCLE_LINE_TYPE_WEIGHT },
+            { .key=LineType::H_LINE, .weight=H_LINE_LINE_TYPE_WEIGHT },
+            { .key=LineType::V_LINE, .weight=V_LINE_LINE_TYPE_WEIGHT },
         }
     }
 {
@@ -270,9 +270,9 @@ inline auto LinesFx::LinesImpl::SetWeightedColorMaps(
 
 inline auto LinesFx::LinesImpl::CanResetDestLines() const noexcept -> bool
 {
-  return std::all_of(cbegin(m_lineMorphs),
-                     cend(m_lineMorphs),
-                     [](const LineMorph& line) { return line.CanResetDestLine(); });
+  return std::ranges::all_of(m_lineMorphs,
+
+                             [](const LineMorph& line) { return line.CanResetDestLine(); });
 }
 
 inline auto LinesFx::LinesImpl::ResetDestLines(
@@ -503,8 +503,11 @@ auto LinesFx::LinesImpl::GetResetCircleLineSettings(const uint32_t farVal) const
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
   return {
-      {{LineType::CIRCLE, param1, line1Color, amplitude},
-       {LineType::CIRCLE, param2, line2Color, amplitude}}
+      {{.lineType = LineType::CIRCLE, .param = param1, .color = line1Color, .amplitude = amplitude},
+       {.lineType  = LineType::CIRCLE,
+        .param     = param2,
+        .color     = line2Color,
+        .amplitude = amplitude}}
   };
 }
 
@@ -539,8 +542,11 @@ auto LinesFx::LinesImpl::GetResetHorizontalLineSettings(const uint32_t farVal) c
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
   return {
-      {{LineType::H_LINE, param1, line1Color, amplitude},
-       {LineType::H_LINE, param2, line2Color, amplitude}}
+      {{.lineType = LineType::H_LINE, .param = param1, .color = line1Color, .amplitude = amplitude},
+       {.lineType  = LineType::H_LINE,
+        .param     = param2,
+        .color     = line2Color,
+        .amplitude = amplitude}}
   };
 }
 
@@ -575,8 +581,11 @@ auto LinesFx::LinesImpl::GetResetVerticalLineSettings(const uint32_t farVal) con
   const auto [line1Color, line2Color] = GetResetLineColors(farVal);
 
   return {
-      {{LineType::V_LINE, param1, line1Color, amplitude},
-       {LineType::V_LINE, param2, line2Color, amplitude}}
+      {{.lineType = LineType::V_LINE, .param = param1, .color = line1Color, .amplitude = amplitude},
+       {.lineType  = LineType::V_LINE,
+        .param     = param2,
+        .color     = line2Color,
+        .amplitude = amplitude}}
   };
 }
 

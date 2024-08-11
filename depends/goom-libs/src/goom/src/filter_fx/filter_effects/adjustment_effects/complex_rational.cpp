@@ -34,7 +34,7 @@ using UTILS::MATH::TWO_PI;
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.025F, 1.00F};
 
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
+static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
 static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
@@ -43,11 +43,12 @@ static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
     .probUseCentredSides = 0.5F,
-    .rect                = {.minMaxXMin = {-10.0F, +1.0F},
-                            .minMaxYMin = {-10.0F, +1.0F},
-                            .minMaxXMax = {-10.0F + 0.1F, +10.0F},
-                            .minMaxYMax = {-10.0F + 0.1F, +10.0F}},
-    .sides               = {.minMaxWidth = {0.1F, 20.0F}, .minMaxHeight = {0.1F, 20.0F}}
+    .rect                = {.minMaxXMin = {.minValue = -10.0F, .maxValue = +1.0F},
+                            .minMaxYMin = {.minValue = -10.0F, .maxValue = +1.0F},
+                            .minMaxXMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F},
+                            .minMaxYMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F}},
+    .sides               = {.minMaxWidth  = {.minValue = 0.1F, .maxValue = 20.0F},
+                            .minMaxHeight = {.minValue = 0.1F, .maxValue = 20.0F}}
 };
 
 static constexpr auto PROB_AMPLITUDES_EQUAL            = 0.95F;
@@ -62,13 +63,13 @@ ComplexRational::ComplexRational(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{
-        Viewport{},
-        {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        DEFAULT_LERP_TO_ONE_T_S,
-        true,
-        false,
-        false,
-        DEFAULT_MODULATOR_PERIOD
+        .viewport=Viewport{},
+        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
+        .noInverseSquare=true,
+        .useNormalizedAmplitude=false,
+        .useModulatorContours=false,
+        .modulatorPeriod=DEFAULT_MODULATOR_PERIOD
     }
 {
 }
@@ -96,7 +97,7 @@ auto ComplexRational::GetVelocity(const NormalizedCoords& coords) const noexcept
 
   if (sqDistFromZero < SMALL_FLOAT)
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
 
   const auto z       = std::complex<FltCalcType>{static_cast<FltCalcType>(viewportCoords.GetX()),
@@ -106,12 +107,12 @@ auto ComplexRational::GetVelocity(const NormalizedCoords& coords) const noexcept
 
   if (absSqFz < SMALL_FLT)
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
   if (not m_params.useNormalizedAmplitude)
   {
-    return {m_params.amplitude.x * static_cast<float>(fz.real()),
-            m_params.amplitude.y * static_cast<float>(fz.imag())};
+    return {.x = m_params.amplitude.x * static_cast<float>(fz.real()),
+            .y = m_params.amplitude.y * static_cast<float>(fz.imag())};
   }
 
   const auto normalizedAmplitude =
@@ -119,15 +120,15 @@ auto ComplexRational::GetVelocity(const NormalizedCoords& coords) const noexcept
 
   if (not m_params.useModulatorContours)
   {
-    return {static_cast<float>(normalizedAmplitude.real()),
-            static_cast<float>(normalizedAmplitude.imag())};
+    return {.x = static_cast<float>(normalizedAmplitude.real()),
+            .y = static_cast<float>(normalizedAmplitude.imag())};
   }
 
   const auto modulatedValue =
       GetModulatedValue(absSqFz, normalizedAmplitude, m_params.modulatorPeriod);
 
-  return {GetBaseZoomAdjustment().x + static_cast<float>(modulatedValue.real()),
-          GetBaseZoomAdjustment().y + static_cast<float>(modulatedValue.imag())};
+  return {.x = GetBaseZoomAdjustment().x + static_cast<float>(modulatedValue.real()),
+          .y = GetBaseZoomAdjustment().y + static_cast<float>(modulatedValue.imag())};
 }
 
 auto ComplexRational::GetPolyValue(const std::complex<FltCalcType>& z) const noexcept
@@ -180,14 +181,14 @@ auto ComplexRational::SetRandomParams() noexcept -> void
 
   const auto zeroesAndPoles = GetNextZeroesAndPoles();
   SetParams({
-      viewport,
-      { xAmplitude,  yAmplitude},
-      {xLerpToOneT, yLerpToOneT},
-      noInverseSquare,
-      useNormalizedAmplitude,
-      useModulatorContours,
-      modulatorPeriod,
-      zeroesAndPoles,
+      .viewport               = viewport,
+      .amplitude              = {           xAmplitude,            yAmplitude},
+      .lerpToOneTs            = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
+      .noInverseSquare        = noInverseSquare,
+      .useNormalizedAmplitude = useNormalizedAmplitude,
+      .useModulatorContours   = useModulatorContours,
+      .modulatorPeriod        = modulatorPeriod,
+      .zeroesAndPoles         = zeroesAndPoles,
   });
 }
 
@@ -217,7 +218,8 @@ auto ComplexRational::GetNextZeroesAndPoles() const noexcept -> Params::ZeroesAn
   {
     const auto numZeroes    = m_goomRand->GetRandInRange<ZEROES_RANGE>();
     const auto zeroesRadius = m_goomRand->GetRandInRange<ZEROES_RADIUS_RANGE>();
-    return {GetPointSpread(numZeroes, zeroesRadius), GetPointSpread(numPoles, polesRadius)};
+    return {.zeroes = GetPointSpread(numZeroes, zeroesRadius),
+            .poles  = GetPointSpread(numPoles, polesRadius)};
   }
 
   const auto numInnerZeroes    = m_goomRand->GetRandInRange<INNER_ZEROES_RANGE>();
@@ -231,7 +233,7 @@ auto ComplexRational::GetNextZeroesAndPoles() const noexcept -> Params::ZeroesAn
   auto zeroes = innerZeroes;
   zeroes.insert(zeroes.end(), outerZeroes.begin(), outerZeroes.end());
 
-  return {zeroes, GetPointSpread(numPoles, polesRadius)};
+  return {.zeroes = zeroes, .poles = GetPointSpread(numPoles, polesRadius)};
 }
 
 auto ComplexRational::GetSimpleZeroesAndPoles() noexcept -> Params::ZeroesAndPoles
@@ -267,7 +269,7 @@ auto ComplexRational::GetSimpleZeroesAndPoles() noexcept -> Params::ZeroesAndPol
       {+POLE_PT, -POLE_PT},
   };
 
-  return {zeroes, poles};
+  return {.zeroes = zeroes, .poles = poles};
 }
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
@@ -275,7 +277,8 @@ auto ComplexRational::GetPointSpread(const uint32_t numPoints, const float radiu
     -> std::vector<std::complex<FltCalcType>>
 {
   auto step = TValue{
-      TValue::NumStepsProperties{TValue::StepType::SINGLE_CYCLE, numPoints - 1}
+      TValue::NumStepsProperties{.stepType = TValue::StepType::SINGLE_CYCLE,
+                                 .numSteps = numPoints - 1}
   };
 
   auto points = std::vector<std::complex<FltCalcType>>(numPoints);
@@ -297,10 +300,12 @@ auto ComplexRational::GetZoomAdjustmentEffectNameValueParams() const noexcept ->
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "complex rat"});
   return {
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "lerpToOneTs",
-              Point2dFlt{m_params.lerpToOneTs.xLerpT, m_params.lerpToOneTs.yLerpT}),
+              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
       GetPair(fullParamGroup, "noInverseSquare", m_params.noInverseSquare),
       GetPair(fullParamGroup, "useNormalizedAmp", m_params.useNormalizedAmplitude),
       GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),

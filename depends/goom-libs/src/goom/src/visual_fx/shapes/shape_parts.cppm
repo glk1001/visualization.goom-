@@ -124,11 +124,12 @@ private:
   static constexpr int32_t EXTREME_MAX_DOT_RADIUS_MULTIPLIER = 5;
   int32_t m_extremeMaxShapeDotRadius = EXTREME_MAX_DOT_RADIUS_MULTIPLIER * m_maxShapeDotRadius;
   bool m_useExtremeMaxShapeDotRadius = false;
-  static constexpr auto MIN_MAX_DOT_RADIUS_STEPS = MinMaxValues{100U, 200U};
+  static constexpr auto MIN_MAX_DOT_RADIUS_STEPS = MinMaxValues{.minValue = 100U, .maxValue = 200U};
   static constexpr auto INITIAL_DOT_RADIUS_SPEED = 0.5F;
   StepSpeed m_dotRadiusStepSpeed{MIN_MAX_DOT_RADIUS_STEPS, INITIAL_DOT_RADIUS_SPEED};
   TValue m_dotRadiusT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, m_dotRadiusStepSpeed.GetCurrentNumSteps()}
+      {.stepType = TValue::StepType::CONTINUOUS_REVERSIBLE,
+       .numSteps = m_dotRadiusStepSpeed.GetCurrentNumSteps()}
   };
   [[nodiscard]] auto GetMaxDotRadius(bool varyRadius) const noexcept -> int32_t;
 
@@ -156,9 +157,10 @@ private:
   static constexpr uint32_t MEGA_COLOR_CHANGE_OFF_FAILED_TIME = 20;
   UTILS::OnOffTimer m_megaColorChangeOnOffTimer{
       m_fxHelper->GetGoomTime(),
-      {MEGA_COLOR_CHANGE_ON_TIME,
-                       MEGA_COLOR_CHANGE_ON_FAILED_TIME, MEGA_COLOR_CHANGE_OFF_TIME,
-                       MEGA_COLOR_CHANGE_OFF_FAILED_TIME}
+      {.numOnCount               = MEGA_COLOR_CHANGE_ON_TIME,
+                       .numOnCountAfterFailedOff = MEGA_COLOR_CHANGE_ON_FAILED_TIME,
+                       .numOffCount              = MEGA_COLOR_CHANGE_OFF_TIME,
+                       .numOffCountAfterFailedOn = MEGA_COLOR_CHANGE_OFF_FAILED_TIME}
   };
   auto StartMegaColorChangeOnOffTimer() noexcept -> void;
   [[nodiscard]] auto SetMegaColorChangeOn() noexcept -> bool;
@@ -197,7 +199,7 @@ private:
   float m_maxRadiusFraction;
   static constexpr auto DEFAULT_NUM_STEPS = 100U;
   TValue m_radiusFractionT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, DEFAULT_NUM_STEPS}
+      {.stepType = TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps = DEFAULT_NUM_STEPS}
   };
   [[nodiscard]] auto GetCircleRadius() const noexcept -> float;
   [[nodiscard]] auto GetCircleDirection() const noexcept -> CircleFunction::Direction;
@@ -255,7 +257,7 @@ ShapePart::ShapePart(FxHelper& fxHelper,
     m_defaultAlpha{defaultAlpha},
     m_currentTMinMaxLerp{params.tMinMaxLerp},
     m_shapePathsStepSpeed{
-        {params.shapePathsMinNumSteps, params.shapePathsMaxNumSteps}, params.tMinMaxLerp},
+        {.minValue=params.shapePathsMinNumSteps, .maxValue=params.shapePathsMaxNumSteps}, params.tMinMaxLerp},
     m_minShapeDotRadius{params.minShapeDotRadius},
     m_maxShapeDotRadius{params.maxShapeDotRadius},
     m_shapePartNum{params.shapePartNum},
@@ -280,10 +282,10 @@ ShapePart::ShapePart(FxHelper& fxHelper,
 
 auto ShapePart::GetInitialColorInfo() const noexcept -> ColorInfo
 {
-  return {GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
-          GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
-          GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
-          m_fxHelper->GetGoomRand().GetRandInRange<INNER_COLOR_MIX_T_RANGE>()};
+  return {.mainColorMaps  = GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
+          .lowColorMaps   = GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
+          .innerColorMaps = GetUnweightedRandomColorMaps(m_fxHelper->GetGoomRand(), m_defaultAlpha),
+          .innerColorMix  = m_fxHelper->GetGoomRand().GetRandInRange<INNER_COLOR_MIX_T_RANGE>()};
 }
 
 auto ShapePart::SetShapePathsTargetPoint(const Point2dInt& targetPoint) -> void
@@ -352,8 +354,8 @@ inline auto ShapePart::GetTransform2d(const Vec2dFlt& targetPoint,
                                       const float rotate) noexcept -> Transform2d
 {
   const auto centre = Vec2dFlt{
-      targetPoint.x - (scale * radius * std::cos(rotate)),
-      targetPoint.y - (scale * radius * std::sin(rotate)),
+      .x = targetPoint.x - (scale * radius * std::cos(rotate)),
+      .y = targetPoint.y - (scale * radius * std::sin(rotate)),
   };
   return Transform2d{rotate, centre, scale};
 }
@@ -373,7 +375,7 @@ auto ShapePart::GetRandomizedShapePaths() noexcept -> std::vector<ShapePath>
   const auto maxScale =
       probScaleEqualsOne ? 1.0F : m_fxHelper->GetGoomRand().GetRandInRange<MAX_SCALE_RANGE>();
 
-  return GetShapePaths(numShapePaths, {minScale, maxScale});
+  return GetShapePaths(numShapePaths, {.minValue = minScale, .maxValue = maxScale});
 }
 
 auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
@@ -385,7 +387,7 @@ auto ShapePart::GetShapePaths(const uint32_t numShapePaths,
   static constexpr auto MIN_ANGLE = 0.0F;
   static constexpr auto MAX_ANGLE = TWO_PI;
   auto stepFraction               = TValue{
-                    {TValue::StepType::SINGLE_CYCLE, numShapePaths}
+                    {.stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = numShapePaths}
   };
 
   const auto radius    = GetCircleRadius();
@@ -444,9 +446,9 @@ inline auto ShapePart::GetShapePathColorInfo() const noexcept -> ShapePath::Colo
   const auto& colorMapTypes = WeightedRandomColorMaps::GetAllColorMapsTypes();
 
   return ShapePath::ColorInfo{
-      m_colorInfo.mainColorMaps.GetRandomColorMapSharedPtr(colorMapTypes),
-      m_colorInfo.lowColorMaps.GetRandomColorMapSharedPtr(colorMapTypes),
-      m_colorInfo.innerColorMaps.GetRandomColorMapSharedPtr(colorMapTypes),
+      .mainColorMapPtr  = m_colorInfo.mainColorMaps.GetRandomColorMapSharedPtr(colorMapTypes),
+      .lowColorMapPtr   = m_colorInfo.lowColorMaps.GetRandomColorMapSharedPtr(colorMapTypes),
+      .innerColorMapPtr = m_colorInfo.innerColorMaps.GetRandomColorMapSharedPtr(colorMapTypes),
   };
 }
 
@@ -476,17 +478,18 @@ inline auto ShapePart::GetCirclePath(const float radius,
                                      const CircleFunction::Direction direction,
                                      const uint32_t numSteps) noexcept -> CirclePath
 {
-  auto positionT = std::make_unique<TValue>(
-      TValue::NumStepsProperties{TValue::StepType::CONTINUOUS_REVERSIBLE, numSteps});
+  auto positionT = std::make_unique<TValue>(TValue::NumStepsProperties{
+      .stepType = TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps = numSteps});
 
-  const auto params = ShapeFunctionParams{radius, AngleParams{}, direction};
+  const auto params =
+      ShapeFunctionParams{.radius = radius, .angleParams = AngleParams{}, .direction = direction};
 
   return CirclePath{std::move(positionT), GetCircleFunction(params)};
 }
 
 inline auto ShapePart::GetCircleFunction(const ShapeFunctionParams& params) -> CircleFunction
 {
-  static constexpr auto CENTRE_POS = Vec2dFlt{0.0F, 0.0F};
+  static constexpr auto CENTRE_POS = Vec2dFlt{.x = 0.0F, .y = 0.0F};
 
   return {CENTRE_POS, params.radius, params.angleParams, params.direction};
 }
@@ -642,7 +645,8 @@ inline auto ShapePart::StartMegaColorChangeOnOffTimer() noexcept -> void
 {
   m_megaColorChangeOnOffTimer.Reset();
   m_megaColorChangeOnOffTimer.SetActions(
-      {[this]() { return SetMegaColorChangeOn(); }, [this]() { return SetMegaColorChangeOff(); }});
+      {.onAction  = [this]() { return SetMegaColorChangeOn(); },
+       .offAction = [this]() { return SetMegaColorChangeOff(); }});
   m_megaColorChangeOnOffTimer.StartOffTimer();
 }
 
@@ -694,11 +698,11 @@ inline auto ShapePart::IncrementTs() noexcept -> void
 auto ShapePart::Draw(const DrawParams& drawParams) noexcept -> void
 {
   const auto shapePathParams = ShapePath::DrawParams{
-      drawParams.brightnessAttenuation,
-      drawParams.firstShapePathAtMeetingPoint,
-      GetMaxDotRadius(drawParams.varyDotRadius),
-      m_colorInfo.innerColorMix,
-      drawParams.meetingPointColors,
+      .brightnessAttenuation        = drawParams.brightnessAttenuation,
+      .firstShapePathAtMeetingPoint = drawParams.firstShapePathAtMeetingPoint,
+      .maxRadius                    = GetMaxDotRadius(drawParams.varyDotRadius),
+      .innerColorMix                = m_colorInfo.innerColorMix,
+      .meetingPointColors           = drawParams.meetingPointColors,
   };
 
   for (auto& shapePath : m_shapePaths)

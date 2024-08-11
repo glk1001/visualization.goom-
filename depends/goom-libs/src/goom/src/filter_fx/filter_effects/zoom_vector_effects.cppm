@@ -132,7 +132,7 @@ inline auto ZoomVectorEffects::SetBaseZoomAdjustmentFactor() noexcept -> void
   Ensures(baseZoomAdjustment <= MAX_ALLOWED_BASE_ZOOM_ADJUSTMENT);
 
   m_filterEffectsSettings->zoomAdjustmentEffect->SetBaseZoomAdjustment(
-      {baseZoomAdjustment, baseZoomAdjustment});
+      {.x = baseZoomAdjustment, .y = baseZoomAdjustment});
 }
 
 constexpr auto ZoomVectorEffects::GetBaseZoomAdjustment(const float baseZoomAdjustmentFactor,
@@ -154,7 +154,7 @@ inline auto ZoomVectorEffects::GetZoomAdjustment(const NormalizedCoords& coords)
 inline auto ZoomVectorEffects::GetClampedZoomAdjustment(const Vec2dFlt& zoomCoeffs) const noexcept
     -> Vec2dFlt
 {
-  return {GetClampedZoomAdjustment(zoomCoeffs.x), GetClampedZoomAdjustment(zoomCoeffs.y)};
+  return {.x = GetClampedZoomAdjustment(zoomCoeffs.x), .y = GetClampedZoomAdjustment(zoomCoeffs.y)};
 }
 
 inline auto ZoomVectorEffects::GetClampedZoomAdjustment(const float zoomAdjustment) const noexcept

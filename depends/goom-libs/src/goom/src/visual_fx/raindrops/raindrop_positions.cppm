@@ -62,18 +62,20 @@ private:
   static constexpr auto WEIGHT_POINT_CLOSE_TO_SCREEN_CENTRE_T = 0.2F;
   static constexpr auto WEIGHT_POINT_STEPS_RANGE              = NumberRange{10U, 20U};
   TValue m_rectangleWeightPointT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, WEIGHT_POINT_STEPS_RANGE.min}
+      {.stepType = TValue::StepType::CONTINUOUS_REVERSIBLE,
+       .numSteps = WEIGHT_POINT_STEPS_RANGE.min}
   };
 
   static constexpr auto NUM_RAINDROP_POSITION_INCREMENTS = 100U;
   static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_START = 1U;
   static constexpr auto RAINDROP_MOVEMENT_DELAY_AT_END   = 15U; // where they meet
   std::vector<TValue::DelayPoint> m_raindropDelayPoints{
-      {0.0F, RAINDROP_MOVEMENT_DELAY_AT_START},
-      {1.0F,   RAINDROP_MOVEMENT_DELAY_AT_END}
+      {.t0 = 0.0F, .delayTime = RAINDROP_MOVEMENT_DELAY_AT_START},
+      {.t0 = 1.0F,   .delayTime = RAINDROP_MOVEMENT_DELAY_AT_END}
   };
   TValue m_raindropPositionT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_RAINDROP_POSITION_INCREMENTS},
+      {.stepType = TValue::StepType::CONTINUOUS_REVERSIBLE,
+       .numSteps = NUM_RAINDROP_POSITION_INCREMENTS},
       m_raindropDelayPoints
   };
   static constexpr auto MIN_RAINDROP_POSITION_T = 0.00F;
@@ -93,7 +95,7 @@ private:
 
   auto SetNewTargetRectangleWeightPoint(const Point2dInt& targetRectangleWeightPoint) noexcept
       -> void;
-  auto GetAcceptableTargetRectangleWeightPoint(
+  [[nodiscard]] auto GetAcceptableTargetRectangleWeightPoint(
       const Point2dInt& requestedTargetRectangleWeightPoint) const noexcept -> Point2dInt;
 };
 
@@ -231,9 +233,9 @@ auto RaindropPositions::GetPositionsOnCircle(const uint32_t num,
   for (auto i = 0U; i < num; ++i)
   {
     const auto nextAngle = startAngle + angle();
-    positions.emplace_back(centre +
-                           ToVec2dInt(Vec2dFlt{static_cast<float>(radius) * std::sin(nextAngle),
-                                               static_cast<float>(radius) * std::cos(nextAngle)}));
+    positions.emplace_back(
+        centre + ToVec2dInt(Vec2dFlt{.x = static_cast<float>(radius) * std::sin(nextAngle),
+                                     .y = static_cast<float>(radius) * std::cos(nextAngle)}));
     angle.Increment();
   }
   Ensures(positions.size() == num);
@@ -284,18 +286,23 @@ auto RaindropPositions::GetNewRaindropPaths() const noexcept
 
   static constexpr auto FREQ               = 5.0F;
   static constexpr auto OSCILLATING_PARAMS = std::array{
-      OscillatingFunction::Params{12.0F, FREQ, FREQ},
-      OscillatingFunction::Params{12.1F, FREQ, FREQ},
-      OscillatingFunction::Params{12.2F, FREQ, FREQ},
-      OscillatingFunction::Params{12.3F, FREQ, FREQ},
-      OscillatingFunction::Params{12.4F, FREQ, FREQ}
+      OscillatingFunction::Params{
+                                  .oscillatingAmplitude = 12.0F, .xOscillatingFreq = FREQ, .yOscillatingFreq = FREQ},
+      OscillatingFunction::Params{
+                                  .oscillatingAmplitude = 12.1F, .xOscillatingFreq = FREQ, .yOscillatingFreq = FREQ},
+      OscillatingFunction::Params{
+                                  .oscillatingAmplitude = 12.2F, .xOscillatingFreq = FREQ, .yOscillatingFreq = FREQ},
+      OscillatingFunction::Params{
+                                  .oscillatingAmplitude = 12.3F, .xOscillatingFreq = FREQ, .yOscillatingFreq = FREQ},
+      OscillatingFunction::Params{
+                                  .oscillatingAmplitude = 12.4F, .xOscillatingFreq = FREQ, .yOscillatingFreq = FREQ}
   };
 
   static constexpr auto NUM_OSCILLATING_PATH_INCREMENTS = NUM_RAINDROP_POSITION_INCREMENTS;
   const auto oscillatingPathDelayPoints                 = m_raindropDelayPoints;
   const auto oscillatingPathAngleT                      = TValue{
-      TValue::NumStepsProperties{UTILS::MATH::TValue::StepType::CONTINUOUS_REPEATABLE,
-                                 NUM_OSCILLATING_PATH_INCREMENTS},
+      TValue::NumStepsProperties{.stepType = UTILS::MATH::TValue::StepType::CONTINUOUS_REPEATABLE,
+                                 .numSteps = NUM_OSCILLATING_PATH_INCREMENTS},
       oscillatingPathDelayPoints
   };
 
@@ -303,15 +310,17 @@ auto RaindropPositions::GetNewRaindropPaths() const noexcept
   //for (const auto& centrePos : m_raindropPositions)
   for (auto dropNum = 0U; dropNum < m_raindropPositions.size(); ++dropNum)
   {
-    const auto centrePos      = m_raindropPositions.at(dropNum);
-    const auto toPos          = ToPoint2dFlt(m_raindropPositions.at(
+    const auto centrePos = m_raindropPositions.at(dropNum);
+    const auto toPos     = ToPoint2dFlt(m_raindropPositions.at(
         (dropNum + (m_raindropPositions.size() / 2)) % m_raindropPositions.size()));
-    const auto startAndEndPos = UTILS::MATH::StartAndEndPos{ToPoint2dFlt(centrePos), toPos};
-    const auto params         = OSCILLATING_PARAMS.at(dropNum % OSCILLATING_PARAMS.size());
+    const auto startAndEndPos =
+        UTILS::MATH::StartAndEndPos{.startPos = ToPoint2dFlt(centrePos), .endPos = toPos};
+    const auto params = OSCILLATING_PARAMS.at(dropNum % OSCILLATING_PARAMS.size());
     paths.emplace_back(std::make_unique<OscillatingPath>(
         std::make_unique<TValue>(
-            TValue::NumStepsProperties{UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
-                                       NUM_OSCILLATING_PATH_INCREMENTS},
+            TValue::NumStepsProperties{.stepType =
+                                           UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
+                                       .numSteps = NUM_OSCILLATING_PATH_INCREMENTS},
             oscillatingPathDelayPoints),
         oscillatingPathAngleT,
         startAndEndPos,

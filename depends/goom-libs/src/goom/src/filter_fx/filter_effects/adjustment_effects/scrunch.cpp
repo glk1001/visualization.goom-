@@ -13,8 +13,8 @@ using UTILS::MATH::GoomRand;
 static constexpr auto X_DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F;
 static constexpr auto AMPLITUDE_RANGE     = AmplitudeRange{
-        {0.05F, 0.20F},
-        {0.50F, 5.00F},
+        .xRange = {0.05F, 0.20F},
+        .yRange = {0.50F, 5.00F},
 };
 
 Scrunch::Scrunch(const GoomRand& goomRand) noexcept
@@ -32,7 +32,7 @@ auto Scrunch::SetRandomParams() noexcept -> void
 
 auto Scrunch::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  return NameValuePairs();
+  return {};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

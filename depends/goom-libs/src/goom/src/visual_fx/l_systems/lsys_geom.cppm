@@ -183,7 +183,7 @@ auto LSysGeometry::GetTransformAdjustArray() const noexcept -> std::vector<Trans
   auto transformAdjustArray = std::vector<TransformAdjust>(m_numLSysCopies);
 
   auto t = TValue{
-      {TValue::StepType::SINGLE_CYCLE, m_numLSysCopies}
+      {.stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = m_numLSysCopies}
   };
   for (auto& transformAdjust : transformAdjustArray)
   {
@@ -192,7 +192,7 @@ auto LSysGeometry::GetTransformAdjustArray() const noexcept -> std::vector<Trans
     transformAdjust.xScale              = m_goomRand->GetRandInRange<X_SCALE_RANGE>();
     transformAdjust.yScale              = m_goomRand->GetRandInRange<Y_SCALE_RANGE>();
     transformAdjust.rotateDegrees       = t() * DEGREES_360;
-    transformAdjust.translate           = {0.0F, 0.0F};
+    transformAdjust.translate           = {.x = 0.0F, .y = 0.0F};
 
     t.Increment();
   }

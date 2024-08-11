@@ -140,8 +140,8 @@ auto RandomColorMaps::GetRandomTintedColorMapSharedPtr(
 
   return GetTintedColorMapPtr(
       colorMapPtr,
-      {m_goomRand->GetRandInRange(NumberRange{m_minSaturation, m_maxSaturation}),
-       m_goomRand->GetRandInRange(NumberRange{m_minLightness, m_maxLightness})});
+      {.saturation = m_goomRand->GetRandInRange(NumberRange{m_minSaturation, m_maxSaturation}),
+       .lightness  = m_goomRand->GetRandInRange(NumberRange{m_minLightness, m_maxLightness})});
 }
 
 auto RandomColorMaps::GetRandomGroup() const noexcept -> ColorMapGroup

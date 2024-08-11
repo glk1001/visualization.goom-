@@ -12,32 +12,32 @@ using UTILS::MATH::GoomRand;
 
 static constexpr auto DEFAULT_AMPLITUDE     = 0.1F;
 static constexpr auto AMPLITUDE_RANGE_MODE0 = AmplitudeRange{
-    {0.001F, 0.501F},
-    {0.001F, 0.501F},
+    .xRange = {0.001F, 0.501F},
+    .yRange = {0.001F, 0.501F},
 };
 static constexpr auto AMPLITUDE_RANGE_MODE1 = AmplitudeRange{
-    {0.500F, 1.001F},
-    {0.500F, 1.001F},
+    .xRange = {0.500F, 1.001F},
+    .yRange = {0.500F, 1.001F},
 };
 
 static constexpr auto DEFAULT_SQ_DIST_MULT     = 0.025F;
 static constexpr auto SQ_DIST_MULT_RANGE_MODE0 = SqDistMultRange{
-    {0.001F, 0.051F},
-    {0.001F, 0.051F},
+    .xRange = {0.001F, 0.051F},
+    .yRange = {0.001F, 0.051F},
 };
 static constexpr auto SQ_DIST_MULT_RANGE_MODE1 = SqDistMultRange{
-    {0.050F, 0.101F},
-    {0.050F, 0.101F},
+    .xRange = {0.050F, 0.101F},
+    .yRange = {0.050F, 0.101F},
 };
 
 static constexpr auto DEFAULT_SQ_DIST_OFFSET     = 0.05F;
 static constexpr auto SQ_DIST_OFFSET_RANGE_MODE0 = SqDistOffsetRange{
-    {0.001F, 0.11F},
-    {0.001F, 0.11F},
+    .xRange = {0.001F, 0.11F},
+    .yRange = {0.001F, 0.11F},
 };
 static constexpr auto SQ_DIST_OFFSET_RANGE_MODE1 = SqDistOffsetRange{
-    {0.100F, 1.01F},
-    {0.100F, 1.01F},
+    .xRange = {0.100F, 1.01F},
+    .yRange = {0.100F, 1.01F},
 };
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL     = 1.00F;
@@ -48,9 +48,9 @@ CrystalBall::CrystalBall(const Modes mode, const GoomRand& goomRand) noexcept
   : m_mode{mode},
     m_goomRand{&goomRand},
     m_params{
-        {DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE},
-        {DEFAULT_SQ_DIST_MULT,   DEFAULT_SQ_DIST_MULT},
-        {DEFAULT_SQ_DIST_OFFSET, DEFAULT_SQ_DIST_OFFSET}
+        .amplitude={DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE},
+        .sqDistMult={.x=DEFAULT_SQ_DIST_MULT,   .y=DEFAULT_SQ_DIST_MULT},
+        .sqDistOffset={.x=DEFAULT_SQ_DIST_OFFSET, .y=DEFAULT_SQ_DIST_OFFSET}
     }
 {
 }
@@ -97,9 +97,9 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
                                  : m_goomRand->GetRandInRange(sqDistOffsetRange.yRange);
 
   SetParams({
-      {   xAmplitude,    yAmplitude},
-      {  xSqDistMult,   ySqDistMult},
-      {xSqDistOffset, ySqDistOffset}
+      .amplitude    = {        xAmplitude,         yAmplitude},
+      .sqDistMult   = {  .x = xSqDistMult,   .y = ySqDistMult},
+      .sqDistOffset = {.x = xSqDistOffset, .y = ySqDistOffset}
   });
 }
 

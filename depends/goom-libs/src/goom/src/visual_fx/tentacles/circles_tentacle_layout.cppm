@@ -84,8 +84,10 @@ static constexpr auto ANGLE_START  = HALF_PI;
 static constexpr auto ANGLE_FINISH = ANGLE_START + TWO_PI;
 
 CirclesTentacleLayout::CirclesTentacleLayout(const LayoutProperties& layoutProperties) noexcept
-  : m_startPoints{GetCirclePoints({layoutProperties.startRadius, layoutProperties.numTentacles})},
-    m_endPoints{GetCirclePoints({layoutProperties.endRadius, layoutProperties.numTentacles})},
+  : m_startPoints{GetCirclePoints(
+        {.radius = layoutProperties.startRadius, .numPoints = layoutProperties.numTentacles})},
+    m_endPoints{GetCirclePoints(
+        {.radius = layoutProperties.endRadius, .numPoints = layoutProperties.numTentacles})},
     m_startRadius{layoutProperties.startRadius},
     m_endRadius{layoutProperties.endRadius}
 {
@@ -106,7 +108,7 @@ auto CirclesTentacleLayout::GetCirclePoints(
     const auto x = circlePointsProperties.radius * std::cos(angle);
     const auto y = circlePointsProperties.radius * std::sin(angle);
 
-    circlePoints.emplace_back(Point2dFlt{x, y});
+    circlePoints.emplace_back(Point2dFlt{.x = x, .y = y});
 
     angle += angleStep;
   }

@@ -52,21 +52,21 @@ static constexpr auto DEFAULT_CELL_CENTRE = HALF / DEFAULT_GRID_SCALE;
 
 static constexpr auto DEFAULT_AMPLITUDE     = 0.1F;
 static constexpr auto AMPLITUDE_RANGE_MODE0 = AmplitudeRange{
-    {0.05F, 1.101F},
-    {0.05F, 1.101F},
+    .xRange = {0.05F, 1.101F},
+    .yRange = {0.05F, 1.101F},
 };
 static constexpr auto AMPLITUDE_RANGE_MODE1 = AmplitudeRange{
-    {0.50F, 2.01F},
-    {0.50F, 2.01F},
+    .xRange = {0.50F, 2.01F},
+    .yRange = {0.50F, 2.01F},
 };
 static constexpr auto AMPLITUDE_RANGE_MODE2 = AmplitudeRange{
-    {0.70F, 3.01F},
-    {0.70F, 3.01F},
+    .xRange = {0.70F, 3.01F},
+    .yRange = {0.70F, 3.01F},
 };
 static constexpr auto FULL_AMPLITUDE_FACTOR            = 2.0F;
 static constexpr auto PARTIAL_DIAMOND_AMPLITUDE_FACTOR = 0.1F;
 
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
+static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
 static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto PROB_AMPLITUDES_EQUAL              = 0.50F;
@@ -85,21 +85,21 @@ DistanceField::DistanceField(const Modes mode, const GoomRand& goomRand) noexcep
     m_weightedEffects{
         *m_goomRand,
         {
-            {    GridType::FULL,        GRID_TYPE_FULL_WEIGHT},
-            {    GridType::PARTIAL_X,   GRID_TYPE_PARTIAL_X_WEIGHT},
-            {GridType::PARTIAL_DIAMOND, GRID_TYPE_PARTIAL_DIAMOND_WEIGHT},
-            {GridType::PARTIAL_RANDOM,  GRID_TYPE_PARTIAL_RANDOM_WEIGHT},
+            {    .key=GridType::FULL,        .weight=GRID_TYPE_FULL_WEIGHT},
+            {    .key=GridType::PARTIAL_X,   .weight=GRID_TYPE_PARTIAL_X_WEIGHT},
+            {.key=GridType::PARTIAL_DIAMOND, .weight=GRID_TYPE_PARTIAL_DIAMOND_WEIGHT},
+            {.key=GridType::PARTIAL_RANDOM,  .weight=GRID_TYPE_PARTIAL_RANDOM_WEIGHT},
         }
     },
     m_params{
-        {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        DEFAULT_LERP_TO_ONE_T_S,
-        false,
-        DEFAULT_GRID_TYPE,
-        DEFAULT_GRID_WIDTH,
-        DEFAULT_GRID_SCALE,
-        DEFAULT_CELL_CENTRE,
-        {DistanceField::GridPointsWithCentres{}, DistanceField::GridPointMap{}},
+        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
+        .useDiscontinuousZoomFactor=false,
+        .gridType=DEFAULT_GRID_TYPE,
+        .gridMax=DEFAULT_GRID_WIDTH,
+        .gridScale=DEFAULT_GRID_SCALE,
+        .cellCentre=DEFAULT_CELL_CENTRE,
+        .gridArrays={.gridPointsWithCentres=DistanceField::GridPointsWithCentres{}, .gridPointCentresMap=DistanceField::GridPointMap{}},
     }
 {
 }
@@ -154,14 +154,14 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
       m_goomRand->ProbabilityOf<PROB_USE_DISCONTINUOUS_ZOOM_FACTOR>();
 
   SetParams({
-      amplitude,
-      {xLerpToOneT, yLerpToOneT},
-      useDiscontinuousZoomFactor,
-      gridType,
-      static_cast<int32_t>(gridWidth - 1),
-      gridScale,
-      cellCentre,
-      gridArrays,
+      .amplitude                  = amplitude,
+      .lerpToOneTs                = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
+      .useDiscontinuousZoomFactor = useDiscontinuousZoomFactor,
+      .gridType                   = gridType,
+      .gridMax                    = static_cast<int32_t>(gridWidth - 1),
+      .gridScale                  = gridScale,
+      .cellCentre                 = cellCentre,
+      .gridArrays                 = gridArrays,
   });
 }
 
@@ -189,13 +189,14 @@ auto DistanceField::GetGridsArray(const GridType gridType,
 {
   if (gridType == GridType::FULL)
   {
-    return {DistanceField::GridPointsWithCentres{}, DistanceField::GridPointMap{}};
+    return {.gridPointsWithCentres = DistanceField::GridPointsWithCentres{},
+            .gridPointCentresMap   = DistanceField::GridPointMap{}};
   }
 
   const auto gridPointArray      = GetGridPointsWithCentres(gridType, gridWidth);
   const auto gridPointCentresMap = GetGridPointCentresMap(gridWidth, gridPointArray);
 
-  return {gridPointArray, gridPointCentresMap};
+  return {.gridPointsWithCentres = gridPointArray, .gridPointCentresMap = gridPointCentresMap};
 }
 
 auto DistanceField::GetGridPointsWithCentres(
@@ -391,7 +392,7 @@ inline auto DistanceField::GetCorrespondingGridPoint(const NormalizedCoords& poi
   const auto y = static_cast<int32_t>(
       std::floor(m_params.gridScale * (point.GetY() - NormalizedCoords::MIN_COORD)));
 
-  return {std::clamp(x, 0, m_params.gridMax), std::clamp(y, 0, m_params.gridMax)};
+  return {.x = std::clamp(x, 0, m_params.gridMax), .y = std::clamp(y, 0, m_params.gridMax)};
 }
 
 inline auto DistanceField::GetNearsetGridPointsWithCentres(
@@ -464,10 +465,12 @@ auto DistanceField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> N
               m_params.gridType == GridType::FULL
                   ? static_cast<size_t>(Sq(gridWidth))
                   : m_params.gridArrays.gridPointsWithCentres.size()),
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "lerpToOneTs",
-              Point2dFlt{m_params.lerpToOneTs.xLerpT, m_params.lerpToOneTs.yLerpT}),
+              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
       GetPair(fullParamGroup, "discon zoom", m_params.useDiscontinuousZoomFactor),
   };
 }

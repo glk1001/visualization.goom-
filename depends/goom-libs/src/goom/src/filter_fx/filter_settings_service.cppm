@@ -70,8 +70,7 @@ public:
     std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect;
     AFTER_EFFECTS::AfterEffectsStates::AfterEffectsProbabilities afterEffectsProbabilities;
   };
-  using FilterModeEnumMap =
-      RuntimeEnumMap<ZoomFilterMode, FilterSettingsService::ZoomFilterModeInfo>;
+  using FilterModeEnumMap              = RuntimeEnumMap<ZoomFilterMode, ZoomFilterModeInfo>;
   using CreateZoomAdjustmentEffectFunc = std::function<std::unique_ptr<IZoomAdjustmentEffect>(
       ZoomFilterMode filterMode, const GoomRand& goomRand, const std::string& resourcesDirectory)>;
   // TODO(glk) - Visual Studio doesn't like a trailing return type in above function definition.
@@ -87,39 +86,39 @@ public:
   auto operator=(FilterSettingsService&&) -> FilterSettingsService&      = delete;
 
   auto Start() -> void;
-  auto NewCycle() -> void;
+  auto NewCycle() noexcept -> void;
 
-  auto NotifyUpdatedFilterEffectsSettings() -> void;
-  [[nodiscard]] auto HasFilterModeChangedSinceLastUpdate() const -> bool;
+  auto NotifyUpdatedFilterEffectsSettings() noexcept -> void;
+  [[nodiscard]] auto HasFilterModeChangedSinceLastUpdate() const noexcept -> bool;
 
-  [[nodiscard]] auto GetCurrentFilterMode() const -> ZoomFilterMode;
-  [[nodiscard]] auto GetCurrentFilterModeName() const -> const std::string_view&;
-  [[nodiscard]] auto GetPreviousFilterModeName() const -> const std::string_view&;
+  [[nodiscard]] auto GetCurrentFilterMode() const noexcept -> ZoomFilterMode;
+  [[nodiscard]] auto GetCurrentFilterModeName() const noexcept -> const std::string_view&;
+  [[nodiscard]] auto GetPreviousFilterModeName() const noexcept -> const std::string_view&;
 
-  [[nodiscard]] auto GetFilterSettings() const -> const FilterSettings&;
-  [[nodiscard]] auto GetROVitesse() const -> const Vitesse&;
-  [[nodiscard]] auto GetRWVitesse() -> Vitesse&;
+  [[nodiscard]] auto GetFilterSettings() const noexcept -> const FilterSettings&;
+  [[nodiscard]] auto GetROVitesse() const noexcept -> const Vitesse&;
+  [[nodiscard]] auto GetRWVitesse() noexcept -> Vitesse&;
 
   auto SetNewRandomFilter() -> void;
   auto ResetRandomFilterMultiplierEffect() -> void;
   auto ResetRandomAfterEffects() -> void;
   auto ChangeMilieu() -> void;
-  auto TurnOffRotation() -> void;
-  auto MultiplyRotation(float factor) -> void;
-  auto ToggleRotationDirection() -> void;
+  auto TurnOffRotation() noexcept -> void;
+  auto MultiplyRotation(float factor) noexcept -> void;
+  auto ToggleRotationDirection() noexcept -> void;
 
   static constexpr auto DEFAULT_TRAN_LERP_INCREMENT = 0.002F;
-  auto ResetTransformBufferLerpData() -> void;
-  auto SetTransformBufferLerpIncrement(float value) -> void;
-  auto SetDefaultTransformBufferLerpIncrement() -> void;
-  auto MultiplyTransformBufferLerpIncrement(float factor) -> void;
-  auto SetTransformBufferLerpToEnd() -> void;
+  auto ResetTransformBufferLerpData() noexcept -> void;
+  auto SetTransformBufferLerpIncrement(float value) noexcept -> void;
+  auto SetDefaultTransformBufferLerpIncrement() noexcept -> void;
+  auto MultiplyTransformBufferLerpIncrement(float factor) noexcept -> void;
+  auto SetTransformBufferLerpToEnd() noexcept -> void;
 
 protected:
-  [[nodiscard]] auto GetFilterSettings() -> FilterSettings&;
-  auto SetFilterMode(ZoomFilterMode filterMode) -> void;
-  [[nodiscard]] auto GetPluginInfo() const -> const PluginInfo&;
-  [[nodiscard]] auto GetGoomRand() const -> const GoomRand&;
+  [[nodiscard]] auto GetFilterSettings() noexcept -> FilterSettings&;
+  auto SetFilterMode(ZoomFilterMode filterMode) noexcept -> void;
+  [[nodiscard]] auto GetPluginInfo() const noexcept -> const PluginInfo&;
+  [[nodiscard]] auto GetGoomRand() const noexcept -> const GoomRand&;
   virtual auto SetDefaultSettings() -> void;
   virtual auto SetRandomZoomMidpoint() -> void;
   virtual auto SetFilterModeRandomEffects() -> void;
@@ -189,11 +188,13 @@ private:
   static constexpr auto BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT  = 10.0F;
   static constexpr auto BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT = 10.0F;
   Weights<ZoomMidpointEvents> m_zoomMidpointWeights;
-  [[nodiscard]] auto IsZoomMidpointInTheMiddle() const -> bool;
-  [[nodiscard]] auto IsFilterModeAWaveMode() const -> bool;
-  auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) -> void;
-  [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const -> ZoomMidpointEvents;
-  [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) -> bool;
+  [[nodiscard]] auto IsZoomMidpointInTheMiddle() const noexcept -> bool;
+  [[nodiscard]] auto IsFilterModeAWaveMode() const noexcept -> bool;
+  [[nodiscard]] static auto IsAllowedEdgePoints(ZoomFilterMode filterMode) noexcept -> bool;
+  auto SetAnyRandomZoomMidpoint(bool allowEdgePoints) noexcept -> void;
+  [[nodiscard]] auto GetWeightRandomMidPoint(bool allowEdgePoints) const noexcept
+      -> ZoomMidpointEvents;
+  [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) noexcept -> bool;
 };
 
 auto GetFilterModeName(ZoomFilterMode filterMode) noexcept -> std::string_view;
@@ -203,52 +204,54 @@ auto GetFilterModeName(ZoomFilterMode filterMode) noexcept -> std::string_view;
 namespace GOOM::FILTER_FX
 {
 
-inline auto FilterSettingsService::GetFilterSettings() const -> const FilterSettings&
+inline auto FilterSettingsService::GetFilterSettings() const noexcept -> const FilterSettings&
 {
   return m_filterSettings;
 }
 
-inline auto FilterSettingsService::GetFilterSettings() -> FilterSettings&
+inline auto FilterSettingsService::GetFilterSettings() noexcept -> FilterSettings&
 {
   return m_filterSettings;
 }
 
-inline auto FilterSettingsService::GetCurrentFilterMode() const -> ZoomFilterMode
+inline auto FilterSettingsService::GetCurrentFilterMode() const noexcept -> ZoomFilterMode
 {
   return m_filterMode;
 }
 
-inline auto FilterSettingsService::GetCurrentFilterModeName() const -> const std::string_view&
+inline auto FilterSettingsService::GetCurrentFilterModeName() const noexcept
+    -> const std::string_view&
 {
   return m_filterModeData[m_filterMode].name;
 }
 
-inline auto FilterSettingsService::GetPreviousFilterModeName() const -> const std::string_view&
+inline auto FilterSettingsService::GetPreviousFilterModeName() const noexcept
+    -> const std::string_view&
 {
   return m_filterModeData[m_previousFilterMode].name;
 }
 
-inline auto FilterSettingsService::GetPluginInfo() const -> const PluginInfo&
+inline auto FilterSettingsService::GetPluginInfo() const noexcept -> const PluginInfo&
 {
   return *m_goomInfo;
 }
 
-inline auto FilterSettingsService::GetGoomRand() const -> const GoomRand&
+inline auto FilterSettingsService::GetGoomRand() const noexcept -> const GoomRand&
 {
   return *m_goomRand;
 }
 
-inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const -> bool
+inline auto FilterSettingsService::HasFilterModeChangedSinceLastUpdate() const noexcept -> bool
 {
   return m_filterModeAtLastUpdate != m_filterMode;
 }
 
-inline auto FilterSettingsService::GetROVitesse() const -> const Vitesse&
+inline auto FilterSettingsService::GetROVitesse() const noexcept -> const Vitesse&
 {
   return m_filterSettings.filterEffectsSettings.vitesse;
 }
 
-inline auto FilterSettingsService::GetRWVitesse() -> Vitesse&
+inline auto FilterSettingsService::GetRWVitesse() noexcept -> Vitesse&
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
   return m_filterSettings.filterEffectsSettings.vitesse;
@@ -271,7 +274,7 @@ inline auto FilterSettingsService::SetMaxZoomAdjustment() -> void
       m_goomRand->GetRandInRange<SPEED_FACTOR_RANGE>() * MAX_MAX_ZOOM_ADJUSTMENT;
 }
 
-inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) -> void
+inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) noexcept -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
 
@@ -301,7 +304,7 @@ inline auto FilterSettingsService::SetRandomSettingsForNewFilterMode() -> void
   UpdateFilterSettingsFromAfterEffects();
 }
 
-inline auto FilterSettingsService::TurnOffRotation() -> void
+inline auto FilterSettingsService::TurnOffRotation() noexcept -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
               .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
@@ -313,7 +316,7 @@ inline auto FilterSettingsService::TurnOffRotation() -> void
       .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION] = false;
 }
 
-inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
+inline auto FilterSettingsService::MultiplyRotation(const float factor) noexcept -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
               .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
@@ -325,7 +328,7 @@ inline auto FilterSettingsService::MultiplyRotation(const float factor) -> void
       factor, AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
-inline auto FilterSettingsService::ToggleRotationDirection() -> void
+inline auto FilterSettingsService::ToggleRotationDirection() noexcept -> void
 {
   if (not m_filterSettings.filterEffectsSettings.afterEffectsSettings
               .isActive[AFTER_EFFECTS::AfterEffectsTypes::ROTATION])
@@ -338,29 +341,31 @@ inline auto FilterSettingsService::ToggleRotationDirection() -> void
       AFTER_EFFECTS::RotationAdjustments::AdjustmentType::INSTEAD_OF_RANDOM);
 }
 
-inline auto FilterSettingsService::ResetTransformBufferLerpData() -> void
+inline auto FilterSettingsService::ResetTransformBufferLerpData() noexcept -> void
 {
   m_filterSettings.transformBufferLerpData.Reset();
 }
 
-inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const float value) -> void
+inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const float value) noexcept
+    -> void
 {
   Expects(value >= 0.0F);
   m_filterSettings.transformBufferLerpData.SetIncrement(value);
 }
 
-inline auto FilterSettingsService::SetDefaultTransformBufferLerpIncrement() -> void
+inline auto FilterSettingsService::SetDefaultTransformBufferLerpIncrement() noexcept -> void
 {
   SetTransformBufferLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
 }
 
-inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const float factor) -> void
+inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const float factor) noexcept
+    -> void
 {
   m_filterSettings.transformBufferLerpData.SetIncrement(
       m_filterSettings.transformBufferLerpData.GetIncrement() * factor);
 }
 
-inline auto FilterSettingsService::SetTransformBufferLerpToEnd() -> void
+inline auto FilterSettingsService::SetTransformBufferLerpToEnd() noexcept -> void
 {
   m_filterSettings.transformBufferLerpData.SetLerpToEnd();
 }

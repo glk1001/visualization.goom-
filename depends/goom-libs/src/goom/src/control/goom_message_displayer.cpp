@@ -44,10 +44,10 @@ auto GoomMessageDisplayer::GetUpdateMessagesDisplayers(const size_t numDisplayer
   { return textColor; };
 
   static constexpr auto OUTLINE_GREY = 0xFA;
-  const auto outlineColor =
-      GetBrighterColor(2.0F,
-                       Pixel{
-                           {OUTLINE_GREY, OUTLINE_GREY, OUTLINE_GREY, MAX_ALPHA}
+  const auto outlineColor            = GetBrighterColor(
+      2.0F,
+      Pixel{
+                     {.red = OUTLINE_GREY, .green = OUTLINE_GREY, .blue = OUTLINE_GREY, .alpha = MAX_ALPHA}
   });
   const auto getOutlineFontColor = [outlineColor]([[maybe_unused]] const size_t textIndexOfChar,
                                                   [[maybe_unused]] const Point2dInt& point,
@@ -103,7 +103,7 @@ void GoomMessageDisplayer::UpdateMessages(const std::vector<std::string>& msgLin
                                            ((numberOfLinesInMessage - i) * LINE_HEIGHT));
     m_updateMessagesDisplayers.at(i).SetText(msgLines[i]);
     m_updateMessagesDisplayers.at(i).Prepare();
-    m_updateMessagesDisplayers.at(i).Draw({X_POS, yPos});
+    m_updateMessagesDisplayers.at(i).Draw({.x = X_POS, .y = yPos});
   };
 
   //m_parallel.ForLoop(numberOfLinesInMessage, displayMessage);

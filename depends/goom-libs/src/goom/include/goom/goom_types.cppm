@@ -118,12 +118,13 @@ constexpr auto Dimensions::GetFltHeight() const noexcept -> float
 
 constexpr auto Dimensions::GetCentrePoint() const noexcept -> Point2dInt
 {
-  return MidpointFromOrigin({GetIntWidth(), GetIntHeight()});
+  return MidpointFromOrigin({.x = GetIntWidth(), .y = GetIntHeight()});
 }
 
 constexpr auto ToRectangle2dFlt(const Rectangle2dInt& rectangle) noexcept -> Rectangle2dFlt
 {
-  return {ToPoint2dFlt(rectangle.topLeft), ToPoint2dFlt(rectangle.bottomRight)};
+  return {.topLeft     = ToPoint2dFlt(rectangle.topLeft),
+          .bottomRight = ToPoint2dFlt(rectangle.bottomRight)};
 }
 
 } // namespace GOOM

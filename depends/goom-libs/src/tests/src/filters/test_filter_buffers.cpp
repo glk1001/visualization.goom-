@@ -82,10 +82,10 @@ constexpr auto NORMALIZED_COORDS_CONVERTER = NormalizedCoordsConverter{
     {WIDTH, HEIGHT}
 };
 
-constexpr auto MID_PT                     = MidpointFromOrigin({WIDTH, HEIGHT});
-constexpr auto CONST_ZOOM_VECTOR_COORDS_1 = Point2dInt{16, 40};
-constexpr auto CONST_ZOOM_VECTOR_COORDS_2 = Point2dInt{32, 52};
-constexpr auto DUMMY_COORDS               = Point2dInt{14, 38};
+constexpr auto MID_PT                     = MidpointFromOrigin({.x = WIDTH, .y = HEIGHT});
+constexpr auto CONST_ZOOM_VECTOR_COORDS_1 = Point2dInt{.x = 16, .y = 40};
+constexpr auto CONST_ZOOM_VECTOR_COORDS_2 = Point2dInt{.x = 32, .y = 52};
+constexpr auto DUMMY_COORDS               = Point2dInt{.x = 14, .y = 38};
 
 class TestZoomVector : public FilterZoomVector
 {
@@ -141,7 +141,7 @@ const auto CONSTANT_ZOOM_VECTOR = TestZoomVector{true};
 
 constexpr auto TEST_X          = 10;
 constexpr auto TEST_Y          = 50;
-constexpr auto TEST_SRCE_POINT = Point2dInt{TEST_X, TEST_Y};
+constexpr auto TEST_SRCE_POINT = Point2dInt{.x = TEST_X, .y = TEST_Y};
 static_assert((0 <= TEST_X) && (TEST_X < WIDTH), "Invalid X");
 static_assert((0 <= TEST_Y) && (TEST_Y < WIDTH), "Invalid Y");
 
@@ -319,7 +319,7 @@ TEST_CASE("ZoomFilterBuffers Adjustment")
 TEST_CASE("ZoomFilterBuffers Clipping")
 {
   auto filterBuffers = GetFilterBuffers(CONSTANT_ZOOM_VECTOR);
-  filterBuffers.SetTransformBufferMidpoint({0, 0});
+  filterBuffers.SetTransformBufferMidpoint({.x = 0, .y = 0});
   filterBuffers.Start();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::IN_PROGRESS == filterBuffers.GetUpdateStatus());
 

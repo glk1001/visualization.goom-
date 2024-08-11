@@ -42,7 +42,8 @@ private:
     uint32_t numDots;
     uint32_t maxDiameter;
   };
-  std::vector<uint32_t> m_diameters{GetInitialDiameters({m_numDots, m_maxDiameter})};
+  std::vector<uint32_t> m_diameters{
+      GetInitialDiameters({.numDots = m_numDots, .maxDiameter = m_maxDiameter})};
   [[nodiscard]] static auto GetInitialDiameters(
       const NumDotsAndMaxDiameter& numDotsAndMaxDiameter) noexcept -> std::vector<uint32_t>;
 
@@ -84,7 +85,7 @@ auto DotDiameters::GetInitialDiameters(const NumDotsAndMaxDiameter& numDotsAndMa
     -> std::vector<uint32_t>
 {
   auto diameters = std::vector<uint32_t>(numDotsAndMaxDiameter.numDots);
-  std::fill(begin(diameters), end(diameters), numDotsAndMaxDiameter.maxDiameter);
+  std::ranges::fill(diameters, numDotsAndMaxDiameter.maxDiameter);
   return diameters;
 }
 
@@ -104,7 +105,7 @@ auto DotDiameters::ChangeToFixedDiameters() noexcept -> void
 {
   const auto fixedDiameter = m_goomRand->GetRandInRange(NumberRange{m_minDiameter, m_maxDiameter});
 
-  std::fill(begin(m_diameters), end(m_diameters), fixedDiameter);
+  std::ranges::fill(m_diameters, fixedDiameter);
 }
 
 auto DotDiameters::ChangeToVariableDiameters() noexcept -> void
