@@ -43,7 +43,6 @@ using UTILS::MATH::I_HALF;
 using UTILS::MATH::I_QUARTER;
 using UTILS::MATH::I_THREE_QUARTERS;
 using UTILS::MATH::NumberRange;
-using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::UNIT_RANGE;
 using UTILS::MATH::Weights;
@@ -944,8 +943,7 @@ auto FilterSettingsService::SetRandomZoomMidpoint() -> void
   SetAnyRandomZoomMidpoint(IsAllowedEdgePoints(m_filterMode));
 }
 
-auto FilterSettingsService::IsAllowedEdgePoints(const ZoomFilterMode filterMode) const noexcept
-    -> bool
+auto FilterSettingsService::IsAllowedEdgePoints(const ZoomFilterMode filterMode) noexcept -> bool
 {
   static const auto s_NO_EDGE_POINTS = std::unordered_set{
       EXP_RECIPROCAL_MODE,
