@@ -2,8 +2,6 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color_data/color_map_enums.h"
-
 #include <cstdint>
 #include <memory>
 #include <set>
@@ -11,6 +9,7 @@ module;
 
 module Goom.Color.RandomColorMaps;
 
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Utils.EnumUtils;

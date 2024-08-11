@@ -1,7 +1,5 @@
 module;
 
-#include "color/color_data/color_map_enums.h"
-
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -12,6 +10,7 @@ module;
 
 export module Goom.VisualFx.FlyingStarsFx:StarTypesContainer;
 
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.RandomColorMaps;
 import Goom.Color.RandomColorMapsGroups;
 import Goom.Utils.EnumUtils;

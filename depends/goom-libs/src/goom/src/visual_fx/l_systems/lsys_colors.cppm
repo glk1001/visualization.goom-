@@ -1,7 +1,5 @@
 module;
 
-#include "color/color_data/color_map_enums.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -10,6 +8,7 @@ module;
 
 module Goom.VisualFx.LSystemFx:LSysColors;
 
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;

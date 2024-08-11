@@ -8,32 +8,31 @@
 
 #include "vivid/types.h"
 
-#include <vector>
+#include <array>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
-inline const auto IMOLA_19 = std::vector<vivid::srgb_t>{
-    {0.10196F, 0.20000F, 0.70196F},
-    {0.12157F, 0.23922F, 0.68235F},
-    {0.14118F, 0.27451F, 0.66275F},
-    {0.16078F, 0.31373F, 0.64314F},
-    {0.18039F, 0.34902F, 0.62353F},
-    {0.20000F, 0.38431F, 0.60392F},
-    {0.22353F, 0.41961F, 0.58039F},
-    {0.25490F, 0.45098F, 0.54902F},
-    {0.28627F, 0.48235F, 0.52157F},
-    {0.32941F, 0.52549F, 0.49804F},
-    {0.37647F, 0.57255F, 0.48235F},
-    {0.42745F, 0.62745F, 0.47059F},
-    {0.48235F, 0.68235F, 0.45490F},
-    {0.53725F, 0.73725F, 0.44314F},
-    {0.59608F, 0.79608F, 0.42745F},
-    {0.66667F, 0.85490F, 0.41176F},
-    {0.76863F, 0.91765F, 0.40392F},
-    {0.88627F, 0.96078F, 0.40000F},
-    {1.00000F, 1.00000F, 0.40000F},
+inline constexpr auto VIV_IMOLA_19 = std::array{
+    vivid::srgb_t{0.10196F, 0.20000F, 0.70196F},
+    vivid::srgb_t{0.12157F, 0.23922F, 0.68235F},
+    vivid::srgb_t{0.14118F, 0.27451F, 0.66275F},
+    vivid::srgb_t{0.16078F, 0.31373F, 0.64314F},
+    vivid::srgb_t{0.18039F, 0.34902F, 0.62353F},
+    vivid::srgb_t{0.20000F, 0.38431F, 0.60392F},
+    vivid::srgb_t{0.22353F, 0.41961F, 0.58039F},
+    vivid::srgb_t{0.25490F, 0.45098F, 0.54902F},
+    vivid::srgb_t{0.28627F, 0.48235F, 0.52157F},
+    vivid::srgb_t{0.32941F, 0.52549F, 0.49804F},
+    vivid::srgb_t{0.37647F, 0.57255F, 0.48235F},
+    vivid::srgb_t{0.42745F, 0.62745F, 0.47059F},
+    vivid::srgb_t{0.48235F, 0.68235F, 0.45490F},
+    vivid::srgb_t{0.53725F, 0.73725F, 0.44314F},
+    vivid::srgb_t{0.59608F, 0.79608F, 0.42745F},
+    vivid::srgb_t{0.66667F, 0.85490F, 0.41176F},
+    vivid::srgb_t{0.76863F, 0.91765F, 0.40392F},
+    vivid::srgb_t{0.88627F, 0.96078F, 0.40000F},
+    vivid::srgb_t{1.00000F, 1.00000F, 0.40000F},
 };
 
 } // namespace GOOM::COLOR::COLOR_DATA
