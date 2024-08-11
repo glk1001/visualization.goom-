@@ -72,7 +72,8 @@ private:
       -> const std::set<COLOR::RandomColorMaps::ColorMapTypes>&;
   static constexpr auto NUM_COLOR_STEPS = 200U;
   UTILS::MATH::TValue m_innerColorT{
-      {UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE, NUM_COLOR_STEPS}
+      {.stepType = UTILS::MATH::TValue::StepType::CONTINUOUS_REVERSIBLE,
+       .numSteps = NUM_COLOR_STEPS}
   };
 
   [[nodiscard]] static auto GetInnerColorCutoffRadius(int32_t maxRadius) noexcept -> int32_t;
@@ -94,7 +95,7 @@ private:
 
   static constexpr float GAMMA = 1.3F;
   COLOR::ColorAdjustment m_colorAdjust{
-      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+      {.gamma = GAMMA, .alterChromaFactor = COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 };
 
@@ -232,8 +233,8 @@ inline auto ShapePath::GetInnerColorCutoffRadius(const int32_t maxRadius) noexce
 inline auto ShapePath::GetCurrentShapeColors() const noexcept -> MultiplePixels
 {
   return {
-      m_colorInfo.mainColorMapPtr->GetColor(GetCurrentT()),
-      m_colorInfo.lowColorMapPtr->GetColor(GetCurrentT()),
+      .color1 = m_colorInfo.mainColorMapPtr->GetColor(GetCurrentT()),
+      .color2 = m_colorInfo.lowColorMapPtr->GetColor(GetCurrentT()),
   };
 }
 
@@ -258,10 +259,10 @@ inline auto ShapePath::GetColorsWithoutInner(
     const float brightness, const MultiplePixels& shapeColors) const noexcept -> MultiplePixels
 {
   return {
-      m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
-                                  GetMainColor(shapeColors)),
-      m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
-                                  GetLowColor(shapeColors)),
+      .color1 = m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
+                                            GetMainColor(shapeColors)),
+      .color2 = m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
+                                            GetLowColor(shapeColors)),
   };
 }
 
@@ -272,10 +273,10 @@ inline auto ShapePath::GetColorsWithInner(const float brightness,
     -> MultiplePixels
 {
   return {
-      m_colorAdjust.GetAdjustment(
+      .color1 = m_colorAdjust.GetAdjustment(
           MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,
           ColorMaps::GetColorMix(GetMainColor(shapeColors), innerColor, innerColorMix)),
-      m_colorAdjust.GetAdjustment(
+      .color2 = m_colorAdjust.GetAdjustment(
           LOW_COLOR_BRIGHTNESS_FACTOR * brightness,
           ColorMaps::GetColorMix(GetLowColor(shapeColors), innerColor, innerColorMix)),
   };
@@ -285,10 +286,11 @@ inline auto ShapePath::GetFinalMeetingPointColors(const MultiplePixels& meetingP
                                                   const float brightness) const noexcept
     -> MultiplePixels
 {
-  return {m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
-                                      GetMainColor(meetingPointColors)),
-          m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
-                                      GetLowColor(meetingPointColors))};
+  return {
+      .color1 = m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
+                                            GetMainColor(meetingPointColors)),
+      .color2 = m_colorAdjust.GetAdjustment(LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR * brightness,
+                                            GetLowColor(meetingPointColors))};
 }
 
 } // namespace GOOM::VISUAL_FX::SHAPES

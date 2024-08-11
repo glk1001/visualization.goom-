@@ -122,7 +122,7 @@ namespace GOOM::UTILS::MATH
 template<typename T>
 IncrementedValue<T>::IncrementedValue(const TValue::StepType stepType,
                                       const uint32_t numSteps) noexcept
-  : m_value1{}, m_value2{}, m_t{{stepType, numSteps}}
+  : m_value1{}, m_value2{}, m_t{{.stepType=stepType, .numSteps=numSteps}}
 {
   Expects(numSteps > 0U);
 }
@@ -133,7 +133,7 @@ IncrementedValue<T>::IncrementedValue(const T& value1,
                                       const T& value2,
                                       const TValue::StepType stepType,
                                       const uint32_t numSteps) noexcept
-  : m_value1{value1}, m_value2{value2}, m_t{{stepType, numSteps}}
+  : m_value1{value1}, m_value2{value2}, m_t{{.stepType=stepType, .numSteps=numSteps}}
 {
   Expects(numSteps > 0U);
 }
@@ -144,7 +144,7 @@ IncrementedValue<T>::IncrementedValue(const T& value1,
                                       const T& value2,
                                       const TValue::StepType stepType,
                                       const float stepSize) noexcept
-  : m_value1{value1}, m_value2{value2}, m_t{TValue::StepSizeProperties{stepSize, stepType}}
+  : m_value1{value1}, m_value2{value2}, m_t{TValue::StepSizeProperties{.stepSize=stepSize, .stepType=stepType}}
 {
   Expects(stepSize > 0.0F);
 }

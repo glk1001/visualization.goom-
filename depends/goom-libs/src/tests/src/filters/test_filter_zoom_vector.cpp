@@ -97,20 +97,25 @@ const auto GOOM_RAND                = GoomRand{};
   }}};
 
   return FilterEffectsSettings{
-      Vitesse{},
-      DEFAULT_MAX_ZOOM_ADJUSTMENT,
-      UNIT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
-      DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
-      std::make_shared<UniformZoomAdjustmentEffect>(),
-      {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
-      {DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
-              DEFAULT_MULTIPLIER_EFFECT_X_FREQ, DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
-              DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE, DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
-              DEFAULT_LERP_ADJUSTMENT_TO_COORDS},
-      {
-              HypercosOverlayMode::NONE,
-              ALL_OFF_AFTER_EFFECTS_STATES, RotationAdjustments{},
-              },
+      .vitesse                            = Vitesse{},
+      .maxZoomAdjustment                  = DEFAULT_MAX_ZOOM_ADJUSTMENT,
+      .baseZoomAdjustmentFactorMultiplier = UNIT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
+      .afterEffectsVelocityMultiplier     = DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
+      .zoomAdjustmentEffect               = std::make_shared<UniformZoomAdjustmentEffect>(),
+      .zoomMidpoint                       = {.x = DEFAULT_ZOOM_MID_X, .y = DEFAULT_ZOOM_MID_Y},
+      .filterMultiplierEffectsSettings    = {.isActive   = DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
+                                                    .xFreq      = DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
+                                                    .yFreq      = DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
+                                                    .xAmplitude = DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE,
+                                                    .yAmplitude = DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
+                                                    .lerpZoomAdjustmentToCoords =
+                                                 DEFAULT_LERP_ADJUSTMENT_TO_COORDS},
+      .afterEffectsSettings =
+          {
+                                                    .hypercosOverlayMode = HypercosOverlayMode::NONE,
+                                                    .isActive            = ALL_OFF_AFTER_EFFECTS_STATES,
+                                                    .rotationAdjustments = RotationAdjustments{},
+                                                    },
   };
 }
 

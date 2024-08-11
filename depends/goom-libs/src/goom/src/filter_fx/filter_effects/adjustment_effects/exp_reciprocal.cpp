@@ -33,7 +33,7 @@ using UTILS::MATH::TWO_PI;
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.01F, 0.11F};
 
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
+static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
 static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_MAGNIFY_AND_ROTATE = std::complex<float>{0.0F, 0.0F};
@@ -49,11 +49,12 @@ static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
     .probUseCentredSides = 0.5F,
-    .rect                = {.minMaxXMin = {-10.0F, +1.0F},
-                            .minMaxYMin = {-10.0F, +1.0F},
-                            .minMaxXMax = {-10.0F + 0.1F, +10.0F},
-                            .minMaxYMax = {-10.0F + 0.1F, +10.0F}},
-    .sides               = {.minMaxWidth = {0.1F, 20.0F}, .minMaxHeight = {0.1F, 20.0F}}
+    .rect                = {.minMaxXMin = {.minValue = -10.0F, .maxValue = +1.0F},
+                            .minMaxYMin = {.minValue = -10.0F, .maxValue = +1.0F},
+                            .minMaxXMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F},
+                            .minMaxYMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F}},
+    .sides               = {.minMaxWidth  = {.minValue = 0.1F, .maxValue = 20.0F},
+                            .minMaxHeight = {.minValue = 0.1F, .maxValue = 20.0F}}
 };
 
 static constexpr auto PROB_AMPLITUDES_EQUAL         = 0.95F;
@@ -66,15 +67,15 @@ ExpReciprocal::ExpReciprocal(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{
-        Viewport{},
-        {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        DEFAULT_LERP_TO_ONE_T_S,
-        true,
-        DEFAULT_MAGNIFY_AND_ROTATE,
-        false,
-        DEFAULT_RECIPROCAL_EXPONENT,
-        false,
-        DEFAULT_MODULATOR_PERIOD,
+        .viewport=Viewport{},
+        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
+        .noInverseSquare=true,
+        .magnifyAndRotate=DEFAULT_MAGNIFY_AND_ROTATE,
+        .useNormalizedAmplitude=false,
+        .reciprocalExponent=DEFAULT_RECIPROCAL_EXPONENT,
+        .useModulatorContours=false,
+        .modulatorPeriod=DEFAULT_MODULATOR_PERIOD,
     }
 {
 }
@@ -107,15 +108,15 @@ auto ExpReciprocal::SetRandomParams() noexcept -> void
       not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange<MODULATOR_PERIOD_RANGE>();
 
   SetParams({
-      viewport,
-      { xAmplitude,  yAmplitude},
-      {xLerpToOneT, yLerpToOneT},
-      noInverseSquare,
-      magnify * rotate,
-      useNormalizedAmplitude,
-      reciprocalExponent,
-      useModulatorContours,
-      modulatorPeriod,
+      .viewport               = viewport,
+      .amplitude              = {           xAmplitude,            yAmplitude},
+      .lerpToOneTs            = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
+      .noInverseSquare        = noInverseSquare,
+      .magnifyAndRotate       = magnify * rotate,
+      .useNormalizedAmplitude = useNormalizedAmplitude,
+      .reciprocalExponent     = reciprocalExponent,
+      .useModulatorContours   = useModulatorContours,
+      .modulatorPeriod        = modulatorPeriod,
   });
 }
 
@@ -142,7 +143,7 @@ auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -
 
   if (sqDistFromZero < SMALL_FLOAT)
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
 
   const auto zOffset = std::complex<FltCalcType>{};
@@ -156,12 +157,12 @@ auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -
 
   if (absSqFz < SMALL_FLT)
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
   if (not m_params.useNormalizedAmplitude)
   {
-    return {m_params.amplitude.x * static_cast<float>(fz.real()),
-            m_params.amplitude.y * static_cast<float>(fz.imag())};
+    return {.x = m_params.amplitude.x * static_cast<float>(fz.real()),
+            .y = m_params.amplitude.y * static_cast<float>(fz.imag())};
   }
 
   const auto normalizedAmplitude =
@@ -169,14 +170,15 @@ auto ExpReciprocal::GetVelocity(const NormalizedCoords& coords) const noexcept -
 
   if (not m_params.useModulatorContours)
   {
-    return {static_cast<float>(normalizedAmplitude.real()),
-            static_cast<float>(normalizedAmplitude.imag())};
+    return {.x = static_cast<float>(normalizedAmplitude.real()),
+            .y = static_cast<float>(normalizedAmplitude.imag())};
   }
 
   const auto modulatedValue =
       GetModulatedValue(absSqFz, normalizedAmplitude, m_params.modulatorPeriod);
 
-  return {static_cast<float>(modulatedValue.real()), static_cast<float>(modulatedValue.imag())};
+  return {.x = static_cast<float>(modulatedValue.real()),
+          .y = static_cast<float>(modulatedValue.imag())};
 }
 
 auto ExpReciprocal::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
@@ -184,15 +186,18 @@ auto ExpReciprocal::GetZoomAdjustmentEffectNameValueParams() const noexcept -> N
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {
       GetPair(fullParamGroup, "exp reciprocal", m_params.reciprocalExponent),
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "lerpToOneTs",
-              Point2dFlt{m_params.lerpToOneTs.xLerpT, m_params.lerpToOneTs.yLerpT}),
+              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
       GetPair(fullParamGroup, "noInverseSquare", m_params.noInverseSquare),
       GetPair(fullParamGroup, "useNormalizedAmp", m_params.useNormalizedAmplitude),
-      GetPair(fullParamGroup,
-              "magnify/rotate",
-              Point2dFlt{m_params.magnifyAndRotate.real(), m_params.magnifyAndRotate.imag()}),
+      GetPair(
+          fullParamGroup,
+          "magnify/rotate",
+          Point2dFlt{.x = m_params.magnifyAndRotate.real(), .y = m_params.magnifyAndRotate.imag()}),
       GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
       GetPair(PARAM_GROUP,
               "viewport0",

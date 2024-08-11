@@ -43,10 +43,10 @@ TEST_CASE("Pixel Add")
 {
   static constexpr auto ALPHA  = 128U;
   static constexpr auto COLOR1 = Pixel{
-      {100, 50, 20}
+      {.red = 100, .green = 50, .blue = 20}
   };
   static constexpr auto COLOR2 = Pixel{
-      {120, 250, 70}
+      {.red = 120, .green = 250, .blue = 70}
   };
   static constexpr auto COLOR3 = GetColorAdd(COLOR1, COLOR2, ALPHA);
   REQUIRE(static_cast<uint32_t>(COLOR3.R()) == 220);
@@ -64,7 +64,7 @@ TEST_CASE("Pixel Channels Multiply")
   SECTION("Pixel Multiply Scalar")
   {
     static constexpr auto PIXEL = Pixel{
-        {TEST_R, TEST_G, TEST_B}
+        {.red = TEST_R, .green = TEST_G, .blue = TEST_B}
     };
     static constexpr auto R_CHANNEL = PIXEL.R();
     static constexpr auto SCALAR    = 32U;
@@ -74,7 +74,7 @@ TEST_CASE("Pixel Channels Multiply")
   SECTION("Pixel Multiply Channels")
   {
     static constexpr auto PIXEL = Pixel{
-        {TEST_R, TEST_G, TEST_B}
+        {.red = TEST_R, .green = TEST_G, .blue = TEST_B}
     };
     static constexpr auto R_CHANNEL  = PIXEL.R();
     static constexpr auto G_CHANNEL  = PIXEL.G();
@@ -87,10 +87,10 @@ TEST_CASE("Pixel Multiply")
 {
   static constexpr auto ALPHA  = 128U;
   static constexpr auto COLOR1 = Pixel{
-      {100, 50, 20}
+      {.red = 100, .green = 50, .blue = 20}
   };
   static constexpr auto COLOR2 = Pixel{
-      {120, 250, 70}
+      {.red = 120, .green = 250, .blue = 70}
   };
 
   static constexpr auto COLOR3 = GetColorMultiply(COLOR1, COLOR2, ALPHA);

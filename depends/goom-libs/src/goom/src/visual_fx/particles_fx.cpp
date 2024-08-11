@@ -110,7 +110,7 @@ private:
   float m_pixelBrightness     = SINGLE_PIXEL_BRIGHTNESS_FACTOR * m_circleBrightness;
   static constexpr auto GAMMA = 1.8F;
   ColorAdjustment m_colorAdjustment{
-      {GAMMA, ColorAdjustment::INCREASED_CHROMA_FACTOR}
+      {.gamma = GAMMA, .alterChromaFactor = ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 
   const Camera* m_camera;
@@ -228,13 +228,15 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
       const auto brighterPixelColor =
           m_colorAdjustment.GetAdjustment(m_circleBrightness, pixelColor);
       static constexpr auto RADIUS = 4;
-      circleDrawer.DrawFilledCircle(screenPos, RADIUS, {brighterPixelColor, brighterPixelColor});
+      circleDrawer.DrawFilledCircle(
+          screenPos, RADIUS, {.color1 = brighterPixelColor, .color2 = brighterPixelColor});
     }
     else
     {
       const auto brighterPixelColor =
           m_colorAdjustment.GetAdjustment(m_pixelBrightness, pixelColor);
-      pixelDrawer.DrawPixelsClipped(screenPos, {brighterPixelColor, brighterPixelColor});
+      pixelDrawer.DrawPixelsClipped(screenPos,
+                                    {.color1 = brighterPixelColor, .color2 = brighterPixelColor});
     }
   }
 }
@@ -276,12 +278,12 @@ private:
   RandomPixelBlender m_pixelBlender{
       m_fxHelper->GetGoomRand(),
       {
-          {RandomPixelBlender::PixelBlendType::ADD,          ADD_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  DARKEN_ONLY_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, LIGHTEN_ONLY_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::LUMA_MIX,     LUMA_MIX_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::MULTIPLY,     MULTIPLY_WEIGHT},
-          {RandomPixelBlender::PixelBlendType::ALPHA,        ALPHA_WEIGHT},
+          {.key=RandomPixelBlender::PixelBlendType::ADD,          .weight=ADD_WEIGHT},
+          {.key=RandomPixelBlender::PixelBlendType::DARKEN_ONLY,  .weight=DARKEN_ONLY_WEIGHT},
+          {.key=RandomPixelBlender::PixelBlendType::LIGHTEN_ONLY, .weight=LIGHTEN_ONLY_WEIGHT},
+          {.key=RandomPixelBlender::PixelBlendType::LUMA_MIX,     .weight=LUMA_MIX_WEIGHT},
+          {.key=RandomPixelBlender::PixelBlendType::MULTIPLY,     .weight=MULTIPLY_WEIGHT},
+          {.key=RandomPixelBlender::PixelBlendType::ALPHA,        .weight=ALPHA_WEIGHT},
       }
   };
   // clang-format on
@@ -291,16 +293,18 @@ private:
   Point2dInt m_previousScreenPositionOffset{};
   static constexpr auto SCREEN_POSITION_OFFSET_NUM_STEPS = 100U;
   TValue m_screenPositionOffsetT{
-      {TValue::StepType::SINGLE_CYCLE, SCREEN_POSITION_OFFSET_NUM_STEPS}
+      {.stepType = TValue::StepType::SINGLE_CYCLE, .numSteps = SCREEN_POSITION_OFFSET_NUM_STEPS}
   };
   [[nodiscard]] auto GetScreenPositionOffset() const noexcept -> Point2dInt;
-  auto GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept -> Point2dInt;
+  [[nodiscard]] auto GetAdjustedZoomMidpoint(const Point2dInt& zoomMidpoint) const noexcept
+      -> Point2dInt;
 
   ColorMapPtrWrapper m_tintMainColorMap{nullptr};
   ColorMapPtrWrapper m_tintLowColorMap{nullptr};
   static constexpr auto TINT_COLORS_NUM_STEPS_RANGE = NumberRange{10U, 100U};
   TValue m_tintColorT{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, TINT_COLORS_NUM_STEPS_RANGE.min}
+      {.stepType = TValue::StepType::CONTINUOUS_REVERSIBLE,
+       .numSteps = TINT_COLORS_NUM_STEPS_RANGE.min}
   };
 
   static constexpr auto DRAW_CIRCLE_FREQUENCY_RANGE = NumberRange{5U, 100U};
@@ -473,9 +477,11 @@ auto ParticlesFx::ParticlesFxImpl::GetAdjustedZoomMidpoint(
   const auto xMax = m_fxHelper->GetDimensions().GetIntWidth() - 1;
   const auto yMax = m_fxHelper->GetDimensions().GetIntHeight() - 1;
 
-  const auto minZoomMidpoint   = Point2dInt{xMax / 10, yMax / 10};
-  const auto maxZoomMidpoint   = Point2dInt{xMax - minZoomMidpoint.x, yMax - minZoomMidpoint.y};
-  const auto zoomClipRectangle = Rectangle2dInt{minZoomMidpoint, maxZoomMidpoint};
+  const auto minZoomMidpoint = Point2dInt{.x = xMax / 10, .y = yMax / 10};
+  const auto maxZoomMidpoint =
+      Point2dInt{.x = xMax - minZoomMidpoint.x, .y = yMax - minZoomMidpoint.y};
+  const auto zoomClipRectangle =
+      Rectangle2dInt{.topLeft = minZoomMidpoint, .bottomRight = maxZoomMidpoint};
 
   return GetPointClippedToRectangle(
       zoomMidpoint, zoomClipRectangle, m_fxHelper->GetDimensions().GetCentrePoint());

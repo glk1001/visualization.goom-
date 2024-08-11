@@ -99,11 +99,11 @@ private:
   };
   static constexpr auto NUM_CURRENT_COLOR_STEPS = 500U;
   TValue m_currentColorT{
-      {StepType::CONTINUOUS_REVERSIBLE, NUM_CURRENT_COLOR_STEPS}
+      {.stepType = StepType::CONTINUOUS_REVERSIBLE, .numSteps = NUM_CURRENT_COLOR_STEPS}
   };
   static constexpr auto NUM_NODE_T_OFFSET_STEPS = 10U;
   TValue m_nodeTOffset{
-      {StepType::CONTINUOUS_REVERSIBLE, NUM_NODE_T_OFFSET_STEPS}
+      {.stepType = StepType::CONTINUOUS_REVERSIBLE, .numSteps = NUM_NODE_T_OFFSET_STEPS}
   };
   std::vector<TentacleAndAttributes> m_tentacles;
   [[nodiscard]] static auto GetTentacles(const GoomRand& goomRand,
@@ -120,7 +120,7 @@ private:
                                     float brightness) const -> MultiplePixels;
   static constexpr float GAMMA = 0.8F;
   COLOR::ColorAdjustment m_colorAdjust{
-      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+      {.gamma = GAMMA, .alterChromaFactor = COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 
   static constexpr auto COLOR_SEGMENT_MIX_T_RANGE   = NumberRange{0.7F, 1.0F};
@@ -135,7 +135,7 @@ private:
   Point2dInt m_targetEndCentrePos               = m_screenCentre;
   static constexpr auto NUM_STEPS_TO_END_TARGET = 100U;
   TValue m_endCentrePosT{
-      {StepType::SINGLE_CYCLE, NUM_STEPS_TO_END_TARGET}
+      {.stepType = StepType::SINGLE_CYCLE, .numSteps = NUM_STEPS_TO_END_TARGET}
   };
   [[nodiscard]] auto GetAcceptableEndCentrePos(
       const Point2dInt& requestedEndCentrePos) const noexcept -> Point2dInt;
@@ -194,7 +194,8 @@ static constexpr auto BASE_Y_WEIGHT_FACTOR_RANGE  = NumberRange{0.8F, 1.1F};
 static constexpr auto ITER_ZERO_LERP_FACTOR       = 0.9;
 static constexpr auto MIN_SINE_X0                 = 0.0F;
 static const auto ITER_ZERO_Y_VAL_WAVE_ZERO_START = SineWaveMultiplier{
-    SineWaveMultiplier::SineProperties{MIN_SINE_FREQUENCY, -20.0F, +20.0F, MIN_SINE_X0}
+    SineWaveMultiplier::SineProperties{
+                                       .frequency = MIN_SINE_FREQUENCY, .lower = -20.0F, .upper = +20.0F, .x0 = MIN_SINE_X0}
 };
 
 constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D::BaseYWeights
@@ -219,11 +220,12 @@ constexpr auto GetMatchingBaseYWeights(const float freq) noexcept -> Tentacle2D:
   {
     if (freq <= FREQUENCIES.at(i))
     {
-      return {CORRESPONDING_BASE_Y_WEIGHTS.at(i), 1.0F - CORRESPONDING_BASE_Y_WEIGHTS.at(i)};
+      return {.previous = CORRESPONDING_BASE_Y_WEIGHTS.at(i),
+              .current  = 1.0F - CORRESPONDING_BASE_Y_WEIGHTS.at(i)};
     }
   }
 
-  return {HIGHEST_BASE_Y_WEIGHT, 1.0F - HIGHEST_BASE_Y_WEIGHT};
+  return {.previous = HIGHEST_BASE_Y_WEIGHT, .current = 1.0F - HIGHEST_BASE_Y_WEIGHT};
 }
 
 TentacleDriver::TentacleDriver(IGoomDraw& draw,
@@ -235,8 +237,10 @@ TentacleDriver::TentacleDriver(IGoomDraw& draw,
     m_goomTime{&goomTime},
     m_screenCentre{draw.GetDimensions().GetCentrePoint()},
     m_colorMaps{defaultAlpha},
-    m_tentacleParams{
-        NUM_TENTACLE_NODES, TENTACLE_LENGTH, MIN_SINE_FREQUENCY, ITER_ZERO_Y_VAL_WAVE_ZERO_START},
+    m_tentacleParams{.numNodes             = NUM_TENTACLE_NODES,
+                     .length               = TENTACLE_LENGTH,
+                     .iterZeroYValWaveFreq = MIN_SINE_FREQUENCY,
+                     .iterZeroYValWave     = ITER_ZERO_Y_VAL_WAVE_ZERO_START},
     m_tentaclePlotter{draw, *m_goomRand},
     m_tentacles{GetTentacles(*m_goomRand, tentacleLayout, m_tentacleParams)}
 {
@@ -262,11 +266,11 @@ auto TentacleDriver::GetTentacles(const GoomRand& goomRand,
     tentacle.SetStartPos(tentacleLayout.GetStartPoints().at(i));
     tentacle.SetEndPos(tentacleLayout.GetEndPoints().at(i));
 
-    tentacles.emplace_back(TentacleAndAttributes{std::move(tentacle),
-                                                 ConstColorMapSharedPtr{nullptr},
-                                                 ConstColorMapSharedPtr{nullptr},
-                                                 BLACK_PIXEL,
-                                                 BLACK_PIXEL});
+    tentacles.emplace_back(TentacleAndAttributes{.tentacle3D      = std::move(tentacle),
+                                                 .mainColorMapPtr = ConstColorMapSharedPtr{nullptr},
+                                                 .lowColorMapPtr  = ConstColorMapSharedPtr{nullptr},
+                                                 .currentMainColor = BLACK_PIXEL,
+                                                 .currentLowColor  = BLACK_PIXEL});
   }
 
   return tentacles;
@@ -282,8 +286,8 @@ auto TentacleDriver::CreateNewTentacle2D(const GoomRand& goomRand,
   Ensures(tent2dXMax >= 1.0);
 
   const auto dimensions = Tentacle2D::Dimensions{
-      {TENTACLE_2D_X_MIN,        tent2dXMax},
-      {TENTACLE_2D_Y_MIN, TENTACLE_2D_Y_MAX},
+      .xDimensions = {.min = TENTACLE_2D_X_MIN,        .max = tent2dXMax},
+      .yDimensions = {.min = TENTACLE_2D_Y_MIN, .max = TENTACLE_2D_Y_MAX},
   };
 
   auto baseYWeights = GetMatchingBaseYWeights(tentacleParams.iterZeroYValWaveFreq);
@@ -312,7 +316,8 @@ auto TentacleDriver::SetWeightedColorMaps(
       m_tentacles,
       [this, &baseMainColorMapName, &baseLowColorMapName, &saturation, &lightness](auto& tentacle)
       {
-        const auto tintProperties = ColorMaps::TintProperties{saturation(), lightness()};
+        const auto tintProperties =
+            ColorMaps::TintProperties{.saturation = saturation(), .lightness = lightness()};
 
         tentacle.mainColorMapPtr =
             m_colorMaps.GetTintedColorMapPtr(baseMainColorMapName, tintProperties);
@@ -417,20 +422,20 @@ auto TentacleDriver::GetNewRadiusEndCentrePosOffset(
     const Point2dFlt& oldTentacleEndPos,
     const Point2dInt& newCentreEndPosOffset) noexcept -> V3dFlt
 {
-  const auto oldTentacleEndPosVec = Vec2dInt{static_cast<int32_t>(oldTentacleEndPos.x),
-                                             static_cast<int32_t>(oldTentacleEndPos.y)};
+  const auto oldTentacleEndPosVec = Vec2dInt{.x = static_cast<int32_t>(oldTentacleEndPos.x),
+                                             .y = static_cast<int32_t>(oldTentacleEndPos.y)};
   const auto newTentacleEndPos    = Point2dInt{
-      static_cast<int32_t>(radiusScale * static_cast<float>(oldTentacleEndPosVec.x)),
-      static_cast<int32_t>(radiusScale * static_cast<float>(oldTentacleEndPosVec.y)),
+         .x = static_cast<int32_t>(radiusScale * static_cast<float>(oldTentacleEndPosVec.x)),
+         .y = static_cast<int32_t>(radiusScale * static_cast<float>(oldTentacleEndPosVec.y)),
   };
   const auto newRadiusEndPosOffset = newTentacleEndPos - oldTentacleEndPosVec;
 
   const auto newRadiusCentreEndPosOffset =
       newCentreEndPosOffset + ToVec2dInt(newRadiusEndPosOffset);
 
-  return V3dFlt{static_cast<float>(newRadiusCentreEndPosOffset.x),
-                static_cast<float>(newRadiusCentreEndPosOffset.y),
-                0.0F};
+  return V3dFlt{.x = static_cast<float>(newRadiusCentreEndPosOffset.x),
+                .y = static_cast<float>(newRadiusCentreEndPosOffset.y),
+                .z = 0.0F};
 }
 
 auto TentacleDriver::Update() -> void
@@ -451,7 +456,7 @@ inline auto TentacleDriver::PreDrawUpdateTentacles() noexcept -> void
 auto TentacleDriver::DrawTentacles() noexcept -> void
 {
   auto colorT = TValue{
-      {TValue::StepType::CONTINUOUS_REVERSIBLE, m_tentacleGroupSize}
+      {.stepType = TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps = m_tentacleGroupSize}
   };
 
   m_tentaclePlotter.SetNodeTOffset(m_nodeTOffset());
@@ -467,8 +472,8 @@ auto TentacleDriver::DrawTentacles() noexcept -> void
 
     IterateTentacle(tentacleAndAttributes.tentacle3D);
 
-    m_tentaclePlotter.SetEndDotColors({m_dominantMainColorMapPtr->GetColor(colorT()),
-                                       m_dominantLowColorMapPtr->GetColor(colorT())});
+    m_tentaclePlotter.SetEndDotColors({.color1 = m_dominantMainColorMapPtr->GetColor(colorT()),
+                                       .color2 = m_dominantLowColorMapPtr->GetColor(colorT())});
 
     m_tentaclePlotter.SetTentacleLineThickness(GetLineThickness(i));
 
@@ -504,17 +509,18 @@ auto TentacleDriver::GetMixedColors(const float dominantT,
                                     const TentacleAndAttributes& tentacleAndAttributes,
                                     const float brightness) const -> MultiplePixels
 {
-  const auto mixedColors =
-      MultiplePixels{ColorMaps::GetColorMix(m_dominantMainColorMapPtr->GetColor(dominantT),
-                                            tentacleAndAttributes.mainColorMapPtr->GetColor(nodeT),
-                                            m_mainColorSegmentMixT),
-                     ColorMaps::GetColorMix(m_dominantLowColorMapPtr->GetColor(dominantT),
-                                            tentacleAndAttributes.lowColorMapPtr->GetColor(nodeT),
-                                            m_lowColorSegmentMixT)};
+  const auto mixedColors = MultiplePixels{
+      .color1 = ColorMaps::GetColorMix(m_dominantMainColorMapPtr->GetColor(dominantT),
+                                       tentacleAndAttributes.mainColorMapPtr->GetColor(nodeT),
+                                       m_mainColorSegmentMixT),
+      .color2 = ColorMaps::GetColorMix(m_dominantLowColorMapPtr->GetColor(dominantT),
+                                       tentacleAndAttributes.lowColorMapPtr->GetColor(nodeT),
+                                       m_lowColorSegmentMixT)};
 
-  return {
-      m_colorAdjust.GetAdjustment(MAIN_BRIGHTNESS_FACTOR * brightness, GetMainColor(mixedColors)),
-      m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness, GetLowColor(mixedColors))};
+  return {.color1 = m_colorAdjust.GetAdjustment(MAIN_BRIGHTNESS_FACTOR * brightness,
+                                                GetMainColor(mixedColors)),
+          .color2 = m_colorAdjust.GetAdjustment(LOW_BRIGHTNESS_FACTOR * brightness,
+                                                GetLowColor(mixedColors))};
 }
 
 inline auto TentacleDriver::ChangeSegmentMixes() noexcept -> void

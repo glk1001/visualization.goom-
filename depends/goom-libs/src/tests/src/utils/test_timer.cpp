@@ -224,10 +224,10 @@ TEST_CASE("OnOffTimer")
   static constexpr auto NUM_OFF_COUNT                 = 10U;
   static constexpr auto NUM_OFF_COUNT_AFTER_FAILED_ON = 0U;
   static constexpr auto TIMER_COUNTS                  = OnOffTimer::TimerCounts{
-      NUM_ON_COUNT,
-      NUM_ON_COUNT_AFTER_FAILED_OFF,
-      NUM_OFF_COUNT,
-      NUM_OFF_COUNT_AFTER_FAILED_ON,
+                       .numOnCount               = NUM_ON_COUNT,
+                       .numOnCountAfterFailedOff = NUM_ON_COUNT_AFTER_FAILED_OFF,
+                       .numOffCount              = NUM_OFF_COUNT,
+                       .numOffCountAfterFailedOn = NUM_OFF_COUNT_AFTER_FAILED_ON,
   };
   auto onOffTimer = OnOffTimer{goomTime, TIMER_COUNTS};
 
@@ -244,7 +244,7 @@ TEST_CASE("OnOffTimer")
     return true;
   };
 
-  onOffTimer.SetActions({onAction, offAction});
+  onOffTimer.SetActions({.onAction = onAction, .offAction = offAction});
 
   // Run 'on' timer.
   REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
@@ -370,10 +370,10 @@ TEST_CASE("OnOffTimer with fails")
   static constexpr auto NUM_OFF_COUNT                 = 10U;
   static constexpr auto NUM_OFF_COUNT_AFTER_FAILED_ON = 2U;
   static constexpr auto TIMER_COUNTS                  = OnOffTimer::TimerCounts{
-      NUM_ON_COUNT,
-      NUM_ON_COUNT_AFTER_FAILED_OFF,
-      NUM_OFF_COUNT,
-      NUM_OFF_COUNT_AFTER_FAILED_ON,
+                       .numOnCount               = NUM_ON_COUNT,
+                       .numOnCountAfterFailedOff = NUM_ON_COUNT_AFTER_FAILED_OFF,
+                       .numOffCount              = NUM_OFF_COUNT,
+                       .numOffCountAfterFailedOn = NUM_OFF_COUNT_AFTER_FAILED_ON,
   };
   auto onOffTimer = OnOffTimer{goomTime, TIMER_COUNTS};
 
@@ -392,7 +392,7 @@ TEST_CASE("OnOffTimer with fails")
     return offActionReturn;
   };
 
-  onOffTimer.SetActions({onAction, offAction});
+  onOffTimer.SetActions({.onAction = onAction, .offAction = offAction});
 
   REQUIRE(onOffTimer.GetTimerState() == OnOffTimer::TimerState::NO_TIMERS_ACTIVE);
   REQUIRE(not onActionCalled);

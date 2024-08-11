@@ -42,13 +42,13 @@ auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) n
     const auto ypx11 = iPart(yEnd);
     if (steep)
     {
-      plot({ypx11, xpx11}, rFPart(yEnd) * xGap);
-      plot({ypx11 + 1, xpx11}, fPart(yEnd) * xGap);
+      plot({.x = ypx11, .y = xpx11}, rFPart(yEnd) * xGap);
+      plot({.x = ypx11 + 1, .y = xpx11}, fPart(yEnd) * xGap);
     }
     else
     {
-      plot({xpx11, ypx11}, rFPart(yEnd) * xGap);
-      plot({xpx11, ypx11 + 1}, fPart(yEnd) * xGap);
+      plot({.x = xpx11, .y = ypx11}, rFPart(yEnd) * xGap);
+      plot({.x = xpx11, .y = ypx11 + 1}, fPart(yEnd) * xGap);
     }
     interY = yEnd + gradient;
   }
@@ -62,13 +62,13 @@ auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) n
     const auto ypx12 = iPart(yEnd);
     if (steep)
     {
-      plot({ypx12, xpx12}, rFPart(yEnd) * xGap);
-      plot({ypx12 + 1, xpx12}, fPart(yEnd) * xGap);
+      plot({.x = ypx12, .y = xpx12}, rFPart(yEnd) * xGap);
+      plot({.x = ypx12 + 1, .y = xpx12}, fPart(yEnd) * xGap);
     }
     else
     {
-      plot({xpx12, ypx12}, rFPart(yEnd) * xGap);
-      plot({xpx12, ypx12 + 1}, fPart(yEnd) * xGap);
+      plot({.x = xpx12, .y = ypx12}, rFPart(yEnd) * xGap);
+      plot({.x = xpx12, .y = ypx12 + 1}, fPart(yEnd) * xGap);
     }
   }
 
@@ -76,8 +76,8 @@ auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) n
   {
     for (auto x = xpx11 + 1; x < xpx12; ++x)
     {
-      plot({iPart(interY), x}, rFPart(interY));
-      plot({iPart(interY) + 1, x}, fPart(interY));
+      plot({.x = iPart(interY), .y = x}, rFPart(interY));
+      plot({.x = iPart(interY) + 1, .y = x}, fPart(interY));
       interY += gradient;
     }
   }
@@ -85,8 +85,8 @@ auto WuLine(float x0, float y0, float x1, float y1, const PlotPointFunc& plot) n
   {
     for (auto x = xpx11 + 1; x < xpx12; ++x)
     {
-      plot({x, iPart(interY)}, rFPart(interY));
-      plot({x, iPart(interY) + 1}, fPart(interY));
+      plot({.x = x, .y = iPart(interY)}, rFPart(interY));
+      plot({.x = x, .y = iPart(interY) + 1}, fPart(interY));
       interY += gradient;
     }
   }

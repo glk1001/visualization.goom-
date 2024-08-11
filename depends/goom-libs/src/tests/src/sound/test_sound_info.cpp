@@ -149,7 +149,7 @@ TEST_CASE("Test SoundInfo Volume")
   static constexpr auto FLAT_VOL            = 0.1F;
   static constexpr auto EXPECTED_NEW_VOLUME = AudioSamples::GetPositiveValue(FLAT_VOL);
 
-  std::fill(begin(audioData), end(audioData), FLAT_VOL);
+  std::ranges::fill(audioData, FLAT_VOL);
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);
   REQUIRE(soundInfo.GetVolume() == Approx(EXPECTED_NEW_VOLUME));
@@ -168,7 +168,7 @@ TEST_CASE("Test SoundInfo Volume")
 
   // Fourth update - negative sound values
   static constexpr auto NEGATIVE_VOL = -0.2F;
-  std::fill(begin(audioData), end(audioData), NEGATIVE_VOL);
+  std::ranges::fill(audioData, NEGATIVE_VOL);
   audioSamples = std::make_unique<AudioSamples>(NUM_SAMPLE_CHANNELS, audioData);
   soundInfo.ProcessSample(*audioSamples);
   REQUIRE(soundInfo.GetVolume() == Approx(AudioSamples::GetPositiveValue(NEGATIVE_VOL)));

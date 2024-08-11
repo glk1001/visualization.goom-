@@ -81,7 +81,7 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   const auto emplaceCoords = [&](const Point2dInt& point, const ColorsList& colorsList)
   {
     changedPixels.emplace_back(PixelInfo{
-        point, {colorsList.colorsArray[0], BLACK_PIXEL}
+        .point = point, .colors = {.color1 = colorsList.colorsArray[0], .color2 = BLACK_PIXEL}
     });
   };
   draw.IterateChangedCoordsNewToOld(emplaceCoords);
@@ -92,18 +92,19 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
 
 [[nodiscard]] auto GetPixelInfo(uint32_t pixelNum) -> PixelInfo
 {
-  const auto point  = Point2dInt{static_cast<int32_t>(pixelNum), static_cast<int32_t>(pixelNum)};
+  const auto point =
+      Point2dInt{.x = static_cast<int32_t>(pixelNum), .y = static_cast<int32_t>(pixelNum)};
   const auto chan0  = static_cast<PixelChannelType>(pixelNum);
   const auto chan1  = static_cast<PixelChannelType>(pixelNum + 1);
   const auto color0 = Pixel{
-      {chan0, chan0, chan0, 255U}
+      {.red = chan0, .green = chan0, .blue = chan0, .alpha = 255U}
   };
   const auto color1 = Pixel{
-      {chan1, chan1, chan1, 0U}
+      {.red = chan1, .green = chan1, .blue = chan1, .alpha = 0U}
   };
-  const auto colors = MultiplePixels{color0, color1};
+  const auto colors = MultiplePixels{.color1 = color0, .color2 = color1};
 
-  return {point, colors};
+  return {.point = point, .colors = colors};
 }
 
 [[nodiscard]] auto GetPixelsNewToOld(GoomDrawToContainer* const draw,
@@ -122,7 +123,7 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
     REQUIRE(draw->GetPixels(pixelInfo.point).color1 == pixelInfo.colors.color1);
     REQUIRE(draw->GetPixels(pixelInfo.point).color2 == BLACK_PIXEL);
   }
-  std::reverse(begin(pixelsNewToOld), end(pixelsNewToOld));
+  std::ranges::reverse(pixelsNewToOld);
 
   return pixelsNewToOld;
 }
@@ -200,12 +201,12 @@ TEST_CASE("Test DrawMovingText to Container with Duplicates")
   std::vector<PixelInfo> pixelsNewToOld    = FillDrawContainer(&draw, NUM_CHANGED_COORDS);
 
   const auto color0 = Pixel{
-      {10, 10, 10, 255U}
+      {.red = 10, .green = 10, .blue = 10, .alpha = 255U}
   };
   const auto color1 = Pixel{
-      {11, 11, 11, 0U}
+      {.red = 11, .green = 11, .blue = 11, .alpha = 0U}
   };
-  const auto colors = MultiplePixels{color0, color1};
+  const auto colors = MultiplePixels{.color1 = color0, .color2 = color1};
   const auto oldest = pixelsNewToOld.back();
   draw.DrawPixels(oldest.point, colors);
   REQUIRE(draw.GetNumChangedCoords() == NUM_CHANGED_COORDS);

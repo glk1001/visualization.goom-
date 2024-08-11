@@ -54,17 +54,23 @@ public:
       static constexpr auto DEFAULT_MIN_X_MAX = NormalizedCoords::MAX_COORD;
       static constexpr auto DEFAULT_MIN_Y_MIN = NormalizedCoords::MIN_COORD;
       static constexpr auto DEFAULT_MIN_Y_MAX = NormalizedCoords::MAX_COORD;
-      MinMaxValues<float> minMaxXMin{DEFAULT_MIN_X_MIN, DEFAULT_MIN_X_MIN + EPSILON};
-      MinMaxValues<float> minMaxYMin{DEFAULT_MIN_Y_MIN, DEFAULT_MIN_Y_MIN + EPSILON};
-      MinMaxValues<float> minMaxXMax{DEFAULT_MIN_X_MAX - EPSILON, DEFAULT_MIN_X_MAX};
-      MinMaxValues<float> minMaxYMax{DEFAULT_MIN_Y_MAX - EPSILON, DEFAULT_MIN_Y_MAX};
+      MinMaxValues<float> minMaxXMin{.minValue = DEFAULT_MIN_X_MIN,
+                                     .maxValue = DEFAULT_MIN_X_MIN + EPSILON};
+      MinMaxValues<float> minMaxYMin{.minValue = DEFAULT_MIN_Y_MIN,
+                                     .maxValue = DEFAULT_MIN_Y_MIN + EPSILON};
+      MinMaxValues<float> minMaxXMax{.minValue = DEFAULT_MIN_X_MAX - EPSILON,
+                                     .maxValue = DEFAULT_MIN_X_MAX};
+      MinMaxValues<float> minMaxYMax{.minValue = DEFAULT_MIN_Y_MAX - EPSILON,
+                                     .maxValue = DEFAULT_MIN_Y_MAX};
     } rect;
     struct Sides
     {
       static constexpr auto DEFAULT_MIN_LENGTH = NormalizedCoords::COORD_WIDTH - EPSILON;
       static constexpr auto DEFAULT_MAX_LENGTH = NormalizedCoords::COORD_WIDTH - EPSILON;
-      MinMaxValues<float> minMaxWidth{DEFAULT_MIN_LENGTH, DEFAULT_MAX_LENGTH + EPSILON};
-      MinMaxValues<float> minMaxHeight{DEFAULT_MIN_LENGTH, DEFAULT_MAX_LENGTH + EPSILON};
+      MinMaxValues<float> minMaxWidth{.minValue = DEFAULT_MIN_LENGTH,
+                                      .maxValue = DEFAULT_MAX_LENGTH + EPSILON};
+      MinMaxValues<float> minMaxHeight{.minValue = DEFAULT_MIN_LENGTH,
+                                       .maxValue = DEFAULT_MAX_LENGTH + EPSILON};
     } sides;
   };
 
@@ -204,15 +210,15 @@ inline auto GetVelocityByZoomLerpedToNegOne(const NormalizedCoords& coords,
 inline auto GetAppliedZoomFactor(const XyZoomFactor& zoomFactor,
                                  const Vec2dFlt& velocity) noexcept -> Vec2dFlt
 {
-  return {zoomFactor.xFactor * velocity.x, zoomFactor.yFactor * velocity.y};
+  return {.x = zoomFactor.xFactor * velocity.x, .y = zoomFactor.yFactor * velocity.y};
 }
 
 inline auto GetXyZoomFactor(const NormalizedCoords& coords,
                             const LerpToOneTs& lerpToOneTs) noexcept -> XyZoomFactor
 {
   return {
-      std::lerp(coords.GetX(), 1.0F, lerpToOneTs.xLerpT),
-      std::lerp(coords.GetY(), 1.0F, lerpToOneTs.yLerpT),
+      .xFactor = std::lerp(coords.GetX(), 1.0F, lerpToOneTs.xLerpT),
+      .yFactor = std::lerp(coords.GetY(), 1.0F, lerpToOneTs.yLerpT),
   };
 }
 
@@ -223,8 +229,8 @@ inline auto GetDiscontinuousXyZoomFactor(const NormalizedCoords& coords,
   const auto yAbsZoomFactor = std::lerp(std::abs(coords.GetY()), 1.0F, lerpToOneTs.yLerpT);
 
   return {
-      coords.GetX() < 0.0F ? -xAbsZoomFactor : +xAbsZoomFactor,
-      coords.GetY() < 0.0F ? -yAbsZoomFactor : +yAbsZoomFactor,
+      .xFactor = coords.GetX() < 0.0F ? -xAbsZoomFactor : +xAbsZoomFactor,
+      .yFactor = coords.GetY() < 0.0F ? -yAbsZoomFactor : +yAbsZoomFactor,
   };
 }
 

@@ -26,15 +26,15 @@ static constexpr auto Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;
 static constexpr auto X_DEFAULT_FREQ_FACTOR = 1.0F;
 static constexpr auto Y_DEFAULT_FREQ_FACTOR = 10.0F;
 static constexpr auto FREQ_FACTOR_RANGE     = FrequencyFactorRange{
-        {-50.0F, +50.01F},
-        {-50.0F, +50.01F},
+        .xRange = {-50.0F, +50.01F},
+        .yRange = {-50.0F, +50.01F},
 };
 
 static constexpr auto X_DEFAULT_AMPLITUDE = 10.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 10.0F;
 static constexpr auto AMPLITUDE_RANGE     = AmplitudeRange{
-        {0.010F, 1.011F},
-        {0.010F, 1.011F},
+        .xRange = {0.010F, 1.011F},
+        .yRange = {0.010F, 1.011F},
 };
 
 static constexpr auto PROB_Y_ONLY_STRICT   = 0.9F;
@@ -44,9 +44,9 @@ static constexpr auto PROB_AMPLITUDE_EQUAL = 0.9F;
 YOnly::YOnly(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_params{
-        {X_DEFAULT_EFFECT,      Y_DEFAULT_EFFECT},
-        {X_DEFAULT_FREQ_FACTOR, Y_DEFAULT_FREQ_FACTOR},
-        {X_DEFAULT_AMPLITUDE,   Y_DEFAULT_AMPLITUDE}
+        .xyEffect={.xEffect=X_DEFAULT_EFFECT,      .yEffect=Y_DEFAULT_EFFECT},
+        .frequencyFactor={.x=X_DEFAULT_FREQ_FACTOR, .y=Y_DEFAULT_FREQ_FACTOR},
+        .amplitude={X_DEFAULT_AMPLITUDE,   Y_DEFAULT_AMPLITUDE}
     }
 {
 }
@@ -72,9 +72,9 @@ auto YOnly::SetRandomParams() noexcept -> void
                               : m_goomRand->GetRandInRange<AMPLITUDE_RANGE.yRange>();
 
   SetParams({
-      {    xEffect,     yEffect},
-      {xFreqFactor, yFreqFactor},
-      { xAmplitude,  yAmplitude}
+      .xyEffect        = {.xEffect = xEffect, .yEffect = yEffect},
+      .frequencyFactor = {  .x = xFreqFactor,   .y = yFreqFactor},
+      .amplitude       = {        xAmplitude,         yAmplitude}
   });
 }
 
@@ -102,7 +102,7 @@ auto YOnly::GetYOnlyZoomAdjustmentMultiplier(const YOnlyEffect effect,
 
 auto YOnly::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  return NameValuePairs();
+  return {};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

@@ -99,12 +99,12 @@ inline IGoomDraw::IGoomDraw(const Dimensions& dimensions) noexcept : m_dimension
 
 inline auto MakePixels(const Pixel& mainColor, const Pixel& lowColor) noexcept -> MultiplePixels
 {
-  return {mainColor, lowColor};
+  return {.color1 = mainColor, .color2 = lowColor};
 }
 
 inline auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels
 {
-  return {colors.color2, colors.color1};
+  return {.color1 = colors.color2, .color2 = colors.color1};
 }
 
 inline auto GetMainColor(const MultiplePixels& colors) noexcept -> Pixel

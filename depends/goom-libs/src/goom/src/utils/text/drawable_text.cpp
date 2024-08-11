@@ -85,8 +85,8 @@ auto GetLeftAlignedPenForCentringStringAt(TextDrawer& textDrawer,
   textDrawer.SetCharSpacing(oldCharSpacing);
   textDrawer.SetFontSize(oldFontSize);
 
-  return {centreAt.x - (I_HALF * (textWidth - bearingX)),
-          centreAt.y - ((I_HALF * textHeight) - bearingY)};
+  return {.x = centreAt.x - (I_HALF * (textWidth - bearingX)),
+          .y = centreAt.y - ((I_HALF * textHeight) - bearingY)};
 }
 
 } // namespace GOOM::UTILS::TEXT

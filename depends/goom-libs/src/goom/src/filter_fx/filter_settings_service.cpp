@@ -370,49 +370,53 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   auto filterWeights = ConditionalWeights<ZoomFilterMode>{
       goomRand,
       {
-        {AMULET_MODE, AMULET_MODE_WEIGHT},
-        {COMPLEX_RATIONAL_MODE, COMPLEX_RATIONAL_MODE_WEIGHT},
-        {CRYSTAL_BALL_MODE0, CRYSTAL_BALL_MODE0_WEIGHT},
-        {CRYSTAL_BALL_MODE1, CRYSTAL_BALL_MODE1_WEIGHT},
-        {DISTANCE_FIELD_MODE0, DISTANCE_FIELD_MODE0_WEIGHT},
-        {DISTANCE_FIELD_MODE1, DISTANCE_FIELD_MODE1_WEIGHT},
-        {DISTANCE_FIELD_MODE2, DISTANCE_FIELD_MODE2_WEIGHT},
-        {EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_MODE_WEIGHT},
-        {HYPERCOS_MODE0, HYPERCOS_MODE0_WEIGHT},
-        {HYPERCOS_MODE1, HYPERCOS_MODE1_WEIGHT},
-        {HYPERCOS_MODE2, HYPERCOS_MODE2_WEIGHT},
-        {HYPERCOS_MODE3, HYPERCOS_MODE3_WEIGHT},
-        {IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_MODE_WEIGHT},
-        {MOBIUS_MODE, MOBIUS_MODE_WEIGHT},
-        {NEWTON_MODE, NEWTON_MODE_WEIGHT},
-        {NORMAL_MODE, NORMAL_MODE_WEIGHT},
-        {PERLIN_NOISE_MODE, PERLIN_NOISE_MODE_WEIGHT},
-        {SCRUNCH_MODE, SCRUNCH_MODE_WEIGHT},
-        {SPEEDWAY_MODE0, SPEEDWAY_MODE0_WEIGHT},
-        {SPEEDWAY_MODE1, SPEEDWAY_MODE1_WEIGHT},
-        {SPEEDWAY_MODE2, SPEEDWAY_MODE2_WEIGHT},
-        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, WAVE_SQ_DIST_MODE0_WEIGHT},
-        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, WAVE_SQ_DIST_MODE1_WEIGHT},
-        {WAVE_ATAN_ANGLE_EFFECT_MODE0, WAVE_ATAN_MODE0_WEIGHT},
-        {WAVE_ATAN_ANGLE_EFFECT_MODE1, WAVE_ATAN_MODE1_WEIGHT},
-        {WATER_MODE, WATER_MODE_WEIGHT},
-        {Y_ONLY_MODE, Y_ONLY_MODE_WEIGHT},
+        {.key = AMULET_MODE, .weight = AMULET_MODE_WEIGHT},
+        {.key = COMPLEX_RATIONAL_MODE, .weight = COMPLEX_RATIONAL_MODE_WEIGHT},
+        {.key = CRYSTAL_BALL_MODE0, .weight = CRYSTAL_BALL_MODE0_WEIGHT},
+        {.key = CRYSTAL_BALL_MODE1, .weight = CRYSTAL_BALL_MODE1_WEIGHT},
+        {.key = DISTANCE_FIELD_MODE0, .weight = DISTANCE_FIELD_MODE0_WEIGHT},
+        {.key = DISTANCE_FIELD_MODE1, .weight = DISTANCE_FIELD_MODE1_WEIGHT},
+        {.key = DISTANCE_FIELD_MODE2, .weight = DISTANCE_FIELD_MODE2_WEIGHT},
+        {.key = EXP_RECIPROCAL_MODE, .weight = EXP_RECIPROCAL_MODE_WEIGHT},
+        {.key = HYPERCOS_MODE0, .weight = HYPERCOS_MODE0_WEIGHT},
+        {.key = HYPERCOS_MODE1, .weight = HYPERCOS_MODE1_WEIGHT},
+        {.key = HYPERCOS_MODE2, .weight = HYPERCOS_MODE2_WEIGHT},
+        {.key = HYPERCOS_MODE3, .weight = HYPERCOS_MODE3_WEIGHT},
+        {.key = IMAGE_DISPLACEMENT_MODE, .weight = IMAGE_DISPLACEMENT_MODE_WEIGHT},
+        {.key = MOBIUS_MODE, .weight = MOBIUS_MODE_WEIGHT},
+        {.key = NEWTON_MODE, .weight = NEWTON_MODE_WEIGHT},
+        {.key = NORMAL_MODE, .weight = NORMAL_MODE_WEIGHT},
+        {.key = PERLIN_NOISE_MODE, .weight = PERLIN_NOISE_MODE_WEIGHT},
+        {.key = SCRUNCH_MODE, .weight = SCRUNCH_MODE_WEIGHT},
+        {.key = SPEEDWAY_MODE0, .weight = SPEEDWAY_MODE0_WEIGHT},
+        {.key = SPEEDWAY_MODE1, .weight = SPEEDWAY_MODE1_WEIGHT},
+        {.key = SPEEDWAY_MODE2, .weight = SPEEDWAY_MODE2_WEIGHT},
+        {.key = WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, .weight = WAVE_SQ_DIST_MODE0_WEIGHT},
+        {.key = WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, .weight = WAVE_SQ_DIST_MODE1_WEIGHT},
+        {.key = WAVE_ATAN_ANGLE_EFFECT_MODE0, .weight = WAVE_ATAN_MODE0_WEIGHT},
+        {.key = WAVE_ATAN_ANGLE_EFFECT_MODE1, .weight = WAVE_ATAN_MODE1_WEIGHT},
+        {.key = WATER_MODE, .weight = WATER_MODE_WEIGHT},
+        {.key = Y_ONLY_MODE, .weight = Y_ONLY_MODE_WEIGHT},
         },
       {
-        {CRYSTAL_BALL_MODE0, s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS},
-        {CRYSTAL_BALL_MODE1, s_CRYSTAL_BALL_MOD_E1_MULTIPLIERS},
-        {NORMAL_MODE, s_NORMAL_MODE_MULTIPLIERS},
-        {HYPERCOS_MODE0, s_HYPERCOS_MOD_E0_MULTIPLIERS},
-        {HYPERCOS_MODE1, s_HYPERCOS_MOD_E1_MULTIPLIERS},
-        {HYPERCOS_MODE2, s_HYPERCOS_MOD_E2_MULTIPLIERS},
-        {HYPERCOS_MODE3, s_HYPERCOS_MOD_E3_MULTIPLIERS},
-        {SPEEDWAY_MODE0, s_SPEEDWAY_MOD_E0_MULTIPLIERS},
-        {SPEEDWAY_MODE1, s_SPEEDWAY_MOD_E1_MULTIPLIERS},
-        {SPEEDWAY_MODE2, s_SPEEDWAY_MOD_E2_MULTIPLIERS},
-        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, s_WAVE_SQ_DIST_MOD_E0_MULTIPLIERS},
-        {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, s_WAVE_SQ_DIST_MOD_E1_MULTIPLIERS},
-        {WAVE_ATAN_ANGLE_EFFECT_MODE0, s_WAVE_ATAN_MOD_E0_MULTIPLIERS},
-        {WAVE_ATAN_ANGLE_EFFECT_MODE1, s_WAVE_ATAN_MOD_E1_MULTIPLIERS},
+        {.key = CRYSTAL_BALL_MODE0, .weightMultipliers = s_CRYSTAL_BALL_MOD_E0_MULTIPLIERS},
+        {.key = CRYSTAL_BALL_MODE1, .weightMultipliers = s_CRYSTAL_BALL_MOD_E1_MULTIPLIERS},
+        {.key = NORMAL_MODE, .weightMultipliers = s_NORMAL_MODE_MULTIPLIERS},
+        {.key = HYPERCOS_MODE0, .weightMultipliers = s_HYPERCOS_MOD_E0_MULTIPLIERS},
+        {.key = HYPERCOS_MODE1, .weightMultipliers = s_HYPERCOS_MOD_E1_MULTIPLIERS},
+        {.key = HYPERCOS_MODE2, .weightMultipliers = s_HYPERCOS_MOD_E2_MULTIPLIERS},
+        {.key = HYPERCOS_MODE3, .weightMultipliers = s_HYPERCOS_MOD_E3_MULTIPLIERS},
+        {.key = SPEEDWAY_MODE0, .weightMultipliers = s_SPEEDWAY_MOD_E0_MULTIPLIERS},
+        {.key = SPEEDWAY_MODE1, .weightMultipliers = s_SPEEDWAY_MOD_E1_MULTIPLIERS},
+        {.key = SPEEDWAY_MODE2, .weightMultipliers = s_SPEEDWAY_MOD_E2_MULTIPLIERS},
+        {.key               = WAVE_SQ_DIST_ANGLE_EFFECT_MODE0,
+           .weightMultipliers = s_WAVE_SQ_DIST_MOD_E0_MULTIPLIERS},
+        {.key               = WAVE_SQ_DIST_ANGLE_EFFECT_MODE1,
+           .weightMultipliers = s_WAVE_SQ_DIST_MOD_E1_MULTIPLIERS},
+        {.key               = WAVE_ATAN_ANGLE_EFFECT_MODE0,
+           .weightMultipliers = s_WAVE_ATAN_MOD_E0_MULTIPLIERS},
+        {.key               = WAVE_ATAN_ANGLE_EFFECT_MODE1,
+           .weightMultipliers = s_WAVE_ATAN_MOD_E1_MULTIPLIERS},
         }
   };
 
@@ -433,165 +437,165 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   using ModeWeights = std::array<Weights<HypercosOverlayMode>::KeyValue, NUM<HypercosOverlayMode>>;
 
   constexpr auto AMULET_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 20.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 20.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto COMPLEX_RATIONAL_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
   };
   constexpr auto CRYSTAL_BALL0_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
-       {Hyp::MODE0, 10.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 5.0F},
+       {.key = Hyp::MODE0, .weight = 10.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto CRYSTAL_BALL1_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 99.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 5.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 99.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto DISTANCE_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 5.0F},
-       {Hyp::MODE0, 10.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 5.0F},
+       {.key = Hyp::MODE0, .weight = 10.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto EXP_RECIPROCAL_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
   };
   constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 2.0F},
-       {Hyp::MODE2, 2.0F},
-       {Hyp::MODE3, 2.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 2.0F},
+       {.key = Hyp::MODE2, .weight = 2.0F},
+       {.key = Hyp::MODE3, .weight = 2.0F}}
   };
   constexpr auto HYPERCOS1_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
-       {Hyp::MODE0, 2.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 2.0F},
-       {Hyp::MODE3, 2.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {.key = Hyp::MODE0, .weight = 2.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 2.0F},
+       {.key = Hyp::MODE3, .weight = 2.0F}}
   };
   constexpr auto HYPERCOS2_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
-       {Hyp::MODE0, 2.0F},
-       {Hyp::MODE1, 2.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 2.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {.key = Hyp::MODE0, .weight = 2.0F},
+       {.key = Hyp::MODE1, .weight = 2.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 2.0F}}
   };
   constexpr auto HYPERCOS3_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 1.0F},
-       {Hyp::MODE0, 2.0F},
-       {Hyp::MODE1, 2.0F},
-       {Hyp::MODE2, 2.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 1.0F},
+       {.key = Hyp::MODE0, .weight = 2.0F},
+       {.key = Hyp::MODE1, .weight = 2.0F},
+       {.key = Hyp::MODE2, .weight = 2.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
   };
   constexpr auto NEWTON_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
   };
   constexpr auto NORMAL_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
   };
   constexpr auto PERLIN_NOISE_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 0.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
   };
   constexpr auto SCRUNCH_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto SPEEDWAY_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto WATER_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto WAVE_SQ_DIST_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto WAVE_SQ_DIST_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto WAVE_ATAN_MODE0_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 5.0F},
-       {Hyp::MODE1, 1.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto WAVE_ATAN_MODE1_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto Y_ONLY_HYPERCOS_WEIGHTS = ModeWeights{
-      {{Hyp::NONE, FORCED_HYPERCOS ? 0.0F : 10.0F},
-       {Hyp::MODE0, 1.0F},
-       {Hyp::MODE1, 5.0F},
-       {Hyp::MODE2, 1.0F},
-       {Hyp::MODE3, 1.0F}}
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
 
   constexpr auto HYPERCOS_WEIGHTS = EnumMap<ZoomFilterMode, ModeWeights>{{{
@@ -649,10 +653,13 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
     filterModeVec.emplace_back(
         filterMode,
         FilterSettingsService::ZoomFilterModeInfo{
-            FILTER_MODE_NAMES[filterMode],
-            createZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory),
-            {Weights<HypercosOverlayMode>{goomRand, GetHypercosWeights(filterMode)},
-                                                        GetAfterEffectsProbability(filterMode)},
+            .name = FILTER_MODE_NAMES[filterMode],
+            .zoomAdjustmentEffect =
+                createZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory),
+            .afterEffectsProbabilities = {.hypercosModeWeights =
+                                              Weights<HypercosOverlayMode>{
+                                                  goomRand, GetHypercosWeights(filterMode)},
+                                          .probabilities = GetAfterEffectsProbability(filterMode)},
     });
   }
 
@@ -684,45 +691,47 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                        m_resourcesDirectory,
                                        createZoomAdjustmentEffect)},
     m_filterSettings{
-        false,
-        {
-           Vitesse{},
-           DEFAULT_MAX_ZOOM_ADJUSTMENT,
-           DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
-           DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
-           nullptr,
-           {DEFAULT_ZOOM_MID_X, DEFAULT_ZOOM_MID_Y},
-           {
-               DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
-               DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
-               DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
-               DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE,
-               DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
-               DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS
+        .filterEffectsSettingsHaveChanged=false,
+        .filterEffectsSettings={
+           .vitesse=Vitesse{},
+           .maxZoomAdjustment=DEFAULT_MAX_ZOOM_ADJUSTMENT,
+           .baseZoomAdjustmentFactorMultiplier=DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
+           .afterEffectsVelocityMultiplier=DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
+           .zoomAdjustmentEffect=nullptr,
+           .zoomMidpoint={.x=DEFAULT_ZOOM_MID_X, .y=DEFAULT_ZOOM_MID_Y},
+           .filterMultiplierEffectsSettings={
+               .isActive=DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
+               .xFreq=DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
+               .yFreq=DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
+               .xAmplitude=DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE,
+               .yAmplitude=DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
+               .lerpZoomAdjustmentToCoords=DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS
            },
-           {
-               HypercosOverlayMode::NONE,
-               DEFAULT_AFTER_EFFECTS_STATES,
-               RotationAdjustments{},
+           .afterEffectsSettings={
+               .hypercosOverlayMode=HypercosOverlayMode::NONE,
+               .isActive=DEFAULT_AFTER_EFFECTS_STATES,
+               .rotationAdjustments=RotationAdjustments{},
             }
         },
-        GoomLerpData{DEFAULT_TRAN_LERP_INCREMENT, true},
+        .transformBufferLerpData=GoomLerpData{DEFAULT_TRAN_LERP_INCREMENT, true},
     },
     m_weightedFilterEvents{GetWeightedFilterEvents(goomRand)},
     m_zoomMidpointWeights{
       goomRand,
       {
-          {ZoomMidpointEvents::BOTTOM_MID_POINT,            BOTTOM_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::TOP_MID_POINT,               TOP_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::LEFT_MID_POINT,              LEFT_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::RIGHT_MID_POINT,             RIGHT_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::CENTRE_MID_POINT,            CENTRE_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT,
-                                                            BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT,  TOP_LEFT_QUARTER_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT,
-                                                            BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT},
-          {ZoomMidpointEvents::TOP_RIGHT_QUARTER_MID_POINT, TOP_RIGHT_QUARTER_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::BOTTOM_MID_POINT,          .weight = BOTTOM_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::TOP_MID_POINT,             .weight = TOP_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::LEFT_MID_POINT,            .weight = LEFT_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::RIGHT_MID_POINT,           .weight = RIGHT_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::CENTRE_MID_POINT,          .weight = CENTRE_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT,
+                                                   .weight = BOTTOM_LEFT_QUARTER_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT,
+                                                   .weight = TOP_LEFT_QUARTER_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT,
+                                                   .weight = BOTTOM_RIGHT_QUARTER_MID_POINT_WEIGHT},
+          {.key = ZoomMidpointEvents::TOP_RIGHT_QUARTER_MID_POINT,
+                                                   .weight = TOP_RIGHT_QUARTER_MID_POINT_WEIGHT},
       }
     }
 {
@@ -760,13 +769,13 @@ inline auto FilterSettingsService::GetZoomAdjustmentEffect()
   return m_filterModeData[m_filterMode].zoomAdjustmentEffect;
 }
 
-auto FilterSettingsService::NewCycle() -> void
+auto FilterSettingsService::NewCycle() noexcept -> void
 {
   m_filterModeAtLastUpdate = m_filterMode;
   m_filterSettings.transformBufferLerpData.Update();
 }
 
-auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() -> void
+auto FilterSettingsService::NotifyUpdatedFilterEffectsSettings() noexcept -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = false;
 
@@ -922,7 +931,7 @@ auto FilterSettingsService::SetRandomZoomMidpoint() -> void
   SetAnyRandomZoomMidpoint(allowEdgePoints);
 }
 
-auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
+auto FilterSettingsService::IsZoomMidpointInTheMiddle() const noexcept -> bool
 {
   if ((m_filterMode == WATER_MODE) or (m_filterMode == AMULET_MODE))
   {
@@ -943,7 +952,7 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const -> bool
   return false;
 }
 
-inline auto FilterSettingsService::IsFilterModeAWaveMode() const -> bool
+inline auto FilterSettingsService::IsFilterModeAWaveMode() const noexcept -> bool
 {
   if (m_filterMode == WAVE_SQ_DIST_ANGLE_EFFECT_MODE0)
   {
@@ -964,7 +973,7 @@ inline auto FilterSettingsService::IsFilterModeAWaveMode() const -> bool
   return false;
 }
 
-auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) const
+auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) const noexcept
     -> ZoomMidpointEvents
 {
   Expects(m_zoomMidpointWeights.GetSumOfWeights() > SMALL_FLOAT);
@@ -982,7 +991,8 @@ auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) 
   return midPointEvent;
 }
 
-inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPointEvent) -> bool
+inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPointEvent) noexcept
+    -> bool
 {
   return (midPointEvent == ZoomMidpointEvents::BOTTOM_MID_POINT) or
          (midPointEvent == ZoomMidpointEvents::TOP_MID_POINT) or
@@ -990,7 +1000,7 @@ inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPo
          (midPointEvent == ZoomMidpointEvents::LEFT_MID_POINT);
 }
 
-auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints) -> void
+auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints) noexcept -> void
 {
   static constexpr auto HEIGHT_MARGIN = 2;
 
@@ -998,44 +1008,44 @@ auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints)
   {
     case ZoomMidpointEvents::BOTTOM_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
-          m_goomInfo->GetDimensions().GetIntHeight() - HEIGHT_MARGIN};
+          .x = I_HALF * m_goomInfo->GetDimensions().GetIntWidth(),
+          .y = m_goomInfo->GetDimensions().GetIntHeight() - HEIGHT_MARGIN};
       break;
     case ZoomMidpointEvents::TOP_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          I_HALF * m_goomInfo->GetDimensions().GetIntWidth(), 1};
+          .x = I_HALF * m_goomInfo->GetDimensions().GetIntWidth(), .y = 1};
       break;
     case ZoomMidpointEvents::LEFT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          1, I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
+          .x = 1, .y = I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::RIGHT_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          m_goomInfo->GetDimensions().GetIntWidth() - HEIGHT_MARGIN,
-          I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
+          .x = m_goomInfo->GetDimensions().GetIntWidth() - HEIGHT_MARGIN,
+          .y = I_HALF * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::CENTRE_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenCentre;
       break;
     case ZoomMidpointEvents::BOTTOM_LEFT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          I_QUARTER * m_goomInfo->GetDimensions().GetIntWidth(),
-          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntHeight()};
+          .x = I_QUARTER * m_goomInfo->GetDimensions().GetIntWidth(),
+          .y = I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::TOP_LEFT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          I_QUARTER * m_goomInfo->GetDimensions().GetIntWidth(),
-          I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
+          .x = I_QUARTER * m_goomInfo->GetDimensions().GetIntWidth(),
+          .y = I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::BOTTOM_RIGHT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
-          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntHeight()};
+          .x = I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
+          .y = I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
     case ZoomMidpointEvents::TOP_RIGHT_QUARTER_MID_POINT:
       m_filterSettings.filterEffectsSettings.zoomMidpoint = {
-          I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
-          I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
+          .x = I_THREE_QUARTERS * m_goomInfo->GetDimensions().GetIntWidth(),
+          .y = I_QUARTER * m_goomInfo->GetDimensions().GetIntHeight()};
       break;
   }
 }

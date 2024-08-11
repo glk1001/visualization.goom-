@@ -127,7 +127,7 @@ inline auto Wave::GetZoomAdjustment(const NormalizedCoords& coords) const noexce
 {
   const auto velocity = GetVelocity(coords);
 
-  return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
+  return {.x = coords.GetX() * velocity.x, .y = coords.GetY() * velocity.y};
 }
 
 inline auto Wave::GetParams() const noexcept -> const Params&
@@ -153,7 +153,7 @@ inline auto Wave::GetVelocity(const NormalizedCoords& coords) const noexcept -> 
   const auto yZoomAdjustment =
       GetBaseZoomAdjustment().y + GetZoomAdjustmentAdd(m_params.yWaveEffect, angle, reducer);
 
-  return {xZoomAdjustment, yZoomAdjustment};
+  return {.x = xZoomAdjustment, .y = yZoomAdjustment};
 }
 
 inline auto Wave::GetZoomAdjustmentAdd(const WaveEffect waveEffect,

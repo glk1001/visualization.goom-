@@ -184,7 +184,8 @@ inline auto DotDrawer::DrawCircleDot(const Point2dInt& centre,
 {
   const auto maxRadius = static_cast<int32_t>(diameter + 3) / 2;
   auto innerColorT     = TValue{
-          {TValue::StepType::SINGLE_CYCLE, static_cast<uint32_t>(maxRadius - 1)}
+          {.stepType = TValue::StepType::SINGLE_CYCLE,
+           .numSteps = static_cast<uint32_t>(maxRadius - 1)}
   };
   static constexpr auto INNER_COLOR_CUTOFF_RADIUS = 4;
 
@@ -215,8 +216,8 @@ inline auto DotDrawer::GetCircleColors(const float brightness,
                                        const MultiplePixels& colors) noexcept -> MultiplePixels
 {
   return {
-      GetBrighterColor(brightness, GetMainColor(colors)),
-      GetBrighterColor(brightness, GetLowColor(colors)),
+      .color1 = GetBrighterColor(brightness, GetMainColor(colors)),
+      .color2 = GetBrighterColor(brightness, GetLowColor(colors)),
   };
 }
 
@@ -227,10 +228,10 @@ inline auto DotDrawer::GetCircleColorsWithInner(const float brightness,
     -> MultiplePixels
 {
   return {
-      GetBrighterColor(brightness,
-                       ColorMaps::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
-      GetBrighterColor(brightness,
-                       ColorMaps::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
+      .color1 = GetBrighterColor(
+          brightness, ColorMaps::GetColorMix(GetMainColor(colors), innerColor, innerColorMix)),
+      .color2 = GetBrighterColor(
+          brightness, ColorMaps::GetColorMix(GetLowColor(colors), innerColor, innerColorMix)),
   };
 }
 

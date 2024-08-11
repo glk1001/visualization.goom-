@@ -31,11 +31,11 @@ auto ImageDisplacement::GetDisplacementVector(
 
   if ((imagePoint.x < 0) || (imagePoint.x > m_xMax))
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
   if ((imagePoint.y < 0) || (imagePoint.y > m_yMax))
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
 
   const auto color =
@@ -62,7 +62,7 @@ inline auto ImageDisplacement::ColorToNormalizedDisplacement(const Pixel& color)
   //const auto normalizedDisplacementY =
   //         (ProbabilityOfMInN(1, 2) ? color.GFlt() : color.BFlt()) - 0.5F;
 
-  return {normalizedDisplacementX, normalizedDisplacementY};
+  return {.x = normalizedDisplacementX, .y = normalizedDisplacementY};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_UTILS

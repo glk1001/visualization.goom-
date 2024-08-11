@@ -112,7 +112,7 @@ void FractalHits::AddHit(const int32_t x, const int32_t y, const Similitude& sim
   else
   {
     hitInfo.color = simi.GetColor();
-    m_hits.emplace_back(Point2dInt{x, y}, 1);
+    m_hits.emplace_back(Point2dInt{.x = x, .y = y}, 1);
   }
 }
 

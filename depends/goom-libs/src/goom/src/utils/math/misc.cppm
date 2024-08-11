@@ -64,7 +64,9 @@ struct RationalNumber
 
   const auto isRational = denominator != static_cast<int32_t>(PRECISION);
 
-  return {(static_cast<int32_t>(intVal) * denominator) + numerator, denominator, isRational};
+  return {.numerator   = (static_cast<int32_t>(intVal) * denominator) + numerator,
+          .denominator = denominator,
+          .isRational  = isRational};
 }
 
 template<typename T>
@@ -231,7 +233,7 @@ private:
 
 template<typename T>
 inline constexpr auto FRAC_HALF = Fraction<T>{
-    {static_cast<T>(1), static_cast<T>(2)}
+    {.numerator = static_cast<T>(1), .denominator = static_cast<T>(2)}
 };
 inline constexpr auto I_HALF = FRAC_HALF<int32_t>;
 inline constexpr auto U_HALF = FRAC_HALF<uint32_t>;
@@ -239,28 +241,28 @@ inline constexpr auto S_HALF = FRAC_HALF<size_t>;
 
 template<typename T>
 inline constexpr auto FRAC_QUARTER = Fraction<T>{
-    {static_cast<T>(1), static_cast<T>(4)}
+    {.numerator = static_cast<T>(1), .denominator = static_cast<T>(4)}
 };
 inline constexpr auto I_QUARTER = FRAC_QUARTER<int32_t>;
 inline constexpr auto U_QUARTER = FRAC_QUARTER<uint32_t>;
 
 template<typename T>
 inline constexpr auto FRAC_THREE_QUARTERS = Fraction<T>{
-    {static_cast<T>(3), static_cast<T>(4)}
+    {.numerator = static_cast<T>(3), .denominator = static_cast<T>(4)}
 };
 inline constexpr auto I_THREE_QUARTERS = FRAC_THREE_QUARTERS<int32_t>;
 inline constexpr auto U_THREE_QUARTERS = FRAC_THREE_QUARTERS<uint32_t>;
 
 template<typename T>
 inline constexpr auto FRAC_THIRD = Fraction<T>{
-    {static_cast<T>(1), static_cast<T>(3)}
+    {.numerator = static_cast<T>(1), .denominator = static_cast<T>(3)}
 };
 inline constexpr auto I_THIRD = FRAC_THIRD<int32_t>;
 inline constexpr auto U_THIRD = FRAC_THIRD<uint32_t>;
 
 template<typename T>
 inline constexpr auto FRAC_FIFTH = Fraction<T>{
-    {static_cast<T>(1), static_cast<T>(5)}
+    {.numerator = static_cast<T>(1), .denominator = static_cast<T>(5)}
 };
 inline constexpr auto I_FIFTH = FRAC_FIFTH<int32_t>;
 inline constexpr auto U_FIFTH = FRAC_FIFTH<uint32_t>;

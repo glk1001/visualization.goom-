@@ -65,7 +65,7 @@ private:
 
   UTILS::Parallel m_parallel{UTILS::GetNumAvailablePoolThreads()};
   ZoomPointFunc m_getZoomPoint;
-  Point2dInt m_midpoint                 = {0, 0};
+  Point2dInt m_midpoint                 = {.x = 0, .y = 0};
   NormalizedCoords m_normalizedMidpoint = {0.0F, 0.0F};
 
   std::vector<Point2dFlt> m_transformBuffer;
@@ -101,7 +101,7 @@ inline auto ZoomFilterBuffers::CopyTransformBuffer(std::span<Point2dFlt> destBuf
 {
   Expects(UpdateStatus::AT_END == m_updateStatus);
 
-  std::copy(m_transformBuffer.cbegin(), m_transformBuffer.cend(), destBuff.begin());
+  std::ranges::copy(m_transformBuffer, destBuff.begin());
   m_updateStatus = UpdateStatus::HAS_BEEN_COPIED;
 }
 

@@ -30,9 +30,9 @@ Blend2dDoubleGoomBuffers::Blend2dDoubleGoomBuffers(
   : m_draw{&draw},
     m_mainBuffer{dimensions, func},
     m_lowBuffer{dimensions, func},
-    m_blend2DContexts{m_mainBuffer.GetBlend2DBuffer().blend2dContext,
-                      m_lowBuffer.GetBlend2DBuffer().blend2dContext,
-                      false}
+    m_blend2DContexts{.mainBlend2dContext     = m_mainBuffer.GetBlend2DBuffer().blend2dContext,
+                      .lowBlend2dContext      = m_lowBuffer.GetBlend2DBuffer().blend2dContext,
+                      .blend2dBuffersWereUsed = false}
 {
 }
 

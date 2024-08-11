@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
-#include <functional>
 #include <map>
 
 import Goom.Tests.Utils.Math.RandHelper;
@@ -24,7 +23,6 @@ using GOOM::UnderlyingEnumType;
 using UTILS::EnumToString;
 using UTILS::NUM;
 using UTILS::MATH::ConditionalWeights;
-using UTILS::MATH::GetWeightedSample;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::Weights;
@@ -45,42 +43,29 @@ constexpr auto PREVIOUS_EVENT = Events::EVENT3;
 constexpr size_t NUM_LOOPS     = 10000000;
 constexpr double DBL_NUM_LOOPS = NUM_LOOPS;
 
-template<typename E>
-[[nodiscard]] auto GetWeightedCounts(const size_t numLoops,
-                                     const std::function<E()>& getRandomWeighted) -> EventCounts
+[[nodiscard]] auto GetWeightedCounts(const Weights<Events>& weights) -> EventCounts
 {
   EventCounts eventCounts{};
-  for (auto i = 0U; i < numLoops; ++i)
+  for (auto i = 0U; i < NUM_LOOPS; ++i)
   {
-    const auto event = getRandomWeighted();
+    const auto event = weights.GetRandomWeighted();
     ++eventCounts.at(static_cast<size_t>(event));
   }
 
   return eventCounts;
 }
 
-[[nodiscard]] auto GetConditionalWeightedCounts(
-    const size_t numLoops, const ConditionalWeights<Events>& weights) -> EventCounts
+[[nodiscard]] auto GetConditionalWeightedCounts(const ConditionalWeights<Events>& weights)
+    -> EventCounts
 {
   EventCounts eventCounts{};
-  for (auto i = 0U; i < numLoops; ++i)
+  for (auto i = 0U; i < NUM_LOOPS; ++i)
   {
     const auto event = weights.GetRandomWeighted(PREVIOUS_EVENT);
     ++eventCounts.at(static_cast<size_t>(event));
   }
 
   return eventCounts;
-}
-
-constexpr auto GOOM_RAND = GoomRand{};
-
-template<NumberRange numberRange> // NOLINT(readability-identifier-naming)
-auto GetRangeCountResults(const size_t numLoops) -> CountResults<decltype(numberRange.min)>
-{
-  const auto randInRange = [](const auto n0, const auto nRange)
-  { return GOOM_RAND.GetRandInRange(NumberRange<decltype(numberRange.min)>{n0, n0 + nRange - 1}); };
-
-  return GetCountResults(numLoops, numberRange.min, numberRange.rangePlus1, randInRange);
 }
 
 } // namespace
@@ -94,9 +79,9 @@ TEST_CASE("NumberRange")
   static constexpr auto N_MAX1 = 10001U;
   static constexpr auto RANGE  = NumberRange{N_MIN1, N_MAX1};
 
-  STATIC_REQUIRE(RANGE.min == N_MIN1);
-  STATIC_REQUIRE(RANGE.max == N_MAX1);
-  STATIC_REQUIRE(RANGE.range == N_MAX1 - N_MIN1);
+  STATIC_REQUIRE(RANGE.Min() == N_MIN1);
+  STATIC_REQUIRE(RANGE.Max() == N_MAX1);
+  STATIC_REQUIRE(RANGE.Range() == N_MAX1 - N_MIN1);
 }
 
 TEST_CASE("NumberRange min max get random")
@@ -106,41 +91,57 @@ TEST_CASE("NumberRange min max get random")
   static constexpr auto NUM_RANGE_LOOPS                  = 100'000U;
   static constexpr auto ACCEPTABLE_OUT_OF_UNIFORM_MARGIN = 300U;
 
-  static constexpr auto N_MIN1   = 999U;
-  static constexpr auto N_MAX1   = 10001U;
-  static constexpr auto N_RANGE1 = NumberRange{N_MIN1, N_MAX1};
-  const auto countsResults1      = GetRangeCountResults<N_RANGE1>(NUM_RANGE_LOOPS);
+  const auto goomRand      = GoomRand{};
+  const auto& goomRandBase = static_cast<const GoomRand&>(goomRand);
+  const auto randInRange   = [&goomRandBase](const auto min, const auto max)
+  { return goomRandBase.GetRandInRange(NumberRange{min, max - 1}); };
+
+  static constexpr auto N_MIN1 = 999U;
+  static constexpr auto N_MAX1 = 10001U;
+  const auto countsResults1    = GetCountResults(NUM_RANGE_LOOPS, N_MIN1, N_MAX1, randInRange);
   REQUIRE(countsResults1.min == N_MIN1);
-  REQUIRE(countsResults1.max == N_MAX1);
-  REQUIRE(countsResults1.numCounts == (N_RANGE1.range + 1));
+  REQUIRE(countsResults1.max == N_MAX1 - 1);
+  REQUIRE(countsResults1.numCounts == (N_MAX1 - N_MIN1));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults1.minCount, countsResults1.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults1.maxCount, countsResults1.maxCountAt));
   REQUIRE(countsResults1.maxCount - countsResults1.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  static constexpr auto N_MIN2   = 0U;
-  static constexpr auto N_MAX2   = 120U;
-  static constexpr auto N_RANGE2 = NumberRange{N_MIN2, N_MAX2};
-  const auto countsResults2      = GetRangeCountResults<N_RANGE2>(NUM_RANGE_LOOPS);
+  static constexpr auto N_MIN2 = 0U;
+  static constexpr auto N_MAX2 = 120U;
+  const auto countsResults2    = GetCountResults(NUM_RANGE_LOOPS, N_MIN2, N_MAX2, randInRange);
   REQUIRE(countsResults2.min == N_MIN2);
-  REQUIRE(countsResults2.max == N_MAX2);
-  REQUIRE(countsResults2.numCounts == (N_RANGE2.range + 1));
+  REQUIRE(countsResults2.max == N_MAX2 - 1);
+  REQUIRE(countsResults2.numCounts == (N_MAX2 - N_MIN2));
   UNSCOPED_INFO(std::format(
       "minCount = {}, minCountAt = {}", countsResults2.minCount, countsResults2.minCountAt));
   UNSCOPED_INFO(std::format(
       "maxCount = {}, maxCountAt = {}", countsResults2.maxCount, countsResults2.maxCountAt));
   REQUIRE(countsResults2.maxCount - countsResults2.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
 
-  REQUIRE(5U == GOOM_RAND.GetRandInRange(NumberRange{5U, 5U}));
+  static constexpr auto NUM_RANGE = NumberRange{0U, 120U};
+  const auto countsResults3    = GetCountResults(NUM_RANGE_LOOPS, NUM_RANGE, randInRange);
+  REQUIRE(countsResults3.min == NUM_RANGE.Min());
+  REQUIRE(countsResults3.max == NUM_RANGE.Max() - 1);
+  REQUIRE(countsResults3.numCounts == NUM_RANGE.Range());
+  UNSCOPED_INFO(std::format(
+      "minCount = {}, minCountAt = {}", countsResults3.minCount, countsResults3.minCountAt));
+  UNSCOPED_INFO(std::format(
+      "maxCount = {}, maxCountAt = {}", countsResults3.maxCount, countsResults3.maxCountAt));
+  REQUIRE(countsResults3.maxCount - countsResults3.minCount < ACCEPTABLE_OUT_OF_UNIFORM_MARGIN);
+
+  static constexpr auto SINGLE_RANGE = NumberRange{5U, 5U};
+  REQUIRE(5U == goomRandBase.GetRandInRange<u_int32_t, SINGLE_RANGE>());
 }
 
 TEST_CASE("Shuffle")
 {
   static constexpr auto TEST_VEC = std::array{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-  auto vec = TEST_VEC;
-  GOOM_RAND.Shuffle(vec);
+  const auto goomRand = GoomRand{};
+  auto vec            = TEST_VEC;
+  goomRand.Shuffle(vec);
   REQUIRE(vec != TEST_VEC);
   std::ranges::sort(vec);
   REQUIRE(vec == TEST_VEC);
@@ -148,28 +149,22 @@ TEST_CASE("Shuffle")
 
 TEST_CASE("Weighted Events")
 {
-  static constexpr auto EVENT1_WEIGHT = 05.0F;
-  static constexpr auto EVENT2_WEIGHT = 02.0F;
-  static constexpr auto EVENT3_WEIGHT = 10.0F;
-  static constexpr auto EVENT4_WEIGHT = 06.0F;
-  const auto weightPairs              = Weights<Events>::EventWeightPairs{
-                   {.key = Events::EVENT1, .weight = EVENT1_WEIGHT},
-                   {.key = Events::EVENT2, .weight = EVENT2_WEIGHT},
-                   {.key = Events::EVENT3, .weight = EVENT3_WEIGHT},
-                   {.key = Events::EVENT4, .weight = EVENT4_WEIGHT},
+  const auto goomRand    = GoomRand{};
+  const auto weightPairs = Weights<Events>::EventWeightPairs{
+      {Events::EVENT1, 05.0F},
+      {Events::EVENT2, 02.0F},
+      {Events::EVENT3, 10.0F},
+      {Events::EVENT4, 06.0F},
   };
-  const auto weightedEvents = Weights<Events>{GOOM_RAND, weightPairs};
-  static constexpr auto EXPECTED_SUM =
-      EVENT1_WEIGHT + EVENT2_WEIGHT + EVENT3_WEIGHT + EVENT4_WEIGHT;
+  const auto weightedEvents          = Weights<Events>{goomRand, weightPairs};
+  static constexpr auto EXPECTED_SUM = 23.0;
 
   SECTION("Unconditional weights")
   {
     const auto sumOfWeights = static_cast<double>(weightedEvents.GetSumOfWeights());
     REQUIRE(sumOfWeights == Approx(EXPECTED_SUM));
 
-    const auto getRandomWeighted = [&weightedEvents]()
-    { return weightedEvents.GetRandomWeighted(); };
-    const auto eventCounts = GetWeightedCounts<Events>(NUM_LOOPS, getRandomWeighted);
+    const auto eventCounts = GetWeightedCounts(weightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
@@ -187,59 +182,6 @@ TEST_CASE("Weighted Events")
     }
   }
 
-  SECTION("Weighted Sample")
-  {
-    static constexpr auto SAMPLE_EVENT1_WEIGHT = 05.0F;
-    static constexpr auto SAMPLE_EVENT2_WEIGHT = 02.0F;
-    static constexpr auto SAMPLE_EVENT3_WEIGHT = 10.0F;
-    static constexpr auto SAMPLE_EVENT4_WEIGHT = 06.0F;
-    const auto weightedSamplePairs             = Weights<Events>::EventWeightPairs{
-                    {.key = Events::EVENT1, .weight = SAMPLE_EVENT1_WEIGHT},
-                    {.key = Events::EVENT2, .weight = SAMPLE_EVENT2_WEIGHT},
-                    {.key = Events::EVENT3, .weight = SAMPLE_EVENT3_WEIGHT},
-                    {.key = Events::EVENT4, .weight = SAMPLE_EVENT4_WEIGHT},
-    };
-    const auto weightedSampleEvents = Weights<Events>{GOOM_RAND, weightedSamplePairs};
-    const auto sumOfWeights         = static_cast<double>(weightedSampleEvents.GetSumOfWeights());
-
-    static constexpr auto SAMPLE_SIZE = NUM<Events>;
-    auto eventsSample                 = std::vector<Events>(SAMPLE_SIZE);
-
-    // TODO(glk): Not sure how to test positions 1,2,3. '0' seems OK but
-    //            the others seem quite difficult.
-    auto weightedEventPositions0 = EventCounts{0};
-    for (auto i = 0U; i < NUM_LOOPS; ++i)
-    {
-      GetWeightedSample(weightedSampleEvents, SAMPLE_SIZE, eventsSample);
-      REQUIRE(eventsSample.size() == SAMPLE_SIZE);
-      ++weightedEventPositions0.at(static_cast<size_t>(eventsSample.at(0)));
-    }
-
-    const auto& weights = weightedSampleEvents.GetWeightArray();
-
-    for (auto i = 0U; i < NUM<Events>; ++i)
-    {
-      const auto fEventCount  = static_cast<double>(weightedEventPositions0.at(i));
-      const auto fEventWeight = static_cast<double>(weights.at(i));
-
-      const auto countFraction = fEventCount / DBL_NUM_LOOPS;
-      const auto eventFraction = fEventWeight / sumOfWeights;
-
-      UNSCOPED_INFO(std::format("i = {}, fEventWeight = {}, sumOfWeights = {}, eventFraction = {}",
-                                i,
-                                fEventWeight,
-                                sumOfWeights,
-                                eventFraction));
-      UNSCOPED_INFO(std::format("i = {}, fEventCount = {}, DBL_NUM_LOOPS = {}, countFraction = {}",
-                                i,
-                                fEventCount,
-                                DBL_NUM_LOOPS,
-                                countFraction));
-      static constexpr auto CLOSE_ENOUGH = 0.005;
-      REQUIRE(countFraction == Approx(eventFraction).epsilon(CLOSE_ENOUGH));
-    }
-  }
-
   SECTION("Conditional weights")
   {
     static const auto s_EVENT3_WEIGHT_MULTIPLIERS = std::map<Events, float>{
@@ -249,17 +191,16 @@ TEST_CASE("Weighted Events")
         {Events::EVENT4, 1.0F},
     };
     static const auto s_WEIGHT_MULTIPLIERS = ConditionalWeights<Events>::EventWeightMultiplierPairs{
-        {.key = PREVIOUS_EVENT, .weightMultipliers = s_EVENT3_WEIGHT_MULTIPLIERS}
+        {PREVIOUS_EVENT, s_EVENT3_WEIGHT_MULTIPLIERS}
     };
     const auto conditionalWeightedEvents =
-        ConditionalWeights<Events>{GOOM_RAND, weightPairs, s_WEIGHT_MULTIPLIERS};
+        ConditionalWeights<Events>{goomRand, weightPairs, s_WEIGHT_MULTIPLIERS};
     const auto conditionalSumOfWeights =
         static_cast<double>(conditionalWeightedEvents.GetSumOfWeights(PREVIOUS_EVENT));
     static constexpr auto EXPECTED_SUM_FOR_GIVEN = 5.0 + (2.0 * 10.0) + 6.0;
     REQUIRE(conditionalSumOfWeights == Approx(EXPECTED_SUM_FOR_GIVEN));
 
-    const auto conditionalEventCounts =
-        GetConditionalWeightedCounts(NUM_LOOPS, conditionalWeightedEvents);
+    const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {
@@ -271,8 +212,8 @@ TEST_CASE("Weighted Events")
       UNSCOPED_INFO(
           std::format("i:{}, conditionalCountFraction = {}", i, conditionalCountFraction));
 
-      const auto fConditionalEventWeight  = static_cast<double>(conditionalWeightedEvents.GetWeight(
-          {.previousEvent = PREVIOUS_EVENT, .event = static_cast<Events>(i)}));
+      const auto fConditionalEventWeight = static_cast<double>(
+          conditionalWeightedEvents.GetWeight({PREVIOUS_EVENT, static_cast<Events>(i)}));
       const auto conditionalEventFraction = fConditionalEventWeight / conditionalSumOfWeights;
       UNSCOPED_INFO(std::format("i:{}, fConditionalEventWeight({}) = {}",
                                 i,
@@ -292,10 +233,9 @@ TEST_CASE("Weighted Events")
 
   SECTION("DisallowEventsSameAsGiven = true")
   {
-    const auto conditionalWeightedEvents = ConditionalWeights<Events>{GOOM_RAND, weightPairs, true};
+    const auto conditionalWeightedEvents = ConditionalWeights<Events>{goomRand, weightPairs, true};
 
-    const auto conditionalEventCounts =
-        GetConditionalWeightedCounts(NUM_LOOPS, conditionalWeightedEvents);
+    const auto conditionalEventCounts = GetConditionalWeightedCounts(conditionalWeightedEvents);
 
     REQUIRE(conditionalEventCounts.at(static_cast<size_t>(PREVIOUS_EVENT)) == 0);
   }
@@ -305,13 +245,14 @@ TEST_CASE("Weighted Events")
 // NOLINTBEGIN(readability-function-cognitive-complexity)
 TEST_CASE("Weighted Events Corner Cases")
 {
+  const auto goomRand       = GoomRand{};
   const auto weightedEvents = Weights<Events>{
-      GOOM_RAND,
+      goomRand,
       {
-        {.key = Events::EVENT1, .weight = 0.0F},
-        {.key = Events::EVENT2, .weight = 1.0F},
-        {.key = Events::EVENT3, .weight = 0.0F},
-        {.key = Events::EVENT4, .weight = 0.0F},
+        {Events::EVENT1, 0.0F},
+        {Events::EVENT2, 1.0F},
+        {Events::EVENT3, 0.0F},
+        {Events::EVENT4, 0.0F},
         }
   };
 
@@ -320,9 +261,7 @@ TEST_CASE("Weighted Events Corner Cases")
     const auto sumOfWeights = static_cast<double>(weightedEvents.GetSumOfWeights());
     REQUIRE(sumOfWeights == Approx(1.0F));
 
-    const auto getRandomWeighted = [&weightedEvents]()
-    { return weightedEvents.GetRandomWeighted(); };
-    const auto eventCounts = GetWeightedCounts<Events>(NUM_LOOPS, getRandomWeighted);
+    const auto eventCounts = GetWeightedCounts(weightedEvents);
 
     for (auto i = 0U; i < NUM<Events>; ++i)
     {

@@ -28,7 +28,7 @@ using UTILS::MATH::NumberRange;
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.01F, 0.11F};
 
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.5F, 0.5F};
+static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
 static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_USE_Z_SIN       = true;
@@ -55,11 +55,12 @@ static constexpr auto C_IMAG_RANGE   = NumberRange{-1.0F, +1.0F};
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
     .probUseCentredSides = 0.5F,
-    .rect                = {.minMaxXMin = {-10.0F, +1.0F},
-                            .minMaxYMin = {-10.0F, +1.0F},
-                            .minMaxXMax = {-10.0F + 0.1F, +10.0F},
-                            .minMaxYMax = {-10.0F + 0.1F, +10.0F}},
-    .sides               = {.minMaxWidth = {0.1F, 20.0F}, .minMaxHeight = {0.1F, 20.0F}}
+    .rect                = {.minMaxXMin = {.minValue = -10.0F, .maxValue = +1.0F},
+                            .minMaxYMin = {.minValue = -10.0F, .maxValue = +1.0F},
+                            .minMaxXMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F},
+                            .minMaxYMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F}},
+    .sides               = {.minMaxWidth  = {.minValue = 0.1F, .maxValue = 20.0F},
+                            .minMaxHeight = {.minValue = 0.1F, .maxValue = 20.0F}}
 };
 
 static constexpr auto PROB_AMPLITUDES_EQUAL       = 0.95F;
@@ -74,18 +75,18 @@ Newton::Newton(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
     m_params{
-        Viewport{},
-        DEFAULT_EXPONENT,
-        {static_cast<FltCalcType>(DEFAULT_A_REAL),
+        .viewport=Viewport{},
+        .exponent=DEFAULT_EXPONENT,
+        .a={static_cast<FltCalcType>(DEFAULT_A_REAL),
          static_cast<FltCalcType>(DEFAULT_A_IMAG)},
-        {static_cast<FltCalcType>(DEFAULT_C_REAL),
+        .c={static_cast<FltCalcType>(DEFAULT_C_REAL),
          static_cast<FltCalcType>(DEFAULT_C_IMAG)},
-        {DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        DEFAULT_LERP_TO_ONE_T_S,
-        DEFAULT_USE_SQ_DIST_DENOM,
-        DEFAULT_DENOMINATOR,
-        DEFAULT_USE_Z_SIN,
-        {DEFAULT_Z_SIN_AMPLITUDE, DEFAULT_Z_SIN_AMPLITUDE},
+        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
+        .useSqDistDenominator=DEFAULT_USE_SQ_DIST_DENOM,
+        .denominator=DEFAULT_DENOMINATOR,
+        .useZSinInput=DEFAULT_USE_Z_SIN,
+        .zSinAmplitude={DEFAULT_Z_SIN_AMPLITUDE, DEFAULT_Z_SIN_AMPLITUDE},
     }
 {
   m_randomViewport.SetProbNoViewport(PROB_NO_VIEWPORT);
@@ -121,16 +122,16 @@ auto Newton::SetRandomParams() noexcept -> void
   const auto denominator          = m_goomRand->GetRandInRange<DENOMINATOR_RANGE>();
 
   SetParams({
-      viewport,
-      exponent,
-      a,
-      c,
-      {    xAmplitude,     yAmplitude},
-      {   xLerpToOneT,    yLerpToOneT},
-      useSqDistDenominator,
-      denominator,
-      useZSin,
-      {xZSinAmplitude, yZSinAmplitude},
+      .viewport             = viewport,
+      .exponent             = exponent,
+      .a                    = a,
+      .c                    = c,
+      .amplitude            = {           xAmplitude,            yAmplitude},
+      .lerpToOneTs          = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
+      .useSqDistDenominator = useSqDistDenominator,
+      .denominator          = denominator,
+      .useZSinInput         = useZSin,
+      .zSinAmplitude        = {       xZSinAmplitude,        yZSinAmplitude},
   });
 }
 
@@ -162,7 +163,7 @@ auto Newton::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2d
   const auto absSqDfDz = std::norm(fzAndDfDz.dFdz);
   if (absSqDfDz < SMALL_FLT)
   {
-    return {0.0F, 0.0F};
+    return {.x = 0.0F, .y = 0.0F};
   }
 
   const auto fullDenominator = m_params.useSqDistDenominator
@@ -172,8 +173,8 @@ auto Newton::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2d
   const auto zoomAdj =
       (z - ((m_params.a * fzAndDfDz.fz) / fzAndDfDz.dFdz) + m_params.c) / fullDenominator;
 
-  return {m_params.amplitude.x * static_cast<float>(zoomAdj.real()),
-          m_params.amplitude.y * static_cast<float>(zoomAdj.imag())};
+  return {.x = m_params.amplitude.x * static_cast<float>(zoomAdj.real()),
+          .y = m_params.amplitude.y * static_cast<float>(zoomAdj.imag())};
 }
 
 auto Newton::GetZ(const NormalizedCoords& coords) const noexcept -> std::complex<FltCalcType>
@@ -211,7 +212,7 @@ auto Newton::GetPolyFuncValueAndDerivative(const std::complex<FltCalcType>& z) c
   const auto dFdz =
       static_cast<FltCalcType>(m_params.exponent) * std::pow(z, m_params.exponent - 1);
 
-  return {fz, dFdz};
+  return {.fz = fz, .dFdz = dFdz};
 }
 
 auto Newton::GetPolySinFuncValueAndDerivative(const std::complex<FltCalcType>& z) const noexcept
@@ -223,7 +224,7 @@ auto Newton::GetPolySinFuncValueAndDerivative(const std::complex<FltCalcType>& z
                     ((static_cast<FltCalcType>(m_params.exponent) * std::sin(FREQ * z)) +
                      (z * (FREQ * std::cos(FREQ * z))));
 
-  return {fz, dFdz};
+  return {.fz = fz, .dFdz = dFdz};
 }
 
 auto Newton::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
@@ -235,16 +236,18 @@ auto Newton::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValu
       GetPair(fullParamGroup, "a imag", m_params.a.imag()),
       GetPair(fullParamGroup, "c real", m_params.c.real()),
       GetPair(fullParamGroup, "c imag", m_params.c.imag()),
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "lerpToOneTs",
-              Point2dFlt{m_params.lerpToOneTs.xLerpT, m_params.lerpToOneTs.yLerpT}),
+              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
       GetPair(fullParamGroup, "useSqDistDenominator", m_params.useSqDistDenominator),
       GetPair(fullParamGroup, "denominator", m_params.denominator),
       GetPair(fullParamGroup, "useZSin", m_params.useZSinInput),
       GetPair(fullParamGroup,
               "zSinAmplitude",
-              Point2dFlt{m_params.zSinAmplitude.x, m_params.zSinAmplitude.y}),
+              Point2dFlt{.x = m_params.zSinAmplitude.x, .y = m_params.zSinAmplitude.y}),
       GetPair(PARAM_GROUP,
               "viewport0",
               m_params.viewport

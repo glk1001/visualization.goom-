@@ -184,7 +184,7 @@ inline auto Similitudes::Transform(const Similitude& simi, const FltPoint& point
 
 inline auto Similitude::GetCPoint() const -> FltPoint
 {
-  return {m_cx, m_cy};
+  return {.x = m_cx, .y = m_cy};
 }
 
 inline auto Similitude::GetColor() const -> Pixel
@@ -215,10 +215,10 @@ Similitudes::Similitudes(const GoomRand& goomRand,
     m_centreWeights{
         *m_goomRand,
         {
-            {CentreNums::NUM0, NUM0_WEIGHT},
-            {CentreNums::NUM1, NUM1_WEIGHT},
-            {CentreNums::NUM2, NUM2_WEIGHT},
-            {CentreNums::NUM3, NUM3_WEIGHT},
+            {.key=CentreNums::NUM0, .weight=NUM0_WEIGHT},
+            {.key=CentreNums::NUM1, .weight=NUM1_WEIGHT},
+            {.key=CentreNums::NUM2, .weight=NUM2_WEIGHT},
+            {.key=CentreNums::NUM3, .weight=NUM3_WEIGHT},
         }
     }
 {
@@ -480,12 +480,12 @@ auto Similitudes::ResetCurrentIfsFunc() -> void
         [](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)
     {
       return FltPoint{
-          DivByUnit((x1 * simi.m_sinA1) - (y1 * simi.m_cosA1) + (x2 * simi.m_sinA2) -
-                    (y2 * simi.m_cosA2)) +
-              simi.m_cx,
-          DivByUnit((x1 * simi.m_cosA1) + (y1 * simi.m_sinA1) + (x2 * simi.m_cosA2) +
-                    (y2 * simi.m_sinA2)) +
-              simi.m_cy,
+          .x = DivByUnit((x1 * simi.m_sinA1) - (y1 * simi.m_cosA1) + (x2 * simi.m_sinA2) -
+                         (y2 * simi.m_cosA2)) +
+               simi.m_cx,
+          .y = DivByUnit((x1 * simi.m_cosA1) + (y1 * simi.m_sinA1) + (x2 * simi.m_cosA2) +
+                         (y2 * simi.m_sinA2)) +
+               simi.m_cy,
       };
     };
   }
@@ -495,12 +495,12 @@ auto Similitudes::ResetCurrentIfsFunc() -> void
         [](const Similitude& simi, const Flt x1, const Flt y1, const Flt x2, const Flt y2)
     {
       return FltPoint{
-          DivByUnit((x1 * simi.m_cosA1) - (y1 * simi.m_sinA1) + (x2 * simi.m_cosA2) -
-                    (y2 * simi.m_sinA2)) +
-              simi.m_cx,
-          DivByUnit((x1 * simi.m_sinA1) + (y1 * simi.m_cosA1) + (x2 * simi.m_sinA2) +
-                    (y2 * simi.m_cosA2)) +
-              simi.m_cy,
+          .x = DivByUnit((x1 * simi.m_cosA1) - (y1 * simi.m_sinA1) + (x2 * simi.m_cosA2) -
+                         (y2 * simi.m_sinA2)) +
+               simi.m_cx,
+          .y = DivByUnit((x1 * simi.m_sinA1) + (y1 * simi.m_cosA1) + (x2 * simi.m_sinA2) +
+                         (y2 * simi.m_cosA2)) +
+               simi.m_cy,
       };
     };
   }

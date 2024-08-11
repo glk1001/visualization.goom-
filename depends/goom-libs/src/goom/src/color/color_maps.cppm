@@ -146,7 +146,7 @@ inline auto ColorMapPtrWrapper::GetColor(const float t) const noexcept -> Pixel
 {
   const auto color = m_colorMap->GetColor(t);
   return Pixel{
-      {color.R(), color.G(), color.B(), m_defaultAlpha}
+      {.red = color.R(), .green = color.G(), .blue = color.B(), .alpha = m_defaultAlpha}
   };
 }
 

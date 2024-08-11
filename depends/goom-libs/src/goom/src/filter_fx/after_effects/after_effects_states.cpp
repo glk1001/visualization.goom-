@@ -29,46 +29,46 @@ AfterEffectsStates::AfterEffectsStates(const UTILS::GoomTime& goomTime,
         goomTime,
         goomRand,
         DEFAULT_HYPERCOS_OVERLAY_EFFECT,
-        AfterEffectState::AfterEffectProperties{repeatProbabilities[AfterEffectsTypes::HYPERCOS],
-                                                offTimes[AfterEffectsTypes::HYPERCOS]}},
+        AfterEffectState::AfterEffectProperties{.probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::HYPERCOS],
+                                                .effectOffTime=offTimes[AfterEffectsTypes::HYPERCOS]}},
     m_imageVelocityEffect{
         goomTime,
         goomRand,
         DEFAULT_IMAGE_VELOCITY_EFFECT,
         AfterEffectState::AfterEffectProperties{
-            repeatProbabilities[AfterEffectsTypes::IMAGE_VELOCITY],
-            offTimes[AfterEffectsTypes::IMAGE_VELOCITY]}},
+            .probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::IMAGE_VELOCITY],
+            .effectOffTime=offTimes[AfterEffectsTypes::IMAGE_VELOCITY]}},
     m_noiseEffect{
         goomTime,
         goomRand,
         DEFAULT_NOISE_EFFECT,
-        AfterEffectState::AfterEffectProperties{repeatProbabilities[AfterEffectsTypes::NOISE],
-                                                offTimes[AfterEffectsTypes::NOISE]}},
+        AfterEffectState::AfterEffectProperties{.probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::NOISE],
+                                                .effectOffTime=offTimes[AfterEffectsTypes::NOISE]}},
     m_planeEffect{
         goomTime,
         goomRand,
         DEFAULT_PLANE_EFFECT,
-        AfterEffectState::AfterEffectProperties{repeatProbabilities[AfterEffectsTypes::PLANES],
-                                                offTimes[AfterEffectsTypes::PLANES]}},
+        AfterEffectState::AfterEffectProperties{.probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::PLANES],
+                                                .effectOffTime=offTimes[AfterEffectsTypes::PLANES]}},
     m_rotationEffect{
         goomTime,
         goomRand,
         DEFAULT_ROTATION_EFFECT,
-        AfterEffectState::AfterEffectProperties{repeatProbabilities[AfterEffectsTypes::ROTATION],
-                                                offTimes[AfterEffectsTypes::ROTATION]}},
+        AfterEffectState::AfterEffectProperties{.probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::ROTATION],
+                                                .effectOffTime=offTimes[AfterEffectsTypes::ROTATION]}},
     m_tanEffect{
         goomTime,
         goomRand,
         DEFAULT_TAN_EFFECT,
-        AfterEffectState::AfterEffectProperties{repeatProbabilities[AfterEffectsTypes::TAN_EFFECT],
-                                                offTimes[AfterEffectsTypes::TAN_EFFECT]}},
+        AfterEffectState::AfterEffectProperties{.probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::TAN_EFFECT],
+                                                .effectOffTime=offTimes[AfterEffectsTypes::TAN_EFFECT]}},
     m_xyLerpEffect{
         goomTime,
         goomRand,
         DEFAULT_XY_LERP_EFFECT,
         AfterEffectState::AfterEffectProperties{
-            repeatProbabilities[AfterEffectsTypes::XY_LERP_EFFECT],
-            offTimes[AfterEffectsTypes::XY_LERP_EFFECT]}}
+            .probabilityOfEffectRepeated=repeatProbabilities[AfterEffectsTypes::XY_LERP_EFFECT],
+            .effectOffTime=offTimes[AfterEffectsTypes::XY_LERP_EFFECT]}}
 {
 }
 

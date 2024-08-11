@@ -126,7 +126,7 @@ private:
   // TODO(glk) Move to simi
   static constexpr auto T_MIX_STARTING_VALUE = 0.01F;
   TValue m_tMix{
-      {T_MIX_STARTING_VALUE, TValue::StepType::CONTINUOUS_REVERSIBLE}
+      {.stepSize = T_MIX_STARTING_VALUE, .stepType = TValue::StepType::CONTINUOUS_REVERSIBLE}
   };
   static constexpr auto POINT_BRIGHTNESS  = 8.0F;
   static constexpr auto BITMAP_BRIGHTNESS = 6.0F;
@@ -237,12 +237,12 @@ IfsDancersFx::IfsDancersFxImpl::IfsDancersFxImpl(FxHelper& fxHelper,
     m_blurrerColorModeWeights{
       fxHelper.GetGoomRand(),
       {
-        {BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WGT},
-        {BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WGT},
-        {BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WGT},
-        {BlurrerColorMode::SIMI_NO_NEIGHBOURS,     BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WGT},
-        {BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WGT},
-        {BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT},
+        {.key=BlurrerColorMode::SMOOTH_WITH_NEIGHBOURS, .weight=BLURRER_COLOR_MODE_SMOOTH_WITH_NEIGHBOURS_WGT},
+        {.key=BlurrerColorMode::SMOOTH_NO_NEIGHBOURS,   .weight=BLURRER_COLOR_MODE_SMOOTH_NO_NEIGHBOURS_WGT},
+        {.key=BlurrerColorMode::SIMI_WITH_NEIGHBOURS,   .weight=BLURRER_COLOR_MODE_SIMI_WITH_NEIGHBOURS_WGT},
+        {.key=BlurrerColorMode::SIMI_NO_NEIGHBOURS,     .weight=BLURRER_COLOR_MODE_SIMI_NO_NEIGHBOURS_WGT},
+        {.key=BlurrerColorMode::SINGLE_WITH_NEIGHBOURS, .weight=BLURRER_COLOR_MODE_SINGLE_WITH_NEIGHBOURS_WGT},
+        {.key=BlurrerColorMode::SINGLE_NO_NEIGHBOURS,   .weight=BLURRER_COLOR_MODE_SINGLE_NO_NEIGHBOURS_WGT},
     }}
 {
 }
@@ -482,8 +482,8 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
                                                const IfsPoint& ifsPoint,
                                                const float tMix) noexcept -> void
 {
-  const auto point =
-      Point2dInt{static_cast<int32_t>(ifsPoint.GetX()), static_cast<int32_t>(ifsPoint.GetY())};
+  const auto point = Point2dInt{.x = static_cast<int32_t>(ifsPoint.GetX()),
+                                .y = static_cast<int32_t>(ifsPoint.GetY())};
 
   const auto tX = static_cast<float>(point.x) / m_fxHelper->GetDimensions().GetFltWidth();
   const auto tY = static_cast<float>(point.y) / m_fxHelper->GetDimensions().GetFltHeight();
@@ -491,14 +491,18 @@ auto IfsDancersFx::IfsDancersFxImpl::DrawPoint(const float t,
   if (const auto baseColor = ifsPoint.GetSimi()->GetColorMap().GetColor(t);
       nullptr == ifsPoint.GetSimi()->GetCurrentPointBitmap())
   {
-    const auto mixedColor =
-        m_colorizer.GetMixedColor(baseColor, ifsPoint.GetCount(), {POINT_BRIGHTNESS, tMix, tX, tY});
-    m_pixelDrawer.DrawPixels(point, {mixedColor, mixedColor});
+    const auto mixedColor = m_colorizer.GetMixedColor(
+        baseColor,
+        ifsPoint.GetCount(),
+        {.brightness = POINT_BRIGHTNESS, .tMix = tMix, .tX = tX, .tY = tY});
+    m_pixelDrawer.DrawPixels(point, {.color1 = mixedColor, .color2 = mixedColor});
   }
   else
   {
     const auto mixedColor = m_colorizer.GetMixedColor(
-        baseColor, ifsPoint.GetCount(), {BITMAP_BRIGHTNESS, tMix, tX, tY});
+        baseColor,
+        ifsPoint.GetCount(),
+        {.brightness = BITMAP_BRIGHTNESS, .tMix = tMix, .tX = tX, .tY = tY});
     const auto getColor = [&mixedColor]([[maybe_unused]] const Point2dInt& bitmapPoint,
                                         [[maybe_unused]] const Pixel& bgnd) { return mixedColor; };
     const auto& bitmap{*ifsPoint.GetSimi()->GetCurrentPointBitmap()};

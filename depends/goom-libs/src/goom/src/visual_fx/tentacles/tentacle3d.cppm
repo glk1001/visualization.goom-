@@ -108,18 +108,18 @@ inline auto Tentacle3D::Iterate() -> void
 constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept -> V3dFlt
 {
   return {
-      point1.x + point2.x,
-      point1.y + point2.y,
-      point1.z + point2.z,
+      .x = point1.x + point2.x,
+      .y = point1.y + point2.y,
+      .z = point1.z + point2.z,
   };
 }
 
 constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, const float t) noexcept -> V3dFlt
 {
   return {
-      std::lerp(point1.x, point2.x, t),
-      std::lerp(point1.y, point2.y, t),
-      std::lerp(point1.z, point2.z, t),
+      .x = std::lerp(point1.x, point2.x, t),
+      .y = std::lerp(point1.y, point2.y, t),
+      .z = std::lerp(point1.z, point2.z, t),
   };
 }
 

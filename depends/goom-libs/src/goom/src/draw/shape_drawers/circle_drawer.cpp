@@ -59,7 +59,7 @@ auto CircleDrawer::DrawHorizontalLine(const Point2dInt& point1,
   const auto xEnd = point1.x == x2 ? point1.x : x2;
   for (auto x = point1.x; x <= xEnd; ++x)
   {
-    m_draw->DrawPixels({x, point1.y}, colors);
+    m_draw->DrawPixels({.x = x, .y = point1.y}, colors);
   }
 }
 
@@ -71,10 +71,10 @@ auto CircleDrawer::DrawBresenhamCircle(const Point2dInt& centre,
   const auto drawCircle8 =
       [&plot](const int32_t xc, int32_t const yc, const int32_t x, const int32_t y)
   {
-    plot({xc - x, yc + y}, {xc + x, yc + y});
-    plot({xc - x, yc - y}, {xc + x, yc - y});
-    plot({xc - y, yc + x}, {xc + y, yc + x});
-    plot({xc - y, yc - x}, {xc + y, yc - x});
+    plot({.x = xc - x, .y = yc + y}, {.x = xc + x, .y = yc + y});
+    plot({.x = xc - x, .y = yc - y}, {.x = xc + x, .y = yc - y});
+    plot({.x = xc - y, .y = yc + x}, {.x = xc + y, .y = yc + x});
+    plot({.x = xc - y, .y = yc - x}, {.x = xc + y, .y = yc - x});
   };
 
   int32_t x = 0;

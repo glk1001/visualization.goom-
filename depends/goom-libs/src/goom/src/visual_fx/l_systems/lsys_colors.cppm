@@ -112,7 +112,7 @@ private:
 
   static constexpr auto GAMMA = 1.8F;
   COLOR::ColorAdjustment m_colorAdjust{
-      {GAMMA, COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
+      {.gamma = GAMMA, .alterChromaFactor = COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
 };
 
@@ -210,10 +210,10 @@ auto LSysColors::SetNumColors(const uint32_t numColors) noexcept -> void
   m_currentThickerColorTs.clear();
   for (auto i = 0U; i < numColors; ++i)
   {
-    m_currentColorTs.emplace_back(
-        TValue::NumStepsProperties{TValue::StepType::CONTINUOUS_REVERSIBLE, numColorSteps});
-    m_currentThickerColorTs.emplace_back(
-        TValue::NumStepsProperties{TValue::StepType::CONTINUOUS_REVERSIBLE, numThickerColorSteps});
+    m_currentColorTs.emplace_back(TValue::NumStepsProperties{
+        .stepType = TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps = numColorSteps});
+    m_currentThickerColorTs.emplace_back(TValue::NumStepsProperties{
+        .stepType = TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps = numThickerColorSteps});
   }
 }
 

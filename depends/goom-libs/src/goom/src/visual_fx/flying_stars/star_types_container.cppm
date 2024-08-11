@@ -239,9 +239,9 @@ StarTypesContainer::StarTypesContainer(const PluginInfo& goomInfo,
     m_weightedStarTypes{
         goomRand,
         {
-            {AvailableStarTypes::FIREWORKS, STAR_TYPES_FIREWORKS_WEIGHT},
-            {AvailableStarTypes::FOUNTAIN, STAR_TYPES_FOUNTAIN_WEIGHT},
-            {AvailableStarTypes::RAIN, STAR_TYPES_RAIN_WEIGHT},
+            {.key=AvailableStarTypes::FIREWORKS, .weight=STAR_TYPES_FIREWORKS_WEIGHT},
+            {.key=AvailableStarTypes::FOUNTAIN, .weight=STAR_TYPES_FOUNTAIN_WEIGHT},
+            {.key=AvailableStarTypes::RAIN, .weight=STAR_TYPES_RAIN_WEIGHT},
         }
     }
 {
@@ -379,22 +379,26 @@ auto StarType::GetColorMapsSet() const noexcept -> StarColors::ColorMapsSet
       m_goomRand->ProbabilityOf<PROB_RANDOM_COLOR_MAPS>())
   {
     return {
-        GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
-        GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        .currentMainColorMapPtr =
+            GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        .currentLowColorMapPtr =
+            GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        .dominantMainColorMapPtr =
+            GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
+        .dominantLowColorMapPtr =
+            GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(DEFAULT_COLOR_MAP_TYPES),
     };
   }
 
   return {
-      GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(GetMainColorMapName(),
-                                                            DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(GetLowColorMapName(),
-                                                           DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(GetMainColorMapName(),
-                                                            DEFAULT_COLOR_MAP_TYPES),
-      GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(GetLowColorMapName(),
-                                                           DEFAULT_COLOR_MAP_TYPES),
+      .currentMainColorMapPtr = GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(
+          GetMainColorMapName(), DEFAULT_COLOR_MAP_TYPES),
+      .currentLowColorMapPtr = GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(
+          GetLowColorMapName(), DEFAULT_COLOR_MAP_TYPES),
+      .dominantMainColorMapPtr = GetWeightedMainColorMaps().GetRandomColorMapSharedPtr(
+          GetMainColorMapName(), DEFAULT_COLOR_MAP_TYPES),
+      .dominantLowColorMapPtr = GetWeightedLowColorMaps().GetRandomColorMapSharedPtr(
+          GetLowColorMapName(), DEFAULT_COLOR_MAP_TYPES),
   };
 }
 
@@ -455,8 +459,9 @@ auto FireworksStarType::GetRandomizedSetupParams(const float defaultPathLength) 
   while (true)
   {
     setupParams.startPos = {
-        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetDimensions().GetWidth())),
-        static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetDimensions().GetHeight())),
+        .x = static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetDimensions().GetWidth())),
+        .y =
+            static_cast<int32_t>(GetGoomRand().GetNRand(GetGoomInfo().GetDimensions().GetHeight())),
     };
     const auto sqDist = SqDistance(setupParams.startPos, GetZoomMidpoint());
     if (sqDist < rSq)

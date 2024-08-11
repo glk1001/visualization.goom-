@@ -89,8 +89,8 @@ inline auto Camera::GetScreenPosition(const glm::vec4& worldPosition) const noex
   const auto mvpPos = m_modelViewProjection * worldPosition;
 
   // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access): union hard to fix here
-  return m_screenPositionOffset + ToVec2dInt(Vec2dFlt{m_halfScreenWidth * (1.0F + mvpPos.x),
-                                                      m_halfScreenHeight * (1.0F - mvpPos.y)});
+  return m_screenPositionOffset + ToVec2dInt(Vec2dFlt{.x = m_halfScreenWidth * (1.0F + mvpPos.x),
+                                                      .y = m_halfScreenHeight * (1.0F - mvpPos.y)});
   // NOLINTEND(cppcoreguidelines-pro-type-union-access)
 }
 

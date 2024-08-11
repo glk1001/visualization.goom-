@@ -65,11 +65,11 @@ auto ImageDisplacementList::GetImageFilename(const std::string& imageFilename) c
 
 auto ImageDisplacementList::GetParams() const -> Params
 {
-  return {GetCurrentImageDisplacement().GetAmplitude(),
-          GetCurrentImageDisplacement().GetXColorCutoff(),
-          GetCurrentImageDisplacement().GetYColorCutoff(),
-          GetCurrentImageDisplacement().GetXZoomFactor(),
-          GetCurrentImageDisplacement().GetYZoomFactor()};
+  return {.amplitude    = GetCurrentImageDisplacement().GetAmplitude(),
+          .xColorCutoff = GetCurrentImageDisplacement().GetXColorCutoff(),
+          .yColorCutoff = GetCurrentImageDisplacement().GetYColorCutoff(),
+          .xZoomFactor  = GetCurrentImageDisplacement().GetXZoomFactor(),
+          .yZoomFactor  = GetCurrentImageDisplacement().GetYZoomFactor()};
 }
 
 auto ImageDisplacementList::SetParams(const Params& params) -> void
@@ -87,16 +87,16 @@ auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) co
           paramGroup, "filename", std::string{IMAGE_FILENAMES.at(m_currentImageDisplacementIndex)}),
       GetPair(paramGroup,
               "zoom factor",
-              Point2dFlt{GetCurrentImageDisplacement().GetXZoomFactor(),
-                         GetCurrentImageDisplacement().GetYZoomFactor()}),
+              Point2dFlt{.x = GetCurrentImageDisplacement().GetXZoomFactor(),
+                         .y = GetCurrentImageDisplacement().GetYZoomFactor()}),
       GetPair(paramGroup,
               "amplitude",
-              Point2dFlt{GetCurrentImageDisplacement().GetAmplitude().x,
-                         GetCurrentImageDisplacement().GetAmplitude().y}),
+              Point2dFlt{.x = GetCurrentImageDisplacement().GetAmplitude().x,
+                         .y = GetCurrentImageDisplacement().GetAmplitude().y}),
       GetPair(paramGroup,
               "cutoff",
-              Point2dFlt{GetCurrentImageDisplacement().GetXColorCutoff(),
-                         GetCurrentImageDisplacement().GetYColorCutoff()}),
+              Point2dFlt{.x = GetCurrentImageDisplacement().GetXColorCutoff(),
+                         .y = GetCurrentImageDisplacement().GetYColorCutoff()}),
   };
 }
 

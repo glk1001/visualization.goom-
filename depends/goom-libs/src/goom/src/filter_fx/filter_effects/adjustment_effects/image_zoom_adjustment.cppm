@@ -45,7 +45,7 @@ inline auto ImageZoomAdjustment::GetZoomAdjustment(const NormalizedCoords& coord
 {
   const auto velocity = GetVelocity(coords);
 
-  return {coords.GetX() * velocity.x, coords.GetY() * velocity.y};
+  return {.x = coords.GetX() * velocity.x, .y = coords.GetY() * velocity.y};
 }
 
 inline auto ImageZoomAdjustment::GetVelocity(const NormalizedCoords& coords) const noexcept

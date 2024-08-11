@@ -29,7 +29,7 @@ using UTILS::MATH::NumberRange;
 static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
 static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.05F, 1.5F};
 
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{0.0F, 0.0F};
+static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.0F, .yLerpT = 0.0F};
 static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
 
 static constexpr auto DEFAULT_NOISE_FREQUENCY_FACTOR = 1.0F;
@@ -51,12 +51,12 @@ static constexpr auto PROB_XY_ANGLE_FREQUENCIES_EQUAL = 0.5F;
 
 PerlinNoise::PerlinNoise(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_params{{DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-             DEFAULT_LERP_TO_ONE_T_S,
-             {DEFAULT_NOISE_FREQUENCY_FACTOR, DEFAULT_NOISE_FREQUENCY_FACTOR},
-             {DEFAULT_ANGLE_FREQUENCY_FACTOR, DEFAULT_ANGLE_FREQUENCY_FACTOR},
-             DEFAULT_OCTAVES,
-             DEFAULT_PERSISTENCE},
+    m_params{.amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
+             .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
+             .noiseFrequencyFactor={.x=DEFAULT_NOISE_FREQUENCY_FACTOR, .y=DEFAULT_NOISE_FREQUENCY_FACTOR},
+             .angleFrequencyFactor={.x=DEFAULT_ANGLE_FREQUENCY_FACTOR, .y=DEFAULT_ANGLE_FREQUENCY_FACTOR},
+             .octaves=DEFAULT_OCTAVES,
+             .persistence=DEFAULT_PERSISTENCE},
     m_perlinNoise{GetRandSeedForPerlinNoise()},
     m_perlinNoise2{GetRandSeedForPerlinNoise()}
 {
@@ -111,12 +111,12 @@ auto PerlinNoise::SetRandomParams() noexcept -> void
   const auto persistence = m_goomRand->GetRandInRange<PERSISTENCE_RANGE>();
 
   SetParams({
-      {           xAmplitude,            yAmplitude},
-      {          xLerpToOneT,           yLerpToOneT},
-      {xNoiseFrequencyFactor, yNoiseFrequencyFactor},
-      {xAngleFrequencyFactor, yAngleFrequencyFactor},
-      octaves,
-      persistence
+      .amplitude            = {                xAmplitude,                 yAmplitude},
+      .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
+      .noiseFrequencyFactor = {.x = xNoiseFrequencyFactor, .y = yNoiseFrequencyFactor},
+      .angleFrequencyFactor = {.x = xAngleFrequencyFactor, .y = yAngleFrequencyFactor},
+      .octaves              = octaves,
+      .persistence          = persistence
   });
 }
 
@@ -152,23 +152,27 @@ auto PerlinNoise::GetVelocity(const NormalizedCoords& coords) const noexcept -> 
   //  const auto xNoise = std::cos(m_params.angleFrequencyFactor.x * angle);
   //  const auto yNoise = std::cos(m_params.angleFrequencyFactor.y * angle);
 
-  return {(m_params.amplitude.x * xNoise), (m_params.amplitude.y * yNoise)};
+  return {.x = (m_params.amplitude.x * xNoise), .y = (m_params.amplitude.y * yNoise)};
 }
 
 auto PerlinNoise::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "perlin noise"});
   return {
-      GetPair(fullParamGroup, "amplitude", Point2dFlt{m_params.amplitude.x, m_params.amplitude.y}),
+      GetPair(fullParamGroup,
+              "amplitude",
+              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
       GetPair(fullParamGroup,
               "lerpToOneTs",
-              Point2dFlt{m_params.lerpToOneTs.xLerpT, m_params.lerpToOneTs.yLerpT}),
-      GetPair(fullParamGroup,
-              "angle freq fac",
-              Point2dFlt{m_params.angleFrequencyFactor.x, m_params.angleFrequencyFactor.y}),
-      GetPair(fullParamGroup,
-              "noise freq fac",
-              Point2dFlt{m_params.noiseFrequencyFactor.x, m_params.noiseFrequencyFactor.y}),
+              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
+      GetPair(
+          fullParamGroup,
+          "angle freq fac",
+          Point2dFlt{.x = m_params.angleFrequencyFactor.x, .y = m_params.angleFrequencyFactor.y}),
+      GetPair(
+          fullParamGroup,
+          "noise freq fac",
+          Point2dFlt{.x = m_params.noiseFrequencyFactor.x, .y = m_params.noiseFrequencyFactor.y}),
       GetPair(fullParamGroup, "octaves", m_params.octaves),
       GetPair(fullParamGroup, "persistence", m_params.persistence),
   };

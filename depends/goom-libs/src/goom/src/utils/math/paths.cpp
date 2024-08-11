@@ -65,9 +65,10 @@ auto JoinedPaths::SegmentPathTsAreAscending() const noexcept -> bool
 
 auto JoinedPaths::SegmentPathTsAreValid() const noexcept -> bool
 {
-  return std::all_of(cbegin(m_pathTStarts),
-                     cend(m_pathTStarts),
-                     [](const float tStart) { return (tStart >= 0.0F) and (tStart <= 1.0F); });
+  return std::ranges::all_of(m_pathTStarts,
+
+                             [](const float tStart)
+                             { return (tStart >= 0.0F) and (tStart <= 1.0F); });
 }
 
 auto JoinedPaths::AdjustSegmentStepSizes() noexcept -> void

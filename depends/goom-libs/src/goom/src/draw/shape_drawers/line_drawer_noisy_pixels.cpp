@@ -39,8 +39,11 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::SetNoisePerPixel() noexcept -> voi
   for (auto& noiseList : m_noisePerPixelList)
   {
     noiseList.resize(static_cast<size_t>(m_numNoisePixelsPerPixel));
+    // for (auto& noise : noiseList)
+    // NOLINTNEXTLINE(modernize-loop-convert): Can't get clang++-19 to do this!
     for (auto i = 0U; i < noiseList.size(); ++i)
     {
+      // noise = m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius});
       noiseList[i] = m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius});
     }
   }
@@ -96,8 +99,8 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPureNoisePoints(
   for (auto i = 0; i < m_numNoisePixelsPerPixel; ++i)
   {
     const auto noisePoint = Point2dInt{
-        point.x + m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius}),
-        point.y + m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius})};
+        .x = point.x + m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius}),
+        .y = point.y + m_goomRand->GetRandInRange(NumberRange{-m_noiseRadius, +m_noiseRadius})};
 
     m_draw->DrawClippedPixels(noisePoint, colors);
   }
@@ -107,8 +110,11 @@ inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPatternedNoisePoints(
     const Point2dInt& point, const MultiplePixels& colors) noexcept -> void
 {
   const auto& noiseList = m_noisePerPixelList.at(m_currentNoisePerPixelIndex);
+  // for (const auto noise : noiseList)
+  // NOLINTNEXTLINE(modernize-loop-convert): Can't get clang++-19 to do this!
   for (auto i = 0U; i < noiseList.size(); ++i)
   {
+    // m_draw->DrawClippedPixels(point + noise, colors);
     m_draw->DrawClippedPixels(point + noiseList[i], colors);
   }
 

@@ -21,11 +21,11 @@ public:
 
   [[nodiscard]] virtual auto StopNow() noexcept -> bool { return false; }
 
-  auto GetWidth() const noexcept -> int32_t;
-  auto GetHeight() const noexcept -> int32_t;
+  [[nodiscard]] auto GetWidth() const noexcept -> int32_t;
+  [[nodiscard]] auto GetHeight() const noexcept -> int32_t;
 
-  auto GetFramebufferWidth() const noexcept -> int32_t;
-  auto GetFramebufferHeight() const noexcept -> int32_t;
+  [[nodiscard]] auto GetFramebufferWidth() const noexcept -> int32_t;
+  [[nodiscard]] auto GetFramebufferHeight() const noexcept -> int32_t;
   auto SetFramebufferDimensions(const WindowDimensions& windowDimensions) noexcept -> void;
 
   // Load textures, initialize shaders, etc.

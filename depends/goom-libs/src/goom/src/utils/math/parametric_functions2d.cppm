@@ -309,13 +309,13 @@ inline auto SpiralFunction::GetPointData(const float t) const noexcept -> PointD
   const auto angle  = m_angleFactor * t;
   const auto point  = GetSpiralPoint(radius, angle) + m_centrePos;
 
-  return {point, angle};
+  return {.point = point, .normalAngle = angle};
 }
 
 inline auto SpiralFunction::GetSpiralPoint(const float radius,
                                            const float angle) noexcept -> Point2dFlt
 {
-  return Point2dFlt{+radius * std::cos(angle), -radius * std::sin(angle)};
+  return Point2dFlt{.x = +radius * std::cos(angle), .y = -radius * std::sin(angle)};
 }
 
 inline auto LissajousFunction::GetPoint(const float t) const noexcept -> Point2dFlt

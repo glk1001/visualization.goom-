@@ -62,14 +62,14 @@ TEST_CASE("EnumMap")
     int i2;
   };
   static constexpr auto CONST_ENUM_MAP = EnumMap<EnumClass, Simple>{{{
-      {EnumClass::ENUM1, {1, 2}},
-      {EnumClass::ENUM3, {5, 6}},
-      {EnumClass::ENUM2, {3, 4}},
+      {EnumClass::ENUM1, {.i1 = 1, .i2 = 2}},
+      {EnumClass::ENUM3, {.i1 = 5, .i2 = 6}},
+      {EnumClass::ENUM2, {.i1 = 3, .i2 = 4}},
   }}};
   const auto nonConstRuntimeEnumMap    = RuntimeEnumMap<EnumClass, Simple>{{{
-      {EnumClass::ENUM1, {1, 2}},
-      {EnumClass::ENUM3, {5, 6}},
-      {EnumClass::ENUM2, {3, 4}},
+      {EnumClass::ENUM1, {.i1 = 1, .i2 = 2}},
+      {EnumClass::ENUM3, {.i1 = 5, .i2 = 6}},
+      {EnumClass::ENUM2, {.i1 = 3, .i2 = 4}},
   }}};
 
   // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers, readability-magic-numbers)

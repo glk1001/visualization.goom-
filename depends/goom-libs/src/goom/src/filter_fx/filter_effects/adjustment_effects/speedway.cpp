@@ -13,8 +13,8 @@ using UTILS::MATH::GoomRand;
 static constexpr auto X_DEFAULT_AMPLITUDE = 4.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F;
 static constexpr auto AMPLITUDE_RANGE     = AmplitudeRange{
-        {+01.0F, +08.0F},
-        {-10.0F, +10.0F},
+        .xRange = {+01.0F, +08.0F},
+        .yRange = {-10.0F, +10.0F},
 };
 
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.5F;
@@ -70,7 +70,7 @@ auto Speedway::SetMode2RandomParams() noexcept -> void
 
 auto Speedway::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  return NameValuePairs();
+  return {};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

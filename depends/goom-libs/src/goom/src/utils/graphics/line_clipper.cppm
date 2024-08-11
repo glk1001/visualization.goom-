@@ -119,14 +119,14 @@ constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> Clipped
   {
     // Both endpoints lie within the clip rectangle.
     return {
-        ClipResult::INSIDE, {newPoint1, newPoint2}
+        .clipResult = ClipResult::INSIDE, .line = {.point1 = newPoint1, .point2 = newPoint2}
     };
   }
   if (code1 & code2)
   {
     // Both endpoints are outside the clip rectangle.
     return {
-        ClipResult::REJECTED, {newPoint1, newPoint2}
+        .clipResult = ClipResult::REJECTED, .line = {.point1 = newPoint1, .point2 = newPoint2}
     };
   }
 
@@ -134,8 +134,9 @@ constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> Clipped
   while (true)
   {
     // At least one endpoint is outside the clip rectangle, so get it.
-    const auto codeOutside       = code1 != INSIDE ? code1 : code2;
-    const auto intersectionPoint = GetIntersectionPoint({newPoint1, newPoint2}, codeOutside);
+    const auto codeOutside = code1 != INSIDE ? code1 : code2;
+    const auto intersectionPoint =
+        GetIntersectionPoint({.point1 = newPoint1, .point2 = newPoint2}, codeOutside);
 
     // Replace the point outside the clip rectangle with the intersection point.
     if (codeOutside == code1)
@@ -158,13 +159,13 @@ constexpr auto LineClipper::GetClippedLine(const LineFlt& line) const -> Clipped
     {
       // Both endpoints are outside the clip rectangle.
       return {
-          ClipResult::REJECTED, {newPoint1, newPoint2}
+          .clipResult = ClipResult::REJECTED, .line = {.point1 = newPoint1, .point2 = newPoint2}
       };
     }
   }
 
   return {
-      ClipResult::CLIPPED, {newPoint1, newPoint2}
+      .clipResult = ClipResult::CLIPPED, .line = {.point1 = newPoint1, .point2 = newPoint2}
   };
 }
 
