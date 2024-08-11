@@ -8,20 +8,19 @@
 
 #include "vivid/types.h"
 
-#include <vector>
+#include <array>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
-inline const auto GRAY_7 = std::vector<vivid::srgb_t>{
-    {0.00000F, 0.00000F, 0.00000F},
-    {0.13725F, 0.13725F, 0.13725F},
-    {0.29020F, 0.29020F, 0.28627F},
-    {0.44706F, 0.44314F, 0.44314F},
-    {0.60784F, 0.60392F, 0.60392F},
-    {0.78824F, 0.78431F, 0.78039F},
-    {1.00000F, 1.00000F, 0.99216F},
+inline constexpr auto VIV_GRAY_7 = std::array{
+    vivid::srgb_t{0.00000F, 0.00000F, 0.00000F},
+    vivid::srgb_t{0.13725F, 0.13725F, 0.13725F},
+    vivid::srgb_t{0.29020F, 0.29020F, 0.28627F},
+    vivid::srgb_t{0.44706F, 0.44314F, 0.44314F},
+    vivid::srgb_t{0.60784F, 0.60392F, 0.60392F},
+    vivid::srgb_t{0.78824F, 0.78431F, 0.78039F},
+    vivid::srgb_t{1.00000F, 1.00000F, 0.99216F},
 };
 
 } // namespace GOOM::COLOR::COLOR_DATA

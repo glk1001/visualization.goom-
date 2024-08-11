@@ -8,33 +8,32 @@
 
 #include "vivid/types.h"
 
-#include <vector>
+#include <array>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
-inline const auto LINEARL_20 = std::vector<vivid::srgb_t>{
-    {0.01569F, 0.01569F, 0.01569F},
-    {0.12549F, 0.04706F, 0.10980F},
-    {0.18039F, 0.08235F, 0.19608F},
-    {0.17647F, 0.10980F, 0.37255F},
-    {0.13333F, 0.17255F, 0.47059F},
-    {0.10588F, 0.23529F, 0.50588F},
-    {0.06275F, 0.30980F, 0.50196F},
-    {0.00392F, 0.38431F, 0.43529F},
-    {0.00000F, 0.45098F, 0.37255F},
-    {0.00000F, 0.52157F, 0.28627F},
-    {0.00000F, 0.58824F, 0.21961F},
-    {0.00000F, 0.65882F, 0.13333F},
-    {0.23137F, 0.70196F, 0.00000F},
-    {0.34118F, 0.75294F, 0.00000F},
-    {0.63137F, 0.77255F, 0.00000F},
-    {0.79608F, 0.79216F, 0.20000F},
-    {0.90588F, 0.81961F, 0.59216F},
-    {0.96863F, 0.86275F, 0.77647F},
-    {0.96863F, 0.93725F, 0.90980F},
-    {1.00000F, 1.00000F, 1.00000F},
+inline constexpr auto VIV_LINEARL_20 = std::array{
+    vivid::srgb_t{0.01569F, 0.01569F, 0.01569F},
+    vivid::srgb_t{0.12549F, 0.04706F, 0.10980F},
+    vivid::srgb_t{0.18039F, 0.08235F, 0.19608F},
+    vivid::srgb_t{0.17647F, 0.10980F, 0.37255F},
+    vivid::srgb_t{0.13333F, 0.17255F, 0.47059F},
+    vivid::srgb_t{0.10588F, 0.23529F, 0.50588F},
+    vivid::srgb_t{0.06275F, 0.30980F, 0.50196F},
+    vivid::srgb_t{0.00392F, 0.38431F, 0.43529F},
+    vivid::srgb_t{0.00000F, 0.45098F, 0.37255F},
+    vivid::srgb_t{0.00000F, 0.52157F, 0.28627F},
+    vivid::srgb_t{0.00000F, 0.58824F, 0.21961F},
+    vivid::srgb_t{0.00000F, 0.65882F, 0.13333F},
+    vivid::srgb_t{0.23137F, 0.70196F, 0.00000F},
+    vivid::srgb_t{0.34118F, 0.75294F, 0.00000F},
+    vivid::srgb_t{0.63137F, 0.77255F, 0.00000F},
+    vivid::srgb_t{0.79608F, 0.79216F, 0.20000F},
+    vivid::srgb_t{0.90588F, 0.81961F, 0.59216F},
+    vivid::srgb_t{0.96863F, 0.86275F, 0.77647F},
+    vivid::srgb_t{0.96863F, 0.93725F, 0.90980F},
+    vivid::srgb_t{1.00000F, 1.00000F, 1.00000F},
 };
 
 } // namespace GOOM::COLOR::COLOR_DATA

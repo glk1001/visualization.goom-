@@ -8,28 +8,27 @@
 
 #include "vivid/types.h"
 
-#include <vector>
+#include <array>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
-inline const auto GRAY_15 = std::vector<vivid::srgb_t>{
-    {0.00000F, 0.00000F, 0.00000F},
-    {0.04314F, 0.04314F, 0.04314F},
-    {0.11373F, 0.11373F, 0.11373F},
-    {0.18431F, 0.18431F, 0.18039F},
-    {0.24706F, 0.24706F, 0.24706F},
-    {0.31373F, 0.30980F, 0.30980F},
-    {0.37647F, 0.37255F, 0.37255F},
-    {0.44706F, 0.44314F, 0.44314F},
-    {0.51373F, 0.50980F, 0.50980F},
-    {0.58431F, 0.58039F, 0.58039F},
-    {0.65490F, 0.65490F, 0.65098F},
-    {0.73333F, 0.73333F, 0.72941F},
-    {0.81961F, 0.81961F, 0.81569F},
-    {0.90588F, 0.90588F, 0.90196F},
-    {1.00000F, 1.00000F, 0.99216F},
+inline constexpr auto VIV_GRAY_15 = std::array{
+    vivid::srgb_t{0.00000F, 0.00000F, 0.00000F},
+    vivid::srgb_t{0.04314F, 0.04314F, 0.04314F},
+    vivid::srgb_t{0.11373F, 0.11373F, 0.11373F},
+    vivid::srgb_t{0.18431F, 0.18431F, 0.18039F},
+    vivid::srgb_t{0.24706F, 0.24706F, 0.24706F},
+    vivid::srgb_t{0.31373F, 0.30980F, 0.30980F},
+    vivid::srgb_t{0.37647F, 0.37255F, 0.37255F},
+    vivid::srgb_t{0.44706F, 0.44314F, 0.44314F},
+    vivid::srgb_t{0.51373F, 0.50980F, 0.50980F},
+    vivid::srgb_t{0.58431F, 0.58039F, 0.58039F},
+    vivid::srgb_t{0.65490F, 0.65490F, 0.65098F},
+    vivid::srgb_t{0.73333F, 0.73333F, 0.72941F},
+    vivid::srgb_t{0.81961F, 0.81961F, 0.81569F},
+    vivid::srgb_t{0.90588F, 0.90588F, 0.90196F},
+    vivid::srgb_t{1.00000F, 1.00000F, 0.99216F},
 };
 
 } // namespace GOOM::COLOR::COLOR_DATA

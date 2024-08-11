@@ -67,6 +67,8 @@ set(GoomLib_source_files
 )
 
 set(GoomColor_modules
+    src/color/color_data/color_data_maps.cppm
+    src/color/color_data/color_map_enums.cppm
     src/color/color_data/extra_color_groups.cppm
     src/color/color_adjustment.cppm
     src/color/color_maps_base.cppm
@@ -87,6 +89,12 @@ set(GoomColor_source_files
     src/color/random_color_maps.cpp
     src/color/random_color_maps_groups.cpp
 )
+if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    set_source_files_properties(src/color/color_data/color_data_maps.cpp
+                                PROPERTIES COMPILE_OPTIONS
+                                -fbracket-depth=1700
+    )
+endif ()
 
 set(GoomControl_modules
     src/control/goom_drawable_states/goom_drawables.cppm

@@ -8,30 +8,29 @@
 
 #include "vivid/types.h"
 
-#include <vector>
+#include <array>
 
 namespace GOOM::COLOR::COLOR_DATA
 {
 
-// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.
-inline const auto SOLAR_17 = std::vector<vivid::srgb_t>{
-    {0.20000F, 0.07843F, 0.09412F},
-    {0.27843F, 0.10196F, 0.12157F},
-    {0.35686F, 0.12549F, 0.13725F},
-    {0.43529F, 0.14510F, 0.14510F},
-    {0.50980F, 0.17647F, 0.13333F},
-    {0.57647F, 0.21569F, 0.11373F},
-    {0.62745F, 0.27059F, 0.09804F},
-    {0.67451F, 0.32941F, 0.08235F},
-    {0.71373F, 0.39216F, 0.07451F},
-    {0.74902F, 0.45490F, 0.07451F},
-    {0.78039F, 0.52549F, 0.08627F},
-    {0.80784F, 0.59608F, 0.10980F},
-    {0.83137F, 0.67059F, 0.13725F},
-    {0.85098F, 0.74510F, 0.17255F},
-    {0.86667F, 0.82353F, 0.21176F},
-    {0.87451F, 0.90588F, 0.25098F},
-    {0.88235F, 0.99216F, 0.29412F},
+inline constexpr auto VIV_SOLAR_17 = std::array{
+    vivid::srgb_t{0.20000F, 0.07843F, 0.09412F},
+    vivid::srgb_t{0.27843F, 0.10196F, 0.12157F},
+    vivid::srgb_t{0.35686F, 0.12549F, 0.13725F},
+    vivid::srgb_t{0.43529F, 0.14510F, 0.14510F},
+    vivid::srgb_t{0.50980F, 0.17647F, 0.13333F},
+    vivid::srgb_t{0.57647F, 0.21569F, 0.11373F},
+    vivid::srgb_t{0.62745F, 0.27059F, 0.09804F},
+    vivid::srgb_t{0.67451F, 0.32941F, 0.08235F},
+    vivid::srgb_t{0.71373F, 0.39216F, 0.07451F},
+    vivid::srgb_t{0.74902F, 0.45490F, 0.07451F},
+    vivid::srgb_t{0.78039F, 0.52549F, 0.08627F},
+    vivid::srgb_t{0.80784F, 0.59608F, 0.10980F},
+    vivid::srgb_t{0.83137F, 0.67059F, 0.13725F},
+    vivid::srgb_t{0.85098F, 0.74510F, 0.17255F},
+    vivid::srgb_t{0.86667F, 0.82353F, 0.21176F},
+    vivid::srgb_t{0.87451F, 0.90588F, 0.25098F},
+    vivid::srgb_t{0.88235F, 0.99216F, 0.29412F},
 };
 
 } // namespace GOOM::COLOR::COLOR_DATA

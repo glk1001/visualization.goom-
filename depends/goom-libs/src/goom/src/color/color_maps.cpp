@@ -2,14 +2,12 @@ module;
 
 //#undef NO_LOGGING
 
-#include "color_data/color_data_maps.h"
-#include "color_data/color_map_enums.h"
-
 #include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <span>
 #include <utility>
 #include <vector>
 
@@ -26,6 +24,8 @@ module;
 
 module Goom.Color.ColorMaps;
 
+import Goom.Color.ColorData.ColorDataMaps;
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.ColorData.ExtraColorGroups;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorUtils;
@@ -37,6 +37,36 @@ namespace GOOM::COLOR
 {
 
 using COLOR_DATA::ColorMapName;
+using COLOR_DATA::GetAllMapArrays;
+using COLOR_DATA::GetAllMaps;
+using COLOR_DATA::GetBlueMaps;
+using COLOR_DATA::GetCityMaps;
+using COLOR_DATA::GetColdMaps;
+using COLOR_DATA::GetCyclicMaps;
+using COLOR_DATA::GetCyclicSlimMaps;
+using COLOR_DATA::GetDivergingBlackMaps;
+using COLOR_DATA::GetDivergingBlackSlimMaps;
+using COLOR_DATA::GetDivergingMaps;
+using COLOR_DATA::GetDivergingSlimMaps;
+using COLOR_DATA::GetGreenMaps;
+using COLOR_DATA::GetHeatMaps;
+using COLOR_DATA::GetMiscMaps;
+using COLOR_DATA::GetMiscSlimMaps;
+using COLOR_DATA::GetOrangeMaps;
+using COLOR_DATA::GetPastelMaps;
+using COLOR_DATA::GetPercUnifSequentialMaps;
+using COLOR_DATA::GetPercUnifSequentialSlimMaps;
+using COLOR_DATA::GetPurpleMaps;
+using COLOR_DATA::GetQualitativeMaps;
+using COLOR_DATA::GetQualitativeSlimMaps;
+using COLOR_DATA::GetRedMaps;
+using COLOR_DATA::GetSeasonMaps;
+using COLOR_DATA::GetSequential2Maps;
+using COLOR_DATA::GetSequential2SlimMaps;
+using COLOR_DATA::GetSequentialMaps;
+using COLOR_DATA::GetSequentialSlimMaps;
+using COLOR_DATA::GetWesAndersonMaps;
+using COLOR_DATA::GetYellowMaps;
 using COLOR_DATA::NUM_COLOR_MAP_ENUMS;
 using UTILS::NUM;
 
@@ -123,17 +153,12 @@ namespace
 {
 
 template<class T>
-auto at(const std::array<T, NUM<ColorMapGroup>>& arr, ColorMapGroup idx) noexcept -> const T&;
-template<class T>
 auto at(std::array<T, NUM<ColorMapGroup>>& arr, ColorMapGroup idx) noexcept -> T&;
-
-[[nodiscard]] auto GetAllColorMapNames() noexcept -> const std::vector<ColorMapName>&;
-[[nodiscard]] auto MakeAllColorMapNames() noexcept -> std::vector<ColorMapName>;
 
 [[nodiscard]] auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMap>&;
 [[nodiscard]] auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>;
 
-using ColorGroupNamesArray = std::array<const std::vector<ColorMapName>*, NUM<ColorMapGroup>>;
+using ColorGroupNamesArray = std::array<std::span<const ColorMapName>, NUM<ColorMapGroup>>;
 [[nodiscard]] auto GetColorGroupNames() noexcept -> const ColorGroupNamesArray&;
 [[nodiscard]] auto MakeColorGroupNames() noexcept -> ColorGroupNamesArray;
 
@@ -191,14 +216,14 @@ auto ColorMaps::GetNumColorMapNames() noexcept -> uint32_t
 }
 
 auto ColorMaps::GetColorMapNames(const ColorMapGroup colorMapGroup) noexcept
-    -> const std::vector<ColorMapName>&
+    -> std::span<const ColorMapName>
 {
   if (colorMapGroup == ColorMapGroup::ALL)
   {
-    return GetAllColorMapNames();
+    return GetAllMaps();
   }
 
-  return *at(GetColorGroupNames(), colorMapGroup);
+  return GetColorGroupNames().at(static_cast<size_t>(colorMapGroup));
 }
 
 auto ColorMaps::GetNumGroups() noexcept -> uint32_t
@@ -222,7 +247,7 @@ auto ColorMaps::GetColorMapSharedPtr(const ColorMapName colorMapName) noexcept
 namespace
 {
 
-inline auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMap>&
+auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMap>&
 {
   static const auto s_PRE_BUILT_COLOR_MAPS = MakePrebuiltColorMaps();
 
@@ -231,23 +256,17 @@ inline auto GetPreBuiltColorMaps() noexcept -> const std::vector<PrebuiltColorMa
 
 auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>
 {
-  static_assert(NUM_COLOR_MAP_ENUMS == COLOR_DATA::ALL_MAPS.size(), "Invalid allMaps size.");
+  Expects(NUM_COLOR_MAP_ENUMS == GetAllMapArrays().size());
 
   auto preBuiltColorMaps = std::vector<PrebuiltColorMap>{};
-  preBuiltColorMaps.reserve(COLOR_DATA::ALL_MAPS.size());
+  preBuiltColorMaps.reserve(GetAllMapArrays().size());
 
-  for (const auto& map : COLOR_DATA::ALL_MAPS)
+  for (const auto& [colorMap, vivArray] : GetAllMapArrays())
   {
-    preBuiltColorMaps.emplace_back(map.colorMapName, *map.vividArray);
+    preBuiltColorMaps.emplace_back(colorMap, std::vector(vivArray.cbegin(), vivArray.cend()));
   }
 
   return preBuiltColorMaps;
-}
-
-template<class T>
-auto at(const std::array<T, NUM<ColorMapGroup>>& arr, const ColorMapGroup idx) noexcept -> const T&
-{
-  return arr.at(static_cast<size_t>(idx));
 }
 
 template<class T>
@@ -256,27 +275,7 @@ auto at(std::array<T, NUM<ColorMapGroup>>& arr, const ColorMapGroup idx) noexcep
   return arr.at(static_cast<size_t>(idx));
 }
 
-auto GetAllColorMapNames() noexcept -> const std::vector<ColorMapName>&
-{
-  static const auto s_ALL_COLOR_MAP_NAMES = MakeAllColorMapNames();
-
-  return s_ALL_COLOR_MAP_NAMES;
-}
-
-auto MakeAllColorMapNames() noexcept -> std::vector<ColorMapName>
-{
-  auto allColorMapNames = std::vector<ColorMapName>{};
-  allColorMapNames.reserve(COLOR_DATA::ALL_MAPS.size());
-
-  for (const auto& map : COLOR_DATA::ALL_MAPS)
-  {
-    allColorMapNames.emplace_back(map.colorMapName);
-  }
-
-  return allColorMapNames;
-}
-
-inline auto GetColorGroupNames() noexcept -> const ColorGroupNamesArray&
+auto GetColorGroupNames() noexcept -> const ColorGroupNamesArray&
 {
   static const auto s_COLOR_GROUP_NAMES = MakeColorGroupNames();
 
@@ -287,42 +286,38 @@ auto MakeColorGroupNames() noexcept -> ColorGroupNamesArray
 {
   auto groups = ColorGroupNamesArray{};
 
-  at(groups, ColorMapGroup::ALL) = &GetAllColorMapNames();
+  at(groups, ColorMapGroup::ALL) = GetAllMaps();
 
-  at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL) =
-      &COLOR_DATA::PERC_UNIF_SEQUENTIAL_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL)      = &COLOR_DATA::SEQUENTIAL_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL2)     = &COLOR_DATA::SEQUENTIAL2_MAPS;
-  at(groups, ColorMapGroup::CYCLIC)          = &COLOR_DATA::CYCLIC_MAPS;
-  at(groups, ColorMapGroup::DIVERGING)       = &COLOR_DATA::DIVERGING_MAPS;
-  at(groups, ColorMapGroup::DIVERGING_BLACK) = &COLOR_DATA::DIVERGING_BLACK_MAPS;
-  at(groups, ColorMapGroup::QUALITATIVE)     = &COLOR_DATA::QUALITATIVE_MAPS;
-  at(groups, ColorMapGroup::MISC)            = &COLOR_DATA::MISC_MAPS;
+  at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL) = GetPercUnifSequentialMaps();
+  at(groups, ColorMapGroup::SEQUENTIAL)                      = GetSequentialMaps();
+  at(groups, ColorMapGroup::SEQUENTIAL2)                     = GetSequential2Maps();
+  at(groups, ColorMapGroup::CYCLIC)                          = GetCyclicMaps();
+  at(groups, ColorMapGroup::DIVERGING)                       = GetDivergingMaps();
+  at(groups, ColorMapGroup::DIVERGING_BLACK)                 = GetDivergingBlackMaps();
+  at(groups, ColorMapGroup::QUALITATIVE)                     = GetQualitativeMaps();
+  at(groups, ColorMapGroup::MISC)                            = GetMiscMaps();
 
-  at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM) =
-      &COLOR_DATA::PERC_UNIF_SEQUENTIAL_SLIM_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL_SLIM)      = &COLOR_DATA::SEQUENTIAL_SLIM_MAPS;
-  at(groups, ColorMapGroup::SEQUENTIAL2_SLIM)     = &COLOR_DATA::SEQUENTIAL2_SLIM_MAPS;
-  at(groups, ColorMapGroup::CYCLIC_SLIM)          = &COLOR_DATA::CYCLIC_SLIM_MAPS;
-  at(groups, ColorMapGroup::DIVERGING_SLIM)       = &COLOR_DATA::DIVERGING_SLIM_MAPS;
-  at(groups, ColorMapGroup::DIVERGING_BLACK_SLIM) = &COLOR_DATA::DIVERGING_BLACK_SLIM_MAPS;
-  at(groups, ColorMapGroup::QUALITATIVE_SLIM)     = &COLOR_DATA::QUALITATIVE_SLIM_MAPS;
-  at(groups, ColorMapGroup::MISC_SLIM)            = &COLOR_DATA::MISC_SLIM_MAPS;
+  at(groups, ColorMapGroup::PERCEPTUALLY_UNIFORM_SEQUENTIAL_SLIM) = GetPercUnifSequentialSlimMaps();
+  at(groups, ColorMapGroup::SEQUENTIAL_SLIM)                      = GetSequentialSlimMaps();
+  at(groups, ColorMapGroup::SEQUENTIAL2_SLIM)                     = GetSequential2SlimMaps();
+  at(groups, ColorMapGroup::CYCLIC_SLIM)                          = GetCyclicSlimMaps();
+  at(groups, ColorMapGroup::DIVERGING_SLIM)                       = GetDivergingSlimMaps();
+  at(groups, ColorMapGroup::DIVERGING_BLACK_SLIM)                 = GetDivergingBlackSlimMaps();
+  at(groups, ColorMapGroup::QUALITATIVE_SLIM)                     = GetQualitativeSlimMaps();
+  at(groups, ColorMapGroup::MISC_SLIM)                            = GetMiscSlimMaps();
 
-  at(groups, ColorMapGroup::WES_ANDERSON) = &COLOR_DATA::WES_ANDERSON_MAPS;
-  at(groups, ColorMapGroup::BLUES)        = &COLOR_DATA::BLUE_MAPS;
-  at(groups, ColorMapGroup::REDS)         = &COLOR_DATA::RED_MAPS;
-  at(groups, ColorMapGroup::GREENS)       = &COLOR_DATA::GREEN_MAPS;
-  at(groups, ColorMapGroup::YELLOWS)      = &COLOR_DATA::YELLOW_MAPS;
-  at(groups, ColorMapGroup::ORANGES)      = &COLOR_DATA::ORANGE_MAPS;
-  at(groups, ColorMapGroup::PURPLES)      = &COLOR_DATA::PURPLE_MAPS;
-  at(groups, ColorMapGroup::CITIES)       = &COLOR_DATA::CITY_MAPS;
-  at(groups, ColorMapGroup::SEASONS)      = &COLOR_DATA::SEASON_MAPS;
-  at(groups, ColorMapGroup::HEAT)         = &COLOR_DATA::HEAT_MAPS;
-  at(groups, ColorMapGroup::COLD)         = &COLOR_DATA::COLD_MAPS;
-  at(groups, ColorMapGroup::PASTEL)       = &COLOR_DATA::PASTEL_MAPS;
-
-  Ensures(std::ranges::all_of(groups, [](const auto& group) { return group != nullptr; }));
+  at(groups, ColorMapGroup::WES_ANDERSON) = GetWesAndersonMaps();
+  at(groups, ColorMapGroup::BLUES)        = GetBlueMaps();
+  at(groups, ColorMapGroup::REDS)         = GetRedMaps();
+  at(groups, ColorMapGroup::GREENS)       = GetGreenMaps();
+  at(groups, ColorMapGroup::YELLOWS)      = GetYellowMaps();
+  at(groups, ColorMapGroup::ORANGES)      = GetOrangeMaps();
+  at(groups, ColorMapGroup::PURPLES)      = GetPurpleMaps();
+  at(groups, ColorMapGroup::CITIES)       = GetCityMaps();
+  at(groups, ColorMapGroup::SEASONS)      = GetSeasonMaps();
+  at(groups, ColorMapGroup::HEAT)         = GetHeatMaps();
+  at(groups, ColorMapGroup::COLD)         = GetColdMaps();
+  at(groups, ColorMapGroup::PASTEL)       = GetPastelMaps();
 
   return groups;
 }

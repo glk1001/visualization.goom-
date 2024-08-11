@@ -32,9 +32,11 @@ INCLUDE_DIR = TEMP_DIR + "/" + INCLUDE_RELDIR
 PALETTABLE_INCLUDE_DIR = TEMP_DIR + "/" + INCLUDE_RELDIR + "/" + PALETTABLE_SUBDIR
 SRCE_DIR = TEMP_DIR + "/" + SRCE_RELDIR
 
-COLOR_MAP_ENUMS_H = "color_map_enums.h"
-COLOR_DATA_MAPS_H = "color_data_maps.h"
+COLOR_MAP_ENUMS_CPPM = "color_map_enums.cppm"
+COLOR_MAP_ENUMS_MODULE_NAME = "Goom.Color.ColorData.ColorMapEnums"
+COLOR_DATA_MAPS_CPPM = "color_data_maps.cppm"
 COLOR_DATA_MAPS_CPP = "color_data_maps.cpp"
+COLOR_DATA_MAPS_MODULE_NAME = "Goom.Color.ColorData.ColorDataMaps"
 GOOM_NAMESPACE = "GOOM"
 COLOR_NAMESPACE = "COLOR"
 COLOR_DATA_NAMESPACE = "COLOR_DATA"
@@ -112,6 +114,10 @@ def get_cpp_name(nm: str) -> str:
     if cpp_nm.endswith("_"):
         cpp_nm = cpp_nm[:-1]
     return cpp_nm
+
+
+def get_vivid_map_name(nm: str) -> str:
+    return f"VIV_{get_upper_cpp_name(nm)}"
 
 
 def get_upper_cpp_name(nm: str) -> str:
@@ -229,30 +235,32 @@ def write_cpp_header(cm: Colormap):
         f.write("\n")
         f.write('#include "vivid/types.h"\n')
         f.write("\n")
-        f.write("#include <vector>\n")
+        f.write("#include <array>\n")
         f.write("\n")
         write_namespace_begin(f)
         f.write("\n")
-        f.write("// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.\n")
         f.write(
-            f"inline const auto {get_upper_cpp_name(cm.name)} = std::vector<vivid::srgb_t>{{\n"
+            f"inline constexpr auto {get_vivid_map_name(cm.name)} = std::array{{\n"
         )
         for i in range(cm.N):
             vals = cm(i)
-            f.write(f"    {{{vals[0]:7.5f}F, {vals[1]:7.5f}F, {vals[2]:7.5f}F}},\n")
+            f.write(f"    vivid::srgb_t{{{vals[0]:7.5f}F, {vals[1]:7.5f}F, {vals[2]:7.5f}F}},\n")
         f.write("};\n")
         f.write("\n")
         write_namespace_end(f)
 
 
 def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
-    with open(f"{INCLUDE_DIR}/{COLOR_MAP_ENUMS_H}", "w") as f:
-        f.write("#pragma once\n")
-        f.write("\n")
+    with open(f"{INCLUDE_DIR}/{COLOR_MAP_ENUMS_CPPM}", "w") as f:
         f.write(f"{GENERATED_CODE_WARNING}\n")
+        f.write("\n")
+        f.write("module;\n")
         f.write("\n")
         f.write("#include <cstdint>\n")
         f.write("\n")
+        f.write(f'export module {COLOR_MAP_ENUMS_MODULE_NAME};\n')
+        f.write("\n")
+        f.write("export ")
         write_namespace_begin(f)
         f.write("\n")
         f.write(f"enum class {MAPS_ENUM_NAME} : int16_t\n")
@@ -268,37 +276,48 @@ def write_color_maps_enums_header(maps: List[str], dupl: Dict[str, str]):
 
 
 def write_color_data_maps_header(color_map_grps: Dict[str, List[str]]):
-    with open(f"{INCLUDE_DIR}/{COLOR_DATA_MAPS_H}", "w") as f:
-        f.write("#pragma once\n")
-        f.write("\n")
+    with open(f"{INCLUDE_DIR}/{COLOR_DATA_MAPS_CPPM}", "w") as f:
         f.write(f"{GENERATED_CODE_WARNING}\n")
         f.write("\n")
-        f.write(f'#include "{COLOR_MAP_ENUMS_H}"\n')
+        f.write("module;\n")
+        f.write("\n")
         f.write('#include "vivid/types.h"\n')
         f.write("\n")
-        f.write("#include <array>\n")
-        f.write("#include <vector>\n")
+        f.write("#include <span>\n")
         f.write("\n")
+        f.write(f"export module {COLOR_DATA_MAPS_MODULE_NAME};\n")
+        f.write("\n")
+        f.write(f"import {COLOR_MAP_ENUMS_MODULE_NAME};\n")
+        f.write("\n")
+        f.write("export ")
         write_namespace_begin(f)
         f.write("\n")
-        f.write(f"// array of raw maps matching elements of enum '{MAPS_ENUM_NAME}'\n")
+        f.write(f"// Array of raw maps matching elements of enum '{MAPS_ENUM_NAME}'.\n")
         f.write("struct ColorNamePair\n")
         f.write("{\n")
-        f.write("  ColorMapName colorMapName;\n")
-        f.write("  const std::vector<vivid::srgb_t>* vividArray;\n")
+        f.write("  ColorMapName colorMap{};\n")
+        f.write("  std::span<const vivid::srgb_t> vivArray{};\n")
         f.write("};\n")
         f.write("\n")
-        f.write(
-            f"extern const std::array<ColorNamePair, NUM_COLOR_MAP_ENUMS> ALL_MAPS;\n"
-        )
+        f.write(f"auto GetAllMapArrays() noexcept -> std::span<const ColorNamePair>;\n")
         f.write("\n")
         for map_nm in color_map_grps:
             f.write(
-                f"extern const std::vector<{MAPS_ENUM_NAME}>"
-                f" {get_upper_cpp_name(map_nm)}_MAPS;\n"
+                f"auto {get_map_getter_name(map_nm)} noexcept"
+                f" -> std::span<const {MAPS_ENUM_NAME}>;\n"
             )
         f.write("\n")
         write_namespace_end(f)
+
+
+def get_map_getter_name(map_name: str) -> str:
+    name_parts = map_name.split("_")
+
+    fixed_parts = []
+    for n in name_parts:
+        fixed_parts.append(n[0].upper() + n[1:].lower())
+
+    return "Get" + "".join(fixed_parts) + "Maps()"
 
 
 def write_color_data_maps_cpp(
@@ -307,7 +326,8 @@ def write_color_data_maps_cpp(
     with open(f"{SRCE_DIR}/{FINAL_INCLUDE_RELDIR}/{COLOR_DATA_MAPS_CPP}", "w") as f:
         f.write(f"{GENERATED_CODE_WARNING}\n")
         f.write("\n")
-        f.write(f'#include "{COLOR_DATA_MAPS_H}"\n')
+
+        f.write("module;\n")
         f.write("\n")
         f.write("// clang-format off\n")
         f.write("// NOLINTBEGIN(llvm-include-order)\n")
@@ -319,44 +339,70 @@ def write_color_data_maps_cpp(
         f.write("// NOLINTEND(llvm-include-order)\n")
         f.write("// clang-format on\n")
         f.write("\n")
-        f.write(f'#include "{COLOR_MAP_ENUMS_H}"\n')
-        f.write("\n")
         f.write("#include <array>\n")
-        f.write("#include <vector>\n")
+        f.write("#include <span>\n")
         f.write("\n")
+
+        f.write(f"module {COLOR_DATA_MAPS_MODULE_NAME};\n")
+        f.write("\n")
+
+        f.write(f"import {COLOR_MAP_ENUMS_MODULE_NAME};\n")
+        f.write("\n")
+
         write_namespace_begin(f)
         f.write("\n")
-        f.write("// clang-format off\n")
-        f.write(f"const std::array<ColorNamePair, NUM_COLOR_MAP_ENUMS> ALL_MAPS{{{{\n")
+
+        f.write("auto GetAllMapArrays() noexcept -> std::span<const ColorNamePair>\n")
+        f.write("{\n")
+        f.write("  using enum ColorMapName;\n")
+        f.write("  using std::span;\n")
+        f.write("\n")
+        f.write("  // clang-format off\n")
+        f.write(f"  static const auto s_ALL_MAPS = std::array{{\n")
         for m in used_mps:
             f.write(
-                f"  {{.colorMapName = {MAPS_ENUM_NAME}::{get_upper_cpp_name(m)},"
-                f" .vividArray = &{COLOR_DATA_NAMESPACE}::{get_upper_cpp_name(m)}}},"
+                f"      ColorNamePair{{.colorMap = {get_upper_cpp_name(m)},"
+                f" .vivArray = span{{{get_vivid_map_name(m)}}}}},"
                 + get_enum_line_end(m, dupl)
             )
-        f.write(f"}}}};\n")
+        f.write(f"  }};\n")
+        f.write("  // clang-format on\n")
+        f.write("\n")
+        f.write("  static_assert(s_ALL_MAPS.size() == NUM_COLOR_MAP_ENUMS);\n")
+        f.write("\n")
+        f.write("  return std::span{s_ALL_MAPS};\n")
+        f.write("}\n")
         f.write("\n")
 
         # Do the groups
         not_done_maps = copy.deepcopy(used_mps)
         for map_nm in color_map_grps:
+            f.write("\n")
             f.write(
-                "// NOLINTNEXTLINE(cert-err58-cpp): Fix with C++20 and 'constexpr'.\n"
+                f"auto {get_map_getter_name(map_nm)} noexcept -> std::span<const ColorMapName>\n"
             )
-            f.write(
-                f"const std::vector<{MAPS_ENUM_NAME}> {get_upper_cpp_name(map_nm)}_MAPS{{\n"
-            )
+            f.write("{\n")
+            array_name = f"{get_upper_cpp_name(map_nm)}_MAPS"
+            f.write(f"  static constexpr auto {array_name} = std::array{{\n")
             sorted_map_names = sorted(color_map_grps[map_nm], key=cmap_name_key)
             for m in sorted_map_names:
                 if m not in used_mps:
                     continue
                 f.write(
-                    f"    {MAPS_ENUM_NAME}::{get_upper_cpp_name(m)},"
+                    f"      {MAPS_ENUM_NAME}::{get_upper_cpp_name(m)},"
                     + get_enum_line_end(m, dupl)
                 )
                 if m in not_done_maps:
                     not_done_maps.remove(m)
-            f.write(f"}};\n")
+            f.write(f"  }};\n")
+            f.write("\n")
+            if map_nm == "all":
+                f.write(
+                    f"  static_assert({array_name}.size() == NUM_COLOR_MAP_ENUMS);\n"
+                )
+                f.write("\n")
+            f.write(f"  return std::span{{{get_upper_cpp_name(map_nm)}_MAPS}};\n")
+            f.write("}\n")
 
         if len(not_done_maps) > 0:
             print(
@@ -365,7 +411,6 @@ def write_color_data_maps_cpp(
                 )
             )
 
-        f.write("// clang-format on\n")
         f.write("\n")
         write_namespace_end(f)
 
@@ -508,6 +553,8 @@ if __name__ == "__main__":
     used_maps, duplicate_maps, numbered_maps = get_map_types(all_maps)
     write_cpp_headers(used_maps)
     write_color_maps_enums_header(used_maps, duplicate_maps)
+
+    color_map_groups["all"] = used_maps
 
     write_color_data_maps_header(color_map_groups)
     write_color_data_maps_cpp(color_map_groups, used_maps, duplicate_maps)

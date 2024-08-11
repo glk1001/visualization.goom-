@@ -1,7 +1,5 @@
 // NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
 
-#include "color/color_data/color_map_enums.h"
-
 #include <cstddef>
 #include <string>
 #include <utility>
@@ -21,6 +19,7 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMapsGrid;
 import Goom.Color.ColorUtils;

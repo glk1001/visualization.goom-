@@ -1,12 +1,11 @@
 module;
 
-#include "color_data/color_map_enums.h"
-
 #include <set>
 #include <string>
 
 export module Goom.Color.RandomColorMaps;
 
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.ColorMapBase;
 import Goom.Color.ColorMaps;
 import Goom.Utils.Math.GoomRand;

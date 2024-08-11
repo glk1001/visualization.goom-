@@ -1,14 +1,13 @@
 module;
 
-#include "color_data/color_map_enums.h"
-
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <vector>
+#include <span>
 
 export module Goom.Color.ColorMaps;
 
+import Goom.Color.ColorData.ColorMapEnums;
 import Goom.Color.ColorMapBase;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
@@ -90,7 +89,7 @@ public:
   [[nodiscard]] static auto GetNumGroups() noexcept -> uint32_t;
   [[nodiscard]] static auto GetNumColorMapNames() noexcept -> uint32_t;
   [[nodiscard]] static auto GetColorMapNames(ColorMapGroup colorMapGroup) noexcept
-      -> const std::vector<COLOR_DATA::ColorMapName>&;
+      -> std::span<const COLOR_DATA::ColorMapName>;
 
   [[nodiscard]] auto GetColorMap(COLOR_DATA::ColorMapName colorMapName) const noexcept
       -> ColorMapPtrWrapper;
