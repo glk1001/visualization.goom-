@@ -211,6 +211,8 @@ auto PerlinFlowField::SetRandomParams() noexcept -> void
       .persistence2         = persistence2,
       .noiseFactor          = noiseFactor,
   });
+
+  SetupAngles();
 }
 
 auto PerlinFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
