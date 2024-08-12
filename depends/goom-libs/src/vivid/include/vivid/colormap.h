@@ -18,6 +18,7 @@
 #include "vivid/types.h"
 #include <vector>
 #include <string>
+#include <span>
 
 namespace vivid {
 
@@ -49,8 +50,9 @@ class ColorMap
         };
 
         ColorMap() = default;
-        ColorMap( const Preset type );
+        ColorMap( Preset type );
         ColorMap( std::vector<srgb_t> s ): stops_{ s } {}
+        ColorMap( const std::span<const srgb_t>& s): stops_{s.cbegin(), s.cend()} {}
 
         bool empty() const { return stops_.empty(); }
         size_t numStops() const { return stops_.size(); }
