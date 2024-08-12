@@ -4,7 +4,7 @@ module;
 #include <complex>
 #include <cstdint>
 
-module Goom.FilterFx.FilterEffects.AdjustmentEffects.TestFlowField;
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.JuliaFlowField;
 
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
@@ -45,7 +45,7 @@ constexpr auto PROB_MULTIPLY_VELOCITY     = 0.2F;
 
 } // namespace
 
-TestFlowField::TestFlowField(const GoomRand& goomRand) noexcept
+JuliaFlowField::JuliaFlowField(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_params{.amplitude        = DEFAULT_AMPLITUDE,
              .lerpToOneTs      = DEFAULT_LERP_TO_ONE_T_S,
@@ -54,29 +54,10 @@ TestFlowField::TestFlowField(const GoomRand& goomRand) noexcept
              .maxZ             = DEFAULT_MAX_Z,
              .multiplyVelocity = false}
 {
-  SetupAngles();
 }
 
-auto TestFlowField::SetupAngles() noexcept -> void
-{
-  const auto setupFunc = [](const uint32_t x, const uint32_t y) -> FlowFieldGrid::PolarCoords
-  {
-    const auto xFlt =
-        2.0F * (-0.5F + (static_cast<float>(x) / static_cast<float>(FlowFieldGrid::GRID_WIDTH)));
-    const auto yFlt =
-        2.0F * (-0.5F + (static_cast<float>(y) / static_cast<float>(FlowFieldGrid::GRID_HEIGHT)));
-
-    const auto angle  = std::atan2(yFlt, xFlt);
-    const auto radius = std::sqrt(Sq(xFlt) + Sq(yFlt));
-
-    return {.angle = angle, .radius = radius};
-  };
-
-  m_gridArray.Initialize(setupFunc);
-}
-
-auto TestFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
-                                const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+auto JuliaFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
+                                 const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   static constexpr auto RESET_POINT = std::complex<float>{2.0F, 2.0F};
 
@@ -104,7 +85,7 @@ auto TestFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
   return {.x = coords.GetX() * x, .y = coords.GetY() * y};
 }
 
-auto TestFlowField::SetRandomParams() noexcept -> void
+auto JuliaFlowField::SetRandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
@@ -136,7 +117,7 @@ auto TestFlowField::SetRandomParams() noexcept -> void
   });
 }
 
-auto TestFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
+auto JuliaFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return {};
 }

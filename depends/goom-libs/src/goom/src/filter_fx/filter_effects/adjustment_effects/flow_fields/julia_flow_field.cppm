@@ -2,9 +2,8 @@ module;
 
 #include <complex>
 
-export module Goom.FilterFx.FilterEffects.AdjustmentEffects.TestFlowField;
+export module Goom.FilterFx.FilterEffects.AdjustmentEffects.JuliaFlowField;
 
-import Goom.FilterFx.FilterEffects.AdjustmentEffects.FlowFieldGrid;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
@@ -18,10 +17,10 @@ using GOOM::UTILS::MATH::GoomRand;
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-class TestFlowField
+class JuliaFlowField
 {
 public:
-  explicit TestFlowField(const GoomRand& goomRand) noexcept;
+  explicit JuliaFlowField(const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void;
 
@@ -47,8 +46,6 @@ protected:
 
 private:
   const GoomRand* m_goomRand;
-  FlowFieldGrid m_gridArray{};
-  auto SetupAngles() noexcept -> void;
   Params m_params;
   [[nodiscard]] auto GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                  const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
@@ -59,20 +56,21 @@ private:
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-inline auto TestFlowField::GetZoomAdjustment(
-    const Vec2dFlt& baseZoomAdjustment, const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+inline auto JuliaFlowField::GetZoomAdjustment(const Vec2dFlt& baseZoomAdjustment,
+                                               const NormalizedCoords& coords) const noexcept
+    -> Vec2dFlt
 {
   const auto velocity = GetVelocity(baseZoomAdjustment, coords);
 
   return GetVelocityByZoomLerpedToOne(coords, m_params.lerpToOneTs, velocity);
 }
 
-inline auto TestFlowField::GetParams() const noexcept -> const Params&
+inline auto JuliaFlowField::GetParams() const noexcept -> const Params&
 {
   return m_params;
 }
 
-inline void TestFlowField::SetParams(const Params& params) noexcept
+inline void JuliaFlowField::SetParams(const Params& params) noexcept
 {
   m_params = params;
 }

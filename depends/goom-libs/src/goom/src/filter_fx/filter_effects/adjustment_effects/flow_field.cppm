@@ -1,12 +1,14 @@
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.FlowField;
 
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.DipoleFlowField;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.JuliaFlowField;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.PerlinFlowField;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.TestFlowField;
 import Goom.FilterFx.NormalizedCoords;
 import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
+import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
 using GOOM::UTILS::NameValuePairs;
@@ -29,15 +31,17 @@ public:
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
       -> NameValuePairs override;
 
-  enum class FlowFieldTypes
+  enum class FlowFieldTypes : UnderlyingEnumType
   {
     DIPOLE,
+    JULIA,
     PERLIN,
     TEST
   };
 
 private:
   DipoleFlowField m_dipoleFlowField;
+  JuliaFlowField m_juliaFlowField;
   PerlinFlowField m_perlinFlowField;
   TestFlowField m_testFlowField;
   Weights<FlowFieldTypes> m_flowFieldTypeWeights;
