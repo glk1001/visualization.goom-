@@ -177,6 +177,8 @@ set(GoomFilterFx_modules
     src/filter_fx/after_effects/after_effects_states.cppm
     src/filter_fx/after_effects/after_effects_types.cppm
     src/filter_fx/after_effects/zoom_vector_after_effects.cppm
+    src/filter_fx/filter_effects/adjustment_effects/flow_fields/dipole_flow_field.cppm
+    src/filter_fx/filter_effects/adjustment_effects/flow_fields/flow_field_grid.cppm
     src/filter_fx/filter_effects/adjustment_effects/flow_fields/perlin_flow_field.cppm
     src/filter_fx/filter_effects/adjustment_effects/flow_fields/test_flow_field.cppm
     src/filter_fx/filter_effects/adjustment_effects/amulet.cppm
@@ -226,6 +228,8 @@ set(GoomFilterFx_source_files
     src/filter_fx/after_effects/after_effects.cpp
     src/filter_fx/after_effects/after_effects_states.cpp
     src/filter_fx/after_effects/zoom_vector_after_effects.cpp
+    src/filter_fx/filter_effects/adjustment_effects/flow_fields/dipole_flow_field.cpp
+    src/filter_fx/filter_effects/adjustment_effects/flow_fields/flow_field_grid.cpp
     src/filter_fx/filter_effects/adjustment_effects/flow_fields/perlin_flow_field.cpp
     src/filter_fx/filter_effects/adjustment_effects/flow_fields/test_flow_field.cpp
     src/filter_fx/filter_effects/adjustment_effects/amulet.cpp

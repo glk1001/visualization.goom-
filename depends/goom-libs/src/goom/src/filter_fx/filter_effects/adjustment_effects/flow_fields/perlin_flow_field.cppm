@@ -1,15 +1,14 @@
 module;
 
-#include <array>
-//#include <mdspan.hpp>
 #include <PerlinNoise.hpp>
+#include <cstdint>
 
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.PerlinFlowField;
 
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.FlowFieldGrid;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
@@ -44,6 +43,7 @@ public:
     int32_t octaves2{};
     float persistence2{};
     float noiseFactor{};
+    bool multiplyVelocity = false;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
@@ -52,14 +52,7 @@ protected:
 
 private:
   const GoomRand* m_goomRand;
-  static constexpr auto GRID_HEIGHT = 500UL;
-  static constexpr auto GRID_WIDTH  = 500UL;
-  std::array<float, GRID_WIDTH * GRID_HEIGHT> m_gridArray{};
-  // std::mdspan<float, std::extents<unsigned long, GRID_HEIGHT, GRID_WIDTH>>
-  //    gridAngles{m_gridArray.data()};
-  NormalizedCoordsConverter m_normalizedCoordsToGridConverter{
-      {GRID_WIDTH, GRID_HEIGHT}
-  };
+  FlowFieldGrid m_gridArray{};
   siv::BasicPerlinNoise<float> m_perlinNoise;
   siv::BasicPerlinNoise<float> m_perlinNoise2;
   auto SetupAngles() noexcept -> void;

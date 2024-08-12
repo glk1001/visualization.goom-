@@ -12,11 +12,11 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
-import Goom.Lib.AssertUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
+
 using UTILS::NameValuePairs;
 using UTILS::MATH::GetRandSeed;
 using UTILS::MATH::GoomRand;
@@ -75,6 +75,7 @@ constexpr auto PROB_XY_NOISE_FREQUENCIES_EQUAL = 0.5F;
 constexpr auto PROB_XY_ANGLE_FREQUENCIES_EQUAL = 0.5F;
 constexpr auto PROB_OCTAVES_EQUAL              = 0.5F;
 constexpr auto PROB_PERSISTENCE_EQUAL          = 0.5F;
+constexpr auto PROB_MULTIPLY_VELOCITY          = 0.1F;
 
 } // namespace
 
@@ -98,70 +99,62 @@ PerlinFlowField::PerlinFlowField(const GoomRand& goomRand) noexcept
 
 auto PerlinFlowField::SetupAngles() noexcept -> void
 {
-  auto gridAngles = std::mdspan{m_gridArray.data(), GRID_HEIGHT, GRID_WIDTH};
-
-  Expects(gridAngles.extent(0) == GRID_HEIGHT);
-  Expects(gridAngles.extent(1) == GRID_WIDTH);
-
-  for (auto col = 0U; col < GRID_WIDTH; ++col)
+  const auto setupFunc = [this](const uint32_t x, const uint32_t y) -> FlowFieldGrid::PolarCoords
   {
-    const auto x = 2.0F * (-0.5F + (static_cast<float>(col) / static_cast<float>(GRID_WIDTH)));
+    const auto xFlt =
+        2.0F * (-0.5F + (static_cast<float>(x) / static_cast<float>(FlowFieldGrid::GRID_WIDTH)));
+    const auto yFlt =
+        2.0F * (-0.5F + (static_cast<float>(y) / static_cast<float>(FlowFieldGrid::GRID_HEIGHT)));
 
-    for (auto row = 0U; row < GRID_HEIGHT; ++row)
-    {
-      const auto y = 2.0F * (-0.5F + (static_cast<float>(row) / static_cast<float>(GRID_HEIGHT)));
+    const auto distFromCentre = std::sqrt(Sq(xFlt) + Sq(yFlt));
 
-      const auto distFromCentre = std::sqrt(Sq(x) + Sq(y));
+    const auto xFreq = (0.1F + distFromCentre) * m_params.noiseFrequencyFactor.x;
+    const auto yFreq = (0.1F + distFromCentre) * m_params.noiseFrequencyFactor.y;
+    //const auto xFreq = m_params.noiseFrequencyFactor.x;
+    //const auto yFreq = m_params.noiseFrequencyFactor.y;
+    // const auto xFreq = 0.01F;
+    // const auto yFreq  = 0.01F;
 
-      const auto xFreq = (0.1F + distFromCentre) * m_params.noiseFrequencyFactor.x;
-      const auto yFreq = (0.1F + distFromCentre) * m_params.noiseFrequencyFactor.y;
-      //const auto xFreq = m_params.noiseFrequencyFactor.x;
-      //const auto yFreq = m_params.noiseFrequencyFactor.y;
-      // const auto xFreq = 0.01F;
-      // const auto yFreq  = 0.01F;
+    const auto xNoise = m_perlinNoise.octave2D_11(xFreq * static_cast<float>(x),
+                                                  xFreq * static_cast<float>(y),
+                                                  m_params.octaves1,
+                                                  m_params.persistence1);
+    const auto yNoise = m_perlinNoise2.octave2D_11(yFreq * static_cast<float>(x),
+                                                   yFreq * static_cast<float>(y),
+                                                   m_params.octaves2,
+                                                   m_params.persistence2);
 
-      const auto xNoise = m_perlinNoise.octave2D_11(xFreq * static_cast<float>(col),
-                                                    xFreq * static_cast<float>(row),
-                                                    m_params.octaves1,
-                                                    m_params.persistence1);
-      const auto yNoise = m_perlinNoise2.octave2D_11(yFreq * static_cast<float>(col),
-                                                     yFreq * static_cast<float>(row),
-                                                     m_params.octaves2,
-                                                     m_params.persistence2);
+    // const auto xNoise = m_perlinNoise.octave2D_11(
+    //     xFreq * static_cast<float>(col), xFreq * static_cast<float>(row), 5, 0.5F);
+    // const auto yNoise = m_perlinNoise2.octave2D_11(
+    //     yFreq * static_cast<float>(col), yFreq * static_cast<float>(row), 2, 1.0F);
 
-      // const auto xNoise = m_perlinNoise.octave2D_11(
-      //     xFreq * static_cast<float>(col), xFreq * static_cast<float>(row), 5, 0.5F);
-      // const auto yNoise = m_perlinNoise2.octave2D_11(
-      //     yFreq * static_cast<float>(col), yFreq * static_cast<float>(row), 2, 1.0F);
+    const auto noise = m_params.noiseFactor * (0.5F * (xNoise + yNoise));
+    auto angle       = (1.0F - noise) * (distFromCentre * TWO_PI);
 
-      const auto noise = m_params.noiseFactor * (0.5F * (xNoise + yNoise));
-      auto angle       = (1.0F - noise) * (distFromCentre * TWO_PI);
-      //angle = std::floor(5.0F * angle) / 5.0F;
+    return {.angle = angle, .radius = 1.0F};
+  };
 
-      gridAngles[row, col] = angle;
-    }
-  }
+  m_gridArray.Initialize(setupFunc);
 }
 
 auto PerlinFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                   const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  const auto gridCoords =
-      ToPoint2dInt(m_normalizedCoordsToGridConverter.NormalizedToOtherCoordsFlt(coords));
+  const auto gridPolarCoords = m_gridArray.GetPolarCoords(coords);
+  const auto sqDistFromZero  = std::sqrt(SqDistanceFromZero(coords));
 
-  const auto gridAngles = std::mdspan{m_gridArray.data(), GRID_HEIGHT, GRID_WIDTH};
-  const auto gridAngle  = gridAngles[std::clamp(gridCoords.y, 0, static_cast<int>(GRID_HEIGHT) - 1),
-                                    std::clamp(gridCoords.x, 0, static_cast<int>(GRID_WIDTH) - 1)];
+  const auto x = (m_params.amplitude.x * sqDistFromZero) *
+                 std::cos(m_params.angleFrequencyFactor.x * gridPolarCoords.angle);
+  const auto y = (m_params.amplitude.y * sqDistFromZero) *
+                 std::sin(m_params.angleFrequencyFactor.y * gridPolarCoords.angle);
 
-  const auto sqDistFromZero = std::sqrt(SqDistanceFromZero(coords));
+  if (not m_params.multiplyVelocity)
+  {
+    return {.x = baseZoomAdjustment.x + x, .y = baseZoomAdjustment.y + y};
+  }
 
-  return {.x = baseZoomAdjustment.x + (m_params.amplitude.x * sqDistFromZero *
-                                       std::cos(m_params.angleFrequencyFactor.x * gridAngle)),
-          .y = baseZoomAdjustment.y + (m_params.amplitude.y * sqDistFromZero *
-                                       std::sin(m_params.angleFrequencyFactor.y * gridAngle))};
-
-  // return {coords.GetX() * (m_params.amplitude.x * sqDistFromZero*std::cos(15.0F * gridAngle)),
-  //         coords.GetY() * + (m_params.amplitude.y * sqDistFromZero*std::sin(25.0F * gridAngle))};
+  return {.x = coords.GetX() * x, .y = coords.GetY() * y};
 }
 
 auto PerlinFlowField::SetRandomParams() noexcept -> void
@@ -200,6 +193,8 @@ auto PerlinFlowField::SetRandomParams() noexcept -> void
 
   const auto noiseFactor = m_goomRand->GetRandInRange<NOISE_FACTOR_RANGE>();
 
+  const auto multiplyVelocity = m_goomRand->ProbabilityOf<PROB_MULTIPLY_VELOCITY>();
+
   SetParams({
       .amplitude            = {                xAmplitude,                 yAmplitude},
       .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
@@ -210,6 +205,7 @@ auto PerlinFlowField::SetRandomParams() noexcept -> void
       .octaves2             = octaves2,
       .persistence2         = persistence2,
       .noiseFactor          = noiseFactor,
+      .multiplyVelocity     = multiplyVelocity
   });
 
   SetupAngles();

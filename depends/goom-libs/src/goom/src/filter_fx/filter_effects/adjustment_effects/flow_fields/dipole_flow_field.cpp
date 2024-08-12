@@ -3,7 +3,7 @@ module;
 #include <cmath>
 #include <cstdint>
 
-module Goom.FilterFx.FilterEffects.AdjustmentEffects.TestFlowField;
+module Goom.FilterFx.FilterEffects.AdjustmentEffects.DipoleFlowField;
 
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.NormalizedCoords;
@@ -39,7 +39,7 @@ constexpr auto PROB_MULTIPLY_VELOCITY          = 0.2F;
 
 } // namespace
 
-TestFlowField::TestFlowField(const GoomRand& goomRand) noexcept
+DipoleFlowField::DipoleFlowField(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_params{.amplitude = DEFAULT_AMPLITUDE,
              .lerpToOneTs = DEFAULT_LERP_TO_ONE_T_S,
@@ -50,7 +50,7 @@ TestFlowField::TestFlowField(const GoomRand& goomRand) noexcept
   SetupAngles();
 }
 
-auto TestFlowField::SetupAngles() noexcept -> void
+auto DipoleFlowField::SetupAngles() noexcept -> void
 {
   const auto setupFunc = [](const uint32_t x, const uint32_t y) -> FlowFieldGrid::PolarCoords
   {
@@ -70,8 +70,8 @@ auto TestFlowField::SetupAngles() noexcept -> void
   m_gridArray.Initialize(setupFunc);
 }
 
-auto TestFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
-                                const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+auto DipoleFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
+                                  const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto gridPolarCoords = m_gridArray.GetPolarCoords(coords);
 
@@ -92,7 +92,7 @@ auto TestFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
   return {.x = coords.GetX() * x, .y = coords.GetY() * y};
 }
 
-auto TestFlowField::SetRandomParams() noexcept -> void
+auto DipoleFlowField::SetRandomParams() noexcept -> void
 {
   const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
@@ -120,7 +120,7 @@ auto TestFlowField::SetRandomParams() noexcept -> void
   });
 }
 
-auto TestFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
+auto DipoleFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   return {};
 }
