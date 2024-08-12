@@ -23,7 +23,7 @@ from subprocess import DEVNULL
 from typing import List
 
 
-CLANG_FORMAT_IGNORE_FILE = ".clang-format-ignore"
+CLANG_FORMAT_IGNORE_FILE = ".clang-format-runner-ignore"
 CLANG_FORMAT_ENV_VAR = "CLANG_FORMAT"
 DEFAULT_EXTENSIONS = "c,h,C,H,cpp,cppm,hpp,cc,hh,c++,h++,cxx,hxx"
 
