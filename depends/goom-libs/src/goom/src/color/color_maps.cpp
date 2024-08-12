@@ -128,7 +128,7 @@ private:
 class PrebuiltColorMap : public IColorMap
 {
 public:
-  PrebuiltColorMap(ColorMapName mapName, vivid::ColorMap colorMap) noexcept;
+  PrebuiltColorMap(ColorMapName mapName, const std::span<const vivid::srgb_t>& vividArray) noexcept;
   PrebuiltColorMap(const PrebuiltColorMap&) noexcept           = delete;
   PrebuiltColorMap(PrebuiltColorMap&&) noexcept                = default;
   ~PrebuiltColorMap() noexcept override                        = default;
@@ -263,7 +263,7 @@ auto MakePrebuiltColorMaps() noexcept -> std::vector<PrebuiltColorMap>
 
   for (const auto& [colorMap, vivArray] : GetAllMapArrays())
   {
-    preBuiltColorMaps.emplace_back(colorMap, std::vector(vivArray.cbegin(), vivArray.cend()));
+    preBuiltColorMaps.emplace_back(colorMap, vivArray);
   }
 
   return preBuiltColorMaps;
@@ -398,8 +398,8 @@ auto TintedColorMap::GetColor(const float t) const noexcept -> Pixel
 }
 
 inline PrebuiltColorMap::PrebuiltColorMap(const ColorMapName mapName,
-                                          vivid::ColorMap colorMap) noexcept
-  : m_mapName{mapName}, m_vividColorMap{std::move(colorMap)}
+                                          const std::span<const vivid::srgb_t>& vividArray) noexcept
+  : m_mapName{mapName}, m_vividColorMap{vividArray}
 {
 }
 
