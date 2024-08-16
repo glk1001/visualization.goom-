@@ -187,7 +187,7 @@ auto CVisualizationGoom::PassSettings() noexcept -> void
       static_cast<ShowSongTitleType>(KODI_ADDON::GetSettingInt(SHOW_TITLE_SETTING)));
 
   static constexpr auto PERCENT_MULTIPLIER    = 1.0F / 100.0F;
-  static constexpr auto MAX_BRIGHTNESS_ADJUST = 1.5F;
+  static constexpr auto MAX_BRIGHTNESS_ADJUST = 1.4F;
   m_goomVisualization.SetBrightnessAdjust(
       MAX_BRIGHTNESS_ADJUST * PERCENT_MULTIPLIER *
       static_cast<float>(KODI_ADDON::GetSettingInt(BRIGHTNESS_ADJUST_SETTING)));
