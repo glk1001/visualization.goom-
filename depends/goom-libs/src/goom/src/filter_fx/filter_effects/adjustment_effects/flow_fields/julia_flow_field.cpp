@@ -2,7 +2,6 @@ module;
 
 #include <cmath>
 #include <complex>
-#include <cstdint>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.JuliaFlowField;
 
@@ -43,12 +42,12 @@ constexpr auto MAX_Z_RANGE   = NumberRange{2.0F, 6.0F};
 constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
     .probUseCentredSides = 0.5F,
-    .rect                = {.minMaxXMin = {.minValue = -10.0F, .maxValue = +1.0F},
-                            .minMaxYMin = {.minValue = -10.0F, .maxValue = +1.0F},
-                            .minMaxXMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F},
-                            .minMaxYMax = {.minValue = -10.0F + 0.1F, .maxValue = +10.0F}},
-    .sides               = {.minMaxWidth  = {.minValue = 0.1F, .maxValue = 20.0F},
-                            .minMaxHeight = {.minValue = 0.1F, .maxValue = 20.0F}}
+    .rect                = {.minMaxXMin = {.minValue = -2.0F, .maxValue = +1.0F},
+                            .minMaxYMin = {.minValue = -2.0F, .maxValue = +1.0F},
+                            .minMaxXMax = {.minValue = -2.0F + 0.1F, .maxValue = +2.0F},
+                            .minMaxYMax = {.minValue = -2.0F + 0.1F, .maxValue = +2.0F}},
+    .sides               = {.minMaxWidth  = {.minValue = 0.1F, .maxValue = 4.0F},
+                            .minMaxHeight = {.minValue = 0.1F, .maxValue = 4.0F}}
 };
 
 constexpr auto PROB_XY_AMPLITUDES_EQUAL   = 0.98F;
