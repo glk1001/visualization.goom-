@@ -32,6 +32,7 @@ public:
 
   struct Params
   {
+    Viewport viewport;
     Amplitude amplitude{};
     LerpToOneTs lerpToOneTs{};
     std::complex<float> c{}; // NOLINT(readability-identifier-length)
@@ -46,6 +47,7 @@ protected:
 
 private:
   const GoomRand* m_goomRand;
+  FILTER_UTILS::RandomViewport m_randomViewport;
   Params m_params;
   [[nodiscard]] auto GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                  const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
@@ -56,9 +58,8 @@ private:
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-inline auto JuliaFlowField::GetZoomAdjustment(const Vec2dFlt& baseZoomAdjustment,
-                                               const NormalizedCoords& coords) const noexcept
-    -> Vec2dFlt
+inline auto JuliaFlowField::GetZoomAdjustment(
+    const Vec2dFlt& baseZoomAdjustment, const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(baseZoomAdjustment, coords);
 
