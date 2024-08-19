@@ -14,7 +14,8 @@ import Goom.Lib.AssertUtils;
 export namespace GOOM::UTILS::MATH
 {
 
-inline constexpr auto HALF = 1.0F / 2.0F;
+inline constexpr auto HALF  = 1.0F / 2.0F;
+inline constexpr auto THIRD = 1.0F / 3.0F;
 
 // NOLINTNEXTLINE: problem with 'readability-identifier-naming.ConstexprVariableIgnoredRegexp'
 inline constexpr auto PI       = std::numbers::pi_v<float>;
