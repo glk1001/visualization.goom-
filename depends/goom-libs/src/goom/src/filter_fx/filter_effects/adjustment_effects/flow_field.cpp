@@ -10,6 +10,9 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 
+static constexpr auto FORCE_FLOW_FIELD_TYPE  = true;
+static constexpr auto FORCED_FLOW_FIELD_TYPE = FlowField::FlowFieldTypes::JULIA;
+
 static constexpr auto DIPOLE_WEIGHT = 1.0F;
 static constexpr auto JULIA_WEIGHT  = 1.0F;
 static constexpr auto PERLIN_WEIGHT = 1.0F;
@@ -49,7 +52,14 @@ auto FlowField::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept
 
 auto FlowField::SetRandomParams() noexcept -> void
 {
-  m_flowFieldType = m_flowFieldTypeWeights.GetRandomWeighted();
+  if constexpr (FORCE_FLOW_FIELD_TYPE)
+  {
+    m_flowFieldType = FORCED_FLOW_FIELD_TYPE;
+  }
+  else
+  {
+    m_flowFieldType = m_flowFieldTypeWeights.GetRandomWeighted();
+  }
 
   switch (m_flowFieldType)
   {
