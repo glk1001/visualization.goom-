@@ -55,8 +55,10 @@ public:
     Amplitude amplitude{};
     LerpToOneTs lerpToOneTs{};
     std::complex<float> c; // NOLINT(readability-identifier-length)
+    std::complex<float> trapPoint;
     uint32_t maxIterations{};
-    bool multiplyVelocity = false;
+    bool escapePointIsZero = true;
+    bool multiplyVelocity  = false;
     ZFunc zFunc{};
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
@@ -83,9 +85,8 @@ private:
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-inline auto JuliaFlowField::GetZoomAdjustment(const Vec2dFlt& baseZoomAdjustment,
-                                              const NormalizedCoords& coords) const noexcept
-    -> Vec2dFlt
+inline auto JuliaFlowField::GetZoomAdjustment(
+    const Vec2dFlt& baseZoomAdjustment, const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto velocity = GetVelocity(baseZoomAdjustment, coords);
 

@@ -10,7 +10,7 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 
-static constexpr auto FORCE_FLOW_FIELD_TYPE  = true;
+static constexpr auto FORCE_FLOW_FIELD_TYPE  = false;
 static constexpr auto FORCED_FLOW_FIELD_TYPE = FlowField::FlowFieldTypes::JULIA;
 
 static constexpr auto DIPOLE_WEIGHT = 1.0F;

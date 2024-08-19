@@ -31,7 +31,7 @@ namespace
 
 struct CustomParamRanges
 {
-  float defaultAmplitude{};
+  Amplitude defaultAmplitude{};
   NumberRange<float> amplitudeRange{};
   uint32_t defaultMaxIterations{};
   NumberRange<uint32_t> maxIterationsRange{};
@@ -39,52 +39,22 @@ struct CustomParamRanges
 
 using enum JuliaFlowField::ZFuncTypes;
 
-constexpr auto PARAM_RANGES = EnumMap<JuliaFlowField::ZFuncTypes, CustomParamRanges>{{{
-    {STD_JULIA_FUNC,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 8,
-                       .maxIterationsRange   = NumberRange{2U, 10U}}},
-    {CUBIC_JULIA_FUNC1,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 2,
-                       .maxIterationsRange   = NumberRange{2U, 20U}}},
-    {CUBIC_JULIA_FUNC2,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 2,
-                       .maxIterationsRange   = NumberRange{2U, 20U}}},
-    {SIN_JULIA_FUNC1,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 8,
-                       .maxIterationsRange   = NumberRange{2U, 20U}}},
-    {SIN_JULIA_FUNC2,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 8,
-                       .maxIterationsRange   = NumberRange{2U, 20U}}},
-    {COS_JULIA_FUNC1,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 8,
-                       .maxIterationsRange   = NumberRange{2U, 20U}}},
-    {COS_JULIA_FUNC2,
-     CustomParamRanges{.defaultAmplitude     = 1.0F,
-                       .amplitudeRange       = NumberRange{0.5F, 10.0F},
-                       .defaultMaxIterations = 8,
-                       .maxIterationsRange   = NumberRange{2U, 20U}}},
-}}};
-
-constexpr auto DEFAULT_AMPLITUDE      = Amplitude{1.0F, 1.0F};
-constexpr auto DEFAULT_MAX_ITERATIONS = 8U;
+constexpr auto PARAM_RANGES = CustomParamRanges{
+    .defaultAmplitude     = Amplitude{1.0F,  1.0F},
+    .amplitudeRange       = NumberRange{0.5F, 10.0F},
+    .defaultMaxIterations = 8,
+    .maxIterationsRange   = NumberRange{  2U,   10U}
+};
 
 constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
 constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.5F, 1.0F};
 
 constexpr auto DEFAULT_C = std::complex<float>{0.5F, 0.5F};
 constexpr auto C_RANGE   = NumberRange{NormalizedCoords::MIN_COORD, NormalizedCoords::MAX_COORD};
+
+constexpr auto DEFAULT_TRAP_POINT = std::complex<float>{0.0F, 0.0F};
+constexpr auto TRAP_POINT_RANGE =
+    NumberRange{0.5F * NormalizedCoords::MIN_COORD, 0.5F * NormalizedCoords::MAX_COORD};
 
 constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -99,47 +69,48 @@ constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
 
 constexpr auto PROB_XY_AMPLITUDES_EQUAL   = 0.98F;
 constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL = 0.95F;
+constexpr auto PROB_ESCAPE_POINT_IS_ZERO  = 0.5F;
 constexpr auto PROB_MULTIPLY_VELOCITY     = 0.2F;
 
 // NOLINTBEGIN(readability-identifier-length)
-constexpr auto StdJuliaFunc(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto StdJuliaFunc(const std::complex<float>& z,
+                            const std::complex<float>& c) -> std::complex<float>
 {
   return (z * z) + c;
 }
 
-constexpr auto CubicJuliaFunc1(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto CubicJuliaFunc1(const std::complex<float>& z,
+                               const std::complex<float>& c) -> std::complex<float>
 {
   return (HALF * (z * z)) + (THIRD * (z * z * z)) + c;
 }
 
-constexpr auto CubicJuliaFunc2(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto CubicJuliaFunc2(const std::complex<float>& z,
+                               const std::complex<float>& c) -> std::complex<float>
 {
   return (z * z * z) + c;
 }
 
-constexpr auto SinJuliaFunc1(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto SinJuliaFunc1(const std::complex<float>& z,
+                             const std::complex<float>& c) -> std::complex<float>
 {
   return std::sin(z) * c;
 }
 
-constexpr auto SinJuliaFunc2(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto SinJuliaFunc2(const std::complex<float>& z,
+                             const std::complex<float>& c) -> std::complex<float>
 {
   return std::sin(z * z) + c;
 }
 
-constexpr auto CosJuliaFunc1(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto CosJuliaFunc1(const std::complex<float>& z,
+                             const std::complex<float>& c) -> std::complex<float>
 {
   return std::cos(z) + c;
 }
 
-constexpr auto CosJuliaFunc2(const std::complex<float>& z, const std::complex<float>& c)
-    -> std::complex<float>
+constexpr auto CosJuliaFunc2(const std::complex<float>& z,
+                             const std::complex<float>& c) -> std::complex<float>
 {
   return std::cos(z * z) + c;
 }
@@ -161,13 +132,15 @@ static constexpr auto COS_JULIA_FUNC2_WEIGHT   = 1.0F;
 JuliaFlowField::JuliaFlowField(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_randomViewport{goomRand, VIEWPORT_BOUNDS},
-    m_params{.viewport         = Viewport{},
-             .amplitude        = DEFAULT_AMPLITUDE,
-             .lerpToOneTs      = DEFAULT_LERP_TO_ONE_T_S,
-             .c                = DEFAULT_C,
-             .maxIterations    = DEFAULT_MAX_ITERATIONS,
-             .multiplyVelocity = false,
-             .zFunc            = StdJuliaFunc},
+    m_params{.viewport          = Viewport{},
+             .amplitude         = PARAM_RANGES.defaultAmplitude,
+             .lerpToOneTs       = DEFAULT_LERP_TO_ONE_T_S,
+             .c                 = DEFAULT_C,
+             .trapPoint         = DEFAULT_TRAP_POINT,
+             .maxIterations     = PARAM_RANGES.defaultMaxIterations,
+             .escapePointIsZero = true,
+             .multiplyVelocity  = false,
+             .zFunc             = StdJuliaFunc},
     m_zFuncWeights{
         goomRand,
 {
@@ -197,9 +170,8 @@ auto JuliaFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
 {
   const auto viewportCoords = m_params.viewport.GetViewportCoords(coords);
 
-  static constexpr auto TRAP_POINT = std::complex<float>{0.0F, 0.0F};
-  const auto viewportTrapPoint =
-      m_params.viewport.GetViewportCoords(NormalizedCoords{TRAP_POINT.real(), TRAP_POINT.imag()});
+  const auto viewportTrapPoint = m_params.viewport.GetViewportCoords(
+      NormalizedCoords{m_params.trapPoint.real(), m_params.trapPoint.imag()});
   const auto viewportC =
       m_params.viewport.GetViewportCoords(NormalizedCoords{m_params.c.real(), m_params.c.imag()});
   // NOLINTNEXTLINE(readability-identifier-length)
@@ -235,8 +207,10 @@ auto JuliaFlowField::GetJuliaPoint(const std::complex<float>& trapPoint,
 
     if (const auto distSq = std::norm(z); distSq > 4.0F)
     {
-      //minPoint = 0.01F * std::log(z);
-      minPoint = std::complex<float>{0.0F, 0.0F};
+      if (m_params.escapePointIsZero)
+      {
+        minPoint = std::complex<float>{0.0F, 0.0F};
+      }
       break;
     }
 
@@ -259,7 +233,7 @@ auto JuliaFlowField::SetRandomParams() noexcept -> void
   const auto viewport = m_randomViewport.GetRandomViewport();
   //const auto viewport = Viewport{};
 
-  const auto& amplitudeRange = PARAM_RANGES[zFuncType].amplitudeRange;
+  const auto& amplitudeRange = PARAM_RANGES.amplitudeRange;
   const auto xAmplitude      = m_goomRand->GetRandInRange(amplitudeRange);
   const auto yAmplitude      = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
                                    ? xAmplitude
@@ -274,20 +248,27 @@ auto JuliaFlowField::SetRandomParams() noexcept -> void
   const auto c =
       std::complex<float>{m_goomRand->GetRandInRange(C_RANGE), m_goomRand->GetRandInRange(C_RANGE)};
 
-  const auto maxIterations = m_goomRand->GetRandInRange(PARAM_RANGES[zFuncType].maxIterationsRange);
+  const auto trapPoint = std::complex<float>{m_goomRand->GetRandInRange(TRAP_POINT_RANGE),
+                                             m_goomRand->GetRandInRange(TRAP_POINT_RANGE)};
+
+  const auto maxIterations = m_goomRand->GetRandInRange(PARAM_RANGES.maxIterationsRange);
+
+  const auto escapePointIsZero = m_goomRand->ProbabilityOf<PROB_ESCAPE_POINT_IS_ZERO>();
 
   const auto multiplyVelocity = m_goomRand->ProbabilityOf<PROB_MULTIPLY_VELOCITY>();
 
   const auto zFunc = m_zFuncs[zFuncType];
 
   SetParams({
-      .viewport         = viewport,
-      .amplitude        = {           xAmplitude,            yAmplitude},
-      .lerpToOneTs      = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
-      .c                = c,
-      .maxIterations    = maxIterations,
-      .multiplyVelocity = multiplyVelocity,
-      .zFunc            = zFunc,
+      .viewport          = viewport,
+      .amplitude         = {           xAmplitude,            yAmplitude},
+      .lerpToOneTs       = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
+      .c                 = c,
+      .trapPoint         = trapPoint,
+      .maxIterations     = maxIterations,
+      .escapePointIsZero = escapePointIsZero,
+      .multiplyVelocity  = multiplyVelocity,
+      .zFunc             = zFunc,
   });
 }
 
