@@ -98,10 +98,11 @@ constexpr auto PROB_HALF = 0.5F;
 constexpr auto PROB_LOW  = 0.1F;
 constexpr auto PROB_ZERO = 0.0F;
 
-constexpr auto PROB_CRYSTAL_BALL_IN_MIDDLE = 0.8F;
-constexpr auto PROB_WAVE_IN_MIDDLE         = 0.5F;
-constexpr auto PROB_CHANGE_SPEED           = 0.5F;
-constexpr auto PROB_REVERSE_SPEED          = 0.5F;
+constexpr auto PROB_CRYSTAL_BALL_IN_MIDDLE   = 0.8F;
+constexpr auto PROB_EXP_RECIPROCAL_IN_MIDDLE = 0.6F;
+constexpr auto PROB_WAVE_IN_MIDDLE           = 0.5F;
+constexpr auto PROB_CHANGE_SPEED             = 0.5F;
+constexpr auto PROB_REVERSE_SPEED            = 0.5F;
 
 constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {AMULET_MODE, "Amulet"},
@@ -940,6 +941,12 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const noexcept -> bool
 
   if (((m_filterMode == CRYSTAL_BALL_MODE0) or (m_filterMode == CRYSTAL_BALL_MODE1)) and
       m_goomRand->ProbabilityOf<PROB_CRYSTAL_BALL_IN_MIDDLE>())
+  {
+    return true;
+  }
+
+  if ((m_filterMode == EXP_RECIPROCAL_MODE) and
+      m_goomRand->ProbabilityOf<PROB_EXP_RECIPROCAL_IN_MIDDLE>())
   {
     return true;
   }

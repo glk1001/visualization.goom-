@@ -42,6 +42,7 @@ public:
     float reciprocalExponent;
     bool useModulatorContours;
     float modulatorPeriod;
+    double maxAbsSqFz;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
 
