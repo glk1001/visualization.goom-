@@ -20,7 +20,7 @@ class Noise
 public:
   explicit Noise(const GoomRand& goomRand) noexcept;
 
-  auto SetRandomParams() -> void;
+  auto SetRandomParams() noexcept -> void;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
@@ -41,6 +41,7 @@ private:
   // For noise amplitude, take the reciprocal of these.
   static constexpr auto NOISE_RANGE = NumberRange{40.0F, 120.0F};
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
 };
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS
@@ -64,6 +65,11 @@ inline auto Noise::GetParams() const -> const Params&
 inline auto Noise::SetParams(const Params& params) -> void
 {
   m_params = params;
+}
+
+inline auto Noise::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

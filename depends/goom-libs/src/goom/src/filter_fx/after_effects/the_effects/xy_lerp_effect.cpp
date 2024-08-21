@@ -20,7 +20,6 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_T_FREQ   = 1.0F;
 static constexpr auto T_FREQ_RANGE     = NumberRange{1.0F, 10.0F};
 static constexpr auto PROB_FLIP_Y_SIGN = 0.5F;
 static constexpr auto PROB_FLIP_XY     = 0.5F;
@@ -41,18 +40,18 @@ XYLerpEffect::XYLerpEffect(const GoomRand& goomRand)
             {.key=Modes::MODE3, .weight=MODE3_WEIGHT},
         }
     },
-    m_params{.mode=Modes::MODE0, .tFreq=DEFAULT_T_FREQ, .ySign=+1.0F, .flipXY=false}
+    m_params{GetRandomParams()}
 {
 }
 
-auto XYLerpEffect::SetRandomParams() -> void
+auto XYLerpEffect::GetRandomParams() const noexcept -> Params
 {
   const auto mode   = m_modeWeights.GetRandomWeighted();
   const auto tFreq  = m_goomRand->GetRandInRange<T_FREQ_RANGE>();
   const auto ySign  = m_goomRand->ProbabilityOf<PROB_FLIP_Y_SIGN>() ? -1.0F : +1.0F;
   const auto flipXY = m_goomRand->ProbabilityOf(GetFlipYProbability(mode));
 
-  SetParams({.mode = mode, .tFreq = tFreq, .ySign = ySign, .flipXY = flipXY});
+  return {.mode = mode, .tFreq = tFreq, .ySign = ySign, .flipXY = flipXY};
 }
 
 inline auto XYLerpEffect::GetFlipYProbability(const Modes mode) -> float

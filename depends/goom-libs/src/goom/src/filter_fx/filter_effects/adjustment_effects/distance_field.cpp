@@ -25,7 +25,6 @@ import Goom.Lib.Point2d;
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-using FILTER_UTILS::LerpToOneTs;
 using UTILS::EnumToString;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
@@ -38,20 +37,13 @@ using UTILS::MATH::Sq;
 using UTILS::MATH::U_HALF;
 
 static constexpr auto MIN_GRID_WIDTH         = 4U;
-static constexpr auto DEFAULT_GRID_WIDTH     = MIN_GRID_WIDTH;
-static constexpr auto GRID_WIDTH_MODE0_RANGE = NumberRange{4U, 15U};
-static constexpr auto GRID_WIDTH_MODE1_RANGE = NumberRange{16U, 31U};
-static constexpr auto GRID_WIDTH_MODE2_RANGE = NumberRange{32U, 63U};
-static_assert(GRID_WIDTH_MODE0_RANGE.min >= MIN_GRID_WIDTH);
-static_assert(GRID_WIDTH_MODE1_RANGE.min > GRID_WIDTH_MODE0_RANGE.min);
-static_assert(GRID_WIDTH_MODE2_RANGE.min > GRID_WIDTH_MODE1_RANGE.min);
+static constexpr auto GRID_WIDTH_RANGE_MODE0 = NumberRange{4U, 15U};
+static constexpr auto GRID_WIDTH_RANGE_MODE1 = NumberRange{16U, 31U};
+static constexpr auto GRID_WIDTH_RANGE_MODE2 = NumberRange{32U, 63U};
+static_assert(GRID_WIDTH_RANGE_MODE0.min >= MIN_GRID_WIDTH);
+static_assert(GRID_WIDTH_RANGE_MODE1.min > GRID_WIDTH_RANGE_MODE0.min);
+static_assert(GRID_WIDTH_RANGE_MODE2.min > GRID_WIDTH_RANGE_MODE1.min);
 
-static constexpr auto DEFAULT_GRID_TYPE = DistanceField::GridType::FULL;
-static constexpr auto DEFAULT_GRID_SCALE =
-    static_cast<float>(DEFAULT_GRID_WIDTH) / NormalizedCoords::COORD_WIDTH;
-static constexpr auto DEFAULT_CELL_CENTRE = HALF / DEFAULT_GRID_SCALE;
-
-static constexpr auto DEFAULT_AMPLITUDE     = 0.1F;
 static constexpr auto AMPLITUDE_RANGE_MODE0 = AmplitudeRange{
     .xRange = {0.05F, 1.101F},
     .yRange = {0.05F, 1.101F},
@@ -67,8 +59,7 @@ static constexpr auto AMPLITUDE_RANGE_MODE2 = AmplitudeRange{
 static constexpr auto FULL_AMPLITUDE_FACTOR            = 2.0F;
 static constexpr auto PARTIAL_DIAMOND_AMPLITUDE_FACTOR = 0.1F;
 
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
+static constexpr auto LERP_TO_ONE_T_RANGE = NumberRange{0.0F, 1.0F};
 
 static constexpr auto PROB_AMPLITUDES_EQUAL              = 0.50F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL         = 0.95F;
@@ -92,16 +83,7 @@ DistanceField::DistanceField(const Modes mode, const GoomRand& goomRand) noexcep
             {.key=GridType::PARTIAL_RANDOM,  .weight=GRID_TYPE_PARTIAL_RANDOM_WEIGHT},
         }
     },
-    m_params{
-        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
-        .useDiscontinuousZoomFactor=false,
-        .gridType=DEFAULT_GRID_TYPE,
-        .gridMax=DEFAULT_GRID_WIDTH,
-        .gridScale=DEFAULT_GRID_SCALE,
-        .cellCentre=DEFAULT_CELL_CENTRE,
-        .gridArrays={.gridPointsWithCentres=DistanceField::GridPointsWithCentres{}, .gridPointCentresMap=DistanceField::GridPointMap{}},
-    }
+    m_params{GetMode0RandomParams()}
 {
 }
 
@@ -121,23 +103,23 @@ auto DistanceField::SetRandomParams() noexcept -> void
   }
 }
 
-auto DistanceField::SetMode0RandomParams() noexcept -> void
+auto DistanceField::GetMode0RandomParams() const noexcept -> Params
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE0, GRID_WIDTH_MODE0_RANGE);
+  return GetRandomParams(AMPLITUDE_RANGE_MODE0, GRID_WIDTH_RANGE_MODE0);
 }
 
-auto DistanceField::SetMode1RandomParams() noexcept -> void
+auto DistanceField::GetMode1RandomParams() const noexcept -> Params
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE1, GRID_WIDTH_MODE1_RANGE);
+  return GetRandomParams(AMPLITUDE_RANGE_MODE1, GRID_WIDTH_RANGE_MODE1);
 }
 
-auto DistanceField::SetMode2RandomParams() noexcept -> void
+auto DistanceField::GetMode2RandomParams() const noexcept -> Params
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE2, GRID_WIDTH_MODE2_RANGE);
+  return GetRandomParams(AMPLITUDE_RANGE_MODE2, GRID_WIDTH_RANGE_MODE2);
 }
 
-auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
-                                    const GridWidthRange& gridWidthRange) noexcept -> void
+auto DistanceField::GetRandomParams(const AmplitudeRange& amplitudeRange,
+                                    const GridWidthRange& gridWidthRange) const noexcept -> Params
 {
   const auto gridType   = m_weightedEffects.GetRandomWeighted();
   const auto gridWidth  = GetGridWidth(gridType, gridWidthRange);
@@ -154,7 +136,7 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
   const auto useDiscontinuousZoomFactor =
       m_goomRand->ProbabilityOf<PROB_USE_DISCONTINUOUS_ZOOM_FACTOR>();
 
-  SetParams({
+  return {
       .amplitude                  = amplitude,
       .lerpToOneTs                = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
       .useDiscontinuousZoomFactor = useDiscontinuousZoomFactor,
@@ -163,16 +145,16 @@ auto DistanceField::SetRandomParams(const AmplitudeRange& amplitudeRange,
       .gridScale                  = gridScale,
       .cellCentre                 = cellCentre,
       .gridArrays                 = gridArrays,
-  });
+  };
 }
 
 auto DistanceField::GetGridWidth(const GridType gridType,
                                  const GridWidthRange& gridWidthRange) const noexcept -> uint32_t
 {
-  if ((gridType == GridType::PARTIAL_RANDOM) and (gridWidthRange.min == GRID_WIDTH_MODE0_RANGE.min))
+  if ((gridType == GridType::PARTIAL_RANDOM) and (gridWidthRange.min == GRID_WIDTH_RANGE_MODE0.min))
   {
     // For random grid type, wider range looks better.
-    return m_goomRand->GetRandInRange<GRID_WIDTH_MODE1_RANGE>();
+    return m_goomRand->GetRandInRange<GRID_WIDTH_RANGE_MODE1>();
   }
 
   const auto gridWidth = m_goomRand->GetRandInRange(gridWidthRange);

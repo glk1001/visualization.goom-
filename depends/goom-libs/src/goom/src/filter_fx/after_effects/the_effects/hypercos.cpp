@@ -100,41 +100,42 @@ auto Hypercos::SetDefaultParams() -> void
   SetParams(DEFAULT_PARAMS);
 }
 
-auto Hypercos::SetMode0RandomParams() -> void
+auto Hypercos::GetMode0RandomParams() const noexcept -> Params
 {
   const auto hypercosMax = std::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.15F);
 
-  SetHypercosEffect(
+  return GetHypercosEffect(
       HypercosOverlayMode::MODE0, {FREQUENCY_FACTOR_RANGE.min, hypercosMax}, AMPLITUDE_RANGE);
 }
 
-auto Hypercos::SetMode1RandomParams() -> void
+auto Hypercos::GetMode1RandomParams() const noexcept -> Params
 {
   const auto hypercosMin = std::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.20F);
 
-  SetHypercosEffect(
+  return GetHypercosEffect(
       HypercosOverlayMode::MODE1, {hypercosMin, FREQUENCY_FACTOR_RANGE.max}, AMPLITUDE_RANGE);
 }
 
-auto Hypercos::SetMode2RandomParams() -> void
+auto Hypercos::GetMode2RandomParams() const noexcept -> Params
 {
   const auto amplitudeRange =
       m_goomRand->ProbabilityOf<PROB_BIG_AMPLITUDE_RANGE>() ? BIG_AMPLITUDE_RANGE : AMPLITUDE_RANGE;
 
   const auto hypercosMin = std::lerp(FREQUENCY_FACTOR_RANGE.min, FREQUENCY_FACTOR_RANGE.max, 0.50F);
 
-  SetHypercosEffect(
+  return GetHypercosEffect(
       HypercosOverlayMode::MODE2, {hypercosMin, BIG_FREQUENCY_FACTOR_RANGE.max}, amplitudeRange);
 }
 
-auto Hypercos::SetMode3RandomParams() -> void
+auto Hypercos::GetMode3RandomParams() const noexcept -> Params
 {
-  SetHypercosEffect(HypercosOverlayMode::MODE3, VERY_BIG_FREQUENCY_FACTOR_RANGE, AMPLITUDE_RANGE);
+  return GetHypercosEffect(
+      HypercosOverlayMode::MODE3, VERY_BIG_FREQUENCY_FACTOR_RANGE, AMPLITUDE_RANGE);
 }
 
-auto Hypercos::SetHypercosEffect(const HypercosOverlayMode overlay,
+auto Hypercos::GetHypercosEffect(HypercosOverlayMode overlay,
                                  const NumberRange<float>& freqRange,
-                                 const NumberRange<float>& amplitudeRange) -> void
+                                 const NumberRange<float>& amplitudeRange) const noexcept -> Params
 {
   const auto xFrequencyFactor = m_goomRand->GetRandInRange(freqRange);
   const auto yFrequencyFactor = m_goomRand->ProbabilityOf<PROB_FREQUENCY_FACTORS_EQUAL>()
@@ -148,13 +149,13 @@ auto Hypercos::SetHypercosEffect(const HypercosOverlayMode overlay,
                               ? xAmplitude
                               : m_goomRand->GetRandInRange(amplitudeRange);
 
-  SetParams({
+  return {
       .overlay         = overlay,
       .effect          = m_hypercosOverlayWeights.GetRandomWeighted(),
       .reverse         = reverse,
       .frequencyFactor = {.x = xFrequencyFactor, .y = yFrequencyFactor},
       .amplitude       = {      .x = xAmplitude,       .y = yAmplitude}
-  });
+  };
 }
 
 inline auto Hypercos::GetFrequencyFactorToUse(const float frequencyFactor) const -> float

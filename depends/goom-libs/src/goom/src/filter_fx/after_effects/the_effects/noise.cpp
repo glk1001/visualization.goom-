@@ -16,17 +16,15 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_NOISE_FACTOR = 0.01F;
-static constexpr auto NOISE_FACTOR_RANGE   = NumberRange{0.001F, 0.100F};
+static constexpr auto NOISE_FACTOR_RANGE = NumberRange{0.001F, 0.100F};
 
-Noise::Noise(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand}, m_params{DEFAULT_NOISE_FACTOR}
+Noise::Noise(const GoomRand& goomRand) noexcept : m_goomRand{&goomRand}, m_params{GetRandomParams()}
 {
 }
 
-auto Noise::SetRandomParams() -> void
+auto Noise::GetRandomParams() const noexcept -> Params
 {
-  SetParams({m_goomRand->GetRandInRange<NOISE_FACTOR_RANGE>()});
+  return {m_goomRand->GetRandInRange<NOISE_FACTOR_RANGE>()};
 }
 
 auto Noise::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

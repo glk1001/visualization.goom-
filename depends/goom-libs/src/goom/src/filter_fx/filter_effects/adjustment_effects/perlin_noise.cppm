@@ -13,13 +13,17 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GOOM_RAND_MAX;
+using GOOM::UTILS::MATH::GoomRand;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 class PerlinNoise : public IZoomAdjustmentEffect
 {
 public:
-  explicit PerlinNoise(const UTILS::MATH::GoomRand& goomRand) noexcept;
+  explicit PerlinNoise(const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -27,7 +31,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
   struct Params
   {
@@ -44,8 +48,9 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   siv::BasicPerlinNoise<float> m_perlinNoise;
   siv::BasicPerlinNoise<float> m_perlinNoise2;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
@@ -66,6 +71,14 @@ inline auto PerlinNoise::GetParams() const noexcept -> const Params&
 inline void PerlinNoise::SetParams(const Params& params) noexcept
 {
   m_params = params;
+}
+
+inline auto PerlinNoise::SetRandomParams() noexcept -> void
+{
+  m_perlinNoise.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
+  m_perlinNoise2.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
+
+  m_params = GetRandomParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

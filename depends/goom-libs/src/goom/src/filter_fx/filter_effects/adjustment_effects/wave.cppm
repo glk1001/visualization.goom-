@@ -12,6 +12,11 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -25,7 +30,7 @@ public:
     ATAN_ANGLE_EFFECT_MODE0,
     ATAN_ANGLE_EFFECT_MODE1,
   };
-  Wave(Modes mode, const UTILS::MATH::GoomRand& goomRand);
+  Wave(Modes mode, const GoomRand& goomRand);
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -33,7 +38,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
   enum class AngleEffect : UnderlyingEnumType
   {
@@ -75,24 +80,26 @@ protected:
 
 private:
   Modes m_mode;
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   FILTER_UTILS::RandomViewport m_randomViewport;
-  UTILS::MATH::Weights<WaveEffect> m_weightedEffects;
+  Weights<WaveEffect> m_weightedEffects;
   Params m_params;
-  auto SetSqDistAngleEffectMode0RandomParams() noexcept -> void;
-  auto SetSqDistAngleEffectMode1RandomParams() noexcept -> void;
-  auto SetAtanAngleEffectMode0RandomParams() noexcept -> void;
-  auto SetAtanAngleEffectMode1RandomParams() noexcept -> void;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetSqDistAngleEffectMode0RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetSqDistAngleEffectMode1RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetAtanAngleEffectMode0RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetAtanAngleEffectMode1RandomParams() const noexcept -> Params;
 
   struct WaveModeSettings
   {
     AngleEffect angleEffect{};
-    UTILS::MATH::NumberRange<float> freqFactorRange{};
-    UTILS::MATH::NumberRange<float> amplitudeRange{};
-    UTILS::MATH::NumberRange<float> periodicFactorRange{};
-    UTILS::MATH::NumberRange<float> sinCosPeriodicFactorRange{};
+    NumberRange<float> freqFactorRange{};
+    NumberRange<float> amplitudeRange{};
+    NumberRange<float> periodicFactorRange{};
+    NumberRange<float> sinCosPeriodicFactorRange{};
   };
-  auto SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcept -> void;
+  [[nodiscard]] auto GetWaveModeSettings(const WaveModeSettings& waveModeSettings) const noexcept
+      -> Params;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetZoomAdjustmentAdd(WaveEffect waveEffect,
@@ -106,8 +113,8 @@ private:
   [[nodiscard]] auto GetPeriodicFactor(
       WaveEffect xWaveEffect,
       WaveEffect yWaveEffect,
-      const UTILS::MATH::NumberRange<float>& periodicFactorRange,
-      const UTILS::MATH::NumberRange<float>& sinCosPeriodicFactorRange) const noexcept -> float;
+      const NumberRange<float>& periodicFactorRange,
+      const NumberRange<float>& sinCosPeriodicFactorRange) const noexcept -> float;
   [[nodiscard]] auto GetReducerCoeff(WaveEffect xWaveEffect,
                                      WaveEffect yWaveEffect,
                                      float periodicFactor) const noexcept -> float;
@@ -138,6 +145,11 @@ inline auto Wave::GetParams() const noexcept -> const Params&
 inline auto Wave::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto Wave::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 inline auto Wave::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

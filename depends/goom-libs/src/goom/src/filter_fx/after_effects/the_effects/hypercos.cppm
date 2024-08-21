@@ -11,13 +11,18 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class Hypercos
 {
 public:
-  explicit Hypercos(const UTILS::MATH::GoomRand& goomRand) noexcept;
+  explicit Hypercos(const GoomRand& goomRand) noexcept;
   Hypercos(const Hypercos&) noexcept           = delete;
   Hypercos(Hypercos&&) noexcept                = delete;
   virtual ~Hypercos() noexcept                 = default;
@@ -27,8 +32,7 @@ public:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
   virtual auto SetDefaultParams() -> void;
   virtual auto SetMode0RandomParams() -> void;
@@ -65,12 +69,17 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
-  UTILS::MATH::Weights<HypercosEffect> m_hypercosOverlayWeights;
-  auto SetHypercosEffect(HypercosOverlayMode overlay,
-                         const UTILS::MATH::NumberRange<float>& freqRange,
-                         const UTILS::MATH::NumberRange<float>& amplitudeRange) -> void;
+  [[nodiscard]] auto GetMode0RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode1RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode2RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode3RandomParams() const noexcept -> Params;
+  Weights<HypercosEffect> m_hypercosOverlayWeights;
+  [[nodiscard]] auto GetHypercosEffect(HypercosOverlayMode overlay,
+                                       const NumberRange<float>& freqRange,
+                                       const NumberRange<float>& amplitudeRange) const noexcept
+      -> Params;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords,
                                  HypercosEffect effect,
                                  const FrequencyFactor& frequencyFactorToUse) const
@@ -91,6 +100,26 @@ inline auto Hypercos::GetParams() const -> const Params&
 inline auto Hypercos::SetParams(const Params& params) -> void
 {
   m_params = params;
+}
+
+inline auto Hypercos::SetMode0RandomParams() -> void
+{
+  m_params = GetMode0RandomParams();
+}
+
+inline auto Hypercos::SetMode1RandomParams() -> void
+{
+  m_params = GetMode1RandomParams();
+}
+
+inline auto Hypercos::SetMode2RandomParams() -> void
+{
+  m_params = GetMode2RandomParams();
+}
+
+inline auto Hypercos::SetMode3RandomParams() -> void
+{
+  m_params = GetMode3RandomParams();
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

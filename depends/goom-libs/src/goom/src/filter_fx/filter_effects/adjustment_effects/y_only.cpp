@@ -20,38 +20,25 @@ using UTILS::NUM;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto X_DEFAULT_EFFECT = YOnly::YOnlyEffect::X_SIN_Y_SIN;
-static constexpr auto Y_DEFAULT_EFFECT = YOnly::YOnlyEffect::NONE;
-
-static constexpr auto X_DEFAULT_FREQ_FACTOR = 1.0F;
-static constexpr auto Y_DEFAULT_FREQ_FACTOR = 10.0F;
-static constexpr auto FREQ_FACTOR_RANGE     = FrequencyFactorRange{
-        .xRange = {-50.0F, +50.01F},
-        .yRange = {-50.0F, +50.01F},
+static constexpr auto FREQ_FACTOR_RANGE = FrequencyFactorRange{
+    .xRange = {-50.0F, +50.01F},
+    .yRange = {-50.0F, +50.01F},
 };
 
-static constexpr auto X_DEFAULT_AMPLITUDE = 10.0F;
-static constexpr auto Y_DEFAULT_AMPLITUDE = 10.0F;
-static constexpr auto AMPLITUDE_RANGE     = AmplitudeRange{
-        .xRange = {0.010F, 1.011F},
-        .yRange = {0.010F, 1.011F},
+static constexpr auto AMPLITUDE_RANGE = AmplitudeRange{
+    .xRange = {0.010F, 1.011F},
+    .yRange = {0.010F, 1.011F},
 };
 
 static constexpr auto PROB_Y_ONLY_STRICT   = 0.9F;
 static constexpr auto PROB_FREQ_EQUAL      = 0.9F;
 static constexpr auto PROB_AMPLITUDE_EQUAL = 0.9F;
 
-YOnly::YOnly(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_params{
-        .xyEffect={.xEffect=X_DEFAULT_EFFECT,      .yEffect=Y_DEFAULT_EFFECT},
-        .frequencyFactor={.x=X_DEFAULT_FREQ_FACTOR, .y=Y_DEFAULT_FREQ_FACTOR},
-        .amplitude={X_DEFAULT_AMPLITUDE,   Y_DEFAULT_AMPLITUDE}
-    }
+YOnly::YOnly(const GoomRand& goomRand) noexcept : m_goomRand{&goomRand}, m_params{GetRandomParams()}
 {
 }
 
-auto YOnly::SetRandomParams() noexcept -> void
+auto YOnly::GetRandomParams() const noexcept -> Params
 {
   static constexpr auto Y_ONLY_EFFECT_RANGE =
       NumberRange{static_cast<uint32_t>(YOnlyEffect::NONE) + 1, NUM<YOnlyEffect> - 1};
@@ -71,11 +58,11 @@ auto YOnly::SetRandomParams() noexcept -> void
                               ? xAmplitude
                               : m_goomRand->GetRandInRange<AMPLITUDE_RANGE.yRange>();
 
-  SetParams({
+  return {
       .xyEffect        = {.xEffect = xEffect, .yEffect = yEffect},
       .frequencyFactor = {  .x = xFreqFactor,   .y = yFreqFactor},
       .amplitude       = {        xAmplitude,         yAmplitude}
-  });
+  };
 }
 
 auto YOnly::GetYOnlyZoomAdjustmentMultiplier(const YOnlyEffect effect,

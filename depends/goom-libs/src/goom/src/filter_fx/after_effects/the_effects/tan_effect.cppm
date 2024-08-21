@@ -13,26 +13,30 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::HALF_PI;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class TanEffect
 {
 public:
-  explicit TanEffect(const UTILS::MATH::GoomRand& goomRand);
+  explicit TanEffect(const GoomRand& goomRand);
   TanEffect(const TanEffect&) noexcept           = delete;
   TanEffect(TanEffect&&) noexcept                = delete;
   virtual ~TanEffect() noexcept                  = default;
   auto operator=(const TanEffect&) -> TanEffect& = delete;
   auto operator=(TanEffect&&) -> TanEffect&      = delete;
 
-  virtual auto SetRandomParams() -> void;
+  virtual auto SetRandomParams() noexcept -> void;
 
   [[nodiscard]] auto GetVelocity(float sqDistFromZero,
                                  const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
   enum class TanType : UnderlyingEnumType
   {
@@ -53,10 +57,10 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
+  Weights<TanType> m_tanEffectWeights;
   Params m_params;
-  UTILS::MATH::Weights<TanType> m_tanEffectWeights;
-  static constexpr auto HALF_PI = UTILS::MATH::HALF_PI;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   [[nodiscard]] auto GetTanSqDist(float tanArg) const -> float;
 };
 
@@ -83,6 +87,11 @@ inline auto TanEffect::GetParams() const -> const Params&
 inline auto TanEffect::SetParams(const Params& params) -> void
 {
   m_params = params;
+}
+
+inline auto TanEffect::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 inline auto TanEffect::GetTanSqDist(const float tanArg) const -> float

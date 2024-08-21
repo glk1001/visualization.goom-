@@ -11,7 +11,11 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::HALF_PI;
 using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::Weights;
 
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
@@ -19,20 +23,19 @@ export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 class XYLerpEffect
 {
 public:
-  explicit XYLerpEffect(const UTILS::MATH::GoomRand& goomRand);
+  explicit XYLerpEffect(const GoomRand& goomRand);
   XYLerpEffect(const XYLerpEffect&) noexcept           = delete;
   XYLerpEffect(XYLerpEffect&&) noexcept                = delete;
   virtual ~XYLerpEffect() noexcept                     = default;
   auto operator=(const XYLerpEffect&) -> XYLerpEffect& = delete;
   auto operator=(XYLerpEffect&&) -> XYLerpEffect&      = delete;
 
-  virtual auto SetRandomParams() -> void;
+  virtual auto SetRandomParams() noexcept -> void;
 
   [[nodiscard]] auto GetVelocity(float sqDistFromZero,
                                  const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
   enum class Modes : UnderlyingEnumType
   {
@@ -54,9 +57,10 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
-  UTILS::MATH::Weights<Modes> m_modeWeights;
+  const GoomRand* m_goomRand;
+  Weights<Modes> m_modeWeights;
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   [[nodiscard]] auto GetT(float sqDistFromZero, const NormalizedCoords& velocity) const -> float;
   [[nodiscard]] static auto GetFlipYProbability(Modes mode) -> float;
 };
@@ -92,6 +96,11 @@ inline auto XYLerpEffect::SetParams(const Params& params) -> void
   m_params = params;
 }
 
+inline auto XYLerpEffect::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
+}
+
 inline auto XYLerpEffect::GetT(const float sqDistFromZero,
                                const NormalizedCoords& velocity) const -> float
 {
@@ -108,10 +117,9 @@ inline auto XYLerpEffect::GetT(const float sqDistFromZero,
       return std::cos((m_params.tFreq * sqDistFromZero) *
                       m_goomRand->GetRandInRange<MODE1_FACTOR_RANGE>());
     case Modes::MODE2:
-      return -(1.0F / UTILS::MATH::HALF_PI) *
-             std::atan(std::tan(UTILS::MATH::HALF_PI - (m_params.tFreq * sqDistFromZero)));
+      return -(1.0F / HALF_PI) * std::atan(std::tan(HALF_PI - (m_params.tFreq * sqDistFromZero)));
     case Modes::MODE3:
-      return (1.0F / UTILS::MATH::HALF_PI) * std::abs(std::atan2(velocity.GetY(), velocity.GetX()));
+      return (1.0F / HALF_PI) * std::abs(std::atan2(velocity.GetY(), velocity.GetX()));
   }
 }
 

@@ -10,24 +10,26 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
 class ImageVelocity
 {
 public:
-  ImageVelocity(const UTILS::MATH::GoomRand& goomRand, const std::string& resourcesDirectory);
+  ImageVelocity(const GoomRand& goomRand, const std::string& resourcesDirectory);
 
   auto SetRandomParams() -> void;
 
   [[nodiscard]] auto GetVelocity(const CoordsAndVelocity& coordsAndVelocity) const
       -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
 };
 
