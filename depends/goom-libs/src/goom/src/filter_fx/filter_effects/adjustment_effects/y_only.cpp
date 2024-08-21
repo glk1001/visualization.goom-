@@ -2,6 +2,7 @@ module;
 
 #include <cmath>
 #include <cstdint>
+#include <utility>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
 
@@ -10,7 +11,6 @@ import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
-import Goom.Lib.AssertUtils;
 
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
@@ -83,6 +83,8 @@ auto YOnly::GetYOnlyZoomAdjustmentMultiplier(const YOnlyEffect effect,
 {
   switch (effect)
   {
+    case YOnlyEffect::NONE:
+      std::unreachable();
     case YOnlyEffect::X_SIN_Y_SIN:
       return std::sin(m_params.frequencyFactor.x * coords.GetX()) *
              std::sin(m_params.frequencyFactor.y * coords.GetY());
@@ -95,8 +97,6 @@ auto YOnly::GetYOnlyZoomAdjustmentMultiplier(const YOnlyEffect effect,
     case YOnlyEffect::X_COS_Y_COS:
       return std::cos(m_params.frequencyFactor.x * coords.GetX()) *
              std::cos(m_params.frequencyFactor.y * coords.GetY());
-    default:
-      FailFast();
   }
 }
 

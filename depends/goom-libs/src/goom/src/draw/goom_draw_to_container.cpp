@@ -3,6 +3,7 @@ module;
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <utility>
 
 module Goom.Draw.GoomDrawToContainer;
 
@@ -49,7 +50,7 @@ auto GoomDrawToContainer::DrawPixelsUnblended(
     [[maybe_unused]] const Point2dInt& point,
     [[maybe_unused]] const MultiplePixels& colors) noexcept -> void
 {
-  FailFast();
+  std::unreachable();
 }
 
 auto GoomDrawToContainer::DrawPixelsToDevice(const Point2dInt& point,

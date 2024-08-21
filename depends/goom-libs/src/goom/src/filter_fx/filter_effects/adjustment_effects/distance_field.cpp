@@ -7,6 +7,7 @@ module;
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <utility>
 #include <vector>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.DistanceField;
@@ -215,7 +216,7 @@ auto DistanceField::GetGridPointsWithCentres(
     return GetGridPointRandomArray(gridWidth);
   }
 
-  FailFast();
+  std::unreachable();
 }
 
 auto DistanceField::GetGridPointXArray(const uint32_t gridWidth) noexcept -> GridPointsWithCentres
@@ -258,7 +259,7 @@ auto DistanceField::GetGridPointRandomArray(const uint32_t gridWidth) const noex
     }
   }
 
-  FailFast();
+  std::unreachable();
 }
 
 auto DistanceField::TryGetGridPointRandomArray(const uint32_t gridWidth) const noexcept

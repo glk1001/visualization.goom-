@@ -42,8 +42,6 @@ constexpr auto Assert(
     const std::string& extraInfo         = "",
     const std::source_location& location = std::source_location::current()) noexcept -> void;
 
-[[noreturn]] auto FailFast() noexcept -> void;
-
 } // namespace GOOM
 
 namespace GOOM
@@ -109,11 +107,6 @@ constexpr auto Assert(const bool expr,
   {
     Check(expr, "Assert FAILED", extraInfo, location);
   }
-}
-
-[[noreturn]] auto FailFast() noexcept -> void
-{
-  std::terminate();
 }
 
 } // namespace GOOM

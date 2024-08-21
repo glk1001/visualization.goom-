@@ -21,7 +21,6 @@ import Goom.Utils.Math.Misc;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRand;
 import Goom.Utils.EnumUtils;
-import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomGraphic;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
@@ -215,7 +214,7 @@ StarDrawer::StarDrawer(IGoomDraw& draw,
                 const MultiplePixels& colors) { DrawParticleDot(point1, point2, size, colors); }},
         {DrawElementTypes::CIRCLES_AND_LINES,
          [](const Point2dInt, const Point2dInt, const uint32_t, const DRAW::MultiplePixels&)
-         { FailFast(); }},
+         { std::unreachable(); }},
     }}}
 {
 }

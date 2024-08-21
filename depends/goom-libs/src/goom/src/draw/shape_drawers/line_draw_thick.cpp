@@ -3,10 +3,9 @@ module;
 // NOLINTBEGIN: Not my code
 
 #include <cmath>
+#include <utility>
 
 module Goom.Draw.ShaperDrawers.LineDrawThick;
-
-import Goom.Lib.AssertUtils;
 
 namespace GOOM::DRAW::SHAPE_DRAWERS::THICK_LINES
 {
@@ -146,7 +145,7 @@ auto DrawVariableThicknessLine(const PlotPointFunc& plot,
       swapLeftRightWidthFuncs = true;
       break; // 5
     default:
-      FailFast();
+      std::unreachable();
   }
 
   if (swapLeftRightWidthFuncs)

@@ -7,6 +7,7 @@ module;
 #include <map>
 #include <numeric>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 export module Goom.Utils.Math.GoomRand;
@@ -435,7 +436,7 @@ auto Weights<E>::GetRandomWeighted() const noexcept -> E
     }
   }
 
-  FailFast();
+  std::unreachable();
 }
 
 template<EnumType E>
@@ -467,7 +468,7 @@ auto Weights<E>::GetRandomWeighted(const E& given) const noexcept -> E
     randVal -= m_weightData.weightArray[i];
   }
 
-  FailFast();
+  std::unreachable();
 }
 
 template<EnumType E>
