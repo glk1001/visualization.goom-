@@ -23,14 +23,9 @@ using UTILS::MATH::Sq;
 namespace
 {
 
-constexpr auto DEFAULT_AMPLITUDE = Amplitude{1.0F, 1.0F};
-constexpr auto AMPLITUDE_RANGE   = NumberRange{0.5F, 3.0F};
-
-constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-
-constexpr auto DEFAULT_ANGLE_FREQUENCY_FACTOR = 1.0F;
-constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.5F, 1.5F};
+constexpr auto AMPLITUDE_RANGE              = NumberRange{0.5F, 3.0F};
+constexpr auto LERP_TO_ONE_T_RANGE          = NumberRange{0.0F, 1.0F};
+constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE = NumberRange{0.5F, 1.5F};
 
 constexpr auto PROB_XY_AMPLITUDES_EQUAL        = 0.98F;
 constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL      = 0.95F;
@@ -40,12 +35,7 @@ constexpr auto PROB_MULTIPLY_VELOCITY          = 0.2F;
 } // namespace
 
 DipoleFlowField::DipoleFlowField(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_params{.amplitude = DEFAULT_AMPLITUDE,
-             .lerpToOneTs = DEFAULT_LERP_TO_ONE_T_S,
-             .angleFrequencyFactor = {.x = DEFAULT_ANGLE_FREQUENCY_FACTOR,
-                                        .y = DEFAULT_ANGLE_FREQUENCY_FACTOR},
-             .multiplyVelocity = false}
+  : m_goomRand{&goomRand}, m_params{GetRandomParams()}
 {
   SetupAngles();
 }
@@ -92,7 +82,7 @@ auto DipoleFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
   return {.x = coords.GetX() * x, .y = coords.GetY() * y};
 }
 
-auto DipoleFlowField::SetRandomParams() noexcept -> void
+auto DipoleFlowField::GetRandomParams() const noexcept -> Params
 {
   const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
@@ -112,12 +102,12 @@ auto DipoleFlowField::SetRandomParams() noexcept -> void
 
   const auto multiplyVelocity = m_goomRand->ProbabilityOf<PROB_MULTIPLY_VELOCITY>();
 
-  SetParams({
+  return {
       .amplitude            = {                xAmplitude,                 yAmplitude},
       .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
       .angleFrequencyFactor = {.x = xAngleFrequencyFactor, .y = yAngleFrequencyFactor},
       .multiplyVelocity     = multiplyVelocity
-  });
+  };
 }
 
 auto DipoleFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

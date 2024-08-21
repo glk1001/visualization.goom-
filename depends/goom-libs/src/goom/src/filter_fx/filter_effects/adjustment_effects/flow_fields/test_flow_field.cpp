@@ -24,35 +24,19 @@ using UTILS::MATH::Sq;
 namespace
 {
 
-constexpr auto DEFAULT_AMPLITUDE = Amplitude{1.0F, 1.0F};
-constexpr auto AMPLITUDE_RANGE   = NumberRange{0.5F, 3.0F};
+constexpr auto AMPLITUDE_RANGE              = NumberRange{0.5F, 3.0F};
+constexpr auto LERP_TO_ONE_T_RANGE          = NumberRange{0.0F, 1.0F};
+constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE = NumberRange{0.5F, 1.5F};
 
-constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-
-constexpr auto DEFAULT_C = std::complex<float>{0.5F, 0.5F};
-constexpr auto C_RANGE   = NumberRange{NormalizedCoords::MIN_COORD, NormalizedCoords::MAX_COORD};
-
-constexpr auto DEFAULT_MAX_ITERATIONS = 8;
-constexpr auto MAX_ITERATIONS_RANGE   = NumberRange{2, 20};
-
-constexpr auto DEFAULT_MAX_Z = 4.0F;
-constexpr auto MAX_Z_RANGE   = NumberRange{2.0F, 6.0F};
-
-constexpr auto PROB_XY_AMPLITUDES_EQUAL   = 0.98F;
-constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL = 0.95F;
-constexpr auto PROB_MULTIPLY_VELOCITY     = 0.2F;
+constexpr auto PROB_XY_AMPLITUDES_EQUAL        = 0.98F;
+constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL      = 0.95F;
+constexpr auto PROB_XY_ANGLE_FREQUENCIES_EQUAL = 0.5F;
+constexpr auto PROB_MULTIPLY_VELOCITY          = 0.2F;
 
 } // namespace
 
 TestFlowField::TestFlowField(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_params{.amplitude        = DEFAULT_AMPLITUDE,
-             .lerpToOneTs      = DEFAULT_LERP_TO_ONE_T_S,
-             .c                = DEFAULT_C,
-             .maxIterations    = DEFAULT_MAX_ITERATIONS,
-             .maxZ             = DEFAULT_MAX_Z,
-             .multiplyVelocity = false}
+  : m_goomRand{&goomRand}, m_params{GetRandomParams()}
 {
   SetupAngles();
 }
@@ -66,8 +50,10 @@ auto TestFlowField::SetupAngles() noexcept -> void
     const auto yFlt =
         2.0F * (-0.5F + (static_cast<float>(y) / static_cast<float>(FlowFieldGrid::GRID_HEIGHT)));
 
-    const auto angle  = std::atan2(yFlt, xFlt);
-    const auto radius = std::sqrt(Sq(xFlt) + Sq(yFlt));
+    const auto newX   = 2.0F * (xFlt * yFlt);
+    const auto newY   = Sq(yFlt) - Sq(xFlt);
+    const auto angle  = std::atan2(newY, newX);
+    const auto radius = std::sqrt(Sq(newX) + Sq(newY));
 
     return {.angle = angle, .radius = radius};
   };
@@ -78,33 +64,26 @@ auto TestFlowField::SetupAngles() noexcept -> void
 auto TestFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                 const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
-  static constexpr auto RESET_POINT = std::complex<float>{2.0F, 2.0F};
+  const auto gridPolarCoords = m_gridArray.GetPolarCoords(coords);
 
-  const auto c = m_params.c; // NOLINT(readability-identifier-length)
-
-  auto z = std::complex<float>{coords.GetX(), coords.GetY()};
-  for (auto i = 0; i < m_params.maxIterations; ++i)
-  {
-    z = (z * z) + c;
-    if (std::abs(z) > m_params.maxZ)
-    {
-      z = RESET_POINT + std::sin(z);
-      break;
-    }
-  }
-
-  const auto x = m_params.amplitude.x * z.real();
-  const auto y = m_params.amplitude.y * z.imag();
+  const auto x =
+      m_params.amplitude.x *
+      (gridPolarCoords.radius * std::cos(m_params.angleFrequencyFactor.x * gridPolarCoords.angle));
+  const auto y =
+      m_params.amplitude.y *
+      (gridPolarCoords.radius * std::sin(m_params.angleFrequencyFactor.y * gridPolarCoords.angle));
 
   if (not m_params.multiplyVelocity)
   {
     return {.x = baseZoomAdjustment.x + x, .y = baseZoomAdjustment.y + y};
+    // return {.x = baseZoomAdjustment.x + (2.0F * coords.GetX()*coords.GetY()),
+    //         .y = baseZoomAdjustment.y + (Sq(coords.GetY()) - Sq(coords.GetX()))};
   }
 
   return {.x = coords.GetX() * x, .y = coords.GetY() * y};
 }
 
-auto TestFlowField::SetRandomParams() noexcept -> void
+auto TestFlowField::GetRandomParams() const noexcept -> Params
 {
   const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
@@ -116,24 +95,20 @@ auto TestFlowField::SetRandomParams() noexcept -> void
                                ? xLerpToOneT
                                : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
 
-  // NOLINTNEXTLINE(readability-identifier-length)
-  const auto c =
-      std::complex<float>{m_goomRand->GetRandInRange(C_RANGE), m_goomRand->GetRandInRange(C_RANGE)};
-
-  const auto maxIterations = m_goomRand->GetRandInRange<MAX_ITERATIONS_RANGE>();
-
-  const auto maxZ = m_goomRand->GetRandInRange<MAX_Z_RANGE>();
+  const auto xAngleFrequencyFactor = m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
+  const auto yAngleFrequencyFactor =
+      m_goomRand->ProbabilityOf<PROB_XY_ANGLE_FREQUENCIES_EQUAL>()
+          ? xAngleFrequencyFactor
+          : m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
 
   const auto multiplyVelocity = m_goomRand->ProbabilityOf<PROB_MULTIPLY_VELOCITY>();
 
-  SetParams({
-      .amplitude        = {           xAmplitude,            yAmplitude},
-      .lerpToOneTs      = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
-      .c                = c,
-      .maxIterations    = maxIterations,
-      .maxZ             = maxZ,
-      .multiplyVelocity = multiplyVelocity
-  });
+  return {
+      .amplitude            = {                xAmplitude,                 yAmplitude},
+      .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
+      .angleFrequencyFactor = {.x = xAngleFrequencyFactor, .y = yAngleFrequencyFactor},
+      .multiplyVelocity     = multiplyVelocity
+  };
 }
 
 auto TestFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

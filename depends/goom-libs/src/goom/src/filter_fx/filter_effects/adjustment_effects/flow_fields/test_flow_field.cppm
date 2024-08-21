@@ -35,9 +35,7 @@ public:
   {
     Amplitude amplitude{};
     LerpToOneTs lerpToOneTs{};
-    std::complex<float> c{}; // NOLINT(readability-identifier-length)
-    int maxIterations{};
-    float maxZ{};
+    FrequencyFactor angleFrequencyFactor{};
     bool multiplyVelocity = false;
   };
   [[nodiscard]] auto GetParams() const noexcept -> const Params&;
@@ -50,6 +48,7 @@ private:
   FlowFieldGrid m_gridArray{};
   auto SetupAngles() noexcept -> void;
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   [[nodiscard]] auto GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                  const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
@@ -75,6 +74,11 @@ inline auto TestFlowField::GetParams() const noexcept -> const Params&
 inline void TestFlowField::SetParams(const Params& params) noexcept
 {
   m_params = params;
+}
+
+inline auto TestFlowField::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

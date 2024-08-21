@@ -69,9 +69,10 @@ protected:
 private:
   const GoomRand* m_goomRand;
   FILTER_UTILS::RandomViewport m_randomViewport;
-  Params m_params;
   Weights<ZFuncTypes> m_zFuncWeights;
   EnumMap<ZFuncTypes, ZFunc> m_zFuncs;
+  Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   [[nodiscard]] auto GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                  const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetJuliaPoint(const std::complex<float>& trapPoint,
@@ -101,6 +102,11 @@ inline auto JuliaFlowField::GetParams() const noexcept -> const Params&
 inline void JuliaFlowField::SetParams(const Params& params) noexcept
 {
   m_params = params;
+}
+
+inline auto JuliaFlowField::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS
