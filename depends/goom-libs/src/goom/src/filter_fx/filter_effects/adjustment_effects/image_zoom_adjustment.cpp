@@ -10,8 +10,8 @@ import Goom.Utils.Math.GoomRand;
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-using GOOM::UTILS::NameValuePairs;
-using GOOM::UTILS::MATH::GoomRand;
+using UTILS::NameValuePairs;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
 static constexpr auto AMPLITUDE_RANGE    = NumberRange{0.0025F, 0.1000F};

@@ -14,6 +14,11 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+using GOOM::UTILS::MATH::NumberRange;
+using GOOM::UTILS::MATH::Weights;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -26,7 +31,7 @@ public:
     MODE1,
     MODE2
   };
-  DistanceField(Modes mode, const UTILS::MATH::GoomRand& goomRand) noexcept;
+  DistanceField(Modes mode, const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -34,7 +39,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
   enum class GridType : UnderlyingEnumType
   {
@@ -69,17 +74,19 @@ protected:
 
 private:
   Modes m_mode;
-  const UTILS::MATH::GoomRand* m_goomRand;
-  UTILS::MATH::Weights<GridType> m_weightedEffects;
+  const GoomRand* m_goomRand;
+  Weights<GridType> m_weightedEffects;
 
   Params m_params;
+  [[nodiscard]] auto GetMode0RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode1RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode2RandomParams() const noexcept -> Params;
+  using GridWidthRange = NumberRange<uint32_t>;
+  [[nodiscard]] auto GetRandomParams(const AmplitudeRange& amplitudeRange,
+                                     const GridWidthRange& gridWidthRange) const noexcept -> Params;
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
-
-  using GridWidthRange = UTILS::MATH::NumberRange<uint32_t>;
-  auto SetRandomParams(const AmplitudeRange& amplitudeRange,
-                       const GridWidthRange& gridWidthRange) noexcept -> void;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetGridWidth(GridType gridType,
@@ -151,6 +158,21 @@ inline auto DistanceField::GetParams() const noexcept -> const Params&
 inline auto DistanceField::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto DistanceField::SetMode0RandomParams() noexcept -> void
+{
+  m_params = GetMode0RandomParams();
+}
+
+inline auto DistanceField::SetMode1RandomParams() noexcept -> void
+{
+  m_params = GetMode1RandomParams();
+}
+
+inline auto DistanceField::SetMode2RandomParams() noexcept -> void
+{
+  m_params = GetMode2RandomParams();
 }
 
 inline auto DistanceField::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

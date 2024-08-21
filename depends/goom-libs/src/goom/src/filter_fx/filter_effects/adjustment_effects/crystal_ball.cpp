@@ -10,7 +10,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 
-static constexpr auto DEFAULT_AMPLITUDE     = 0.1F;
 static constexpr auto AMPLITUDE_RANGE_MODE0 = AmplitudeRange{
     .xRange = {0.001F, 0.501F},
     .yRange = {0.001F, 0.501F},
@@ -20,7 +19,6 @@ static constexpr auto AMPLITUDE_RANGE_MODE1 = AmplitudeRange{
     .yRange = {0.500F, 1.001F},
 };
 
-static constexpr auto DEFAULT_SQ_DIST_MULT     = 0.025F;
 static constexpr auto SQ_DIST_MULT_RANGE_MODE0 = SqDistMultRange{
     .xRange = {0.001F, 0.051F},
     .yRange = {0.001F, 0.051F},
@@ -30,7 +28,6 @@ static constexpr auto SQ_DIST_MULT_RANGE_MODE1 = SqDistMultRange{
     .yRange = {0.050F, 0.101F},
 };
 
-static constexpr auto DEFAULT_SQ_DIST_OFFSET     = 0.05F;
 static constexpr auto SQ_DIST_OFFSET_RANGE_MODE0 = SqDistOffsetRange{
     .xRange = {0.001F, 0.11F},
     .yRange = {0.001F, 0.11F},
@@ -45,13 +42,7 @@ static constexpr auto PROB_XY_SQ_DIST_MULT_EQUAL   = 1.00F;
 static constexpr auto PROB_XY_SQ_DIST_OFFSET_EQUAL = 1.00F;
 
 CrystalBall::CrystalBall(const Modes mode, const GoomRand& goomRand) noexcept
-  : m_mode{mode},
-    m_goomRand{&goomRand},
-    m_params{
-        .amplitude={DEFAULT_AMPLITUDE,      DEFAULT_AMPLITUDE},
-        .sqDistMult={.x=DEFAULT_SQ_DIST_MULT,   .y=DEFAULT_SQ_DIST_MULT},
-        .sqDistOffset={.x=DEFAULT_SQ_DIST_OFFSET, .y=DEFAULT_SQ_DIST_OFFSET}
-    }
+  : m_mode{mode}, m_goomRand{&goomRand}, m_params{GetMode0RandomParams()}
 {
 }
 
@@ -67,19 +58,22 @@ auto CrystalBall::SetRandomParams() noexcept -> void
   }
 }
 
-auto CrystalBall::SetMode0RandomParams() noexcept -> void
+auto CrystalBall::GetMode0RandomParams() const noexcept -> Params
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE0, SQ_DIST_MULT_RANGE_MODE0, SQ_DIST_OFFSET_RANGE_MODE0);
+  return GetRandomParams(
+      AMPLITUDE_RANGE_MODE0, SQ_DIST_MULT_RANGE_MODE0, SQ_DIST_OFFSET_RANGE_MODE0);
 }
 
-auto CrystalBall::SetMode1RandomParams() noexcept -> void
+auto CrystalBall::GetMode1RandomParams() const noexcept -> Params
 {
-  SetRandomParams(AMPLITUDE_RANGE_MODE1, SQ_DIST_MULT_RANGE_MODE1, SQ_DIST_OFFSET_RANGE_MODE1);
+  return GetRandomParams(
+      AMPLITUDE_RANGE_MODE1, SQ_DIST_MULT_RANGE_MODE1, SQ_DIST_OFFSET_RANGE_MODE1);
 }
 
-auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
+auto CrystalBall::GetRandomParams(const AmplitudeRange& amplitudeRange,
                                   const SqDistMultRange& sqDistMultRange,
-                                  const SqDistOffsetRange& sqDistOffsetRange) noexcept -> void
+                                  const SqDistOffsetRange& sqDistOffsetRange) const noexcept
+    -> Params
 {
   const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange.xRange);
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
@@ -96,11 +90,11 @@ auto CrystalBall::SetRandomParams(const AmplitudeRange& amplitudeRange,
                                  ? xSqDistOffset
                                  : m_goomRand->GetRandInRange(sqDistOffsetRange.yRange);
 
-  SetParams({
+  return {
       .amplitude    = {        xAmplitude,         yAmplitude},
       .sqDistMult   = {  .x = xSqDistMult,   .y = ySqDistMult},
       .sqDistOffset = {.x = xSqDistOffset, .y = ySqDistOffset}
-  });
+  };
 }
 
 auto CrystalBall::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

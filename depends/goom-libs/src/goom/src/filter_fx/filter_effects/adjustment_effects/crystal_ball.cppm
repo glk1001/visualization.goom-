@@ -8,6 +8,9 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -19,7 +22,7 @@ public:
     MODE0,
     MODE1
   };
-  explicit CrystalBall(Modes mode, const UTILS::MATH::GoomRand& goomRand) noexcept;
+  explicit CrystalBall(Modes mode, const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -27,7 +30,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
   struct Params
   {
@@ -42,13 +45,16 @@ protected:
 
 private:
   Modes m_mode;
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
+  [[nodiscard]] auto GetMode0RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode1RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetRandomParams(const AmplitudeRange& amplitudeRange,
+                                     const SqDistMultRange& sqDistMultRange,
+                                     const SqDistOffsetRange& sqDistOffsetRange) const noexcept
+      -> Params;
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
-  auto SetRandomParams(const AmplitudeRange& amplitudeRange,
-                       const SqDistMultRange& sqDistMultRange,
-                       const SqDistOffsetRange& sqDistOffsetRange) noexcept -> void;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] static auto GetZoomAdjustment(float baseZoomAdjustment,
                                               float sqDistFromZero,
@@ -78,6 +84,16 @@ inline auto CrystalBall::GetParams() const noexcept -> const Params&
 inline auto CrystalBall::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto CrystalBall::SetMode0RandomParams() noexcept -> void
+{
+  m_params = GetMode0RandomParams();
+}
+
+inline auto CrystalBall::SetMode1RandomParams() noexcept -> void
+{
+  m_params = GetMode1RandomParams();
 }
 
 inline auto CrystalBall::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

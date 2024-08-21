@@ -15,7 +15,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using FILTER_UTILS::GetVelocityByZoomLerpedToOne;
-using FILTER_UTILS::LerpToOneTs;
 using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
@@ -23,26 +22,13 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.01F, 0.11F};
-
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.5F, 1.0F};
-
-static constexpr auto DEFAULT_A = 1.0F;
-static constexpr auto A_RANGE   = NumberRange{0.5F, 1.5F};
-
-static constexpr auto DEFAULT_B = 1.0F;
-static constexpr auto B_RANGE   = NumberRange{0.5F, 1.5F};
-
-static constexpr auto DEFAULT_C = 1.0F;
-static constexpr auto C_RANGE   = NumberRange{0.5F, 1.5F};
-
-static constexpr auto DEFAULT_D = -1.0F;
-static constexpr auto D_RANGE   = NumberRange{-1.5F, -0.5F};
-
-static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
-static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
+static constexpr auto AMPLITUDE_RANGE        = NumberRange{0.01F, 0.11F};
+static constexpr auto LERP_TO_ONE_T_RANGE    = NumberRange{0.5F, 1.0F};
+static constexpr auto A_RANGE                = NumberRange{0.5F, 1.5F};
+static constexpr auto B_RANGE                = NumberRange{0.5F, 1.5F};
+static constexpr auto C_RANGE                = NumberRange{0.5F, 1.5F};
+static constexpr auto D_RANGE                = NumberRange{-1.5F, -0.5F};
+static constexpr auto MODULATOR_PERIOD_RANGE = NumberRange{1.0F, 100.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -62,25 +48,11 @@ static constexpr auto PROB_USE_NORMALIZED_AMPLITUDE = 0.50F;
 static constexpr auto PROB_USE_MODULATOR_CONTOURS   = 0.10F;
 
 Mobius::Mobius(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
-    m_params{
-        .viewport=Viewport{},
-        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
-        .a=DEFAULT_A,
-        .b=DEFAULT_B,
-        .c=DEFAULT_C,
-        .d=DEFAULT_D,
-        .noInverseSquare=true,
-        .useNormalizedAmplitude=false,
-        .useModulatorContours=false,
-        .modulatorPeriod=DEFAULT_MODULATOR_PERIOD,
-    }
+  : m_goomRand{&goomRand}, m_randomViewport{goomRand, VIEWPORT_BOUNDS}, m_params{GetRandomParams()}
 {
 }
 
-auto Mobius::SetRandomParams() noexcept -> void
+auto Mobius::GetRandomParams() const noexcept -> Params
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
@@ -105,7 +77,7 @@ auto Mobius::SetRandomParams() noexcept -> void
   const auto modulatorPeriod =
       not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange<MODULATOR_PERIOD_RANGE>();
 
-  SetParams({
+  return {
       .viewport               = viewport,
       .amplitude              = {           xAmplitude,            yAmplitude},
       .lerpToOneTs            = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
@@ -117,7 +89,7 @@ auto Mobius::SetRandomParams() noexcept -> void
       .useNormalizedAmplitude = useNormalizedAmplitude,
       .useModulatorContours   = useModulatorContours,
       .modulatorPeriod        = modulatorPeriod,
-  });
+  };
 }
 
 auto Mobius::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

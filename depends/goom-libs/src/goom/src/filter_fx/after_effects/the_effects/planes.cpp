@@ -38,32 +38,21 @@ static constexpr auto PROB_OPPOSITES_FOR_MEDIUM_EFFECTS         = 0.9F;
 
 // H Plane:
 // @since June 2001
-// clang-format off
-static constexpr auto
-  HORIZONTAL_EFFECTS_MULTIPLIER_RANGE            = NumberRange{0.0015F, 0.0035F};
-static constexpr auto
-  HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE = NumberRange{0.0015F, 0.0351F};
-// clang-format on
+static constexpr auto HORIZONTAL_EFFECTS_MULTIPLIER_RANGE = NumberRange{0.0015F, 0.0035F};
+static constexpr auto HORIZONTAL_EFFECTS_SPIRALLING_MULTIPLIER_RANGE =
+    NumberRange{0.0015F, 0.0351F};
 
-static constexpr auto DEFAULT_HORIZONTAL_SWIRL_FREQ      = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE        = NumberRange{0.1F, 5.01F};
-static constexpr auto DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE = 1.0F;
-static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE   = NumberRange{0.1F, 5.01F};
+static constexpr auto HORIZONTAL_SWIRL_FREQ_RANGE      = NumberRange{0.1F, 5.01F};
+static constexpr auto HORIZONTAL_SWIRL_AMPLITUDE_RANGE = NumberRange{0.1F, 5.01F};
 
 static constexpr auto SWIRL_TYPE_RANGE = NumberRange{1U, NUM<Planes::PlaneSwirlType> - 1};
 
 // V Plane:
-// clang-format off
-static constexpr auto
-  VERTICAL_EFFECTS_AMPLITUDE_RANGE            = NumberRange{0.0015F, 0.0035F};
-static constexpr auto
-  VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = NumberRange{0.0015F, 0.0351F};
-// clang-format on
+static constexpr auto VERTICAL_EFFECTS_AMPLITUDE_RANGE            = NumberRange{0.0015F, 0.0035F};
+static constexpr auto VERTICAL_EFFECTS_SPIRALLING_AMPLITUDE_RANGE = NumberRange{0.0015F, 0.0351F};
 
-static constexpr auto DEFAULT_VERTICAL_SWIRL_FREQ      = 1.0F;
-static constexpr auto VERTICAL_SWIRL_FREQ_RANGE        = NumberRange{0.1F, 30.01F};
-static constexpr auto DEFAULT_VERTICAL_SWIRL_AMPLITUDE = 1.0F;
-static constexpr auto VERTICAL_SWIRL_AMPLITUDE_RANGE   = NumberRange{0.1F, 30.01F};
+static constexpr auto VERTICAL_SWIRL_FREQ_RANGE      = NumberRange{0.1F, 30.01F};
+static constexpr auto VERTICAL_SWIRL_AMPLITUDE_RANGE = NumberRange{0.1F, 30.01F};
 
 static constexpr auto PROB_PLANE_AMPLITUDES_EQUAL       = 0.75F;
 static constexpr auto PROB_ZERO_HORIZONTAL_PLANE_EFFECT = 0.50F;
@@ -82,23 +71,6 @@ static constexpr auto ZERO_EFFECTS_WEIGHT                                  = 2.0
 
 Planes::Planes(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_params{
-        .planeEffects={
-            .horizontalEffectActive=false, .verticalEffectActive=false,
-            .amplitude={0.0F,  0.0F},
-        },
-        .swirlEffects={
-            .swirlType=PlaneSwirlType::NONE,
-            .frequencyFactor={
-                .x=DEFAULT_HORIZONTAL_SWIRL_FREQ,
-                .y=DEFAULT_VERTICAL_SWIRL_FREQ,
-            },
-            .amplitude={
-                DEFAULT_HORIZONTAL_SWIRL_AMPLITUDE,
-                DEFAULT_VERTICAL_SWIRL_AMPLITUDE,
-            },
-        }
-    },
     m_planeEffectWeights{
       *m_goomRand,
       {
@@ -108,18 +80,20 @@ Planes::Planes(const GoomRand& goomRand) noexcept
           { .key=PlaneEffectEvents::LARGE_EFFECTS,      .weight=LARGE_EFFECTS_WEIGHT },
           { .key=PlaneEffectEvents::VERY_LARGE_EFFECTS, .weight=VERY_LARGE_EFFECTS_WEIGHT },
           { .key=PlaneEffectEvents::POS_VERTICAL_NEG_HORIZONTAL_VERY_LARGE_EFFECTS,
-                                             .weight=POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT },
+                                     .weight=POSITIVE_VERTICAL_NEGATIVE_HORIZONTAL_EFFECTS_WEIGHT },
           { .key=PlaneEffectEvents::POS_HORIZONTAL_NEG_VERTICAL_VERY_LARGE_EFFECTS,
-                                             .weight=POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT },
+                                     .weight=POSITIVE_HORIZONTAL_NEGATIVE_VERTICAL_EFFECTS_WEIGHT },
       }
-    }
+    },
+    m_params{GetRandomParams(Point2dInt{}, 0U)}
 {
 }
 
-auto Planes::SetRandomParams(const Point2dInt& zoomMidpoint, const uint32_t screenWidth) -> void
+auto Planes::GetRandomParams(const Point2dInt& zoomMidpoint,
+                             const uint32_t screenWidth) const noexcept -> Params
 {
-  SetParams(GetRandomParams(
-      *m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint, screenWidth));
+  return GetRandomParams(
+      *m_goomRand, m_planeEffectWeights.GetRandomWeighted(), zoomMidpoint, screenWidth);
 }
 
 auto Planes::GetRandomParams(const GoomRand& goomRand,
@@ -233,7 +207,7 @@ auto Planes::GetAdjustedIntAmplitude(const GoomRand& goomRand,
 {
   auto adjustedIntAmplitude = intAmplitude;
 
-  if ((1 == zoomMidpoint.x) || (zoomMidpoint.x == static_cast<int32_t>(screenWidth - 1)))
+  if ((1 == zoomMidpoint.x) or (zoomMidpoint.x == static_cast<int32_t>(screenWidth) - 1))
   {
     adjustedIntAmplitude.y = 0;
     if (goomRand.ProbabilityOf<PROB_ZERO_HORIZONTAL_PLANE_EFFECT>())

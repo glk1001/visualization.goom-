@@ -17,7 +17,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using FILTER_UTILS::GetVelocityByZoomLerpedToOne;
-using FILTER_UTILS::LerpToOneTs;
 using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
@@ -25,32 +24,15 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.01F, 0.11F};
-
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-
-static constexpr auto DEFAULT_USE_Z_SIN       = true;
-static constexpr auto DEFAULT_Z_SIN_AMPLITUDE = 0.1F;
-static constexpr auto Z_SIN_AMPLITUDE_RANGE   = NumberRange{0.01F, 20.0F};
-
-static constexpr auto DEFAULT_USE_SQ_DIST_DENOM = true;
-static constexpr auto DEFAULT_DENOMINATOR       = 20.0F;
-static constexpr auto DENOMINATOR_RANGE         = NumberRange{20.0F, 40.0F};
-
-static constexpr auto DEFAULT_EXPONENT = 3U;
-static constexpr auto EXPONENT_RANGE   = NumberRange{3U, 11U};
-
-static constexpr auto DEFAULT_A_REAL = 1.0F;
-static constexpr auto DEFAULT_A_IMAG = 0.0F;
-static constexpr auto A_REAL_RANGE   = NumberRange{-1.0F, +1.0F};
-static constexpr auto A_IMAG_RANGE   = NumberRange{-1.0F, +1.0F};
-
-static constexpr auto DEFAULT_C_REAL = 0.0F;
-static constexpr auto DEFAULT_C_IMAG = 0.0F;
-static constexpr auto C_REAL_RANGE   = NumberRange{-1.0F, +1.0F};
-static constexpr auto C_IMAG_RANGE   = NumberRange{-1.0F, +1.0F};
+static constexpr auto AMPLITUDE_RANGE       = NumberRange{0.01F, 0.11F};
+static constexpr auto LERP_TO_ONE_T_RANGE   = NumberRange{0.0F, 1.0F};
+static constexpr auto Z_SIN_AMPLITUDE_RANGE = NumberRange{0.01F, 20.0F};
+static constexpr auto DENOMINATOR_RANGE     = NumberRange{20.0F, 40.0F};
+static constexpr auto EXPONENT_RANGE        = NumberRange{3U, 11U};
+static constexpr auto A_REAL_RANGE          = NumberRange{-1.0F, +1.0F};
+static constexpr auto A_IMAG_RANGE          = NumberRange{-1.0F, +1.0F};
+static constexpr auto C_REAL_RANGE          = NumberRange{-1.0F, +1.0F};
+static constexpr auto C_IMAG_RANGE          = NumberRange{-1.0F, +1.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -72,27 +54,12 @@ static constexpr auto PROB_USE_SQ_DIST_DENOM      = 0.1F;
 static constexpr auto PROB_NO_VIEWPORT            = 0.8F;
 
 Newton::Newton(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
-    m_params{
-        .viewport=Viewport{},
-        .exponent=DEFAULT_EXPONENT,
-        .a={static_cast<FltCalcType>(DEFAULT_A_REAL),
-         static_cast<FltCalcType>(DEFAULT_A_IMAG)},
-        .c={static_cast<FltCalcType>(DEFAULT_C_REAL),
-         static_cast<FltCalcType>(DEFAULT_C_IMAG)},
-        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
-        .useSqDistDenominator=DEFAULT_USE_SQ_DIST_DENOM,
-        .denominator=DEFAULT_DENOMINATOR,
-        .useZSinInput=DEFAULT_USE_Z_SIN,
-        .zSinAmplitude={DEFAULT_Z_SIN_AMPLITUDE, DEFAULT_Z_SIN_AMPLITUDE},
-    }
+  : m_goomRand{&goomRand}, m_randomViewport{goomRand, VIEWPORT_BOUNDS}, m_params{GetRandomParams()}
 {
   m_randomViewport.SetProbNoViewport(PROB_NO_VIEWPORT);
 }
 
-auto Newton::SetRandomParams() noexcept -> void
+auto Newton::GetRandomParams() const noexcept -> Params
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
@@ -121,7 +88,7 @@ auto Newton::SetRandomParams() noexcept -> void
   const auto useSqDistDenominator = m_goomRand->ProbabilityOf<PROB_USE_SQ_DIST_DENOM>();
   const auto denominator          = m_goomRand->GetRandInRange<DENOMINATOR_RANGE>();
 
-  SetParams({
+  return {
       .viewport             = viewport,
       .exponent             = exponent,
       .a                    = a,
@@ -132,7 +99,7 @@ auto Newton::SetRandomParams() noexcept -> void
       .denominator          = denominator,
       .useZSinInput         = useZSin,
       .zSinAmplitude        = {       xZSinAmplitude,        yZSinAmplitude},
-  });
+  };
 }
 
 auto Newton::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

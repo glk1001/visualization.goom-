@@ -21,35 +21,25 @@ using UTILS::MATH::NumberRange;
 
 using enum Wave::WaveEffect;
 
-static constexpr auto DEFAULT_WAVE_EFFECT  = WAVE_SIN_EFFECT;
-static constexpr auto DEFAULT_ANGLE_EFFECT = Wave::AngleEffect::SQ_DIST;
-
-static constexpr auto DEFAULT_SQ_DIST_POWER = 1.0F;
-static constexpr auto SQ_DIST_POWER_RANGE   = NumberRange{0.15F, 1.1F};
+static constexpr auto SQ_DIST_POWER_RANGE = NumberRange{0.15F, 1.1F};
 
 static constexpr auto DEFAULT_PERIODIC_FACTOR         = 1.0F;
 static constexpr auto DEFAULT_SIN_COS_PERIODIC_FACTOR = 0.5F;
 static constexpr auto PERIODIC_FACTOR_RANGE           = NumberRange{0.5F, 1.0F};
 static constexpr auto SIN_COS_PERIODIC_FACTOR_RANGE   = NumberRange{0.1F, 0.9F};
 
-static constexpr auto DEFAULT_FREQ_FACTOR = 20.0F;
-static constexpr auto FREQ_FACTOR_RANGE   = NumberRange{1.0F, 50.0F};
+static constexpr auto FREQ_FACTOR_RANGE = NumberRange{1.0F, 50.0F};
 
-static constexpr auto DEFAULT_AMPLITUDE = 0.01F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.001F, 0.25F};
+static constexpr auto AMPLITUDE_RANGE = NumberRange{0.001F, 0.25F};
 
-static constexpr auto DEFAULT_REDUCER_COEFF   = 1.0F;
 static constexpr auto REDUCER_COEFF_RANGE     = NumberRange{0.95F, 1.5F};
 static constexpr auto TAN_REDUCER_COEFF_RANGE = NumberRange{4.0F, 10.0F};
 
-static constexpr auto DEFAULT_SPIRAL_ROTATE_BASE_ANGLE = 0.25F * UTILS::MATH::PI;
-static constexpr auto SPIRAL_ROTATE_FACTOR_RANGE       = NumberRange{0.9F, 1.1F};
-static constexpr auto MIN_SPIRAL_ROTATE_LERP           = 0.5F;
-static constexpr auto MAX_SPIRAL_ROTATE_LERP           = 1.0F;
+static constexpr auto SPIRAL_ROTATE_FACTOR_RANGE = NumberRange{0.9F, 1.1F};
+static constexpr auto MIN_SPIRAL_ROTATE_LERP     = 0.5F;
+static constexpr auto MAX_SPIRAL_ROTATE_LERP     = 1.0F;
 
-static constexpr auto DEFAULT_USE_MODIFIED_ATAN_ANGLE    = false;
-static constexpr auto DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR = 1.0F;
-static constexpr auto MODIFIED_ATAN_ANGLE_FACTOR_RANGE   = NumberRange{0.1F, 10.0F};
+static constexpr auto MODIFIED_ATAN_ANGLE_FACTOR_RANGE = NumberRange{0.1F, 10.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -111,100 +101,81 @@ Wave::Wave(const Modes mode, const GoomRand& goomRand)
         {.key=WAVE_COT_COS_EFFECT,  .weight=WAVE_COT_COS_EFFECT_WEIGHT},
       }
     },
-    m_params{.viewport=Viewport{},
-             .xWaveEffect=DEFAULT_WAVE_EFFECT,
-             .yWaveEffect=DEFAULT_WAVE_EFFECT,
-             .angleEffect=DEFAULT_ANGLE_EFFECT,
-             .sqDistPower=DEFAULT_SQ_DIST_POWER,
-             .freqFactor=DEFAULT_FREQ_FACTOR,
-             .amplitude=DEFAULT_AMPLITUDE,
-             .periodicFactor=DEFAULT_PERIODIC_FACTOR,
-             .reducerCoeff=DEFAULT_REDUCER_COEFF,
-             .spiralRotateBaseAngle=DEFAULT_SPIRAL_ROTATE_BASE_ANGLE,
-             .useModifiedATanAngle=DEFAULT_USE_MODIFIED_ATAN_ANGLE,
-             .modifiedATanAngleFactor=DEFAULT_MODIFIED_ATAN_ANGLE_FACTOR}
+    m_params{GetRandomParams()}
 {
   m_randomViewport.SetProbNoViewport(PROB_NO_VIEWPORT);
 }
 
-auto Wave::SetRandomParams() noexcept -> void
+auto Wave::GetRandomParams() const noexcept -> Params
 {
   switch (m_mode)
   {
     case Modes::SQ_DIST_ANGLE_EFFECT_MODE0:
-      SetSqDistAngleEffectMode0RandomParams();
-      break;
+      return GetSqDistAngleEffectMode0RandomParams();
     case Modes::SQ_DIST_ANGLE_EFFECT_MODE1:
-      SetSqDistAngleEffectMode1RandomParams();
-      break;
+      return GetSqDistAngleEffectMode1RandomParams();
     case Modes::ATAN_ANGLE_EFFECT_MODE0:
-      SetAtanAngleEffectMode0RandomParams();
-      break;
+      return GetAtanAngleEffectMode0RandomParams();
     case Modes::ATAN_ANGLE_EFFECT_MODE1:
-      SetAtanAngleEffectMode1RandomParams();
-      break;
+      return GetAtanAngleEffectMode1RandomParams();
   }
 }
 
-auto Wave::SetSqDistAngleEffectMode0RandomParams() noexcept -> void
+auto Wave::GetSqDistAngleEffectMode0RandomParams() const noexcept -> Params
 {
-  SetWaveModeSettings({.angleEffect               = GetSqDistEffect(),
-                       .freqFactorRange           = FREQ_FACTOR_RANGE,
-                       .amplitudeRange            = AMPLITUDE_RANGE,
-                       .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
-                       .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
+  return GetWaveModeSettings({.angleEffect               = GetSqDistEffect(),
+                              .freqFactorRange           = FREQ_FACTOR_RANGE,
+                              .amplitudeRange            = AMPLITUDE_RANGE,
+                              .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
+                              .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
 }
 
-auto Wave::SetSqDistAngleEffectMode1RandomParams() noexcept -> void
-{
-  if (m_goomRand->ProbabilityOf<PROB_ALLOW_STRANGE_WAVE_VALUES>())
-  {
-    SetWaveModeSettings({.angleEffect               = GetSqDistEffect(),
-                         .freqFactorRange           = SMALL_FREQ_FACTOR_RANGE,
-                         .amplitudeRange            = BIG_AMPLITUDE_RANGE,
-                         .periodicFactorRange       = BIG_PERIODIC_FACTOR_RANGE,
-                         .sinCosPeriodicFactorRange = BIG_SIN_COS_PERIODIC_FACTOR_RANGE});
-  }
-  else
-  {
-    SetWaveModeSettings({.angleEffect               = GetSqDistEffect(),
-                         .freqFactorRange           = FREQ_FACTOR_RANGE,
-                         .amplitudeRange            = AMPLITUDE_RANGE,
-                         .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
-                         .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
-  }
-}
-
-auto Wave::SetAtanAngleEffectMode0RandomParams() noexcept -> void
-{
-  SetWaveModeSettings({.angleEffect               = AngleEffect::ATAN,
-                       .freqFactorRange           = FREQ_FACTOR_RANGE,
-                       .amplitudeRange            = AMPLITUDE_RANGE,
-                       .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
-                       .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
-}
-
-auto Wave::SetAtanAngleEffectMode1RandomParams() noexcept -> void
+auto Wave::GetSqDistAngleEffectMode1RandomParams() const noexcept -> Params
 {
   if (m_goomRand->ProbabilityOf<PROB_ALLOW_STRANGE_WAVE_VALUES>())
   {
-    SetWaveModeSettings({.angleEffect               = AngleEffect::ATAN,
-                         .freqFactorRange           = SMALL_FREQ_FACTOR_RANGE,
-                         .amplitudeRange            = BIG_AMPLITUDE_RANGE,
-                         .periodicFactorRange       = BIG_PERIODIC_FACTOR_RANGE,
-                         .sinCosPeriodicFactorRange = BIG_SIN_COS_PERIODIC_FACTOR_RANGE});
+    return GetWaveModeSettings({.angleEffect               = GetSqDistEffect(),
+                                .freqFactorRange           = SMALL_FREQ_FACTOR_RANGE,
+                                .amplitudeRange            = BIG_AMPLITUDE_RANGE,
+                                .periodicFactorRange       = BIG_PERIODIC_FACTOR_RANGE,
+                                .sinCosPeriodicFactorRange = BIG_SIN_COS_PERIODIC_FACTOR_RANGE});
   }
-  else
-  {
-    SetWaveModeSettings({.angleEffect               = AngleEffect::ATAN,
-                         .freqFactorRange           = FREQ_FACTOR_RANGE,
-                         .amplitudeRange            = AMPLITUDE_RANGE,
-                         .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
-                         .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
-  }
+
+  return GetWaveModeSettings({.angleEffect               = GetSqDistEffect(),
+                              .freqFactorRange           = FREQ_FACTOR_RANGE,
+                              .amplitudeRange            = AMPLITUDE_RANGE,
+                              .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
+                              .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
 }
 
-auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcept -> void
+auto Wave::GetAtanAngleEffectMode0RandomParams() const noexcept -> Params
+{
+  return GetWaveModeSettings({.angleEffect               = AngleEffect::ATAN,
+                              .freqFactorRange           = FREQ_FACTOR_RANGE,
+                              .amplitudeRange            = AMPLITUDE_RANGE,
+                              .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
+                              .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
+}
+
+auto Wave::GetAtanAngleEffectMode1RandomParams() const noexcept -> Params
+{
+  if (m_goomRand->ProbabilityOf<PROB_ALLOW_STRANGE_WAVE_VALUES>())
+  {
+    return GetWaveModeSettings({.angleEffect               = AngleEffect::ATAN,
+                                .freqFactorRange           = SMALL_FREQ_FACTOR_RANGE,
+                                .amplitudeRange            = BIG_AMPLITUDE_RANGE,
+                                .periodicFactorRange       = BIG_PERIODIC_FACTOR_RANGE,
+                                .sinCosPeriodicFactorRange = BIG_SIN_COS_PERIODIC_FACTOR_RANGE});
+  }
+
+  return GetWaveModeSettings({.angleEffect               = AngleEffect::ATAN,
+                              .freqFactorRange           = FREQ_FACTOR_RANGE,
+                              .amplitudeRange            = AMPLITUDE_RANGE,
+                              .periodicFactorRange       = PERIODIC_FACTOR_RANGE,
+                              .sinCosPeriodicFactorRange = SIN_COS_PERIODIC_FACTOR_RANGE});
+}
+
+auto Wave::GetWaveModeSettings(const WaveModeSettings& waveModeSettings) const noexcept -> Params
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
@@ -227,18 +198,18 @@ auto Wave::SetWaveModeSettings(const WaveModeSettings& waveModeSettings) noexcep
   const auto modifiedATanAngleFactor =
       m_goomRand->GetRandInRange<MODIFIED_ATAN_ANGLE_FACTOR_RANGE>();
 
-  SetParams({.viewport                = viewport,
-             .xWaveEffect             = xWaveEffect,
-             .yWaveEffect             = yWaveEffect,
-             .angleEffect             = waveModeSettings.angleEffect,
-             .sqDistPower             = sqDistPower,
-             .freqFactor              = freqFactor,
-             .amplitude               = amplitude,
-             .periodicFactor          = periodicFactor,
-             .reducerCoeff            = reducerCoeff,
-             .spiralRotateBaseAngle   = spiralRotateBaseAngle,
-             .useModifiedATanAngle    = useModifiedATanAngle,
-             .modifiedATanAngleFactor = modifiedATanAngleFactor});
+  return {.viewport                = viewport,
+          .xWaveEffect             = xWaveEffect,
+          .yWaveEffect             = yWaveEffect,
+          .angleEffect             = waveModeSettings.angleEffect,
+          .sqDistPower             = sqDistPower,
+          .freqFactor              = freqFactor,
+          .amplitude               = amplitude,
+          .periodicFactor          = periodicFactor,
+          .reducerCoeff            = reducerCoeff,
+          .spiralRotateBaseAngle   = spiralRotateBaseAngle,
+          .useModifiedATanAngle    = useModifiedATanAngle,
+          .modifiedATanAngleFactor = modifiedATanAngleFactor};
 }
 
 inline auto Wave::GetReducerCoeff(const WaveEffect xWaveEffect,
@@ -330,10 +301,6 @@ auto Wave::GetAngle(const float sqDistFromZero,
       return std::pow(sqDistFromZero, m_params.sqDistPower);
     case AngleEffect::SQ_DIST_AND_SPIRAL:
       return GetSqDistSpiralRotateAngle(sqDistFromZero, coords);
-#ifdef _MSC_VER
-    default:
-      FailFast();
-#endif
   }
 }
 

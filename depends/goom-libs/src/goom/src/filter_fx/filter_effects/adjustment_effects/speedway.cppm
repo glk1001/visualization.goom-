@@ -13,6 +13,8 @@ import Goom.Utils.Math.Misc;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
@@ -27,7 +29,7 @@ public:
     MODE1,
     MODE2,
   };
-  Speedway(Modes mode, const UTILS::MATH::GoomRand& goomRand) noexcept;
+  Speedway(Modes mode, const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -35,7 +37,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
   struct Params
   {
@@ -48,8 +50,11 @@ protected:
 
 private:
   Modes m_mode;
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
+  [[nodiscard]] auto GetMode0RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode1RandomParams() const noexcept -> Params;
+  [[nodiscard]] auto GetMode2RandomParams() const noexcept -> Params;
   auto SetMode0RandomParams() noexcept -> void;
   auto SetMode1RandomParams() noexcept -> void;
   auto SetMode2RandomParams() noexcept -> void;
@@ -82,6 +87,21 @@ inline auto Speedway::GetParams() const noexcept -> const Params&
 inline auto Speedway::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto Speedway::SetMode0RandomParams() noexcept -> void
+{
+  m_params = GetMode0RandomParams();
+}
+
+inline auto Speedway::SetMode1RandomParams() noexcept -> void
+{
+  m_params = GetMode1RandomParams();
+}
+
+inline auto Speedway::SetMode2RandomParams() noexcept -> void
+{
+  m_params = GetMode2RandomParams();
 }
 
 inline auto Speedway::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

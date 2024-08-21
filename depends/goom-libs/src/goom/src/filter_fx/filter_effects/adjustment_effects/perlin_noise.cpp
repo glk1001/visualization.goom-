@@ -1,7 +1,6 @@
 module;
 
 #include <PerlinNoise.hpp>
-#include <cstdint>
 #include <limits>
 #include <type_traits>
 
@@ -17,32 +16,19 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using FILTER_UTILS::GetVelocityByZoomLerpedToOne;
-using FILTER_UTILS::LerpToOneTs;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
 using UTILS::MATH::GetRandSeed;
-using UTILS::MATH::GOOM_RAND_MAX;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.05F, 1.5F};
-
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.0F, .yLerpT = 0.0F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-
-static constexpr auto DEFAULT_NOISE_FREQUENCY_FACTOR = 1.0F;
-static constexpr auto NOISE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.1F, 2.0F};
-
-static constexpr auto DEFAULT_ANGLE_FREQUENCY_FACTOR = 1.0F;
-static constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.1F, 2.0F};
-
-static constexpr auto DEFAULT_OCTAVES = 1;
-static constexpr auto OCTAVES_RANGE   = NumberRange{1, 5};
-
-static constexpr auto DEFAULT_PERSISTENCE = 1.0F;
-static constexpr auto PERSISTENCE_RANGE   = NumberRange{0.1F, 1.0F};
+static constexpr auto AMPLITUDE_RANGE              = NumberRange{0.05F, 1.5F};
+static constexpr auto LERP_TO_ONE_T_RANGE          = NumberRange{0.0F, 1.0F};
+static constexpr auto NOISE_FREQUENCY_FACTOR_RANGE = NumberRange{0.1F, 2.0F};
+static constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE = NumberRange{0.1F, 2.0F};
+static constexpr auto OCTAVES_RANGE                = NumberRange{1, 5};
+static constexpr auto PERSISTENCE_RANGE            = NumberRange{0.1F, 1.0F};
 
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL        = 0.98F;
 static constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL      = 0.95F;
@@ -51,12 +37,7 @@ static constexpr auto PROB_XY_ANGLE_FREQUENCIES_EQUAL = 0.5F;
 
 PerlinNoise::PerlinNoise(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_params{.amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-             .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
-             .noiseFrequencyFactor={.x=DEFAULT_NOISE_FREQUENCY_FACTOR, .y=DEFAULT_NOISE_FREQUENCY_FACTOR},
-             .angleFrequencyFactor={.x=DEFAULT_ANGLE_FREQUENCY_FACTOR, .y=DEFAULT_ANGLE_FREQUENCY_FACTOR},
-             .octaves=DEFAULT_OCTAVES,
-             .persistence=DEFAULT_PERSISTENCE},
+    m_params{GetRandomParams()},
     m_perlinNoise{GetRandSeedForPerlinNoise()},
     m_perlinNoise2{GetRandSeedForPerlinNoise()}
 {
@@ -79,11 +60,8 @@ auto PerlinNoise::GetRandSeedForPerlinNoise() -> PerlinSeedType
 #endif
 }
 
-auto PerlinNoise::SetRandomParams() noexcept -> void
+auto PerlinNoise::GetRandomParams() const noexcept -> Params
 {
-  m_perlinNoise.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
-  m_perlinNoise2.reseed(m_goomRand->GetNRand(GOOM_RAND_MAX));
-
   const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
                               ? xAmplitude
@@ -110,14 +88,14 @@ auto PerlinNoise::SetRandomParams() noexcept -> void
 
   const auto persistence = m_goomRand->GetRandInRange<PERSISTENCE_RANGE>();
 
-  SetParams({
+  return {
       .amplitude            = {                xAmplitude,                 yAmplitude},
       .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
       .noiseFrequencyFactor = {.x = xNoiseFrequencyFactor, .y = yNoiseFrequencyFactor},
       .angleFrequencyFactor = {.x = xAngleFrequencyFactor, .y = yAngleFrequencyFactor},
       .octaves              = octaves,
       .persistence          = persistence
-  });
+  };
 }
 
 auto PerlinNoise::GetZoomAdjustment(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

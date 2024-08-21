@@ -9,6 +9,9 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+
 export namespace GOOM::FILTER_FX::AFTER_EFFECTS
 {
 
@@ -42,20 +45,19 @@ private:
 class Rotation
 {
 public:
-  explicit Rotation(const UTILS::MATH::GoomRand& goomRand) noexcept;
+  explicit Rotation(const GoomRand& goomRand) noexcept;
   Rotation(const Rotation&) noexcept           = delete;
   Rotation(Rotation&&) noexcept                = delete;
   virtual ~Rotation() noexcept                 = default;
   auto operator=(const Rotation&) -> Rotation& = delete;
   auto operator=(Rotation&&) -> Rotation&      = delete;
 
-  virtual auto SetRandomParams() -> void;
+  virtual auto SetRandomParams() noexcept -> void;
   auto ApplyAdjustments(const RotationAdjustments& rotationAdjustments) -> void;
 
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& velocity) const -> NormalizedCoords;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
   struct Params
   {
@@ -70,8 +72,9 @@ protected:
   auto SetParams(const Params& params) -> void;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
 
   auto Multiply(float factor) -> void;
   auto Toggle() -> void;
@@ -164,6 +167,11 @@ inline auto Rotation::GetParams() const -> const Params&
 inline auto Rotation::SetParams(const Params& params) -> void
 {
   m_params = params;
+}
+
+inline auto Rotation::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

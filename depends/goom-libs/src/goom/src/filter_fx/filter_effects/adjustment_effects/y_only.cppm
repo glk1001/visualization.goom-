@@ -8,13 +8,16 @@ import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 class YOnly : public IZoomAdjustmentEffect
 {
 public:
-  explicit YOnly(const UTILS::MATH::GoomRand& goomRand) noexcept;
+  explicit YOnly(const GoomRand& goomRand) noexcept;
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -22,7 +25,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
   enum class YOnlyEffect : UnderlyingEnumType
   {
@@ -49,8 +52,9 @@ protected:
   auto SetParams(const Params& params) noexcept -> void;
 
 private:
-  const UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetYOnlyZoomAdjustmentMultiplier(
       YOnlyEffect effect, const NormalizedCoords& coords) const noexcept -> float;
@@ -76,6 +80,11 @@ inline auto YOnly::GetParams() const noexcept -> const Params&
 inline auto YOnly::SetParams(const Params& params) noexcept -> void
 {
   m_params = params;
+}
+
+inline auto YOnly::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
 }
 
 inline auto YOnly::GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt

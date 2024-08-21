@@ -13,8 +13,7 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_AMPLITUDE = 1.0F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.1F, 1.51F};
+static constexpr auto AMPLITUDE_RANGE = NumberRange{0.1F, 1.51F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -28,14 +27,12 @@ static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 0.98F;
 static constexpr auto PROB_NO_VIEWPORT         = 0.5F;
 
 Amulet::Amulet(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
-    m_params{.viewport=Viewport{}, .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE}}
+  : m_goomRand{&goomRand}, m_randomViewport{goomRand, VIEWPORT_BOUNDS}, m_params{GetRandomParams()}
 {
   m_randomViewport.SetProbNoViewport(PROB_NO_VIEWPORT);
 }
 
-auto Amulet::SetRandomParams() noexcept -> void
+auto Amulet::GetRandomParams() const noexcept -> Params
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
@@ -44,9 +41,9 @@ auto Amulet::SetRandomParams() noexcept -> void
                               ? xAmplitude
                               : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  SetParams({
+  return {
       .viewport = viewport, .amplitude = {xAmplitude, yAmplitude}
-  });
+  };
 }
 
 auto Amulet::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs

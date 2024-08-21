@@ -11,14 +11,16 @@ import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+using GOOM::UTILS::MATH::GoomRand;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 class ImageZoomAdjustment : public IZoomAdjustmentEffect
 {
 public:
-  ImageZoomAdjustment(const std::string& resourcesDirectory,
-                      const GOOM::UTILS::MATH::GoomRand& goomRand);
+  ImageZoomAdjustment(const std::string& resourcesDirectory, const GoomRand& goomRand);
 
   auto SetRandomParams() noexcept -> void override;
 
@@ -26,10 +28,10 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> GOOM::UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
 private:
-  const GOOM::UTILS::MATH::GoomRand* m_goomRand;
+  const GoomRand* m_goomRand;
   FILTER_UTILS::ImageDisplacementList m_imageDisplacementList;
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   auto DoSetRandomParams() noexcept -> void;

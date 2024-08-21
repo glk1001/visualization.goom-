@@ -20,7 +20,6 @@ namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 using FILTER_UTILS::GetVelocityByZoomLerpedToOne;
-using FILTER_UTILS::LerpToOneTs;
 using FILTER_UTILS::RandomViewport;
 using UTILS::GetFullParamGroup;
 using UTILS::GetPair;
@@ -31,14 +30,9 @@ using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::TValue;
 using UTILS::MATH::TWO_PI;
 
-static constexpr auto DEFAULT_AMPLITUDE = 0.1F;
-static constexpr auto AMPLITUDE_RANGE   = NumberRange{0.025F, 1.00F};
-
-static constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-static constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-
-static constexpr auto DEFAULT_MODULATOR_PERIOD = 2.0F;
-static constexpr auto MODULATOR_PERIOD_RANGE   = NumberRange{1.0F, 100.0F};
+static constexpr auto AMPLITUDE_RANGE        = NumberRange{0.025F, 1.00F};
+static constexpr auto LERP_TO_ONE_T_RANGE    = NumberRange{0.0F, 1.0F};
+static constexpr auto MODULATOR_PERIOD_RANGE = NumberRange{1.0F, 100.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
@@ -60,17 +54,7 @@ static constexpr auto PROB_USE_SIMPLE_ZEROES_AND_POLES = 0.50F;
 static constexpr auto PROB_USE_INNER_ZEROES            = 0.25F;
 
 ComplexRational::ComplexRational(const GoomRand& goomRand) noexcept
-  : m_goomRand{&goomRand},
-    m_randomViewport{goomRand, VIEWPORT_BOUNDS},
-    m_params{
-        .viewport=Viewport{},
-        .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-        .lerpToOneTs=DEFAULT_LERP_TO_ONE_T_S,
-        .noInverseSquare=true,
-        .useNormalizedAmplitude=false,
-        .useModulatorContours=false,
-        .modulatorPeriod=DEFAULT_MODULATOR_PERIOD
-    }
+  : m_goomRand{&goomRand}, m_randomViewport{goomRand, VIEWPORT_BOUNDS}, m_params{GetRandomParams()}
 {
 }
 
@@ -148,7 +132,7 @@ auto ComplexRational::GetProduct(const std::complex<FltCalcType>& z,
                                  const std::vector<std::complex<FltCalcType>>& coeffs) noexcept
     -> std::complex<FltCalcType>
 {
-  std::complex<float> product{1.0F};
+  auto product = std::complex<FltCalcType>{ONE, ZERO};
 
   for (const auto& coeff : coeffs)
   {
@@ -158,7 +142,7 @@ auto ComplexRational::GetProduct(const std::complex<FltCalcType>& z,
   return product;
 }
 
-auto ComplexRational::SetRandomParams() noexcept -> void
+auto ComplexRational::GetRandomParams() const noexcept -> Params
 {
   const auto viewport = m_randomViewport.GetRandomViewport();
 
@@ -180,7 +164,7 @@ auto ComplexRational::SetRandomParams() noexcept -> void
       not useModulatorContours ? 0.0F : m_goomRand->GetRandInRange<MODULATOR_PERIOD_RANGE>();
 
   const auto zeroesAndPoles = GetNextZeroesAndPoles();
-  SetParams({
+  return {
       .viewport               = viewport,
       .amplitude              = {           xAmplitude,            yAmplitude},
       .lerpToOneTs            = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
@@ -189,7 +173,7 @@ auto ComplexRational::SetRandomParams() noexcept -> void
       .useModulatorContours   = useModulatorContours,
       .modulatorPeriod        = modulatorPeriod,
       .zeroesAndPoles         = zeroesAndPoles,
-  });
+  };
 }
 
 auto ComplexRational::GetNextZeroesAndPoles() const noexcept -> Params::ZeroesAndPoles

@@ -25,24 +25,18 @@ using UTILS::NUM;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto DEFAULT_TAN_TYPE = TanEffect::TanType::TAN_ONLY;
-static constexpr auto DEFAULT_COT_MIX  = 1.1F;
-static constexpr auto COT_MIX_RANGE    = NumberRange{0.6F, 1.6F};
-static constexpr auto TAN_ONLY_WEIGHT  = 500.0F;
-static constexpr auto COT_ONLY_WEIGHT  = 1.0F;
-static constexpr auto COT_MIX_WEIGHT   = 50.0F;
+static constexpr auto COT_MIX_RANGE   = NumberRange{0.6F, 1.6F};
+static constexpr auto TAN_ONLY_WEIGHT = 500.0F;
+static constexpr auto COT_ONLY_WEIGHT = 1.0F;
+static constexpr auto COT_MIX_WEIGHT  = 50.0F;
 
-static constexpr auto DEFAULT_AMPLITUDE        = 1.0F;
 static constexpr auto AMPLITUDE_RANGE          = NumberRange{0.10F, 1.11F};
 static constexpr auto PROB_XY_AMPLITUDES_EQUAL = 1.00F;
 
-static constexpr auto DEFAULT_LIMITING_FACTOR = 0.75F;
-static constexpr auto LIMITING_FACTOR_RANGE   = NumberRange{0.10F, 0.85F};
+static constexpr auto LIMITING_FACTOR_RANGE = NumberRange{0.10F, 0.85F};
 
 TanEffect::TanEffect(const GoomRand& goomRand)
   : m_goomRand{&goomRand},
-    m_params{.tanType=DEFAULT_TAN_TYPE, .cotMix=DEFAULT_COT_MIX, .amplitude={DEFAULT_AMPLITUDE, DEFAULT_AMPLITUDE},
-             .limitingFactor=DEFAULT_LIMITING_FACTOR},
     m_tanEffectWeights{
       *m_goomRand,
       {
@@ -50,11 +44,12 @@ TanEffect::TanEffect(const GoomRand& goomRand)
         {.key=TanType::COT_ONLY, .weight=COT_ONLY_WEIGHT},
         {.key=TanType::COT_MIX,  .weight=COT_MIX_WEIGHT},
       }
-    }
+    },
+    m_params{GetRandomParams()}
 {
 }
 
-auto TanEffect::SetRandomParams() -> void
+auto TanEffect::GetRandomParams() const noexcept -> Params
 {
   const auto tanType = m_tanEffectWeights.GetRandomWeighted();
   const auto cotMix  = m_goomRand->GetRandInRange<COT_MIX_RANGE>();
@@ -70,12 +65,12 @@ auto TanEffect::SetRandomParams() -> void
   LogInfo("xAmplitude = {}, yAmplitude = {}", xAmplitude, yAmplitude); // NOLINT
   LogInfo("limitingFactor = {}", limitingFactor); // NOLINT
 
-  SetParams({
+  return {
       .tanType        = tanType,
       .cotMix         = cotMix,
       .amplitude      = {xAmplitude, yAmplitude},
       .limitingFactor = limitingFactor
-  });
+  };
 }
 
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs

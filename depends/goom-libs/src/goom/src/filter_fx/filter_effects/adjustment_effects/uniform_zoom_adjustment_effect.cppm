@@ -5,6 +5,8 @@ import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Lib.Point2d;
 
+using GOOM::UTILS::NameValuePairs;
+
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
@@ -19,7 +21,7 @@ public:
       -> Vec2dFlt override;
 
   [[nodiscard]] auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> GOOM::UTILS::NameValuePairs override;
+      -> NameValuePairs override;
 
 private:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
@@ -44,7 +46,7 @@ inline auto UniformZoomAdjustmentEffect::SetRandomParams() noexcept -> void
 }
 
 inline auto UniformZoomAdjustmentEffect::GetZoomAdjustmentEffectNameValueParams() const noexcept
-    -> GOOM::UTILS::NameValuePairs
+    -> NameValuePairs
 {
   return {};
 }
