@@ -38,6 +38,7 @@ public:
     LerpToOneTs lerpToOneTs{};
     FrequencyFactor noiseFrequencyFactor{};
     FrequencyFactor angleFrequencyFactor{};
+    float minAngle{};
     int32_t octaves1{};
     float persistence1{};
     int32_t octaves2{};
@@ -57,6 +58,7 @@ private:
   siv::BasicPerlinNoise<float> m_perlinNoise2;
   auto SetupAngles() noexcept -> void;
   Params m_params;
+  [[nodiscard]] auto GetRandomParams() const noexcept -> Params;
   [[nodiscard]] auto GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                  const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
 };
@@ -82,6 +84,13 @@ inline auto PerlinFlowField::GetParams() const noexcept -> const Params&
 inline void PerlinFlowField::SetParams(const Params& params) noexcept
 {
   m_params = params;
+}
+
+inline auto PerlinFlowField::SetRandomParams() noexcept -> void
+{
+  m_params = GetRandomParams();
+
+  SetupAngles();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

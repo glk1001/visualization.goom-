@@ -21,6 +21,7 @@ using UTILS::NameValuePairs;
 using UTILS::MATH::GetRandSeed;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
+using UTILS::MATH::PI;
 using UTILS::MATH::Sq;
 using UTILS::MATH::TWO_PI;
 
@@ -48,26 +49,16 @@ auto GetRandSeedForPerlinNoise() -> PerlinSeedType
 #endif
 }
 
-constexpr auto DEFAULT_AMPLITUDE = Amplitude{0.1F, 0.1F};
-constexpr auto AMPLITUDE_RANGE   = NumberRange{0.05F, 0.251F};
+constexpr auto AMPLITUDE_RANGE              = NumberRange{0.15F, 0.5F};
+constexpr auto LERP_TO_ONE_T_RANGE          = NumberRange{0.1F, 1.0F};
+constexpr auto NOISE_FREQUENCY_FACTOR_RANGE = NumberRange{0.005F, 1.000F};
+constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE = NumberRange{0.5F, 5.0F};
+constexpr auto MIN_ANGLE_RANGE              = NumberRange{PI, TWO_PI};
+constexpr auto OCTAVES_RANGE                = NumberRange{1, 5};
+constexpr auto PERSISTENCE_RANGE            = NumberRange{0.1F, 1.0F};
+constexpr auto NOISE_FACTOR_RANGE           = NumberRange{0.05F, 1.00F};
 
-constexpr auto DEFAULT_LERP_TO_ONE_T_S = LerpToOneTs{.xLerpT = 0.5F, .yLerpT = 0.5F};
-constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-
-constexpr auto DEFAULT_NOISE_FREQUENCY_FACTOR = 0.01F;
-constexpr auto NOISE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.005F, 0.05F};
-
-constexpr auto DEFAULT_ANGLE_FREQUENCY_FACTOR = 5.0F;
-constexpr auto ANGLE_FREQUENCY_FACTOR_RANGE   = NumberRange{0.1F, 20.0F};
-
-constexpr auto DEFAULT_OCTAVES = 1;
-constexpr auto OCTAVES_RANGE   = NumberRange{1, 5};
-
-constexpr auto DEFAULT_PERSISTENCE = 0.5F;
-constexpr auto PERSISTENCE_RANGE   = NumberRange{0.1F, 1.0F};
-
-constexpr auto DEFAULT_NOISE_FACTOR = 0.5F;
-constexpr auto NOISE_FACTOR_RANGE   = NumberRange{0.0F, 1.0F};
+static_assert((PI <= MIN_ANGLE_RANGE.min) and (MIN_ANGLE_RANGE.max <= TWO_PI));
 
 constexpr auto PROB_XY_AMPLITUDES_EQUAL        = 0.98F;
 constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL      = 0.95F;
@@ -83,16 +74,7 @@ PerlinFlowField::PerlinFlowField(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
     m_perlinNoise{GetRandSeedForPerlinNoise()},
     m_perlinNoise2{GetRandSeedForPerlinNoise()},
-    m_params{
-      .amplitude   = DEFAULT_AMPLITUDE,
-      .lerpToOneTs = DEFAULT_LERP_TO_ONE_T_S,
-      .noiseFrequencyFactor ={.x=DEFAULT_NOISE_FREQUENCY_FACTOR, .y=DEFAULT_NOISE_FREQUENCY_FACTOR},
-      .angleFrequencyFactor ={.x=DEFAULT_ANGLE_FREQUENCY_FACTOR, .y=DEFAULT_ANGLE_FREQUENCY_FACTOR},
-      .octaves1     = DEFAULT_OCTAVES,
-      .persistence1 = DEFAULT_PERSISTENCE,
-      .octaves2     = DEFAULT_OCTAVES,
-      .persistence2 = DEFAULT_PERSISTENCE,
-      .noiseFactor  = DEFAULT_NOISE_FACTOR}
+    m_params{GetRandomParams()}
 {
   SetupAngles();
 }
@@ -130,9 +112,9 @@ auto PerlinFlowField::SetupAngles() noexcept -> void
     //     yFreq * static_cast<float>(col), yFreq * static_cast<float>(row), 2, 1.0F);
 
     const auto noise = m_params.noiseFactor * (0.5F * (xNoise + yNoise));
-    auto angle       = (1.0F - noise) * (distFromCentre * TWO_PI);
+    const auto angle = distFromCentre * std::lerp(m_params.minAngle, TWO_PI, noise);
 
-    return {.angle = angle, .radius = 1.0F};
+    return {.angle = angle, .radius = distFromCentre};
   };
 
   m_gridArray.Initialize(setupFunc);
@@ -142,11 +124,11 @@ auto PerlinFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
                                   const NormalizedCoords& coords) const noexcept -> Vec2dFlt
 {
   const auto gridPolarCoords = m_gridArray.GetPolarCoords(coords);
-  const auto sqDistFromZero  = std::sqrt(SqDistanceFromZero(coords));
+  const auto distFromCentre  = gridPolarCoords.radius;
 
-  const auto x = (m_params.amplitude.x * sqDistFromZero) *
+  const auto x = (m_params.amplitude.x * distFromCentre) *
                  std::cos(m_params.angleFrequencyFactor.x * gridPolarCoords.angle);
-  const auto y = (m_params.amplitude.y * sqDistFromZero) *
+  const auto y = (m_params.amplitude.y * distFromCentre) *
                  std::sin(m_params.angleFrequencyFactor.y * gridPolarCoords.angle);
 
   if (not m_params.multiplyVelocity)
@@ -157,7 +139,7 @@ auto PerlinFlowField::GetVelocity(const Vec2dFlt& baseZoomAdjustment,
   return {.x = coords.GetX() * x, .y = coords.GetY() * y};
 }
 
-auto PerlinFlowField::SetRandomParams() noexcept -> void
+auto PerlinFlowField::GetRandomParams() const noexcept -> Params
 {
   const auto xAmplitude = m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
   const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_XY_AMPLITUDES_EQUAL>()
@@ -181,6 +163,8 @@ auto PerlinFlowField::SetRandomParams() noexcept -> void
           ? xAngleFrequencyFactor
           : m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
 
+  const auto minAngle = m_goomRand->GetRandInRange<MIN_ANGLE_RANGE>();
+
   const auto octaves1 = m_goomRand->GetRandInRange<OCTAVES_RANGE>();
   const auto octaves2 = m_goomRand->ProbabilityOf<PROB_OCTAVES_EQUAL>()
                             ? octaves1
@@ -195,20 +179,19 @@ auto PerlinFlowField::SetRandomParams() noexcept -> void
 
   const auto multiplyVelocity = m_goomRand->ProbabilityOf<PROB_MULTIPLY_VELOCITY>();
 
-  SetParams({
+  return {
       .amplitude            = {                xAmplitude,                 yAmplitude},
       .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
       .noiseFrequencyFactor = {.x = xNoiseFrequencyFactor, .y = yNoiseFrequencyFactor},
       .angleFrequencyFactor = {.x = xAngleFrequencyFactor, .y = yAngleFrequencyFactor},
+      .minAngle             = minAngle,
       .octaves1             = octaves1,
       .persistence1         = persistence1,
       .octaves2             = octaves2,
       .persistence2         = persistence2,
       .noiseFactor          = noiseFactor,
       .multiplyVelocity     = multiplyVelocity
-  });
-
-  SetupAngles();
+  };
 }
 
 auto PerlinFlowField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
