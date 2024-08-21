@@ -1,12 +1,12 @@
 module;
 
 #include <cstdint>
+#include <utility>
 
 export module Goom.Utils.Graphics.LineClipper;
 
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
-import Goom.Lib.AssertUtils;
 
 export namespace GOOM::UTILS::GRAPHICS
 {
@@ -200,7 +200,7 @@ constexpr auto LineClipper::GetIntersectionPoint(const LineFlt& line,
   }
   else
   {
-    FailFast();
+    std::unreachable();
   }
 
   return intersectionPoint;

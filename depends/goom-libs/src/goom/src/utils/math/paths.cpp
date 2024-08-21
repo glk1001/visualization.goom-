@@ -30,7 +30,7 @@ LerpedPath::LerpedPath(const std::shared_ptr<IPath>& path1,
 
 auto LerpedPath::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
-  FailFast();
+  std::unreachable();
 }
 
 JoinedPaths::JoinedPaths(std::unique_ptr<TValue> positionT,
@@ -90,7 +90,7 @@ auto JoinedPaths::AdjustSegmentStepSizes() noexcept -> void
 
 auto JoinedPaths::GetClone() const noexcept -> std::unique_ptr<IPath>
 {
-  FailFast();
+  std::unreachable();
 }
 
 } // namespace GOOM::UTILS::MATH

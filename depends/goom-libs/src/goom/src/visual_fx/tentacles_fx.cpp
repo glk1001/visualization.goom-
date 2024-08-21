@@ -8,6 +8,7 @@ module;
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 module Goom.VisualFx.TentaclesFx;
@@ -293,7 +294,7 @@ auto TentaclesFx::TentaclesImpl::SetWeightedColorMaps(
   }
   else
   {
-    FailFast();
+    std::unreachable();
   }
 }
 

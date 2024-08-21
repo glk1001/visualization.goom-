@@ -3,6 +3,7 @@ module;
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 export module Goom.Utils.Math.TValues;
@@ -481,7 +482,7 @@ inline auto TValue::HandleBoundary(const float continueValue,
   }
   else
   {
-    FailFast();
+    std::unreachable();
   }
 
   m_currentDelayPoints = m_delayPoints;

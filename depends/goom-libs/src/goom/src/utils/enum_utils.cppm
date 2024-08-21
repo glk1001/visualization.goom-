@@ -6,6 +6,7 @@ module;
 #include <magic_enum.hpp>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 export module Goom.Utils.EnumUtils;
@@ -242,7 +243,7 @@ auto StringToEnum(const std::string& eStr) -> E
     return *val;
   }
 
-  FailFast();
+  std::unreachable();
 }
 
 } // namespace GOOM::UTILS
