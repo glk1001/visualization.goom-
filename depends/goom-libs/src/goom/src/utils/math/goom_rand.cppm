@@ -249,8 +249,8 @@ template<NumberRange numberRange> // NOLINT(readability-identifier-naming)
 {
   if constexpr (not std::is_integral<decltype(numberRange.min)>())
   {
-    // Get random floating point number.
-    if constexpr (numberRange.range < SMALL_FLOAT)
+    // Get a random floating point number.
+    if constexpr (numberRange.range == static_cast<decltype(numberRange.min)>(0.0F))
     {
       return numberRange.min;
     }
