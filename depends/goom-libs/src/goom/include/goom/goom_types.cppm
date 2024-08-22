@@ -1,6 +1,8 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
+#include <numeric>
 
 export module Goom.Lib.GoomTypes;
 
@@ -27,11 +29,13 @@ struct MinMaxValues
 };
 
 template<typename T>
-constexpr auto GetAverage(const MinMaxValues<T> minMaxValues) noexcept -> T
-{
-  constexpr auto NUM_VALUES = 2;
-  return (minMaxValues.minValue + minMaxValues.maxValue) / static_cast<T>(NUM_VALUES);
-}
+[[nodiscard]] constexpr auto GetStartingMinMaxValues() noexcept -> MinMaxValues<T>;
+
+template<typename T>
+constexpr auto UpdateMinMaxValues(MinMaxValues<T>& minMaxValues, T value) noexcept -> void;
+
+template<typename T>
+[[nodiscard]] constexpr auto GetMidpointOfMinMax(const MinMaxValues<T>& minMaxValues) noexcept -> T;
 
 struct Rectangle2dInt
 {
@@ -119,6 +123,28 @@ constexpr auto Dimensions::GetFltHeight() const noexcept -> float
 constexpr auto Dimensions::GetCentrePoint() const noexcept -> Point2dInt
 {
   return MidpointFromOrigin({.x = GetIntWidth(), .y = GetIntHeight()});
+}
+
+template<typename T>
+constexpr auto GetStartingMinMaxValues() noexcept -> MinMaxValues<T>
+{
+  return {
+      .minValue = std::numeric_limits<T>::max(),
+      .maxValue = std::numeric_limits<T>::min(),
+  };
+}
+
+template<typename T>
+constexpr auto UpdateMinMaxValues(MinMaxValues<T>& minMaxValues, const T value) noexcept -> void
+{
+  minMaxValues.minValue = std::min(minMaxValues.minValue, value);
+  minMaxValues.maxValue = std::max(minMaxValues.maxValue, value);
+}
+
+template<typename T>
+constexpr auto GetMidpointOfMinMax(const MinMaxValues<T>& minMaxValues) noexcept -> T
+{
+  return std::midpoint(minMaxValues.minValue, minMaxValues.maxValue);
 }
 
 constexpr auto ToRectangle2dFlt(const Rectangle2dInt& rectangle) noexcept -> Rectangle2dFlt
