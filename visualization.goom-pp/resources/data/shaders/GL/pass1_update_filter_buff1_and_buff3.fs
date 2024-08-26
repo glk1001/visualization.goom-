@@ -34,6 +34,7 @@ uniform float u_lowColorMultiplier  = 0.7F; // Used to factor this frames' low c
 
 vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY);
 float GetBaseColorMultiplier(vec3 color);
+vec2 GetTexelPos(vec2 filterPos);
 
 void main()
 {
@@ -100,6 +101,27 @@ float GetColor1Color2TMix(vec2 fromUV, TexelPositions toTexelPositions);
 
 vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY)
 {
+//   deviceXY = ivec2(deviceXY.x, HEIGHT - 1 - deviceXY.y);
+//
+//   const float xRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(WIDTH - 1);
+//   const float yRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(WIDTH - 1);
+//   const float X_MIN_COORD = FILTER_POS_MIN_COORD;
+//   const float Y_MIN_COORD = FILTER_POS_MIN_COORD;
+//
+//   vec2 pos = vec2(X_MIN_COORD + (xRatioDeviceToNormalizedCoord * float(deviceXY.x)),
+//                   Y_MIN_COORD + (yRatioDeviceToNormalizedCoord * float(deviceXY.y))
+//              );
+//
+//   float x = (pos.x - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH;
+//   float y = (pos.y - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH;
+//   uv = vec2(x, 1 - (ASPECT_RATIO * y));
+//
+//   uv = GetTexelPos(pos);
+//   //uv = vec2(deviceXY.x/float(WIDTH-1), deviceXY.y/float(HEIGHT-1));
+//
+// //   return texture(tex_filterBuff2, uv);
+//   TexelPositions filterBuff2TexelPositions = TexelPositions(uv, uv);
+
   TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(deviceXY);
   FilterBuffColors filterBuff2Colors       = GetFilterBuff2Colors(filterBuff2TexelPositions);
   return GetColorFromMixOfColor1AndColor2(
@@ -119,22 +141,23 @@ void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
 
 vec2 GetVortexVelocity(vec2 position)
 {
-  vec2 p = position;// + vec2(0.5, 1.0);
+  vec2 p = position;
 
   float r = length(p);
   float theta = atan(p.y, p.x);
   vec2 v = vec2(p.y, -p.x) / r;
-  float t = sqrt(r * 10.) + theta + float(u_time) * .02;
+  float t = sqrt(10.0 * r) + theta + 0.02 * float(u_time);
+
   v *= sin(t);
-  v *= length(v) * 2.;
-  v += p * .2;
+  v *= 2,0 * length(v);
+  v += 0.2 * p;
 
   return v;
 }
 
 vec2 GetReflectingPoolVelocity(vec2 position)
 {
-  vec2 p = position + vec2(0.5, 1.0);
+  vec2 p = position;
 
   vec2 v;
 
@@ -142,6 +165,58 @@ vec2 GetReflectingPoolVelocity(vec2 position)
   v.y = cos(5.0*p.x - p.y);
 
   return v;
+}
+
+vec2 GetAmulet(vec2 position)
+{
+  vec2 p = position;
+
+  vec2 v;
+
+  float sqDistFromZero = p.x * p.x + p.y * p.y;
+
+  const float sinT = sin(0.01*u_time);
+  const float cosT = cos(0.01*u_time);
+  float x = p.x;
+  p.x = p.x*cosT - p.y*sinT;
+  p.y = p.y*cosT + x*sinT;
+
+  const float Ax = 1.0;
+  const float Ay = 1.0;
+  const float baseX = 0.25;
+  const float baseY = 0.25;
+  v.x = baseX + (Ax * sqDistFromZero),
+  v.y = baseY + (Ay * sqDistFromZero);
+
+  return -p * v;
+}
+
+vec2 GetWave(vec2 position)
+{
+  vec2 p = position;
+
+  vec2 v;
+
+  float sqDistFromZero = p.x * p.x + p.y * p.y;
+  const float reducerCoeff = 0.0;
+  float reducer        = exp(-reducerCoeff * sqDistFromZero);
+
+  const float freqFactor = 10.5;
+  //float angle          = atan(p.y, p.x);
+  float angle = pow(sqDistFromZero, 1.1);
+
+  float sinAngle = sin(freqFactor * angle);
+  float cosAngle = cos(freqFactor * angle);
+
+  const float Ax = 0.2;
+  const float Ay = 0.2;
+  const float baseX = 0.1;
+  const float baseY = 0.1;
+
+  v.x = baseX + reducer * Ax * cosAngle,
+  v.y = baseY + reducer * Ay * sinAngle;
+
+  return -p * v;
 }
 
 vec2 GetBeautifulFieldVelocity(vec2 position)
@@ -154,7 +229,7 @@ vec2 GetBeautifulFieldVelocity(vec2 position)
   const float dt = 0.01;
 
   float t = frame * dt;
-  const float w = 2.*PI/5.;
+  const float w = 2.0 * (PI / 5.0);
   const float A = 5.0;
 
   float d = sqrt((p.x * p.x) + (p.y * p.y));
@@ -168,18 +243,27 @@ vec2 GetGPUFilteredPosition(ivec2 deviceXY)
 {
   const float xRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(WIDTH - 1);
   const float yRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(WIDTH - 1);
+  //const float yRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(HEIGHT - 1);
   const float X_MIN_COORD = FILTER_POS_MIN_COORD;
-  const float Y_MIN_COORD = (1.0F / ASPECT_RATIO) * FILTER_POS_MIN_COORD;
+  //const float Y_MIN_COORD = (1.0F / ASPECT_RATIO) * FILTER_POS_MIN_COORD;
+  const float Y_MIN_COORD = FILTER_POS_MIN_COORD;
 
   vec2 pos = vec2(X_MIN_COORD + (xRatioDeviceToNormalizedCoord * float(deviceXY.x)),
                   Y_MIN_COORD + (yRatioDeviceToNormalizedCoord * float(deviceXY.y))
              );
 
-  //vec2 v = GetVortexVelocity(pos);
-  //vec2 v = GetReflectingPoolVelocity(pos);
-  vec2 v = GetBeautifulFieldVelocity(pos);
+  //pos.y = (pos.y - Y_MIN_COORD)*ASPECT_RATIO + Y_MIN_COORD;
 
-  return pos + v;
+  //vec2 v = GetVortexVelocity(pos);
+  vec2 v = GetWave(pos);
+  //vec2 v = GetAmulet(pos);
+  //vec2 v = GetReflectingPoolVelocity(pos);
+  //vec2 v = GetBeautifulFieldVelocity(pos);
+
+  pos = pos + v;
+  //pos.y -= 0.5;
+  //pos.y = (pos.y - Y_MIN_COORD)/ASPECT_RATIO + Y_MIN_COORD;
+  return pos;
 }
 
 TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY)
@@ -199,11 +283,13 @@ TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY)
   lerpedNormalizedPositions.pos1 += deltaAmp * delta;
   lerpedNormalizedPositions.pos2 -= deltaAmp * delta;
 
-  const float tGPU = 0.8F;
+  const float tGPU = 1.0F;
   vec2 GPUPos = GetGPUFilteredPosition(deviceXY);
 
   lerpedNormalizedPositions.pos1 = mix(lerpedNormalizedPositions.pos1, GPUPos, tGPU);
   lerpedNormalizedPositions.pos2 = mix(lerpedNormalizedPositions.pos2, GPUPos, tGPU);
+//   lerpedNormalizedPositions.pos1 = GPUPos;
+//   lerpedNormalizedPositions.pos2 = GPUPos;
 
   return GetTexelPositions(lerpedNormalizedPositions);
 }
