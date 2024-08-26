@@ -117,6 +117,71 @@ TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPosit
 void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
                                        LerpedNormalizedPositions lerpedNormalizedPositions);
 
+vec2 GetVortexVelocity(vec2 position)
+{
+  vec2 p = position;// + vec2(0.5, 1.0);
+
+  float r = length(p);
+  float theta = atan(p.y, p.x);
+  vec2 v = vec2(p.y, -p.x) / r;
+  float t = sqrt(r * 10.) + theta + float(u_time) * .02;
+  v *= sin(t);
+  v *= length(v) * 2.;
+  v += p * .2;
+
+  return v;
+}
+
+vec2 GetReflectingPoolVelocity(vec2 position)
+{
+  vec2 p = position + vec2(0.5, 1.0);
+
+  vec2 v;
+
+  v.x = sin(5.0*p.y + p.x);
+  v.y = cos(5.0*p.x - p.y);
+
+  return v;
+}
+
+vec2 GetBeautifulFieldVelocity(vec2 position)
+{
+  vec2 p = position;// + vec2(0.5, 1.0);
+
+  float frame = 150.0 * sin(0.01 * float(u_time));
+
+  const float PI = 3.14;
+  const float dt = 0.01;
+
+  float t = frame * dt;
+  const float w = 2.*PI/5.;
+  const float A = 5.0;
+
+  float d = sqrt((p.x * p.x) + (p.y * p.y));
+
+  vec2 v = vec2(A * cos((w * t) / d), A * sin((w * t) / d));
+
+  return v;
+}
+
+vec2 GetGPUFilteredPosition(ivec2 deviceXY)
+{
+  const float xRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(WIDTH - 1);
+  const float yRatioDeviceToNormalizedCoord = FILTER_POS_COORD_WIDTH / float(WIDTH - 1);
+  const float X_MIN_COORD = FILTER_POS_MIN_COORD;
+  const float Y_MIN_COORD = (1.0F / ASPECT_RATIO) * FILTER_POS_MIN_COORD;
+
+  vec2 pos = vec2(X_MIN_COORD + (xRatioDeviceToNormalizedCoord * float(deviceXY.x)),
+                  Y_MIN_COORD + (yRatioDeviceToNormalizedCoord * float(deviceXY.y))
+             );
+
+  //vec2 v = GetVortexVelocity(pos);
+  //vec2 v = GetReflectingPoolVelocity(pos);
+  vec2 v = GetBeautifulFieldVelocity(pos);
+
+  return pos + v;
+}
+
 TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY)
 {
   deviceXY = ivec2(deviceXY.x, HEIGHT - 1 - deviceXY.y);
@@ -133,6 +198,12 @@ TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY)
   const vec2 delta      = vec2(cos(deltaFreq * u_time), sin(deltaFreq * u_time));
   lerpedNormalizedPositions.pos1 += deltaAmp * delta;
   lerpedNormalizedPositions.pos2 -= deltaAmp * delta;
+
+  const float tGPU = 0.8F;
+  vec2 GPUPos = GetGPUFilteredPosition(deviceXY);
+
+  lerpedNormalizedPositions.pos1 = mix(lerpedNormalizedPositions.pos1, GPUPos, tGPU);
+  lerpedNormalizedPositions.pos2 = mix(lerpedNormalizedPositions.pos2, GPUPos, tGPU);
 
   return GetTexelPositions(lerpedNormalizedPositions);
 }

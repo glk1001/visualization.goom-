@@ -700,6 +700,7 @@ auto DisplacementFilter::CompileAndLinkShaders() -> void
       {"FILTER_DEST_POS_IMAGE_UNIT1", std::to_string(FILTER_DEST_POS_IMAGE_UNITS.at(0))},
       {"FILTER_DEST_POS_IMAGE_UNIT2", std::to_string(FILTER_DEST_POS_IMAGE_UNITS.at(1))},
       { "LUM_HISTOGRAM_BUFFER_INDEX",        std::to_string(LUM_HISTOGRAM_BUFFER_INDEX)},
+      {                      "WIDTH",                        std::to_string(GetWidth())},
       {                     "HEIGHT",                       std::to_string(GetHeight())},
       {               "ASPECT_RATIO",                     std::to_string(m_aspectRatio)},
       {       "FILTER_POS_MIN_COORD",              std::to_string(MIN_NORMALIZED_COORD)},
