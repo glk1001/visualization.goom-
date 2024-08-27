@@ -32,16 +32,16 @@ uniform float u_baseColorMultiplier;        // Used to factor this frames' buff2
 uniform float u_mainColorMultiplier = 1.0F; // Used to factor this frames' main color.
 uniform float u_lowColorMultiplier  = 0.7F; // Used to factor this frames' low color.
 
-vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY);
-float GetBaseColorMultiplier(vec3 color);
-vec2 GetTexelPos(vec2 filterPos);
+vec4 GetPosMappedFilterBuff2ColorValue(const vec2 uv, const ivec2 deviceXY);
+float GetBaseColorMultiplier(const vec3 color);
+vec2 GetTexelPos(const vec2 filterPos);
 
 void main()
 {
-  ivec2 deviceXY = ivec2(gl_FragCoord.xy);
+  const ivec2 deviceXY = ivec2(gl_FragCoord.xy);
 
   vec4 filterBuff2Val = GetPosMappedFilterBuff2ColorValue(texCoord, deviceXY);
-  vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
+  const vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
 
   // Mix in some of the previous frames' color from the current deviceXY.
   filterBuff2Val.rgb = mix(filterBuff2Val.rgb, filterBuff3Val.rgb, u_prevFrameTMix);
@@ -50,14 +50,14 @@ void main()
   filterBuff2Val.rgb *= GetBaseColorMultiplier(filterBuff2Val.rgb);
 
   // Get and store the low color added to this frames' buff2 color.
-  vec4 colorLow            = texture(tex_lowColorImage, texCoord);
-  float alpha              = colorLow.a; // Use low color alpha for main also.
-  vec3 filterBuff2ColorLow = filterBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
+  const vec4 colorLow            = texture(tex_lowColorImage, texCoord);
+  const float alpha              = colorLow.a; // Use low color alpha for main also.
+  const vec3 filterBuff2ColorLow = filterBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
   imageStore(img_filterBuff1, deviceXY, vec4(filterBuff2ColorLow, alpha));
 
   // Get and store the main color added to this frames' buff2 color.
-  vec4 colorMain            = texture(tex_mainColorImage, texCoord);
-  vec3 filterBuff2ColorMain = filterBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
+  const vec4 colorMain            = texture(tex_mainColorImage, texCoord);
+  const vec3 filterBuff2ColorMain = filterBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
   imageStore(img_filterBuff3, deviceXY, vec4(filterBuff2ColorMain, alpha));
 
   discard;
@@ -66,13 +66,13 @@ void main()
 
 const float BLACK_CUTOFF = 0.03F;
 
-bool NotCloseToBlack(vec3 color)
+bool NotCloseToBlack(const vec3 color)
 {
   return (color.r > BLACK_CUTOFF) || (color.r != color.g) || (color.r != color.b);
 }
 
 // Try to get purer blacks by using a lower baseColorMultiplier for small grey values.
-float GetBaseColorMultiplier(vec3 color)
+float GetBaseColorMultiplier(const vec3 color)
 {
   const float LOW_BASE_COLOR_MULTIPLIER = 0.25F;
 
@@ -95,11 +95,11 @@ struct FilterBuffColors
 };
 
 TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY);
-FilterBuffColors GetFilterBuff2Colors(TexelPositions texelPositions);
-vec4 GetColorFromMixOfColor1AndColor2(FilterBuffColors filterBuff2Colors, float tMix);
-float GetColor1Color2TMix(vec2 fromUV, TexelPositions toTexelPositions);
+FilterBuffColors GetFilterBuff2Colors(const TexelPositions texelPositions);
+vec4 GetColorFromMixOfColor1AndColor2(const FilterBuffColors filterBuff2Colors, const float tMix);
+float GetColor1Color2TMix(const vec2 fromUV, const TexelPositions toTexelPositions);
 
-vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY)
+vec4 GetPosMappedFilterBuff2ColorValue(const vec2 uv, const ivec2 deviceXY)
 {
 //   deviceXY = ivec2(deviceXY.x, HEIGHT - 1 - deviceXY.y);
 //
@@ -122,8 +122,8 @@ vec4 GetPosMappedFilterBuff2ColorValue(vec2 uv, ivec2 deviceXY)
 // //   return texture(tex_filterBuff2, uv);
 //   TexelPositions filterBuff2TexelPositions = TexelPositions(uv, uv);
 
-  TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(deviceXY);
-  FilterBuffColors filterBuff2Colors       = GetFilterBuff2Colors(filterBuff2TexelPositions);
+  const TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(deviceXY);
+  const FilterBuffColors filterBuff2Colors       = GetFilterBuff2Colors(filterBuff2TexelPositions);
   return GetColorFromMixOfColor1AndColor2(
       filterBuff2Colors, GetColor1Color2TMix(uv, filterBuff2TexelPositions));
 }
@@ -134,50 +134,46 @@ struct LerpedNormalizedPositions
   vec2 pos1;
   vec2 pos2;
 };
-LerpedNormalizedPositions GetLerpedNormalizedPositions(ivec2 deviceXY);
-TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPositions);
-void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
-                                       LerpedNormalizedPositions lerpedNormalizedPositions);
+LerpedNormalizedPositions GetLerpedNormalizedPositions(const ivec2 deviceXY);
+TexelPositions GetTexelPositions(const LerpedNormalizedPositions lerpedNormalizedPositions);
+void ResetImageSrceFilterBuffPositions(const ivec2 deviceXY,
+                                       const LerpedNormalizedPositions lerpedNormalizedPositions);
 
-vec2 GetVortexVelocity(vec2 position)
+vec2 GetVortexVelocity(const vec2 position)
 {
-  vec2 p = position;
+  const vec2 p = position;
 
-  float r = length(p);
-  float theta = atan(p.y, p.x);
+  const float r = length(p);
+  const float theta = atan(p.y, p.x);
+  const float t = sqrt(10.0 * r) + theta + (0.02 * float(u_time));
+
   vec2 v = vec2(p.y, -p.x) / r;
-  float t = sqrt(10.0 * r) + theta + 0.02 * float(u_time);
-
   v *= sin(t);
-  v *= 2,0 * length(v);
+  v *= 2.0 * length(v);
   v += 0.2 * p;
 
   return v;
 }
 
-vec2 GetReflectingPoolVelocity(vec2 position)
+vec2 GetReflectingPoolVelocity(const vec2 position)
 {
-  vec2 p = position;
+  const vec2 p = position;
 
-  vec2 v;
-
-  v.x = sin(5.0*p.y + p.x);
-  v.y = cos(5.0*p.x - p.y);
+  const vec2 v = vec2(sin(5.0*p.y + p.x),
+                      cos(5.0*p.x - p.y));
 
   return v;
 }
 
-vec2 GetAmulet(vec2 position)
+vec2 GetAmulet(const vec2 position)
 {
   vec2 p = position;
 
-  vec2 v;
-
-  float sqDistFromZero = p.x * p.x + p.y * p.y;
+  const float sqDistFromZero = p.x * p.x + p.y * p.y;
 
   const float sinT = sin(0.01*u_time);
   const float cosT = cos(0.01*u_time);
-  float x = p.x;
+  const float x = p.x;
   p.x = p.x*cosT - p.y*sinT;
   p.y = p.y*cosT + x*sinT;
 
@@ -185,56 +181,54 @@ vec2 GetAmulet(vec2 position)
   const float Ay = 1.0;
   const float baseX = 0.25;
   const float baseY = 0.25;
-  v.x = baseX + (Ax * sqDistFromZero),
-  v.y = baseY + (Ay * sqDistFromZero);
+  const vec2 v = vec2(baseX + (Ax * sqDistFromZero),
+                      baseY + (Ay * sqDistFromZero));
 
   return -p * v;
 }
 
-vec2 GetWave(vec2 position)
+vec2 GetWave(const vec2 position)
 {
-  vec2 p = position;
+  const vec2 p = position;
 
-  vec2 v;
-
-  float sqDistFromZero = p.x * p.x + p.y * p.y;
+  const float sqDistFromZero = p.x * p.x + p.y * p.y;
   const float reducerCoeff = 0.0;
-  float reducer        = exp(-reducerCoeff * sqDistFromZero);
+  const float reducer      = exp(-reducerCoeff * sqDistFromZero);
 
   const float freqFactor = 10.5;
-  //float angle          = atan(p.y, p.x);
-  float angle = pow(sqDistFromZero, 1.1);
+  //const float angle          = atan(p.y, p.x);
+  const float angle = pow(sqDistFromZero, 1.1);
 
-  float sinAngle = sin(freqFactor * angle);
-  float cosAngle = cos(freqFactor * angle);
+  const float sinAngle = sin(freqFactor * angle);
+  const float cosAngle = cos(freqFactor * angle);
 
   const float Ax = 0.2;
   const float Ay = 0.2;
   const float baseX = 0.1;
   const float baseY = 0.1;
 
-  v.x = baseX + reducer * Ax * cosAngle,
-  v.y = baseY + reducer * Ay * sinAngle;
+  const vec2 v = vec2(baseX + reducer * Ax * cosAngle,
+                      baseY + reducer * Ay * sinAngle);
 
   return -p * v;
 }
 
-vec2 GetBeautifulFieldVelocity(vec2 position)
+vec2 GetBeautifulFieldVelocity(const vec2 position)
 {
-  vec2 p = position;// + vec2(0.5, 1.0);
+  const vec2 p = position;
 
-  float frame = 150.0 * sin(0.01 * float(u_time));
+  const float frame = 150.0 * sin(0.01 * float(u_time));
 
   const float PI = 3.14;
   const float dt = 0.01;
 
-  float t = frame * dt;
+  const float t = frame * dt;
   const float w = 2.0 * (PI / 5.0);
   const float A = 5.0;
 
-  float d = sqrt((p.x * p.x) + (p.y * p.y));
+  const float d = sqrt((p.x * p.x) + (p.y * p.y));
 
-  vec2 v = vec2(A * cos((w * t) / d), A * sin((w * t) / d));
+  const vec2 v = vec2(A * cos((w * t) / d), A * sin((w * t) / d));
 
   return v;
 }
@@ -245,19 +239,18 @@ const vec2 MID_POINT = vec2(FILTER_POS_MIN_COORD + (RATIO_DEV_TO_NORMALIZED_COOR
                             FILTER_POS_MIN_COORD + (RATIO_DEV_TO_NORMALIZED_COORD * float(HEIGHT/2))
            );
 
-vec2 GetGPUFilteredPosition(ivec2 deviceXY)
+vec2 GetGPUFilteredPosition(const ivec2 deviceXY)
 {
-  vec2 pos = vec2(FILTER_POS_MIN_COORD + (RATIO_DEV_TO_NORMALIZED_COORD * float(deviceXY.x)),
-                  FILTER_POS_MIN_COORD + (RATIO_DEV_TO_NORMALIZED_COORD * float(deviceXY.y))
-             );
+  const vec2 pos = vec2(FILTER_POS_MIN_COORD + (RATIO_DEV_TO_NORMALIZED_COORD * float(deviceXY.x)),
+                        FILTER_POS_MIN_COORD + (RATIO_DEV_TO_NORMALIZED_COORD * float(deviceXY.y)));
 
-  vec2 centredPos = pos - MID_POINT;
+  const vec2 centredPos = pos - MID_POINT;
 
-  //vec2 v = GetVortexVelocity(centredPos);
-  //vec2 v = GetWave(centredPos);
-  //vec2 v = GetAmulet(centredPos);
-  //vec2 v = GetReflectingPoolVelocity(centredPos);
-  vec2 v = GetBeautifulFieldVelocity(centredPos);
+  //const vec2 v = GetVortexVelocity(centredPos);
+  //const vec2 v = GetWave(centredPos);
+  //const vec2 v = GetAmulet(centredPos);
+  //const vec2 v = GetReflectingPoolVelocity(centredPos);
+  const vec2 v = GetBeautifulFieldVelocity(centredPos);
 
   return (centredPos + v) + MID_POINT;
 }
@@ -280,12 +273,10 @@ TexelPositions GetPosMappedFilterBuff2TexelPositions(ivec2 deviceXY)
   lerpedNormalizedPositions.pos2 -= deltaAmp * delta;
 
   const float tGPU = 0.1F;
-  vec2 GPUPos = GetGPUFilteredPosition(deviceXY);
+  const vec2 GPUPos = GetGPUFilteredPosition(deviceXY);
 
   lerpedNormalizedPositions.pos1 = mix(lerpedNormalizedPositions.pos1, GPUPos, tGPU);
   lerpedNormalizedPositions.pos2 = mix(lerpedNormalizedPositions.pos2, GPUPos, tGPU);
-//   lerpedNormalizedPositions.pos1 = GPUPos;
-//   lerpedNormalizedPositions.pos2 = GPUPos;
 
   return GetTexelPositions(lerpedNormalizedPositions);
 }
@@ -298,7 +289,7 @@ struct SrceAndDestNormalizedPositions
   vec2 destPos2;
 };
 
-SrceAndDestNormalizedPositions GetSrceAndDestNormalizedPositions(ivec2 deviceXY)
+SrceAndDestNormalizedPositions GetSrceAndDestNormalizedPositions(const ivec2 deviceXY)
 {
   return SrceAndDestNormalizedPositions(
              imageLoad(img_filterSrcePosBuff1, deviceXY).xy,
@@ -308,9 +299,10 @@ SrceAndDestNormalizedPositions GetSrceAndDestNormalizedPositions(ivec2 deviceXY)
   );
 }
 
-LerpedNormalizedPositions GetLerpedNormalizedPositions(ivec2 deviceXY)
+LerpedNormalizedPositions GetLerpedNormalizedPositions(const ivec2 deviceXY)
 {
-  SrceAndDestNormalizedPositions normalizedPositions = GetSrceAndDestNormalizedPositions(deviceXY);
+  const SrceAndDestNormalizedPositions normalizedPositions
+        = GetSrceAndDestNormalizedPositions(deviceXY);
 
   return LerpedNormalizedPositions(
              mix(normalizedPositions.srcePos1, normalizedPositions.destPos1, u_lerpFactor),
@@ -318,8 +310,8 @@ LerpedNormalizedPositions GetLerpedNormalizedPositions(ivec2 deviceXY)
   );
 }
 
-void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
-                                       LerpedNormalizedPositions lerpedNormalizedPositions)
+void ResetImageSrceFilterBuffPositions(const ivec2 deviceXY,
+                                       const LerpedNormalizedPositions lerpedNormalizedPositions)
 {
   // Reset the filter srce pos buffers to the current lerped state, ready for
   // a new filter dest pos buffer.
@@ -327,15 +319,15 @@ void ResetImageSrceFilterBuffPositions(ivec2 deviceXY,
   imageStore(img_filterSrcePosBuff2, deviceXY, vec4(lerpedNormalizedPositions.pos2, 0, 0));
 }
 
-vec2 GetTexelPos(vec2 filterPos)
+vec2 GetTexelPos(const vec2 filterPos)
 {
-  float x = (filterPos.x - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH;
-  float y = (filterPos.y - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH;
+  const float x = (filterPos.x - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH;
+  const float y = (filterPos.y - FILTER_POS_MIN_COORD) / FILTER_POS_COORD_WIDTH;
 
   return vec2(x, 1 - (ASPECT_RATIO * y));
 }
 
-TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPositions)
+TexelPositions GetTexelPositions(const LerpedNormalizedPositions lerpedNormalizedPositions)
 {
   return TexelPositions(
              GetTexelPos(lerpedNormalizedPositions.pos1),
@@ -344,7 +336,7 @@ TexelPositions GetTexelPositions(LerpedNormalizedPositions lerpedNormalizedPosit
 }
 
 
-FilterBuffColors GetFilterBuff2Colors(TexelPositions texelPositions)
+FilterBuffColors GetFilterBuff2Colors(const TexelPositions texelPositions)
 {
   return FilterBuffColors(
              texture(tex_filterBuff2, texelPositions.uv1),
@@ -370,27 +362,31 @@ float GetSinTMix()
   return 0.5F * (1.0F + sin(u_pos1Pos2MixFreq * u_time));
 }
 
-float GetUVDistAdjustedTMix(vec2 fromUV, TexelPositions toTexelPositions, float tMix)
+float GetUVDistAdjustedTMix(const vec2 fromUV,
+                            const TexelPositions toTexelPositions,
+                            const float tMix)
 {
   const float MAX_UV = sqrt(2.0F);
   //vec2 posUv = mix(toTexelPositions.uv1, toTexelPositions.uv2, vec2(tMix.x));
   //float distUv = min(distance(fromUV, posUv), MAX_UV) / MAX_UV;
-  float uvDist = min(distance(fromUV, toTexelPositions.uv2), MAX_UV) / MAX_UV;
+  const float uvDist = min(distance(fromUV, toTexelPositions.uv2), MAX_UV) / MAX_UV;
 
   return tMix * (1.0F - uvDist);
 }
 
-float GetColor1Color2TMix(vec2 fromUV, TexelPositions toTexelPositions)
+float GetColor1Color2TMix(const vec2 fromUV, const TexelPositions toTexelPositions)
 {
   const float SIN_T_MIX = GetSinTMix();
   // return SIN_T_MIX;
   return GetUVDistAdjustedTMix(fromUV, toTexelPositions, SIN_T_MIX);
 }
 
-vec4 GetColorFromMixOfColor1AndColor2(FilterBuffColors filterBuff2Colors, float tMix)
+vec4 GetColorFromMixOfColor1AndColor2(const FilterBuffColors filterBuff2Colors, const float tMix)
 {
-  vec3 mixedColor = mix(filterBuff2Colors.color1.rgb, filterBuff2Colors.color2.rgb, vec3(tMix));
-  float alpha     = filterBuff2Colors.color1.a;
+  const vec3 mixedColor = mix(filterBuff2Colors.color1.rgb,
+                              filterBuff2Colors.color2.rgb,
+                              vec3(tMix));
+  const float alpha = filterBuff2Colors.color1.a;
 
   return vec4(mixedColor, alpha);
 }
