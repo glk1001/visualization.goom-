@@ -8,7 +8,6 @@ export module Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.FilterFx.ZoomVector;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;

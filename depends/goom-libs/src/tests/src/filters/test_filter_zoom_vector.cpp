@@ -23,7 +23,6 @@ import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;
 import Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRand;
 

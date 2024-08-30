@@ -7,7 +7,7 @@ export module Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.FilterUtils.GoomLerpData;
 import Goom.FilterFx.FilterSpeed;
-import Goom.FilterFx.ZoomAdjustmentEffect;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.Lib.Point2d;
 
 export namespace GOOM::FILTER_FX
@@ -30,7 +30,7 @@ struct FilterEffectsSettings
   float maxZoomAdjustment;
   float baseZoomAdjustmentFactorMultiplier;
   float afterEffectsVelocityMultiplier;
-  std::shared_ptr<IZoomAdjustmentEffect> zoomAdjustmentEffect;
+  std::shared_ptr<FILTER_EFFECTS::IZoomAdjustmentEffect> zoomAdjustmentEffect;
 
   Point2dInt zoomMidpoint;
 

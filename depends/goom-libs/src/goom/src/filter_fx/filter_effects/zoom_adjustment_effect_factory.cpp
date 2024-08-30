@@ -21,8 +21,8 @@ import Goom.FilterFx.FilterEffects.AdjustmentEffects.Speedway;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.UniformZoomAdjustmentEffect;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.Wave;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.FilterSettingsService;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.Math.GoomRand;
 import Goom.Utils.EnumUtils;
 

@@ -5,9 +5,8 @@ module;
 
 export module Goom.FilterFx.FilterEffects.ZoomAdjustmentEffectFactory;
 
-import Goom.FilterFx.FilterSettings;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.FilterSettingsService;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.Math.GoomRand;
 
 export namespace GOOM::FILTER_FX::FILTER_EFFECTS

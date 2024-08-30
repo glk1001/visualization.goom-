@@ -1,7 +1,7 @@
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.UniformZoomAdjustmentEffect;
 
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Lib.Point2d;
 

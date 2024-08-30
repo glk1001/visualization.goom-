@@ -1,8 +1,8 @@
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.YOnly;
 
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.GoomTypes;

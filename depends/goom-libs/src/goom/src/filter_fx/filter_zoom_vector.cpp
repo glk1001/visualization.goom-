@@ -10,7 +10,6 @@ module Goom.FilterFx.FilterZoomVector;
 import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Lib.Point2d;
 
 namespace GOOM::FILTER_FX

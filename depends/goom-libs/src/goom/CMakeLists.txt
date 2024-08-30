@@ -193,6 +193,7 @@ set(GoomFilterFx_modules
     src/filter_fx/filter_effects/adjustment_effects/uniform_zoom_adjustment_effect.cppm
     src/filter_fx/filter_effects/adjustment_effects/wave.cppm
     src/filter_fx/filter_effects/adjustment_effects/y_only.cppm
+    src/filter_fx/filter_effects/zoom_adjustment_effect.cppm
     src/filter_fx/filter_effects/zoom_adjustment_effect_factory.cppm
     src/filter_fx/filter_effects/zoom_vector_effects.cppm
     src/filter_fx/filter_utils/goom_lerp_data.cppm
@@ -208,7 +209,6 @@ set(GoomFilterFx_modules
     src/filter_fx/filter_speed.cppm
     src/filter_fx/filter_zoom_vector.cppm
     src/filter_fx/normalized_coords.cppm
-    src/filter_fx/zoom_adjustment_effect.cppm
     src/filter_fx/zoom_vector.cppm
 )
 

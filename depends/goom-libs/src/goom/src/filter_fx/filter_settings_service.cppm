@@ -10,9 +10,9 @@ export module Goom.FilterFx.FilterSettingsService;
 import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.EnumUtils;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
@@ -21,6 +21,7 @@ import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
+using GOOM::FILTER_FX::FILTER_EFFECTS::IZoomAdjustmentEffect;
 using GOOM::UTILS::RuntimeEnumMap;
 using GOOM::UTILS::MATH::ConditionalWeights;
 using GOOM::UTILS::MATH::GoomRand;

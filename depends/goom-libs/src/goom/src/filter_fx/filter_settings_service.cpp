@@ -32,6 +32,7 @@ using AFTER_EFFECTS::AfterEffectsTypes;
 using AFTER_EFFECTS::HypercosOverlayMode;
 using AFTER_EFFECTS::RotationAdjustments;
 using FILTER_EFFECTS::ZoomVectorEffects;
+using FILTER_FX::FILTER_EFFECTS::IZoomAdjustmentEffect;
 using FILTER_UTILS::GoomLerpData;
 using UTILS::EnumMap;
 using UTILS::GetFilledEnumMap;

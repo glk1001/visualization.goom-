@@ -1,10 +1,10 @@
-export module Goom.FilterFx.ZoomAdjustmentEffect;
+export module Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 
 import Goom.FilterFx.NormalizedCoords;
 import Goom.Utils.NameValuePairs;
 import Goom.Lib.Point2d;
 
-export namespace GOOM::FILTER_FX
+export namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 class IZoomAdjustmentEffect
@@ -35,9 +35,9 @@ private:
   Vec2dFlt m_baseZoomAdjustment{};
 };
 
-} // namespace GOOM::FILTER_FX
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS
 
-namespace GOOM::FILTER_FX
+namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
 inline auto IZoomAdjustmentEffect::GetBaseZoomAdjustment() const noexcept -> const Vec2dFlt&
@@ -51,4 +51,4 @@ inline auto IZoomAdjustmentEffect::SetBaseZoomAdjustment(
   m_baseZoomAdjustment = baseZoomAdjustment;
 }
 
-} // namespace GOOM::FILTER_FX
+} // namespace GOOM::FILTER_FX::FILTER_EFFECTS

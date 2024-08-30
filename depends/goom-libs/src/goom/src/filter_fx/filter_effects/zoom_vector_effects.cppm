@@ -8,9 +8,9 @@ export module Goom.FilterFx.FilterEffects.ZoomVectorEffects;
 
 import Goom.FilterFx.AfterEffects.AfterEffects;
 import Goom.FilterFx.AfterEffects.ZoomVectorAfterEffects;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;

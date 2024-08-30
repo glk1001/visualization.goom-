@@ -7,10 +7,10 @@ module;
 export module Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexRational;
 
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexUtils;
+import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
 import Goom.FilterFx.FilterUtils.Utils;
 import Goom.FilterFx.CommonTypes;
 import Goom.FilterFx.NormalizedCoords;
-import Goom.FilterFx.ZoomAdjustmentEffect;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.Point2d;
