@@ -68,6 +68,7 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE2;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE3;
 //constexpr auto FORCED_FILTER_MODE = IMAGE_DISPLACEMENT_MODE;
+//constexpr auto FORCED_FILTER_MODE = JULIA_MODE;
 //constexpr auto FORCED_FILTER_MODE = MOBIUS_MODE;
 //constexpr auto FORCED_FILTER_MODE = NEWTON_MODE;
 constexpr auto FORCED_FILTER_MODE = NORMAL_MODE;
@@ -119,6 +120,7 @@ constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
     {HYPERCOS_MODE2, "Hypercos Mode 2"},
     {HYPERCOS_MODE3, "Hypercos Mode 3"},
     {IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
+    {JULIA_MODE, "Julia"},
     {MOBIUS_MODE, "Mobius"},
     {NEWTON_MODE, "Newton"},
     {NORMAL_MODE, "Normal"},
@@ -177,6 +179,8 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[HYPERCOS_MODE3][EffectType::ROTATION] = PROB_LOW;
 
   effectsProbs[IMAGE_DISPLACEMENT_MODE][EffectType::ROTATION] = PROB_ZERO;
+
+  effectsProbs[JULIA_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[MOBIUS_MODE][EffectType::ROTATION] = PROB_HIGH;
 
@@ -284,6 +288,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
   static constexpr auto HYPERCOS_MODE3_WEIGHT          = 01.0F;
   static constexpr auto IMAGE_DISPLACEMENT_MODE_WEIGHT = 05.0F;
+  static constexpr auto JULIA_MODE_WEIGHT              = 10.0F;
   static constexpr auto MOBIUS_MODE_WEIGHT             = 10.0F;
   static constexpr auto NEWTON_MODE_WEIGHT             = 10.0F;
   static constexpr auto NORMAL_MODE_WEIGHT             = 10.0F;
@@ -385,6 +390,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
         {.key = HYPERCOS_MODE2, .weight = HYPERCOS_MODE2_WEIGHT},
         {.key = HYPERCOS_MODE3, .weight = HYPERCOS_MODE3_WEIGHT},
         {.key = IMAGE_DISPLACEMENT_MODE, .weight = IMAGE_DISPLACEMENT_MODE_WEIGHT},
+        {.key = JULIA_MODE, .weight = JULIA_MODE_WEIGHT},
         {.key = MOBIUS_MODE, .weight = MOBIUS_MODE_WEIGHT},
         {.key = NEWTON_MODE, .weight = NEWTON_MODE_WEIGHT},
         {.key = NORMAL_MODE, .weight = NORMAL_MODE_WEIGHT},
@@ -515,6 +521,13 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {.key = Hyp::MODE2, .weight = 1.0F},
        {.key = Hyp::MODE3, .weight = 1.0F}}
   };
+  constexpr auto JULIA_HYPERCOS_WEIGHTS = ModeWeights{
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
+       {.key = Hyp::MODE0, .weight = 5.0F},
+       {.key = Hyp::MODE1, .weight = 1.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 0.0F}}
+  };
   constexpr auto MOBIUS_HYPERCOS_WEIGHTS = ModeWeights{
       {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 10.0F},
        {.key = Hyp::MODE0, .weight = 5.0F},
@@ -614,6 +627,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
       {HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE3, HYPERCOS3_HYPERCOS_WEIGHTS},
       {IMAGE_DISPLACEMENT_MODE, IMAGE_DISPLACEMENT_HYPERCOS_WEIGHTS},
+      {JULIA_MODE, JULIA_HYPERCOS_WEIGHTS},
       {MOBIUS_MODE, MOBIUS_HYPERCOS_WEIGHTS},
       {NEWTON_MODE, NEWTON_HYPERCOS_WEIGHTS},
       {NORMAL_MODE, NORMAL_HYPERCOS_WEIGHTS},

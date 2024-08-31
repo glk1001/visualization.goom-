@@ -13,6 +13,7 @@ import Goom.FilterFx.FilterEffects.AdjustmentEffects.DistanceField;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.ExpReciprocal;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.FunctionOfFunction;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.ImageZoomAdjustment;
+import Goom.FilterFx.FilterEffects.AdjustmentEffects.Julia;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.Newton;
 import Goom.FilterFx.FilterEffects.AdjustmentEffects.PerlinNoise;
@@ -90,6 +91,8 @@ auto CreateFuncZoomAdjustmentEffect(const ZoomFilterMode filterMode,
       return std::make_unique<UniformZoomAdjustmentEffect>();
     case IMAGE_DISPLACEMENT_MODE:
       return std::make_unique<ImageZoomAdjustment>(resourcesDirectory, goomRand);
+    case JULIA_MODE:
+      return std::make_unique<Julia>(goomRand);
     case MOBIUS_MODE:
       return std::make_unique<Mobius>(goomRand);
     case NEWTON_MODE:
