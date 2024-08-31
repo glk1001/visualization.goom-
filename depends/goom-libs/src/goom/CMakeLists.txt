@@ -205,6 +205,7 @@ set(GoomFilterFx_modules
     src/filter_fx/filter_buffers.cppm
     src/filter_fx/filter_consts.cppm
     src/filter_fx/filter_buffers_service.cppm
+    src/filter_fx/filter_modes.cppm
     src/filter_fx/filter_settings.cppm
     src/filter_fx/filter_settings_service.cppm
     src/filter_fx/filter_speed.cppm

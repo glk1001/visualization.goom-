@@ -11,6 +11,7 @@ import Goom.FilterFx.AfterEffects.TheEffects.Rotation;
 import Goom.FilterFx.AfterEffects.AfterEffectsStates;
 import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterEffects.ZoomAdjustmentEffect;
+import Goom.FilterFx.FilterModes;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;
 import Goom.Utils.EnumUtils;
@@ -30,38 +31,6 @@ using GOOM::UTILS::MATH::Weights;
 
 export namespace GOOM::FILTER_FX
 {
-
-enum class ZoomFilterMode : UnderlyingEnumType
-{
-  AMULET_MODE = 0,
-  COMPLEX_RATIONAL_MODE,
-  CRYSTAL_BALL_MODE0,
-  CRYSTAL_BALL_MODE1,
-  DISTANCE_FIELD_MODE0,
-  DISTANCE_FIELD_MODE1,
-  DISTANCE_FIELD_MODE2,
-  EXP_RECIPROCAL_MODE,
-  HYPERCOS_MODE0,
-  HYPERCOS_MODE1,
-  HYPERCOS_MODE2,
-  HYPERCOS_MODE3,
-  IMAGE_DISPLACEMENT_MODE,
-  JULIA_MODE,
-  MOBIUS_MODE,
-  NEWTON_MODE,
-  NORMAL_MODE,
-  PERLIN_NOISE_MODE,
-  SCRUNCH_MODE,
-  SPEEDWAY_MODE0,
-  SPEEDWAY_MODE1,
-  SPEEDWAY_MODE2,
-  WATER_MODE,
-  WAVE_SQ_DIST_ANGLE_EFFECT_MODE0,
-  WAVE_SQ_DIST_ANGLE_EFFECT_MODE1,
-  WAVE_ATAN_ANGLE_EFFECT_MODE0,
-  WAVE_ATAN_ANGLE_EFFECT_MODE1,
-  Y_ONLY_MODE,
-};
 
 class FilterSettingsService
 {
@@ -102,6 +71,7 @@ public:
   [[nodiscard]] auto GetRWVitesse() noexcept -> Vitesse&;
 
   auto SetNewRandomFilter() -> void;
+
   auto ResetRandomFilterMultiplierEffect() -> void;
   auto ResetRandomAfterEffects() -> void;
   auto ChangeMilieu() -> void;
@@ -139,9 +109,9 @@ private:
   ZoomFilterMode m_filterMode             = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_previousFilterMode     = ZoomFilterMode::NORMAL_MODE;
   ZoomFilterMode m_filterModeAtLastUpdate = ZoomFilterMode::NORMAL_MODE;
-  auto SetRandomSettingsForNewFilterMode() -> void;
-
   FilterModeEnumMap m_filterModeData;
+
+  auto SetRandomSettingsForNewFilterMode() -> void;
 
   static constexpr auto DEFAULT_ZOOM_MID_X                             = 16U;
   static constexpr auto DEFAULT_ZOOM_MID_Y                             = 1U;
@@ -162,7 +132,7 @@ private:
   static constexpr auto PROB_MULTIPLIER_EFFECT_AMPLITUDES_EQUAL        = 0.95F;
   FilterSettings m_filterSettings;
   ConditionalWeights<ZoomFilterMode> m_weightedFilterEvents;
-  [[nodiscard]] auto GetNewRandomMode() const -> ZoomFilterMode;
+  [[nodiscard]] auto GetNewRandomFilterMode() const -> ZoomFilterMode;
   [[nodiscard]] auto GetZoomAdjustmentEffect() -> std::shared_ptr<IZoomAdjustmentEffect>&;
   auto SetMaxZoomAdjustment() -> void;
   auto SetBaseZoomAdjustmentFactorMultiplier() noexcept -> void;
@@ -198,8 +168,6 @@ private:
       -> ZoomMidpointEvents;
   [[nodiscard]] static auto IsEdgeMidPoint(ZoomMidpointEvents midPointEvent) noexcept -> bool;
 };
-
-auto GetFilterModeName(ZoomFilterMode filterMode) noexcept -> std::string_view;
 
 } // namespace GOOM::FILTER_FX
 
@@ -276,22 +244,12 @@ inline auto FilterSettingsService::SetMaxZoomAdjustment() -> void
       m_goomRand->GetRandInRange<SPEED_FACTOR_RANGE>() * MAX_MAX_ZOOM_ADJUSTMENT;
 }
 
-inline auto FilterSettingsService::SetFilterMode(const ZoomFilterMode filterMode) noexcept -> void
-{
-  m_filterSettings.filterEffectsSettingsHaveChanged = true;
-
-  m_previousFilterMode = m_filterMode;
-  m_filterMode         = filterMode;
-
-  SetRandomSettingsForNewFilterMode();
-}
-
 inline auto FilterSettingsService::SetNewRandomFilter() -> void
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
 
   m_previousFilterMode = m_filterMode;
-  m_filterMode         = GetNewRandomMode();
+  m_filterMode         = GetNewRandomFilterMode();
 
   SetRandomSettingsForNewFilterMode();
 }

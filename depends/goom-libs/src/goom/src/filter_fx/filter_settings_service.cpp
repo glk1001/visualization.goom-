@@ -5,7 +5,6 @@ module;
 #include <map>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,6 +16,7 @@ import Goom.FilterFx.AfterEffects.AfterEffectsTypes;
 import Goom.FilterFx.FilterEffects.ZoomVectorEffects;
 import Goom.FilterFx.FilterUtils.GoomLerpData;
 import Goom.FilterFx.FilterConsts;
+import Goom.FilterFx.FilterModes;
 import Goom.FilterFx.FilterSettings;
 import Goom.FilterFx.FilterSpeed;
 import Goom.Utils.EnumUtils;
@@ -105,37 +105,6 @@ constexpr auto PROB_EXP_RECIPROCAL_IN_MIDDLE = 0.6F;
 constexpr auto PROB_WAVE_IN_MIDDLE           = 0.5F;
 constexpr auto PROB_CHANGE_SPEED             = 0.5F;
 constexpr auto PROB_REVERSE_SPEED            = 0.5F;
-
-constexpr auto FILTER_MODE_NAMES = EnumMap<ZoomFilterMode, std::string_view>{{{
-    {AMULET_MODE, "Amulet"},
-    {COMPLEX_RATIONAL_MODE, "Complex Rational"},
-    {CRYSTAL_BALL_MODE0, "Crystal Ball Mode 0"},
-    {CRYSTAL_BALL_MODE1, "Crystal Ball Mode 1"},
-    {DISTANCE_FIELD_MODE0, "Distance Field Mode 0"},
-    {DISTANCE_FIELD_MODE1, "Distance Field Mode 1"},
-    {DISTANCE_FIELD_MODE2, "Distance Field Mode 2"},
-    {EXP_RECIPROCAL_MODE, "Exp Reciprocal"},
-    {HYPERCOS_MODE0, "Hypercos Mode 0"},
-    {HYPERCOS_MODE1, "Hypercos Mode 1"},
-    {HYPERCOS_MODE2, "Hypercos Mode 2"},
-    {HYPERCOS_MODE3, "Hypercos Mode 3"},
-    {IMAGE_DISPLACEMENT_MODE, "Image Displacement"},
-    {JULIA_MODE, "Julia"},
-    {MOBIUS_MODE, "Mobius"},
-    {NEWTON_MODE, "Newton"},
-    {NORMAL_MODE, "Normal"},
-    {PERLIN_NOISE_MODE, "Perlin Noise"},
-    {SCRUNCH_MODE, "Scrunch"},
-    {SPEEDWAY_MODE0, "Speedway Mode 0"},
-    {SPEEDWAY_MODE1, "Speedway Mode 1"},
-    {SPEEDWAY_MODE2, "Speedway Mode 2"},
-    {WATER_MODE, "Water"},
-    {WAVE_SQ_DIST_ANGLE_EFFECT_MODE0, "Wave Sq Dist Mode 0"},
-    {WAVE_SQ_DIST_ANGLE_EFFECT_MODE1, "Wave Sq Dist Mode 1"},
-    {WAVE_ATAN_ANGLE_EFFECT_MODE0, "Wave Atan Mode 0"},
-    {WAVE_ATAN_ANGLE_EFFECT_MODE1, "Wave Atan Mode 1"},
-    {Y_ONLY_MODE, "Y Only"},
-}}};
 
 using AfterEffectsProbs = EnumMap<AfterEffectsTypes, float>;
 
@@ -657,7 +626,6 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
     const FilterSettingsService::CreateZoomAdjustmentEffectFunc& createZoomAdjustmentEffect)
     -> FilterSettingsService::FilterModeEnumMap
 {
-  static_assert(FILTER_MODE_NAMES.size() == NUM<ZoomFilterMode>);
   static_assert(GetEffectsProbabilities().size() == NUM<ZoomFilterMode>);
 
   auto filterModeVec = std::vector<FilterSettingsService::FilterModeEnumMap::KeyValue>{};
@@ -669,7 +637,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
     filterModeVec.emplace_back(
         filterMode,
         FilterSettingsService::ZoomFilterModeInfo{
-            .name = FILTER_MODE_NAMES[filterMode],
+            .name = GetFilterModeName(filterMode),
             .zoomAdjustmentEffect =
                 createZoomAdjustmentEffect(filterMode, goomRand, resourcesDirectory),
             .afterEffectsProbabilities = {.hypercosModeWeights =
@@ -683,11 +651,6 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
 }
 
 } // namespace
-
-auto GetFilterModeName(const ZoomFilterMode filterMode) noexcept -> std::string_view
-{
-  return FILTER_MODE_NAMES[filterMode];
-}
 
 FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                                              const GoomRand& goomRand,
@@ -765,7 +728,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
 
 FilterSettingsService::~FilterSettingsService() noexcept = default;
 
-auto FilterSettingsService::GetNewRandomMode() const -> ZoomFilterMode
+auto FilterSettingsService::GetNewRandomFilterMode() const -> ZoomFilterMode
 {
   if constexpr (USE_FORCED_FILTER_MODE)
   {
