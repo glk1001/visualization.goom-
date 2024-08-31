@@ -66,8 +66,8 @@ void main()
 
     // The new stored value will be interpolated using the last frames value
     // to prevent sudden shifts in the exposure.
-    float lumLastFrame = imageLoad(img_target, ivec2(0, 0)).x;
-    float adaptedLum   = lumLastFrame + (TIME_COEFF * (weightedAvgLum - lumLastFrame));
+    const float lumLastFrame = imageLoad(img_target, ivec2(0, 0)).x;
+    const float adaptedLum   = lumLastFrame + (TIME_COEFF * (weightedAvgLum - lumLastFrame));
 
     imageStore(img_target, ivec2(0, 0), vec4(adaptedLum, 0.0, 0.0, 0.0));
   }

@@ -20,22 +20,22 @@ uniform float u_brightnessAdjust;
 uniform float u_hueShift;
 uniform float u_chromaFactor;
 
-vec3 GetHueShift(vec3 color);
-float GetChromaticIncrease(float chroma);
-vec3 RGBtoHCY(vec3 RGB);
+vec3 GetHueShift(const vec3 color);
+float GetChromaticIncrease(const float chroma);
+vec3 RGBtoHCY(const vec3 RGB);
 vec3 HCYtoRGB(vec3 HCY);
-float GetFinalExposure(float brightness, float averageLuminance);
+float GetFinalExposure(const float brightness, const float averageLuminance);
 
 void main()
 {
-  ivec2 deviceXY = ivec2(gl_FragCoord.xy);
+  const ivec2 deviceXY = ivec2(gl_FragCoord.xy);
 
   // Get the hdr color to work with.
-  vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
-  vec4 hdrColor       = filterBuff3Val;
+  const vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
+  const vec4 hdrColor       = filterBuff3Val;
 
   // Copy filter buff1 to filter buff2 ready for the next frame.
-  vec4 filterBuff1Val = imageLoad(img_filterBuff1, deviceXY);
+  const vec4 filterBuff1Val = imageLoad(img_filterBuff1, deviceXY);
   imageStore(img_filterBuff2, deviceXY, filterBuff1Val);
 
   // Convert to HCY.
@@ -45,7 +45,7 @@ void main()
   hcy.y = GetChromaticIncrease(hcy.y);
 
   // Apply the exposure correction.
-  float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
+  const float averageLuminance = imageLoad(img_lumAvg, ivec2(0, 0)).x;
   hcy.z *= GetFinalExposure(u_brightnessAdjust * u_brightness, averageLuminance);
 
   // Convert back to RGB.
@@ -60,12 +60,12 @@ void main()
   fragColor = vec4(finalColor, 1.0F);
 }
 
-float GetFinalExposure(float brightness, float averageLuminance)
+float GetFinalExposure(const float brightness, const float averageLuminance)
 {
   return brightness / ((9.6 * averageLuminance) + 0.0001);
 }
 
-vec3 GetHueShift(vec3 color)
+vec3 GetHueShift(const vec3 color)
 {
   //  const vec3 k   = vec3(0.57735, 0.57735, 0.57735);
   //  float cosAngle = cos(u_hueShift);
@@ -104,7 +104,7 @@ vec3 GetHueShift(vec3 color)
          (dot(vec3(0.299, 0.587, 0.114), color) * (1.0 - cosAngle));
 }
 
-float GetChromaticIncrease(float chroma)
+float GetChromaticIncrease(const float chroma)
 {
   // 'Chromatic Increase' - https://github.com/gurki/vivid
   return min(u_chromaFactor * chroma, 140.0);
@@ -117,23 +117,23 @@ float GetChromaticIncrease(float chroma)
 #define saturate(v) clamp(v, 0, 1)
 #endif
 
-vec3 HUEtoRGB(float H)
+vec3 HUEtoRGB(const float H)
 {
-  float R = abs(H * 6 - 3) - 1;
-  float G = 2 - abs(H * 6 - 2);
-  float B = 2 - abs(H * 6 - 4);
+  const float R = abs(H * 6 - 3) - 1;
+  const float G = 2 - abs(H * 6 - 2);
+  const float B = 2 - abs(H * 6 - 4);
   return saturate(vec3(R, G, B));
 }
 
 const float Epsilon = 1e-10;
 
-vec3 RGBtoHCV(vec3 RGB)
+vec3 RGBtoHCV(const vec3 RGB)
 {
   // Based on work by Sam Hocevar and Emil Persson
-  vec4 P  = (RGB.g < RGB.b) ? vec4(RGB.bg, -1.0, 2.0 / 3.0) : vec4(RGB.gb, 0.0, -1.0 / 3.0);
-  vec4 Q  = (RGB.r < P.x) ? vec4(P.xyw, RGB.r) : vec4(RGB.r, P.yzx);
-  float C = Q.x - min(Q.w, Q.y);
-  float H = abs((Q.w - Q.y) / (6 * C + Epsilon) + Q.z);
+  const vec4 P  = (RGB.g < RGB.b) ? vec4(RGB.bg, -1.0, 2.0 / 3.0) : vec4(RGB.gb, 0.0, -1.0 / 3.0);
+  const vec4 Q  = (RGB.r < P.x) ? vec4(P.xyw, RGB.r) : vec4(RGB.r, P.yzx);
+  const float C = Q.x - min(Q.w, Q.y);
+  const float H = abs((Q.w - Q.y) / (6 * C + Epsilon) + Q.z);
   return vec3(H, C, Q.x);
 }
 
@@ -141,12 +141,12 @@ vec3 RGBtoHCV(vec3 RGB)
 // Should sum to unity.
 const vec3 HCYwts = vec3(0.299, 0.587, 0.114);
 
-vec3 RGBtoHCY(vec3 RGB)
+vec3 RGBtoHCY(const vec3 RGB)
 {
   // Corrected by David Schaeffer
-  vec3 HCV = RGBtoHCV(RGB);
-  float Y  = dot(RGB, HCYwts);
-  float Z  = dot(HUEtoRGB(HCV.x), HCYwts);
+  vec3 HCV       = RGBtoHCV(RGB);
+  const float Y  = dot(RGB, HCYwts);
+  const float Z  = dot(HUEtoRGB(HCV.x), HCYwts);
   if (Y < Z)
   {
     HCV.y *= Z / (Epsilon + Y);
@@ -160,8 +160,8 @@ vec3 RGBtoHCY(vec3 RGB)
 
 vec3 HCYtoRGB(vec3 HCY)
 {
-  vec3 RGB = HUEtoRGB(HCY.x);
-  float Z  = dot(RGB, HCYwts);
+  const vec3 RGB = HUEtoRGB(HCY.x);
+  const float Z  = dot(RGB, HCYwts);
   if (HCY.z < Z)
   {
     HCY.y *= HCY.z / Z;

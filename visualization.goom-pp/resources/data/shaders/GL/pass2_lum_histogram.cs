@@ -37,7 +37,7 @@ shared uint histogramShared[GROUP_SIZE];
 
 layout(local_size_x = THREADS_X, local_size_y = THREADS_Y) in;
 
-uint colorToBin(vec3 hdrColor, float minLogLum, float inverseLogLumRange);
+uint colorToBin(const vec3 hdrColor, const float minLogLum, const float inverseLogLumRange);
 
 void main()
 {
@@ -50,8 +50,8 @@ void main()
   // Ignore threads that map to areas beyond the bounds of our HDR image.
   if ((gl_GlobalInvocationID.x < dim.x) && (gl_GlobalInvocationID.y < dim.y))
   {
-    vec3 hdrColor = imageLoad(img_input, ivec2(gl_GlobalInvocationID.xy)).rgb;
-    uint binIndex = colorToBin(hdrColor, MIN_LOG_LUM, INVERSE_LOG_LUM_RANGE);
+    const vec3 hdrColor = imageLoad(img_input, ivec2(gl_GlobalInvocationID.xy)).rgb;
+    const uint binIndex = colorToBin(hdrColor, MIN_LOG_LUM, INVERSE_LOG_LUM_RANGE);
     // We use an atomic add to ensure we don't write to the same bin in our
     // histogram from two different threads at the same time.
     atomicAdd(histogramShared[binIndex], 1);
@@ -68,10 +68,10 @@ void main()
 
 
 // For a given color and luminance range, return the histogram bin index.
-uint colorToBin(vec3 hdrColor, float minLogLum, float inverseLogLumRange)
+uint colorToBin(const vec3 hdrColor, const float minLogLum, const float inverseLogLumRange)
 {
   // Convert our RGB value to Luminance, see note for RGB_TO_LUM macro above.
-  float lum = dot(hdrColor, RGB_TO_LUM);
+  const float lum = dot(hdrColor, RGB_TO_LUM);
   // Avoid taking the log of zero.
   if (lum < EPSILON)
   {
@@ -80,7 +80,7 @@ uint colorToBin(vec3 hdrColor, float minLogLum, float inverseLogLumRange)
 
   // Calculate the log_2 luminance and express it as a value in [0.0, 1.0]
   // where 0.0 represents the minimum luminance, and 1.0 represents the max.
-  float logLum = clamp((log2(lum) - minLogLum) * inverseLogLumRange, 0.0, 1.0);
+  const float logLum = clamp((log2(lum) - minLogLum) * inverseLogLumRange, 0.0, 1.0);
 
   // Map [0, 1] to [1, 255]. The zeroth bin is handled by the epsilon check above.
   return uint((logLum * 254.0) + 1.0);
