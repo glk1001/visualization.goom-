@@ -6,6 +6,7 @@ module;
 #include <cstdint>
 #include <numbers>
 #include <numeric>
+#include <type_traits>
 
 export module Goom.Utils.Math.Misc;
 
@@ -275,29 +276,30 @@ template<typename T>
   return static_cast<float>(numDom.numerator) / static_cast<float>(numDom.denominator);
 }
 
+template<std::floating_point T>
 class RangeMapper
 {
 public:
   constexpr RangeMapper() noexcept = default;
-  constexpr RangeMapper(double x0, double x1) noexcept;
-  constexpr auto operator()(double x0, double x1, double x) const noexcept -> double;
-  [[nodiscard]] constexpr auto GetXMin() const noexcept -> double { return m_xMin; }
-  [[nodiscard]] constexpr auto GetXMax() const noexcept -> double { return m_xMax; }
+  constexpr RangeMapper(T x0, T x1) noexcept;
+  constexpr auto operator()(T x0, T x1, T x) const noexcept -> T;
+  [[nodiscard]] constexpr auto GetXMin() const noexcept -> T { return m_xMin; }
+  [[nodiscard]] constexpr auto GetXMax() const noexcept -> T { return m_xMax; }
 
 private:
-  double m_xMin   = 0;
-  double m_xMax   = 0;
-  double m_xWidth = 0;
+  T m_xMin{};
+  T m_xMax{};
+  T m_xWidth{};
 };
 
-constexpr RangeMapper::RangeMapper(const double x0, const double x1) noexcept
+template<std::floating_point T>
+constexpr RangeMapper<T>::RangeMapper(const T x0, const T x1) noexcept
   : m_xMin(x0), m_xMax(x1), m_xWidth(m_xMax - m_xMin)
 {
 }
 
-constexpr auto RangeMapper::operator()(const double x0,
-                                       const double x1,
-                                       const double x) const noexcept -> double
+template<std::floating_point T>
+constexpr auto RangeMapper<T>::operator()(const T x0, const T x1, const T x) const noexcept -> T
 {
   return std::lerp(x0, x1, (x - m_xMin) / m_xWidth);
 }

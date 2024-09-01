@@ -143,7 +143,7 @@ public:
   auto SetPiStepFrac(float val) noexcept -> void;
 
 private:
-  RangeMapper m_rangeMapper{-1.0, +1.0};
+  RangeMapper<double> m_rangeMapper{-1.0, +1.0};
   float m_frequency;
   float m_lower;
   float m_upper;
