@@ -4,6 +4,7 @@ module;
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 export module Goom.FilterFx.FilterSettingsService;
 
@@ -23,6 +24,7 @@ import Goom.Lib.Point2d;
 import Goom.PluginInfo;
 
 using GOOM::FILTER_FX::FILTER_EFFECTS::IZoomAdjustmentEffect;
+using GOOM::UTILS::NUM;
 using GOOM::UTILS::RuntimeEnumMap;
 using GOOM::UTILS::MATH::ConditionalWeights;
 using GOOM::UTILS::MATH::GoomRand;
@@ -140,16 +142,21 @@ private:
 
   enum class ZoomMidpointEvents : UnderlyingEnumType
   {
-    BOTTOM_MID_POINT,
-    TOP_MID_POINT,
-    LEFT_MID_POINT,
-    RIGHT_MID_POINT,
     CENTRE_MID_POINT,
     BOTTOM_LEFT_QUARTER_MID_POINT,
     TOP_LEFT_QUARTER_MID_POINT,
     BOTTOM_RIGHT_QUARTER_MID_POINT,
     TOP_RIGHT_QUARTER_MID_POINT,
+    // NOTE: Put the 'edge' points here, last!
+    BOTTOM_MID_POINT,
+    TOP_MID_POINT,
+    LEFT_MID_POINT,
+    RIGHT_MID_POINT,
   };
+  static constexpr auto LAST_EDGE_MIDPOINT =
+      static_cast<ZoomMidpointEvents>(NUM<ZoomMidpointEvents> - 4);
+  static constexpr auto LAST_NON_EDGE_MIDPOINT =
+      static_cast<ZoomMidpointEvents>(std::to_underlying(LAST_EDGE_MIDPOINT) - 1);
   static constexpr auto BOTTOM_MID_POINT_WEIGHT               = 03.0F;
   static constexpr auto TOP_MID_POINT_WEIGHT                  = 03.0F;
   static constexpr auto LEFT_MID_POINT_WEIGHT                 = 02.0F;

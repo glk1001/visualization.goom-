@@ -5,6 +5,7 @@ module;
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -43,7 +44,6 @@ using UTILS::MATH::I_HALF;
 using UTILS::MATH::I_QUARTER;
 using UTILS::MATH::I_THREE_QUARTERS;
 using UTILS::MATH::NumberRange;
-using UTILS::MATH::SMALL_FLOAT;
 using UTILS::MATH::U_HALF;
 using UTILS::MATH::UNIT_RANGE;
 using UTILS::MATH::Weights;
@@ -63,6 +63,7 @@ namespace
 //constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE1;
 //constexpr auto FORCED_FILTER_MODE = DISTANCE_FIELD_MODE2;
 //constexpr auto FORCED_FILTER_MODE = EXP_RECIPROCAL_MODE;
+//constexpr auto FORCED_FILTER_MODE = FLOW_FIELD_MODE;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE0;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE1;
 //constexpr auto FORCED_FILTER_MODE = HYPERCOS_MODE2;
@@ -102,6 +103,7 @@ constexpr auto PROB_ZERO = 0.0F;
 
 constexpr auto PROB_CRYSTAL_BALL_IN_MIDDLE   = 0.8F;
 constexpr auto PROB_EXP_RECIPROCAL_IN_MIDDLE = 0.6F;
+constexpr auto PROB_FLOW_FIELD_IN_MIDDLE     = 0.4F;
 constexpr auto PROB_WAVE_IN_MIDDLE           = 0.5F;
 constexpr auto PROB_CHANGE_SPEED             = 0.5F;
 constexpr auto PROB_REVERSE_SPEED            = 0.5F;
@@ -141,6 +143,8 @@ constexpr auto GetEffectsProbabilities() noexcept -> EnumMap<ZoomFilterMode, Aft
   effectsProbs[DISTANCE_FIELD_MODE2][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[EXP_RECIPROCAL_MODE][EffectType::ROTATION] = PROB_HIGH;
+
+  effectsProbs[FLOW_FIELD_MODE][EffectType::ROTATION] = PROB_HIGH;
 
   effectsProbs[HYPERCOS_MODE0][EffectType::ROTATION] = PROB_LOW;
   effectsProbs[HYPERCOS_MODE1][EffectType::ROTATION] = PROB_LOW;
@@ -252,6 +256,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
   static constexpr auto DISTANCE_FIELD_MODE1_WEIGHT    = 03.0F;
   static constexpr auto DISTANCE_FIELD_MODE2_WEIGHT    = 02.0F;
   static constexpr auto EXP_RECIPROCAL_MODE_WEIGHT     = 10.0F;
+  static constexpr auto FLOW_FIELD_MODE_WEIGHT         = 10.0F;
   static constexpr auto HYPERCOS_MODE0_WEIGHT          = 08.0F;
   static constexpr auto HYPERCOS_MODE1_WEIGHT          = 04.0F;
   static constexpr auto HYPERCOS_MODE2_WEIGHT          = 02.0F;
@@ -354,6 +359,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
         {.key = DISTANCE_FIELD_MODE1, .weight = DISTANCE_FIELD_MODE1_WEIGHT},
         {.key = DISTANCE_FIELD_MODE2, .weight = DISTANCE_FIELD_MODE2_WEIGHT},
         {.key = EXP_RECIPROCAL_MODE, .weight = EXP_RECIPROCAL_MODE_WEIGHT},
+        {.key = FLOW_FIELD_MODE, .weight = FLOW_FIELD_MODE_WEIGHT},
         {.key = HYPERCOS_MODE0, .weight = HYPERCOS_MODE0_WEIGHT},
         {.key = HYPERCOS_MODE1, .weight = HYPERCOS_MODE1_WEIGHT},
         {.key = HYPERCOS_MODE2, .weight = HYPERCOS_MODE2_WEIGHT},
@@ -454,6 +460,13 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
        {.key = Hyp::MODE1, .weight = 1.0F},
        {.key = Hyp::MODE2, .weight = 1.0F},
        {.key = Hyp::MODE3, .weight = 0.0F}}
+  };
+  constexpr auto FLOW_FIELD_HYPERCOS_WEIGHTS = ModeWeights{
+      {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 20.0F},
+       {.key = Hyp::MODE0, .weight = 1.0F},
+       {.key = Hyp::MODE1, .weight = 5.0F},
+       {.key = Hyp::MODE2, .weight = 1.0F},
+       {.key = Hyp::MODE3, .weight = 1.0F}}
   };
   constexpr auto HYPERCOS0_HYPERCOS_WEIGHTS = ModeWeights{
       {{.key = Hyp::NONE, .weight = FORCED_HYPERCOS ? 0.0F : 1.0F},
@@ -591,6 +604,7 @@ constexpr auto DEFAULT_AFTER_EFFECTS_OFF_TIMES    = EnumMap<AfterEffectsTypes, u
       {DISTANCE_FIELD_MODE1, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
       {DISTANCE_FIELD_MODE2, DISTANCE_FIELD_HYPERCOS_WEIGHTS},
       {EXP_RECIPROCAL_MODE, EXP_RECIPROCAL_HYPERCOS_WEIGHTS},
+      {FLOW_FIELD_MODE, FLOW_FIELD_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE0, HYPERCOS0_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE1, HYPERCOS1_HYPERCOS_WEIGHTS},
       {HYPERCOS_MODE2, HYPERCOS2_HYPERCOS_WEIGHTS},
@@ -903,11 +917,21 @@ auto FilterSettingsService::SetRandomZoomMidpoint() -> void
     return;
   }
 
-  const auto allowEdgePoints = (m_filterMode != WAVE_SQ_DIST_ANGLE_EFFECT_MODE0) and
-                               (m_filterMode != WAVE_SQ_DIST_ANGLE_EFFECT_MODE1) and
-                               (m_filterMode != WAVE_ATAN_ANGLE_EFFECT_MODE0) and
-                               (m_filterMode != WAVE_ATAN_ANGLE_EFFECT_MODE1);
-  SetAnyRandomZoomMidpoint(allowEdgePoints);
+  SetAnyRandomZoomMidpoint(IsAllowedEdgePoints(m_filterMode));
+}
+
+auto FilterSettingsService::IsAllowedEdgePoints(const ZoomFilterMode filterMode) noexcept -> bool
+{
+  static const auto s_NO_EDGE_POINTS = std::unordered_set{
+      EXP_RECIPROCAL_MODE,
+      FLOW_FIELD_MODE,
+      WAVE_SQ_DIST_ANGLE_EFFECT_MODE0,
+      WAVE_SQ_DIST_ANGLE_EFFECT_MODE1,
+      WAVE_ATAN_ANGLE_EFFECT_MODE0,
+      WAVE_ATAN_ANGLE_EFFECT_MODE1,
+  };
+
+  return not s_NO_EDGE_POINTS.contains(filterMode);
 }
 
 auto FilterSettingsService::IsZoomMidpointInTheMiddle() const noexcept -> bool
@@ -925,6 +949,11 @@ auto FilterSettingsService::IsZoomMidpointInTheMiddle() const noexcept -> bool
 
   if ((m_filterMode == EXP_RECIPROCAL_MODE) and
       m_goomRand->ProbabilityOf<PROB_EXP_RECIPROCAL_IN_MIDDLE>())
+  {
+    return true;
+  }
+
+  if ((m_filterMode == FLOW_FIELD_MODE) and m_goomRand->ProbabilityOf<PROB_FLOW_FIELD_IN_MIDDLE>())
   {
     return true;
   }
@@ -961,28 +990,23 @@ inline auto FilterSettingsService::IsFilterModeAWaveMode() const noexcept -> boo
 auto FilterSettingsService::GetWeightRandomMidPoint(const bool allowEdgePoints) const noexcept
     -> ZoomMidpointEvents
 {
-  Expects(m_zoomMidpointWeights.GetSumOfWeights() > SMALL_FLOAT);
-  auto midPointEvent = m_zoomMidpointWeights.GetRandomWeighted();
-
   if (allowEdgePoints)
   {
-    return midPointEvent;
+    return m_zoomMidpointWeights.GetRandomWeighted();
   }
 
-  while (IsEdgeMidPoint(midPointEvent))
-  {
-    midPointEvent = m_zoomMidpointWeights.GetRandomWeighted();
-  }
-  return midPointEvent;
+  return m_zoomMidpointWeights.GetRandomWeightedUpTo(LAST_NON_EDGE_MIDPOINT);
 }
 
 inline auto FilterSettingsService::IsEdgeMidPoint(const ZoomMidpointEvents midPointEvent) noexcept
     -> bool
 {
-  return (midPointEvent == ZoomMidpointEvents::BOTTOM_MID_POINT) or
-         (midPointEvent == ZoomMidpointEvents::TOP_MID_POINT) or
-         (midPointEvent == ZoomMidpointEvents::RIGHT_MID_POINT) or
-         (midPointEvent == ZoomMidpointEvents::LEFT_MID_POINT);
+  static_assert(ZoomMidpointEvents::BOTTOM_MID_POINT >= LAST_EDGE_MIDPOINT);
+  static_assert(ZoomMidpointEvents::TOP_MID_POINT >= LAST_EDGE_MIDPOINT);
+  static_assert(ZoomMidpointEvents::RIGHT_MID_POINT >= LAST_EDGE_MIDPOINT);
+  static_assert(ZoomMidpointEvents::LEFT_MID_POINT >= LAST_EDGE_MIDPOINT);
+
+  return midPointEvent >= LAST_EDGE_MIDPOINT;
 }
 
 auto FilterSettingsService::SetAnyRandomZoomMidpoint(const bool allowEdgePoints) noexcept -> void
