@@ -32,8 +32,8 @@ public:
 
   virtual auto SetRandomParams() noexcept -> void;
 
-  [[nodiscard]] auto GetVelocity(float sqDistFromZero,
-                                 const NormalizedCoords& velocity) const -> NormalizedCoords;
+  [[nodiscard]] auto GetVelocity(float sqDistFromZero, const NormalizedCoords& velocity) const
+      -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
@@ -101,8 +101,8 @@ inline auto XYLerpEffect::SetRandomParams() noexcept -> void
   m_params = GetRandomParams();
 }
 
-inline auto XYLerpEffect::GetT(const float sqDistFromZero,
-                               const NormalizedCoords& velocity) const -> float
+inline auto XYLerpEffect::GetT(const float sqDistFromZero, const NormalizedCoords& velocity) const
+    -> float
 {
   static constexpr auto MODE0_OFFSET       = 5.5F;
   static constexpr auto MODE0_FREQ         = 2.0F;

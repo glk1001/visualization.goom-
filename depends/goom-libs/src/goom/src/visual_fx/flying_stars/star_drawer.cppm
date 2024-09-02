@@ -117,9 +117,8 @@ private:
   using DrawFunc = std::function<void(
       Point2dInt point1, Point2dInt point2, uint32_t elementSize, const MultiplePixels& colors)>;
   UTILS::EnumMap<DrawElementTypes, DrawFunc> m_drawFuncs;
-  auto DrawStar(const Star& star,
-                float speedFactor,
-                const DrawFunc& drawFunc) const noexcept -> void;
+  auto DrawStar(const Star& star, float speedFactor, const DrawFunc& drawFunc) const noexcept
+      -> void;
   [[nodiscard]] auto GetNumPartsAndElementSize(float tAge) const noexcept
       -> std::pair<uint32_t, uint32_t>;
   [[nodiscard]] auto GetPartMultiplier() const noexcept -> float;

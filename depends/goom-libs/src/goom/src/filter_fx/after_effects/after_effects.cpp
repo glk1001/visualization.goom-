@@ -39,8 +39,8 @@ AfterEffects::AfterEffects(std::unique_ptr<Hypercos>&& hypercos,
 
 AfterEffects::~AfterEffects() noexcept = default;
 
-auto GetStandardAfterEffects(const GoomRand& goomRand,
-                             const std::string& resourcesDirectory) -> AfterEffects
+auto GetStandardAfterEffects(const GoomRand& goomRand, const std::string& resourcesDirectory)
+    -> AfterEffects
 {
   return {
       std::make_unique<Hypercos>(goomRand),

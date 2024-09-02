@@ -33,8 +33,8 @@ public:
 
   virtual auto SetRandomParams() noexcept -> void;
 
-  [[nodiscard]] auto GetVelocity(float sqDistFromZero,
-                                 const NormalizedCoords& velocity) const -> NormalizedCoords;
+  [[nodiscard]] auto GetVelocity(float sqDistFromZero, const NormalizedCoords& velocity) const
+      -> NormalizedCoords;
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 

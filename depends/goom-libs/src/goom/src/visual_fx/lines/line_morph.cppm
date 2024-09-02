@@ -115,8 +115,8 @@ private:
   static constexpr float LINE_LERP_INC          = 1.0F / static_cast<float>(MIN_LINE_DURATION - 1);
   float m_lineLerpParam                         = 0.0F;
   auto MoveSrceLineCloserToDest() noexcept -> void;
-  [[nodiscard]] auto GetFreshLine(LineType lineType,
-                                  float lineParam) const noexcept -> std::vector<LinePoint>;
+  [[nodiscard]] auto GetFreshLine(LineType lineType, float lineParam) const noexcept
+      -> std::vector<LinePoint>;
 
   // pour l'instant je stocke la couleur a terme, on stockera le mode couleur et l'on animera
   bool m_useLineColor             = true;
@@ -268,8 +268,8 @@ inline auto LineMorph::UpdateColorInfo() noexcept -> void
   m_useLineColor                            = m_goomRand->ProbabilityOf<PROB_USE_LINE_COLOR>();
 }
 
-inline auto LineMorph::GetFreshLine(const LineType lineType,
-                                    const float lineParam) const noexcept -> std::vector<LinePoint>
+inline auto LineMorph::GetFreshLine(const LineType lineType, const float lineParam) const noexcept
+    -> std::vector<LinePoint>
 {
   switch (lineType)
   {
@@ -426,8 +426,9 @@ auto LineMorph::DrawFlatLine(const Pixel& lineColor) noexcept -> void
   m_lineDrawer.DrawLine(ToPoint2dInt(pt0.point), ToPoint2dInt(ptN.point), colors);
 }
 
-auto LineMorph::GetAudioPoints(const Pixel& lineColor, const AudioSamples::SampleArray& audioData)
-    const noexcept -> std::vector<PointAndColor>
+auto LineMorph::GetAudioPoints(const Pixel& lineColor,
+                               const AudioSamples::SampleArray& audioData) const noexcept
+    -> std::vector<PointAndColor>
 {
   const auto randColor = GetRandomLineColor();
 

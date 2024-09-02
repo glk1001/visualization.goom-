@@ -215,8 +215,8 @@ private:
   Timer m_allStayAwayFromCentreTimer{m_fxHelper->GetGoomTime(),
                                      STAY_AWAY_FROM_CENTRE_TIME_RANGE.max};
   auto IncrementAllJoinCentreT() -> void;
-  [[nodiscard]] auto GetTransformedCentreVector(uint32_t tubeId,
-                                                const Point2dInt& centre) const -> Vec2dInt;
+  [[nodiscard]] auto GetTransformedCentreVector(uint32_t tubeId, const Point2dInt& centre) const
+      -> Vec2dInt;
 
   bool m_prevShapesJitter                               = false;
   static constexpr auto PREV_SHAPES_JITTER_AMOUNT       = 2;
@@ -273,8 +273,8 @@ private:
                        SmallImageBitmaps::ImageNames imageName,
                        uint32_t size,
                        const MultiplePixels& colors) -> void;
-  [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName,
-                                    size_t size) const -> const ImageBitmap&;
+  [[nodiscard]] auto GetImageBitmap(SmallImageBitmaps::ImageNames imageName, size_t size) const
+      -> const ImageBitmap&;
   static auto GetSimpleColorFuncs(const MultiplePixels& colors)
       -> std::vector<BitmapDrawer::GetBitmapColorFunc>;
 };

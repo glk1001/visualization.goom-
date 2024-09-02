@@ -45,8 +45,8 @@ private:
   [[nodiscard]] auto GetImageBitmapPtr(ImageNames name, size_t sizeOfImageSquare) const
       -> std::unique_ptr<const ImageBitmap>;
   static auto GetImageKey(ImageNames name, size_t sizeOfImageSquare) -> std::string;
-  [[nodiscard]] auto GetImageFilename(ImageNames name,
-                                      size_t sizeOfImageSquare) const -> std::string;
+  [[nodiscard]] auto GetImageFilename(ImageNames name, size_t sizeOfImageSquare) const
+      -> std::string;
 };
 
 } // namespace GOOM::UTILS::GRAPHICS

@@ -219,8 +219,8 @@ auto Planes::GetAdjustedIntAmplitude(const GoomRand& goomRand,
   return adjustedIntAmplitude;
 }
 
-auto Planes::GetRandomEffectMultiplier(const GoomRand& goomRand,
-                                       const bool muchSpiralling) -> Amplitude
+auto Planes::GetRandomEffectMultiplier(const GoomRand& goomRand, const bool muchSpiralling)
+    -> Amplitude
 {
   auto effectMultiplier = Amplitude{};
 
@@ -242,8 +242,8 @@ auto Planes::GetRandomEffectMultiplier(const GoomRand& goomRand,
   return effectMultiplier;
 }
 
-auto Planes::GetRandomSwirlEffects(const UTILS::MATH::GoomRand& goomRand,
-                                   const bool muchSpiralling) -> PlaneSwirlEffects
+auto Planes::GetRandomSwirlEffects(const UTILS::MATH::GoomRand& goomRand, const bool muchSpiralling)
+    -> PlaneSwirlEffects
 {
   if (muchSpiralling || goomRand.ProbabilityOf<PROB_NO_SWIRL>())
   {

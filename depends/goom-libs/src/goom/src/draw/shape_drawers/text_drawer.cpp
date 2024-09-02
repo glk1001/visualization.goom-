@@ -316,10 +316,8 @@ private:
   [[nodiscard]] auto GetStdSpans() const noexcept -> SpanArray;
   [[nodiscard]] auto GetOutlineSpans() const -> SpanArray;
   auto RenderSpans(FT_Outline* outline, SpanArray* spans) const noexcept -> void;
-  static auto RasterCallback(int32_t y,
-                             int32_t count,
-                             const FT_Span* spans,
-                             void* user) noexcept -> void;
+  static auto RasterCallback(int32_t y, int32_t count, const FT_Span* spans, void* user) noexcept
+      -> void;
 
   [[nodiscard]] auto GetStartXPen(int32_t xPen) const -> int;
   [[nodiscard]] static auto GetStartYPen(int32_t yPen) noexcept -> int;

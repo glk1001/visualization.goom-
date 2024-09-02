@@ -128,8 +128,8 @@ void CheckContainer(const GoomDrawToContainer& draw, const std::vector<PixelInfo
   return pixelsNewToOld;
 }
 
-auto FillDrawContainer(GoomDrawToContainer* const draw,
-                       const uint32_t numChanged) -> std::vector<PixelInfo>
+auto FillDrawContainer(GoomDrawToContainer* const draw, const uint32_t numChanged)
+    -> std::vector<PixelInfo>
 {
   auto pixelsNewToOld = GetPixelsNewToOld(draw, numChanged);
 

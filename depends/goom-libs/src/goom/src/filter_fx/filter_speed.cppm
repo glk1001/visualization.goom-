@@ -36,10 +36,10 @@ public:
   constexpr auto SetVitesse(uint32_t val) noexcept -> void;
   constexpr auto SetDefault() noexcept -> void;
   constexpr auto GoSlowerBy(uint32_t amount) noexcept -> void;
-  [[nodiscard]] constexpr static auto GetFasterBy(uint32_t speed,
-                                                  uint32_t amount) noexcept -> uint32_t;
-  [[nodiscard]] constexpr static auto GetSlowerBy(uint32_t speed,
-                                                  uint32_t amount) noexcept -> uint32_t;
+  [[nodiscard]] constexpr static auto GetFasterBy(uint32_t speed, uint32_t amount) noexcept
+      -> uint32_t;
+  [[nodiscard]] constexpr static auto GetSlowerBy(uint32_t speed, uint32_t amount) noexcept
+      -> uint32_t;
 
   [[nodiscard]] constexpr auto GetReverseVitesse() const noexcept -> bool;
   constexpr auto SetReverseVitesse(bool val) noexcept -> void;
@@ -106,14 +106,14 @@ constexpr auto Vitesse::GoSlowerBy(const uint32_t amount) noexcept -> void
   Ensures(m_vitesse >= STOP_SPEED);
 }
 
-constexpr auto Vitesse::GetFasterBy(const uint32_t speed,
-                                    const uint32_t amount) noexcept -> uint32_t
+constexpr auto Vitesse::GetFasterBy(const uint32_t speed, const uint32_t amount) noexcept
+    -> uint32_t
 {
   return std::min(speed + amount, MAXIMUM_SPEED);
 }
 
-constexpr auto Vitesse::GetSlowerBy(const uint32_t speed,
-                                    const uint32_t amount) noexcept -> uint32_t
+constexpr auto Vitesse::GetSlowerBy(const uint32_t speed, const uint32_t amount) noexcept
+    -> uint32_t
 {
   if (amount >= speed)
   {

@@ -188,9 +188,8 @@ private:
                                   const Point2dInt& position1,
                                   const Point2dInt& position2,
                                   float tLineColor) noexcept -> float;
-  auto DrawDot(uint32_t dotNum,
-               const Point2dInt& pos,
-               const MultiplePixels& colors) noexcept -> void;
+  auto DrawDot(uint32_t dotNum, const Point2dInt& pos, const MultiplePixels& colors) noexcept
+      -> void;
   auto DrawConnectingLine(const Point2dInt& position1,
                           const Point2dInt& position2,
                           float lineBrightness,
@@ -237,8 +236,8 @@ private:
   [[nodiscard]] auto GetSingleDotColors(uint32_t dotNum,
                                         const AllDotColors& allDotColors,
                                         float dotBrightness) const noexcept -> MultiplePixels;
-  [[nodiscard]] auto GetCorrectedColor(float brightness,
-                                       const Pixel& color) const noexcept -> Pixel;
+  [[nodiscard]] auto GetCorrectedColor(float brightness, const Pixel& color) const noexcept
+      -> Pixel;
 };
 
 } // namespace GOOM::VISUAL_FX::CIRCLES
@@ -829,8 +828,8 @@ inline auto Circle::GetLineBrightness(const float brightness) const noexcept -> 
                                   : brightness;
 }
 
-inline auto Circle::GetCorrectedColor(const float brightness,
-                                      const Pixel& color) const noexcept -> Pixel
+inline auto Circle::GetCorrectedColor(const float brightness, const Pixel& color) const noexcept
+    -> Pixel
 {
   LogInfo("corrected color brightness = {}", brightness);
   return m_colorAdjustment.GetAdjustment(brightness, color);

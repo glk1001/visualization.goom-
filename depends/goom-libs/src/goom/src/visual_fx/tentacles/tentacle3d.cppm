@@ -19,11 +19,10 @@ struct V3dFlt
   float y = 0.0;
   float z = 0.0;
 };
-[[nodiscard]] constexpr auto operator+(const V3dFlt& point1,
-                                       const V3dFlt& point2) noexcept -> V3dFlt;
-[[nodiscard]] constexpr auto lerp(const V3dFlt& point1,
-                                  const V3dFlt& point2,
-                                  float t) noexcept -> V3dFlt;
+[[nodiscard]] constexpr auto operator+(const V3dFlt& point1, const V3dFlt& point2) noexcept
+    -> V3dFlt;
+[[nodiscard]] constexpr auto lerp(const V3dFlt& point1, const V3dFlt& point2, float t) noexcept
+    -> V3dFlt;
 
 class Tentacle3D
 {

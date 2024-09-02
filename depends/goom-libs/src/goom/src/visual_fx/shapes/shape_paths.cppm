@@ -255,8 +255,9 @@ static constexpr auto LOW_COLOR_BRIGHTNESS_FACTOR                = 1.0F;
 static constexpr auto MAIN_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR = 0.1F;
 static constexpr auto LOW_COLOR_BRIGHTNESS_MEETING_POINT_FACTOR  = 0.1F;
 
-inline auto ShapePath::GetColorsWithoutInner(
-    const float brightness, const MultiplePixels& shapeColors) const noexcept -> MultiplePixels
+inline auto ShapePath::GetColorsWithoutInner(const float brightness,
+                                             const MultiplePixels& shapeColors) const noexcept
+    -> MultiplePixels
 {
   return {
       .color1 = m_colorAdjust.GetAdjustment(MAIN_COLOR_BRIGHTNESS_FACTOR * brightness,

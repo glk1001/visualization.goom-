@@ -39,8 +39,8 @@ public:
   auto SetTranslateAdjust(const Vec2dFlt& translateAdjust) noexcept -> void;
 
   auto UpdateCurrentTransformArray() noexcept -> void;
-  [[nodiscard]] auto GetTransformedPoint(const Point2dFlt& point,
-                                         uint32_t copyNum) const noexcept -> Point2dFlt;
+  [[nodiscard]] auto GetTransformedPoint(const Point2dFlt& point, uint32_t copyNum) const noexcept
+      -> Point2dFlt;
   auto IncrementTs() noexcept -> void;
 
   [[nodiscard]] auto GetVerticalMove() const noexcept -> const IncrementedValue<float>&;

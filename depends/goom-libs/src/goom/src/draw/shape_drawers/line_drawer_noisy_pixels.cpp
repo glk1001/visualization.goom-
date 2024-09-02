@@ -67,8 +67,10 @@ auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawPixels(const Point2dInt& point
   DrawNoisePoints(point, brightness, colors);
 }
 
-inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawMainPoint(
-    const Point2dInt& point, const float brightness, MultiplePixels& colors) noexcept -> void
+inline auto LineDrawerNoisyPixels::NoisyPixelDrawer::DrawMainPoint(const Point2dInt& point,
+                                                                   const float brightness,
+                                                                   MultiplePixels& colors) noexcept
+    -> void
 {
   BrightenColors(brightness, colors);
   m_draw->DrawClippedPixels(point, colors);

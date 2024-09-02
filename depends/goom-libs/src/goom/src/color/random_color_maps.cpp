@@ -81,8 +81,8 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 }
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
-    const ColorMapGroup colorMapGroup,
-    const std::set<ColorMapTypes>& types) const noexcept -> ConstColorMapSharedPtr
+    const ColorMapGroup colorMapGroup, const std::set<ColorMapTypes>& types) const noexcept
+    -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 
@@ -91,8 +91,8 @@ auto RandomColorMaps::GetRandomColorMapSharedPtr(
 }
 
 auto RandomColorMaps::GetRandomColorMapSharedPtr(
-    const ConstColorMapSharedPtr& colorMapPtr,
-    const std::set<ColorMapTypes>& types) const noexcept -> ConstColorMapSharedPtr
+    const ConstColorMapSharedPtr& colorMapPtr, const std::set<ColorMapTypes>& types) const noexcept
+    -> ConstColorMapSharedPtr
 {
   Expects(IsActive());
 

@@ -147,8 +147,8 @@ private:
   auto DrawLowDensityPoints(size_t numPointsAlreadyDrawn,
                             const std::vector<IfsPoint>& points) noexcept -> void;
   [[nodiscard]] auto BlurTheLowDensityPoints(
-      size_t numPointsAlreadyDrawn,
-      const std::vector<IfsPoint>& lowDensityPoints) const noexcept -> bool;
+      size_t numPointsAlreadyDrawn, const std::vector<IfsPoint>& lowDensityPoints) const noexcept
+      -> bool;
   auto DrawLowDensityPointsWithoutBlur(const std::vector<IfsPoint>& lowDensityPoints,
                                        uint32_t maxLowDensityCount) noexcept -> void;
   auto DrawLowDensityPointsWithBlur(std::vector<IfsPoint>& lowDensityPoints,
@@ -558,8 +558,8 @@ inline auto IfsDancersFx::IfsDancersFxImpl::BlurTheLowDensityPoints(
 }
 
 inline auto IfsDancersFx::IfsDancersFxImpl::DrawLowDensityPointsWithoutBlur(
-    const std::vector<IfsPoint>& lowDensityPoints,
-    const uint32_t maxLowDensityCount) noexcept -> void
+    const std::vector<IfsPoint>& lowDensityPoints, const uint32_t maxLowDensityCount) noexcept
+    -> void
 {
   const auto logMaxLowDensityCount = std::log(static_cast<float>(maxLowDensityCount));
 

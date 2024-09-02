@@ -341,8 +341,8 @@ private:
                        std::span<Pixel> buffer,
                        float lumAverage = 0.0F) const -> void;
   auto SaveFilterPosBuffer(const std::string& filename, uint32_t textureIndex) -> void;
-  auto SaveFilterPosBuffer(const std::string& filename,
-                           std::span<FilterPosBuffersXY> buffer) const -> void;
+  auto SaveFilterPosBuffer(const std::string& filename, std::span<FilterPosBuffersXY> buffer) const
+      -> void;
 #endif
 };
 
@@ -418,8 +418,8 @@ auto CopyBuffer(const std::span<const Point2dFlt> srce, std::span<Point2dFlt> de
 }
 
 // TODO(glk) - Move this into goom filters?
-auto InitFilterPosBuffer(const Dimensions& dimensions,
-                         std::span<Point2dFlt> tranBufferFlt) noexcept -> void
+auto InitFilterPosBuffer(const Dimensions& dimensions, std::span<Point2dFlt> tranBufferFlt) noexcept
+    -> void
 {
   Expects(dimensions.GetSize() == tranBufferFlt.size());
 

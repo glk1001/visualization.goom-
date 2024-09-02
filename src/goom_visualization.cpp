@@ -312,8 +312,8 @@ auto GoomVisualization::ConsumeItem(const size_t slot) noexcept -> void
 #endif
 }
 
-auto GoomVisualization::ProduceItem(const size_t slot,
-                                    const AudioSamples& audioSamples) noexcept -> void
+auto GoomVisualization::ProduceItem(const size_t slot, const AudioSamples& audioSamples) noexcept
+    -> void
 {
 #ifdef DEBUG_LOGGING
   LogInfo(*m_goomLogger, std::format("Producer producing slot {}.", slot));

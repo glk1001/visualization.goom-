@@ -105,8 +105,8 @@ private:
   [[nodiscard]] auto GetZoomAdjustmentAdd(WaveEffect waveEffect,
                                           float angle,
                                           float reducer) const noexcept -> float;
-  [[nodiscard]] auto GetAngle(float sqDistFromZero,
-                              const NormalizedCoords& coords) const noexcept -> float;
+  [[nodiscard]] auto GetAngle(float sqDistFromZero, const NormalizedCoords& coords) const noexcept
+      -> float;
   [[nodiscard]] static auto GetPeriodicPart(WaveEffect waveEffect,
                                             float angle,
                                             float periodicFactor) noexcept -> float;
@@ -121,8 +121,9 @@ private:
 
   [[nodiscard]] auto GetSqDistEffect() const noexcept -> Wave::AngleEffect;
   [[nodiscard]] auto GetATanAngle(const NormalizedCoords& coords) const noexcept -> float;
-  [[nodiscard]] auto GetSqDistSpiralRotateAngle(
-      float sqDistFromZero, const NormalizedCoords& coords) const noexcept -> float;
+  [[nodiscard]] auto GetSqDistSpiralRotateAngle(float sqDistFromZero,
+                                                const NormalizedCoords& coords) const noexcept
+      -> float;
 };
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

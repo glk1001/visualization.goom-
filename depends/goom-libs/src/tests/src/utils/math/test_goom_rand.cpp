@@ -59,8 +59,9 @@ template<typename E>
   return eventCounts;
 }
 
-[[nodiscard]] auto GetConditionalWeightedCounts(
-    const size_t numLoops, const ConditionalWeights<Events>& weights) -> EventCounts
+[[nodiscard]] auto GetConditionalWeightedCounts(const size_t numLoops,
+                                                const ConditionalWeights<Events>& weights)
+    -> EventCounts
 {
   EventCounts eventCounts{};
   for (auto i = 0U; i < numLoops; ++i)

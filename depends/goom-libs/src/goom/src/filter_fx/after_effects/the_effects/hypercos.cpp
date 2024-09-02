@@ -163,8 +163,8 @@ inline auto Hypercos::GetFrequencyFactorToUse(const float frequencyFactor) const
   return m_params.reverse ? -frequencyFactor : +frequencyFactor;
 }
 
-auto Hypercos::GetVelocity(const NormalizedCoords& coords,
-                           const NormalizedCoords& velocity) const -> NormalizedCoords
+auto Hypercos::GetVelocity(const NormalizedCoords& coords, const NormalizedCoords& velocity) const
+    -> NormalizedCoords
 {
   const auto xFrequencyFactorToUse = GetFrequencyFactorToUse(m_params.frequencyFactor.x);
   const auto yFrequencyFactorToUse = GetFrequencyFactorToUse(m_params.frequencyFactor.y);

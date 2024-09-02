@@ -91,16 +91,16 @@ private:
   [[nodiscard]] auto GetVelocity(const NormalizedCoords& coords) const noexcept -> Vec2dFlt;
   [[nodiscard]] auto GetGridWidth(GridType gridType,
                                   const GridWidthRange& gridWidthRange) const noexcept -> uint32_t;
-  [[nodiscard]] auto GetGridsArray(GridType gridType,
-                                   uint32_t gridWidth) const noexcept -> Params::GridArrays;
+  [[nodiscard]] auto GetGridsArray(GridType gridType, uint32_t gridWidth) const noexcept
+      -> Params::GridArrays;
   [[nodiscard]] auto GetGridPointsWithCentres(GridType gridType, uint32_t gridWidth) const noexcept
       -> GridPointsWithCentres;
   [[nodiscard]] static auto GetGridPointCentresMap(
-      uint32_t gridWidth,
-      const GridPointsWithCentres& gridPointsWithCentres) noexcept -> GridPointMap;
+      uint32_t gridWidth, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+      -> GridPointMap;
   [[nodiscard]] static auto FindNearestGridPointsWithCentres(
-      const Point2dInt& gridPoint,
-      const GridPointsWithCentres& gridPointsWithCentres) noexcept -> GridCentresList;
+      const Point2dInt& gridPoint, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+      -> GridCentresList;
   [[nodiscard]] static auto GetGridPointXArray(uint32_t gridWidth) noexcept
       -> GridPointsWithCentres;
   [[nodiscard]] static auto GetGridPointDiamondArray(uint32_t gridWidth) noexcept
@@ -129,8 +129,8 @@ private:
   [[nodiscard]] auto GetNormalizedGridPointCentre(
       const Point2dInt& gridPointWithCentre) const noexcept -> NormalizedCoords;
   [[nodiscard]] static auto GetMinDistanceSquared(
-      const NormalizedCoords& point,
-      const std::vector<NormalizedCoords>& centres) noexcept -> float;
+      const NormalizedCoords& point, const std::vector<NormalizedCoords>& centres) noexcept
+      -> float;
 };
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

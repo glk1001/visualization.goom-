@@ -23,8 +23,8 @@ struct MultiplePixels
   Pixel color2;
 };
 
-[[nodiscard]] auto MakePixels(const Pixel& mainColor,
-                              const Pixel& lowColor) noexcept -> MultiplePixels;
+[[nodiscard]] auto MakePixels(const Pixel& mainColor, const Pixel& lowColor) noexcept
+    -> MultiplePixels;
 [[nodiscard]] auto ReversePixels(const MultiplePixels& colors) noexcept -> MultiplePixels;
 [[nodiscard]] auto GetMainColor(const MultiplePixels& colors) noexcept -> Pixel;
 [[nodiscard]] auto GetLowColor(const MultiplePixels& colors) noexcept -> Pixel;
@@ -56,8 +56,8 @@ public:
   auto DrawClippedPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept -> void;
 
   [[nodiscard]] virtual auto GetPixel(const Point2dInt& point) const noexcept -> Pixel = 0;
-  virtual auto DrawPixelsUnblended(const Point2dInt& point,
-                                   const MultiplePixels& colors) noexcept -> void      = 0;
+  virtual auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
+      -> void = 0;
 
   [[nodiscard]] static auto GetIntBuffIntensity(float buffIntensity) noexcept -> uint32_t;
 
@@ -70,8 +70,8 @@ protected:
                                      const Pixel& fgndColor,
                                      PixelChannelType newAlpha) const noexcept -> Pixel;
 
-  virtual auto DrawPixelsToDevice(const Point2dInt& point,
-                                  const MultiplePixels& colors) noexcept -> void = 0;
+  virtual auto DrawPixelsToDevice(const Point2dInt& point, const MultiplePixels& colors) noexcept
+      -> void = 0;
 
 private:
   Dimensions m_dimensions;
@@ -166,8 +166,8 @@ inline auto IGoomDraw::GetBlendedPixel(const Pixel& bgndColor,
   return m_pixelBlendFunc(bgndColor, intBuffIntensity, fgndColor, newAlpha);
 }
 
-inline auto IGoomDraw::DrawPixels(const Point2dInt& point,
-                                  const MultiplePixels& colors) noexcept -> void
+inline auto IGoomDraw::DrawPixels(const Point2dInt& point, const MultiplePixels& colors) noexcept
+    -> void
 {
   Expects(point.x >= 0);
   Expects(point.y >= 0);

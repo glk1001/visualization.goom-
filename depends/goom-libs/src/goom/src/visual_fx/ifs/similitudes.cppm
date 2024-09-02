@@ -450,9 +450,8 @@ auto Similitudes::Get_1_minus_exp_neg_S(const Dbl S) -> Dbl
 }
 
 // NOLINTBEGIN(bugprone-easily-swappable-parameters)
-auto Similitudes::GaussRand(const Dbl c,
-                            const Dbl S,
-                            const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
+auto Similitudes::GaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) const
+    -> Dbl
 {
   const auto x = m_goomRand->GetRandInRange<UNIT_RANGE>();
   const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));
@@ -460,9 +459,8 @@ auto Similitudes::GaussRand(const Dbl c,
   return m_goomRand->ProbabilityOf<HALF>() ? (c + y) : (c - y);
 }
 
-auto Similitudes::HalfGaussRand(const Dbl c,
-                                const Dbl S,
-                                const Dbl A_mult_1_minus_exp_neg_S) const -> Dbl
+auto Similitudes::HalfGaussRand(const Dbl c, const Dbl S, const Dbl A_mult_1_minus_exp_neg_S) const
+    -> Dbl
 {
   const auto x = m_goomRand->GetRandInRange<UNIT_RANGE>();
   const auto y = A_mult_1_minus_exp_neg_S * (1.0F - std::exp(-x * x * S));

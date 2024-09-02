@@ -167,8 +167,8 @@ auto DistanceField::GetGridWidth(const GridType gridType,
   return gridWidth;
 }
 
-auto DistanceField::GetGridsArray(const GridType gridType,
-                                  const uint32_t gridWidth) const noexcept -> Params::GridArrays
+auto DistanceField::GetGridsArray(const GridType gridType, const uint32_t gridWidth) const noexcept
+    -> Params::GridArrays
 {
   if (gridType == GridType::FULL)
   {
@@ -182,8 +182,9 @@ auto DistanceField::GetGridsArray(const GridType gridType,
   return {.gridPointsWithCentres = gridPointArray, .gridPointCentresMap = gridPointCentresMap};
 }
 
-auto DistanceField::GetGridPointsWithCentres(
-    const GridType gridType, const uint32_t gridWidth) const noexcept -> GridPointsWithCentres
+auto DistanceField::GetGridPointsWithCentres(const GridType gridType,
+                                             const uint32_t gridWidth) const noexcept
+    -> GridPointsWithCentres
 {
   if (gridType == GridType::PARTIAL_X)
   {
@@ -264,8 +265,8 @@ auto DistanceField::TryGetGridPointRandomArray(const uint32_t gridWidth) const n
 }
 
 auto DistanceField::GetGridPointCentresMap(
-    const uint32_t gridWidth,
-    const GridPointsWithCentres& gridPointsWithCentres) noexcept -> GridPointMap
+    const uint32_t gridWidth, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+    -> GridPointMap
 {
   Expects(gridWidth > 0U);
   Expects(not gridPointsWithCentres.empty());
@@ -286,8 +287,8 @@ auto DistanceField::GetGridPointCentresMap(
 }
 
 inline auto DistanceField::FindNearestGridPointsWithCentres(
-    const Point2dInt& gridPoint,
-    const GridPointsWithCentres& gridPointsWithCentres) noexcept -> GridCentresList
+    const Point2dInt& gridPoint, const GridPointsWithCentres& gridPointsWithCentres) noexcept
+    -> GridCentresList
 {
   Expects(not gridPointsWithCentres.empty());
 

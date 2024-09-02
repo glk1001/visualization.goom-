@@ -17,8 +17,8 @@ export namespace GOOM::CONTROL
     -> std::string;
 
 [[nodiscard]] auto GetRandInRangeBuffIntensities(
-    const GoomRand& goomRand,
-    const std::vector<GoomDrawables>& drawables) noexcept -> std::vector<float>;
+    const GoomRand& goomRand, const std::vector<GoomDrawables>& drawables) noexcept
+    -> std::vector<float>;
 
 [[nodiscard]] auto GetMidpointRangeBuffIntensities(
     const std::vector<GoomDrawables>& drawables) noexcept -> std::vector<float>;

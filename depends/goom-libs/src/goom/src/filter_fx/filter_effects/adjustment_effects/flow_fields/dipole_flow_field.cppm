@@ -54,8 +54,9 @@ private:
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
-inline auto DipoleFlowField::GetZoomAdjustment(
-    const Vec2dFlt& baseZoomAdjustment, const NormalizedCoords& coords) const noexcept -> Vec2dFlt
+inline auto DipoleFlowField::GetZoomAdjustment(const Vec2dFlt& baseZoomAdjustment,
+                                               const NormalizedCoords& coords) const noexcept
+    -> Vec2dFlt
 {
   const auto velocity = GetVelocity(baseZoomAdjustment, coords);
 

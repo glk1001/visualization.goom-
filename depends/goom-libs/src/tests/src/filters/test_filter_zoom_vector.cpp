@@ -56,8 +56,8 @@ constexpr auto WIDTH                = 120;
 constexpr auto* RESOURCES_DIRECTORY = "";
 const auto GOOM_RAND                = GoomRand{};
 
-[[nodiscard]] constexpr auto GetRelativeSpeed(const uint32_t intSpeed,
-                                              const bool reverseSpeed) -> float
+[[nodiscard]] constexpr auto GetRelativeSpeed(const uint32_t intSpeed, const bool reverseSpeed)
+    -> float
 {
   constexpr auto MAX_INT_SPEED = static_cast<float>(Vitesse::MAXIMUM_SPEED);
   const auto absRelativeSpeed  = static_cast<float>(intSpeed) / MAX_INT_SPEED;

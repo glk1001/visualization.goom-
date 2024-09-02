@@ -164,9 +164,8 @@ using ColorGroupNamesArray = std::array<std::span<const ColorMapName>, NUM<Color
 
 } // namespace
 
-auto ColorMaps::GetColorMix(const Pixel& color1,
-                            const Pixel& color2,
-                            const float t) noexcept -> Pixel
+auto ColorMaps::GetColorMix(const Pixel& color1, const Pixel& color2, const float t) noexcept
+    -> Pixel
 {
   return PrebuiltColorMap::GetColorMix(color1, color2, t);
 }
@@ -181,8 +180,9 @@ auto ColorMaps::GetColorMap(const ColorMapName colorMapName) const noexcept -> C
                             m_defaultAlpha};
 }
 
-auto ColorMaps::GetRotatedColorMapPtr(const ColorMapName colorMapName, const float tRotatePoint)
-    const noexcept -> ConstColorMapSharedPtr
+auto ColorMaps::GetRotatedColorMapPtr(const ColorMapName colorMapName,
+                                      const float tRotatePoint) const noexcept
+    -> ConstColorMapSharedPtr
 {
   return std::make_shared<RotatedColorMap>(
       GetColorMapSharedPtr(colorMapName), m_defaultAlpha, tRotatePoint);

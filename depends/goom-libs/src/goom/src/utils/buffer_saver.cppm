@@ -81,8 +81,8 @@ public:
                              std::span<const T> buffer,
                              const Formatters& formatters = Formatters{}) -> void;
 
-  [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename,
-                                                HeaderT& header) -> bool;
+  [[nodiscard]] static auto PeekHeaderFormatted(const std::string& filename, HeaderT& header)
+      -> bool;
 
 protected:
   auto IncCurrentBufferNum() noexcept -> void;
@@ -172,8 +172,8 @@ auto BufferSaver<T, HeaderT>::DefaultGetBufferIndexString(const size_t bufferInd
 }
 
 template<class T, class HeaderT>
-auto BufferSaver<T, HeaderT>::Write(const std::span<const T> buffer,
-                                    const bool binaryFormat) -> void
+auto BufferSaver<T, HeaderT>::Write(const std::span<const T> buffer, const bool binaryFormat)
+    -> void
 {
   const auto ignore = HeaderT{};
   Write(ignore, buffer, binaryFormat);

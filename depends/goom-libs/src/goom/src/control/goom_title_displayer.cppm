@@ -84,9 +84,8 @@ private:
   [[nodiscard]] auto GetFinalPhaseInteriorColor(const Point2dInt& point,
                                                 float fontCharColorMixT,
                                                 const Dimensions& charDimensions) const -> Pixel;
-  [[nodiscard]] auto GetOutlineColor(int32_t x,
-                                     const FontTs& fontTs,
-                                     int32_t charWidth) const -> Pixel;
+  [[nodiscard]] auto GetOutlineColor(int32_t x, const FontTs& fontTs, int32_t charWidth) const
+      -> Pixel;
 
   [[nodiscard]] auto GetCharSpacing() const -> float;
   void UpdateColorMaps();

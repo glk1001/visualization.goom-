@@ -272,16 +272,16 @@ private:
   [[nodiscard]] auto GetBrightness(const Shape& shape,
                                    const Point2dInt& shapeCentrePos) const noexcept -> float;
 
-  [[nodiscard]] auto GetShapeColors(uint32_t shapeNum,
-                                    float brightness) const noexcept -> ShapeColors;
-  [[nodiscard]] auto GetCircleColors(uint32_t circleNum,
-                                     float brightness) const noexcept -> ShapeColors;
+  [[nodiscard]] auto GetShapeColors(uint32_t shapeNum, float brightness) const noexcept
+      -> ShapeColors;
+  [[nodiscard]] auto GetCircleColors(uint32_t circleNum, float brightness) const noexcept
+      -> ShapeColors;
   [[nodiscard]] auto GetColors(const ShapeColorMaps& shapeColorMaps,
                                const TValue& t,
                                const ShapeColors& oldShapeColors,
                                float brightness) const noexcept -> ShapeColors;
-  [[nodiscard]] static auto GetLowColor(LowColorTypes colorType,
-                                        const ShapeColors& colors) noexcept -> Pixel;
+  [[nodiscard]] static auto GetLowColor(LowColorTypes colorType, const ShapeColors& colors) noexcept
+      -> Pixel;
   [[nodiscard]] static auto GetLowMixedColor(LowColorTypes colorType,
                                              const ShapeColors& colors1,
                                              const ShapeColors& colors2,
@@ -294,8 +294,8 @@ private:
                                                   float mixT) noexcept -> Pixel;
   static constexpr float CUTOFF_BRIGHTNESS = 0.005F;
   BrightnessAttenuation m_brightnessAttenuation;
-  [[nodiscard]] auto GetFinalColor(const Pixel& oldColor,
-                                   const Pixel& color) const noexcept -> Pixel;
+  [[nodiscard]] auto GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
+      -> Pixel;
   [[nodiscard]] auto GetShapesOnlyColors(const LowColorTypes& lowColorType,
                                          const Shape& shape,
                                          float brightness) const noexcept -> ShapeColors;
@@ -797,8 +797,8 @@ inline auto Tube::TubeImpl::GetInteriorShapeSize(const float hexLen) const noexc
       std::round(m_data.goomRand->GetRandInRange<SIZE_FACTOR_RANGE>() * hexLen));
 }
 
-auto Tube::TubeImpl::DrawShape(const Shape& shape,
-                               const Vec2dInt& centreOffset) const noexcept -> void
+auto Tube::TubeImpl::DrawShape(const Shape& shape, const Vec2dInt& centreOffset) const noexcept
+    -> void
 {
   const auto jitterXOffset  = m_data.goomRand->GetRandInRange(NumberRange{0, m_maxJitterOffset});
   const auto jitterYOffset  = jitterXOffset;
@@ -1242,8 +1242,8 @@ auto ShapeColorizer::GetColors(const ShapeColorMaps& shapeColorMaps,
   };
 }
 
-inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor,
-                                          const Pixel& color) const noexcept -> Pixel
+inline auto ShapeColorizer::GetFinalColor(const Pixel& oldColor, const Pixel& color) const noexcept
+    -> Pixel
 {
   return ColorMaps::GetColorMix(oldColor, color, m_oldT());
 }

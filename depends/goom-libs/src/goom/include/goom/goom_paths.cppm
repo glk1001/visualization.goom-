@@ -45,8 +45,8 @@ struct CompileTimeString
 //           google-explicit-constructor)
 
 template<size_t LhsSize, size_t RhsSize>
-CompileTimeString(CompileTimeString<LhsSize>,
-                  CompileTimeString<RhsSize>) -> CompileTimeString<(LhsSize + RhsSize) - 1>;
+CompileTimeString(CompileTimeString<LhsSize>, CompileTimeString<RhsSize>)
+    -> CompileTimeString<(LhsSize + RhsSize) - 1>;
 
 template<CompileTimeString Lhs, CompileTimeString Rhs>
 consteval auto static_concat() noexcept -> CompileTimeString<(Lhs.size + Rhs.size) - 1>
@@ -104,8 +104,8 @@ template<CompileTimeString Base, CompileTimeString... Others>
 
 template<typename... Types>
   requires(sizeof...(Types) != 0)
-[[nodiscard]] constexpr auto join_paths(const std::string& base,
-                                        Types... paths) noexcept -> std::string
+[[nodiscard]] constexpr auto join_paths(const std::string& base, Types... paths) noexcept
+    -> std::string
 {
   return base + GetPathSep() + join_paths(paths...);
 }

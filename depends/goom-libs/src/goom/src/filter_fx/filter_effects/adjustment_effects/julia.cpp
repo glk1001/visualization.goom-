@@ -61,44 +61,44 @@ constexpr auto PROB_ESCAPE_POINT_IS_ZERO  = 0.5F;
 constexpr auto PROB_MULTIPLY_VELOCITY     = 0.2F;
 
 // NOLINTBEGIN(readability-identifier-length,bugprone-easily-swappable-parameters)
-constexpr auto StdJuliaFunc(const std::complex<float>& z,
-                            const std::complex<float>& c) -> std::complex<float>
+constexpr auto StdJuliaFunc(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return (z * z) + c;
 }
 
-constexpr auto CubicJuliaFunc1(const std::complex<float>& z,
-                               const std::complex<float>& c) -> std::complex<float>
+constexpr auto CubicJuliaFunc1(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return (HALF * (z * z)) + (THIRD * (z * z * z)) + c;
 }
 
-constexpr auto CubicJuliaFunc2(const std::complex<float>& z,
-                               const std::complex<float>& c) -> std::complex<float>
+constexpr auto CubicJuliaFunc2(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return (z * z * z) + c;
 }
 
-constexpr auto SinJuliaFunc1(const std::complex<float>& z,
-                             const std::complex<float>& c) -> std::complex<float>
+constexpr auto SinJuliaFunc1(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return std::sin(z) * c;
 }
 
-constexpr auto SinJuliaFunc2(const std::complex<float>& z,
-                             const std::complex<float>& c) -> std::complex<float>
+constexpr auto SinJuliaFunc2(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return std::sin(z * z) + c;
 }
 
-constexpr auto CosJuliaFunc1(const std::complex<float>& z,
-                             const std::complex<float>& c) -> std::complex<float>
+constexpr auto CosJuliaFunc1(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return std::cos(z) + c;
 }
 
-constexpr auto CosJuliaFunc2(const std::complex<float>& z,
-                             const std::complex<float>& c) -> std::complex<float>
+constexpr auto CosJuliaFunc2(const std::complex<float>& z, const std::complex<float>& c)
+    -> std::complex<float>
 {
   return std::cos(z * z) + c;
 }

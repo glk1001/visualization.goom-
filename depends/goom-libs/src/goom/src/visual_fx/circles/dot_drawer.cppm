@@ -50,9 +50,8 @@ public:
   auto SetWeightedColorMaps(const RandomColorMaps& weightedMaps) noexcept -> void;
   auto SetGlobalBrightnessFactor(float val) noexcept -> void;
 
-  auto DrawDot(const Point2dInt& pos,
-               uint32_t diameter,
-               const MultiplePixels& colors) noexcept -> void;
+  auto DrawDot(const Point2dInt& pos, uint32_t diameter, const MultiplePixels& colors) noexcept
+      -> void;
 
 private:
   const GoomRand* m_goomRand;

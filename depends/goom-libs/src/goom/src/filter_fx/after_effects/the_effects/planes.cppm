@@ -37,8 +37,8 @@ public:
 
   [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs;
 
-  virtual auto SetRandomParams(const Point2dInt& zoomMidpoint,
-                               uint32_t screenWidth) noexcept -> void;
+  virtual auto SetRandomParams(const Point2dInt& zoomMidpoint, uint32_t screenWidth) noexcept
+      -> void;
 
   enum class PlaneSwirlType : UnderlyingEnumType
   {
@@ -96,25 +96,27 @@ private:
                                             const Point2dInt& zoomMidpoint,
                                             uint32_t screenWidth) -> Params;
 
-  [[nodiscard]] static auto GetRandomPlaneEffects(
-      const IntAmplitude& adjustedIntAmplitude, const Amplitude& effectMultiplier) -> PlaneEffects;
+  [[nodiscard]] static auto GetRandomPlaneEffects(const IntAmplitude& adjustedIntAmplitude,
+                                                  const Amplitude& effectMultiplier)
+      -> PlaneEffects;
   [[nodiscard]] static auto GetRandomPlaneEffects(const GoomRand& goomRand,
                                                   PlaneEffectEvents planeEffectsEvent,
                                                   bool muchSpiralling,
                                                   const Point2dInt& zoomMidpoint,
                                                   uint32_t screenWidth) -> PlaneEffects;
-  [[nodiscard]] static auto GetRandomIntAmplitude(
-      const GoomRand& goomRand, PlaneEffectEvents planeEffectsEvent) -> IntAmplitude;
+  [[nodiscard]] static auto GetRandomIntAmplitude(const GoomRand& goomRand,
+                                                  PlaneEffectEvents planeEffectsEvent)
+      -> IntAmplitude;
   [[nodiscard]] static auto GetAdjustedIntAmplitude(const GoomRand& goomRand,
                                                     const IntAmplitude& intAmplitude,
                                                     const Point2dInt& zoomMidpoint,
                                                     uint32_t screenWidth) -> IntAmplitude;
-  [[nodiscard]] static auto GetRandomEffectMultiplier(const GoomRand& goomRand,
-                                                      bool muchSpiralling) -> Amplitude;
+  [[nodiscard]] static auto GetRandomEffectMultiplier(const GoomRand& goomRand, bool muchSpiralling)
+      -> Amplitude;
 
   [[nodiscard]] static auto GetZeroSwirlEffects() -> PlaneSwirlEffects;
-  [[nodiscard]] static auto GetRandomSwirlEffects(const GoomRand& goomRand,
-                                                  bool muchSpiralling) -> PlaneSwirlEffects;
+  [[nodiscard]] static auto GetRandomSwirlEffects(const GoomRand& goomRand, bool muchSpiralling)
+      -> PlaneSwirlEffects;
   [[nodiscard]] static auto GetNonzeroRandomSwirlEffects(const GoomRand& goomRand)
       -> PlaneSwirlEffects;
   [[nodiscard]] auto GetHorizontalSwirlOffsetFactor(float coordValue) const -> float;

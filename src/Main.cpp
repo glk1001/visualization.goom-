@@ -346,8 +346,8 @@ auto CVisualizationGoom::UpdateTrack(const kodi::addon::VisualizationTrack& trac
 //-- AudioData ----------------------------------------------------------------
 // Called by Kodi to pass new audio data to the vis
 //-----------------------------------------------------------------------------
-auto CVisualizationGoom::AudioData(const float* const audioData,
-                                   const size_t audioDataLength) -> void
+auto CVisualizationGoom::AudioData(const float* const audioData, const size_t audioDataLength)
+    -> void
 {
   if (not m_started)
   {

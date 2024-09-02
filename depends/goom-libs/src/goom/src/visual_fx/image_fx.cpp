@@ -183,8 +183,8 @@ private:
   [[nodiscard]] auto GetNextChunkPosition(const Point2dInt& nextStartPosition,
                                           const ChunkedImage::ImageChunk& imageChunk) const
       -> Point2dInt;
-  [[nodiscard]] auto GetPixelColors(const Pixel& pixelColor,
-                                    float brightness) const -> MultiplePixels;
+  [[nodiscard]] auto GetPixelColors(const Pixel& pixelColor, float brightness) const
+      -> MultiplePixels;
   [[nodiscard]] auto GetMappedColor(const Pixel& pixelColor) const -> Pixel;
 
   auto UpdateImageStartPositions() -> void;
@@ -462,8 +462,9 @@ inline auto ImageFx::ImageFxImpl::DrawChunks() -> void
    **/
 }
 
-inline auto ImageFx::ImageFxImpl::GetPositionAdjustedBrightness(
-    const float brightness, const Point2dInt& position) const -> float
+inline auto ImageFx::ImageFxImpl::GetPositionAdjustedBrightness(const float brightness,
+                                                                const Point2dInt& position) const
+    -> float
 {
   return m_randBrightnessFactor * (brightness * static_cast<float>(SqDistanceFromZero(position)));
 }
@@ -502,8 +503,8 @@ inline auto ImageFx::ImageFxImpl::GetNextChunkStartPosition(const size_t i) cons
 }
 
 inline auto ImageFx::ImageFxImpl::GetNextChunkPosition(
-    const Point2dInt& nextStartPosition,
-    const ChunkedImage::ImageChunk& imageChunk) const -> Point2dInt
+    const Point2dInt& nextStartPosition, const ChunkedImage::ImageChunk& imageChunk) const
+    -> Point2dInt
 {
   const auto nextChunkPosition = lerp(nextStartPosition, imageChunk.finalPosition, m_inOutT());
   return nextChunkPosition;
@@ -589,8 +590,8 @@ inline auto ChunkedImage::SetStartPosition(const size_t i, const Point2dInt& pos
   m_startPositions.at(i) = pos;
 }
 
-auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap,
-                                        const PluginInfo& goomInfo) -> ImageAsChunks
+auto ChunkedImage::SplitImageIntoChunks(const ImageBitmap& imageBitmap, const PluginInfo& goomInfo)
+    -> ImageAsChunks
 {
   auto imageAsChunks = ImageAsChunks{};
 

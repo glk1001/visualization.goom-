@@ -320,8 +320,9 @@ auto FlyingStarsFx::FlyingStarsImpl::AddStarClusters() -> void
   }
 }
 
-auto FlyingStarsFx::FlyingStarsImpl::AddStarCluster(
-    const IStarType& starType, const uint32_t totalNumActiveStars) noexcept -> void
+auto FlyingStarsFx::FlyingStarsImpl::AddStarCluster(const IStarType& starType,
+                                                    const uint32_t totalNumActiveStars) noexcept
+    -> void
 {
   if (m_activeStars.size() >= totalNumActiveStars)
   {

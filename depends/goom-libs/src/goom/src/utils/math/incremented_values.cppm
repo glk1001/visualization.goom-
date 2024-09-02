@@ -108,9 +108,8 @@ private:
     requires Lerpable<T>;
   [[nodiscard]] static auto Clamp(const T& val, const T& val1, const T& val2) noexcept -> T
     requires Clampable<T>;
-  [[nodiscard]] static auto GetMatchingT(const T& val,
-                                         const T& val1,
-                                         const T& val2) noexcept -> float
+  [[nodiscard]] static auto GetMatchingT(const T& val, const T& val1, const T& val2) noexcept
+      -> float
     requires Matchable<T>;
 };
 

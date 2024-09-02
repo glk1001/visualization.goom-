@@ -22,8 +22,8 @@ using namespace std::string_literals;
 using DRAW::SHAPE_DRAWERS::TextDrawer;
 using MATH::I_HALF;
 
-auto GetLinesOfWords(const std::string& text,
-                     const uint32_t maxLineLength) -> std::vector<std::string>
+auto GetLinesOfWords(const std::string& text, const uint32_t maxLineLength)
+    -> std::vector<std::string>
 {
   if (text.length() <= maxLineLength)
   {

@@ -50,8 +50,8 @@ private:
   [[nodiscard]] constexpr auto CohenSutherlandClip(const LineFlt& line) const noexcept
       -> ClippedLine;
   [[nodiscard]] constexpr auto ComputeCode(const Point2dFlt& point) const noexcept -> uint32_t;
-  [[nodiscard]] constexpr auto GetIntersectionPoint(const LineFlt& line,
-                                                    uint32_t codeOutside) const -> Point2dFlt;
+  [[nodiscard]] constexpr auto GetIntersectionPoint(const LineFlt& line, uint32_t codeOutside) const
+      -> Point2dFlt;
   [[nodiscard]] static constexpr auto GetXIntercept(float y, const LineFlt& line) -> float;
   [[nodiscard]] static constexpr auto GetYIntercept(float x, const LineFlt& line) -> float;
 };

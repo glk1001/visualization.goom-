@@ -271,8 +271,10 @@ inline auto GoomTitleDisplayer::GetInitialPhaseInteriorColor(const float fontCol
   return m_textColorMap.GetColor(fontColorT);
 }
 
-inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(
-    const Point2dInt& point, const FontTs& fontTs, const Dimensions& charDimensions) const -> Pixel
+inline auto GoomTitleDisplayer::GetMiddlePhaseInteriorColor(const Point2dInt& point,
+                                                            const FontTs& fontTs,
+                                                            const Dimensions& charDimensions) const
+    -> Pixel
 {
   const auto fontColor  = m_textColorMap.GetColor(fontTs.fontColorT);
   const auto charColor1 = m_charColorMap.GetColor(

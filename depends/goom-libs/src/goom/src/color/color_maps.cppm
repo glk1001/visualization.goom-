@@ -82,9 +82,8 @@ public:
   ColorMaps() noexcept = default;
   explicit ColorMaps(PixelChannelType defaultAlpha) noexcept;
 
-  [[nodiscard]] static auto GetColorMix(const Pixel& color1,
-                                        const Pixel& color2,
-                                        float t) noexcept -> Pixel;
+  [[nodiscard]] static auto GetColorMix(const Pixel& color1, const Pixel& color2, float t) noexcept
+      -> Pixel;
 
   [[nodiscard]] static auto GetNumGroups() noexcept -> uint32_t;
   [[nodiscard]] static auto GetNumColorMapNames() noexcept -> uint32_t;

@@ -34,8 +34,9 @@ ZoomVectorEffects::ZoomVectorEffects(const uint32_t screenWidth,
                 GetBaseZoomAdjustment(RAW_BASE_ZOOM_ADJUSTMENT_FACTOR, +1.0F));
 }
 
-auto ZoomVectorEffects::GetStandardAfterEffects(
-    const GoomRand& goomRand, const std::string& resourcesDirectory) noexcept -> AfterEffects
+auto ZoomVectorEffects::GetStandardAfterEffects(const GoomRand& goomRand,
+                                                const std::string& resourcesDirectory) noexcept
+    -> AfterEffects
 {
   return AFTER_EFFECTS::GetStandardAfterEffects(goomRand, resourcesDirectory);
 }
@@ -53,8 +54,9 @@ auto ZoomVectorEffects::SetFilterSettings(
                                                    m_filterEffectsSettings->zoomMidpoint);
 }
 
-auto ZoomVectorEffects::GetMultiplierEffect(
-    const NormalizedCoords& coords, const Vec2dFlt& zoomAdjustment) const noexcept -> Point2dFlt
+auto ZoomVectorEffects::GetMultiplierEffect(const NormalizedCoords& coords,
+                                            const Vec2dFlt& zoomAdjustment) const noexcept
+    -> Point2dFlt
 {
   const auto& multiplierSettings = m_filterEffectsSettings->filterMultiplierEffectsSettings;
 
