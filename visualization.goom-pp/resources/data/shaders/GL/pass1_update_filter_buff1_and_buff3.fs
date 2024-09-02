@@ -6,10 +6,10 @@ uniform sampler2D tex_filterBuff2;    // Low colors from last frame
 uniform sampler2D tex_mainColorImage; // Main colors for this frame
 uniform sampler2D tex_lowColorImage;  // Low colors for this frame
 
-// At end of this pass, 'filterBuff1' contains the newly mapped colors plus low colors.
-layout(binding = FILTER_BUFF1_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff1;
-// At end of this pass, 'filterBuff3' contains the newly mapped colors plus main colors.
-layout(binding = FILTER_BUFF3_IMAGE_UNIT, rgba16f) uniform image2D img_filterBuff3;
+// At end of this pass, 'img_lowColorsBuff' contains the newly mapped colors plus low colors.
+layout(binding = LOW_COLORS_BUFF_IMAGE_UNIT, rgba16f) uniform image2D img_lowColorsBuff;
+// At end of this pass, 'img_mainColorsBuff' contains the newly mapped colors plus main colors.
+layout(binding = MAIN_COLORS_BUFF_IMAGE_UNIT, rgba16f) uniform image2D img_mainColorsBuff;
 
 // All the buffers used for position mapping.
 layout(binding = FILTER_SRCE_POS_IMAGE_UNIT1, rg32f) uniform image2D  img_filterSrcePosBuff1;
@@ -41,9 +41,9 @@ void main()
   const ivec2 deviceXY = ivec2(gl_FragCoord.xy);
 
   vec4 filterBuff2Val = GetPosMappedFilterBuff2ColorValue(texCoord, deviceXY);
-  const vec4 filterBuff3Val = imageLoad(img_filterBuff3, deviceXY);
+  const vec4 filterBuff3Val = imageLoad(img_mainColorsBuff, deviceXY);
 
-  // Mix in some of the previous frames' color from the current deviceXY.
+  // Mix in some of the previous frames' color from the current deviceXY pixel.
   filterBuff2Val.rgb = mix(filterBuff2Val.rgb, filterBuff3Val.rgb, u_prevFrameTMix);
 
   // Boost this frames' buff2 color by the base color multiplier.
@@ -53,12 +53,12 @@ void main()
   const vec4 colorLow            = texture(tex_lowColorImage, texCoord);
   const float alpha              = colorLow.a; // Use low color alpha for main also.
   const vec3 filterBuff2ColorLow = filterBuff2Val.rgb + (u_lowColorMultiplier * colorLow.rgb);
-  imageStore(img_filterBuff1, deviceXY, vec4(filterBuff2ColorLow, alpha));
+  imageStore(img_lowColorsBuff, deviceXY, vec4(filterBuff2ColorLow, alpha));
 
   // Get and store the main color added to this frames' buff2 color.
   const vec4 colorMain            = texture(tex_mainColorImage, texCoord);
   const vec3 filterBuff2ColorMain = filterBuff2Val.rgb + (u_mainColorMultiplier * colorMain.rgb);
-  imageStore(img_filterBuff3, deviceXY, vec4(filterBuff2ColorMain, alpha));
+  imageStore(img_mainColorsBuff, deviceXY, vec4(filterBuff2ColorMain, alpha));
 
   discard;
 }
@@ -103,8 +103,9 @@ vec4 GetPosMappedFilterBuff2ColorValue(const vec2 uv, const ivec2 deviceXY)
 {
   const TexelPositions filterBuff2TexelPositions = GetPosMappedFilterBuff2TexelPositions(deviceXY);
   const FilterBuffColors filterBuff2Colors       = GetFilterBuff2Colors(filterBuff2TexelPositions);
-  return GetColorFromMixOfColor1AndColor2(
-      filterBuff2Colors, GetColor1Color2TMix(uv, filterBuff2TexelPositions));
+
+  return GetColorFromMixOfColor1AndColor2(filterBuff2Colors,
+                                          GetColor1Color2TMix(uv, filterBuff2TexelPositions));
 }
 
 
