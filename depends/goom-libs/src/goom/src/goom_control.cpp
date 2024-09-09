@@ -232,9 +232,10 @@ private:
   PluginInfo m_goomInfo;
   GoomControlLogger* m_goomLogger;
   std::unique_ptr<GoomRand> m_goomRand = std::make_unique<GoomRand>();
-  GoomDrawToTwoBuffers m_multiBufferDraw{m_goomInfo.GetDimensions(), *m_goomLogger};
-  Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers{
-      m_multiBufferDraw, m_goomInfo.GetDimensions(), GetColorAlphaNoAddBlend};
+  PixelBufferVector m_mainPixelBuffer;
+  PixelBufferVector m_lowPixelBuffer;
+  GoomDrawToTwoBuffers m_multiBufferDraw;
+  Blend2dDoubleGoomBuffers m_blend2dDoubleGoomBuffers;
   FxHelper m_fxHelper;
   std::string m_dumpDirectory;
 
@@ -243,7 +244,8 @@ private:
 
   FrameData* m_frameData = nullptr;
   auto UpdateFrameData() -> void;
-  auto UpdateFilterPos() noexcept -> void;
+  auto UpdateFrameDataPixelBuffers() noexcept -> void;
+  auto UpdateFrameDataFilterPosArrays() noexcept -> void;
 
   static constexpr auto TIME_BETWEEN_POS1_POS2_MIX_FREQ_CHANGES_RANGE = NumberRange{100U, 1000U};
   Timer m_pos1Pos2MixFreqChangeTimer{
@@ -255,11 +257,9 @@ private:
   };
   float m_previousPos1Pos2MixFreq = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
   float m_targetPos1Pos2MixFreq   = FilterPosArrays::DEFAULT_POS1_POS2_MIX_FREQ;
-  auto UpdatePos1Pos2MixFreq() noexcept -> void;
+  auto UpdateFrameDataPos1Pos2MixFreq() noexcept -> void;
 
-  bool m_noZooms    = false;
-  PixelBuffer* m_p1 = nullptr;
-  PixelBuffer* m_p2 = nullptr;
+  bool m_noZooms = false;
 
   FilterSettingsService m_filterSettingsService;
   FilterBuffersService m_filterBuffersService;
@@ -298,7 +298,7 @@ private:
 
   SongInfo m_songInfo{};
   ShowSongTitleType m_showTitle = ShowSongTitleType::AT_START;
-  GoomDrawToSingleBuffer m_goomTextOutput{m_goomInfo.GetDimensions(), *m_goomLogger};
+  GoomDrawToSingleBuffer m_goomTextOutput;
   GoomTitleDisplayer m_goomTitleDisplayer;
   GoomMessageDisplayer m_messageDisplayer;
   [[nodiscard]] static auto GetMessagesFontFile(const std::string& resourcesDirectory)
@@ -421,6 +421,10 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
   : m_parentGoomControl{&parentGoomControl},
     m_goomInfo{dimensions, m_goomTime, m_goomSoundEvents},
     m_goomLogger{&dynamic_cast<GoomControlLogger&>(goomLogger)},
+    m_mainPixelBuffer{dimensions},
+    m_lowPixelBuffer{dimensions},
+    m_multiBufferDraw{dimensions, goomLogger, m_mainPixelBuffer, m_lowPixelBuffer},
+    m_blend2dDoubleGoomBuffers{m_multiBufferDraw, dimensions, GetColorAlphaNoAddBlend},
     m_fxHelper{m_multiBufferDraw,
                m_goomInfo,
                *m_goomRand,
@@ -435,6 +439,7 @@ GoomControl::GoomControlImpl::GoomControlImpl(const GoomControl& parentGoomContr
                                                               *m_goomRand)},
     m_smallBitmaps{resourcesDirectory},
     m_visualFx{m_parallel, m_fxHelper, m_smallBitmaps, resourcesDirectory, m_stateHandler},
+    m_goomTextOutput{dimensions, goomLogger, m_mainPixelBuffer},
     m_goomTitleDisplayer{m_goomTextOutput, *m_goomRand, GetFontDirectory(resourcesDirectory)},
     m_messageDisplayer{m_goomTextOutput, GetMessagesFontFile(resourcesDirectory)}
 {
@@ -468,26 +473,37 @@ inline auto GoomControl::GoomControlImpl::SetFrameData(FrameData& frameData) -> 
 
   m_visualFx.SetFrameMiscData(m_frameData->miscData);
 
-  m_p1 = &m_frameData->imageArrays.mainImagePixelBuffer;
-  m_p2 = &m_frameData->imageArrays.lowImagePixelBuffer;
-  m_p1->Fill(ZERO_PIXEL);
-  m_p2->Fill(ZERO_PIXEL);
-  m_multiBufferDraw.SetBuffers(*m_p1, *m_p2);
+  m_mainPixelBuffer.Fill(ZERO_PIXEL);
+  m_lowPixelBuffer.Fill(ZERO_PIXEL);
 }
 
 auto GoomControl::GoomControlImpl::UpdateFrameData() -> void
 {
   m_frameData->miscData.goomTime = m_goomTime.GetCurrentTime();
 
-  m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
-  m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating  = true;
-
-  UpdatePos1Pos2MixFreq();
-
-  UpdateFilterPos();
+  UpdateFrameDataPixelBuffers();
+  UpdateFrameDataPos1Pos2MixFreq();
+  UpdateFrameDataFilterPosArrays();
 }
 
-auto GoomControl::GoomControlImpl::UpdateFilterPos() noexcept -> void
+auto GoomControl::GoomControlImpl::UpdateFrameDataPixelBuffers() noexcept -> void
+{
+  // IMPORTANT: 'm_mainPixelBuffer' and 'm_lowPixelBuffer' need to be created in this
+  //   class, then copied to frame data when needed. Just using the frame data pixel
+  //   buffers directly caused a 10 times slow down with pixel blending when I moved
+  //   to an AMD cpu and integrated gpu.
+  const auto& srceMain    = m_mainPixelBuffer.GetPixelBuffer();
+  auto& destMainFrameData = m_frameData->imageArrays.mainImagePixelBuffer.GetPixelBuffer();
+  std::ranges::copy(srceMain.cbegin(), srceMain.cend(), destMainFrameData.begin());
+  m_frameData->imageArrays.mainImagePixelBufferNeedsUpdating = true;
+
+  const auto& srceLow    = m_lowPixelBuffer.GetPixelBuffer();
+  auto& destLowFrameData = m_frameData->imageArrays.lowImagePixelBuffer.GetPixelBuffer();
+  std::ranges::copy(srceLow.cbegin(), srceLow.cend(), destLowFrameData.begin());
+  m_frameData->imageArrays.lowImagePixelBufferNeedsUpdating = true;
+}
+
+auto GoomControl::GoomControlImpl::UpdateFrameDataFilterPosArrays() noexcept -> void
 {
   const auto lerpFactor = std::as_const(m_filterSettingsService)
                               .GetFilterSettings()
@@ -506,7 +522,7 @@ auto GoomControl::GoomControlImpl::UpdateFilterPos() noexcept -> void
   }
 }
 
-auto GoomControl::GoomControlImpl::UpdatePos1Pos2MixFreq() noexcept -> void
+auto GoomControl::GoomControlImpl::UpdateFrameDataPos1Pos2MixFreq() noexcept -> void
 {
   if (not m_pos1Pos2MixFreqChangeTimer.Finished())
   {
@@ -559,9 +575,6 @@ inline auto GoomControl::GoomControlImpl::GetNumPoolThreads() const noexcept -> 
 
 inline auto GoomControl::GoomControlImpl::Start() -> void
 {
-  Expects(m_p1 != nullptr);
-  Expects(m_p2 != nullptr);
-
   m_goomLogger->StartGoomControl(this);
 
   StartFilterServices();
@@ -829,10 +842,6 @@ inline auto GoomControl::GoomControlImpl::InitTitleDisplay() -> void
 
 inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 {
-  // NOLINTBEGIN(clang-analyzer-core.NonNullParamChecker)
-  Expects(m_p1 != nullptr);
-  Expects(m_p2 != nullptr);
-
   if (m_songInfo.title.empty())
   {
     return;
@@ -840,7 +849,7 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 
   if (m_showTitle == ShowSongTitleType::ALWAYS)
   {
-    m_goomTextOutput.SetBuffer(*m_p1);
+    m_goomTextOutput.SetBuffer(m_mainPixelBuffer);
     m_goomTitleDisplayer.DrawStaticText(m_songInfo.title);
     return;
   }
@@ -852,23 +861,21 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
 
   if (not m_goomTitleDisplayer.IsFinalPhase())
   {
-    m_goomTextOutput.SetBuffer(*m_p1);
+    m_goomTextOutput.SetBuffer(m_mainPixelBuffer);
   }
   else if (not m_goomTitleDisplayer.IsFinalMoments())
   {
     static constexpr auto FINAL_PHASE_BUFF_INTENSITY = 0.2F;
     m_goomTextOutput.SetBuffIntensity(FINAL_PHASE_BUFF_INTENSITY);
-    m_goomTextOutput.SetBuffer(*m_p1);
+    m_goomTextOutput.SetBuffer(m_mainPixelBuffer);
   }
   else
   {
     static constexpr auto FINAL_MOMENTS_BUFF_INTENSITY = 0.1F;
     m_goomTextOutput.SetBuffIntensity(FINAL_MOMENTS_BUFF_INTENSITY);
-    m_goomTextOutput.SetBuffer(*m_p2);
+    m_goomTextOutput.SetBuffer(m_lowPixelBuffer);
   }
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
-
-  // NOLINTEND(clang-analyzer-core.NonNullParamChecker)
 }
 
 /*
@@ -881,9 +888,7 @@ auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -
     return;
   }
 
-  Expects(m_p1 != nullptr);
-  // NOLINTNEXTLINE(clang-analyzer-core.NonNullParamChecker)
-  m_goomTextOutput.SetBuffer(*m_p1);
+  m_goomTextOutput.SetBuffer(m_mainPixelBuffer);
 
   m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
 }

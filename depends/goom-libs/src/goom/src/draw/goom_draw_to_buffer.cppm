@@ -16,7 +16,9 @@ export namespace GOOM::DRAW
 class GoomDrawToSingleBuffer : public IGoomDraw
 {
 public:
-  GoomDrawToSingleBuffer(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept;
+  GoomDrawToSingleBuffer(const Dimensions& dimensions,
+                         GoomLogger& goomLogger,
+                         PixelBuffer& buffer) noexcept;
 
   [[nodiscard]] auto GetBuffer() const noexcept -> const PixelBuffer&;
   [[nodiscard]] auto GetBuffer() noexcept -> PixelBuffer&;
@@ -38,13 +40,15 @@ private:
 class GoomDrawToTwoBuffers : public IGoomDraw
 {
 public:
-  GoomDrawToTwoBuffers(const Dimensions& dimensions, GoomLogger& goomLogger) noexcept;
+  GoomDrawToTwoBuffers(const Dimensions& dimensions,
+                       GoomLogger& goomLogger,
+                       PixelBuffer& buffer1,
+                       PixelBuffer& buffer2) noexcept;
 
   [[nodiscard]] auto GetBuffer1() const noexcept -> const PixelBuffer&;
   [[nodiscard]] auto GetBuffer1() noexcept -> PixelBuffer&;
   [[nodiscard]] auto GetBuffer2() const noexcept -> const PixelBuffer&;
   [[nodiscard]] auto GetBuffer2() noexcept -> PixelBuffer&;
-  auto SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept -> void;
 
   [[nodiscard]] auto GetPixel(const Point2dInt& point) const noexcept -> Pixel override;
   auto DrawPixelsUnblended(const Point2dInt& point, const MultiplePixels& colors) noexcept
@@ -122,16 +126,6 @@ inline auto GoomDrawToTwoBuffers::GetBuffer2() const noexcept -> const PixelBuff
 inline auto GoomDrawToTwoBuffers::GetBuffer2() noexcept -> PixelBuffer&
 {
   return *m_buffer2;
-}
-
-inline auto GoomDrawToTwoBuffers::SetBuffers(PixelBuffer& buffer1, PixelBuffer& buffer2) noexcept
-    -> void
-{
-  Expects(buffer1.GetWidth() == GetDimensions().GetWidth());
-  Expects(buffer2.GetWidth() == GetDimensions().GetWidth());
-
-  m_buffer1 = &buffer1;
-  m_buffer2 = &buffer2;
 }
 
 inline auto GoomDrawToTwoBuffers::GetPixel(const Point2dInt& point) const noexcept -> Pixel
