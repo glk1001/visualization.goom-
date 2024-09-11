@@ -20,7 +20,7 @@ layout(binding = FILTER_DEST_POS_IMAGE_UNIT2, rg32f) uniform readonly image2D im
 in vec3 position;
 in vec2 texCoord;
 
-uniform float u_lerpFactor;  // For lerping between srce and dest buffers.
+uniform float u_srceDestLerpFactor;  // For lerping between srce and dest buffers.
 uniform float u_prevFrameTMix;
 uniform bool u_resetSrceFilterPosBuffers;
 uniform float u_pos1Pos2MixFreq;
@@ -38,7 +38,7 @@ uniform float u_mainColorMultiplier = 1.0F; // Used to factor this frames' main 
 uniform float u_lowColorMultiplier  = 1.0F; // Used to factor this frames' low color.
 
 #include "pass1_gpu_filter_effects_consts.h"
-#include "pass1_gpu_filter_effects.fs"
+#include "pass1_gpu_filter_effects.frag"
 
 vec4 GetPosMappedPersistentColorValue(const vec2 uv, const ivec2 deviceXY);
 float GetBaseColorMultiplier(const vec3 color);
