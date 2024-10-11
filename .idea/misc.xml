@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Black">
+    <option name="sdkName" value="Python 3.11" />
+  </component>
+  <component name="CMakePythonSetting">
+    <option name="pythonIntegrationState" value="YES" />
+  </component>
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/.venv" />
+      <file path="$PROJECT_DIR$/SPOTIFY_ERROR" />
+      <file path="$PROJECT_DIR$/build-clang-19-RelWithDebInfo-omega" />
+      <file path="$PROJECT_DIR$/build-clion-clang-18-Debug-omega" />
+      <file path="$PROJECT_DIR$/build-clion-clang-18-RelWithDebInfo-omega" />
+      <file path="$PROJECT_DIR$/build-clion-clang-19-RelWithDebInfo-omega" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-18-RelWithDebInfo-omega" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-18-Release-omega" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-19-RelWithDebInfo-omega" />
+      <file path="$PROJECT_DIR$/build-clion-docker-clang-19-Release-omega" />
+      <file path="$PROJECT_DIR$/build-clion-docker-gcc-14-RelWithDebInfo-omega" />
+    </excludeRoots>
+  </component>
+  <component name="PythonCompatibilityInspectionAdvertiser">
+    <option name="version" value="3" />
+  </component>
+</project>
