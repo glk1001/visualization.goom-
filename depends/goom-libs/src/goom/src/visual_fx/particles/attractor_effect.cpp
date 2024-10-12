@@ -27,10 +27,10 @@ using ::PARTICLES::UPDATERS::VelocityColorUpdater;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::NumberRange;
 
-static constexpr auto EMIT_RATE_FACTOR_RANGE = NumberRange{0.1F, 0.9F};
+static constexpr auto EMIT_RATE_FACTOR_RANGE = NumberRange{0.1F, 100.0F};
 
 static constexpr auto MIN_SPHERE_VELOCITY = 0.1F;
-static constexpr auto MAX_SPHERE_VELOCITY = 0.5F;
+static constexpr auto MAX_SPHERE_VELOCITY = 1.0F;
 
 static constexpr auto MIN_LIFETIME = 2.0F;
 static constexpr auto MAX_LIFETIME = 200.0F;
@@ -91,10 +91,10 @@ static constexpr auto UPDATE_RADIUS_Y = std::array{
 };
 static_assert(UPDATE_RADIUS_Y.size() == AttractorEffect::NUM_EMITTERS);
 
-static constexpr auto PROB_BIG_EULER_ACCELERATION    = 0.05F;
+static constexpr auto PROB_BIG_EULER_ACCELERATION    = 0.50F;
 static constexpr auto PROB_EQUAL_EULER_ACCELERATION  = 0.95F;
-static constexpr auto SMALL_EULER_ACCELERATION_RANGE = NumberRange{0.0F, 0.1F};
-static constexpr auto BIG_EULER_ACCELERATION_RANGE   = NumberRange{0.1F, 10.0F};
+static constexpr auto SMALL_EULER_ACCELERATION_RANGE = NumberRange{5.0F, 10.0F};
+static constexpr auto BIG_EULER_ACCELERATION_RANGE   = NumberRange{10.0F, 100.0F};
 
 static constexpr auto PROB_POS_COLOR_UPDATER = 0.5F;
 
