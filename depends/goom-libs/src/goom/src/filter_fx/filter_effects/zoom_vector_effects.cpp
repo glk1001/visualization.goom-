@@ -2,6 +2,7 @@ module;
 
 #include <cmath>
 #include <cstdint>
+#include <format>
 #include <string>
 
 module Goom.FilterFx.FilterEffects.ZoomVectorEffects;
@@ -78,14 +79,14 @@ auto ZoomVectorEffects::GetMultiplierEffect(const NormalizedCoords& coords,
 
 auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs
 {
-  static constexpr auto* PARAM_GROUP = "ZoomEffects";
+  static constexpr auto* PARAM_GROUP = "Zoom Effects";
 
   auto nameValuePairs = UTILS::NameValuePairs{
-      GetPair(PARAM_GROUP, "coeffFactor", m_baseZoomAdjustmentFactor),
       GetPair(PARAM_GROUP,
-              "multEffectActive",
-              m_filterEffectsSettings->filterMultiplierEffectsSettings.isActive),
-  };
+              "params",
+              std::format("{:.2f}, {}",
+                          m_baseZoomAdjustmentFactor,
+                          m_filterEffectsSettings->filterMultiplierEffectsSettings.isActive))};
 
   UTILS::MoveNameValuePairs(GetZoomAdjustmentNameValueParams(), nameValuePairs);
   UTILS::MoveNameValuePairs(m_zoomVectorAfterEffects.GetZoomEffectsNameValueParams(),

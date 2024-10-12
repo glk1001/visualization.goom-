@@ -136,6 +136,7 @@ auto GoomVisualization::SetShowSongTitle(const ShowSongTitleType showMusicTitleT
 auto GoomVisualization::SetShowGoomState(const bool value) -> void
 {
   m_goomControl.SetShowGoomState(value);
+  m_glScene->SetZeroPrevFrameTMix(value);
 }
 
 auto GoomVisualization::SetDumpDirectory(const std::string& dumpDirectory) -> void

@@ -1,39 +1,47 @@
 module;
 
-#include <cstddef>
-#include <cstdint>
 #include <string>
 #include <vector>
 
 export module Goom.Control.GoomMessageDisplayer;
 
+import Goom.Color.ColorUtils;
 import Goom.Draw.GoomDrawBase;
 import Goom.Draw.ShaperDrawers.TextDrawer;
-import Goom.Utils.Parallel;
+import Goom.Lib.GoomGraphic;
+
+using GOOM::COLOR::SimpleColors;
+using GOOM::DRAW::IGoomDraw;
+using GOOM::DRAW::SHAPE_DRAWERS::TextDrawer;
 
 export namespace GOOM::CONTROL
 {
 
+using MessageGroupColors = SimpleColors;
+struct MessageGroup
+{
+  MessageGroupColors color{};
+  std::vector<std::string> messages;
+};
+
 class GoomMessageDisplayer
 {
 public:
-  GoomMessageDisplayer(DRAW::IGoomDraw& draw, const std::string& updateMessagesFontFile);
+  GoomMessageDisplayer(IGoomDraw& draw, const std::string& messagesFontFile);
 
-  void UpdateMessages(const std::vector<std::string>& msgLines);
+  auto DisplayMessageGroups(const std::vector<MessageGroup>& messageGroups) -> void;
 
 private:
-  UTILS::Parallel m_parallel{UTILS::GetNumAvailablePoolThreads()};
-  DRAW::IGoomDraw* m_draw;
-  std::string m_updateMessagesFontFile;
+  IGoomDraw* m_draw;
 
-  static constexpr int32_t MSG_FONT_SIZE         = 9;
-  static constexpr size_t DEFAULT_NUM_DISPLAYERS = 1;
-  std::vector<DRAW::SHAPE_DRAWERS::TextDrawer> m_updateMessagesDisplayers{
-      GetUpdateMessagesDisplayers(DEFAULT_NUM_DISPLAYERS, *m_draw, m_updateMessagesFontFile)};
-  [[nodiscard]] static auto GetUpdateMessagesDisplayers(size_t numDisplayers,
-                                                        DRAW::IGoomDraw& textOutput,
-                                                        const std::string& updateMessagesFontFile)
-      -> std::vector<DRAW::SHAPE_DRAWERS::TextDrawer>;
+  [[nodiscard]] auto DisplayMessageGroup(int32_t yStart, const MessageGroup& messageGroup)
+      -> int32_t;
+  // Returns next available y position.
+
+  static constexpr auto MESSAGES_FONT_SIZE = 10;
+  Pixel m_currentTextColor;
+  TextDrawer m_messagesDisplayer;
+  [[nodiscard]] auto GetMessagesDisplayer(const std::string& messagesFontFile) const -> TextDrawer;
 };
 
 } // namespace GOOM::CONTROL

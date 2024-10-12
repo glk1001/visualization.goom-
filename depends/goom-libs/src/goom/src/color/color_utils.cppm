@@ -43,6 +43,8 @@ inline constexpr auto MAX_BRIGHTNESS = 50.0F;
 
 enum class SimpleColors : UnderlyingEnumType
 {
+  BLACK,
+  WHITE,
   PURE_RED,
   PURE_LIME,
   PURE_BLUE,
@@ -58,7 +60,6 @@ enum class SimpleColors : UnderlyingEnumType
   CURIOUS_BLUE,
   LIGHT_ORCHID,
   GOLDEN_BELL,
-  BLACK,
 };
 [[nodiscard]] constexpr auto GetSimpleColor(SimpleColors simpleColor, PixelChannelType alpha)
     -> Pixel;
@@ -194,6 +195,8 @@ constexpr auto GetLuma(const Pixel& color) -> float
 constexpr auto GetSimpleColor(const SimpleColors simpleColor, const PixelChannelType alpha) -> Pixel
 {
   constexpr auto SIMPLE_COLORS_MAP = UTILS::EnumMap<SimpleColors, Pixel>{{{
+      {SimpleColors::BLACK, Pixel{16, 16, 16, MAX_ALPHA}},
+      {SimpleColors::WHITE, Pixel{255, 255, 255, MAX_ALPHA}},
       {SimpleColors::PURE_RED, Pixel{255, 0, 0, MAX_ALPHA}},
       {SimpleColors::PURE_LIME, Pixel{0, 255, 0, MAX_ALPHA}},
       {SimpleColors::PURE_BLUE, Pixel{0, 0, 255, MAX_ALPHA}},
@@ -209,7 +212,6 @@ constexpr auto GetSimpleColor(const SimpleColors simpleColor, const PixelChannel
       {SimpleColors::CURIOUS_BLUE, Pixel{40, 140, 220, MAX_ALPHA}},
       {SimpleColors::LIGHT_ORCHID, Pixel{220, 140, 220, MAX_ALPHA}},
       {SimpleColors::GOLDEN_BELL, Pixel{220, 140, 20, MAX_ALPHA}},
-      {SimpleColors::BLACK, Pixel{16, 16, 16, MAX_ALPHA}},
   }}};
 
   if (alpha == MAX_ALPHA)

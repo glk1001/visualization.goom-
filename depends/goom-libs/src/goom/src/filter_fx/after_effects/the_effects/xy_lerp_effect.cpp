@@ -2,6 +2,7 @@ module;
 
 // #undef NO_LOGGING
 
+#include <format>
 #include <string>
 
 module Goom.FilterFx.AfterEffects.TheEffects.XYLerpEffect;
@@ -68,10 +69,13 @@ auto XYLerpEffect::GetNameValueParams(const std::string& paramGroup) const -> Na
 {
   const auto fullParamGroup = GetFullParamGroup({paramGroup, "xy lerp effect"});
   return {
-      GetPair(fullParamGroup, "mode", EnumToString(m_params.mode)),
-      GetPair(fullParamGroup, "tFreq", m_params.tFreq),
-      GetPair(fullParamGroup, "ySign", m_params.ySign),
-      GetPair(fullParamGroup, "flipXY", m_params.flipXY),
+      GetPair(fullParamGroup,
+              "params",
+              std::format("{}, {:.2f}, {:.1f}, {}",
+                          EnumToString(m_params.mode),
+                          m_params.tFreq,
+                          m_params.ySign,
+                          m_params.flipXY)),
   };
 }
 

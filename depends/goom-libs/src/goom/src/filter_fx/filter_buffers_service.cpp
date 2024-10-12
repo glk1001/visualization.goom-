@@ -4,6 +4,7 @@ module;
 
 #include <cmath>
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <string>
 #include <thread>
@@ -133,12 +134,14 @@ auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) con
 {
   static constexpr auto* PARAM_GROUP = "Buffer Service";
 
-  auto nameValuePairs = UTILS::NameValuePairs{
-      GetPair(PARAM_GROUP, "num pending changes", m_numPendingFilterEffectsChanges),
-      GetPair(PARAM_GROUP, "num completed buffs", m_numTransformBuffersCompleted),
-      GetPair(PARAM_GROUP, "av time to do buff", GetAverageGoomTimeOfBufferProcessing()),
-      GetPair(PARAM_GROUP, "av time betw resets", GetAverageGoomTimeBetweenBufferResets()),
-  };
+  auto nameValuePairs =
+      NameValuePairs{GetPair(PARAM_GROUP,
+                             "params",
+                             std::format("{}, {}, {}, {}",
+                                         m_numPendingFilterEffectsChanges,
+                                         m_numTransformBuffersCompleted,
+                                         GetAverageGoomTimeOfBufferProcessing(),
+                                         GetAverageGoomTimeBetweenBufferResets()))};
   MoveNameValuePairs(m_zoomVector->GetNameValueParams(paramGroup), nameValuePairs);
 
   return nameValuePairs;

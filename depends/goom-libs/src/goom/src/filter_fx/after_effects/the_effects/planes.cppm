@@ -61,8 +61,8 @@ public:
   struct PlaneSwirlEffects
   {
     PlaneSwirlType swirlType;
-    FrequencyFactor frequencyFactor;
     Amplitude amplitude;
+    FrequencyFactor frequencyFactor;
   };
   struct Params
   {

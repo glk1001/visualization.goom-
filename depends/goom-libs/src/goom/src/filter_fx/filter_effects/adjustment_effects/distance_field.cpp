@@ -6,6 +6,7 @@ module;
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <limits>
 #include <utility>
 #include <vector>
@@ -441,22 +442,19 @@ auto DistanceField::GetZoomAdjustmentEffectNameValueParams() const noexcept -> N
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "Dist Field"});
   const auto gridWidth      = m_params.gridMax + 1;
-  return {
-      GetPair(fullParamGroup, "GridType", EnumToString(m_params.gridType)),
-      GetPair(fullParamGroup, "GridWidth", gridWidth),
-      GetPair(fullParamGroup,
-              "Grid Centres",
-              m_params.gridType == GridType::FULL
-                  ? static_cast<size_t>(Sq(gridWidth))
-                  : m_params.gridArrays.gridPointsWithCentres.size()),
-      GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup,
-              "lerpToOneTs",
-              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
-      GetPair(fullParamGroup, "discon zoom", m_params.useDiscontinuousZoomFactor),
-  };
+  return {GetPair(fullParamGroup,
+                  "params",
+                  std::format("({:.2f},{:.2f}), ({:.2f},{:.2f}), {}, {}, {}, {}",
+                              m_params.amplitude.x,
+                              m_params.amplitude.y,
+                              m_params.lerpToOneTs.xLerpT,
+                              m_params.lerpToOneTs.yLerpT,
+                              m_params.useDiscontinuousZoomFactor,
+                              EnumToString(m_params.gridType),
+                              gridWidth,
+                              m_params.gridType == GridType::FULL
+                                  ? static_cast<size_t>(Sq(gridWidth))
+                                  : m_params.gridArrays.gridPointsWithCentres.size()))};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

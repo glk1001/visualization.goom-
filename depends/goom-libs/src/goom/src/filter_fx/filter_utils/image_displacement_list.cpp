@@ -2,6 +2,7 @@ module;
 
 #include <array>
 #include <cstdint>
+#include <format>
 #include <string>
 
 module Goom.FilterFx.FilterUtils.ImageDisplacementList;
@@ -82,22 +83,18 @@ auto ImageDisplacementList::SetParams(const Params& params) -> void
 auto ImageDisplacementList::GetNameValueParams(const std::string& paramGroup) const
     -> NameValuePairs
 {
-  return {
-      GetPair(
-          paramGroup, "filename", std::string{IMAGE_FILENAMES.at(m_currentImageDisplacementIndex)}),
-      GetPair(paramGroup,
-              "zoom factor",
-              Point2dFlt{.x = GetCurrentImageDisplacement().GetXZoomFactor(),
-                         .y = GetCurrentImageDisplacement().GetYZoomFactor()}),
-      GetPair(paramGroup,
-              "amplitude",
-              Point2dFlt{.x = GetCurrentImageDisplacement().GetAmplitude().x,
-                         .y = GetCurrentImageDisplacement().GetAmplitude().y}),
-      GetPair(paramGroup,
-              "cutoff",
-              Point2dFlt{.x = GetCurrentImageDisplacement().GetXColorCutoff(),
-                         .y = GetCurrentImageDisplacement().GetYColorCutoff()}),
-  };
+  return {GetPair(paramGroup,
+                  "filename",
+                  std::string{IMAGE_FILENAMES.at(m_currentImageDisplacementIndex)}),
+          GetPair(paramGroup,
+                  "params",
+                  std::format("({:.3f},{:.3f}), ({:.2f},{:.2f}), ({:.2f},{:.2f})",
+                              GetCurrentImageDisplacement().GetAmplitude().x,
+                              GetCurrentImageDisplacement().GetAmplitude().y,
+                              GetCurrentImageDisplacement().GetXColorCutoff(),
+                              GetCurrentImageDisplacement().GetYColorCutoff(),
+                              GetCurrentImageDisplacement().GetXZoomFactor(),
+                              GetCurrentImageDisplacement().GetYZoomFactor()))};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_UTILS

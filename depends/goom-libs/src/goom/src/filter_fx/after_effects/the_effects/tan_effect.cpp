@@ -4,6 +4,7 @@ module;
 
 #include "goom/goom_logger.h"
 
+#include <format>
 #include <string>
 
 module Goom.FilterFx.AfterEffects.TheEffects.TanEffect;
@@ -76,14 +77,14 @@ auto TanEffect::GetRandomParams() const noexcept -> Params
 auto TanEffect::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({paramGroup, "tan effect"});
-  return {
-      GetPair(fullParamGroup, "tan type", EnumToString(m_params.tanType)),
-      GetPair(fullParamGroup, "cot mix", m_params.cotMix),
-      GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup, "limiting factor", m_params.limitingFactor),
-  };
+  return {GetPair(fullParamGroup,
+                  "params",
+                  std::format("{}, {:.2f}, ({:.2f},{:.2f}), {:.2f}",
+                              EnumToString(m_params.tanType),
+                              m_params.cotMix,
+                              m_params.amplitude.x,
+                              m_params.amplitude.y,
+                              m_params.limitingFactor))};
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

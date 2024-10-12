@@ -220,43 +220,43 @@ auto AllStandardVisualFx::GetDrawablesMap(Parallel& parallel,
   }}};
 }
 
-auto AllStandardVisualFx::GetLinesFx() noexcept -> VISUAL_FX::LinesFx&
+inline auto AllStandardVisualFx::GetLinesFx() noexcept -> VISUAL_FX::LinesFx&
 {
   return *dynamic_cast<LinesFx*>(m_drawablesMap[GoomDrawables::LINES].get());
 }
 
-auto AllStandardVisualFx::Start() -> void
+inline auto AllStandardVisualFx::Start() -> void
 {
   std::ranges::for_each(m_drawablesMap, [](auto& value) { value->Start(); });
 }
 
-auto AllStandardVisualFx::Finish() -> void
+inline auto AllStandardVisualFx::Finish() -> void
 {
   std::ranges::for_each(m_drawablesMap, [](auto& value) { value->Finish(); });
 }
 
-auto AllStandardVisualFx::RefreshAllFx() -> void
+inline auto AllStandardVisualFx::RefreshAllFx() -> void
 {
   std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->Refresh(); });
 }
 
-auto AllStandardVisualFx::SuspendFx() -> void
+inline auto AllStandardVisualFx::SuspendFx() -> void
 {
   std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->Suspend(); });
 }
 
-auto AllStandardVisualFx::ResumeFx() -> void
+inline auto AllStandardVisualFx::ResumeFx() -> void
 {
   std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->Resume(); });
 }
 
-auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
+inline auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
     const IVisualFx::PixelBlenderParams& pixelBlenderParams) noexcept -> void
 {
   std::ranges::for_each(
@@ -265,14 +265,14 @@ auto AllStandardVisualFx::ChangeAllFxPixelBlenders(
       { m_drawablesMap[currentlyDrawable]->ChangePixelBlender(pixelBlenderParams); });
 }
 
-auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
+inline auto AllStandardVisualFx::SetZoomMidpoint(const Point2dInt& zoomMidpoint) -> void
 {
   std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this, &zoomMidpoint](const auto currentlyDrawable)
                         { m_drawablesMap[currentlyDrawable]->SetZoomMidpoint(zoomMidpoint); });
 }
 
-auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::string>
+inline auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::string>
 {
   auto activeColorMapsNames = std::unordered_set<std::string>{};
   activeColorMapsNames.emplace("N/A");
@@ -290,7 +290,7 @@ auto AllStandardVisualFx::GetActiveColorMapsNames() -> std::unordered_set<std::s
   return activeColorMapsNames;
 }
 
-auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
+inline auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
 {
   std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this](const auto drawable)
@@ -300,7 +300,8 @@ auto AllStandardVisualFx::SetFrameMiscDataToStandardFx() -> void
                         });
 }
 
-auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soundData) -> void
+inline auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soundData)
+    -> void
 {
   std::ranges::for_each(m_currentDrawablesState.GetDrawables(),
                         [this, &soundData](const auto drawable)
@@ -314,17 +315,18 @@ auto AllStandardVisualFx::ApplyStandardFxToImageBuffers(const AudioSamples& soun
                         });
 }
 
-auto AllStandardVisualFx::ApplyShaderFxToImageBuffers() -> void
+inline auto AllStandardVisualFx::ApplyShaderFxToImageBuffers() -> void
 {
   m_shaderFx->ApplyToImageBuffers();
 }
 
-auto AllStandardVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues) -> void
+inline auto AllStandardVisualFx::ApplyEndEffectIfNearEnd(const Stopwatch::TimeValues& timeValues)
+    -> void
 {
   m_shaderFx->ApplyEndEffect(timeValues);
 }
 
-auto AllStandardVisualFx::ChangeShaderVariables() -> void
+inline auto AllStandardVisualFx::ChangeShaderVariables() -> void
 {
   m_shaderFx->ChangeEffects();
 }

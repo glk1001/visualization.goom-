@@ -3,6 +3,7 @@ module;
 #include <cmath>
 #include <complex>
 #include <cstdint>
+#include <format>
 #include <vector>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.ComplexRational;
@@ -285,14 +286,15 @@ auto ComplexRational::GetZoomAdjustmentEffectNameValueParams() const noexcept ->
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "complex rat"});
   return {
       GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup,
-              "lerpToOneTs",
-              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
-      GetPair(fullParamGroup, "noInverseSquare", m_params.noInverseSquare),
-      GetPair(fullParamGroup, "useNormalizedAmp", m_params.useNormalizedAmplitude),
-      GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
+              "params",
+              std::format("({:.2f},{:.2f}), ({:.2f},{:.2f}), {}, {}, {:.2f}",
+                          m_params.amplitude.x,
+                          m_params.amplitude.y,
+                          m_params.lerpToOneTs.xLerpT,
+                          m_params.lerpToOneTs.yLerpT,
+                          m_params.noInverseSquare,
+                          m_params.useNormalizedAmplitude,
+                          m_params.modulatorPeriod)),
       GetPair(PARAM_GROUP,
               "viewport0",
               m_params.viewport

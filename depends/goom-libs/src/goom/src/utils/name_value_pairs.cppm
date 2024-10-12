@@ -25,7 +25,8 @@ using NameValuePairs = std::vector<NameValuePair>;
   return pair.first + ": " + pair.second;
 }
 
-[[nodiscard]] auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string;
+[[nodiscard]] auto GetNameValueGroups(const NameValuePairs& nameValuePairs)
+    -> std::vector<std::string>;
 
 // NOLINTNEXTLINE(cppcoreguidelines-rvalue-reference-param-not-moved)
 inline void MoveNameValuePairs(NameValuePairs&& nameValues, NameValuePairs& dest)
@@ -137,14 +138,15 @@ inline auto to_string(const Point2dFlt& value) -> std::string
 namespace GOOM::UTILS
 {
 
-[[nodiscard]] auto GetNameValuesString(const NameValuePairs& nameValuePairs) -> std::string
+[[nodiscard]] auto GetNameValueGroups(const NameValuePairs& nameValuePairs)
+    -> std::vector<std::string>
 {
   auto nameValueStrings = std::vector<std::string>{};
   std::ranges::transform(cbegin(nameValuePairs),
                          cend(nameValuePairs),
                          std::back_inserter(nameValueStrings),
                          [](const NameValuePair& pair) { return GetNameValueString(pair); });
-  return StringJoin(nameValueStrings, "\n");
+  return nameValueStrings;
 }
 
 } // namespace GOOM::UTILS

@@ -47,7 +47,7 @@ public:
   [[nodiscard]] auto GetDumpDirectory() const noexcept -> const std::string&;
 
   auto SetFrameData(FrameData& frameData) -> void;
-  auto UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message = "") -> void;
+  auto UpdateGoomBuffers(const AudioSamples& audioSamples) -> void;
 
   [[nodiscard]] auto GetFrameData() const noexcept -> const FrameData&;
   [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;

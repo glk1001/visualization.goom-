@@ -57,6 +57,8 @@ public:
                      const std::string& shaderDir,
                      const TextureBufferDimensions& textureBufferDimensions) noexcept;
 
+  auto SetZeroPrevFrameTMix(bool useZeroPrevFrameTMix) -> void;
+
   auto InitScene() -> void override;
   auto Resize(const WindowDimensions& windowDimensions) noexcept -> void override;
   auto DestroyScene() -> void override;
@@ -124,7 +126,8 @@ private:
   std::string m_shaderDir;
   size_t m_buffSize;
   float m_aspectRatio;
-  float m_brightnessAdjust = 1.0F;
+  float m_brightnessAdjust    = 1.0F;
+  bool m_useZeroPrevFrameTMix = false;
   GLuint m_renderToTextureFbo{};
   GLuint m_renderTextureName{};
   bool m_receivedFrameData = false;
@@ -350,6 +353,11 @@ private:
 
 namespace GOOM::OPENGL
 {
+
+inline auto DisplacementFilter::SetZeroPrevFrameTMix(const bool useZeroPrevFrameTMix) -> void
+{
+  m_useZeroPrevFrameTMix = useZeroPrevFrameTMix;
+}
 
 inline auto DisplacementFilter::GetShaderDir() const noexcept -> const std::string&
 {
@@ -1024,7 +1032,8 @@ auto DisplacementFilter::UpdatePass1MiscDataToGl(const size_t pboIndex) noexcept
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_BASE_COLOR_MULTIPLIER, m_frameDataArray.at(pboIndex).miscData.baseColorMultiplier);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
-      UNIFORM_PREV_FRAME_T_MIX, m_frameDataArray.at(pboIndex).miscData.prevFrameTMix);
+      UNIFORM_PREV_FRAME_T_MIX,
+      m_useZeroPrevFrameTMix ? 0.0F : m_frameDataArray.at(pboIndex).miscData.prevFrameTMix);
   m_programPass1UpdateFilterBuff1AndBuff3.SetUniform(
       UNIFORM_TIME, static_cast<uint32_t>(m_frameDataArray.at(pboIndex).miscData.goomTime));
 }

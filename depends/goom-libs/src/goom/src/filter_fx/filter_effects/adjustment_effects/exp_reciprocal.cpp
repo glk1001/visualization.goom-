@@ -6,6 +6,7 @@ module;
 #include <cmath>
 #include <complex>
 #include <cstdint>
+#include <format>
 #include <numeric>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.ExpReciprocal;
@@ -189,21 +190,22 @@ auto ExpReciprocal::GetZoomAdjustmentEffectNameValueParams() const noexcept -> N
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "exp reciprocal"});
   return {
-      GetPair(fullParamGroup, "exp reciprocal", m_params.reciprocalExponent),
-      GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup,
-              "lerpToOneTs",
-              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
-      GetPair(fullParamGroup, "noInverseSquare", m_params.noInverseSquare),
-      GetPair(fullParamGroup, "useNormalizedAmp", m_params.useNormalizedAmplitude),
       GetPair(
           fullParamGroup,
-          "magnify/rotate",
-          Point2dFlt{.x = m_params.magnifyAndRotate.real(), .y = m_params.magnifyAndRotate.imag()}),
-      GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
-      GetPair(fullParamGroup, "maxAbsSqFz", m_params.maxAbsSqFz),
+          "params",
+          std::format(
+              "({:.2f},{:.2f}), ({:.2f},{:.2f}), {}, ({:.2f},{:.2f}), {}, {:.2f}, {:.2f}, {:.2f},",
+              m_params.amplitude.x,
+              m_params.amplitude.y,
+              m_params.lerpToOneTs.xLerpT,
+              m_params.lerpToOneTs.yLerpT,
+              m_params.noInverseSquare,
+              m_params.magnifyAndRotate.real(),
+              m_params.magnifyAndRotate.imag(),
+              m_params.useNormalizedAmplitude,
+              m_params.reciprocalExponent,
+              m_params.modulatorPeriod,
+              m_params.maxAbsSqFz)),
       GetPair(PARAM_GROUP,
               "viewport0",
               m_params.viewport

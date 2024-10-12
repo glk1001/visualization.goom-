@@ -1,6 +1,7 @@
 module;
 
 #include <PerlinNoise.hpp>
+#include <format>
 #include <limits>
 #include <type_traits>
 
@@ -67,11 +68,6 @@ auto PerlinNoise::GetRandomParams() const noexcept -> Params
                               ? xAmplitude
                               : m_goomRand->GetRandInRange<AMPLITUDE_RANGE>();
 
-  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
-  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
-                               ? xLerpToOneT
-                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
-
   const auto xNoiseFrequencyFactor = m_goomRand->GetRandInRange<NOISE_FREQUENCY_FACTOR_RANGE>();
   const auto yNoiseFrequencyFactor =
       m_goomRand->ProbabilityOf<PROB_XY_NOISE_FREQUENCIES_EQUAL>()
@@ -84,15 +80,20 @@ auto PerlinNoise::GetRandomParams() const noexcept -> Params
           ? xAngleFrequencyFactor
           : m_goomRand->GetRandInRange<ANGLE_FREQUENCY_FACTOR_RANGE>();
 
+  const auto xLerpToOneT = m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+  const auto yLerpToOneT = m_goomRand->ProbabilityOf<PROB_LERP_TO_ONE_T_S_EQUAL>()
+                               ? xLerpToOneT
+                               : m_goomRand->GetRandInRange<LERP_TO_ONE_T_RANGE>();
+
   const auto octaves = m_goomRand->GetRandInRange<OCTAVES_RANGE>();
 
   const auto persistence = m_goomRand->GetRandInRange<PERSISTENCE_RANGE>();
 
   return {
       .amplitude            = {                xAmplitude,                 yAmplitude},
-      .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
       .noiseFrequencyFactor = {.x = xNoiseFrequencyFactor, .y = yNoiseFrequencyFactor},
       .angleFrequencyFactor = {.x = xAngleFrequencyFactor, .y = yAngleFrequencyFactor},
+      .lerpToOneTs          = {     .xLerpT = xLerpToOneT,      .yLerpT = yLerpToOneT},
       .octaves              = octaves,
       .persistence          = persistence
   };
@@ -136,24 +137,20 @@ auto PerlinNoise::GetVelocity(const NormalizedCoords& coords) const noexcept -> 
 auto PerlinNoise::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "perlin noise"});
-  return {
-      GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup,
-              "lerpToOneTs",
-              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
-      GetPair(
-          fullParamGroup,
-          "angle freq fac",
-          Point2dFlt{.x = m_params.angleFrequencyFactor.x, .y = m_params.angleFrequencyFactor.y}),
-      GetPair(
-          fullParamGroup,
-          "noise freq fac",
-          Point2dFlt{.x = m_params.noiseFrequencyFactor.x, .y = m_params.noiseFrequencyFactor.y}),
-      GetPair(fullParamGroup, "octaves", m_params.octaves),
-      GetPair(fullParamGroup, "persistence", m_params.persistence),
-  };
+  return {GetPair(
+      fullParamGroup,
+      "params",
+      std::format("({:.2f},{:.2f}), ({:.2f},{:.2f}), ({:.2f},{:.2f}), ({:.2f},{:.2f}), {}, {:.2f}",
+                  m_params.amplitude.x,
+                  m_params.amplitude.y,
+                  m_params.angleFrequencyFactor.x,
+                  m_params.angleFrequencyFactor.y,
+                  m_params.noiseFrequencyFactor.x,
+                  m_params.noiseFrequencyFactor.y,
+                  m_params.lerpToOneTs.xLerpT,
+                  m_params.lerpToOneTs.yLerpT,
+                  m_params.octaves,
+                  m_params.persistence))};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

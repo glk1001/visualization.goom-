@@ -57,11 +57,11 @@ public:
 
   struct Params
   {
+    Amplitude amplitude;
+    FrequencyFactor frequencyFactor;
     HypercosOverlayMode overlay;
     HypercosEffect effect;
     bool reverse;
-    FrequencyFactor frequencyFactor;
-    Amplitude amplitude;
   };
   [[nodiscard]] auto GetParams() const -> const Params&;
 

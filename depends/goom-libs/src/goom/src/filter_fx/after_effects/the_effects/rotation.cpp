@@ -1,6 +1,7 @@
 module;
 
 #include <cmath>
+#include <format>
 #include <string>
 
 module Goom.FilterFx.AfterEffects.TheEffects.Rotation;
@@ -56,13 +57,13 @@ auto Rotation::GetRandomParams() const noexcept -> Params
 auto Rotation::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({paramGroup, "rotation"});
-  return {
-      GetPair(fullParamGroup,
-              "speed",
-              Point2dFlt{.x = m_params.xRotateSpeed, .y = m_params.yRotateSpeed}),
-      GetPair(fullParamGroup, "sinAngle", m_params.sinAngle),
-      GetPair(fullParamGroup, "cosAngle", m_params.cosAngle),
-  };
+  return {GetPair(fullParamGroup,
+                  "params",
+                  std::format("({:.2f},{:.2f}), {:.2f}, {:.2f}",
+                              m_params.xRotateSpeed,
+                              m_params.yRotateSpeed,
+                              m_params.sinAngle,
+                              m_params.cosAngle))};
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

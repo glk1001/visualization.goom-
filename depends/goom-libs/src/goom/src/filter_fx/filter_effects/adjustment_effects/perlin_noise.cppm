@@ -36,9 +36,9 @@ public:
   struct Params
   {
     Amplitude amplitude;
-    FILTER_UTILS::LerpToOneTs lerpToOneTs;
     FrequencyFactor noiseFrequencyFactor;
     FrequencyFactor angleFrequencyFactor;
+    FILTER_UTILS::LerpToOneTs lerpToOneTs;
     int32_t octaves;
     float persistence;
   };

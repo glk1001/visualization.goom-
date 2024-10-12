@@ -2,6 +2,7 @@ module;
 
 #include <cmath>
 #include <cstdint>
+#include <format>
 #include <string>
 
 module Goom.FilterFx.AfterEffects.TheEffects.Planes;
@@ -257,8 +258,8 @@ inline auto Planes::GetZeroSwirlEffects() -> PlaneSwirlEffects
 {
   return {
       .swirlType       = PlaneSwirlType::NONE,
-      .frequencyFactor = {.x = 0.0F, .y = 0.0F},
       .amplitude       = {     0.0F,      0.0F},
+      .frequencyFactor = {.x = 0.0F, .y = 0.0F},
   };
 }
 
@@ -269,15 +270,15 @@ inline auto Planes::GetNonzeroRandomSwirlEffects(const UTILS::MATH::GoomRand& go
 
   swirlEffects.swirlType = static_cast<PlaneSwirlType>(goomRand.GetRandInRange<SWIRL_TYPE_RANGE>());
 
-  swirlEffects.frequencyFactor.x = goomRand.GetRandInRange<HORIZONTAL_SWIRL_FREQ_RANGE>();
-  swirlEffects.frequencyFactor.y = goomRand.ProbabilityOf<PROB_SWIRL_FREQ_EQUAL>()
-                                       ? swirlEffects.frequencyFactor.x
-                                       : goomRand.GetRandInRange<VERTICAL_SWIRL_FREQ_RANGE>();
-
   swirlEffects.amplitude.x = goomRand.GetRandInRange<HORIZONTAL_SWIRL_AMPLITUDE_RANGE>();
   swirlEffects.amplitude.y = goomRand.ProbabilityOf<PROB_SWIRL_AMPLITUDES_EQUAL>()
                                  ? swirlEffects.amplitude.x
                                  : goomRand.GetRandInRange<VERTICAL_SWIRL_AMPLITUDE_RANGE>();
+
+  swirlEffects.frequencyFactor.x = goomRand.GetRandInRange<HORIZONTAL_SWIRL_FREQ_RANGE>();
+  swirlEffects.frequencyFactor.y = goomRand.ProbabilityOf<PROB_SWIRL_FREQ_EQUAL>()
+                                       ? swirlEffects.frequencyFactor.x
+                                       : goomRand.GetRandInRange<VERTICAL_SWIRL_FREQ_RANGE>();
 
   return swirlEffects;
 }
@@ -355,23 +356,21 @@ auto Planes::GetVerticalSwirlOffsetFactor(const float coordValue) const -> float
 auto Planes::GetNameValueParams(const std::string& paramGroup) const -> NameValuePairs
 {
   const auto fullParamGroup = GetFullParamGroup({paramGroup, "planes"});
-  return {
-      GetPair(fullParamGroup,
-              "planeEffects.amplitudes",
-              Point2dFlt{.x = m_params.planeEffects.amplitude.x,
-                         .y = m_params.planeEffects.amplitude.y}),
-      GetPair(fullParamGroup,
-              "swirlEffects.swirlType",
-              static_cast<int32_t>(m_params.swirlEffects.swirlType)),
-      GetPair(fullParamGroup,
-              "swirlEffects.frequencies",
-              Point2dFlt{.x = m_params.swirlEffects.frequencyFactor.x,
-                         .y = m_params.swirlEffects.frequencyFactor.y}),
-      GetPair(fullParamGroup,
-              "swirlEffects.amplitudes",
-              Point2dFlt{.x = m_params.swirlEffects.amplitude.x,
-                         .y = m_params.swirlEffects.amplitude.y}),
-  };
+  return {GetPair(fullParamGroup,
+                  "planeEffects",
+                  std::format("({}, {}, {:.3f},{:.3f}),",
+                              m_params.planeEffects.horizontalEffectActive,
+                              m_params.planeEffects.verticalEffectActive,
+                              m_params.planeEffects.amplitude.x,
+                              m_params.planeEffects.amplitude.y)),
+          GetPair(fullParamGroup,
+                  "swirlEffects",
+                  std::format("({}, {:.3f},{:.3f}), {:.1f},{:.1f})",
+                              static_cast<int32_t>(m_params.swirlEffects.swirlType),
+                              m_params.swirlEffects.amplitude.x,
+                              m_params.swirlEffects.amplitude.y,
+                              m_params.swirlEffects.frequencyFactor.x,
+                              m_params.swirlEffects.frequencyFactor.y))};
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

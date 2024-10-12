@@ -1,11 +1,14 @@
 module;
 
+#include <format>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 module Goom.Control.GoomStateMonitor;
 
 import Goom.Control.GoomAllVisualFx;
+import Goom.Control.GoomMessageDisplayer;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.FilterFx.FilterBuffersService;
 import Goom.FilterFx.FilterSettingsService;
@@ -16,7 +19,7 @@ namespace GOOM::CONTROL
 
 using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterSettingsService;
-using UTILS::GetNameValuesString;
+using UTILS::GetNameValueGroups;
 using UTILS::GetPair;
 
 GoomStateMonitor::GoomStateMonitor(const GoomAllVisualFx& visualFx,
@@ -30,18 +33,29 @@ GoomStateMonitor::GoomStateMonitor(const GoomAllVisualFx& visualFx,
 {
 }
 
-auto GoomStateMonitor::GetCurrentState() const -> std::string
+auto GoomStateMonitor::GetCurrentState() const -> std::vector<MessageGroup>
 {
-  auto message = std::string{};
+  using enum MessageGroupColors;
 
-  message += GetNameValuesString(GetStateAndFilterModeNameValueParams()) + "\n";
-  message += GetNameValuesString(GetShaderVariablesNameValueParams()) + "\n";
-  message += GetNameValuesString(GetMusicSettingsNameValueParams()) + "\n";
-  message += GetNameValuesString(GetFilterBufferValueParams()) + "\n";
-  message += GetNameValuesString(GetZoomFilterFxNameValueParams()) + "\n";
-  message += GetNameValuesString(GetFilterEffectsNameValueParams());
+  auto messageGroup = std::vector<MessageGroup>(NUM_GROUPS + 1);
 
-  return message;
+  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+  // NOTE: Clunky but first index 0 is reserved for the caller.
+  messageGroup.at(1) = {.color    = PURE_RED,
+                        .messages = GetNameValueGroups(GetStateAndFilterModeNameValueParams())};
+  messageGroup.at(2) = {.color    = PURE_LIME,
+                        .messages = GetNameValueGroups(GetShaderVariablesNameValueParams())};
+  messageGroup.at(3) = {.color    = PURE_BLUE,
+                        .messages = GetNameValueGroups(GetMusicSettingsNameValueParams())};
+  messageGroup.at(4) = {.color    = PURE_YELLOW,
+                        .messages = GetNameValueGroups(GetFilterBufferValueParams())};
+  messageGroup.at(5) = {.color    = ORANGE,
+                        .messages = GetNameValueGroups(GetZoomFilterFxNameValueParams())};
+  messageGroup.at(6) = {.color    = TIA_MARIA,
+                        .messages = GetNameValueGroups(GetFilterEffectsNameValueParams())};
+  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
+
+  return messageGroup;
 }
 
 // TODO(glk) - clean this up.
@@ -65,7 +79,7 @@ namespace
 
 auto GoomStateMonitor::GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs
 {
-  static constexpr auto* PARAM_GROUP = "";
+  static constexpr auto* PARAM_GROUP = "Main";
   return {
       GetPair(PARAM_GROUP, "State", m_visualFx->GetCurrentStateName()),
       GetPair(PARAM_GROUP, "Color Maps", GetString(GoomAllVisualFx::GetCurrentColorMapsNames())),
@@ -93,11 +107,12 @@ inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> UTILS::NameV
   static constexpr auto* PARAM_GROUP = "Filter Buffer";
   const auto& transformBufferLerpData =
       m_filterSettingsService->GetFilterSettings().transformBufferLerpData;
-  return {
-      GetPair(PARAM_GROUP, "LerpFactor", transformBufferLerpData.GetLerpFactor()),
-      GetPair(PARAM_GROUP, "LerpIncrement", transformBufferLerpData.GetIncrement()),
-      GetPair(PARAM_GROUP, "LerpSFunc", transformBufferLerpData.GetUseSFunction()),
-  };
+  return {GetPair(PARAM_GROUP,
+                  "params",
+                  std::format("{:.2f}, {:.2f}, {}",
+                              transformBufferLerpData.GetLerpFactor(),
+                              transformBufferLerpData.GetIncrement(),
+                              transformBufferLerpData.GetUseSFunction()))};
 }
 
 inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::NameValuePairs
@@ -110,7 +125,7 @@ inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> UTILS::
               "Middle",
               Point2dInt{.x = filterEffectsSettings.zoomMidpoint.x,
                          .y = filterEffectsSettings.zoomMidpoint.y}),
-      GetPair(PARAM_GROUP, "After Effects", filterEffectsSettings.afterEffectsVelocityMultiplier),
+      GetPair(PARAM_GROUP, "After Mult", filterEffectsSettings.afterEffectsVelocityMultiplier),
   };
 }
 

@@ -2,6 +2,7 @@ module;
 
 #include <cmath>
 #include <cstdint>
+#include <format>
 #include <string>
 
 module Goom.FilterFx.AfterEffects.TheEffects.Hypercos;
@@ -31,16 +32,6 @@ using enum Hypercos::HypercosEffect;
 // Hypercos:
 // applique une surcouche de hypercos effect
 // applies an overlay of hypercos effect
-static constexpr auto DEFAULT_OVERLAY = HypercosOverlayMode::NONE;
-static constexpr auto DEFAULT_EFFECT  = NONE;
-static constexpr auto DEFAULT_REVERSE = false;
-
-static constexpr auto X_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
-static constexpr auto Y_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
-static constexpr auto FREQUENCY_FACTOR_RANGE          = NumberRange{5.0F, 100.0F};
-static constexpr auto BIG_FREQUENCY_FACTOR_RANGE      = NumberRange{5.0F, 500.0F};
-static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE = NumberRange{1000.0F, 10000.0F};
-
 static constexpr auto X_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto Y_DEFAULT_AMPLITUDE = 1.0F / 120.0F;
 static constexpr auto AMPLITUDE_RANGE =
@@ -48,17 +39,27 @@ static constexpr auto AMPLITUDE_RANGE =
 static constexpr auto BIG_AMPLITUDE_RANGE =
     NumberRange{0.1F * X_DEFAULT_AMPLITUDE, 10.1F * X_DEFAULT_AMPLITUDE};
 
+static constexpr auto X_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
+static constexpr auto Y_DEFAULT_FREQUENCY_FACTOR      = 10.0F;
+static constexpr auto FREQUENCY_FACTOR_RANGE          = NumberRange{5.0F, 100.0F};
+static constexpr auto BIG_FREQUENCY_FACTOR_RANGE      = NumberRange{5.0F, 500.0F};
+static constexpr auto VERY_BIG_FREQUENCY_FACTOR_RANGE = NumberRange{1000.0F, 10000.0F};
+
+static constexpr auto DEFAULT_OVERLAY = HypercosOverlayMode::NONE;
+static constexpr auto DEFAULT_EFFECT  = NONE;
+static constexpr auto DEFAULT_REVERSE = false;
+
 static constexpr auto PROB_FREQUENCY_FACTORS_EQUAL = 0.5F;
 static constexpr auto PROB_REVERSE                 = 0.5F;
 static constexpr auto PROB_AMPLITUDES_EQUAL        = 0.5F;
 static constexpr auto PROB_BIG_AMPLITUDE_RANGE     = 0.2F;
 
 static constexpr auto DEFAULT_PARAMS = Hypercos::Params{
+    .amplitude       = {       .x = X_DEFAULT_AMPLITUDE,        .y = Y_DEFAULT_AMPLITUDE},
+    .frequencyFactor = {.x = X_DEFAULT_FREQUENCY_FACTOR, .y = Y_DEFAULT_FREQUENCY_FACTOR},
     .overlay         = DEFAULT_OVERLAY,
     .effect          = DEFAULT_EFFECT,
     .reverse         = DEFAULT_REVERSE,
-    .frequencyFactor = {.x = X_DEFAULT_FREQUENCY_FACTOR, .y = Y_DEFAULT_FREQUENCY_FACTOR},
-    .amplitude       = {       .x = X_DEFAULT_AMPLITUDE,        .y = Y_DEFAULT_AMPLITUDE}
 };
 
 static constexpr auto HYPERCOS_EFFECT_NONE_WEIGHT               = 00.0F;
@@ -137,6 +138,11 @@ auto Hypercos::GetHypercosEffect(HypercosOverlayMode overlay,
                                  const NumberRange<float>& freqRange,
                                  const NumberRange<float>& amplitudeRange) const noexcept -> Params
 {
+  const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange);
+  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
+                              ? xAmplitude
+                              : m_goomRand->GetRandInRange(amplitudeRange);
+
   const auto xFrequencyFactor = m_goomRand->GetRandInRange(freqRange);
   const auto yFrequencyFactor = m_goomRand->ProbabilityOf<PROB_FREQUENCY_FACTORS_EQUAL>()
                                     ? xFrequencyFactor
@@ -144,17 +150,12 @@ auto Hypercos::GetHypercosEffect(HypercosOverlayMode overlay,
 
   const auto reverse = m_goomRand->ProbabilityOf<PROB_REVERSE>();
 
-  const auto xAmplitude = m_goomRand->GetRandInRange(amplitudeRange);
-  const auto yAmplitude = m_goomRand->ProbabilityOf<PROB_AMPLITUDES_EQUAL>()
-                              ? xAmplitude
-                              : m_goomRand->GetRandInRange(amplitudeRange);
-
   return {
+      .amplitude       = {      .x = xAmplitude,       .y = yAmplitude},
+      .frequencyFactor = {.x = xFrequencyFactor, .y = yFrequencyFactor},
       .overlay         = overlay,
       .effect          = m_hypercosOverlayWeights.GetRandomWeighted(),
       .reverse         = reverse,
-      .frequencyFactor = {.x = xFrequencyFactor, .y = yFrequencyFactor},
-      .amplitude       = {      .x = xAmplitude,       .y = yAmplitude}
   };
 }
 
@@ -245,17 +246,16 @@ auto Hypercos::GetNameValueParams(const std::string& paramGroup) const -> NameVa
     return {GetPair(fullParamGroup, "overlay", std::string{"None"})};
   }
 
-  return {
-      GetPair(fullParamGroup, "overlay", static_cast<uint32_t>(m_params.overlay)),
-      GetPair(fullParamGroup, "effect", static_cast<uint32_t>(m_params.effect)),
-      GetPair(fullParamGroup, "reverse", m_params.reverse),
-      GetPair(fullParamGroup,
-              "Freq",
-              Point2dFlt{.x = m_params.frequencyFactor.x, .y = m_params.frequencyFactor.y}),
-      GetPair(fullParamGroup,
-              "Amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-  };
+  return {GetPair(fullParamGroup,
+                  "Params",
+                  std::format("({:.3f},{:.3f}), ({:.1f},{:.1f}), {}, {}, {}",
+                              m_params.amplitude.x,
+                              m_params.amplitude.y,
+                              m_params.frequencyFactor.x,
+                              m_params.frequencyFactor.y,
+                              static_cast<uint32_t>(m_params.overlay),
+                              static_cast<uint32_t>(m_params.effect),
+                              m_params.reverse))};
 }
 
 } // namespace GOOM::FILTER_FX::AFTER_EFFECTS

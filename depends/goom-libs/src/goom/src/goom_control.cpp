@@ -51,7 +51,6 @@ import Goom.Utils.DebuggingLogger;
 import Goom.Utils.GoomTime;
 import Goom.Utils.Parallel;
 import Goom.Utils.Stopwatch;
-import Goom.Utils.StrUtils;
 import Goom.Utils.Timer;
 import Goom.Utils.Graphics.Blend2dToGoom;
 import Goom.Utils.Graphics.PixelBlend;
@@ -90,6 +89,8 @@ using CONTROL::GoomSoundEvents;
 using CONTROL::GoomStateMonitor;
 using CONTROL::GoomTitleDisplayer;
 using CONTROL::IGoomStateHandler;
+using CONTROL::MessageGroup;
+using CONTROL::MessageGroupColors;
 using CONTROL::USE_FORCED_GOOM_STATE;
 using DRAW::GoomDrawToSingleBuffer;
 using DRAW::GoomDrawToTwoBuffers;
@@ -102,7 +103,6 @@ using UTILS::GetNumAvailablePoolThreads;
 using UTILS::GoomTime;
 using UTILS::Parallel;
 using UTILS::Stopwatch;
-using UTILS::StringSplit;
 using UTILS::Timer;
 using UTILS::GRAPHICS::Blend2dDoubleGoomBuffers;
 using UTILS::GRAPHICS::GetColorAlphaNoAddBlend;
@@ -218,7 +218,7 @@ public:
   [[nodiscard]] auto GetDumpDirectory() const noexcept -> const std::string&;
 
   auto SetFrameData(FrameData& frameData) -> void;
-  auto UpdateGoomBuffers(const AudioSamples& soundData, const std::string& message) -> void;
+  auto UpdateGoomBuffers(const AudioSamples& soundData) -> void;
 
   [[nodiscard]] auto GetFrameData() const noexcept -> const FrameData&;
   [[nodiscard]] auto GetNumPoolThreads() const noexcept -> size_t;
@@ -305,9 +305,9 @@ private:
       -> std::string;
   [[nodiscard]] static auto GetFontDirectory(const std::string& resourcesDirectory) -> std::string;
   auto InitTitleDisplay() -> void;
-  auto DisplayTitleAndMessages(const std::string& message) -> void;
+  auto DisplayTitle() -> void;
   auto DisplayCurrentTitle() -> void;
-  auto UpdateMessages(const std::string& messages) -> void;
+  auto UpdateMessages(const std::vector<MessageGroup>& messageGroups) -> void;
 
 #ifdef DO_GOOM_STATE_DUMP
   std::unique_ptr<GoomStateDump> m_goomStateDump{};
@@ -319,7 +319,7 @@ private:
       m_visualFx, m_musicSettingsReactor, m_filterSettingsService, m_filterBuffersService};
   bool m_showGoomState = false;
   auto DisplayGoomState() -> void;
-  [[nodiscard]] auto GetGoomTimeInfo() const -> std::string;
+  [[nodiscard]] auto GetGoomTimeInfo() const -> MessageGroup;
 };
 
 GoomControl::GoomControl(const Dimensions& dimensions,
@@ -375,10 +375,9 @@ auto GoomControl::SetFrameData(FrameData& frameData) -> void
   m_pimpl->SetFrameData(frameData);
 }
 
-auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples, const std::string& message)
-    -> void
+auto GoomControl::UpdateGoomBuffers(const AudioSamples& audioSamples) -> void
 {
-  m_pimpl->UpdateGoomBuffers(audioSamples, message);
+  m_pimpl->UpdateGoomBuffers(audioSamples);
 }
 
 auto GoomControl::GetFrameData() const noexcept -> const FrameData&
@@ -685,8 +684,7 @@ inline auto GoomControl::GoomControlImpl::GetMessagesFontFile(const std::string&
   return join_paths(GetFontDirectory(resourcesDirectory), "verdana.ttf");
 }
 
-inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& soundData,
-                                                            const std::string& message) -> void
+inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& soundData) -> void
 {
   NewCycle();
 
@@ -702,7 +700,7 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
   ApplyStateToImageBuffers(soundData);
   ApplyEndEffectIfNearEnd();
 
-  DisplayTitleAndMessages(message);
+  DisplayTitle();
   DisplayGoomState();
 
 #ifdef DO_GOOM_STATE_DUMP
@@ -817,11 +815,8 @@ inline auto GoomControl::GoomControlImpl::ResetDrawBuffSettings(const FXBuffSett
   m_multiBufferDraw.SetBuffIntensity(settings.buffIntensity);
 }
 
-inline auto GoomControl::GoomControlImpl::DisplayTitleAndMessages(const std::string& message)
-    -> void
+inline auto GoomControl::GoomControlImpl::DisplayTitle() -> void
 {
-  UpdateMessages(message);
-
   if (m_showTitle == ShowSongTitleType::NEVER)
   {
     return;
@@ -878,21 +873,6 @@ inline auto GoomControl::GoomControlImpl::DisplayCurrentTitle() -> void
   m_goomTitleDisplayer.DrawMovingText(m_songInfo.title);
 }
 
-/*
- * Met a jour l'affichage du message defilant
- */
-auto GoomControl::GoomControlImpl::UpdateMessages(const std::string& messages) -> void
-{
-  if (messages.empty())
-  {
-    return;
-  }
-
-  m_goomTextOutput.SetBuffer(m_mainPixelBuffer);
-
-  m_messageDisplayer.UpdateMessages(StringSplit(messages, "\n"));
-}
-
 auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
 {
   if (not m_showGoomState)
@@ -900,11 +880,13 @@ auto GoomControl::GoomControlImpl::DisplayGoomState() -> void
     return;
   }
 
-  const std::string message = GetGoomTimeInfo() + "\n" + m_goomStateMonitor.GetCurrentState();
-  UpdateMessages(message);
+  auto messageGroups  = m_goomStateMonitor.GetCurrentState();
+  messageGroups.at(0) = GetGoomTimeInfo();
+
+  UpdateMessages(messageGroups);
 }
 
-inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() const -> std::string
+inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() const -> MessageGroup
 {
   const auto timeLeftStr =
       not m_runningTimeStopwatch.AreTimesValid()
@@ -913,7 +895,18 @@ inline auto GoomControl::GoomControlImpl::GetGoomTimeInfo() const -> std::string
                         m_runningTimeStopwatch.GetTimeValues().timeRemainingInMs,
                         m_runningTimeStopwatch.GetTimeValues().timeRemainingAsPercent);
 
-  return timeLeftStr + std::format("\nUpdate Num: {}", m_goomTime.GetCurrentTime());
+  return {
+      .color    = MessageGroupColors::WHITE,
+      .messages = {timeLeftStr, std::format("Update Num: {}", m_goomTime.GetCurrentTime())}
+  };
+}
+
+auto GoomControl::GoomControlImpl::UpdateMessages(const std::vector<MessageGroup>& messageGroups)
+    -> void
+{
+  m_goomTextOutput.SetBuffer(m_mainPixelBuffer);
+
+  m_messageDisplayer.DisplayMessageGroups(messageGroups);
 }
 
 } // namespace GOOM
