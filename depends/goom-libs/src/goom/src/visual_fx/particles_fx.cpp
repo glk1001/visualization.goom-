@@ -211,8 +211,8 @@ auto Renderer::UpdateFrame(const IEffect& effect) noexcept -> void
 
   for (auto i = 0U; i < effect.GetSystem().GetNumAliveParticles(); ++i)
   {
-    const auto pos       = effect.GetSystem().GetFinalData()->GetPosition(i);
-    const auto color     = effect.GetSystem().GetFinalData()->GetColor(i);
+    const auto pos       = effect.GetSystem().GetFinalData().GetPosition(i);
+    const auto color     = effect.GetSystem().GetFinalData().GetColor(i);
     const auto screenPos = GetScreenPos(pos);
 
     if ((screenPos.x < 0) or (screenPos.y < 0))
