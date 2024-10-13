@@ -126,11 +126,16 @@ private:
 class EffectFactory
 {
 public:
-  [[nodiscard]] static auto Create(const char* name) -> EffectData;
+  [[nodiscard]] static auto Create(const GoomRand& goomRand, const char* name) -> EffectData;
 };
 
-auto EffectFactory::Create(const char* const name) -> EffectData
+auto EffectFactory::Create([[maybe_unused]] const GoomRand& goomRand, const char* const name)
+    -> EffectData
 {
+  static constexpr auto DEFAULT_NUM_PARTICLES = 20000U;
+  static constexpr auto DEFAULT_WORLD_SCALE   = 0.5F;
+  static constexpr auto DEFAULT_BRIGHTNESS    = 2.50F;
+
   static constexpr auto DEFAULT_MIN_DELTA_TIME               = 1.0F / 120.0F;
   static constexpr auto DEFAULT_MAX_DELTA_TIME               = 1.0F / 30.0F;
   static constexpr auto DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET = 150U;
@@ -144,25 +149,22 @@ auto EffectFactory::Create(const char* const name) -> EffectData
   static constexpr auto DEFAULT_EYE_POSITION      = glm::vec3{0.0F, 0.0F, -100.0F};
   static constexpr auto DEFAULT_TARGET_POSITION   = glm::vec3{0.0F, 0.0F, 0.0F};
 
-  static constexpr auto NUM_PARTICLES = 20000U;
-  static constexpr auto WORLD_SCALE   = 0.5F;
-  static constexpr auto BRIGHTNESS    = 2.50F;
-  const auto effect                   = std::make_shared<AttractorEffect>(NUM_PARTICLES);
+  const auto effect = std::make_shared<AttractorEffect>(goomRand, DEFAULT_NUM_PARTICLES);
   return {
       .effect                   = effect,
       .name                     = name,
-      .numParticles             = NUM_PARTICLES,
-      .minMaxNumAliveParticles  = U_HALF * NUM_PARTICLES,
-      .maxMaxNumAliveParticles  = NUM_PARTICLES + 1,
+      .numParticles             = DEFAULT_NUM_PARTICLES,
+      .minMaxNumAliveParticles  = U_HALF * DEFAULT_NUM_PARTICLES,
+      .maxMaxNumAliveParticles  = DEFAULT_NUM_PARTICLES + 1,
       .minMixAmount             = DEFAULT_MIN_MIX_AMOUNT,
       .maxMixAmount             = DEFAULT_MAX_MIX_AMOUNT,
-      .brightness               = BRIGHTNESS,
+      .brightness               = DEFAULT_BRIGHTNESS,
       .minDeltaTime             = DEFAULT_MIN_DELTA_TIME,
       .maxDeltaTime             = DEFAULT_MAX_DELTA_TIME,
       .minNumUpdatesBeforeReset = DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET,
       .maxNumUpdatesBeforeReset = DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET + 1,
       .cameraProperties         = {
-                                   .scale              = WORLD_SCALE,
+                                   .scale              = DEFAULT_WORLD_SCALE,
                                    .fieldOfViewDegrees = DEFAULT_FIELD_OF_VIEW_DEGREES,
                                    .nearZClipPlane     = DEFAULT_NEAR_Z_CLIP_PLANE,
                                    .farZClipPlane      = DEFAULT_FAR_Z_CLIP_PLANE,
@@ -385,7 +387,7 @@ ParticlesFx::ParticlesFxImpl::ParticlesFxImpl(
     FxHelper& fxHelper, [[maybe_unused]] const SmallImageBitmaps& smallBitmaps) noexcept
   : m_fxHelper{&fxHelper},
     //m_smallBitmaps{&smallBitmaps},
-    m_effectData{EffectFactory::Create("attractor")},
+    m_effectData{EffectFactory::Create(m_fxHelper->GetGoomRand(), "attractor")},
     m_numUpdatesBeforeReset{fxHelper.GetGoomRand().GetRandInRange(
         NumberRange{m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset})},
     m_deltaTime{m_fxHelper->GetGoomRand().GetRandInRange(

@@ -8,6 +8,7 @@ module Goom.VisualFx.ParticlesFx.Particles.AttractorEffect;
 
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
+import Goom.Utils.Math.GoomRand;
 
 namespace GOOM::VISUAL_FX::PARTICLES
 {
@@ -20,6 +21,8 @@ using ::PARTICLES::UPDATERS::AttractorUpdater;
 using ::PARTICLES::UPDATERS::BasicTimeUpdater;
 using ::PARTICLES::UPDATERS::EulerUpdater;
 using ::PARTICLES::UPDATERS::VelocityColorUpdater;
+using UTILS::MATH::GoomRand;
+using UTILS::MATH::NumberRange;
 
 static constexpr auto EMIT_RATE_FACTOR = 0.1F;
 
@@ -92,8 +95,9 @@ static constexpr auto EULER_ACCELERATION = glm::vec4{0.0F, 0.0F, 0.0F, 0.0F};
 
 static constexpr auto DEFAULT_NUM_PARTICLES = 250000U;
 
-AttractorEffect::AttractorEffect(const size_t numParticles) noexcept
-  : m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
+AttractorEffect::AttractorEffect(const GoomRand& goomRand, const size_t numParticles) noexcept
+  : m_goomRand{&goomRand},
+    m_system{numParticles == 0 ? DEFAULT_NUM_PARTICLES : numParticles},
     m_colorUpdater{std::make_shared<VelocityColorUpdater>(MIN_VELOCITY, MAX_VELOCITY)}
 {
   AddEmitters();
