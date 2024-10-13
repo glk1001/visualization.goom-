@@ -14,8 +14,8 @@ module;
 
 module Goom.VisualFx.ParticlesFx;
 
-import Particles.Effects.Attractor;
-import Particles.Effects.Effect;
+import Goom.VisualFx.ParticlesFx.Particles.AttractorEffect;
+import Particles.Effect;
 import Goom.Color.ColorAdjustment;
 import Goom.Color.ColorMaps;
 import Goom.Color.ColorUtils;
@@ -51,8 +51,8 @@ using DRAW::IGoomDraw;
 using DRAW::SHAPE_DRAWERS::CircleDrawer;
 using DRAW::SHAPE_DRAWERS::PixelDrawer;
 using FX_UTILS::RandomPixelBlender;
-using PARTICLES::EFFECTS::AttractorEffect;
-using PARTICLES::EFFECTS::IEffect;
+using PARTICLES::AttractorEffect;
+using ::PARTICLES::EFFECTS::IEffect;
 using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;

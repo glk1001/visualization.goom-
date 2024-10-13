@@ -355,6 +355,9 @@ set(GoomVisualFx_modules
     src/visual_fx/l_systems/line_drawer_manager.cppm
     src/visual_fx/lines/line_morph.cppm
     src/visual_fx/lines/line_types.cppm
+    src/visual_fx/particles/attractor_effect.cppm
+    src/visual_fx/particles/fountain_effect.cppm
+    src/visual_fx/particles/tunnel_effect.cppm
     src/visual_fx/raindrops/raindrops.cppm
     src/visual_fx/raindrops/raindrop_positions.cppm
     src/visual_fx/shaders/high_contrast.cppm
@@ -390,6 +393,9 @@ set(GoomVisualFx_modules
 )
 
 set(GoomVisualFx_source_files
+    src/visual_fx/particles/attractor_effect.cpp
+    src/visual_fx/particles/fountain_effect.cpp
+    src/visual_fx/particles/tunnel_effect.cpp
     src/visual_fx/circles_fx.cpp
     src/visual_fx/flying_stars_fx.cpp
     src/visual_fx/goom_dots_fx.cpp

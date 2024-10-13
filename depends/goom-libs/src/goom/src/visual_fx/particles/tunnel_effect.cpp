@@ -4,27 +4,24 @@ module;
 #include <glm/vec4.hpp>
 #include <memory>
 
-module Goom.VisualFx.ParticlesFx.Particles.TunnelEffect;
+module Particles.Effects.TunnelEffect;
 
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
 
-namespace GOOM::VISUAL_FX::PARTICLES
+namespace PARTICLES::EFFECTS
 {
 
-using ::PARTICLES::ParticleEmitter;
-using ::PARTICLES::GENERATORS::BasicColorGenerator;
-using ::PARTICLES::GENERATORS::BasicTimeGenerator;
-using ::PARTICLES::GENERATORS::BasicVelocityGenerator;
-using ::PARTICLES::GENERATORS::RoundPositionGenerator;
-using ::PARTICLES::UPDATERS::BasicTimeUpdater;
-using ::PARTICLES::UPDATERS::EulerUpdater;
-using ::PARTICLES::UPDATERS::PositionColorUpdater;
-
-static constexpr auto DEFAULT_NUM_PARTICLES = 10000U;
+using GENERATORS::BasicColorGenerator;
+using GENERATORS::BasicTimeGenerator;
+using GENERATORS::BasicVelocityGenerator;
+using GENERATORS::RoundPositionGenerator;
+using UPDATERS::BasicTimeUpdater;
+using UPDATERS::EulerUpdater;
+using UPDATERS::PositionColorUpdater;
 
 TunnelEffect::TunnelEffect(const size_t numParticles) noexcept
-  : m_system{0 == numParticles ? DEFAULT_NUM_PARTICLES : numParticles}
+  : m_system{0 == numParticles ? 10000 : numParticles}
 {
   const auto numParticlesToUse = m_system.GetNumAllParticles();
 
@@ -104,4 +101,4 @@ auto TunnelEffect::UpdateEffect(const double dt) noexcept -> void
   m_positionGenerator->SetCentreAndRadius(centre, xRadius, yRadius);
 }
 
-} // namespace GOOM::VISUAL_FX::PARTICLES
+} // namespace PARTICLES::EFFECTS

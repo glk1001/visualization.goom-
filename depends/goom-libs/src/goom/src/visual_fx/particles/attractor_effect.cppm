@@ -11,15 +11,15 @@ import Particles.Effect;
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
 import Particles.Particles;
-import Goom.Utils.Math.GoomRand;
 
-using GOOM::UTILS::MATH::GoomRand;
-using ::PARTICLES::ParticleEmitter;
-using ::PARTICLES::ParticleSystem;
 using ::PARTICLES::EFFECTS::IEffect;
+using ::PARTICLES::GENERATORS::BasicColorGenerator;
 using ::PARTICLES::GENERATORS::BoxPositionGenerator;
 using ::PARTICLES::UPDATERS::EulerUpdater;
-using ::PARTICLES::UPDATERS::IColorUpdater;
+using ::PARTICLES::ParticleSystem;
+using ::PARTICLES::ParticleEmitter;
+using ::PARTICLES::UPDATERS::AttractorUpdater;
+using ::PARTICLES::UPDATERS::VelocityColorUpdater;
 
 export namespace GOOM::VISUAL_FX::PARTICLES
 {
@@ -27,9 +27,7 @@ export namespace GOOM::VISUAL_FX::PARTICLES
 class AttractorEffect : public IEffect
 {
 public:
-  static constexpr auto NUM_EMITTERS = 3U;
-
-  AttractorEffect(const GoomRand& goomRand, size_t numParticles) noexcept;
+  explicit AttractorEffect(size_t numParticles) noexcept;
 
   auto Reset() noexcept -> void override;
 
@@ -42,30 +40,33 @@ public:
   [[nodiscard]] auto GetSystem() const noexcept -> const ParticleSystem& override;
 
 private:
-  const GoomRand* m_goomRand;
   ParticleSystem m_system;
 
-  std::shared_ptr<IColorUpdater> m_colorUpdater;
-  [[nodiscard]] auto MakeColorUpdater() const noexcept -> std::shared_ptr<IColorUpdater>;
-
+  static constexpr auto NUM_EMITTERS = 3U;
   std::array<std::shared_ptr<ParticleEmitter>, NUM_EMITTERS> m_particleEmitters;
-  std::array<std::shared_ptr<BoxPositionGenerator>, NUM_EMITTERS> m_positionGenerators;
 
-  std::shared_ptr<EulerUpdater> m_eulerUpdater;
-  [[nodiscard]] auto GetNewEulerAcceleration() const noexcept -> glm::vec4;
+  static constexpr auto NUM_BOX_POS_GENERATORS = 3U;
+  std::array<std::shared_ptr<BoxPositionGenerator>, NUM_BOX_POS_GENERATORS> m_positionGenerators;
+  static constexpr auto Z_GEN_POS1 = -0.25F;
+  static constexpr auto Z_GEN_POS2 = +0.25F;
+  static constexpr auto Z_GEN_POS3 = +0.25F;
 
-  auto AddEmitters() noexcept -> void;
-  [[nodiscard]] auto GetNewEmitRate() const noexcept -> float;
+  std::shared_ptr<BasicColorGenerator> m_colorGenerator;
+  std::shared_ptr<AttractorUpdater> m_attractorUpdater;
+  std::shared_ptr<VelocityColorUpdater> m_colorUpdater;
 
-  auto AddUpdaters() noexcept -> void;
-
-  auto UpdateEffect(double dt) noexcept -> void;
+  auto UpdateEffect(double dt) -> void;
 };
 
-} // namespace GOOM::VISUAL_FX::PARTICLES
+} // namespace PARTICLES::EFFECTS
 
 namespace GOOM::VISUAL_FX::PARTICLES
 {
+
+inline auto AttractorEffect::Reset() noexcept -> void
+{
+  m_system.Reset();
+}
 
 inline auto AttractorEffect::SetTintColor(const glm::vec4& tintColor) noexcept -> void
 {
@@ -75,15 +76,6 @@ inline auto AttractorEffect::SetTintColor(const glm::vec4& tintColor) noexcept -
 inline auto AttractorEffect::SetTintMixAmount(const float mixAmount) noexcept -> void
 {
   m_colorUpdater->SetTintMixAmount(mixAmount);
-}
-
-inline auto AttractorEffect::SetMaxNumAliveParticles(const size_t maxNumAliveParticles) noexcept
-    -> void
-{
-  for (auto& particleEmitter : m_particleEmitters)
-  {
-    particleEmitter->SetMaxNumAliveParticles(maxNumAliveParticles);
-  }
 }
 
 inline auto AttractorEffect::Update(const double dt) noexcept -> void

@@ -4,28 +4,25 @@ module;
 #include <glm/vec4.hpp>
 #include <memory>
 
-module Goom.VisualFx.ParticlesFx.Particles.FountainEffect;
+module Particles.Effects.FountainEffect;
 
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
 
-namespace GOOM::VISUAL_FX::PARTICLES
+namespace PARTICLES::EFFECTS
 {
 
-using ::PARTICLES::ParticleEmitter;
-using ::PARTICLES::GENERATORS::BasicColorGenerator;
-using ::PARTICLES::GENERATORS::BasicTimeGenerator;
-using ::PARTICLES::GENERATORS::BasicVelocityGenerator;
-using ::PARTICLES::GENERATORS::BoxPositionGenerator;
-using ::PARTICLES::UPDATERS::BasicTimeUpdater;
-using ::PARTICLES::UPDATERS::EulerUpdater;
-using ::PARTICLES::UPDATERS::FloorUpdater;
-using ::PARTICLES::UPDATERS::VelocityColorUpdater;
-
-static constexpr auto DEFAULT_NUM_PARTICLES = 10000U;
+using GENERATORS::BasicColorGenerator;
+using GENERATORS::BasicTimeGenerator;
+using GENERATORS::BasicVelocityGenerator;
+using GENERATORS::BoxPositionGenerator;
+using UPDATERS::BasicTimeUpdater;
+using UPDATERS::EulerUpdater;
+using UPDATERS::FloorUpdater;
+using UPDATERS::VelocityColorUpdater;
 
 FountainEffect::FountainEffect(const size_t numParticles) noexcept
-  : m_system{0 == numParticles ? DEFAULT_NUM_PARTICLES : numParticles}
+  : m_system{0 == numParticles ? 10000 : numParticles}
 {
   const auto numParticlesToUse = m_system.GetNumAllParticles();
 
@@ -95,4 +92,4 @@ auto FountainEffect::UpdateEffect(const double dt) noexcept -> void
                                     0.0F});
 }
 
-} // namespace GOOM::VISUAL_FX::PARTICLES
+} // namespace PARTICLES::EFFECTS
