@@ -57,6 +57,7 @@ using UTILS::GRAPHICS::Camera;
 using UTILS::GRAPHICS::GetPointClippedToRectangle;
 using UTILS::GRAPHICS::MakePixel;
 using UTILS::GRAPHICS::SmallImageBitmaps;
+using UTILS::MATH::GoomRand;
 using UTILS::MATH::IncrementedValue;
 using UTILS::MATH::NumberRange;
 using UTILS::MATH::TValue;
@@ -152,14 +153,14 @@ auto EffectFactory::Create(const char* const name) -> EffectData
       .name                     = name,
       .numParticles             = NUM_PARTICLES,
       .minMaxNumAliveParticles  = U_HALF * NUM_PARTICLES,
-      .maxMaxNumAliveParticles  = NUM_PARTICLES,
+      .maxMaxNumAliveParticles  = NUM_PARTICLES + 1,
       .minMixAmount             = DEFAULT_MIN_MIX_AMOUNT,
       .maxMixAmount             = DEFAULT_MAX_MIX_AMOUNT,
       .brightness               = BRIGHTNESS,
       .minDeltaTime             = DEFAULT_MIN_DELTA_TIME,
       .maxDeltaTime             = DEFAULT_MAX_DELTA_TIME,
       .minNumUpdatesBeforeReset = DEFAULT_MIN_NUM_UPDATES_BEFORE_RESET,
-      .maxNumUpdatesBeforeReset = DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET,
+      .maxNumUpdatesBeforeReset = DEFAULT_MAX_NUM_UPDATES_BEFORE_RESET + 1,
       .cameraProperties         = {
                                    .scale              = WORLD_SCALE,
                                    .fieldOfViewDegrees = DEFAULT_FIELD_OF_VIEW_DEGREES,
@@ -310,7 +311,7 @@ private:
   };
 
   static constexpr auto MIN_DRAW_CIRCLE_FREQUENCY = 5U;
-  static constexpr auto MAX_DRAW_CIRCLE_FREQUENCY = 100U;
+  static constexpr auto MAX_DRAW_CIRCLE_FREQUENCY = 101U;
 
   EffectData m_effectData;
   uint32_t m_numUpdatesBeforeReset;
@@ -385,8 +386,8 @@ ParticlesFx::ParticlesFxImpl::ParticlesFxImpl(
   : m_fxHelper{&fxHelper},
     //m_smallBitmaps{&smallBitmaps},
     m_effectData{EffectFactory::Create("attractor")},
-    m_numUpdatesBeforeReset{fxHelper.GetGoomRand().GetRandInRange(NumberRange{
-        m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset + 1})},
+    m_numUpdatesBeforeReset{fxHelper.GetGoomRand().GetRandInRange(
+        NumberRange{m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset})},
     m_deltaTime{m_fxHelper->GetGoomRand().GetRandInRange(
         NumberRange{m_effectData.minDeltaTime, m_effectData.maxDeltaTime})},
     m_camera{m_effectData.cameraProperties, fxHelper.GetDimensions()},
@@ -398,13 +399,13 @@ inline auto ParticlesFx::ParticlesFxImpl::ResetEffect() noexcept -> void
 {
   m_effectData.effect->Reset();
 
-  m_effectData.effect->SetMaxNumAliveParticles(m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{
-      m_effectData.minMaxNumAliveParticles, m_effectData.maxMaxNumAliveParticles + 1U}));
+  m_effectData.effect->SetMaxNumAliveParticles(m_fxHelper->GetGoomRand().GetRandInRange(
+      NumberRange{m_effectData.minMaxNumAliveParticles, m_effectData.maxMaxNumAliveParticles}));
   m_effectData.effect->SetTintMixAmount(m_fxHelper->GetGoomRand().GetRandInRange(
       NumberRange{m_effectData.minMixAmount, m_effectData.maxMixAmount}));
 
-  m_numUpdatesBeforeReset = m_fxHelper->GetGoomRand().GetRandInRange(NumberRange{
-      m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset + 1U});
+  m_numUpdatesBeforeReset = m_fxHelper->GetGoomRand().GetRandInRange(
+      NumberRange{m_effectData.minNumUpdatesBeforeReset, m_effectData.maxNumUpdatesBeforeReset});
 
   ChangeEffectSpeed();
 }
@@ -443,7 +444,7 @@ inline auto ParticlesFx::ParticlesFxImpl::SetWeightedColorMaps(
       WeightedRandomColorMaps{weightedColorMaps.lowColorMaps, m_defaultAlpha}.GetRandomColorMap();
 
   m_renderer.SetDrawCircleFrequency(m_fxHelper->GetGoomRand().GetRandInRange(
-      NumberRange{MIN_DRAW_CIRCLE_FREQUENCY, MAX_DRAW_CIRCLE_FREQUENCY + 1}));
+      NumberRange{MIN_DRAW_CIRCLE_FREQUENCY, MAX_DRAW_CIRCLE_FREQUENCY}));
 }
 
 inline auto ParticlesFx::ParticlesFxImpl::ChangePixelBlender(

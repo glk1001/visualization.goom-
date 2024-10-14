@@ -3,17 +3,19 @@ module;
 #include <glm/vec4.hpp>
 #include <memory>
 
-export module Particles.Effects.TunnelEffect;
+export module Goom.VisualFx.ParticlesFx.Particles.TunnelEffect;
 
 import Particles.Effect;
 import Particles.ParticleGenerators;
 import Particles.ParticleUpdaters;
 import Particles.Particles;
 
-using PARTICLES::GENERATORS::BasicColorGenerator;
-using PARTICLES::GENERATORS::RoundPositionGenerator;
+using ::PARTICLES::ParticleSystem;
+using ::PARTICLES::EFFECTS::IEffect;
+using ::PARTICLES::GENERATORS::BasicColorGenerator;
+using ::PARTICLES::GENERATORS::RoundPositionGenerator;
 
-export namespace PARTICLES::EFFECTS
+export namespace GOOM::VISUAL_FX::PARTICLES
 {
 
 class TunnelEffect : public IEffect
@@ -23,14 +25,13 @@ public:
 
   auto Reset() noexcept -> void override;
 
-  auto SetTintColor([[maybe_unused]] const glm::vec4& tintColor) noexcept -> void override;
-  auto SetTintMixAmount([[maybe_unused]] const float mixAmount) noexcept -> void override;
-  auto SetMaxNumAliveParticles([[maybe_unused]] const size_t maxNumAliveParticles) noexcept
-      -> void override;
+  auto SetTintColor(const glm::vec4& tintColor) noexcept -> void override;
+  auto SetTintMixAmount(float mixAmount) noexcept -> void override;
+  auto SetMaxNumAliveParticles(size_t maxNumAliveParticles) noexcept -> void override;
 
   auto Update(double dt) noexcept -> void override;
 
-  [[nodiscard]] auto GetSystem() const noexcept -> const PARTICLES::ParticleSystem& override;
+  [[nodiscard]] auto GetSystem() const noexcept -> const ParticleSystem& override;
 
 private:
   ParticleSystem m_system;
@@ -40,9 +41,9 @@ private:
   auto UpdateEffect(double dt) noexcept -> void;
 };
 
-} // namespace PARTICLES::EFFECTS
+} // namespace GOOM::VISUAL_FX::PARTICLES
 
-namespace PARTICLES::EFFECTS
+namespace GOOM::VISUAL_FX::PARTICLES
 {
 
 inline auto TunnelEffect::Reset() noexcept -> void
@@ -69,9 +70,9 @@ inline auto TunnelEffect::Update(const double dt) noexcept -> void
   m_system.Update(dt);
 }
 
-inline auto TunnelEffect::GetSystem() const noexcept -> const PARTICLES::ParticleSystem&
+inline auto TunnelEffect::GetSystem() const noexcept -> const ParticleSystem&
 {
   return m_system;
 }
 
-} // namespace PARTICLES::EFFECTS
+} // namespace GOOM::VISUAL_FX::PARTICLES
