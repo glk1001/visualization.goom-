@@ -273,7 +273,7 @@ private:
   static constexpr auto LIGHTEN_ONLY_WEIGHT = 5.0F;
   static constexpr auto LUMA_MIX_WEIGHT     = 5.0F;
   static constexpr auto MULTIPLY_WEIGHT     = 5.0F;
-  static constexpr auto ALPHA_WEIGHT        = 100.0F;
+  static constexpr auto ALPHA_WEIGHT        = 1.0F;
   // clang-format off
   RandomPixelBlender m_pixelBlender{
       m_fxHelper->GetGoomRand(),
@@ -402,7 +402,7 @@ inline auto ParticlesFx::ParticlesFxImpl::ResetEffect() noexcept -> void
   m_numUpdatesBeforeReset =
       m_fxHelper->GetGoomRand().GetRandInRange(m_effectData.numUpdatesBeforeResetRange);
 
-  //m_tintColorT.SetNumSteps(m_fxHelper->GetGoomRand().GetRandInRange<TINT_COLORS_NUM_STEPS_RANGE>());
+  m_tintColorT.SetNumSteps(m_fxHelper->GetGoomRand().GetRandInRange<TINT_COLORS_NUM_STEPS_RANGE>());
 
   ChangeEffectSpeed();
 }
