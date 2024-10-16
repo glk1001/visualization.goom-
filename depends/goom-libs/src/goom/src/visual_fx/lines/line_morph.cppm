@@ -39,6 +39,7 @@ using GOOM::DRAW::MultiplePixels;
 using GOOM::DRAW::SHAPE_DRAWERS::LineDrawerClippedEndPoints;
 using GOOM::UTILS::NUM;
 using GOOM::UTILS::GRAPHICS::SmallImageBitmaps;
+using GOOM::UTILS::MATH::FloatsEqual;
 using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::SMALL_FLOAT;
@@ -301,15 +302,15 @@ auto LineMorph::MoveSrceLineCloserToDest() noexcept -> void
   if (m_lineLerpParam >= 1.0F)
   {
     m_srceLineParams.lineType              = m_destLineParams.lineType;
-    static constexpr auto BRIGHTNESS_RANGE = NumberRange{5.0F, 10.0F};
+    static constexpr auto BRIGHTNESS_RANGE = NumberRange{10.0F, 20.0F};
     m_currentBrightness                    = m_goomRand->GetRandInRange<BRIGHTNESS_RANGE>();
   }
 
   Ensures((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
-          (UTILS::MATH::FloatsEqual(m_srcePoints[0].point.x,
-                                    m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) and
-           UTILS::MATH::FloatsEqual(m_srcePoints[0].point.y,
-                                    m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
+          (FloatsEqual(m_srcePoints[0].point.x,
+                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.x) and
+           FloatsEqual(m_srcePoints[0].point.y,
+                       m_srcePoints[AudioSamples::AUDIO_SAMPLE_LEN - 1].point.y)));
 
   static constexpr auto COLOR_MIX_AMOUNT = 1.0F / 64.0F;
   m_srceLineParams.color =
@@ -344,7 +345,7 @@ auto LineMorph::ResetDestLine(const LineParams& newParams) noexcept -> void
 
   m_lineLerpParam = 0.0;
 
-  static constexpr auto BRIGHTNESS_RANGE = NumberRange{1.5F, 3.0F};
+  static constexpr auto BRIGHTNESS_RANGE = NumberRange{5.0F, 10.0F};
   m_currentBrightness                    = m_goomRand->GetRandInRange<BRIGHTNESS_RANGE>();
 
   m_dotDrawer.ChangeDotSizes();
@@ -374,10 +375,9 @@ auto LineMorph::DrawLines(const AudioSamples::SampleArray& soundData,
 {
   static constexpr auto LAST_POINT_INDEX = AudioSamples::AUDIO_SAMPLE_LEN - 1;
 
-  Expects(
-      (m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
-      (UTILS::MATH::FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) and
-       UTILS::MATH::FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
+  Expects((m_srceLineParams.lineType != LineType::CIRCLE) or (m_lineLerpParam < 1.0F) or
+          (FloatsEqual(m_srcePoints[0].point.x, m_srcePoints[LAST_POINT_INDEX].point.x) and
+           FloatsEqual(m_srcePoints[0].point.y, m_srcePoints[LAST_POINT_INDEX].point.y)));
 
   const auto lineColor = GetFinalLineColor(m_srceLineParams.color);
 
