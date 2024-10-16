@@ -258,8 +258,11 @@ auto Gl2DTexture<CppTextureType,
                  TexturePixelType,
                  NumPbos>::BindTexture(GlslProgram& program, const uint32_t textureIndex) -> void
 {
-  program.SetUniform(m_textureShaderNames.at(textureIndex),
-                     TextureLocation + static_cast<int32_t>(textureIndex));
+  if (m_textureShaderNames.at(textureIndex)[0] != '\0')
+  {
+    program.SetUniform(m_textureShaderNames.at(textureIndex),
+                       TextureLocation + static_cast<int32_t>(textureIndex));
+  }
 
   m_gl->Call()(glActiveTexture, TEXTURE_UNIT + textureIndex);
   m_gl->Call()(glBindTexture, static_cast<GLenum>(GL_TEXTURE_2D), m_textureNames.at(textureIndex));
