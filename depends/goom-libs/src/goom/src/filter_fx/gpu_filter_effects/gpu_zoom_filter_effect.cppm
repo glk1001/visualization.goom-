@@ -97,7 +97,7 @@ public:
       -> NameValuePairs = 0;
 
 protected:
-  static constexpr auto* PARAM_GROUP = "GPU Adj";
+  static constexpr auto* PARAM_GROUP = "GPU Effect";
 };
 
 } // namespace GOOM::FILTER_FX::GPU_FILTER_EFFECTS

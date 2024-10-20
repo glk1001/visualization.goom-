@@ -1,8 +1,14 @@
+module;
+
+#include <string_view>
+
 export module Goom.FilterFx.GpuFilterEffects.None;
 
 import Goom.FilterFx.GpuFilterEffects.GpuZoomFilterEffect;
 import Goom.Utils.NameValuePairs;
 
+using GOOM::UTILS::GetFullParamGroup;
+using GOOM::UTILS::GetPair;
 using GOOM::UTILS::NameValuePairs;
 
 export namespace GOOM::FILTER_FX::GPU_FILTER_EFFECTS
@@ -59,7 +65,8 @@ inline auto None::GpuParams::OutputGpuParams(
 
 inline auto None::GetGpuZoomFilterEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  return {};
+  const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "none"});
+  return {GetPair(fullParamGroup, "params", std::string_view{"NONE"})};
 }
 
 } // namespace GOOM::FILTER_FX::GPU_FILTER_EFFECTS

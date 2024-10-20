@@ -12,6 +12,7 @@ import Goom.Control.GoomMessageDisplayer;
 import Goom.Control.GoomMusicSettingsReactor;
 import Goom.FilterFx.FilterBuffersService;
 import Goom.FilterFx.FilterSettingsService;
+import Goom.Utils.EnumUtils;
 import Goom.Lib.Point2d;
 
 namespace GOOM::CONTROL
@@ -19,6 +20,7 @@ namespace GOOM::CONTROL
 
 using FILTER_FX::FilterBuffersService;
 using FILTER_FX::FilterSettingsService;
+using UTILS::EnumToString;
 using UTILS::GetNameValueStrings;
 using UTILS::GetPair;
 using UTILS::NameValuePairs;
@@ -53,10 +55,12 @@ auto GoomStateMonitor::GetCurrentState() const -> std::vector<MessageGroup>
   messageGroup.at(5) = {.color    = ORANGE,
                         .messages = GetNameValueStrings(GetFilterEffectsNameValueParams())};
   messageGroup.at(6) = {.color    = PURE_YELLOW,
-                        .messages = GetNameValueStrings(GetFilterBufferValueParams())};
-  messageGroup.at(7) = {.color    = PIZAZZ,
+                        .messages = GetNameValueStrings(GetGpuFilterSettingsNameValueParams())};
+  messageGroup.at(7) = {.color    = CURIOUS_BLUE,
+                        .messages = GetNameValueStrings(GetGpuFilterEffectsNameValueParams())};
+  messageGroup.at(8) = {.color    = PIZAZZ,
                         .messages = GetNameValueStrings(GetZoomEffectsNameValueParams())};
-  messageGroup.at(8) = {.color    = LIGHT_ORCHID,
+  messageGroup.at(9) = {.color    = LIGHT_ORCHID,
                         .messages = GetNameValueStrings(GetFilterAfterEffectsNameValueParams())};
   // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
@@ -113,12 +117,20 @@ inline auto GoomStateMonitor::GetFilterSettingsNameValueParams() const -> NameVa
   static constexpr auto* PARAM_GROUP = "Filter Settings";
   const auto& filterSettings         = m_filterSettingsService->GetFilterSettings();
   const auto& filterEffectsSettings  = filterSettings.filterEffectsSettings;
+  const auto& transformBufferLerpData =
+      m_filterSettingsService->GetFilterSettings().transformBufferLerpData;
   return {
       GetPair(PARAM_GROUP, "Filter", m_filterSettingsService->GetCurrentFilterModeName()),
       GetPair(PARAM_GROUP, "Previous Filter", m_filterSettingsService->GetPreviousFilterModeName()),
+      GetPair(PARAM_GROUP, "Texture Wrap", EnumToString(filterSettings.textureWrapType)),
       GetPair(PARAM_GROUP, "Midpoint", filterEffectsSettings.zoomMidpoint),
       GetPair(PARAM_GROUP, "After Mult", filterEffectsSettings.afterEffectsVelocityMultiplier),
-  };
+      GetPair(PARAM_GROUP,
+              "Lerp",
+              std::format("{:.2f}, {:.2f}, {}",
+                          transformBufferLerpData.GetLerpFactor(),
+                          transformBufferLerpData.GetIncrement(),
+                          transformBufferLerpData.GetUseSFunction()))};
 }
 
 inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> NameValuePairs
@@ -128,17 +140,26 @@ inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> NameVal
   return {filterEffectsSettings.zoomAdjustmentEffect->GetZoomAdjustmentEffectNameValueParams()};
 }
 
-inline auto GoomStateMonitor::GetFilterBufferValueParams() const -> NameValuePairs
+inline auto GoomStateMonitor::GetGpuFilterSettingsNameValueParams() const -> NameValuePairs
 {
-  static constexpr auto* PARAM_GROUP = "Filter Buffer";
-  const auto& transformBufferLerpData =
-      m_filterSettingsService->GetFilterSettings().transformBufferLerpData;
-  return {GetPair(PARAM_GROUP,
-                  "params",
-                  std::format("{:.2f}, {:.2f}, {}",
-                              transformBufferLerpData.GetLerpFactor(),
-                              transformBufferLerpData.GetIncrement(),
-                              transformBufferLerpData.GetUseSFunction()))};
+  static constexpr auto* PARAM_GROUP   = "Gpu Settings";
+  const auto& filterSettings           = m_filterSettingsService->GetFilterSettings();
+  const auto& gpuFilterEffectsSettings = filterSettings.gpuFilterEffectsSettings;
+  return {
+      GetPair(PARAM_GROUP, "Gpu Filter", m_filterSettingsService->GetCurrentGPUFilterModeName()),
+      GetPair(PARAM_GROUP,
+              "Previous Gpu Filter",
+              m_filterSettingsService->GetPreviousGPUFilterModeName()),
+      GetPair(PARAM_GROUP, "Gpu Lerp", gpuFilterEffectsSettings.gpuLerpFactor()),
+      GetPair(PARAM_GROUP, "Gpu SD Lerp", gpuFilterEffectsSettings.srceDestLerpFactor()),
+  };
+}
+
+inline auto GoomStateMonitor::GetGpuFilterEffectsNameValueParams() const -> NameValuePairs
+{
+  const auto& gpuFilterEffectsSettings =
+      m_filterSettingsService->GetFilterSettings().gpuFilterEffectsSettings;
+  return {gpuFilterEffectsSettings.gpuZoomFilterEffect->GetGpuZoomFilterEffectNameValueParams()};
 }
 
 inline auto GoomStateMonitor::GetZoomEffectsNameValueParams() const -> NameValuePairs
