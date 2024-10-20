@@ -208,7 +208,7 @@ inline auto ZoomVectorAfterEffects::SetRandomXYLerpEffects() noexcept -> void
   m_afterEffects.GetXYLerpEffect().SetRandomParams();
 }
 
-auto ZoomVectorAfterEffects::GetZoomEffectsNameValueParams() const noexcept -> NameValuePairs
+auto ZoomVectorAfterEffects::GetAfterEffectsNameValueParams() const noexcept -> NameValuePairs
 {
   auto nameValuePairs = NameValuePairs{};
 

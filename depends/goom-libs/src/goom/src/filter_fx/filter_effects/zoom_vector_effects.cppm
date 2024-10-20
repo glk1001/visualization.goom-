@@ -55,6 +55,7 @@ public:
   [[nodiscard]] auto GetAfterEffectsVelocityMultiplier() const noexcept -> float;
 
   [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetAfterEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 protected:
   static constexpr auto RAW_BASE_ZOOM_ADJUSTMENT_FACTOR = 0.02F;
@@ -74,8 +75,6 @@ private:
   [[nodiscard]] auto GetClampedZoomAdjustment(const Vec2dFlt& zoomCoeffs) const noexcept
       -> Vec2dFlt;
   [[nodiscard]] auto GetClampedZoomAdjustment(float zoomAdjustment) const noexcept -> float;
-
-  [[nodiscard]] auto GetZoomAdjustmentNameValueParams() const noexcept -> UTILS::NameValuePairs;
 };
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

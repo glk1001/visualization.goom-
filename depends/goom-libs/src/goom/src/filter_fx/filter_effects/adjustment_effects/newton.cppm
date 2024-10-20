@@ -38,10 +38,10 @@ public:
   struct Params
   {
     Viewport viewport;
+    Amplitude amplitude;
     uint32_t exponent;
     std::complex<FltCalcType> a;
     std::complex<FltCalcType> c;
-    Amplitude amplitude;
     FILTER_UTILS::LerpToOneTs lerpToOneTs;
     bool useSqDistDenominator;
     float denominator;

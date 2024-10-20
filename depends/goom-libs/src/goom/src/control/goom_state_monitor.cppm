@@ -13,6 +13,7 @@ import Goom.FilterFx.FilterSettingsService;
 import Goom.Utils.NameValuePairs;
 import Goom.Utils.EnumUtils;
 
+using GOOM::UTILS::NameValuePairs;
 using GOOM::UTILS::NUM;
 
 export namespace GOOM::CONTROL
@@ -33,14 +34,18 @@ private:
   const FILTER_FX::FilterSettingsService* m_filterSettingsService;
   const FILTER_FX::FilterBuffersService* m_filterBuffersService;
 
-  static constexpr auto NUM_GROUPS = 6U;
+  static constexpr auto NUM_GROUPS = 8U;
   static_assert(NUM_GROUPS < NUM<MessageGroupColors>);
-  [[nodiscard]] auto GetStateAndFilterModeNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetShaderVariablesNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetFilterBufferValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetFilterEffectsNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetMusicSettingsNameValueParams() const -> UTILS::NameValuePairs;
-  [[nodiscard]] auto GetZoomFilterFxNameValueParams() const -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetStateNameValueParams() const -> NameValuePairs;
+  [[nodiscard]] auto GetShaderVariablesNameValueParams() const -> NameValuePairs;
+  [[nodiscard]] auto GetMusicSettingsNameValueParams() const -> NameValuePairs;
+
+  [[nodiscard]] auto GetFilterSettingsNameValueParams() const -> NameValuePairs;
+  [[nodiscard]] auto GetFilterEffectsNameValueParams() const -> NameValuePairs;
+
+  [[nodiscard]] auto GetFilterBufferValueParams() const -> NameValuePairs;
+  [[nodiscard]] auto GetZoomEffectsNameValueParams() const -> NameValuePairs;
+  [[nodiscard]] auto GetFilterAfterEffectsNameValueParams() const -> NameValuePairs;
 };
 
 } // namespace GOOM::CONTROL

@@ -27,7 +27,8 @@ public:
   [[nodiscard]] virtual auto GetZoomPoint(const NormalizedCoords& coords) const noexcept
       -> NormalizedCoords = 0;
 
-  [[nodiscard]] virtual auto GetNameValueParams(const std::string& paramGroup) const noexcept
+  [[nodiscard]] virtual auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs = 0;
+  [[nodiscard]] virtual auto GetAfterEffectsNameValueParams() const noexcept
       -> UTILS::NameValuePairs = 0;
 };
 

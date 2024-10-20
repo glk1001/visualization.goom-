@@ -68,10 +68,14 @@ inline auto FilterZoomVector::GetAfterEffectsVelocity(
          m_zoomVectorEffects.GetAfterEffectsVelocity(coords, sqDistanceFromZero, zoomVelocity);
 }
 
-auto FilterZoomVector::GetNameValueParams(
-    [[maybe_unused]] const std::string& paramGroup) const noexcept -> NameValuePairs
+auto FilterZoomVector::GetNameValueParams() const noexcept -> NameValuePairs
 {
   return m_zoomVectorEffects.GetZoomEffectsNameValueParams();
+}
+
+auto FilterZoomVector::GetAfterEffectsNameValueParams() const noexcept -> NameValuePairs
+{
+  return m_zoomVectorEffects.GetAfterEffectsNameValueParams();
 }
 
 } // namespace GOOM::FILTER_FX

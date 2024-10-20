@@ -1,6 +1,7 @@
 module;
 
 #include <complex>
+#include <format>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.Mobius;
 
@@ -154,17 +155,19 @@ auto Mobius::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValu
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "mobius"});
   return {
-      GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup,
-              "lerpToOneTs",
-              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
-      GetPair(fullParamGroup, "a", m_params.a),
-      GetPair(fullParamGroup, "b", m_params.b),
-      GetPair(fullParamGroup, "c", m_params.c),
-      GetPair(fullParamGroup, "d", m_params.d),
-      GetPair(fullParamGroup, "modulatorPeriod", m_params.modulatorPeriod),
+      GetPair(
+          fullParamGroup,
+          "params",
+          std::format("({:.2f},{:.2f}), ({:.2f},{:.2f}), {:.2f}, {:.2f}, {:.2f}, {:.2f}, {:.2f}",
+                      m_params.amplitude.x,
+                      m_params.amplitude.y,
+                      m_params.lerpToOneTs.xLerpT,
+                      m_params.lerpToOneTs.yLerpT,
+                      m_params.a,
+                      m_params.b,
+                      m_params.c,
+                      m_params.d,
+                      m_params.modulatorPeriod)),
       GetPair(PARAM_GROUP,
               "viewport0",
               m_params.viewport

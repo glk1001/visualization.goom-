@@ -1,5 +1,6 @@
 module;
 
+#include <format>
 #include <string>
 #include <utility>
 
@@ -14,6 +15,8 @@ import Goom.Lib.Point2d;
 namespace GOOM::FILTER_FX::FILTER_EFFECTS
 {
 
+using UTILS::GetPair;
+using UTILS::NameValuePairs;
 using UTILS::MATH::GoomRand;
 
 FunctionOfFunction::FunctionOfFunction(const GoomRand& goomRand,
@@ -58,22 +61,23 @@ auto FunctionOfFunction::GetZoomAdjustment(const NormalizedCoords& coords) const
   return lerp(funcCoords, funcOfFuncCoords, m_funcToFuncOfLerpValue);
 }
 
-auto FunctionOfFunction::GetZoomAdjustmentEffectNameValueParams() const noexcept
-    -> UTILS::NameValuePairs
+auto FunctionOfFunction::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
 {
-  auto nameValueParams = UTILS::NameValuePairs{
-      UTILS::GetPair(PARAM_GROUP, "FoF", m_name),
-  };
-  nameValueParams.emplace_back(UTILS::GetPair(PARAM_GROUP, "use full", m_useFullFuncOf));
-  nameValueParams.emplace_back(UTILS::GetPair(PARAM_GROUP, "funcOfLerp", m_funcToFuncOfLerpValue));
-  nameValueParams.emplace_back(
-      UTILS::GetPair(PARAM_GROUP, "coordsToFuncLerp", m_coordsToFuncCoordsLerpValue));
+  auto nameValueParams = NameValuePairs{GetPair(PARAM_GROUP,
+                                                "FoF",
+                                                std::format("{}, {}, {:.2f}, {:.2f}",
+                                                            m_name,
+                                                            m_useFullFuncOf,
+                                                            m_funcToFuncOfLerpValue,
+                                                            m_coordsToFuncCoordsLerpValue))};
+
   const auto funcNameValueParams   = m_func->GetZoomAdjustmentEffectNameValueParams();
   const auto funcOfNameValueParams = m_funcOf->GetZoomAdjustmentEffectNameValueParams();
   nameValueParams.insert(
       end(nameValueParams), cbegin(funcOfNameValueParams), cend(funcOfNameValueParams));
   nameValueParams.insert(
       end(nameValueParams), cbegin(funcNameValueParams), cend(funcNameValueParams));
+
   return nameValueParams;
 }
 

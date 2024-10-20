@@ -30,7 +30,8 @@ public:
   [[nodiscard]] auto GetZoomPoint(const NormalizedCoords& coords) const noexcept
       -> NormalizedCoords override;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
+  [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs override;
+  [[nodiscard]] auto GetAfterEffectsNameValueParams() const noexcept
       -> UTILS::NameValuePairs override;
 
 private:

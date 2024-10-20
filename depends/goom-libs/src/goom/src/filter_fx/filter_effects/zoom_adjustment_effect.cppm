@@ -28,7 +28,7 @@ public:
       -> GOOM::UTILS::NameValuePairs = 0;
 
 protected:
-  static constexpr auto* PARAM_GROUP = "Zoom Adj";
+  static constexpr auto* PARAM_GROUP = "Filter Effect";
   [[nodiscard]] auto GetBaseZoomAdjustment() const noexcept -> const Vec2dFlt&;
 
 private:

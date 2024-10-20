@@ -28,7 +28,7 @@ public:
       -> NormalizedCoords;
 
   static constexpr auto* PARAM_GROUP = "After Effects";
-  [[nodiscard]] auto GetZoomEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetAfterEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
   uint32_t m_screenWidth;

@@ -194,7 +194,7 @@ auto ExpReciprocal::GetZoomAdjustmentEffectNameValueParams() const noexcept -> N
           fullParamGroup,
           "params",
           std::format(
-              "({:.2f},{:.2f}), ({:.2f},{:.2f}), {}, ({:.2f},{:.2f}), {}, {:.2f}, {:.2f}, {:.2f},",
+              "({:.2f},{:.2f}), ({:.2f},{:.2f}), {}, ({:.2f},{:.2f}), {}, {:.2f}, {:.2f}, {:.2e},",
               m_params.amplitude.x,
               m_params.amplitude.y,
               m_params.lerpToOneTs.xLerpT,

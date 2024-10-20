@@ -285,11 +285,6 @@ auto Wave::GetPeriodicPart(const WaveEffect waveEffect,
   }
 }
 
-auto Wave::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
-{
-  return {};
-}
-
 auto Wave::GetAngle(const float sqDistFromZero, const NormalizedCoords& coords) const noexcept
     -> float
 {
@@ -328,6 +323,11 @@ auto Wave::GetSqDistSpiralRotateAngle(const float sqDistFromZero,
   const auto angle = std::lerp(MIN_SPIRAL_ROTATE_LERP, MAX_SPIRAL_ROTATE_LERP, t);
 
   return std::pow(sqDistFromZero, m_params.sqDistPower) * angle;
+}
+
+auto Wave::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValuePairs
+{
+  return {};
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

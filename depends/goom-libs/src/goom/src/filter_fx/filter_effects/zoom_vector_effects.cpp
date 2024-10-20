@@ -81,23 +81,16 @@ auto ZoomVectorEffects::GetZoomEffectsNameValueParams() const noexcept -> UTILS:
 {
   static constexpr auto* PARAM_GROUP = "Zoom Effects";
 
-  auto nameValuePairs = UTILS::NameValuePairs{
-      GetPair(PARAM_GROUP,
-              "params",
-              std::format("{:.2f}, {}",
-                          m_baseZoomAdjustmentFactor,
-                          m_filterEffectsSettings->filterMultiplierEffectsSettings.isActive))};
-
-  UTILS::MoveNameValuePairs(GetZoomAdjustmentNameValueParams(), nameValuePairs);
-  UTILS::MoveNameValuePairs(m_zoomVectorAfterEffects.GetZoomEffectsNameValueParams(),
-                            nameValuePairs);
-
-  return nameValuePairs;
+  return {GetPair(PARAM_GROUP,
+                  "params",
+                  std::format("{:.2f}, {}",
+                              m_baseZoomAdjustmentFactor,
+                              m_filterEffectsSettings->filterMultiplierEffectsSettings.isActive))};
 }
 
-auto ZoomVectorEffects::GetZoomAdjustmentNameValueParams() const noexcept -> NameValuePairs
+auto ZoomVectorEffects::GetAfterEffectsNameValueParams() const noexcept -> NameValuePairs
 {
-  return m_filterEffectsSettings->zoomAdjustmentEffect->GetZoomAdjustmentEffectNameValueParams();
+  return m_zoomVectorAfterEffects.GetAfterEffectsNameValueParams();
 }
 
 } // namespace GOOM::FILTER_FX::FILTER_EFFECTS

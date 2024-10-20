@@ -38,8 +38,9 @@ public:
 
   auto UpdateTransformBuffer() noexcept -> void;
 
-  [[nodiscard]] auto GetNameValueParams(const std::string& paramGroup) const noexcept
-      -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetZoomVectorNameValueParams() const noexcept -> UTILS::NameValuePairs;
+  [[nodiscard]] auto GetAfterEffectsNameValueParams() const noexcept -> UTILS::NameValuePairs;
 
 private:
   const UTILS::GoomTime* m_goomTime;

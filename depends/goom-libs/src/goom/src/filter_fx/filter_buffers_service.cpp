@@ -25,7 +25,6 @@ namespace GOOM::FILTER_FX
 {
 
 using UTILS::GetPair;
-using UTILS::MoveNameValuePairs;
 using UTILS::NameValuePairs;
 
 FilterBuffersService::FilterBuffersService(
@@ -129,22 +128,27 @@ auto FilterBuffersService::UpdateCompletedTransformBufferStats() noexcept -> voi
   m_goomTimeAtTransformBufferStart = 0U;
 }
 
-auto FilterBuffersService::GetNameValueParams(const std::string& paramGroup) const noexcept
-    -> NameValuePairs
+auto FilterBuffersService::GetNameValueParams() const noexcept -> NameValuePairs
 {
   static constexpr auto* PARAM_GROUP = "Buffer Service";
 
-  auto nameValuePairs =
-      NameValuePairs{GetPair(PARAM_GROUP,
-                             "params",
-                             std::format("{}, {}, {}, {}",
-                                         m_numPendingFilterEffectsChanges,
-                                         m_numTransformBuffersCompleted,
-                                         GetAverageGoomTimeOfBufferProcessing(),
-                                         GetAverageGoomTimeBetweenBufferResets()))};
-  MoveNameValuePairs(m_zoomVector->GetNameValueParams(paramGroup), nameValuePairs);
+  return {GetPair(PARAM_GROUP,
+                  "params",
+                  std::format("{}, {}, {}, {}",
+                              m_numPendingFilterEffectsChanges,
+                              m_numTransformBuffersCompleted,
+                              GetAverageGoomTimeOfBufferProcessing(),
+                              GetAverageGoomTimeBetweenBufferResets()))};
+}
 
-  return nameValuePairs;
+auto FilterBuffersService::GetZoomVectorNameValueParams() const noexcept -> NameValuePairs
+{
+  return m_zoomVector->GetNameValueParams();
+}
+
+auto FilterBuffersService::GetAfterEffectsNameValueParams() const noexcept -> NameValuePairs
+{
+  return m_zoomVector->GetAfterEffectsNameValueParams();
 }
 
 auto FilterBuffersService::GetAverageGoomTimeOfBufferProcessing() const noexcept -> uint32_t

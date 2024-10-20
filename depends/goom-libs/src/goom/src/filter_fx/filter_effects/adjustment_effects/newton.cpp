@@ -3,6 +3,7 @@ module;
 #include <cmath>
 #include <complex>
 #include <cstdint>
+#include <format>
 
 module Goom.FilterFx.FilterEffects.AdjustmentEffects.Newton;
 
@@ -90,10 +91,10 @@ auto Newton::GetRandomParams() const noexcept -> Params
 
   return {
       .viewport             = viewport,
+      .amplitude            = {           xAmplitude,            yAmplitude},
       .exponent             = exponent,
       .a                    = a,
       .c                    = c,
-      .amplitude            = {           xAmplitude,            yAmplitude},
       .lerpToOneTs          = {.xLerpT = xLerpToOneT, .yLerpT = yLerpToOneT},
       .useSqDistDenominator = useSqDistDenominator,
       .denominator          = denominator,
@@ -198,23 +199,24 @@ auto Newton::GetZoomAdjustmentEffectNameValueParams() const noexcept -> NameValu
 {
   const auto fullParamGroup = GetFullParamGroup({PARAM_GROUP, "newton"});
   return {
-      GetPair(fullParamGroup, "exponent", m_params.exponent),
-      GetPair(fullParamGroup, "a real", m_params.a.real()),
-      GetPair(fullParamGroup, "a imag", m_params.a.imag()),
-      GetPair(fullParamGroup, "c real", m_params.c.real()),
-      GetPair(fullParamGroup, "c imag", m_params.c.imag()),
       GetPair(fullParamGroup,
-              "amplitude",
-              Point2dFlt{.x = m_params.amplitude.x, .y = m_params.amplitude.y}),
-      GetPair(fullParamGroup,
-              "lerpToOneTs",
-              Point2dFlt{.x = m_params.lerpToOneTs.xLerpT, .y = m_params.lerpToOneTs.yLerpT}),
-      GetPair(fullParamGroup, "useSqDistDenominator", m_params.useSqDistDenominator),
-      GetPair(fullParamGroup, "denominator", m_params.denominator),
-      GetPair(fullParamGroup, "useZSin", m_params.useZSinInput),
-      GetPair(fullParamGroup,
-              "zSinAmplitude",
-              Point2dFlt{.x = m_params.zSinAmplitude.x, .y = m_params.zSinAmplitude.y}),
+              "params",
+              std::format("({:.2f},{:.2f}), {}, ({:.2f},{:.2f}), ({:.2f},{:.2f}), ({:.2f},{:.2f}), "
+                          "{}, {:.2f}, {}, ({:.2f},{:.2f})",
+                          m_params.amplitude.x,
+                          m_params.amplitude.y,
+                          m_params.exponent,
+                          m_params.a.real(),
+                          m_params.a.imag(),
+                          m_params.c.real(),
+                          m_params.c.imag(),
+                          m_params.lerpToOneTs.xLerpT,
+                          m_params.lerpToOneTs.yLerpT,
+                          m_params.useSqDistDenominator,
+                          m_params.denominator,
+                          m_params.useZSinInput,
+                          m_params.zSinAmplitude.x,
+                          m_params.zSinAmplitude.y)),
       GetPair(PARAM_GROUP,
               "viewport0",
               m_params.viewport
