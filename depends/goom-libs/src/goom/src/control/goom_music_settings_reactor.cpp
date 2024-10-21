@@ -134,7 +134,7 @@ private:
   int32_t m_numUpdatesSinceLastFilterChange = 0;
 
   bool m_hasGpuFilterModeChangedInThisUpdate                         = false;
-  static constexpr auto MAX_UPDATES_BETWEEN_GPU_FILTER_CHANGES_RANGE = NumberRange{200, 500};
+  static constexpr auto MAX_UPDATES_BETWEEN_GPU_FILTER_CHANGES_RANGE = NumberRange{500, 700};
   int32_t m_numUpdatesSinceLastGpuFilterChange                       = 0;
   int32_t m_maxUpdatesBetweenGpuFilterChanges = MAX_UPDATES_BETWEEN_GPU_FILTER_CHANGES_RANGE.min;
 
