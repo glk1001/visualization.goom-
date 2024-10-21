@@ -8,6 +8,7 @@ module;
 
 export module Goom.Utils.Math.TValues;
 
+import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 
@@ -58,6 +59,9 @@ public:
 
   [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
   auto SetNumSteps(uint32_t numSteps) noexcept -> void;
+
+  [[nodiscard]] auto GetDelayPointTime(float t0) const noexcept -> uint32_t;
+  auto ChangeDelayPointTime(float t0, uint32_t delayTime) noexcept -> void;
 
   [[nodiscard]] auto IsInsideBoundary() const noexcept -> bool;
   [[nodiscard]] auto HasJustHitStartBoundary() const noexcept -> bool;
@@ -282,6 +286,38 @@ auto TValue::ValidateDelayPoints() const noexcept -> void
     prevT0 = delayPoint.t0;
   }
 #endif
+}
+
+auto TValue::GetDelayPointTime(const float t0) const noexcept -> uint32_t
+{
+  Expects(not m_delayPoints.empty());
+
+  for (const auto& delayPoint : m_delayPoints)
+  {
+    if (FloatsEqual(t0, delayPoint.t0))
+    {
+      return delayPoint.delayTime;
+    }
+  }
+
+  std::unreachable();
+}
+
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+auto TValue::ChangeDelayPointTime(const float t0, const uint32_t delayTime) noexcept -> void
+{
+  Expects(not m_delayPoints.empty());
+
+  for (auto& delayPoint : m_delayPoints)
+  {
+    if (FloatsEqual(t0, delayPoint.t0))
+    {
+      delayPoint.delayTime = delayTime;
+      return;
+    }
+  }
+
+  std::unreachable();
 }
 
 auto TValue::Increment() noexcept -> void

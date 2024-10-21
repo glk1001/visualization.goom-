@@ -6,13 +6,11 @@ module;
 
 module Goom.VisualFx.ShaderFx:ShaderObjectLerper;
 
-import Goom.Utils.Timer;
 import Goom.Utils.Math.TValues;
 import Goom.Utils.Math.GoomRand;
 import Goom.Lib.AssertUtils;
 import Goom.PluginInfo;
 
-using GOOM::UTILS::Timer;
 using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::NumberRange;
 using GOOM::UTILS::MATH::TValue;
@@ -56,8 +54,7 @@ private:
   float m_currentLerpedValue = m_srceValue;
 
   TValue m_lerpT;
-  Timer m_lerpConstTimer;
-  auto SetNewConstTimerTimeLimit() noexcept -> void;
+  auto SetNewConstDelayTime() noexcept -> void;
 };
 
 } // namespace GOOM::VISUAL_FX::SHADERS
@@ -76,8 +73,13 @@ ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
   : m_goomInfo{&goomInfo},
     m_goomRand{&goomRand},
     m_params{params},
-    m_lerpT{{.stepType=TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps=m_params.initialNumLerpSteps}},
-    m_lerpConstTimer{m_goomInfo->GetTime(), m_params.initialLerpConstTime, false}
+    m_lerpT{
+      {.stepType=TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps=m_params.initialNumLerpSteps},
+      {
+        {.t0 = 0.0F, .delayTime = m_params.initialLerpConstTime}, 
+        {.t0 = 1.0F, .delayTime = m_params.initialLerpConstTime}
+      }
+    }
 {
   Expects(m_params.minValueRangeDist > 0.0F);
   Expects(m_params.valueRange.range >= m_params.minValueRangeDist);
@@ -93,14 +95,7 @@ ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
 
 auto ShaderObjectLerper::Update() noexcept -> void
 {
-  if (not m_lerpConstTimer.Finished())
-  {
-    return;
-  }
-
   m_currentLerpedValue = std::lerp(m_srceValue, m_destValue, m_lerpT());
-
-  m_lerpConstTimer.ResetToZero();
   m_lerpT.Increment();
 }
 
@@ -112,29 +107,32 @@ auto ShaderObjectLerper::ChangeValueRange() noexcept -> void
   m_destValue = GetNewDestValue();
 
   m_lerpT.Reset(0.0F);
-  m_lerpConstTimer.ResetToZero();
-
   m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(m_params.numLerpStepsRange));
 
-  SetNewConstTimerTimeLimit();
+  SetNewConstDelayTime();
 }
 
-auto ShaderObjectLerper::SetNewConstTimerTimeLimit() noexcept -> void
+auto ShaderObjectLerper::SetNewConstDelayTime() noexcept -> void
 {
+  const auto delayAtZero = m_goomRand->GetRandInRange(m_params.lerpConstTimeRange);
+  const auto delayAtOne  = m_goomRand->GetRandInRange(m_params.lerpConstTimeRange);
+
   if (not m_favorBiggerNumbers)
   {
-    m_lerpConstTimer.SetTimeLimit(m_goomRand->GetRandInRange(m_params.lerpConstTimeRange));
+    m_lerpT.ChangeDelayPointTime(0.0F, delayAtZero);
+    m_lerpT.ChangeDelayPointTime(1.0F, delayAtOne);
     return;
   }
 
   Expects(0.0F <= m_params.valueRange.min);
   Expects(m_params.valueRange.max <= 1.0F);
 
-  const auto newTimeLimit = static_cast<uint32_t>(
-      std::min(m_srceValue, m_destValue) *
-      static_cast<float>(m_goomRand->GetRandInRange(m_params.lerpConstTimeRange)));
+  const auto minValue = std::min(m_srceValue, m_destValue);
 
-  m_lerpConstTimer.SetTimeLimit(newTimeLimit);
+  m_lerpT.ChangeDelayPointTime(0.0F,
+                               static_cast<uint32_t>(minValue * static_cast<float>(delayAtZero)));
+  m_lerpT.ChangeDelayPointTime(1.0F,
+                               static_cast<uint32_t>(minValue * static_cast<float>(delayAtOne)));
 }
 
 auto ShaderObjectLerper::GetInitialSrceValue() const noexcept -> float
