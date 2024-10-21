@@ -2,6 +2,7 @@ module;
 
 #include <cmath>
 #include <cstdint>
+#include <numeric>
 
 module Goom.VisualFx.ShaderFx:ShaderObjectLerper;
 
@@ -30,6 +31,7 @@ public:
     NumberRange<uint32_t> lerpConstTimeRange{};
     uint32_t initialNumLerpSteps{};
     uint32_t initialLerpConstTime{};
+    float probFavorBiggerNumbers{};
   };
 
   ShaderObjectLerper(const PluginInfo& goomInfo,
@@ -46,13 +48,16 @@ private:
   const GoomRand* m_goomRand;
 
   Params m_params;
-  float m_srceValue = m_goomRand->GetRandInRange(m_params.valueRange);
-  float m_destValue = GetNewDestValue();
+  bool m_favorBiggerNumbers = m_goomRand->ProbabilityOf(m_params.probFavorBiggerNumbers);
+  float m_srceValue         = GetInitialSrceValue();
+  float m_destValue         = GetNewDestValue();
+  [[nodiscard]] auto GetInitialSrceValue() const noexcept -> float;
   [[nodiscard]] auto GetNewDestValue() const noexcept -> float;
   float m_currentLerpedValue = m_srceValue;
 
   TValue m_lerpT;
   Timer m_lerpConstTimer;
+  auto SetNewConstTimerTimeLimit() noexcept -> void;
 };
 
 } // namespace GOOM::VISUAL_FX::SHADERS
@@ -101,17 +106,55 @@ auto ShaderObjectLerper::Update() noexcept -> void
 
 auto ShaderObjectLerper::ChangeValueRange() noexcept -> void
 {
+  m_favorBiggerNumbers = m_goomRand->ProbabilityOf(m_params.probFavorBiggerNumbers);
+
   m_srceValue = m_currentLerpedValue;
   m_destValue = GetNewDestValue();
+
   m_lerpT.Reset(0.0F);
   m_lerpConstTimer.ResetToZero();
 
   m_lerpT.SetNumSteps(m_goomRand->GetRandInRange(m_params.numLerpStepsRange));
-  m_lerpConstTimer.SetTimeLimit(m_goomRand->GetRandInRange(m_params.lerpConstTimeRange));
+
+  SetNewConstTimerTimeLimit();
+}
+
+auto ShaderObjectLerper::SetNewConstTimerTimeLimit() noexcept -> void
+{
+  if (not m_favorBiggerNumbers)
+  {
+    m_lerpConstTimer.SetTimeLimit(m_goomRand->GetRandInRange(m_params.lerpConstTimeRange));
+    return;
+  }
+
+  Expects(0.0F <= m_params.valueRange.min);
+  Expects(m_params.valueRange.max <= 1.0F);
+
+  const auto newTimeLimit = static_cast<uint32_t>(
+      std::min(m_srceValue, m_destValue) *
+      static_cast<float>(m_goomRand->GetRandInRange(m_params.lerpConstTimeRange)));
+
+  m_lerpConstTimer.SetTimeLimit(newTimeLimit);
+}
+
+auto ShaderObjectLerper::GetInitialSrceValue() const noexcept -> float
+{
+  if (m_favorBiggerNumbers)
+  {
+    return m_goomRand->GetRandInRange(NumberRange{
+        std::midpoint(m_params.valueRange.min, m_params.valueRange.max), m_params.valueRange.max});
+  }
+
+  return m_goomRand->GetRandInRange(m_params.valueRange);
 }
 
 auto ShaderObjectLerper::GetNewDestValue() const noexcept -> float
 {
+  if (m_favorBiggerNumbers)
+  {
+    return m_goomRand->GetRandInRange(NumberRange{m_srceValue, m_params.valueRange.max});
+  }
+
   static constexpr auto MAX_LOOPS = 10U;
 
   // NOTE: The new dest value can be < srce value.

@@ -50,32 +50,35 @@ private:
   HueShiftLerper m_hueShiftLerper;
 
   static constexpr auto CHROMA_FACTOR_LERPER_PARAMS = ShaderObjectLerper::Params{
-      .valueRange           = {0.5F, 5.0F},
-      .minValueRangeDist    = 0.1F,
-      .numLerpStepsRange    = { 50U, 500U},
-      .lerpConstTimeRange   = { 50U, 100U},
-      .initialNumLerpSteps  = 50U,
-      .initialLerpConstTime = 50U,
+      .valueRange             = {0.5F, 5.0F},
+      .minValueRangeDist      = 0.1F,
+      .numLerpStepsRange      = { 50U, 500U},
+      .lerpConstTimeRange     = { 50U, 100U},
+      .initialNumLerpSteps    = 50U,
+      .initialLerpConstTime   = 50U,
+      .probFavorBiggerNumbers = 0.0F,
   };
   ShaderObjectLerper m_chromaFactorLerper;
 
   static constexpr auto BASE_COLOR_MULTIPLIER_LERPER_PARAMS = ShaderObjectLerper::Params{
-      .valueRange           = {0.92F, 0.99F},
-      .minValueRangeDist    = 0.025F,
-      .numLerpStepsRange    = {  50U,  500U},
-      .lerpConstTimeRange   = {  10U,   50U},
-      .initialNumLerpSteps  = 50U,
-      .initialLerpConstTime = 10U,
+      .valueRange             = {0.92F, 0.99F},
+      .minValueRangeDist      = 0.025F,
+      .numLerpStepsRange      = {  50U,  250U},
+      .lerpConstTimeRange     = {  10U,   50U},
+      .initialNumLerpSteps    = 50U,
+      .initialLerpConstTime   = 10U,
+      .probFavorBiggerNumbers = 0.75F,
   };
   ShaderObjectLerper m_baseColorMultiplierLerper;
 
   static constexpr auto PREV_FRAME_T_MIX_LERPER_PARAMS = ShaderObjectLerper::Params{
-      .valueRange           = {0.1F, 0.9F},
-      .minValueRangeDist    = 0.2F,
-      .numLerpStepsRange    = { 50U, 500U},
-      .lerpConstTimeRange   = { 10U,  50U},
-      .initialNumLerpSteps  = 50U,
-      .initialLerpConstTime = 10U,
+      .valueRange             = {0.1F, 0.9F},
+      .minValueRangeDist      = 0.2F,
+      .numLerpStepsRange      = { 50U, 500U},
+      .lerpConstTimeRange     = { 10U,  50U},
+      .initialNumLerpSteps    = 50U,
+      .initialLerpConstTime   = 10U,
+      .probFavorBiggerNumbers = 0.0F,
   };
   ShaderObjectLerper m_prevFrameTMixLerper;
 
