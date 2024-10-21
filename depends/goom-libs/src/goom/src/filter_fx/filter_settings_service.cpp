@@ -121,9 +121,9 @@ constexpr auto PROB_REVERSE_SPEED            = 0.5F;
 [[nodiscard]] auto GetWeightedTextureWrapTypes(const GoomRand& goomRand) -> Weights<TextureWrapType>
 {
   static constexpr auto REPEAT_WEIGHT                 = 10.0F;
-  static constexpr auto MIRRORED_REPEAT_WEIGHT        = 10.0F;
-  static constexpr auto CLAMP_TO_EDGE_WEIGHT          = 10.0F;
-  static constexpr auto MIRRORED_CLAMP_TO_EDGE_WEIGHT = 10.0F;
+  static constexpr auto MIRRORED_REPEAT_WEIGHT        = 20.0F;
+  static constexpr auto CLAMP_TO_EDGE_WEIGHT          = 5.0F;
+  static constexpr auto MIRRORED_CLAMP_TO_EDGE_WEIGHT = 5.0F;
 
   auto textureWrapTypeWeights = Weights<TextureWrapType>{
       goomRand,
