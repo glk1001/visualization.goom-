@@ -118,7 +118,7 @@ private:
                                     float nodeT,
                                     const TentacleAndAttributes& tentacleAndAttributes,
                                     float brightness) const -> MultiplePixels;
-  static constexpr float GAMMA = 0.8F;
+  static constexpr float GAMMA = 1.8F;
   COLOR::ColorAdjustment m_colorAdjust{
       {.gamma = GAMMA, .alterChromaFactor = COLOR::ColorAdjustment::INCREASED_CHROMA_FACTOR}
   };
