@@ -32,8 +32,8 @@ enum class FREQUENCY_TYPES : UnderlyingEnumType
   LARGE,
 };
 static constexpr auto FREQUENCY_RANGE_SMALL  = NumberRange{1.5F, 15.0F};
-static constexpr auto FREQUENCY_RANGE_MEDIUM = NumberRange{15.0F, 100.0F};
-static constexpr auto FREQUENCY_RANGE_LARGE  = NumberRange{100.0F, 1000.0F};
+static constexpr auto FREQUENCY_RANGE_MEDIUM = NumberRange{15.0F, 50.0F};
+static constexpr auto FREQUENCY_RANGE_LARGE  = NumberRange{50.0F, 100.0F};
 
 static constexpr auto VIEWPORT_BOUNDS = RandomViewport::Bounds{
     .minSideLength       = 0.1F,
