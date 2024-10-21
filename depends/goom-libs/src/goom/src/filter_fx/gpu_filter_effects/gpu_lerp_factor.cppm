@@ -24,8 +24,6 @@ public:
 
   auto Increment() noexcept -> void;
 
-  auto ResetToZero() noexcept -> void;
-  auto ResetToOne() noexcept -> void;
   auto ResetNumSteps() noexcept -> void;
   auto ResetNumStepsToDefault() noexcept -> void;
 
@@ -43,6 +41,7 @@ private:
   static constexpr auto FRAC_MOVE_RANGE                   = NumberRange(0.05F, 0.25F);
   static constexpr auto NUM_GPU_LERP_FACTOR_STEPS_RANGE   = NumberRange(300U, 1000U);
   static constexpr auto DEFAULT_NUM_GPU_LERP_FACTOR_STEPS = NUM_GPU_LERP_FACTOR_STEPS_RANGE.max;
+  static constexpr auto GPU_LERP_FACTOR_DELAY_TIME_AT_ONE = 100U;
   Lerper<float> m_lerpFactor{};
 };
 

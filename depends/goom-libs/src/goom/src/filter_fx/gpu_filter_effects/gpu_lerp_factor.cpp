@@ -14,19 +14,12 @@ using UTILS::MATH::NumberRange;
 
 GpuLerpFactor::GpuLerpFactor(const GoomRand& goomRand) noexcept
   : m_goomRand{&goomRand},
-    m_lerpFactor{
-        DEFAULT_NUM_GPU_LERP_FACTOR_STEPS, 0.0F, 1.0F, Lerper<float>::LerperType::CONTINUOUS}
+    m_lerpFactor{DEFAULT_NUM_GPU_LERP_FACTOR_STEPS,
+                 0.0F,
+                 1.0F,
+                 Lerper<float>::LerperType::CONTINUOUS,
+                 GPU_LERP_FACTOR_DELAY_TIME_AT_ONE}
 {
-}
-
-auto GpuLerpFactor::ResetToZero() noexcept -> void
-{
-  m_lerpFactor.ResetT();
-}
-
-auto GpuLerpFactor::ResetToOne() noexcept -> void
-{
-  m_lerpFactor.ResetT(1.0F);
 }
 
 auto GpuLerpFactor::ResetNumSteps() noexcept -> void

@@ -7,6 +7,7 @@ module;
 export module Goom.Utils.Math.Lerper;
 
 import Goom.Utils.Math.TValues;
+import Goom.Lib.AssertUtils;
 import Goom.Lib.GoomTypes;
 import Goom.Lib.Point2d;
 
@@ -47,7 +48,8 @@ public:
   Lerper(uint32_t numSteps,
          const T& value1,
          const T& value2,
-         LerperType lerperType = LerperType::SINGLE) noexcept;
+         LerperType lerperType   = LerperType::SINGLE,
+         uint32_t delayTimeAtOne = 0U) noexcept;
 
   auto ResetValues(const T& value1, const T& value2) noexcept -> void;
   [[nodiscard]] auto GetNumSteps() const noexcept -> uint32_t;
@@ -78,16 +80,25 @@ private:
 namespace GOOM::UTILS::MATH
 {
 
-template <Lerpable T>
+template<Lerpable T>
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 Lerper<T>::Lerper(const uint32_t numSteps,
                   const T& value1,
                   const T& value2,
-                  const LerperType lerperType) noexcept
-  : m_t{TValue::NumStepsProperties{.stepType = GetStepType(lerperType), .numSteps = numSteps}},
+                  const LerperType lerperType,
+                  const uint32_t delayTimeAtOne) noexcept
+  : m_t{delayTimeAtOne == 0 ? TValue{TValue::NumStepsProperties{.stepType = GetStepType(lerperType),
+                                                                .numSteps = numSteps}}
+                            : TValue{TValue::NumStepsProperties{.stepType = GetStepType(lerperType),
+                                                                .numSteps = numSteps},
+                                                                {
+                                                                  {.t0        = 1.0F,
+                                                                   .delayTime = delayTimeAtOne}
+                                                                }}},
     m_value1{value1},
     m_value2{value2}
 {
+  Expects((lerperType == LerperType::CONTINUOUS) or (delayTimeAtOne == 0));
 }
 
 template<Lerpable T>
