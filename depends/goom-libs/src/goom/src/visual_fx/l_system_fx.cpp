@@ -226,7 +226,7 @@ auto LSystemFx::LSystemFxImpl::GetLSystemFileList() noexcept -> std::vector<LSys
                                    .minNumLSysCopies        = 2U,
                                    .maxNumLSysCopies        = 5U,
                                    .minMaxGen               = 5U,
-                                   .maxMaxGen               = 10U,
+                                   .maxMaxGen               = 6U,
                                    .lineWidthFactor         = 1.0F,
                                    .expandBounds            = DEFAULT_BOUNDS_EXPAND_FACTOR,
                                    .minNumRotateDegreeSteps = MIN_NUM_ROTATE_DEGREES_STEPS,
