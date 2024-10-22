@@ -25,7 +25,7 @@ namespace
 
 constexpr auto AMPLITUDE_RANGE         = NumberRange{0.5F, 3.0F};
 constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.0F, 1.0F};
-constexpr auto ANGLE_FREQ_FACTOR_RANGE = NumberRange{0.5F, 1.5F};
+constexpr auto ANGLE_FREQ_FACTOR_RANGE = NumberRange{0.5F, 2.5F};
 
 constexpr auto PROB_XY_AMPLITUDES_EQUAL   = 0.98F;
 constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL = 0.95F;

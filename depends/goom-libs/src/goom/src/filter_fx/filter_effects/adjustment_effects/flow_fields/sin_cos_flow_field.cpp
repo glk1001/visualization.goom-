@@ -25,10 +25,10 @@ using UTILS::MATH::TWO_PI;
 namespace
 {
 
-constexpr auto AMPLITUDE_RANGE               = NumberRange{0.005F, 5.0F};
+constexpr auto AMPLITUDE_RANGE               = NumberRange{0.05F, 0.75F};
 constexpr auto LERP_TO_ONE_T_RANGE           = NumberRange{0.0F, 1.0F};
 constexpr auto SETUP_ANGLE_FREQ_FACTOR_RANGE = NumberRange{1.0F, 10.0F};
-constexpr auto ANGLE_FREQ_FACTOR_RANGE       = NumberRange{0.5F, 5.5F};
+constexpr auto ANGLE_FREQ_FACTOR_RANGE       = NumberRange{0.1F, 3.0F};
 
 constexpr auto PROB_XY_AMPLITUDES_EQUAL       = 0.98F;
 constexpr auto PROB_LERP_TO_ONE_T_S_EQUAL     = 0.95F;

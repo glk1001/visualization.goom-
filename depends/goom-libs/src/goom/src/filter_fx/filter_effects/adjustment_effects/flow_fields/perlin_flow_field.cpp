@@ -51,12 +51,12 @@ auto GetRandSeedForPerlinNoise() -> PerlinSeedType
 
 constexpr auto AMPLITUDE_RANGE         = NumberRange{0.15F, 0.5F};
 constexpr auto LERP_TO_ONE_T_RANGE     = NumberRange{0.1F, 1.0F};
-constexpr auto NOISE_FREQ_FACTOR_RANGE = NumberRange{0.005F, 1.000F};
+constexpr auto NOISE_FREQ_FACTOR_RANGE = NumberRange{0.05F, 0.50F};
 constexpr auto ANGLE_FREQ_FACTOR_RANGE = NumberRange{0.5F, 5.0F};
 constexpr auto MIN_ANGLE_RANGE         = NumberRange{PI, TWO_PI};
 constexpr auto OCTAVES_RANGE           = NumberRange{1, 5};
 constexpr auto PERSISTENCE_RANGE       = NumberRange{0.1F, 1.0F};
-constexpr auto NOISE_FACTOR_RANGE      = NumberRange{0.05F, 1.00F};
+constexpr auto NOISE_FACTOR_RANGE      = NumberRange{0.05F, 1.0F};
 
 static_assert((PI <= MIN_ANGLE_RANGE.min) and (MIN_ANGLE_RANGE.max <= TWO_PI));
 
