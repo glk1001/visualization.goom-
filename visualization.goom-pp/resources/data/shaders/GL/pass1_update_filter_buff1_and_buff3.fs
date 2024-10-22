@@ -30,7 +30,7 @@ uniform uint u_time;
 // out look, too far away and things get too dark.
 uniform float u_baseColorMultiplier;        // Used to factor this frames' buff2 color.
 uniform float u_mainColorMultiplier = 1.0F; // Used to factor this frames' main color.
-uniform float u_lowColorMultiplier  = 0.7F; // Used to factor this frames' low color.
+uniform float u_lowColorMultiplier  = 1.0F; // Used to factor this frames' low color.
 
 vec4 GetPosMappedFilterBuff2ColorValue(const vec2 uv, const ivec2 deviceXY);
 float GetBaseColorMultiplier(const vec3 color);
