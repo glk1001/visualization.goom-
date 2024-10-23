@@ -6,6 +6,7 @@ export module Goom.FilterFx.GpuFilterEffects.GpuLerpFactor;
 
 import Goom.Utils.Math.GoomRand;
 import Goom.Utils.Math.Lerper;
+import Goom.Lib.AssertUtils;
 
 using GOOM::UTILS::MATH::GoomRand;
 using GOOM::UTILS::MATH::Lerper;
@@ -35,6 +36,8 @@ public:
   auto SpeedUpABit() noexcept -> void;
   auto SlowDownABit() noexcept -> void;
 
+  auto ResetTValues(float t0, float t1) noexcept -> void;
+
 private:
   const GoomRand* m_goomRand = nullptr;
 
@@ -63,6 +66,12 @@ inline auto GpuLerpFactor::Increment() noexcept -> void
 inline auto GpuLerpFactor::GetNumSteps() noexcept -> uint32_t
 {
   return m_lerpFactor.GetNumSteps();
+}
+
+inline auto GpuLerpFactor::ResetTValues(const float t0, const float t1) noexcept -> void
+{
+  Expects(t0 <= t1);
+  m_lerpFactor.ResetValues(t0, t1);
 }
 
 } // namespace GOOM::FILTER_FX::GPU_FILTER_EFFECTS

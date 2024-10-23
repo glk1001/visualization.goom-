@@ -846,7 +846,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeFilterExtra
     return;
   }
 
-  m_filterSettingsService->SetRandomwTextureWrapType();
+  m_filterSettingsService->SetRandomTextureWrapType();
 
   LogChangeEvent(CHANGE_FILTER_EXTRA_SETTINGS);
 }

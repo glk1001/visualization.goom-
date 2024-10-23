@@ -154,6 +154,12 @@ inline constexpr auto SMALL_FLOAT = 0.00001F;
   return std::fabs(x - y) < epsilon;
 }
 
+[[nodiscard]] inline auto IsZero(const float x,
+                                 const float epsilon = SMALL_FLOAT) noexcept -> bool
+{
+  return FloatsEqual(x, 0.0F, epsilon);
+}
+
 template<typename T>
 [[nodiscard]] constexpr auto IsEven(const T& n) noexcept -> bool
 {

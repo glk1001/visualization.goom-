@@ -37,9 +37,8 @@ using AFTER_EFFECTS::AfterEffectsTypes;
 using AFTER_EFFECTS::HypercosOverlayMode;
 using AFTER_EFFECTS::RotationAdjustments;
 using FILTER_EFFECTS::ZoomVectorEffects;
-using FILTER_FX::NormalizedCoordsConverter;
-using FILTER_FX::GPU_FILTER_EFFECTS::GpuLerpFactor;
 using FILTER_UTILS::GoomLerpData;
+using GPU_FILTER_EFFECTS::GpuLerpFactor;
 using UTILS::NUM;
 using UTILS::MATH::GoomRand;
 using UTILS::MATH::I_HALF;
@@ -56,6 +55,9 @@ using enum ZoomFilterMode;
 
 namespace
 {
+
+constexpr auto FORCED_TEXTURE_WRAP    = TextureWrapType::REPEAT;
+constexpr auto FORCED_GPU_LERP_FACTOR = 0.5F;
 
 constexpr auto PROB_CRYSTAL_BALL_IN_MIDDLE   = 0.8F;
 constexpr auto PROB_EXP_RECIPROCAL_IN_MIDDLE = 0.6F;
@@ -250,6 +252,13 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
   static_assert(DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE <= MULTIPLIER_EFFECT_AMPLITUDE_RANGE.max);
   static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS >= 0.0F);
   static_assert(DEFAULT_LERP_ZOOM_ADJUSTMENT_TO_COORDS <= 1.0F);
+
+  if constexpr (USE_FORCED_GPU_LERP_FACTOR)
+  {
+    static_assert((0.0F <= FORCED_GPU_LERP_FACTOR) and (FORCED_GPU_LERP_FACTOR <= 1.0F));
+    m_filterSettings.gpuFilterEffectsSettings.gpuLerpFactor.ResetTValues(FORCED_GPU_LERP_FACTOR,
+                                                                         FORCED_GPU_LERP_FACTOR);
+  }
 }
 
 FilterSettingsService::~FilterSettingsService() noexcept = default;
@@ -287,7 +296,7 @@ auto FilterSettingsService::Start() -> void
   [[maybe_unused]] const auto dontCare2 =
       SetNewRandomGpuFilter(APPROX_MAX_TIME_BETWEEN_FILTER_MODE_CHANGES);
 
-  SetRandomwTextureWrapType();
+  SetRandomTextureWrapType();
 }
 
 auto FilterSettingsService::NewCycle() noexcept -> void
@@ -311,9 +320,16 @@ auto FilterSettingsService::NotifyUpdatedGpuFilterEffectsSettings() noexcept -> 
   m_filterSettings.gpuFilterEffectsSettingsHaveChanged = false;
 }
 
-auto FilterSettingsService::SetRandomwTextureWrapType() noexcept -> void
+auto FilterSettingsService::SetRandomTextureWrapType() noexcept -> void
 {
-  m_filterSettings.textureWrapType = m_weightedTextureWrapTypes.GetRandomWeighted();
+  if (USE_FORCED_TEXTURE_WRAP)
+  {
+    m_filterSettings.textureWrapType = FORCED_TEXTURE_WRAP;
+  }
+  else
+  {
+    m_filterSettings.textureWrapType = m_weightedTextureWrapTypes.GetRandomWeighted();
+  }
 }
 
 auto FilterSettingsService::SetDefaultFilterSettings() -> void

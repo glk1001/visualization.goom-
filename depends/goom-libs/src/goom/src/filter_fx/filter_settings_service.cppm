@@ -113,7 +113,7 @@ public:
   [[nodiscard]] auto MultiplyRotation(float factor) noexcept -> bool;
   [[nodiscard]] auto ToggleRotationDirection() noexcept -> bool;
 
-  auto SetRandomwTextureWrapType() noexcept -> void;
+  auto SetRandomTextureWrapType() noexcept -> void;
 
   static constexpr auto DEFAULT_TRAN_LERP_INCREMENT = 0.002F;
   auto ResetTransformBufferLerpData() noexcept -> void;

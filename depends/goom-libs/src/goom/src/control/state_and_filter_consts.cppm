@@ -9,6 +9,8 @@ inline constexpr auto USE_FORCED_SHADER_EFFECTS = false;
 inline constexpr auto USE_FORCED_FILTER_MODE     = true;
 inline constexpr auto USE_FORCED_GPU_FILTER_MODE = true;
 inline constexpr auto USE_FORCED_AFTER_EFFECT    = false;
+inline constexpr auto USE_FORCED_TEXTURE_WRAP    = false;
+inline constexpr auto USE_FORCED_GPU_LERP_FACTOR = true;
 
 inline constexpr auto ALL_AFTER_EFFECTS_TURNED_OFF = true;
 
