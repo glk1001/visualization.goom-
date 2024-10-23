@@ -390,6 +390,7 @@ set(GoomVisualFx_modules
     src/visual_fx/shapes_fx.cppm
     src/visual_fx/tentacles_fx.cppm
     src/visual_fx/tubes_fx.cppm
+    src/visual_fx/visual_fx_consts.cppm
 )
 
 set(GoomVisualFx_source_files

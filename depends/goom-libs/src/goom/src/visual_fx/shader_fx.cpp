@@ -8,8 +8,10 @@ module;
 
 module Goom.VisualFx.ShaderFx;
 
-import Goom.Utils.Math.Misc;
+import Goom.VisualFx.Consts;
 import Goom.VisualFx.FxHelper;
+import Goom.Utils.Math.GoomRand;
+import Goom.Utils.Math.Misc;
 import Goom.Lib.AssertUtils;
 import Goom.Lib.FrameData;
 import Goom.Lib.SPimpl;
@@ -24,7 +26,61 @@ using SHADERS::HighContrast;
 using SHADERS::HueShiftLerper;
 using SHADERS::ShaderObjectLerper;
 using UTILS::Stopwatch;
+using UTILS::MATH::FULL_CIRCLE_RANGE;
 using UTILS::MATH::Sq;
+
+static constexpr auto USE_FORCED_HUE_SHIFT          = false;
+static constexpr auto HUE_SHIFT_LERPER_VALUE_RANGE  = FULL_CIRCLE_RANGE;
+static constexpr auto FORCED_HUE_SHIFT_LERPER_VALUE = 3.0F;
+
+static constexpr auto USE_FORCED_CHROMA_FACTOR          = false;
+static constexpr auto CHROMA_FACTOR_LERPER_VALUE_RANGE  = NumberRange{0.5F, 5.0F};
+static constexpr auto FORCED_CHROMA_FACTOR_LERPER_VALUE = 5.0F;
+
+static constexpr auto USE_FORCED_BASE_COLOR_MULTIPLIER          = false;
+static constexpr auto BASE_COLOR_MULTIPLIER_LERPER_VALUE_RANGE  = NumberRange{0.92F, 0.99F};
+static constexpr auto FORCED_BASE_COLOR_MULTIPLIER_LERPER_VALUE = 0.99F;
+
+static constexpr auto USE_FORCED_PREV_FRAME_T_MIX          = false;
+static constexpr auto PREV_FRAME_T_MIX_LERPER_VALUE_RANGE  = NumberRange{0.1F, 0.9F};
+static constexpr auto FORCED_PREV_FRAME_T_MIX_LERPER_VALUE = 0.1F;
+
+[[nodiscard]] consteval auto GetHueShiftLerperValueRange() noexcept -> NumberRange<float>
+{
+  if constexpr (USE_FORCED_SHADER_EFFECTS and USE_FORCED_HUE_SHIFT)
+  {
+    return {FORCED_HUE_SHIFT_LERPER_VALUE, FORCED_HUE_SHIFT_LERPER_VALUE};
+  }
+  return HUE_SHIFT_LERPER_VALUE_RANGE;
+}
+
+[[nodiscard]] consteval auto GetChromaFactorLerperValueRange() noexcept -> NumberRange<float>
+{
+  if constexpr (USE_FORCED_SHADER_EFFECTS and USE_FORCED_CHROMA_FACTOR)
+  {
+    return {FORCED_CHROMA_FACTOR_LERPER_VALUE, FORCED_CHROMA_FACTOR_LERPER_VALUE};
+  }
+  return CHROMA_FACTOR_LERPER_VALUE_RANGE;
+}
+
+[[nodiscard]] consteval auto GetBaseColorMultiplierLerperValueRange() noexcept -> NumberRange<float>
+{
+  if constexpr (USE_FORCED_SHADER_EFFECTS and USE_FORCED_BASE_COLOR_MULTIPLIER)
+  {
+    return {FORCED_BASE_COLOR_MULTIPLIER_LERPER_VALUE, FORCED_BASE_COLOR_MULTIPLIER_LERPER_VALUE};
+  }
+  return BASE_COLOR_MULTIPLIER_LERPER_VALUE_RANGE;
+}
+
+[[nodiscard]] consteval auto GetPrevFrameTMixLerperValueRange() noexcept -> NumberRange<float>
+{
+
+  if constexpr (USE_FORCED_SHADER_EFFECTS and USE_FORCED_PREV_FRAME_T_MIX)
+  {
+    return {FORCED_PREV_FRAME_T_MIX_LERPER_VALUE, FORCED_PREV_FRAME_T_MIX_LERPER_VALUE};
+  }
+  return PREV_FRAME_T_MIX_LERPER_VALUE_RANGE;
+}
 
 class ShaderFx::ShaderFxImpl
 {
@@ -44,16 +100,17 @@ private:
   HighContrast m_highContrast;
 
   static constexpr auto HUE_SHIFT_LERPER_PARAMS = HueShiftLerper::Params{
+      .valueRange         = GetHueShiftLerperValueRange(),
       .numLerpStepsRange  = { 25U,  100U},
       .lerpConstTimeRange = {500U, 5000U},
   };
   HueShiftLerper m_hueShiftLerper;
 
   static constexpr auto CHROMA_FACTOR_LERPER_PARAMS = ShaderObjectLerper::Params{
-      .valueRange             = {0.5F, 5.0F},
-      .minValueRangeDist      = 0.1F,
-      .numLerpStepsRange      = { 50U, 500U},
-      .lerpConstTimeRange     = { 50U, 100U},
+      .valueRange             = GetChromaFactorLerperValueRange(),
+      .minValueRangeDist      = USE_FORCED_CHROMA_FACTOR ? 0.0F : 0.1F,
+      .numLerpStepsRange      = {50U, 500U},
+      .lerpConstTimeRange     = {50U, 100U},
       .initialNumLerpSteps    = 50U,
       .initialLerpConstTime   = 50U,
       .probFavorBiggerNumbers = 0.0F,
@@ -61,10 +118,10 @@ private:
   ShaderObjectLerper m_chromaFactorLerper;
 
   static constexpr auto BASE_COLOR_MULTIPLIER_LERPER_PARAMS = ShaderObjectLerper::Params{
-      .valueRange             = {0.92F, 0.99F},
-      .minValueRangeDist      = 0.025F,
-      .numLerpStepsRange      = {  50U,  250U},
-      .lerpConstTimeRange     = {  10U,   50U},
+      .valueRange             = GetBaseColorMultiplierLerperValueRange(),
+      .minValueRangeDist      = USE_FORCED_BASE_COLOR_MULTIPLIER ? 0.0F : 0.025F,
+      .numLerpStepsRange      = {50U, 250U},
+      .lerpConstTimeRange     = {10U,  50U},
       .initialNumLerpSteps    = 50U,
       .initialLerpConstTime   = 10U,
       .probFavorBiggerNumbers = 0.75F,
@@ -72,10 +129,10 @@ private:
   ShaderObjectLerper m_baseColorMultiplierLerper;
 
   static constexpr auto PREV_FRAME_T_MIX_LERPER_PARAMS = ShaderObjectLerper::Params{
-      .valueRange             = {0.1F, 0.9F},
-      .minValueRangeDist      = 0.2F,
-      .numLerpStepsRange      = { 50U, 500U},
-      .lerpConstTimeRange     = { 10U,  50U},
+      .valueRange             = GetPrevFrameTMixLerperValueRange(),
+      .minValueRangeDist      = USE_FORCED_PREV_FRAME_T_MIX ? 0.0F : 0.2F,
+      .numLerpStepsRange      = {50U, 500U},
+      .lerpConstTimeRange     = {10U,  50U},
       .initialNumLerpSteps    = 50U,
       .initialLerpConstTime   = 10U,
       .probFavorBiggerNumbers = 0.0F,

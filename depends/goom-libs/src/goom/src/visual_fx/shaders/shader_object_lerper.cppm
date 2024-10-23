@@ -76,13 +76,14 @@ ShaderObjectLerper::ShaderObjectLerper(const PluginInfo& goomInfo,
     m_lerpT{
       {.stepType=TValue::StepType::CONTINUOUS_REVERSIBLE, .numSteps=m_params.initialNumLerpSteps},
       {
-        {.t0 = 0.0F, .delayTime = m_params.initialLerpConstTime}, 
+        {.t0 = 0.0F, .delayTime = m_params.initialLerpConstTime},
         {.t0 = 1.0F, .delayTime = m_params.initialLerpConstTime}
       }
     }
 {
-  Expects(m_params.minValueRangeDist > 0.0F);
-  Expects(m_params.valueRange.range >= m_params.minValueRangeDist);
+  Expects(((m_params.minValueRangeDist == 0.0F) and (m_params.valueRange.range == 0.0F)) or
+          ((m_params.minValueRangeDist > 0.0F) and
+           (m_params.valueRange.range >= m_params.minValueRangeDist)));
 
   Expects(0 < m_params.numLerpStepsRange.min);
   Expects(m_params.numLerpStepsRange.min <= m_params.initialNumLerpSteps);
