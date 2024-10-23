@@ -812,6 +812,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeFilterMode(
 {
   if (not m_filterSettingsService->SetNewRandomFilter())
   {
+    m_numUpdatesSinceLastFilterChange = 0;
     LogChangeEvent(CHANGE_FILTER_MODE_REJECTED);
     return;
   }
@@ -825,6 +826,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeGpuFilterMo
 {
   if (not m_filterSettingsService->SetNewRandomGpuFilter(m_maxUpdatesBetweenFilterChanges))
   {
+    m_numUpdatesSinceLastGpuFilterChange = 0;
     LogChangeEvent(CHANGE_GPU_FILTER_MODE_REJECTED);
     return;
   }
