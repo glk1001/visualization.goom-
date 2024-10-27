@@ -116,7 +116,7 @@ inline auto ZoomVectorEffects::SetBaseZoomAdjustmentFactor(const float multiplie
   m_baseZoomAdjustmentFactor = multiplier * RAW_BASE_ZOOM_ADJUSTMENT_FACTOR;
 
   Ensures(GetBaseZoomAdjustment(m_baseZoomAdjustmentFactor,
-                                m_filterEffectsSettings->vitesse.GetRelativeSpeed()) <=
+                                m_filterEffectsSettings->speed.GetRelativeSpeed()) <=
           MAX_ALLOWED_BASE_ZOOM_ADJUSTMENT);
 
   SetBaseZoomAdjustmentFactor();
@@ -126,7 +126,7 @@ inline auto ZoomVectorEffects::SetBaseZoomAdjustmentFactor() noexcept -> void
 {
   // TODO(glk) Does GetRelativeSpeed change in between this setter use?
   const auto baseZoomAdjustment = GetBaseZoomAdjustment(
-      m_baseZoomAdjustmentFactor, m_filterEffectsSettings->vitesse.GetRelativeSpeed());
+      m_baseZoomAdjustmentFactor, m_filterEffectsSettings->speed.GetRelativeSpeed());
 
   Ensures(MIN_ALLOWED_BASE_ZOOM_ADJUSTMENT <= baseZoomAdjustment);
   Ensures(baseZoomAdjustment <= MAX_ALLOWED_BASE_ZOOM_ADJUSTMENT);

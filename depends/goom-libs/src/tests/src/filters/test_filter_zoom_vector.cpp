@@ -1,6 +1,6 @@
 // NOLINTBEGIN(cert-err58-cpp): Catch2 3.6.0 issue
 
-// TODO(glk) - Look at a better way to deal with this - Vitesse::SetVitesse
+// TODO(glk) - Look at a better way to deal with this - Speed::SetSpeed
 #if not defined(_MSC_VER)
 #else
 #pragma warning(push)
@@ -33,7 +33,7 @@ using Catch::Approx;
 using FILTER_FX::FilterEffectsSettings;
 using FILTER_FX::FilterZoomVector;
 using FILTER_FX::NormalizedCoords;
-using FILTER_FX::Vitesse;
+using FILTER_FX::Speed;
 using FILTER_FX::AFTER_EFFECTS::AfterEffectsTypes;
 using FILTER_FX::AFTER_EFFECTS::HypercosOverlayMode;
 using FILTER_FX::AFTER_EFFECTS::RotationAdjustments;
@@ -59,7 +59,7 @@ const auto GOOM_RAND                = GoomRand{};
 [[nodiscard]] constexpr auto GetRelativeSpeed(const uint32_t intSpeed, const bool reverseSpeed)
     -> float
 {
-  constexpr auto MAX_INT_SPEED = static_cast<float>(Vitesse::MAXIMUM_SPEED);
+  constexpr auto MAX_INT_SPEED = static_cast<float>(Speed::MAXIMUM_SPEED);
   const auto absRelativeSpeed  = static_cast<float>(intSpeed) / MAX_INT_SPEED;
   return reverseSpeed ? -absRelativeSpeed : absRelativeSpeed;
 }
@@ -96,7 +96,7 @@ const auto GOOM_RAND                = GoomRand{};
   }}};
 
   return FilterEffectsSettings{
-      .vitesse                            = Vitesse{},
+      .speed                              = Speed{},
       .maxZoomAdjustment                  = DEFAULT_MAX_ZOOM_ADJUSTMENT,
       .baseZoomAdjustmentFactorMultiplier = UNIT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
       .afterEffectsVelocityMultiplier     = DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
@@ -104,18 +104,18 @@ const auto GOOM_RAND                = GoomRand{};
       .okToChangeFilterSettings           = nullptr,
       .zoomMidpoint                       = {.x = DEFAULT_ZOOM_MID_X, .y = DEFAULT_ZOOM_MID_Y},
       .filterMultiplierEffectsSettings    = {.isActive   = DEFAULT_MULTIPLIER_EFFECT_IS_ACTIVE,
-                                                    .xFreq      = DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
-                                                    .yFreq      = DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
-                                                    .xAmplitude = DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE,
-                                                    .yAmplitude = DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
-                                                    .lerpZoomAdjustmentToCoords =
+                                                  .xFreq      = DEFAULT_MULTIPLIER_EFFECT_X_FREQ,
+                                                  .yFreq      = DEFAULT_MULTIPLIER_EFFECT_Y_FREQ,
+                                                  .xAmplitude = DEFAULT_MULTIPLIER_EFFECT_X_AMPLITUDE,
+                                                  .yAmplitude = DEFAULT_MULTIPLIER_EFFECT_Y_AMPLITUDE,
+                                                  .lerpZoomAdjustmentToCoords =
                                                  DEFAULT_LERP_ADJUSTMENT_TO_COORDS},
       .afterEffectsSettings =
           {
-                                                    .hypercosOverlayMode = HypercosOverlayMode::NONE,
-                                                    .isActive            = ALL_OFF_AFTER_EFFECTS_STATES,
-                                                    .rotationAdjustments = RotationAdjustments{},
-                                                    },
+                                                  .hypercosOverlayMode = HypercosOverlayMode::NONE,
+                                                  .isActive            = ALL_OFF_AFTER_EFFECTS_STATES,
+                                                  .rotationAdjustments = RotationAdjustments{},
+                                                  },
   };
 }
 
@@ -130,13 +130,13 @@ auto TestZoomAdjustment(FilterZoomVector& filterZoomVector,
 
   UNSCOPED_INFO("speedInc = " << speedInc);
 
-  const auto intSpeed      = Vitesse::STOP_SPEED + speedInc;
+  const auto intSpeed      = Speed::STOP_SPEED + speedInc;
   const auto relativeSpeed = GetRelativeSpeed(intSpeed, reverseSpeed);
   UNSCOPED_INFO("relativeSpeed = " << relativeSpeed);
   REQUIRE(-1.0F <= relativeSpeed);
   REQUIRE(relativeSpeed <= 1.0F);
-  filterSettings.vitesse.SetVitesse(intSpeed);
-  REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(relativeSpeed));
+  filterSettings.speed.SetSpeed(intSpeed);
+  REQUIRE(filterSettings.speed.GetRelativeSpeed() == Approx(relativeSpeed));
 
   const auto baseZoomAdjustment     = GetZoomAdjustment(relativeSpeed);
   const auto zoomFactor             = 1.0F - baseZoomAdjustment;
@@ -162,8 +162,8 @@ TEST_CASE("FilterZoomVector")
   {
     const auto coords = NormalizedCoords{1.0F, 1.0F};
 
-    filterSettings.vitesse.SetVitesse(Vitesse::STOP_SPEED);
-    REQUIRE(filterSettings.vitesse.GetRelativeSpeed() == Approx(0.0F));
+    filterSettings.speed.SetSpeed(Speed::STOP_SPEED);
+    REQUIRE(filterSettings.speed.GetRelativeSpeed() == Approx(0.0F));
     const auto baseZoomAdjustment     = GetZoomAdjustment(0.0F);
     const auto zoomFactor             = 1.0F - baseZoomAdjustment;
     const auto expectedZoomAdjustment = zoomFactor * coords;
@@ -180,9 +180,9 @@ TEST_CASE("FilterZoomVector")
     for (auto i = 0U; i < NUM_SPEEDS; ++i)
     {
       const auto reverseSpeed = 1 == i;
-      filterSettings.vitesse.SetReverseVitesse(reverseSpeed);
+      filterSettings.speed.SetSpeedReversed(reverseSpeed);
 
-      for (auto speedInc = 0U; speedInc <= Vitesse::MAXIMUM_SPEED; ++speedInc)
+      for (auto speedInc = 0U; speedInc <= Speed::MAXIMUM_SPEED; ++speedInc)
       {
         TestZoomAdjustment(filterZoomVector, filterSettings, reverseSpeed, speedInc);
       }

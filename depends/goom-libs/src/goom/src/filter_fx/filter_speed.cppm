@@ -19,7 +19,7 @@ import Goom.Lib.AssertUtils;
 export namespace GOOM::FILTER_FX
 {
 
-class Vitesse
+class Speed
 {
 public:
   static constexpr uint32_t STOP_SPEED        = 0U;
@@ -32,26 +32,26 @@ public:
   static constexpr uint32_t MAXIMUM_SPEED     = STOP_SPEED + 10U;
   static constexpr uint32_t DEFAULT_SPEED     = SLOWEST_SPEED;
 
-  [[nodiscard]] constexpr auto GetVitesse() const noexcept -> uint32_t;
-  constexpr auto SetVitesse(uint32_t val) noexcept -> void;
-  constexpr auto SetDefault() noexcept -> void;
+  [[nodiscard]] constexpr auto GetSpeed() const noexcept -> uint32_t;
+  constexpr auto SetSpeed(uint32_t speed) noexcept -> void;
+  constexpr auto SetDefaultSpeed() noexcept -> void;
   constexpr auto GoSlowerBy(uint32_t amount) noexcept -> void;
   [[nodiscard]] constexpr static auto GetFasterBy(uint32_t speed, uint32_t amount) noexcept
       -> uint32_t;
   [[nodiscard]] constexpr static auto GetSlowerBy(uint32_t speed, uint32_t amount) noexcept
       -> uint32_t;
 
-  [[nodiscard]] constexpr auto GetReverseVitesse() const noexcept -> bool;
-  constexpr auto SetReverseVitesse(bool val) noexcept -> void;
-  constexpr auto ToggleReverseVitesse() noexcept -> void;
+  [[nodiscard]] constexpr auto IsSpeedReversed() const noexcept -> bool;
+  constexpr auto SetSpeedReversed(bool flag) noexcept -> void;
+  constexpr auto ToggleSpeedReversedFlag() noexcept -> void;
 
   [[nodiscard]] constexpr auto IsFasterThan(uint32_t otherSpeed) const noexcept -> bool;
 
   [[nodiscard]] constexpr auto GetRelativeSpeed() const noexcept -> float;
 
 private:
-  uint32_t m_vitesse    = DEFAULT_SPEED;
-  bool m_reverseVitesse = true;
+  uint32_t m_speed     = DEFAULT_SPEED;
+  bool m_speedReversed = true;
 };
 
 } // namespace GOOM::FILTER_FX
@@ -59,61 +59,59 @@ private:
 namespace GOOM::FILTER_FX
 {
 
-constexpr auto Vitesse::SetDefault() noexcept -> void
+constexpr auto Speed::SetDefaultSpeed() noexcept -> void
 {
-  m_vitesse        = DEFAULT_SPEED;
-  m_reverseVitesse = true;
+  m_speed         = DEFAULT_SPEED;
+  m_speedReversed = true;
 }
 
-constexpr auto Vitesse::GetReverseVitesse() const noexcept -> bool
+constexpr auto Speed::IsSpeedReversed() const noexcept -> bool
 {
-  return m_reverseVitesse;
+  return m_speedReversed;
 }
 
-constexpr auto Vitesse::SetReverseVitesse(const bool val) noexcept -> void
+constexpr auto Speed::SetSpeedReversed(const bool flag) noexcept -> void
 {
-  m_reverseVitesse = val;
+  m_speedReversed = flag;
 }
 
-constexpr auto Vitesse::ToggleReverseVitesse() noexcept -> void
+constexpr auto Speed::ToggleSpeedReversedFlag() noexcept -> void
 {
-  m_reverseVitesse = not m_reverseVitesse;
+  m_speedReversed = not m_speedReversed;
 }
 
-constexpr auto Vitesse::GetVitesse() const noexcept -> uint32_t
+constexpr auto Speed::GetSpeed() const noexcept -> uint32_t
 {
-  return m_vitesse;
+  return m_speed;
 }
 
-constexpr auto Vitesse::SetVitesse(const uint32_t val) noexcept -> void
+constexpr auto Speed::SetSpeed(const uint32_t speed) noexcept -> void
 {
-  Expects(val <= MAXIMUM_SPEED);
-  Expects(val >= STOP_SPEED);
+  Expects(speed <= MAXIMUM_SPEED);
+  Expects(speed >= STOP_SPEED);
 
-  m_vitesse = val;
+  m_speed = speed;
 }
 
-constexpr auto Vitesse::GoSlowerBy(const uint32_t amount) noexcept -> void
+constexpr auto Speed::GoSlowerBy(const uint32_t amount) noexcept -> void
 {
-  if (amount > m_vitesse)
+  if (amount > m_speed)
   {
-    m_vitesse = STOP_SPEED;
+    m_speed = STOP_SPEED;
     return;
   }
-  m_vitesse -= amount;
+  m_speed -= amount;
 
-  Ensures(m_vitesse <= MAXIMUM_SPEED);
-  Ensures(m_vitesse >= STOP_SPEED);
+  Ensures(m_speed <= MAXIMUM_SPEED);
+  Ensures(m_speed >= STOP_SPEED);
 }
 
-constexpr auto Vitesse::GetFasterBy(const uint32_t speed, const uint32_t amount) noexcept
-    -> uint32_t
+constexpr auto Speed::GetFasterBy(const uint32_t speed, const uint32_t amount) noexcept -> uint32_t
 {
   return std::min(speed + amount, MAXIMUM_SPEED);
 }
 
-constexpr auto Vitesse::GetSlowerBy(const uint32_t speed, const uint32_t amount) noexcept
-    -> uint32_t
+constexpr auto Speed::GetSlowerBy(const uint32_t speed, const uint32_t amount) noexcept -> uint32_t
 {
   if (amount >= speed)
   {
@@ -122,16 +120,16 @@ constexpr auto Vitesse::GetSlowerBy(const uint32_t speed, const uint32_t amount)
   return speed - amount;
 }
 
-constexpr auto Vitesse::IsFasterThan(const uint32_t otherSpeed) const noexcept -> bool
+constexpr auto Speed::IsFasterThan(const uint32_t otherSpeed) const noexcept -> bool
 {
-  return m_vitesse > otherSpeed;
+  return m_speed > otherSpeed;
 }
 
-constexpr auto Vitesse::GetRelativeSpeed() const noexcept -> float
+constexpr auto Speed::GetRelativeSpeed() const noexcept -> float
 {
-  const auto relativeSpeed = static_cast<float>(m_vitesse) / static_cast<float>(MAXIMUM_SPEED);
+  const auto relativeSpeed = static_cast<float>(m_speed) / static_cast<float>(MAXIMUM_SPEED);
 
-  return m_reverseVitesse ? -relativeSpeed : +relativeSpeed;
+  return m_speedReversed ? -relativeSpeed : +relativeSpeed;
 }
 
 } // namespace GOOM::FILTER_FX

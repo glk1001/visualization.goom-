@@ -185,7 +185,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
     m_filterSettings{
         .filterEffectsSettingsHaveChanged = false,
         .filterEffectsSettings = {
-           .vitesse = Vitesse{},
+           .speed = Speed{},
            .maxZoomAdjustment = DEFAULT_MAX_ZOOM_ADJUSTMENT,
            .baseZoomAdjustmentFactorMultiplier = DEFAULT_BASE_ZOOM_ADJUSTMENT_FACTOR_MULTIPLIER,
            .afterEffectsVelocityMultiplier = DEFAULT_AFTER_EFFECTS_VELOCITY_CONTRIBUTION,
@@ -337,7 +337,7 @@ auto FilterSettingsService::SetDefaultFilterSettings() -> void
   m_filterSettings.filterEffectsSettings.zoomAdjustmentEffect =
       m_filterModeData[m_filterMode].zoomAdjustmentEffect;
   m_filterSettings.filterEffectsSettings.zoomMidpoint = m_screenCentre;
-  m_filterSettings.filterEffectsSettings.vitesse.SetDefault();
+  m_filterSettings.filterEffectsSettings.speed.SetDefaultSpeed();
 
   m_randomizedAfterEffects.SetDefaults();
 }
@@ -434,11 +434,11 @@ auto FilterSettingsService::SetWaveModeAfterEffects() -> void
   m_randomizedAfterEffects.TurnPlaneEffectOn();
 
   auto& filterEffectsSettings = m_filterSettings.filterEffectsSettings;
-  filterEffectsSettings.vitesse.SetReverseVitesse(m_goomRand->ProbabilityOf<PROB_REVERSE_SPEED>());
+  filterEffectsSettings.speed.SetSpeedReversed(m_goomRand->ProbabilityOf<PROB_REVERSE_SPEED>());
   if (m_goomRand->ProbabilityOf<PROB_CHANGE_SPEED>())
   {
-    filterEffectsSettings.vitesse.SetVitesse(
-        U_HALF * (Vitesse::DEFAULT_SPEED + filterEffectsSettings.vitesse.GetVitesse()));
+    filterEffectsSettings.speed.SetSpeed(
+        U_HALF * (Speed::DEFAULT_SPEED + filterEffectsSettings.speed.GetSpeed()));
   }
 }
 

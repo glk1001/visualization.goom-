@@ -38,7 +38,7 @@ struct FilterMultiplierEffectsSettings
 
 struct FilterEffectsSettings
 {
-  Vitesse vitesse;
+  Speed speed;
 
   float maxZoomAdjustment;
   float baseZoomAdjustmentFactorMultiplier;

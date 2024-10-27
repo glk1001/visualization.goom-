@@ -102,10 +102,10 @@ public:
   [[nodiscard]] auto GetPreviousGPUFilterModeName() const noexcept -> const std::string_view&;
 
   [[nodiscard]] auto GetFilterSettings() const noexcept -> const FilterSettings&;
-  [[nodiscard]] auto GetROVitesse() const noexcept -> const Vitesse&;
+  [[nodiscard]] auto GetReadOnlyFilterSpeed() const noexcept -> const Speed&;
 
   // The following methods will change filter settings.
-  [[nodiscard]] auto GetRWVitesse() noexcept -> Vitesse&;
+  [[nodiscard]] auto GetReadWriteFilterSpeed() noexcept -> Speed&;
   [[nodiscard]] auto SetNewRandomFilter() -> bool;
   [[nodiscard]] auto SetNewRandomGpuFilter(int32_t maxTimeToNextFilterModeChange) -> bool;
   [[nodiscard]] auto ChangeMilieu() -> bool;
@@ -291,15 +291,15 @@ inline auto FilterSettingsService::GetGoomRand() const noexcept -> const GoomRan
   return *m_goomRand;
 }
 
-inline auto FilterSettingsService::GetROVitesse() const noexcept -> const Vitesse&
+inline auto FilterSettingsService::GetReadOnlyFilterSpeed() const noexcept -> const Speed&
 {
-  return m_filterSettings.filterEffectsSettings.vitesse;
+  return m_filterSettings.filterEffectsSettings.speed;
 }
 
-inline auto FilterSettingsService::GetRWVitesse() noexcept -> Vitesse&
+inline auto FilterSettingsService::GetReadWriteFilterSpeed() noexcept -> Speed&
 {
   m_filterSettings.filterEffectsSettingsHaveChanged = true;
-  return m_filterSettings.filterEffectsSettings.vitesse;
+  return m_filterSettings.filterEffectsSettings.speed;
 }
 
 inline auto FilterSettingsService::CanChangeFilterSettings() const noexcept -> bool

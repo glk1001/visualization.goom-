@@ -25,7 +25,7 @@ public:
       -> Vec2dFlt = 0;
 
   [[nodiscard]] virtual auto GetZoomAdjustmentEffectNameValueParams() const noexcept
-      -> GOOM::UTILS::NameValuePairs = 0;
+      -> UTILS::NameValuePairs = 0;
 
 protected:
   static constexpr auto* PARAM_GROUP = "Filter Effects";

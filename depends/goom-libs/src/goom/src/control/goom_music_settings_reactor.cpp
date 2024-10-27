@@ -29,7 +29,7 @@ namespace GOOM::CONTROL
 {
 
 using FILTER_FX::FilterSettingsService;
-using FILTER_FX::Vitesse;
+using FILTER_FX::Speed;
 using UTILS::EnumToString;
 using UTILS::GetCurrentDateTimeAsString;
 using UTILS::GetPair;
@@ -42,27 +42,27 @@ using UTILS::MATH::NumberRange;
 
 static constexpr auto COLLECT_EVENT_STATS = true;
 
-static constexpr auto NORMAL_UPDATE_LOCK_TIME                  = 50U;
-static constexpr auto SLOWER_SPEED_AND_SPEED_FORWARD_LOCK_TIME = 75U;
-static constexpr auto REVERSE_SPEED_LOCK_TIME                  = 100U;
-static constexpr auto MEGA_LENT_LOCK_TIME_INCREASE             = 50U;
-static constexpr auto CHANGE_VITESSE_LOCK_TIME_INCREASE        = 50U;
-static constexpr auto CHANGE_LERP_TO_END_LOCK_TIME             = 150U;
+static constexpr auto LOCK_TIME_NORMAL_UPDATE                  = 50U;
+static constexpr auto LOCK_TIME_SLOWER_SPEED_AND_SPEED_FORWARD = 75U;
+static constexpr auto LOCK_TIME_REVERSE_SPEED                  = 100U;
+static constexpr auto LOCK_TIME_MEGA_LENT_INCREASE             = 50U;
+static constexpr auto LOCK_TIME_SPEED_CHANGE_INCREASE          = 50U;
+static constexpr auto LOCK_TIME_CHANGE_LERP_TO_END             = 150U;
 
-static constexpr auto PROB_CHANGE_STATE                             = 0.50F;
-static constexpr auto PROB_CHANGE_FILTER_MODE                       = 0.05F;
-static constexpr auto PROB_CHANGE_GPU_FILTER_MODE                   = 0.05F;
-static constexpr auto PROB_CHANGE_FILTER_EXTRA_SETTINGS             = 0.90F;
-static constexpr auto PROB_CHANGE_TO_MEGA_LENT_MODE                 = 1.0F / 700.F;
-static constexpr auto PROB_FILTER_REVERSE_ON                        = 0.10F;
-static constexpr auto PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED        = 0.20F;
-static constexpr auto PROB_FILTER_VITESSE_STOP_SPEED_MINUS_1        = 0.20F;
-static constexpr auto PROB_FILTER_VITESSE_STOP_SPEED                = 0.10F;
-static constexpr auto PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE = 0.05F;
-static constexpr auto PROB_FILTER_TOGGLE_ROTATION                   = 0.125F;
-static constexpr auto PROB_FILTER_INCREASE_ROTATION                 = 0.250F;
-static constexpr auto PROB_FILTER_DECREASE_ROTATION                 = 0.875F;
-static constexpr auto PROB_FILTER_STOP_ROTATION                     = 0.250F;
+static constexpr auto PROB_CHANGE_STATE                           = 0.50F;
+static constexpr auto PROB_CHANGE_FILTER_MODE                     = 0.05F;
+static constexpr auto PROB_CHANGE_GPU_FILTER_MODE                 = 0.05F;
+static constexpr auto PROB_CHANGE_FILTER_EXTRA_SETTINGS           = 0.90F;
+static constexpr auto PROB_CHANGE_TO_MEGA_LENT_MODE               = 1.0F / 700.F;
+static constexpr auto PROB_FILTER_REVERSE_ON                      = 0.10F;
+static constexpr auto PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED      = 0.20F;
+static constexpr auto PROB_FILTER_SPEED_STOP_SPEED_MINUS_1        = 0.20F;
+static constexpr auto PROB_FILTER_SPEED_STOP_SPEED                = 0.10F;
+static constexpr auto PROB_FILTER_CHANGE_SPEED_AND_TOGGLE_REVERSE = 0.05F;
+static constexpr auto PROB_FILTER_TOGGLE_ROTATION                 = 0.125F;
+static constexpr auto PROB_FILTER_INCREASE_ROTATION               = 0.250F;
+static constexpr auto PROB_FILTER_DECREASE_ROTATION               = 0.875F;
+static constexpr auto PROB_FILTER_STOP_ROTATION                   = 0.250F;
 
 enum class ChangeEvents : UnderlyingEnumType
 {
@@ -126,7 +126,7 @@ private:
   GoomAllVisualFx* m_visualFx;
   FilterSettingsService* m_filterSettingsService;
   std::string m_dumpDirectory;
-  GoomLock m_lock; // pour empecher de nouveaux changements
+  GoomLock m_changeLock; // pour empecher de nouveaux changements
 
   bool m_hasFilterModeChangedInThisUpdate                        = false;
   static constexpr auto MAX_UPDATES_BETWEEN_FILTER_CHANGES_RANGE = NumberRange{300, 500};
@@ -138,7 +138,7 @@ private:
   int32_t m_numUpdatesSinceLastGpuFilterChange                       = 0;
   int32_t m_maxUpdatesBetweenGpuFilterChanges = MAX_UPDATES_BETWEEN_GPU_FILTER_CHANGES_RANGE.min;
 
-  uint32_t m_previousZoomSpeed = Vitesse::STOP_SPEED;
+  uint32_t m_previousZoomSpeed = Speed::STOP_SPEED;
 
   static constexpr auto MAX_NUM_STATE_SELECTIONS_BLOCKED = 3U;
   uint32_t m_stateSelectionBlocker                       = MAX_NUM_STATE_SELECTIONS_BLOCKED;
@@ -150,7 +150,7 @@ private:
   auto ChangeStateMaybe() -> void;
   auto ChangeFilterModeMaybe() -> void;
   auto ChangeGpuFilterModeMaybe() -> void;
-  auto BigBreakIfMusicIsCalm() -> void;
+  auto ColorChangeIfMusicIsCalm() -> void;
   auto BigUpdateIfNotLocked() -> void;
   auto LowerTheSpeedMaybe() -> void;
   auto ChangeRotationMaybe() -> void;
@@ -158,7 +158,7 @@ private:
   auto ChangeTransformBufferLerpDataMaybe() -> void;
   auto ChangeTransformBufferLerpToEndMaybe() -> void;
   auto ChangeGpuLerpDataMaybe() -> void;
-  auto ChangeVitesseMaybe() -> void;
+  auto ChangeFilterSpeedMaybe() -> void;
   auto ChangeStopSpeedsMaybe() -> void;
   auto RestoreZoomInMaybe() -> void;
 
@@ -166,7 +166,7 @@ private:
   auto DoBigUpdateMaybe() -> void;
   auto DoBigNormalUpdate() -> void;
   auto DoMegaLentUpdate() -> void;
-  auto DoBigBreak() -> void;
+  auto DoColorChange() -> void;
   auto DoChangeFilterMode() -> void;
   auto DoChangeGpuFilterMode() -> void;
   auto DoChangeFilterExtraSettings() -> void;
@@ -175,7 +175,7 @@ private:
   auto DoChangeSpeedSlowAndForward() -> void;
   auto DoChangeSpeedReverse() -> void;
   auto DoSetSlowerSpeedAndToggleReverse() -> void;
-  auto DoChangeSpeed(uint32_t currentVitesse, uint32_t newVitesse) -> void;
+  auto DoChangeSpeed(uint32_t currentSpeed, uint32_t newSpeed) -> void;
   auto DoChangeGpuLerpData() -> void;
   auto DoResetGpuLerpDataBasedOnSpeed() -> void;
   auto DoChangeTransformBufferLerpData() -> void;
@@ -195,7 +195,7 @@ private:
     uint32_t previousZoomSpeed                 = 0;
     uint32_t currentZoomSpeed                  = 0;
     uint32_t timeSinceLastGoom                 = 0U;
-    uint32_t totalGoomsInCurrentCycle          = 0U;
+    uint32_t totalGoomsInThisCycle             = 0U;
     float soundSpeed                           = 0.0F;
   };
   struct PostChangeEventData
@@ -299,13 +299,13 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::PreUpdateChangeEven
             .numUpdatesSinceLastGpuFilterChange = m_numUpdatesSinceLastGpuFilterChange,
             .maxUpdatesBetweenFilterChanges     = m_maxUpdatesBetweenFilterChanges,
             .maxUpdatesBetweenGpuFilterChanges  = m_maxUpdatesBetweenGpuFilterChanges,
-            .lockTime                           = m_lock.GetLockTime(),
+            .lockTime                           = m_changeLock.GetLockTime(),
             .timeInState                        = m_timeInState,
             .previousZoomSpeed                  = m_previousZoomSpeed,
-            .currentZoomSpeed         = m_filterSettingsService->GetROVitesse().GetVitesse(),
-            .timeSinceLastGoom        = m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom(),
-            .totalGoomsInCurrentCycle = m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle(),
-            .soundSpeed               = m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed(),
+            .currentZoomSpeed      = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed(),
+            .timeSinceLastGoom     = m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom(),
+            .totalGoomsInThisCycle = m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle(),
+            .soundSpeed            = m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed(),
         },
         .postChangeEventData = PostChangeEventData{}
     });
@@ -324,9 +324,9 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::PostUpdateChangeEve
     postData.numUpdatesSinceLastGpuFilterChange = m_numUpdatesSinceLastGpuFilterChange;
     postData.maxUpdatesBetweenFilterChanges     = m_maxUpdatesBetweenFilterChanges;
     postData.maxUpdatesBetweenGpuFilterChanges  = m_maxUpdatesBetweenGpuFilterChanges;
-    postData.lockTime                           = m_lock.GetLockTime();
+    postData.lockTime                           = m_changeLock.GetLockTime();
     postData.timeInState                        = m_timeInState;
-    postData.currentZoomSpeed              = m_filterSettingsService->GetROVitesse().GetVitesse();
+    postData.currentZoomSpeed = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed();
     postData.filterModeChangedInThisUpdate = m_hasFilterModeChangedInThisUpdate;
   }
 }
@@ -419,7 +419,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DumpChangeEventData
                    eventData.postChangeEventData.currentZoomSpeed,
 
                    eventData.preChangeEventData.timeSinceLastGoom,
-                   eventData.preChangeEventData.totalGoomsInCurrentCycle,
+                   eventData.preChangeEventData.totalGoomsInThisCycle,
                    eventData.preChangeEventData.soundSpeed,
 
                    eventData.postChangeEventData.filterModeChangedInThisUpdate,
@@ -451,12 +451,14 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::SetDumpDirectory(
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::Start() -> void
 {
+  m_changeLock.SetLockTime(LOCK_TIME_NORMAL_UPDATE);
+
   m_timeInState                        = 0;
   m_numUpdatesSinceLastFilterChange    = 0;
   m_numUpdatesSinceLastGpuFilterChange = 0;
   m_maxUpdatesBetweenFilterChanges     = MAX_UPDATES_BETWEEN_FILTER_CHANGES_RANGE.min;
   m_maxUpdatesBetweenGpuFilterChanges  = MAX_UPDATES_BETWEEN_GPU_FILTER_CHANGES_RANGE.min;
-  m_previousZoomSpeed                  = Vitesse::STOP_SPEED;
+  m_previousZoomSpeed                  = Speed::STOP_SPEED;
 
   ClearChangeEventData();
   PreUpdateChangeEventData();
@@ -475,7 +477,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::NewCycle() -> void
 {
   ++m_timeInState;
 
-  m_lock.Update();
+  m_changeLock.Update();
 
   m_hasFilterModeChangedInThisUpdate    = false;
   m_hasGpuFilterModeChangedInThisUpdate = false;
@@ -488,7 +490,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateSettings() ->
   ChangeFilterModeMaybe();
   ChangeGpuFilterModeMaybe();
   BigUpdateIfNotLocked();
-  BigBreakIfMusicIsCalm();
+  ColorChangeIfMusicIsCalm();
 
   LowerTheSpeedMaybe();
 
@@ -499,7 +501,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateSettings() ->
   CheckIfFilterModeChanged();
   CheckIfGpuFilterModeChanged();
 
-  m_previousZoomSpeed = m_filterSettingsService->GetROVitesse().GetVitesse();
+  m_previousZoomSpeed = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed();
 
   PostUpdateChangeEventData();
 }
@@ -570,24 +572,24 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeGpuFilterMode
   DoChangeGpuFilterMode();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::BigBreakIfMusicIsCalm() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ColorChangeIfMusicIsCalm() -> void
 {
   static constexpr auto CALM_SOUND_SPEED = 0.3F;
   static constexpr auto CALM_CYCLES      = 16U;
 
   if ((m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed() > CALM_SOUND_SPEED) or
-      (not m_filterSettingsService->GetROVitesse().IsFasterThan(Vitesse::CALM_SPEED)) or
+      (not m_filterSettingsService->GetReadOnlyFilterSpeed().IsFasterThan(Speed::CALM_SPEED)) or
       ((m_goomInfo->GetTime().GetCurrentTime() % CALM_CYCLES) != 0))
   {
     return;
   }
 
-  DoBigBreak();
+  DoColorChange();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::BigUpdateIfNotLocked() -> void
 {
-  if (m_lock.IsLocked())
+  if (m_changeLock.IsLocked())
   {
     return;
   }
@@ -599,7 +601,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::LowerTheSpeedMaybe(
 {
   if (static constexpr auto LOWER_SPEED_CYCLES = 73U;
       ((m_goomInfo->GetTime().GetCurrentTime() % LOWER_SPEED_CYCLES) != 0) or
-      (not m_filterSettingsService->GetROVitesse().IsFasterThan(Vitesse::FAST_SPEED)))
+      (not m_filterSettingsService->GetReadOnlyFilterSpeed().IsFasterThan(Speed::FAST_SPEED)))
   {
     return;
   }
@@ -622,7 +624,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeTransformBuff
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeTransformBufferLerpToEndMaybe()
     -> void
 {
-  if (m_lock.GetLockTime() < CHANGE_LERP_TO_END_LOCK_TIME)
+  if (m_changeLock.GetLockTime() < LOCK_TIME_CHANGE_LERP_TO_END)
   {
     return;
   }
@@ -666,9 +668,9 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::RestoreZoomInMaybe(
   // Retablir le zoom avant.
   // Restore zoom in.
 
-  if (static constexpr auto REVERSE_VITESSE_CYCLES = 13U;
-      (m_filterSettingsService->GetROVitesse().GetReverseVitesse()) and
-      ((m_goomInfo->GetTime().GetCurrentTime() % REVERSE_VITESSE_CYCLES) != 0) and
+  if (static constexpr auto REVERSE_SPEED_CYCLES = 13U;
+      (m_filterSettingsService->GetReadOnlyFilterSpeed().IsSpeedReversed()) and
+      ((m_goomInfo->GetTime().GetCurrentTime() % REVERSE_SPEED_CYCLES) != 0) and
       m_goomRand->ProbabilityOf<PROB_FILTER_REVERSE_OFF_AND_STOP_SPEED>())
   {
     DoChangeSpeedSlowAndForward();
@@ -681,19 +683,19 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::RestoreZoomInMaybe(
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeStopSpeedsMaybe() -> void
 {
-  if (m_goomRand->ProbabilityOf<PROB_FILTER_VITESSE_STOP_SPEED_MINUS_1>())
+  if (m_goomRand->ProbabilityOf<PROB_FILTER_SPEED_STOP_SPEED_MINUS_1>())
   {
     LogChangeEvent(SET_SLOW_SPEED);
-    m_filterSettingsService->GetRWVitesse().SetVitesse(Vitesse::SLOWEST_SPEED);
+    m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeed(Speed::SLOWEST_SPEED);
   }
-  else if (m_goomRand->ProbabilityOf<PROB_FILTER_VITESSE_STOP_SPEED>())
+  else if (m_goomRand->ProbabilityOf<PROB_FILTER_SPEED_STOP_SPEED>())
   {
     LogChangeEvent(SET_STOP_SPEED);
-    m_filterSettingsService->GetRWVitesse().SetVitesse(Vitesse::STOP_SPEED);
+    m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeed(Speed::STOP_SPEED);
   }
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeVitesseMaybe() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterSpeedMaybe() -> void
 {
   const auto soundSpeed = m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed();
 
@@ -708,32 +710,32 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeVitesseMaybe(
   const auto newSpeedVal                 = static_cast<uint32_t>(
       std::lerp(0.0F, static_cast<float>(MAX_SPEED_CHANGE), usableRelativeSoundSpeed));
 
-  auto& filterVitesse = m_filterSettingsService->GetRWVitesse();
+  auto& filterSpeed = m_filterSettingsService->GetReadWriteFilterSpeed();
 
-  const auto currentVitesse = filterVitesse.GetVitesse();
-  const auto newVitesse     = Vitesse::GetFasterBy(Vitesse::STOP_SPEED, newSpeedVal);
+  const auto currentSpeed = filterSpeed.GetSpeed();
+  const auto newSpeed     = Speed::GetFasterBy(Speed::STOP_SPEED, newSpeedVal);
 
-  if (currentVitesse > newVitesse)
+  if (currentSpeed > newSpeed)
   {
     // Current speed is faster than new one. Nothing to do.
     return;
   }
 
   // on accelere
-  if (static constexpr auto VITESSE_CYCLES = 3U;
-      ((currentVitesse > Vitesse::FASTER_SPEED) and (newVitesse > Vitesse::EVEN_FASTER_SPEED) and
-       (0 == (m_goomInfo->GetTime().GetCurrentTime() % VITESSE_CYCLES))) or
-      m_goomRand->ProbabilityOf<PROB_FILTER_CHANGE_VITESSE_AND_TOGGLE_REVERSE>())
+  if (static constexpr auto FILTER_SPEED_CYCLES = 3U;
+      ((currentSpeed > Speed::FASTER_SPEED) and (newSpeed > Speed::EVEN_FASTER_SPEED) and
+       (0 == (m_goomInfo->GetTime().GetCurrentTime() % FILTER_SPEED_CYCLES))) or
+      m_goomRand->ProbabilityOf<PROB_FILTER_CHANGE_SPEED_AND_TOGGLE_REVERSE>())
   {
     LogChangeEvent(SET_SLOWER_SPEED_AND_TOGGLE_REVERSE);
     DoSetSlowerSpeedAndToggleReverse();
   }
   else
   {
-    DoChangeSpeed(currentVitesse, newVitesse);
+    DoChangeSpeed(currentSpeed, newSpeed);
   }
 
-  m_lock.IncreaseLockTime(CHANGE_VITESSE_LOCK_TIME_INCREASE);
+  m_changeLock.IncreaseLockTime(LOCK_TIME_SPEED_CHANGE_INCREASE);
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeState() -> void
@@ -768,14 +770,14 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigNormalUpdate()
 {
   LogChangeEvent(BIG_NORMAL_UPDATE);
 
-  m_lock.SetLockTime(NORMAL_UPDATE_LOCK_TIME);
+  m_changeLock.SetLockTime(LOCK_TIME_NORMAL_UPDATE);
 
   ChangeStateMaybe();
   RestoreZoomInMaybe();
   ChangeStopSpeedsMaybe();
   ChangeRotationMaybe();
   ChangeFilterExtraSettingsMaybe();
-  ChangeVitesseMaybe();
+  ChangeFilterSpeedMaybe();
   ChangeTransformBufferLerpToEndMaybe();
   m_visualFx->ChangeAllFxColorMaps();
 
@@ -789,20 +791,20 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoMegaLentUpdate() 
 {
   LogChangeEvent(MEGA_LENT_UPDATE);
 
-  m_lock.IncreaseLockTime(MEGA_LENT_LOCK_TIME_INCREASE);
+  m_changeLock.IncreaseLockTime(LOCK_TIME_MEGA_LENT_INCREASE);
 
   m_visualFx->ChangeAllFxColorMaps();
-  m_filterSettingsService->GetRWVitesse().SetVitesse(Vitesse::SLOWEST_SPEED);
+  m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeed(Speed::SLOWEST_SPEED);
 
   DoResetTransformBufferLerpToEnd();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigBreak() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoColorChange() -> void
 {
   LogChangeEvent(BIG_BREAK);
 
   static constexpr auto SLOWER_BY = 3U;
-  m_filterSettingsService->GetRWVitesse().GoSlowerBy(SLOWER_BY);
+  m_filterSettingsService->GetReadWriteFilterSpeed().GoSlowerBy(SLOWER_BY);
 
   m_visualFx->ChangeAllFxColorMaps();
   m_visualFx->ChangeAllFxPixelBlenders();
@@ -900,24 +902,24 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeRotationMay
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoLowerTheSpeed() -> void
 {
   LogChangeEvent(GO_SLOWER);
-  m_filterSettingsService->GetRWVitesse().GoSlowerBy(1U);
+  m_filterSettingsService->GetReadWriteFilterSpeed().GoSlowerBy(1U);
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeSpeedSlowAndForward() -> void
 {
   LogChangeEvent(SET_SLOWER_SPEED_AND_SPEED_FORWARD);
 
-  m_filterSettingsService->GetRWVitesse().SetReverseVitesse(false);
-  m_filterSettingsService->GetRWVitesse().SetVitesse(Vitesse::SLOW_SPEED);
-  m_lock.SetLockTime(SLOWER_SPEED_AND_SPEED_FORWARD_LOCK_TIME);
+  m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeedReversed(false);
+  m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeed(Speed::SLOW_SPEED);
+  m_changeLock.SetLockTime(LOCK_TIME_SLOWER_SPEED_AND_SPEED_FORWARD);
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeSpeedReverse() -> void
 {
   LogChangeEvent(SET_SPEED_REVERSE);
 
-  m_filterSettingsService->GetRWVitesse().SetReverseVitesse(true);
-  m_lock.SetLockTime(REVERSE_SPEED_LOCK_TIME);
+  m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeedReversed(true);
+  m_changeLock.SetLockTime(LOCK_TIME_REVERSE_SPEED);
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoSetSlowerSpeedAndToggleReverse()
@@ -925,20 +927,20 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoSetSlowerSpeedAnd
 {
   LogChangeEvent(SET_SLOWER_SPEED_AND_TOGGLE_REVERSE);
 
-  auto& filterVitesse = m_filterSettingsService->GetRWVitesse();
-  filterVitesse.SetVitesse(Vitesse::SLOWEST_SPEED);
-  filterVitesse.ToggleReverseVitesse();
+  auto& filterSpeed = m_filterSettingsService->GetReadWriteFilterSpeed();
+  filterSpeed.SetSpeed(Speed::SLOWEST_SPEED);
+  filterSpeed.ToggleSpeedReversedFlag();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeSpeed(
-    const uint32_t currentVitesse, const uint32_t newVitesse) -> void
+    const uint32_t currentSpeed, const uint32_t newSpeed) -> void
 {
   LogChangeEvent(CHANGE_SPEED);
 
-  auto& filterVitesse                        = m_filterSettingsService->GetRWVitesse();
+  auto& filterSpeed                          = m_filterSettingsService->GetReadWriteFilterSpeed();
   static constexpr auto OLD_TO_NEW_SPEED_MIX = 0.4F;
-  filterVitesse.SetVitesse(static_cast<uint32_t>(std::lerp(
-      static_cast<float>(currentVitesse), static_cast<float>(newVitesse), OLD_TO_NEW_SPEED_MIX)));
+  filterSpeed.SetSpeed(static_cast<uint32_t>(std::lerp(
+      static_cast<float>(currentSpeed), static_cast<float>(newSpeed), OLD_TO_NEW_SPEED_MIX)));
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeGpuLerpData() -> void
@@ -968,11 +970,11 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetGpuLerpDataB
 {
   LogChangeEvent(RESET_GPU_LERP_DATA_BASED_ON_SPEED);
 
-  if (m_filterSettingsService->GetROVitesse().GetVitesse() < m_previousZoomSpeed)
+  if (m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed() < m_previousZoomSpeed)
   {
     m_filterSettingsService->SlowDownGpuLerpFactorABit();
   }
-  else if (m_filterSettingsService->GetROVitesse().GetVitesse() > m_previousZoomSpeed)
+  else if (m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed() > m_previousZoomSpeed)
   {
     m_filterSettingsService->SpeedUpGpuLerpFactorABit();
   }
@@ -1022,7 +1024,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::
 
   m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
 
-  auto diff = static_cast<float>(m_filterSettingsService->GetROVitesse().GetVitesse()) -
+  auto diff = static_cast<float>(m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed()) -
               static_cast<float>(m_previousZoomSpeed);
   if (diff < 0.0F)
   {
@@ -1039,12 +1041,14 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::GetNameValueParams(
 {
   static constexpr auto* PARAM_GROUP = "Music Settings";
   return {
-      GetPair(PARAM_GROUP, "vitesse", m_filterSettingsService->GetROVitesse().GetVitesse()),
+      GetPair(PARAM_GROUP, "speed", m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed()),
       GetPair(PARAM_GROUP, "previousZoomSpeed", m_previousZoomSpeed),
-      GetPair(PARAM_GROUP, "reverse", m_filterSettingsService->GetROVitesse().GetReverseVitesse()),
+      GetPair(PARAM_GROUP,
+              "reverse",
+              m_filterSettingsService->GetReadOnlyFilterSpeed().IsSpeedReversed()),
       GetPair(PARAM_GROUP,
               "relative speed",
-              m_filterSettingsService->GetROVitesse().GetRelativeSpeed()),
+              m_filterSettingsService->GetReadOnlyFilterSpeed().GetRelativeSpeed()),
       GetPair(PARAM_GROUP, "updatesSinceLastChange", m_numUpdatesSinceLastFilterChange),
       GetPair(PARAM_GROUP, "gpuUpdatesSinceLastChange", m_numUpdatesSinceLastGpuFilterChange),
   };
