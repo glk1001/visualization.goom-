@@ -508,27 +508,25 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateSettings() ->
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::CheckIfFilterModeChanged() -> void
 {
-  ++m_numUpdatesSinceLastFilterChange;
-  if ((m_numUpdatesSinceLastFilterChange <= m_maxUpdatesBetweenFilterChanges) and
-      (not m_hasFilterModeChangedInThisUpdate))
+  if (m_hasFilterModeChangedInThisUpdate)
   {
+    m_numUpdatesSinceLastFilterChange = 0;
+    m_visualFx->RefreshAllFx();
     return;
   }
 
-  m_numUpdatesSinceLastFilterChange = 0;
-  m_visualFx->RefreshAllFx();
+  ++m_numUpdatesSinceLastFilterChange;
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::CheckIfGpuFilterModeChanged() -> void
 {
-  ++m_numUpdatesSinceLastGpuFilterChange;
-  if ((m_numUpdatesSinceLastGpuFilterChange <= m_maxUpdatesBetweenGpuFilterChanges) and
-      (not m_hasGpuFilterModeChangedInThisUpdate))
+  if (m_hasGpuFilterModeChangedInThisUpdate)
   {
+    m_numUpdatesSinceLastGpuFilterChange = 0;
     return;
   }
 
-  m_numUpdatesSinceLastGpuFilterChange = 0;
+  ++m_numUpdatesSinceLastGpuFilterChange;
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeStateMaybe() -> void
