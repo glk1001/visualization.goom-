@@ -49,10 +49,10 @@ public:
 
   [[nodiscard]] auto GetBufferBuffMidpoint() const noexcept -> Point2dInt
   {
-    return ZoomFilterBuffers::GetTransformBufferMidpoint();
+    return ZoomFilterBuffers::GetFilterBufferMidpoint();
   }
 
-  auto UpdateTransBuffer() noexcept -> void { ZoomFilterBuffers::UpdateTransformBuffer(); }
+  auto UpdateTransBuffer() noexcept -> void { ZoomFilterBuffers::UpdateFilterBuffer(); }
 };
 
 namespace
@@ -155,7 +155,7 @@ TEST_CASE("ZoomFilterBuffers Basic")
 {
   auto filterBuffers = GetFilterBuffers(IDENTITY_ZOOM_VECTOR);
 
-  filterBuffers.SetTransformBufferMidpoint(MID_PT);
+  filterBuffers.SetFilterBufferMidpoint(MID_PT);
   filterBuffers.Start();
 
   SECTION("Correct Starting TranBuffersState")
@@ -171,7 +171,7 @@ TEST_CASE("ZoomFilterBuffers Basic")
 TEST_CASE("ZoomFilterBuffers Calculations - Correct Dest ZoomBufferTranPoint")
 {
   auto filterBuffers = GetFilterBuffers(CONSTANT_ZOOM_VECTOR);
-  filterBuffers.SetTransformBufferMidpoint(MID_PT);
+  filterBuffers.SetFilterBufferMidpoint(MID_PT);
   filterBuffers.Start();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::IN_PROGRESS == filterBuffers.GetUpdateStatus());
 
@@ -214,7 +214,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
   auto constantZoomVector = TestZoomVector{true};
 
   auto filterBuffers = GetFilterBuffers(constantZoomVector);
-  filterBuffers.SetTransformBufferMidpoint(MID_PT);
+  filterBuffers.SetFilterBufferMidpoint(MID_PT);
   filterBuffers.Start();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::IN_PROGRESS == filterBuffers.GetUpdateStatus());
 
@@ -233,7 +233,7 @@ TEST_CASE("ZoomFilterBuffers Stripes")
 
   std::vector<Point2dFlt> destBuffVec((GOOM_INFO.GetDimensions().GetSize()));
   const std::span<Point2dFlt> destBuff{destBuffVec};
-  filterBuffers.CopyTransformBuffer(destBuff);
+  filterBuffers.CopyFilterBuffer(destBuff);
   REQUIRE(ZoomFilterBuffers::UpdateStatus::HAS_BEEN_COPIED == filterBuffers.GetUpdateStatus());
 
   static constexpr auto NML_CONST_ZOOM_VECTOR_COORDS_2 =
@@ -258,9 +258,9 @@ TEST_CASE("ZoomFilterBuffers Stripes")
     REQUIRE(destVal.y == NML_UNCENTERED_ZOOM_VECTOR_COORDS_2.GetY());
   }
 
-  filterBuffers.ResetTransformBufferToStart();
+  filterBuffers.ResetFilterBufferToStart();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::AT_START == filterBuffers.GetUpdateStatus());
-  filterBuffers.StartTransformBufferUpdates();
+  filterBuffers.StartFilterBufferUpdates();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::IN_PROGRESS == filterBuffers.GetUpdateStatus());
 }
 
@@ -273,7 +273,7 @@ TEST_CASE("ZoomFilterBuffers Adjustment")
 
   auto filterBuffers = GetFilterBuffers(zoomVector);
 
-  filterBuffers.SetTransformBufferMidpoint(MID_PT);
+  filterBuffers.SetFilterBufferMidpoint(MID_PT);
   filterBuffers.Start();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::IN_PROGRESS == filterBuffers.GetUpdateStatus());
 
@@ -319,7 +319,7 @@ TEST_CASE("ZoomFilterBuffers Adjustment")
 TEST_CASE("ZoomFilterBuffers Clipping")
 {
   auto filterBuffers = GetFilterBuffers(CONSTANT_ZOOM_VECTOR);
-  filterBuffers.SetTransformBufferMidpoint({.x = 0, .y = 0});
+  filterBuffers.SetFilterBufferMidpoint({.x = 0, .y = 0});
   filterBuffers.Start();
   REQUIRE(ZoomFilterBuffers::UpdateStatus::IN_PROGRESS == filterBuffers.GetUpdateStatus());
 
@@ -349,9 +349,9 @@ TEST_CASE("ZoomFilterBuffers Clipping")
     //    REQUIRE(expectedTranPoint.x < 0);
     //    REQUIRE(expectedTranPoint.y < 0);
 
-    UNSCOPED_INFO("filterBuffers.GetTransformBufferBuffMidpoint().x = "
+    UNSCOPED_INFO("filterBuffers.GetFilterBufferBuffMidpoint().x = "
                   << filterBuffers.GetBufferBuffMidpoint().x);
-    UNSCOPED_INFO("filterBuffers.GetTransformBufferBuffMidpoint().y = "
+    UNSCOPED_INFO("filterBuffers.GetFilterBufferBuffMidpoint().y = "
                   << filterBuffers.GetBufferBuffMidpoint().y);
     UNSCOPED_INFO("normalizedMidPt.x = " << normalizedMidPt.GetX());
     UNSCOPED_INFO("normalizedMidPt.y = " << normalizedMidPt.GetY());

@@ -117,8 +117,8 @@ inline auto GoomStateMonitor::GetFilterSettingsNameValueParams() const -> NameVa
   static constexpr auto* PARAM_GROUP = "Filter Settings";
   const auto& filterSettings         = m_filterSettingsService->GetFilterSettings();
   const auto& filterEffectsSettings  = filterSettings.filterEffectsSettings;
-  const auto& transformBufferLerpData =
-      m_filterSettingsService->GetFilterSettings().transformBufferLerpData;
+  const auto& filterBufferSrceDestLerpData =
+      m_filterSettingsService->GetFilterSettings().filterBufferSrceDestLerpData;
   return {
       GetPair(PARAM_GROUP, "Filter", m_filterSettingsService->GetCurrentFilterModeName()),
       GetPair(PARAM_GROUP, "Previous Filter", m_filterSettingsService->GetPreviousFilterModeName()),
@@ -128,9 +128,9 @@ inline auto GoomStateMonitor::GetFilterSettingsNameValueParams() const -> NameVa
       GetPair(PARAM_GROUP,
               "Lerp",
               std::format("{:.2f}, {:.2f}, {}",
-                          transformBufferLerpData.GetLerpFactor(),
-                          transformBufferLerpData.GetIncrement(),
-                          transformBufferLerpData.GetUseSFunction()))};
+                          filterBufferSrceDestLerpData.GetLerpFactor(),
+                          filterBufferSrceDestLerpData.GetIncrement(),
+                          filterBufferSrceDestLerpData.GetUseSFunction()))};
 }
 
 inline auto GoomStateMonitor::GetFilterEffectsNameValueParams() const -> NameValuePairs

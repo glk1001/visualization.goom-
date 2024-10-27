@@ -60,7 +60,7 @@ public:
   auto AddCurrentTanEffect(bool value) noexcept -> void;
   auto AddCurrentXYLerpEffect(bool value) noexcept -> void;
 
-  auto AddTransformBufferLerpFactor(float value) noexcept -> void;
+  auto AddFilterBufferLerpFactor(float value) noexcept -> void;
 
   auto AddCurrentTimeSinceLastGoom(uint32_t value) noexcept -> void;
   auto AddCurrentTimeSinceLastBigGoom(uint32_t value) noexcept -> void;
@@ -80,7 +80,7 @@ public:
   [[nodiscard]] auto GetTanEffects() const -> const std::vector<uint8_t>&;
   [[nodiscard]] auto GetXYLerpEffects() const -> const std::vector<uint8_t>&;
 
-  [[nodiscard]] auto GetTransformBufferLerpFactors() const -> const std::vector<float>&;
+  [[nodiscard]] auto GetFilterBufferLerpFactors() const -> const std::vector<float>&;
 
   [[nodiscard]] auto GetTimesSinceLastGoom() const -> const std::vector<uint32_t>&;
   [[nodiscard]] auto GetTimesSinceLastBigGoom() const -> const std::vector<uint32_t>&;
@@ -153,7 +153,7 @@ auto GoomStateDump::AddCurrentState() noexcept -> void
   m_cumulativeState->AddCurrentGoomState(m_visualFx->GetCurrentStateName());
   m_cumulativeState->AddCurrentFilterMode(m_filterSettingsService->GetCurrentFilterMode());
 
-  m_cumulativeState->AddTransformBufferLerpFactor(
+  m_cumulativeState->AddFilterBufferLerpFactor(
       m_goomControl->GetFrameData().filterPosArrays.filterPosBuffersLerpFactor);
 
   const auto filterSettings        = m_filterSettingsService->GetFilterSettings();
@@ -210,7 +210,7 @@ auto GoomStateDump::DumpData(const std::string& directory) -> void
   DumpDataArray("tan_effects", m_cumulativeState->GetTanEffects());
   DumpDataArray("xyLerp_effects", m_cumulativeState->GetXYLerpEffects());
 
-  DumpDataArray("buffer_lerps", m_cumulativeState->GetTransformBufferLerpFactors());
+  DumpDataArray("buffer_lerps", m_cumulativeState->GetFilterBufferLerpFactors());
 
   DumpDataArray("times_since_last_goom", m_cumulativeState->GetTimesSinceLastGoom());
   DumpDataArray("times_since_last_big_goom", m_cumulativeState->GetTimesSinceLastBigGoom());
@@ -356,7 +356,7 @@ inline auto GoomStateDump::CumulativeState::AddCurrentRotationEffect(const bool 
   m_rotationEffects.push_back(static_cast<uint8_t>(value));
 }
 
-inline auto GoomStateDump::CumulativeState::AddTransformBufferLerpFactor(const float value) noexcept
+inline auto GoomStateDump::CumulativeState::AddFilterBufferLerpFactor(const float value) noexcept
     -> void
 {
   m_bufferLerps.push_back(value);
@@ -455,7 +455,7 @@ inline auto GoomStateDump::CumulativeState::GetRotationEffects() const
   return m_rotationEffects;
 }
 
-inline auto GoomStateDump::CumulativeState::GetTransformBufferLerpFactors() const
+inline auto GoomStateDump::CumulativeState::GetFilterBufferLerpFactors() const
     -> const std::vector<float>&
 {
   return m_bufferLerps;

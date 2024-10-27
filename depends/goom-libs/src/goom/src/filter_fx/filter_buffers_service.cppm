@@ -33,12 +33,12 @@ public:
   auto Start() noexcept -> void;
   auto Finish() noexcept -> void;
 
-  [[nodiscard]] auto IsTransformBufferReadyForNextFilter() const noexcept -> bool;
+  [[nodiscard]] auto IsFilterBufferReadyForNextFilter() const noexcept -> bool;
 
-  [[nodiscard]] auto IsTransformBufferReadyToCopy() const noexcept -> bool;
-  auto CopyTransformBuffer(std::span<Point2dFlt> destBuff) noexcept -> void;
+  [[nodiscard]] auto IsFilterBufferReadyToCopy() const noexcept -> bool;
+  auto CopyFilterBuffer(std::span<Point2dFlt> destBuff) noexcept -> void;
 
-  auto UpdateTransformBuffer() noexcept -> void;
+  auto UpdateFilterBuffer() noexcept -> void;
 
   [[nodiscard]] auto GetNameValueParams() const noexcept -> UTILS::NameValuePairs;
   [[nodiscard]] auto GetZoomVectorNameValueParams() const noexcept -> UTILS::NameValuePairs;
@@ -54,17 +54,17 @@ private:
   uint64_t m_numPendingFilterEffectsChanges = 0U;
 
   std::thread m_bufferProducerThread;
-  auto StartTransformBufferThread() noexcept -> void;
-  auto UpdateCompletedTransformBufferStats() noexcept -> void;
+  auto StartFilterBufferThread() noexcept -> void;
+  auto UpdateCompletedFilterBufferStats() noexcept -> void;
   auto CompletePendingSettings() noexcept -> void;
   auto UpdateAllPendingSettings() noexcept -> void;
 
-  uint64_t m_goomTimeAtTransformBufferStart   = 0U;
-  uint64_t m_goomTimeAtTransformBufferReset   = 0U;
+  uint64_t m_goomTimeAtFilterBufferStart      = 0U;
+  uint64_t m_goomTimeAtFilterBufferReset      = 0U;
   uint64_t m_totalGoomTimeOfBufferProcessing  = 0U;
   uint64_t m_totalGoomTimeBetweenBufferResets = 0U;
-  uint32_t m_numTransformBuffersCompleted     = 0U;
-  uint32_t m_numTransformBufferResets         = 0U;
+  uint32_t m_numFilterBuffersCompleted        = 0U;
+  uint32_t m_numFilterBufferResets            = 0U;
   [[nodiscard]] auto GetAverageGoomTimeOfBufferProcessing() const noexcept -> uint32_t;
   [[nodiscard]] auto GetAverageGoomTimeBetweenBufferResets() const noexcept -> uint32_t;
 };
@@ -74,20 +74,19 @@ private:
 namespace GOOM::FILTER_FX
 {
 
-inline auto FilterBuffersService::IsTransformBufferReadyForNextFilter() const noexcept -> bool
+inline auto FilterBuffersService::IsFilterBufferReadyForNextFilter() const noexcept -> bool
 {
   return ZoomFilterBuffers::UpdateStatus::IN_PROGRESS != m_filterBuffers.GetUpdateStatus();
 }
 
-inline auto FilterBuffersService::IsTransformBufferReadyToCopy() const noexcept -> bool
+inline auto FilterBuffersService::IsFilterBufferReadyToCopy() const noexcept -> bool
 {
   return ZoomFilterBuffers::UpdateStatus::AT_END == m_filterBuffers.GetUpdateStatus();
 }
 
-inline auto FilterBuffersService::CopyTransformBuffer(std::span<Point2dFlt> destBuff) noexcept
-    -> void
+inline auto FilterBuffersService::CopyFilterBuffer(std::span<Point2dFlt> destBuff) noexcept -> void
 {
-  m_filterBuffers.CopyTransformBuffer(destBuff);
+  m_filterBuffers.CopyFilterBuffer(destBuff);
 }
 
 } // namespace GOOM::FILTER_FX

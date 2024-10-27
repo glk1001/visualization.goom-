@@ -78,7 +78,7 @@ struct FilterSettings
   bool gpuFilterEffectsSettingsHaveChanged = false;
   GpuFilterEffectsSettings gpuFilterEffectsSettings{};
   TextureWrapType textureWrapType{};
-  GoomLerpData transformBufferLerpData;
+  GoomLerpData filterBufferSrceDestLerpData;
 };
 
 } // namespace GOOM::FILTER_FX

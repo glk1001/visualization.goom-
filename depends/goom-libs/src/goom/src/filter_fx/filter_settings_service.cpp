@@ -221,7 +221,7 @@ FilterSettingsService::FilterSettingsService(const PluginInfo& goomInfo,
                          GetCentreZoomMidpoint()},
         },
         .textureWrapType = TextureWrapType::MIRRORED_REPEAT,
-        .transformBufferLerpData = GoomLerpData{DEFAULT_TRAN_LERP_INCREMENT, true},
+        .filterBufferSrceDestLerpData = GoomLerpData{DEFAULT_FILTER_BUFFER_LERP_INCREMENT, true},
     },
     m_zoomMidpointWeights{
         goomRand,
@@ -301,7 +301,7 @@ auto FilterSettingsService::Start() -> void
 
 auto FilterSettingsService::NewCycle() noexcept -> void
 {
-  m_filterSettings.transformBufferLerpData.Update();
+  m_filterSettings.filterBufferSrceDestLerpData.Update();
 
   m_filterSettings.gpuFilterEffectsSettings.gpuLerpFactor.Increment();
   m_filterSettings.gpuFilterEffectsSettings.srceDestLerpFactor.Increment();

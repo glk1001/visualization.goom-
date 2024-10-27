@@ -115,12 +115,12 @@ public:
 
   auto SetRandomTextureWrapType() noexcept -> void;
 
-  static constexpr auto DEFAULT_TRAN_LERP_INCREMENT = 0.002F;
-  auto ResetTransformBufferLerpData() noexcept -> void;
-  auto SetTransformBufferLerpIncrement(float value) noexcept -> void;
-  auto SetDefaultTransformBufferLerpIncrement() noexcept -> void;
-  auto MultiplyTransformBufferLerpIncrement(float factor) noexcept -> void;
-  auto SetTransformBufferLerpToEnd() noexcept -> void;
+  static constexpr auto DEFAULT_FILTER_BUFFER_LERP_INCREMENT = 0.002F;
+  auto ResetFilterBufferLerpData() noexcept -> void;
+  auto SetFilterBufferLerpIncrement(float value) noexcept -> void;
+  auto SetDefaultFilterBufferLerpIncrement() noexcept -> void;
+  auto MultiplyFilterBufferLerpIncrement(float factor) noexcept -> void;
+  auto SetFilterBufferLerpToEnd() noexcept -> void;
 
   static constexpr auto DEFAULT_NUM_GPU_SRCE_DEST_LERP_FACTOR_STEPS = 100U;
   static constexpr auto DEFAULT_NUM_GPU_MIDPOINT_LERP_STEPS         = 500U;
@@ -518,33 +518,33 @@ inline auto FilterSettingsService::ToggleRotationDirection() noexcept -> bool
   return true;
 }
 
-inline auto FilterSettingsService::ResetTransformBufferLerpData() noexcept -> void
+inline auto FilterSettingsService::ResetFilterBufferLerpData() noexcept -> void
 {
-  m_filterSettings.transformBufferLerpData.Reset();
+  m_filterSettings.filterBufferSrceDestLerpData.Reset();
 }
 
-inline auto FilterSettingsService::SetTransformBufferLerpIncrement(const float value) noexcept
+inline auto FilterSettingsService::SetFilterBufferLerpIncrement(const float value) noexcept
     -> void
 {
   Expects(value >= 0.0F);
-  m_filterSettings.transformBufferLerpData.SetIncrement(value);
+  m_filterSettings.filterBufferSrceDestLerpData.SetIncrement(value);
 }
 
-inline auto FilterSettingsService::SetDefaultTransformBufferLerpIncrement() noexcept -> void
+inline auto FilterSettingsService::SetDefaultFilterBufferLerpIncrement() noexcept -> void
 {
-  SetTransformBufferLerpIncrement(DEFAULT_TRAN_LERP_INCREMENT);
+  SetFilterBufferLerpIncrement(DEFAULT_FILTER_BUFFER_LERP_INCREMENT);
 }
 
-inline auto FilterSettingsService::MultiplyTransformBufferLerpIncrement(const float factor) noexcept
-    -> void
+inline auto FilterSettingsService::MultiplyFilterBufferLerpIncrement(
+    const float factor) noexcept -> void
 {
-  m_filterSettings.transformBufferLerpData.SetIncrement(
-      m_filterSettings.transformBufferLerpData.GetIncrement() * factor);
+  m_filterSettings.filterBufferSrceDestLerpData.SetIncrement(
+      m_filterSettings.filterBufferSrceDestLerpData.GetIncrement() * factor);
 }
 
-inline auto FilterSettingsService::SetTransformBufferLerpToEnd() noexcept -> void
+inline auto FilterSettingsService::SetFilterBufferLerpToEnd() noexcept -> void
 {
-  m_filterSettings.transformBufferLerpData.SetLerpToEnd();
+  m_filterSettings.filterBufferSrceDestLerpData.SetLerpToEnd();
 }
 
 inline auto FilterSettingsService::ResetGpuLerpFactorUpABit() noexcept -> void

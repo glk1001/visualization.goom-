@@ -291,7 +291,7 @@ private:
   auto ResetDrawBuffSettings(const FXBuffSettings& settings) -> void;
 
   auto ApplyStateToImageBuffers(const AudioSamples& soundData) -> void;
-  auto UpdateTransformBuffer() -> void;
+  auto UpdateFilterBuffer() -> void;
   auto ApplyEndEffectIfNearEnd() -> void;
 
   Stopwatch m_runningTimeStopwatch;
@@ -528,18 +528,18 @@ auto GoomControl::GoomControlImpl::UpdateFrameDataFilterPosArrays() noexcept -> 
 {
   const auto lerpFactor = std::as_const(m_filterSettingsService)
                               .GetFilterSettings()
-                              .transformBufferLerpData.GetLerpFactor();
+                              .filterBufferSrceDestLerpData.GetLerpFactor();
   m_frameData->filterPosArrays.filterPosBuffersLerpFactor = lerpFactor;
 
-  if (not m_filterBuffersService.IsTransformBufferReadyToCopy())
+  if (not m_filterBuffersService.IsFilterBufferReadyToCopy())
   {
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating = false;
   }
   else
   {
-    m_filterBuffersService.CopyTransformBuffer(m_frameData->filterPosArrays.filterDestPos);
+    m_filterBuffersService.CopyFilterBuffer(m_frameData->filterPosArrays.filterDestPos);
     m_frameData->filterPosArrays.filterDestPosNeedsUpdating = true;
-    m_filterSettingsService.ResetTransformBufferLerpData();
+    m_filterSettingsService.ResetFilterBufferLerpData();
   }
 }
 
@@ -623,7 +623,7 @@ auto GoomControl::GoomControlImpl::UpdateFrameDataGpuFilterData() noexcept -> vo
 
 auto GoomControl::GoomControlImpl::OkToChangeFilterSettings() const noexcept -> bool
 {
-  return m_filterBuffersService.IsTransformBufferReadyForNextFilter();
+  return m_filterBuffersService.IsFilterBufferReadyForNextFilter();
 }
 
 auto GoomControl::GoomControlImpl::OkToChangeGpuFilterSettings() const noexcept -> bool
@@ -815,7 +815,7 @@ inline auto GoomControl::GoomControlImpl::UpdateGoomBuffers(const AudioSamples& 
   UseMusicToChangeSettings();
   UpdateFilterSettings();
 
-  UpdateTransformBuffer();
+  UpdateFilterBuffer();
 
   Blend2dClearAll();
 
@@ -908,14 +908,14 @@ inline auto GoomControl::GoomControlImpl::ApplyEndEffectIfNearEnd() -> void
   m_visualFx.ApplyEndEffectIfNearEnd(m_runningTimeStopwatch.GetTimeValues());
 }
 
-inline auto GoomControl::GoomControlImpl::UpdateTransformBuffer() -> void
+inline auto GoomControl::GoomControlImpl::UpdateFilterBuffer() -> void
 {
   if (m_noZooms)
   {
     return;
   }
 
-  m_filterBuffersService.UpdateTransformBuffer();
+  m_filterBuffersService.UpdateFilterBuffer();
 }
 
 inline auto GoomControl::GoomControlImpl::UpdateFilterSettings() -> void

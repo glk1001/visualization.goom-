@@ -47,7 +47,7 @@ static constexpr auto LOCK_TIME_SLOWER_SPEED_AND_SPEED_FORWARD = 75U;
 static constexpr auto LOCK_TIME_REVERSE_SPEED                  = 100U;
 static constexpr auto LOCK_TIME_MEGA_LENT_INCREASE             = 50U;
 static constexpr auto LOCK_TIME_SPEED_CHANGE_INCREASE          = 50U;
-static constexpr auto LOCK_TIME_CHANGE_LERP_TO_END             = 150U;
+static constexpr auto LOCK_TIME_CHANGE_LERP_FACTOR_TO_END      = 150U;
 
 static constexpr auto PROB_CHANGE_STATE                           = 0.40F;
 static constexpr auto PROB_CHANGE_FILTER_MODE                     = 0.05F;
@@ -93,12 +93,12 @@ enum class ChangeEvents : UnderlyingEnumType
   SET_SLOWER_SPEED_AND_SPEED_FORWARD,
   SET_SLOWER_SPEED_AND_TOGGLE_REVERSE,
   CHANGE_SPEED,
-  CHANGE_GPU_LERP_DATA,
-  RESET_GPU_LERP_DATA_BASED_ON_SPEED,
-  CHANGE_TRANSFORM_BUFFER_LERP_DATA,
-  RESET_TRANSFORM_BUFFER_LERP_DATA_BASED_ON_SPEED,
-  RESET_TRANSFORM_BUFFER_LERP_TO_END,
-  RESET_TRANSFORM_BUFFER_LERP_DATA,
+  CHANGE_GPU_LERP_FACTOR,
+  RESET_GPU_LERP_FACTOR_BASED_ON_SPEED,
+  CHANGE_FILTER_LERP_FACTOR,
+  RESET_FILTER_LERP_FACTOR_BASED_ON_SPEED,
+  RESET_FILTER_LERP_FACTOR_TO_END,
+  RESET_FILTER_LERP_FACTOR,
 };
 using enum ChangeEvents;
 
@@ -152,9 +152,9 @@ private:
   auto LowerTheSpeedMaybe() -> void;
   auto ChangeRotationMaybe() -> void;
   auto ChangeFilterExtraSettingsMaybe() -> void;
-  auto ChangeTransformBufferLerpDataMaybe() -> void;
-  auto ChangeTransformBufferLerpToEndMaybe() -> void;
-  auto ChangeGpuLerpDataMaybe() -> void;
+  auto ChangeFilterLerpFactorMaybe() -> void;
+  auto ChangeFilterLerpFactorToEndMaybe() -> void;
+  auto ChangeGpuLerpFactorMaybe() -> void;
   auto ChangeFilterSpeedMaybe() -> void;
   auto ChangeStopSpeedsMaybe() -> void;
   auto RestoreZoomInMaybe() -> void;
@@ -173,12 +173,12 @@ private:
   auto DoChangeSpeedReverse() -> void;
   auto DoSetSlowerSpeedAndToggleReverse() -> void;
   auto DoChangeSpeed(uint32_t currentSpeed, uint32_t newSpeed) -> void;
-  auto DoChangeGpuLerpData() -> void;
-  auto DoResetGpuLerpDataBasedOnSpeed() -> void;
-  auto DoChangeTransformBufferLerpData() -> void;
-  auto DoResetTransformBufferLerpToEnd() -> void;
-  auto DoResetTransformBufferLerpData() -> void;
-  auto DoResetTransformBufferLerpDataBasedOnSpeed() -> void;
+  auto DoChangeGpuLerpFactor() -> void;
+  auto DoResetGpuLerpFactorBasedOnSpeed() -> void;
+  auto DoChangeFilterLerpFactor() -> void;
+  auto DoResetFilterLerpFactorToEnd() -> void;
+  auto DoResetFilterLerpFactor() -> void;
+  auto DoResetFilterLerpFactorBasedOnSpeed() -> void;
 
   struct PreChangeEventData
   {
@@ -491,8 +491,8 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateSettings() ->
 
   LowerTheSpeedMaybe();
 
-  ChangeTransformBufferLerpDataMaybe();
-  ChangeGpuLerpDataMaybe();
+  ChangeFilterLerpFactorMaybe();
+  ChangeGpuLerpFactorMaybe();
   ChangeRotationMaybe();
 
   CheckIfFilterModeChanged();
@@ -597,37 +597,36 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::LowerTheSpeedMaybe(
   DoLowerTheSpeed();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeTransformBufferLerpDataMaybe()
-    -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterLerpFactorMaybe() -> void
 {
   if (not m_hasFilterModeChangedInThisUpdate)
   {
     return;
   }
 
-  DoChangeTransformBufferLerpData();
+  DoChangeFilterLerpFactor();
   m_filterSettingsService->SlowDownGpuLerpFactorABit();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeTransformBufferLerpToEndMaybe()
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterLerpFactorToEndMaybe()
     -> void
 {
-  if (m_changeLock.GetLockTime() < LOCK_TIME_CHANGE_LERP_TO_END)
+  if (m_changeLock.GetLockTime() < LOCK_TIME_CHANGE_LERP_FACTOR_TO_END)
   {
     return;
   }
 
-  DoResetTransformBufferLerpToEnd();
+  DoResetFilterLerpFactorToEnd();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeGpuLerpDataMaybe() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeGpuLerpFactorMaybe() -> void
 {
   if (not m_hasGpuFilterModeChangedInThisUpdate)
   {
     return;
   }
 
-  DoChangeGpuLerpData();
+  DoChangeGpuLerpFactor();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeRotationMaybe() -> void
@@ -766,7 +765,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigNormalUpdate()
   ChangeRotationMaybe();
   ChangeFilterExtraSettingsMaybe();
   ChangeFilterSpeedMaybe();
-  ChangeTransformBufferLerpToEndMaybe();
+  ChangeFilterLerpFactorToEndMaybe();
   m_visualFx->ChangeAllFxColorMaps();
 
   m_maxUpdatesBetweenFilterChanges =
@@ -784,7 +783,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoMegaLentUpdate() 
   m_visualFx->ChangeAllFxColorMaps();
   m_filterSettingsService->GetReadWriteFilterSpeed().SetSpeed(Speed::SLOWEST_SPEED);
 
-  DoResetTransformBufferLerpToEnd();
+  DoResetFilterLerpFactorToEnd();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoColorChange() -> void
@@ -931,21 +930,21 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeSpeed(
       static_cast<float>(currentSpeed), static_cast<float>(newSpeed), OLD_TO_NEW_SPEED_MIX)));
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeGpuLerpData() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeGpuLerpFactor() -> void
 {
 #ifdef DEBUG_WITH_PRINTLN
   std::println("Changing GPU lerp data.");
 #endif
 
-  LogChangeEvent(CHANGE_GPU_LERP_DATA);
+  LogChangeEvent(CHANGE_GPU_LERP_FACTOR);
 
-  static constexpr auto MIN_TIME_SINCE_LAST_GOOM            = 10U;
-  static constexpr auto NUM_CYCLES_BEFORE_LERP_SPEED_CHANGE = 2U;
+  static constexpr auto MIN_TIME_SINCE_LAST_GOOM                = 10U;
+  static constexpr auto NUM_CYCLES_BEFORE_GPU_LERP_SPEED_CHANGE = 2U;
   if ((m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom() > MIN_TIME_SINCE_LAST_GOOM) or
       (m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle() >=
-       NUM_CYCLES_BEFORE_LERP_SPEED_CHANGE))
+       NUM_CYCLES_BEFORE_GPU_LERP_SPEED_CHANGE))
   {
-    DoResetGpuLerpDataBasedOnSpeed();
+    DoResetGpuLerpFactorBasedOnSpeed();
   }
   else
   {
@@ -953,10 +952,10 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeGpuLerpData
   }
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetGpuLerpDataBasedOnSpeed()
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetGpuLerpFactorBasedOnSpeed()
     -> void
 {
-  LogChangeEvent(RESET_GPU_LERP_DATA_BASED_ON_SPEED);
+  LogChangeEvent(RESET_GPU_LERP_FACTOR_BASED_ON_SPEED);
 
   if (m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed() < m_previousZoomSpeed)
   {
@@ -968,10 +967,9 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetGpuLerpDataB
   }
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeTransformBufferLerpData()
-    -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeFilterLerpFactor() -> void
 {
-  LogChangeEvent(CHANGE_TRANSFORM_BUFFER_LERP_DATA);
+  LogChangeEvent(CHANGE_FILTER_LERP_FACTOR);
 
   static constexpr auto MIN_TIME_SINCE_LAST_GOOM            = 10U;
   static constexpr auto NUM_CYCLES_BEFORE_LERP_SPEED_CHANGE = 2U;
@@ -979,38 +977,36 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeTransformBu
       (m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle() >=
        NUM_CYCLES_BEFORE_LERP_SPEED_CHANGE))
   {
-    DoResetTransformBufferLerpDataBasedOnSpeed();
+    DoResetFilterLerpFactorBasedOnSpeed();
   }
   else
   {
-    DoResetTransformBufferLerpData();
+    DoResetFilterLerpFactor();
 
     DoChangeRotationMaybe();
   }
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetTransformBufferLerpToEnd()
-    -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetFilterLerpFactorToEnd() -> void
 {
-  LogChangeEvent(RESET_TRANSFORM_BUFFER_LERP_TO_END);
+  LogChangeEvent(RESET_FILTER_LERP_FACTOR_TO_END);
 
-  m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
-  m_filterSettingsService->SetTransformBufferLerpToEnd();
+  m_filterSettingsService->SetDefaultFilterBufferLerpIncrement();
+  m_filterSettingsService->SetFilterBufferLerpToEnd();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetTransformBufferLerpData()
-    -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetFilterLerpFactor() -> void
 {
-  LogChangeEvent(RESET_TRANSFORM_BUFFER_LERP_DATA);
-  m_filterSettingsService->ResetTransformBufferLerpData();
+  LogChangeEvent(RESET_FILTER_LERP_FACTOR);
+  m_filterSettingsService->ResetFilterBufferLerpData();
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::
-    DoResetTransformBufferLerpDataBasedOnSpeed() -> void
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoResetFilterLerpFactorBasedOnSpeed()
+    -> void
 {
-  LogChangeEvent(RESET_TRANSFORM_BUFFER_LERP_DATA_BASED_ON_SPEED);
+  LogChangeEvent(RESET_FILTER_LERP_FACTOR_BASED_ON_SPEED);
 
-  m_filterSettingsService->SetDefaultTransformBufferLerpIncrement();
+  m_filterSettingsService->SetDefaultFilterBufferLerpIncrement();
 
   auto diff = static_cast<float>(m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed()) -
               static_cast<float>(m_previousZoomSpeed);
@@ -1020,7 +1016,8 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::
   }
   if (static constexpr auto DIFF_CUT = 2.0F; diff > DIFF_CUT)
   {
-    m_filterSettingsService->MultiplyTransformBufferLerpIncrement((diff + DIFF_CUT) / DIFF_CUT);
+    const auto lerpIncFactor = (diff + DIFF_CUT) / DIFF_CUT;
+    m_filterSettingsService->MultiplyFilterBufferLerpIncrement(lerpIncFactor);
   }
 }
 
