@@ -49,7 +49,7 @@ static constexpr auto LOCK_TIME_MEGA_LENT_INCREASE             = 50U;
 static constexpr auto LOCK_TIME_SPEED_CHANGE_INCREASE          = 50U;
 static constexpr auto LOCK_TIME_CHANGE_LERP_TO_END             = 150U;
 
-static constexpr auto PROB_CHANGE_STATE                           = 0.50F;
+static constexpr auto PROB_CHANGE_STATE                           = 0.40F;
 static constexpr auto PROB_CHANGE_FILTER_MODE                     = 0.05F;
 static constexpr auto PROB_CHANGE_GPU_FILTER_MODE                 = 0.05F;
 static constexpr auto PROB_CHANGE_FILTER_EXTRA_SETTINGS           = 0.90F;
@@ -127,6 +127,7 @@ private:
   FilterSettingsService* m_filterSettingsService;
   std::string m_dumpDirectory;
   GoomLock m_changeLock; // pour empecher de nouveaux changements
+  uint32_t m_timeInState = 0U;
 
   bool m_hasFilterModeChangedInThisUpdate                        = false;
   static constexpr auto MAX_UPDATES_BETWEEN_FILTER_CHANGES_RANGE = NumberRange{300, 500};
@@ -139,10 +140,6 @@ private:
   int32_t m_maxUpdatesBetweenGpuFilterChanges = MAX_UPDATES_BETWEEN_GPU_FILTER_CHANGES_RANGE.min;
 
   uint32_t m_previousZoomSpeed = Speed::STOP_SPEED;
-
-  static constexpr auto MAX_NUM_STATE_SELECTIONS_BLOCKED = 3U;
-  uint32_t m_stateSelectionBlocker                       = MAX_NUM_STATE_SELECTIONS_BLOCKED;
-  uint32_t m_timeInState                                 = 0U;
 
   // Changement d'effet de zoom !
   auto CheckIfFilterModeChanged() -> void;
@@ -531,19 +528,12 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::CheckIfGpuFilterMod
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeStateMaybe() -> void
 {
-  if (m_stateSelectionBlocker > 0)
-  {
-    --m_stateSelectionBlocker;
-    return;
-  }
   if (not m_goomRand->ProbabilityOf<PROB_CHANGE_STATE>())
   {
     return;
   }
 
   DoChangeState();
-
-  m_stateSelectionBlocker = MAX_NUM_STATE_SELECTIONS_BLOCKED;
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ChangeFilterModeMaybe() -> void
