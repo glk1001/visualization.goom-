@@ -116,6 +116,7 @@ public:
   auto SetRandomTextureWrapType() noexcept -> void;
 
   static constexpr auto DEFAULT_FILTER_BUFFER_LERP_INCREMENT = 0.002F;
+  [[nodiscard]] auto GetCurrentFilterBufferLerpFactor() const noexcept -> float;
   auto ResetFilterBufferLerpData() noexcept -> void;
   auto SetFilterBufferLerpIncrement(float value) noexcept -> void;
   auto SetDefaultFilterBufferLerpIncrement() noexcept -> void;
@@ -124,6 +125,7 @@ public:
 
   static constexpr auto DEFAULT_NUM_GPU_SRCE_DEST_LERP_FACTOR_STEPS = 100U;
   static constexpr auto DEFAULT_NUM_GPU_MIDPOINT_LERP_STEPS         = 500U;
+  [[nodiscard]] auto GetCurrentGpuLerpFactor() const noexcept -> float;
   auto SetDefaultGpuLerpIncrement() noexcept -> void;
   auto ResetGpuLerpFactorUpABit() noexcept -> void;
   auto ResetGpuLerpFactorDownABit() noexcept -> void;
@@ -270,6 +272,7 @@ inline auto FilterSettingsService::GetCurrentGPUFilterModeName() const noexcept
 {
   return m_gpuFilterModeData[m_gpuFilterMode].name;
 }
+
 inline auto FilterSettingsService::GetPreviousGPUFilterModeName() const noexcept
     -> const std::string_view&
 {
@@ -518,6 +521,12 @@ inline auto FilterSettingsService::ToggleRotationDirection() noexcept -> bool
   return true;
 }
 
+inline auto FilterSettingsService::GetCurrentFilterBufferLerpFactor() const noexcept -> float
+{
+  return m_filterSettings.filterBufferSrceDestLerpData.GetLerpFactor();
+}
+
+
 inline auto FilterSettingsService::ResetFilterBufferLerpData() noexcept -> void
 {
   m_filterSettings.filterBufferSrceDestLerpData.Reset();
@@ -575,6 +584,11 @@ inline auto FilterSettingsService::ResetGpuLerpFactorDownABit() noexcept -> void
                oldGpuLerpFactor,
                m_filterSettings.gpuFilterEffectsSettings.gpuLerpFactor());
 #endif
+}
+
+inline auto FilterSettingsService::GetCurrentGpuLerpFactor() const noexcept -> float
+{
+  return m_filterSettings.gpuFilterEffectsSettings.gpuLerpFactor();
 }
 
 inline auto FilterSettingsService::SetDefaultGpuLerpIncrement() noexcept -> void

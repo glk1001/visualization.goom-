@@ -2,6 +2,7 @@ module;
 
 #include "goom/debug_with_println.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <format>
@@ -180,7 +181,7 @@ private:
   auto DoResetFilterLerpFactor() -> void;
   auto DoResetFilterLerpFactorBasedOnSpeed() -> void;
 
-  struct PreChangeEventData
+  struct ChangeEventData
   {
     uint64_t eventTime                         = 0U;
     int32_t numUpdatesSinceLastFilterChange    = 0;
@@ -194,30 +195,22 @@ private:
     uint32_t timeSinceLastGoom                 = 0U;
     uint32_t totalGoomsInThisCycle             = 0U;
     float soundSpeed                           = 0.0F;
-  };
-  struct PostChangeEventData
-  {
-    int32_t numUpdatesSinceLastFilterChange    = 0;
-    int32_t numUpdatesSinceLastGpuFilterChange = 0;
-    int32_t maxUpdatesBetweenFilterChanges     = 0;
-    int32_t maxUpdatesBetweenGpuFilterChanges  = 0;
-    uint32_t lockTime                          = 0U;
-    uint32_t timeInState                       = 0U;
-    uint32_t currentZoomSpeed                  = 0;
+    uint32_t filterMode                        = 0U;
+    uint32_t gpuFilterMode                     = 0U;
+    uint32_t state                             = 0U;
+    float filterLerpFactor                     = 0.0F;
+    float gpuLerpFactor                        = 0.0F;
     bool filterModeChangedInThisUpdate         = false;
     std::vector<ChangeEvents> changeEvents;
   };
-  struct ChangeEventData
-  {
-    PreChangeEventData preChangeEventData{};
-    PostChangeEventData postChangeEventData{};
-  };
   static constexpr auto NUM_EVENT_DATA_TO_RESERVE = 500U;
   std::vector<ChangeEventData> m_allChangeEvents;
+  std::vector<std::string_view> m_usedStates;
+  uint32_t m_currentState = 0U;
   auto ClearChangeEventData() noexcept -> void;
-  auto PreUpdateChangeEventData() noexcept -> void;
-  auto PostUpdateChangeEventData() noexcept -> void;
+  auto UpdateChangeEventData() noexcept -> void;
   auto DumpChangeEventData() -> void;
+  auto LogChangeState() noexcept -> void;
   auto LogChangeEvent(ChangeEvents changeEvent) noexcept -> void;
 };
 
@@ -261,12 +254,28 @@ auto GoomMusicSettingsReactor::GetNameValueParams() const -> NameValuePairs
   return m_pimpl->GetNameValueParams();
 }
 
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::LogChangeState() noexcept -> void
+{
+  if constexpr (COLLECT_EVENT_STATS)
+  {
+    if (const auto iter = std::ranges::find(m_usedStates, m_visualFx->GetCurrentStateName());
+        iter != m_usedStates.end())
+    {
+      m_currentState = static_cast<uint32_t>(iter - m_usedStates.begin());
+    }
+    {
+      m_currentState = static_cast<uint32_t>(m_usedStates.size());
+      m_usedStates.emplace_back(m_visualFx->GetCurrentStateName());
+    }
+  }
+}
+
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::LogChangeEvent(
     const ChangeEvents changeEvent) noexcept -> void
 {
   if constexpr (COLLECT_EVENT_STATS)
   {
-    m_allChangeEvents.back().postChangeEventData.changeEvents.emplace_back(changeEvent);
+    m_allChangeEvents.back().changeEvents.emplace_back(changeEvent);
   }
 }
 
@@ -278,7 +287,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::ClearChangeEventDat
   }
 }
 
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::PreUpdateChangeEventData() noexcept
+auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateChangeEventData() noexcept
     -> void
 {
   if constexpr (COLLECT_EVENT_STATS)
@@ -290,41 +299,27 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::PreUpdateChangeEven
 
     // clang-format off
     m_allChangeEvents.emplace_back(ChangeEventData{
-        .preChangeEventData = PreChangeEventData{
-            .eventTime                          = m_goomInfo->GetTime().GetCurrentTime(),
-            .numUpdatesSinceLastFilterChange    = m_numUpdatesSinceLastFilterChange,
-            .numUpdatesSinceLastGpuFilterChange = m_numUpdatesSinceLastGpuFilterChange,
-            .maxUpdatesBetweenFilterChanges     = m_maxUpdatesBetweenFilterChanges,
-            .maxUpdatesBetweenGpuFilterChanges  = m_maxUpdatesBetweenGpuFilterChanges,
-            .lockTime                           = m_changeLock.GetLockTime(),
-            .timeInState                        = m_timeInState,
-            .previousZoomSpeed                  = m_previousZoomSpeed,
-            .currentZoomSpeed      = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed(),
-            .timeSinceLastGoom     = m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom(),
-            .totalGoomsInThisCycle = m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle(),
-            .soundSpeed            = m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed(),
-        },
-        .postChangeEventData = PostChangeEventData{}
+        .eventTime                          = m_goomInfo->GetTime().GetCurrentTime(),
+        .numUpdatesSinceLastFilterChange    = m_numUpdatesSinceLastFilterChange,
+        .numUpdatesSinceLastGpuFilterChange = m_numUpdatesSinceLastGpuFilterChange,
+        .maxUpdatesBetweenFilterChanges     = m_maxUpdatesBetweenFilterChanges,
+        .maxUpdatesBetweenGpuFilterChanges  = m_maxUpdatesBetweenGpuFilterChanges,
+        .lockTime                           = m_changeLock.GetLockTime(),
+        .timeInState                        = m_timeInState,
+        .previousZoomSpeed                  = m_previousZoomSpeed,
+        .currentZoomSpeed      = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed(),
+        .timeSinceLastGoom     = m_goomInfo->GetSoundEvents().GetTimeSinceLastGoom(),
+        .totalGoomsInThisCycle = m_goomInfo->GetSoundEvents().GetTotalGoomsInCurrentCycle(),
+        .soundSpeed            = m_goomInfo->GetSoundEvents().GetSoundInfo().GetSpeed(),
+        .filterMode    = static_cast<uint32_t>(m_filterSettingsService->GetCurrentFilterMode()),
+        .gpuFilterMode = static_cast<uint32_t>(m_filterSettingsService->GetCurrentGpuFilterMode()),
+        .state         = m_currentState,
+        .filterLerpFactor = m_filterSettingsService->GetCurrentFilterBufferLerpFactor(),
+        .gpuLerpFactor    = m_filterSettingsService->GetCurrentGpuLerpFactor(),
+        .filterModeChangedInThisUpdate = m_hasFilterModeChangedInThisUpdate,
+        .changeEvents                  = {},
     });
     // clang-format on
-  }
-}
-
-auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::PostUpdateChangeEventData() noexcept
-    -> void
-{
-  if constexpr (COLLECT_EVENT_STATS)
-  {
-    auto& postData = m_allChangeEvents.back().postChangeEventData;
-
-    postData.numUpdatesSinceLastFilterChange    = m_numUpdatesSinceLastFilterChange;
-    postData.numUpdatesSinceLastGpuFilterChange = m_numUpdatesSinceLastGpuFilterChange;
-    postData.maxUpdatesBetweenFilterChanges     = m_maxUpdatesBetweenFilterChanges;
-    postData.maxUpdatesBetweenGpuFilterChanges  = m_maxUpdatesBetweenGpuFilterChanges;
-    postData.lockTime                           = m_changeLock.GetLockTime();
-    postData.timeInState                        = m_timeInState;
-    postData.currentZoomSpeed = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed();
-    postData.filterModeChangedInThisUpdate = m_hasFilterModeChangedInThisUpdate;
   }
 }
 
@@ -348,37 +343,39 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DumpChangeEventData
     }
     std::println(outFile,
                  "{:>8s}"
-                 " {:>8s} {:>8s}"
-                 " {:>8s} {:>8s}"
-                 " {:>8s} {:>8s}"
-                 " {:>8s} {:>8s}"
                  " {:>8s}"
-                 " {:>8s} {:>8s}"
+                 " {:>8s}"
+                 " {:>8s}"
+                 " {:>8s}"
+                 " {:>8s}"
+                 " {:>8s}"
                  " {:>8s} {:>8s} {:>8s}"
+                 " {:>8s} {:>8s} {:>8s} {:>8s} {:>8s}"
                  " {:>8s}"
                  "  {}",
                  "TIME",
 
-                 "<N_UPDS",
-                 ">N_UPDS",
+                 "N_UPDS",
 
-                 ">MX_UPDS",
-                 "<MX_UPDS",
+                 "MX_UPDS",
 
-                 ">LK_TIME",
-                 "<LK_TIME",
+                 "LK_TIME",
 
-                 "<IN_STAT",
-                 ">IN_STAT",
+                 "IN_STATE",
 
                  "PRV_SPD",
 
-                 "<CUR_SPD",
-                 ">CUR_SPD",
+                 "CUR_SPD",
 
                  "LAST_GM",
                  "TOT_GM",
                  "SND_SPD",
+
+                 "STATE",
+                 "FILTER",
+                 "GPU",
+                 "FIL_LERP",
+                 "GPU_LERP",
 
                  "FIL_CHG",
 
@@ -387,41 +384,43 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DumpChangeEventData
     {
       std::println(outFile,
                    "{:8d}"
-                   " {:8d} {:8d}"
-                   " {:8d} {:8d}"
-                   " {:8d} {:8d}"
-                   " {:8d} {:8d}"
                    " {:8d}"
-                   " {:8d} {:8d}"
+                   " {:8d}"
+                   " {:8d}"
+                   " {:8d}"
+                   " {:8d}"
+                   " {:8d}"
                    " {:8d} {:8d} {:8.1f}"
+                   " {:8d} {:8d} {:8d} {:8.1f} {:8.1f}"
                    " {:8}"
                    "  {}",
-                   eventData.preChangeEventData.eventTime,
+                   eventData.eventTime,
 
-                   eventData.preChangeEventData.numUpdatesSinceLastFilterChange,
-                   eventData.postChangeEventData.numUpdatesSinceLastFilterChange,
+                   eventData.numUpdatesSinceLastFilterChange,
 
-                   eventData.preChangeEventData.maxUpdatesBetweenFilterChanges,
-                   eventData.postChangeEventData.maxUpdatesBetweenFilterChanges,
+                   eventData.maxUpdatesBetweenFilterChanges,
 
-                   eventData.preChangeEventData.lockTime,
-                   eventData.postChangeEventData.lockTime,
+                   eventData.lockTime,
 
-                   eventData.preChangeEventData.timeInState,
-                   eventData.postChangeEventData.timeInState,
+                   eventData.timeInState,
 
-                   eventData.preChangeEventData.previousZoomSpeed,
+                   eventData.previousZoomSpeed,
 
-                   eventData.preChangeEventData.currentZoomSpeed,
-                   eventData.postChangeEventData.currentZoomSpeed,
+                   eventData.currentZoomSpeed,
 
-                   eventData.preChangeEventData.timeSinceLastGoom,
-                   eventData.preChangeEventData.totalGoomsInThisCycle,
-                   eventData.preChangeEventData.soundSpeed,
+                   eventData.timeSinceLastGoom,
+                   eventData.totalGoomsInThisCycle,
+                   eventData.soundSpeed,
 
-                   eventData.postChangeEventData.filterModeChangedInThisUpdate,
+                   eventData.state,
+                   eventData.filterMode,
+                   eventData.gpuFilterMode,
+                   eventData.filterLerpFactor,
+                   eventData.gpuLerpFactor,
 
-                   StringJoin(ToStrings(eventData.postChangeEventData.changeEvents,
+                   eventData.filterModeChangedInThisUpdate,
+
+                   StringJoin(ToStrings(eventData.changeEvents,
                                         [](const auto event) { return EnumToString(event); }),
                               ", "));
     }
@@ -458,11 +457,9 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::Start() -> void
   m_previousZoomSpeed                  = Speed::STOP_SPEED;
 
   ClearChangeEventData();
-  PreUpdateChangeEventData();
+  UpdateChangeEventData();
 
   DoChangeState();
-
-  PostUpdateChangeEventData();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::Finish() -> void
@@ -482,7 +479,7 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::NewCycle() -> void
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateSettings() -> void
 {
-  PreUpdateChangeEventData();
+  UpdateChangeEventData();
 
   ChangeFilterModeMaybe();
   ChangeGpuFilterModeMaybe();
@@ -499,8 +496,6 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::UpdateSettings() ->
   CheckIfGpuFilterModeChanged();
 
   m_previousZoomSpeed = m_filterSettingsService->GetReadOnlyFilterSpeed().GetSpeed();
-
-  PostUpdateChangeEventData();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::CheckIfFilterModeChanged() -> void
@@ -733,6 +728,8 @@ auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoChangeState() -> 
   m_visualFx->ChangeAllFxColorMaps();
 
   m_timeInState = 0;
+
+  LogChangeState();
 }
 
 auto GoomMusicSettingsReactor::GoomMusicSettingsReactorImpl::DoBigUpdateMaybe() -> void
